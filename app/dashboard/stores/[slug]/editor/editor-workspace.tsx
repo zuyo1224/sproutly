@@ -698,26 +698,28 @@ export function EditorWorkspace({
           </div>
 
           {/* iframe container - viewport-aware */}
-          <div className="flex-1 bg-stone-200/40 overflow-auto flex items-start justify-center p-0 sm:p-4">
-            <div
-              className="bg-white shadow-md shadow-stone-300/50 transition-all duration-500"
-              style={{
-                width:
-                  viewport === "desktop"
-                    ? "100%"
-                    : viewport === "tablet"
-                      ? "768px"
-                      : "375px",
-                maxWidth: "100%",
-                height: "100%",
-              }}
-            >
-              <iframe
-                key={previewKey}
-                src={`/${slug}?edit=1`}
-                title="店面預覽"
-                className="w-full h-full bg-white"
-              />
+          <div className="flex-1 bg-stone-200/40 overflow-auto p-0 sm:p-4">
+            <div className="min-h-full flex items-start justify-center">
+              <div
+                className="bg-white shadow-md shadow-stone-300/50 transition-all duration-500 flex-shrink-0"
+                style={{
+                  width:
+                    viewport === "desktop"
+                      ? "1280px"
+                      : viewport === "tablet"
+                        ? "768px"
+                        : "375px",
+                  height: "100%",
+                  minHeight: "100%",
+                }}
+              >
+                <iframe
+                  key={previewKey}
+                  src={`/${slug}?edit=1`}
+                  title="店面預覽"
+                  className="w-full h-full bg-white"
+                />
+              </div>
             </div>
           </div>
         </div>
