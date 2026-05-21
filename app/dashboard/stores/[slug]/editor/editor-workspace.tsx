@@ -67,6 +67,7 @@ type EditorTheme = {
     stats: StatItem[];
     partners: PartnerItem[];
     gallery: GalleryItem[];
+    mapEmbedUrl: string | null;
   };
   homepage: {
     promise: string;
@@ -401,6 +402,7 @@ export function EditorWorkspace({
           gallery: theme.layout.gallery
             .filter((g) => g.url.trim())
             .map((g) => ({ url: g.url, caption: g.caption })),
+          mapEmbedUrl: theme.layout.mapEmbedUrl,
         },
         homepage: theme.homepage,
         sections: theme.sections,
@@ -871,7 +873,25 @@ export function EditorWorkspace({
                 className="w-full rounded-lg border border-stone-200 px-3 py-2 text-sm"
               />
             </Field>
-            <p className="text-xs text-stone-500 leading-relaxed">
+            <Field label="Google Maps embed URL">
+              <input
+                type="text"
+                value={theme.layout.mapEmbedUrl ?? ""}
+                onChange={(e) =>
+                  updateLayout({
+                    mapEmbedUrl: e.target.value.trim() || null,
+                  })
+                }
+                placeholder="https://www.google.com/maps/embed?pb=..."
+                className="w-full rounded-lg border border-stone-200 px-3 py-2 text-xs font-mono"
+              />
+              <p className="mt-2 text-[11px] text-stone-500 leading-relaxed">
+                Google Maps 找你的店面 → 分享 → 嵌入地圖 → 複製{" "}
+                <code className="px-1 bg-stone-100 rounded">src=</code>{" "}
+                內的 URL（必須是 google.com/maps/embed 開頭）
+              </p>
+            </Field>
+            <p className="text-xs text-stone-500 leading-relaxed pt-2 border-t border-stone-100">
               地址 / 營業時間 / 電話 / Email 在「傳統設定頁」改。
             </p>
           </PanelSection>

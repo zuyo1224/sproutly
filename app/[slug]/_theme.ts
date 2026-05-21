@@ -157,6 +157,7 @@ export interface StoreTheme {
     stats: StatItem[];                 // 數字 / 成就（optional block）
     partners: PartnerItem[];           // 合作夥伴 logos（optional block）
     gallery: GalleryItem[];            // 圖片相簿（optional block）
+    mapEmbedUrl: string | null;        // Google Maps embed URL（visit section 顯示）
   };
 }
 
@@ -418,6 +419,10 @@ function resolveLayout(raw: unknown): StoreTheme["layout"] {
     stats,
     partners,
     gallery,
+    mapEmbedUrl:
+      typeof l.mapEmbedUrl === "string" && l.mapEmbedUrl.trim()
+        ? l.mapEmbedUrl.trim()
+        : null,
   };
 }
 

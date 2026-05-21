@@ -23,6 +23,7 @@ type EditorPayload = {
     stats?: Array<{ value: string; label: string }>;
     partners?: Array<{ name: string; logoUrl: string; href?: string | null }>;
     gallery?: Array<{ url: string; caption?: string | null }>;
+    mapEmbedUrl?: string | null;
   };
   homepage?: {
     promise?: string;
@@ -157,6 +158,18 @@ export async function saveEditorState(slug: string, payload: EditorPayload) {
         }))
         .filter((p) => p.name && p.logoUrl)
         .slice(0, 12);
+    }
+    if (payload.layout.mapEmbedUrl !== undefined) {
+      const v = payload.layout.mapEmbedUrl;
+      // 只接受 google maps embed URL，防 user 貼任意 iframe src
+      if (v === null || v === "") {
+        layoutPatch.mapEmbedUrl = null;
+      } else if (
+        typeof v === "string" &&
+        /^https:\/\/(www\.)?google\.com\/maps\/embed/i.test(v)
+      ) {
+        layoutPatch.mapEmbedUrl = v.slice(0, 1000).trim();
+      }
     }
     if (payload.layout.gallery !== undefined && Array.isArray(payload.layout.gallery)) {
       layoutPatch.gallery = payload.layout.gallery

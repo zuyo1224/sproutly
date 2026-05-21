@@ -1210,6 +1210,24 @@ export default async function StoreHomePage({
                   )}
                 </div>
               )}
+              {theme.layout.mapEmbedUrl && (
+                <div
+                  className="mt-12 rounded-sm overflow-hidden border"
+                  style={{
+                    borderColor: theme.border,
+                    boxShadow: "var(--sproutly-elev-2)",
+                  }}
+                >
+                  <iframe
+                    src={theme.layout.mapEmbedUrl}
+                    title="店面地圖"
+                    loading="lazy"
+                    referrerPolicy="no-referrer-when-downgrade"
+                    className="w-full aspect-[16/10] block"
+                    allowFullScreen
+                  />
+                </div>
+              )}
             </div>
           </section>
         )}
