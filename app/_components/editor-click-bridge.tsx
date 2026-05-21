@@ -77,6 +77,10 @@ export function EditorClickBridge() {
       .sproutly-stagger > *,
       .sproutly-subtle-fade {
         animation: none !important;
+        animation-name: none !important;
+        animation-timeline: none !important;
+        transform: none !important;
+        opacity: 1 !important;
       }
     `;
     document.head.appendChild(style);
