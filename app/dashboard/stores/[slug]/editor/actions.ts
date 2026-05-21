@@ -4,7 +4,7 @@ import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
 
 const HERO_STYLES = new Set(["full-image", "split", "minimal", "magazine"]);
-const SECTION_KEYS = ["hero", "collections", "featured", "journal", "promise", "visit"];
+const SECTION_KEYS = ["hero", "collections", "featured", "journal", "promise", "testimonials", "visit"];
 
 type EditorPayload = {
   primary?: string;
@@ -16,6 +16,7 @@ type EditorPayload = {
     heroSubtitle?: string;
     heroImageSide?: string;
     sectionOrder?: string[];
+    testimonials?: Array<{ quote: string; author: string; role?: string }>;
   };
   homepage?: {
     promise?: string;
@@ -96,10 +97,23 @@ export async function saveEditorState(slug: string, payload: EditorPayload) {
           order.push(k);
         }
       }
-      for (const k of SECTION_KEYS) {
+      // 基本必要 6 個 section（DEFAULT_SECTION_ORDER）沒在 user order 就 append
+      // testimonials 不 auto-append（商家自己加才會出現）
+      for (const k of ["hero", "collections", "featured", "journal", "promise", "visit"]) {
         if (!order.includes(k)) order.push(k);
       }
       layoutPatch.sectionOrder = order;
+    }
+    if (payload.layout.testimonials !== undefined && Array.isArray(payload.layout.testimonials)) {
+      layoutPatch.testimonials = payload.layout.testimonials
+        .filter((t) => t && typeof t === "object")
+        .map((t) => ({
+          quote: String(t.quote ?? "").slice(0, 500).trim(),
+          author: String(t.author ?? "").slice(0, 100).trim(),
+          role: t.role ? String(t.role).slice(0, 100).trim() : null,
+        }))
+        .filter((t) => t.quote && t.author)
+        .slice(0, 6); // 上限 6 個 testimonial
     }
     merged.layout = layoutPatch;
   }

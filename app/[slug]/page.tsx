@@ -756,6 +756,105 @@ export default async function StoreHomePage({
           </section>
         )}
 
+        {/* === Testimonials（optional block，商家從 editor 加） === */}
+        {theme.layout.sectionOrder.includes("testimonials") &&
+          theme.layout.testimonials.length > 0 && (
+            <section
+              className={`py-40 sm:py-56 ${animClass}`}
+              style={{ background: theme.surface }}
+            >
+              <div className="max-w-5xl mx-auto px-8 sm:px-12">
+                <div className="text-center mb-20 sm:mb-28">
+                  <p
+                    className="text-[10px] tracking-[0.4em] uppercase mb-5"
+                    style={{ color: theme.accent }}
+                  >
+                    Testimonials
+                  </p>
+                  <h2
+                    className="text-2xl sm:text-3xl md:text-4xl"
+                    style={{
+                      color: theme.text,
+                      fontFamily: "var(--store-font)",
+                      fontWeight: 400,
+                      letterSpacing: "-0.01em",
+                      lineHeight: 1.2,
+                    }}
+                  >
+                    顧客的話
+                  </h2>
+                  <div
+                    className="mx-auto mt-6"
+                    style={{
+                      width: "32px",
+                      height: "1px",
+                      background: theme.accent,
+                      opacity: 0.5,
+                    }}
+                  />
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8">
+                  {theme.layout.testimonials.slice(0, 6).map((t, i) => (
+                    <figure
+                      key={i}
+                      className="relative p-8 rounded-sm"
+                      style={{
+                        background: theme.bg,
+                        boxShadow: "var(--sproutly-elev-2)",
+                        border: `1px solid ${theme.border}`,
+                      }}
+                    >
+                      <span
+                        aria-hidden="true"
+                        className="absolute select-none pointer-events-none"
+                        style={{
+                          top: "0.5rem",
+                          left: "1rem",
+                          fontFamily: "var(--store-font)",
+                          fontSize: "3rem",
+                          lineHeight: 1,
+                          color: theme.accent,
+                          opacity: 0.2,
+                        }}
+                      >
+                        &ldquo;
+                      </span>
+                      <blockquote
+                        className="text-base leading-[1.95] relative z-10 mb-6"
+                        style={{
+                          color: theme.text,
+                          fontFamily: "var(--store-font)",
+                          fontWeight: 400,
+                          letterSpacing: "0.005em",
+                          wordBreak: "keep-all",
+                        }}
+                      >
+                        {t.quote}
+                      </blockquote>
+                      <figcaption className="relative z-10">
+                        <p
+                          className="text-sm font-medium"
+                          style={{ color: theme.text }}
+                        >
+                          {t.author}
+                        </p>
+                        {t.role && (
+                          <p
+                            className="text-xs mt-1"
+                            style={{ color: theme.textMuted }}
+                          >
+                            {t.role}
+                          </p>
+                        )}
+                      </figcaption>
+                    </figure>
+                  ))}
+                </div>
+              </div>
+            </section>
+          )}
+
         {/* === Visit === */}
         {(store.address || businessHoursText) && (
           <section

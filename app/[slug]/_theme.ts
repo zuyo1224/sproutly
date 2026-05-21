@@ -22,6 +22,7 @@ export type SectionKey =
   | "featured"
   | "journal"
   | "promise"
+  | "testimonials"
   | "visit";
 export const DEFAULT_SECTION_ORDER: SectionKey[] = [
   "hero",
@@ -37,8 +38,24 @@ export const SECTION_LABELS: Record<SectionKey, string> = {
   featured: "本月選物",
   journal: "Journal（慢讀）",
   promise: "Our Promise",
+  testimonials: "顧客評語",
   visit: "來訪資訊",
 };
+
+// 可從 block library 新增的 section types（用戶能加 / 移除）
+export const OPTIONAL_BLOCK_TYPES: { key: SectionKey; label: string; description: string }[] = [
+  {
+    key: "testimonials",
+    label: "顧客評語",
+    description: "3 個 quote card 顯示真實顧客評價",
+  },
+];
+
+export interface Testimonial {
+  quote: string;
+  author: string;
+  role: string | null;
+}
 export type FontKey =
   | "cormorant"
   | "playfair"
@@ -86,6 +103,7 @@ export interface StoreTheme {
     heroEyebrow: string | null;        // magazine top metadata
     heroImageSide: "left" | "right";   // split 用
     sectionOrder: SectionKey[];
+    testimonials: Testimonial[];       // 顧客評語（optional block）
   };
 }
 
@@ -243,17 +261,39 @@ function resolveLayout(raw: unknown): StoreTheme["layout"] {
   const heroImageSide =
     l.heroImageSide === "right" ? "right" : "left";
   const orderRaw = Array.isArray(l.sectionOrder) ? l.sectionOrder : [];
-  const validKeys = new Set<SectionKey>(DEFAULT_SECTION_ORDER);
+  const validKeys = new Set<SectionKey>([
+    "hero",
+    "collections",
+    "featured",
+    "journal",
+    "promise",
+    "testimonials",
+    "visit",
+  ]);
   const order: SectionKey[] = [];
   for (const k of orderRaw) {
     if (typeof k === "string" && validKeys.has(k as SectionKey) && !order.includes(k as SectionKey)) {
       order.push(k as SectionKey);
     }
   }
-  // 沒在 user 的 order 內的 section 加到尾巴，保證所有 section 都會 render
+  // DEFAULT_SECTION_ORDER（基本必要 section）沒在 user order 內就 append
+  // testimonials 不在 DEFAULT 內，商家手動加才會出現
   for (const k of DEFAULT_SECTION_ORDER) {
     if (!order.includes(k)) order.push(k);
   }
+  // testimonials array sanitize
+  const testimonialsRaw = Array.isArray(l.testimonials) ? l.testimonials : [];
+  const testimonials: Testimonial[] = testimonialsRaw
+    .filter((t) => t && typeof t === "object")
+    .map((t) => {
+      const obj = t as Record<string, unknown>;
+      const quote = typeof obj.quote === "string" ? obj.quote.trim() : "";
+      const author = typeof obj.author === "string" ? obj.author.trim() : "";
+      const role = typeof obj.role === "string" && obj.role.trim() ? obj.role.trim() : null;
+      return { quote, author, role };
+    })
+    .filter((t) => t.quote && t.author);
+
   return {
     heroStyle,
     heroSubtitle:
@@ -266,6 +306,7 @@ function resolveLayout(raw: unknown): StoreTheme["layout"] {
         : null,
     heroImageSide,
     sectionOrder: order,
+    testimonials,
   };
 }
 

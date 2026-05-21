@@ -21,8 +21,25 @@ import {
 import { CSS } from "@dnd-kit/utilities";
 import { saveEditorState } from "./actions";
 
-type SectionKey = "hero" | "collections" | "featured" | "journal" | "promise" | "visit";
+type SectionKey =
+  | "hero"
+  | "collections"
+  | "featured"
+  | "journal"
+  | "promise"
+  | "testimonials"
+  | "visit";
 type HeroStyle = "full-image" | "split" | "minimal" | "magazine";
+
+type Testimonial = { quote: string; author: string; role: string | null };
+
+const ADDABLE_BLOCKS: { key: SectionKey; label: string; description: string }[] = [
+  {
+    key: "testimonials",
+    label: "顧客評語",
+    description: "3 個 quote card 顯示真實顧客評價",
+  },
+];
 
 type EditorTheme = {
   primary: string;
@@ -34,6 +51,7 @@ type EditorTheme = {
     heroSubtitle: string | null;
     heroImageSide: "left" | "right";
     sectionOrder: SectionKey[];
+    testimonials: Testimonial[];
   };
   homepage: {
     promise: string;
@@ -116,6 +134,47 @@ export function EditorWorkspace({
     });
   }
 
+  function addBlock(blockKey: SectionKey) {
+    if (theme.layout.sectionOrder.includes(blockKey)) return;
+    const next = [...theme.layout.sectionOrder];
+    // 預設加在 promise 後面（或末端）
+    const promiseIdx = next.indexOf("promise");
+    if (promiseIdx >= 0) {
+      next.splice(promiseIdx + 1, 0, blockKey);
+    } else {
+      next.push(blockKey);
+    }
+    updateLayout({ sectionOrder: next });
+    setSelectedSection(blockKey);
+  }
+
+  function removeBlock(blockKey: SectionKey) {
+    updateLayout({
+      sectionOrder: theme.layout.sectionOrder.filter((k) => k !== blockKey),
+    });
+    if (selectedSection === blockKey) setSelectedSection("hero");
+  }
+
+  function updateTestimonial(idx: number, patch: Partial<Testimonial>) {
+    const next = [...theme.layout.testimonials];
+    next[idx] = { ...next[idx], ...patch };
+    updateLayout({ testimonials: next });
+  }
+  function addTestimonial() {
+    if (theme.layout.testimonials.length >= 6) return;
+    updateLayout({
+      testimonials: [
+        ...theme.layout.testimonials,
+        { quote: "", author: "", role: null },
+      ],
+    });
+  }
+  function removeTestimonial(idx: number) {
+    updateLayout({
+      testimonials: theme.layout.testimonials.filter((_, i) => i !== idx),
+    });
+  }
+
   function handleSave() {
     startTransition(async () => {
       const res = await saveEditorState(slug, {
@@ -128,6 +187,13 @@ export function EditorWorkspace({
           heroSubtitle: theme.layout.heroSubtitle ?? "",
           heroImageSide: theme.layout.heroImageSide,
           sectionOrder: theme.layout.sectionOrder,
+          testimonials: theme.layout.testimonials
+            .filter((t) => t.quote.trim() && t.author.trim())
+            .map((t) => ({
+              quote: t.quote,
+              author: t.author,
+              role: t.role ?? undefined,
+            })),
         },
         homepage: theme.homepage,
         sections: theme.sections,
@@ -214,18 +280,57 @@ export function EditorWorkspace({
                 strategy={verticalListSortingStrategy}
               >
                 <ul className="space-y-1">
-                  {theme.layout.sectionOrder.map((key) => (
-                    <SortableSectionItem
-                      key={key}
-                      sectionKey={key}
-                      label={sectionLabels[key]}
-                      selected={selectedSection === key}
-                      onSelect={() => setSelectedSection(key)}
-                    />
-                  ))}
+                  {theme.layout.sectionOrder.map((key) => {
+                    const removable = ADDABLE_BLOCKS.some((b) => b.key === key);
+                    return (
+                      <SortableSectionItem
+                        key={key}
+                        sectionKey={key}
+                        label={sectionLabels[key]}
+                        selected={selectedSection === key}
+                        onSelect={() => setSelectedSection(key)}
+                        removable={removable}
+                        onRemove={removable ? () => removeBlock(key) : undefined}
+                      />
+                    );
+                  })}
                 </ul>
               </SortableContext>
             </DndContext>
+
+            {ADDABLE_BLOCKS.filter(
+              (b) => !theme.layout.sectionOrder.includes(b.key)
+            ).length > 0 && (
+              <div className="mt-5 pt-4 border-t border-stone-100">
+                <p className="px-2 mb-2 text-[10px] tracking-wider uppercase text-emerald-900/45">
+                  + 加新區段
+                </p>
+                <div className="space-y-1.5">
+                  {ADDABLE_BLOCKS.filter(
+                    (b) => !theme.layout.sectionOrder.includes(b.key)
+                  ).map((b) => (
+                    <button
+                      key={b.key}
+                      type="button"
+                      onClick={() => addBlock(b.key)}
+                      className="w-full text-left px-3 py-2.5 rounded-lg border border-dashed border-stone-300 hover:border-emerald-400 hover:bg-emerald-50/50 transition group"
+                    >
+                      <div className="flex items-center justify-between">
+                        <span className="text-sm text-emerald-950 font-medium">
+                          {b.label}
+                        </span>
+                        <span className="text-emerald-700 group-hover:translate-x-0.5 transition text-sm">
+                          +
+                        </span>
+                      </div>
+                      <p className="text-[11px] text-stone-500 mt-0.5">
+                        {b.description}
+                      </p>
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
         )}
 
@@ -414,6 +519,78 @@ export function EditorWorkspace({
           </PanelSection>
         )}
 
+        {activeTab === "section" && selectedSection === "testimonials" && (
+          <PanelSection title="顧客評語區段">
+            {theme.layout.testimonials.length === 0 ? (
+              <p className="text-sm text-stone-600 leading-relaxed">
+                還沒有評語，先加一筆。
+              </p>
+            ) : (
+              <div className="space-y-4">
+                {theme.layout.testimonials.map((t, i) => (
+                  <div
+                    key={i}
+                    className="rounded-lg border border-stone-200 p-3 space-y-2 bg-stone-50/50"
+                  >
+                    <div className="flex justify-between items-center">
+                      <p className="text-[10px] uppercase tracking-wider text-stone-500">
+                        評語 #{i + 1}
+                      </p>
+                      <button
+                        type="button"
+                        onClick={() => removeTestimonial(i)}
+                        className="text-xs text-red-600 hover:text-red-800"
+                      >
+                        移除
+                      </button>
+                    </div>
+                    <textarea
+                      value={t.quote}
+                      onChange={(e) =>
+                        updateTestimonial(i, { quote: e.target.value })
+                      }
+                      rows={3}
+                      placeholder="顧客評語..."
+                      className="w-full rounded border border-stone-200 px-2 py-1.5 text-sm resize-none"
+                    />
+                    <input
+                      type="text"
+                      value={t.author}
+                      onChange={(e) =>
+                        updateTestimonial(i, { author: e.target.value })
+                      }
+                      placeholder="顧客名字"
+                      className="w-full rounded border border-stone-200 px-2 py-1.5 text-sm"
+                    />
+                    <input
+                      type="text"
+                      value={t.role ?? ""}
+                      onChange={(e) =>
+                        updateTestimonial(i, {
+                          role: e.target.value || null,
+                        })
+                      }
+                      placeholder="頭銜或描述（選填）"
+                      className="w-full rounded border border-stone-200 px-2 py-1.5 text-sm"
+                    />
+                  </div>
+                ))}
+              </div>
+            )}
+            <button
+              type="button"
+              onClick={addTestimonial}
+              disabled={theme.layout.testimonials.length >= 6}
+              className="w-full mt-3 rounded-lg border border-dashed border-stone-300 hover:border-emerald-400 hover:bg-emerald-50/50 py-2.5 text-sm text-emerald-800 transition disabled:opacity-40 disabled:cursor-not-allowed"
+            >
+              + 加一筆評語{" "}
+              <span className="text-stone-400 text-xs">
+                ({theme.layout.testimonials.length}/6)
+              </span>
+            </button>
+          </PanelSection>
+        )}
+
         {activeTab === "section" &&
           (selectedSection === "featured" || selectedSection === "journal") && (
             <PanelSection title={sectionLabels[selectedSection]}>
@@ -517,11 +694,15 @@ function SortableSectionItem({
   label,
   selected,
   onSelect,
+  removable,
+  onRemove,
 }: {
   sectionKey: string;
   label: string;
   selected: boolean;
   onSelect: () => void;
+  removable?: boolean;
+  onRemove?: () => void;
 }) {
   const {
     attributes,
@@ -569,10 +750,21 @@ function SortableSectionItem({
         <button
           type="button"
           onClick={onSelect}
-          className="flex-1 text-left py-2.5 pr-3 text-sm text-emerald-950"
+          className="flex-1 text-left py-2.5 pr-3 text-sm text-emerald-950 min-w-0 truncate"
         >
           {label}
         </button>
+        {removable && onRemove && (
+          <button
+            type="button"
+            onClick={onRemove}
+            className="px-2 text-stone-400 hover:text-red-600 transition opacity-0 group-hover:opacity-100"
+            title="移除這個區段"
+            aria-label="移除"
+          >
+            ×
+          </button>
+        )}
       </div>
     </li>
   );
