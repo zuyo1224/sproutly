@@ -50,6 +50,7 @@ export default async function StoreLayout({
       href: `/dashboard/stores/${slug}/orders`,
       badge: pendingOrderCount ?? 0,
     },
+    { label: "客人", href: `/dashboard/stores/${slug}/customers`, badge: 0 },
     { label: "設定", href: `/dashboard/stores/${slug}/settings`, badge: 0 },
   ];
 
