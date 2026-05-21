@@ -1,3 +1,20 @@
-// 這個 file 已 deprecated，請見 next.config.ts
-// 留空避免 Next.js 同時讀兩個 config crash
-export default {};
+/** @type {import('next').NextConfig} */
+const nextConfig = {
+  experimental: {
+    serverActions: {
+      bodySizeLimit: "10mb",
+    },
+  },
+  images: {
+    // 商家可以貼任何 IG / 自家 CDN / Supabase storage 圖片，允許全 HTTPS
+    remotePatterns: [
+      {
+        protocol: "https",
+        hostname: "**",
+      },
+    ],
+    formats: ["image/avif", "image/webp"],
+  },
+};
+
+export default nextConfig;
