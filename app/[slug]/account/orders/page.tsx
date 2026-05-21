@@ -1,0 +1,259 @@
+import { notFound, redirect } from "next/navigation";
+import Link from "next/link";
+import { createClient } from "@/lib/supabase/server";
+import { resolveTheme } from "../../_theme";
+import { PAYMENT_LABELS } from "@/lib/order-labels";
+
+type Params = Promise<{ slug: string }>;
+
+const STATUS_LABELS: Record<string, string> = {
+  pending: "待店家確認",
+  confirmed: "已確認",
+  shipped: "已出貨",
+  completed: "完成",
+  cancelled: "取消",
+};
+
+function formatPrice(cents: number, currency: string) {
+  const amount = cents / 100;
+  if (currency === "TWD") return `NT$ ${amount.toLocaleString("zh-TW")}`;
+  return `${currency} ${amount.toFixed(2)}`;
+}
+
+function formatDate(iso: string) {
+  const d = new Date(iso);
+  return d.toLocaleDateString("zh-TW", {
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+  });
+}
+
+export default async function CustomerOrdersPage({
+  params,
+}: {
+  params: Params;
+}) {
+  const { slug } = await params;
+  const supabase = await createClient();
+  const { data: store } = await supabase
+    .from("sproutly_merchants")
+    .select("id, name, theme")
+    .eq("slug", slug)
+    .eq("is_published", true)
+    .maybeSingle();
+  if (!store) notFound();
+
+  const theme = resolveTheme(store.theme);
+
+  const { data: userData } = await supabase.auth.getUser();
+  const user = userData.user;
+  if (!user) {
+    redirect(
+      `/${slug}/account/login?next=${encodeURIComponent(`/${slug}/account/orders`)}`
+    );
+  }
+
+  type Order = {
+    id: string;
+    status: string;
+    payment_status: string;
+    payment_method: string | null;
+    total_cents: number;
+    currency: string;
+    created_at: string;
+  };
+  type OrderItem = {
+    order_id: string;
+    name_snapshot: string;
+    quantity: number;
+    price_cents_snapshot: number;
+  };
+
+  const { data: orders } = await supabase
+    .from("sproutly_orders")
+    .select(
+      "id, status, payment_status, payment_method, total_cents, currency, created_at"
+    )
+    .eq("merchant_id", store.id)
+    .eq("customer_id", user.id)
+    .order("created_at", { ascending: false });
+
+  const orderList = (orders as Order[] | null) ?? [];
+  let items: OrderItem[] = [];
+  if (orderList.length > 0) {
+    const ids = orderList.map((o) => o.id);
+    const { data: it } = await supabase
+      .from("sproutly_order_items")
+      .select("order_id, name_snapshot, quantity, price_cents_snapshot")
+      .in("order_id", ids);
+    items = (it as OrderItem[] | null) ?? [];
+  }
+
+  return (
+    <main className="max-w-3xl mx-auto px-6 py-24 sm:py-32">
+      <div className="mb-14 sm:mb-20">
+        <p
+          className="text-[10px] tracking-[0.4em] uppercase mb-5"
+          style={{ color: theme.accent }}
+        >
+          Orders
+        </p>
+        <h1
+          className="text-3xl sm:text-4xl lg:text-[2.5rem]"
+          style={{
+            color: theme.text,
+            fontFamily: "var(--store-font)",
+            fontWeight: 400,
+            letterSpacing: "-0.01em",
+            lineHeight: 1.2,
+          }}
+        >
+          訂單歷史
+        </h1>
+        <Link
+          href={`/${slug}/account`}
+          className="sproutly-link inline-block mt-6 text-xs tracking-[0.3em] uppercase"
+          style={{ color: theme.text }}
+          data-default-line="true"
+        >
+          ← 回會員中心
+        </Link>
+      </div>
+
+      {orderList.length === 0 ? (
+        <div
+          className="rounded-2xl p-10 text-center"
+          style={{
+            background: theme.surface,
+            border: `1px solid ${theme.border}`,
+          }}
+        >
+          <p
+            className="text-base leading-[1.9]"
+            style={{ color: theme.textMuted }}
+          >
+            還沒有訂單。
+            <br />
+            去看看店裡有什麼？
+          </p>
+          <Link
+            href={`/${slug}/shop`}
+            className="sproutly-link inline-block mt-6 text-sm tracking-wider"
+            style={{ color: theme.text }}
+            data-default-line="true"
+          >
+            看商品
+          </Link>
+        </div>
+      ) : (
+        <ul className="space-y-6">
+          {orderList.map((order) => {
+            const orderItems = items.filter((i) => i.order_id === order.id);
+            const shortId = order.id.slice(0, 8).toUpperCase();
+            return (
+              <li
+                key={order.id}
+                className="rounded-2xl p-7"
+                style={{
+                  background: theme.surface,
+                  border: `1px solid ${theme.border}`,
+                }}
+              >
+                <div className="flex items-start justify-between gap-4 mb-5">
+                  <div className="min-w-0">
+                    <p
+                      className="text-[10px] tracking-[0.4em] uppercase mb-2"
+                      style={{ color: theme.accent }}
+                    >
+                      #{shortId}
+                    </p>
+                    <p
+                      className="text-sm"
+                      style={{ color: theme.textMuted }}
+                    >
+                      {formatDate(order.created_at)}
+                    </p>
+                  </div>
+                  <div className="text-right">
+                    <span
+                      className="inline-block text-[10px] tracking-[0.3em] uppercase px-3 py-1 rounded-full"
+                      style={{
+                        background: theme.bg,
+                        color: theme.text,
+                        border: `1px solid ${theme.border}`,
+                      }}
+                    >
+                      {STATUS_LABELS[order.status] ?? order.status}
+                    </span>
+                  </div>
+                </div>
+
+                <ul
+                  className="space-y-2.5 pb-5 mb-5 border-b text-sm leading-[1.8]"
+                  style={{
+                    borderColor: theme.border,
+                    color: theme.text,
+                  }}
+                >
+                  {orderItems.map((item, i) => (
+                    <li key={i} className="flex justify-between gap-4">
+                      <span className="min-w-0 truncate">
+                        {item.name_snapshot}
+                        <span
+                          className="ml-2"
+                          style={{ color: theme.textMuted }}
+                        >
+                          × {item.quantity}
+                        </span>
+                      </span>
+                      <span
+                        className="tabular-nums whitespace-nowrap"
+                        style={{ color: theme.textMuted }}
+                      >
+                        {formatPrice(
+                          item.price_cents_snapshot * item.quantity,
+                          order.currency
+                        )}
+                      </span>
+                    </li>
+                  ))}
+                </ul>
+
+                <div className="flex items-end justify-between gap-4">
+                  <div className="text-xs space-y-1" style={{ color: theme.textMuted }}>
+                    {order.payment_method && (
+                      <p>
+                        付款方式：
+                        {PAYMENT_LABELS[order.payment_method] ?? order.payment_method}
+                      </p>
+                    )}
+                    <p>
+                      付款狀態：
+                      {order.payment_status === "paid"
+                        ? "已付款"
+                        : order.payment_status === "refunded"
+                          ? "已退款"
+                          : "未付款"}
+                    </p>
+                  </div>
+                  <p
+                    className="text-xl sm:text-2xl tabular-nums"
+                    style={{
+                      color: theme.text,
+                      fontFamily: "var(--store-font)",
+                      fontWeight: 400,
+                      letterSpacing: "-0.01em",
+                    }}
+                  >
+                    {formatPrice(order.total_cents, order.currency)}
+                  </p>
+                </div>
+              </li>
+            );
+          })}
+        </ul>
+      )}
+    </main>
+  );
+}

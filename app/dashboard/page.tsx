@@ -20,6 +20,16 @@ export default async function DashboardPage() {
     .eq("owner_id", user.id)
     .order("created_at", { ascending: false });
 
+  // 純客人擋下：沒任何店，但 sproutly_customers 有 record，跳回首頁（避免客人誤入商家後台）
+  if (!stores || stores.length === 0) {
+    const { data: customer } = await supabase
+      .from("sproutly_customers")
+      .select("id")
+      .eq("id", user.id)
+      .maybeSingle();
+    if (customer) redirect("/");
+  }
+
   const name =
     (user.user_metadata?.name as string | undefined) ??
     user.email?.split("@")[0] ??

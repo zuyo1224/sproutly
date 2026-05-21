@@ -132,10 +132,16 @@ export async function POST(
     userNote
   );
 
+  // 如果客人已登入，把訂單 link 到客人 account
+  const supabaseUser = await createClient();
+  const { data: userData } = await supabaseUser.auth.getUser();
+  const customerId = userData.user?.id ?? null;
+
   const { data: order, error: orderError } = await admin
     .from("sproutly_orders")
     .insert({
       merchant_id: store.id,
+      customer_id: customerId,
       customer_name: customerName,
       customer_phone: customerPhone,
       customer_email: customerEmail,

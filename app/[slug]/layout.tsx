@@ -138,6 +138,11 @@ export default async function PublicStoreLayout({
   const theme = resolveTheme(store.theme);
   const cssVars = themeToCssVars(theme);
 
+  // 客人是否登入（決定 nav 上「會員」連結指向哪）
+  const { data: userData } = await supabase.auth.getUser();
+  const isLoggedIn = !!userData.user;
+  const accountHref = isLoggedIn ? `/${slug}/account` : `/${slug}/account/login`;
+
   const navItems = [
     { href: `/${slug}`, label: "首頁", always: true },
     { href: `/${slug}/shop`, label: "商品", always: true },
@@ -418,9 +423,34 @@ export default async function PublicStoreLayout({
                 {item.label}
               </Link>
             ))}
+            <Link
+              href={accountHref}
+              className="ml-2 px-2 py-2 transition hover:opacity-70"
+              style={{ color: theme.textMuted }}
+              aria-label={isLoggedIn ? "會員中心" : "登入"}
+              title={isLoggedIn ? "會員中心" : "登入"}
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="20"
+                height="20"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="1.5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <circle cx="12" cy="8" r="4" />
+                <path d="M4 21c0-4.4 3.6-8 8-8s8 3.6 8 8" />
+                {isLoggedIn && (
+                  <circle cx="18" cy="6" r="2.5" fill={theme.accent} stroke="none" />
+                )}
+              </svg>
+            </Link>
             <FavoritesCounter
               href={`/${slug}/favorites`}
-              className="ml-2 px-2 py-2 whitespace-nowrap"
+              className="ml-1 px-2 py-2 whitespace-nowrap"
             />
             <div
               className="ml-1 px-2 py-2"
