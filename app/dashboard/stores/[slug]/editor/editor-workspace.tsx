@@ -604,11 +604,13 @@ export function EditorWorkspace({
         </div>
       </header>
 
-      {/* === 主編輯區（3 column；240 sidebar 改成 floating popover；fullscreen 只剩 canvas） === */}
+      {/* === 主編輯區（contextual：右 panel 只在選了 section 才出現） === */}
       <div className={`grid flex-1 overflow-hidden relative ${
         fullscreen
           ? "grid-cols-1"
-          : "grid-cols-1 lg:grid-cols-[80px_1fr_320px]"
+          : popover === "section" && selectedSection
+            ? "grid-cols-1 lg:grid-cols-[80px_1fr_320px]"
+            : "grid-cols-1 lg:grid-cols-[80px_1fr]"
       }`}>
       {/* === Icon nav（最左；fullscreen 時隱藏）=== */}
       {!fullscreen && (
@@ -779,7 +781,13 @@ export function EditorWorkspace({
       )}
 
       {/* === 中央 canvas: 公開頁 preview === */}
-      <main className={`bg-stone-100 overflow-hidden flex flex-col ${fullscreen ? "p-0" : "p-4 lg:p-6"}`}>
+      <main
+        className={`bg-stone-100 overflow-hidden flex flex-col ${fullscreen ? "p-0" : "p-4 lg:p-6"}`}
+        onClick={() => {
+          // 點 canvas 空白處（iframe 外）關閉 popover
+          if (popover) setPopover(null);
+        }}
+      >
         <div className={`flex-1 overflow-hidden bg-white flex flex-col ${fullscreen ? "" : "rounded-xl shadow-lg shadow-stone-200/60 border border-stone-200"}`}>
           {/* Canvas URL bar（簡化、wix-like） */}
           <div className="flex items-center justify-between px-4 py-2 border-b border-stone-200 bg-stone-50">
@@ -821,8 +829,8 @@ export function EditorWorkspace({
         </div>
       </main>
 
-      {/* === 右 panel: 屬性編輯（fullscreen 時隱藏） === */}
-      {!fullscreen && (
+      {/* === 右 panel: 屬性編輯（contextual：選了 section 才出現）=== */}
+      {!fullscreen && popover === "section" && selectedSection && (
       <aside className="bg-white border-l border-stone-200 overflow-y-auto">
         {activeTab === "section" && selectedSection === "hero" && (
           <PanelSection title="Hero 區段">
