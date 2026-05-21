@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useTransition } from "react";
+import { useState, useTransition, useEffect, useRef } from "react";
 import Link from "next/link";
 import {
   DndContext,
@@ -108,19 +108,79 @@ export function EditorWorkspace({
   const [pending, startTransition] = useTransition();
   const [savedAt, setSavedAt] = useState<number | null>(null);
   const [previewKey, setPreviewKey] = useState(0);
+  const [viewport, setViewport] = useState<"desktop" | "tablet" | "mobile">("desktop");
+
+  // Undo / Redo state — past / future stacks of theme snapshots
+  const pastRef = useRef<EditorTheme[]>([]);
+  const futureRef = useRef<EditorTheme[]>([]);
+  const [historyTick, setHistoryTick] = useState(0); // 觸發 re-render of undo/redo buttons
+
+  function pushHistory(prev: EditorTheme) {
+    pastRef.current.push(prev);
+    if (pastRef.current.length > 50) pastRef.current.shift();
+    futureRef.current = [];
+    setHistoryTick((t) => t + 1);
+  }
 
   function update<K extends keyof EditorTheme>(key: K, value: EditorTheme[K]) {
-    setTheme((t) => ({ ...t, [key]: value }));
+    setTheme((t) => {
+      pushHistory(t);
+      return { ...t, [key]: value };
+    });
     setDirty(true);
   }
   function updateLayout(patch: Partial<EditorTheme["layout"]>) {
-    setTheme((t) => ({ ...t, layout: { ...t.layout, ...patch } }));
+    setTheme((t) => {
+      pushHistory(t);
+      return { ...t, layout: { ...t.layout, ...patch } };
+    });
     setDirty(true);
   }
   function updateHomepage(patch: Partial<EditorTheme["homepage"]>) {
-    setTheme((t) => ({ ...t, homepage: { ...t.homepage, ...patch } }));
+    setTheme((t) => {
+      pushHistory(t);
+      return { ...t, homepage: { ...t.homepage, ...patch } };
+    });
     setDirty(true);
   }
+
+  function undo() {
+    const last = pastRef.current.pop();
+    if (!last) return;
+    futureRef.current.push(theme);
+    setTheme(last);
+    setDirty(true);
+    setHistoryTick((t) => t + 1);
+  }
+  function redo() {
+    const next = futureRef.current.pop();
+    if (!next) return;
+    pastRef.current.push(theme);
+    setTheme(next);
+    setDirty(true);
+    setHistoryTick((t) => t + 1);
+  }
+
+  // Cmd/Ctrl+Z / Cmd/Ctrl+Shift+Z keyboard shortcut
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      const isMeta = e.metaKey || e.ctrlKey;
+      if (!isMeta) return;
+      // 不要 hijack input / textarea 內的 native undo
+      const tag = (e.target as HTMLElement)?.tagName;
+      if (tag === "INPUT" || tag === "TEXTAREA" || tag === "SELECT") return;
+      if (e.key === "z" && !e.shiftKey) {
+        e.preventDefault();
+        undo();
+      } else if ((e.key === "z" && e.shiftKey) || e.key === "y") {
+        e.preventDefault();
+        redo();
+      }
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [theme]);
 
   function moveSection(from: number, to: number) {
     if (to < 0 || to >= theme.layout.sectionOrder.length) return;
@@ -423,32 +483,104 @@ export function EditorWorkspace({
       </aside>
 
       {/* === 中央 canvas: 公開頁 preview === */}
-      <main className="bg-stone-100 p-4 lg:p-6 overflow-hidden">
-        <div className="h-full rounded-xl overflow-hidden shadow-lg shadow-stone-200/60 border border-stone-200 bg-white">
+      <main className="bg-stone-100 p-4 lg:p-6 overflow-hidden flex flex-col">
+        <div className="flex-1 rounded-xl overflow-hidden shadow-lg shadow-stone-200/60 border border-stone-200 bg-white flex flex-col">
           <div className="flex items-center justify-between px-4 py-2.5 border-b border-stone-200 bg-stone-50">
-            <div className="flex items-center gap-2">
-              <span className="w-2.5 h-2.5 rounded-full bg-red-300" />
-              <span className="w-2.5 h-2.5 rounded-full bg-amber-300" />
-              <span className="w-2.5 h-2.5 rounded-full bg-emerald-300" />
+            <div className="flex items-center gap-3">
+              <div className="flex items-center gap-1.5">
+                <span className="w-2.5 h-2.5 rounded-full bg-red-300" />
+                <span className="w-2.5 h-2.5 rounded-full bg-amber-300" />
+                <span className="w-2.5 h-2.5 rounded-full bg-emerald-300" />
+              </div>
+              {/* Undo / Redo */}
+              <div className="flex items-center gap-0.5 ml-2 border-l border-stone-200 pl-3">
+                <button
+                  type="button"
+                  onClick={undo}
+                  disabled={pastRef.current.length === 0}
+                  title="復原 (Cmd+Z)"
+                  className="w-7 h-7 rounded text-stone-600 hover:bg-stone-200 transition disabled:opacity-30 disabled:cursor-not-allowed flex items-center justify-center"
+                  data-history-tick={historyTick}
+                >
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M3 7v6h6" />
+                    <path d="M21 17a9 9 0 00-15-6.7L3 13" />
+                  </svg>
+                </button>
+                <button
+                  type="button"
+                  onClick={redo}
+                  disabled={futureRef.current.length === 0}
+                  title="重做 (Cmd+Shift+Z)"
+                  className="w-7 h-7 rounded text-stone-600 hover:bg-stone-200 transition disabled:opacity-30 disabled:cursor-not-allowed flex items-center justify-center"
+                >
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M21 7v6h-6" />
+                    <path d="M3 17a9 9 0 0115-6.7L21 13" />
+                  </svg>
+                </button>
+              </div>
             </div>
-            <span className="text-[11px] font-mono text-stone-500">
-              sproutly.app/{slug}
-            </span>
-            <button
-              type="button"
-              onClick={() => setPreviewKey((k) => k + 1)}
-              className="text-xs text-emerald-700 hover:text-emerald-900"
-              title="重新載入預覽"
-            >
-              ↻
-            </button>
+
+            {/* Viewport switcher */}
+            <div className="flex items-center gap-0.5 bg-stone-200/60 rounded-md p-0.5">
+              {(["desktop", "tablet", "mobile"] as const).map((v) => (
+                <button
+                  key={v}
+                  type="button"
+                  onClick={() => setViewport(v)}
+                  className={`px-2.5 py-1 text-[11px] font-medium rounded transition ${
+                    viewport === v
+                      ? "bg-white text-emerald-900 shadow-sm"
+                      : "text-stone-600 hover:text-stone-900"
+                  }`}
+                  title={
+                    v === "desktop" ? "桌機 (1280)" : v === "tablet" ? "平板 (768)" : "手機 (375)"
+                  }
+                >
+                  {v === "desktop" ? "桌機" : v === "tablet" ? "平板" : "手機"}
+                </button>
+              ))}
+            </div>
+
+            <div className="flex items-center gap-3">
+              <span className="text-[11px] font-mono text-stone-500 hidden sm:inline">
+                sproutly.app/{slug}
+              </span>
+              <button
+                type="button"
+                onClick={() => setPreviewKey((k) => k + 1)}
+                className="text-xs text-emerald-700 hover:text-emerald-900"
+                title="重新載入預覽"
+              >
+                ↻
+              </button>
+            </div>
           </div>
-          <iframe
-            key={previewKey}
-            src={`/${slug}`}
-            title="店面預覽"
-            className="w-full h-[calc(100%-40px)] bg-white"
-          />
+
+          {/* iframe container - viewport-aware */}
+          <div className="flex-1 bg-stone-200/40 overflow-auto flex items-start justify-center p-0 sm:p-4">
+            <div
+              className="bg-white shadow-md shadow-stone-300/50 transition-all duration-500"
+              style={{
+                width:
+                  viewport === "desktop"
+                    ? "100%"
+                    : viewport === "tablet"
+                      ? "768px"
+                      : "375px",
+                maxWidth: "100%",
+                height: "100%",
+              }}
+            >
+              <iframe
+                key={previewKey}
+                src={`/${slug}`}
+                title="店面預覽"
+                className="w-full h-full bg-white"
+              />
+            </div>
+          </div>
         </div>
       </main>
 
