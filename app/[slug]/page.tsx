@@ -1,5 +1,6 @@
 import { notFound } from "next/navigation";
 import Link from "next/link";
+import Image from "next/image";
 import { createClient } from "@/lib/supabase/server";
 import { resolveTheme, HOMEPAGE_DEFAULTS, HOMEPAGE_DEFAULT_COLLECTIONS } from "./_theme";
 
@@ -133,11 +134,14 @@ export default async function StoreHomePage({
         {/* === Hero === */}
         {theme.heroUrl ? (
           <section className="relative h-screen overflow-hidden">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
+            <Image
               src={theme.heroUrl}
               alt={store.name}
-              className="sproutly-hero-parallax absolute inset-0 w-full h-full object-cover"
+              fill
+              priority
+              sizes="100vw"
+              quality={85}
+              className="sproutly-hero-parallax object-cover"
             />
             <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-black/45" />
             <div className="relative h-full max-w-6xl mx-auto px-8 sm:px-12 flex flex-col justify-end pb-24 sm:pb-32">
@@ -224,12 +228,15 @@ export default async function StoreHomePage({
                     href={`/${slug}/shop`}
                     className="sproutly-card"
                   >
-                    <div className="sproutly-card-image aspect-[3/4]">
-                      {/* eslint-disable-next-line @next/next/no-img-element */}
-                      <img
+                    <div className="sproutly-card-image aspect-[3/4] relative">
+                      <Image
                         src={c.image}
                         alt={c.title}
-                        className="w-full h-full object-cover"
+                        fill
+                        sizes="(min-width: 640px) 600px, 50vw"
+                        quality={80}
+                        loading="lazy"
+                        className="object-cover"
                       />
                     </div>
                     <h3
@@ -287,13 +294,16 @@ export default async function StoreHomePage({
                     href={`/${slug}/products/${p.id}`}
                     className="sproutly-card"
                   >
-                    <div className="sproutly-card-image aspect-square">
+                    <div className="sproutly-card-image aspect-square relative">
                       {p.image_urls?.[0] ? (
-                        // eslint-disable-next-line @next/next/no-img-element
-                        <img
+                        <Image
                           src={p.image_urls[0]}
                           alt={p.name}
-                          className="w-full h-full object-cover"
+                          fill
+                          sizes="(min-width: 768px) 350px, 50vw"
+                          quality={80}
+                          loading="lazy"
+                          className="object-cover"
                         />
                       ) : (
                         <div
@@ -400,15 +410,18 @@ export default async function StoreHomePage({
                 return (
                   <article key={entry.key} className="sproutly-card">
                     <div
-                      className="sproutly-card-image aspect-[5/3] overflow-hidden"
+                      className="sproutly-card-image aspect-[5/3] overflow-hidden relative"
                       style={{ background: theme.surface }}
                     >
                       {fallbackImage ? (
-                        // eslint-disable-next-line @next/next/no-img-element
-                        <img
+                        <Image
                           src={fallbackImage}
                           alt=""
-                          className="w-full h-full object-cover"
+                          fill
+                          sizes="(min-width: 640px) 400px, 100vw"
+                          quality={75}
+                          loading="lazy"
+                          className="object-cover"
                           style={{ opacity: 0.55 }}
                         />
                       ) : (

@@ -1,5 +1,6 @@
 import { notFound } from "next/navigation";
 import Link from "next/link";
+import Image from "next/image";
 import { createClient } from "@/lib/supabase/server";
 import { resolveTheme } from "../_theme";
 
@@ -187,15 +188,18 @@ export default async function ShopPage({
               className="group block"
             >
               <div
-                className="aspect-square rounded-2xl overflow-hidden shadow-sm transition group-hover:shadow-md"
+                className="aspect-square rounded-2xl overflow-hidden shadow-sm transition group-hover:shadow-md relative"
                 style={{ background: theme.surface }}
               >
                 {p.image_urls?.[0] ? (
-                  // eslint-disable-next-line @next/next/no-img-element
-                  <img
+                  <Image
                     src={p.image_urls[0]}
                     alt={p.name}
-                    className="w-full h-full object-cover group-hover:scale-105 transition duration-700"
+                    fill
+                    sizes="(min-width: 1024px) 300px, (min-width: 640px) 33vw, 50vw"
+                    quality={80}
+                    loading="lazy"
+                    className="object-cover group-hover:scale-105 transition duration-700"
                   />
                 ) : (
                   <div
