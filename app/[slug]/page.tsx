@@ -145,7 +145,11 @@ export default async function StoreHomePage({
           // Variant 1: full-image（既有預設）— 整屏圖 + 底部 overlay 文字
           if (heroStyle === "full-image" && theme.heroUrl) {
             return (
-              <section className="relative h-screen overflow-hidden">
+              <section
+                className="relative h-screen overflow-hidden"
+                data-edit-target="hero"
+                data-edit-label="Hero 區段"
+              >
                 <Image
                   src={theme.heroUrl}
                   alt={store.name}
@@ -193,6 +197,8 @@ export default async function StoreHomePage({
               <section
                 className="relative grid grid-cols-1 md:grid-cols-2 min-h-[80vh] md:min-h-screen overflow-hidden"
                 style={{ background: theme.bg }}
+                data-edit-target="hero"
+                data-edit-label="Hero 區段"
               >
                 <div
                   className={`relative aspect-square md:aspect-auto md:h-full ${imageOnRight ? "md:order-2" : ""}`}
@@ -270,6 +276,8 @@ export default async function StoreHomePage({
               <section
                 className="relative min-h-screen flex flex-col justify-between py-20 sm:py-28"
                 style={{ background: theme.bg }}
+                data-edit-target="hero"
+                data-edit-label="Hero 區段"
               >
                 {/* 上方 metadata 條 */}
                 <div className="max-w-6xl mx-auto px-8 sm:px-12 w-full">
@@ -347,6 +355,8 @@ export default async function StoreHomePage({
             <section
               className="max-w-3xl mx-auto px-6 py-40 sm:py-56 text-center"
               style={{ background: theme.bg }}
+              data-edit-target="hero"
+              data-edit-label="Hero 區段"
             >
               {theme.layout.heroEyebrow && (
                 <p
@@ -402,7 +412,11 @@ export default async function StoreHomePage({
 
         {/* === 選物提案 === */}
         {visibleCollections.length > 0 && (
-          <section className={`py-40 sm:py-56 ${animClass}`}>
+          <section
+            className={`py-40 sm:py-56 ${animClass}`}
+            data-edit-target="collections"
+            data-edit-label="選物提案"
+          >
             <div className="max-w-5xl mx-auto px-8 sm:px-12">
               <h2
                 className="text-xl sm:text-2xl text-center max-w-xl mx-auto mb-32 leading-[1.9]"
@@ -475,6 +489,8 @@ export default async function StoreHomePage({
           <section
             className={`py-40 sm:py-56 ${animClass}`}
             style={{ background: theme.surface }}
+            data-edit-target="featured"
+            data-edit-label="本月選物"
           >
             <div className="max-w-5xl mx-auto px-8 sm:px-12">
               <h2
@@ -556,7 +572,11 @@ export default async function StoreHomePage({
         )}
 
         {/* === Journal（placeholder：尚無實際文章） === */}
-        <section className={`py-40 sm:py-56 ${animClass}`}>
+        <section
+          className={`py-40 sm:py-56 ${animClass}`}
+          data-edit-target="journal"
+          data-edit-label="Journal 區段"
+        >
           <div className="max-w-5xl mx-auto px-8 sm:px-12">
             <div className="mb-20 sm:mb-28">
               <p
@@ -671,7 +691,11 @@ export default async function StoreHomePage({
 
         {/* === Promise（雜誌風 quote card） === */}
         {promiseLines.length > 0 && (
-          <section className={`py-40 sm:py-56 ${animClass}`}>
+          <section
+            className={`py-40 sm:py-56 ${animClass}`}
+            data-edit-target="promise"
+            data-edit-label="Promise 區段"
+          >
             <div className="max-w-3xl mx-auto px-6 sm:px-12">
               <figure
                 className="relative px-8 py-16 sm:px-16 sm:py-24 text-center rounded-sm"
@@ -762,6 +786,8 @@ export default async function StoreHomePage({
             <section
               className={`py-40 sm:py-56 ${animClass}`}
               style={{ background: theme.surface }}
+              data-edit-target="testimonials"
+              data-edit-label="顧客評語"
             >
               <div className="max-w-5xl mx-auto px-8 sm:px-12">
                 <div className="text-center mb-20 sm:mb-28">
@@ -858,7 +884,11 @@ export default async function StoreHomePage({
         {/* === FAQ Accordion（optional block，<details> 原生 accordion） === */}
         {theme.layout.sectionOrder.includes("faq") &&
           theme.layout.faqItems.length > 0 && (
-            <section className={`py-40 sm:py-56 ${animClass}`}>
+            <section
+              className={`py-40 sm:py-56 ${animClass}`}
+              data-edit-target="faq"
+              data-edit-label="常見問題"
+            >
               <div className="max-w-2xl mx-auto px-6 sm:px-12">
                 <div className="text-center mb-16">
                   <p
@@ -941,7 +971,12 @@ export default async function StoreHomePage({
         {/* === Stats（optional block：4 個大數字 + label） === */}
         {theme.layout.sectionOrder.includes("stats") &&
           theme.layout.stats.length > 0 && (
-            <section className={`py-32 sm:py-44 ${animClass}`} style={{ background: theme.surface }}>
+            <section
+              className={`py-32 sm:py-44 ${animClass}`}
+              style={{ background: theme.surface }}
+              data-edit-target="stats"
+              data-edit-label="數字 / 成就"
+            >
               <div className="max-w-5xl mx-auto px-8 sm:px-12">
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-y-12 gap-x-8 text-center">
                   {theme.layout.stats.slice(0, 6).map((s, i) => (
@@ -983,7 +1018,11 @@ export default async function StoreHomePage({
         {/* === Partners（optional block：合作夥伴 logos 灰階） === */}
         {theme.layout.sectionOrder.includes("partners") &&
           theme.layout.partners.length > 0 && (
-            <section className={`py-32 sm:py-44 ${animClass}`}>
+            <section
+              className={`py-32 sm:py-44 ${animClass}`}
+              data-edit-target="partners"
+              data-edit-label="合作夥伴"
+            >
               <div className="max-w-5xl mx-auto px-8 sm:px-12">
                 <p
                   className="text-[10px] tracking-[0.4em] uppercase mb-12 text-center"
@@ -1028,7 +1067,11 @@ export default async function StoreHomePage({
         {/* === Gallery（optional block：3 欄圖片網格） === */}
         {theme.layout.sectionOrder.includes("gallery") &&
           theme.layout.gallery.length > 0 && (
-            <section className={`py-40 sm:py-56 ${animClass}`}>
+            <section
+              className={`py-40 sm:py-56 ${animClass}`}
+              data-edit-target="gallery"
+              data-edit-label="圖片相簿"
+            >
               <div className="max-w-6xl mx-auto px-6 sm:px-10">
                 <div className="text-center mb-16 sm:mb-20">
                   <p
@@ -1097,6 +1140,8 @@ export default async function StoreHomePage({
           <section
             className={`py-40 sm:py-56 ${animClass}`}
             style={{ background: theme.surface }}
+            data-edit-target="visit"
+            data-edit-label="來訪資訊"
           >
             <div className="max-w-xl mx-auto px-8 sm:px-12 text-center">
               <p

@@ -175,6 +175,35 @@ export function EditorWorkspace({
     setHistoryTick((t) => t + 1);
   }
 
+  // 接 iframe edit click postMessage
+  useEffect(() => {
+    function onMessage(e: MessageEvent) {
+      if (typeof e.data !== "object" || !e.data) return;
+      const msg = e.data as { type?: string; target?: string };
+      if (msg.type === "sproutly-edit-click" && typeof msg.target === "string") {
+        const validKeys = [
+          "hero",
+          "collections",
+          "featured",
+          "journal",
+          "promise",
+          "testimonials",
+          "faq",
+          "stats",
+          "partners",
+          "gallery",
+          "visit",
+        ] as const;
+        if ((validKeys as readonly string[]).includes(msg.target)) {
+          setSelectedSection(msg.target as SectionKey);
+          setActiveTab("section");
+        }
+      }
+    }
+    window.addEventListener("message", onMessage);
+    return () => window.removeEventListener("message", onMessage);
+  }, []);
+
   // Auto-save: 改動後 2 秒沒新動作就自動 save + reload iframe
   useEffect(() => {
     if (!dirty || !autoSaveEnabled) return;
@@ -667,7 +696,7 @@ export function EditorWorkspace({
             >
               <iframe
                 key={previewKey}
-                src={`/${slug}`}
+                src={`/${slug}?edit=1`}
                 title="店面預覽"
                 className="w-full h-full bg-white"
               />

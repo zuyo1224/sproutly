@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import {
@@ -14,6 +14,7 @@ import { resolveTheme, themeToCssVars } from "./_theme";
 import { FavoritesCounter } from "@/app/_components/favorite-button";
 import { CartIcon } from "@/app/_components/cart-icon";
 import { SearchOverlay } from "@/app/_components/search-overlay";
+import { EditorClickBridge } from "@/app/_components/editor-click-bridge";
 
 const RESERVED = new Set([
   "api",
@@ -81,6 +82,30 @@ export async function generateMetadata({
       description,
       images: ogImage ? [ogImage] : undefined,
     },
+  };
+}
+
+export async function generateViewport({
+  params,
+}: {
+  params: Promise<{ slug: string }>;
+}): Promise<Viewport> {
+  const { slug } = await params;
+  if (RESERVED.has(slug)) return {};
+
+  const supabase = await createClient();
+  const { data: store } = await supabase
+    .from("sproutly_merchants")
+    .select("theme")
+    .eq("slug", slug)
+    .eq("is_published", true)
+    .maybeSingle();
+  if (!store) return {};
+
+  const theme = resolveTheme(store.theme);
+  return {
+    themeColor: theme.bg,
+    colorScheme: "light",
   };
 }
 
@@ -550,6 +575,9 @@ export default async function PublicStoreLayout({
           }
         }
       `}</style>
+
+      {/* iframe edit mode bridge（只在 ?edit=1 啟動） */}
+      <EditorClickBridge />
 
       {/* 頂部滾動進度（用 store accent 色） */}
       <div
