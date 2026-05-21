@@ -750,13 +750,34 @@ export default async function StoreHomePage({
         </section>
 
         {/* === Promise（雜誌風 quote card） === */}
-        {promiseLines.length > 0 && (
+        {promiseLines.length > 0 && (() => {
+          const promisePos = theme.layout.freePositions["promise-card"] ?? null;
+          return (
           <section
-            className={`py-40 sm:py-56 ${animClass}`}
+            className={`relative py-40 sm:py-56 ${animClass} ${promisePos ? "min-h-screen" : ""}`}
             data-edit-target="promise"
             data-edit-label="Promise 區段"
           >
-            <div className="max-w-3xl mx-auto px-6 sm:px-12">
+            <div
+              className={
+                promisePos
+                  ? "absolute"
+                  : "max-w-3xl mx-auto px-6 sm:px-12"
+              }
+              data-edit-drag="promise-card"
+              style={
+                promisePos
+                  ? {
+                      left: `${promisePos.x * 100}%`,
+                      top: `${promisePos.y * 100}%`,
+                      transform: "translate(-50%, -50%)",
+                      maxWidth: "min(680px, 90vw)",
+                      width: "100%",
+                      padding: "0 1.5rem",
+                    }
+                  : undefined
+              }
+            >
               <figure
                 className="relative px-8 py-16 sm:px-16 sm:py-24 text-center rounded-sm"
                 style={{
@@ -840,7 +861,8 @@ export default async function StoreHomePage({
               </figure>
             </div>
           </section>
-        )}
+          );
+        })()}
 
         {/* === Testimonials（optional block，商家從 editor 加） === */}
         {theme.layout.sectionOrder.includes("testimonials") &&
