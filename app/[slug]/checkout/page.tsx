@@ -340,13 +340,14 @@ export default async function CheckoutPage({
           </section>
 
           <SubmitButton
-            pendingText="送出中..."
-            className="w-full rounded-full px-8 py-4 font-semibold shadow-lg"
+            pendingText="送出中…"
+            className="sproutly-btn sproutly-btn-primary sproutly-btn-lg w-full"
           >
-            <span style={{ color: theme.surface }}>送出訂單</span>
+            送出訂單
           </SubmitButton>
           <style>{`
-            form button[type="submit"] {
+            form button[type="submit"].sproutly-btn-primary {
+              /* sproutly-btn-primary 已套 var(--store-text)，保留覆寫成 primary 配色 */
               background: ${theme.primary};
               color: ${theme.surface};
             }

@@ -161,11 +161,7 @@ export default async function CustomerAccountHome({
           <input type="hidden" name="slug" value={slug} />
           <button
             type="submit"
-            className="rounded-full px-5 py-2.5 text-xs tracking-[0.2em] uppercase transition hover:opacity-85 whitespace-nowrap"
-            style={{
-              background: theme.text,
-              color: theme.bg,
-            }}
+            className="sproutly-btn sproutly-btn-primary sproutly-btn-sm whitespace-nowrap"
           >
             登出
           </button>

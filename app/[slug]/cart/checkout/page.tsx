@@ -161,10 +161,10 @@ export default function CartCheckoutPage() {
           <button
             type="submit"
             disabled={submitting}
-            className="w-full rounded-full px-8 py-4 text-sm tracking-wider transition disabled:opacity-50"
-            style={{ background: "var(--store-primary)", color: "var(--store-surface)" }}
+            className="sproutly-btn sproutly-btn-primary sproutly-btn-lg w-full"
+            aria-disabled={submitting}
           >
-            {submitting ? "送出中..." : "送出訂單"}
+            {submitting ? "送出中…" : "送出訂單"}
           </button>
         </form>
 

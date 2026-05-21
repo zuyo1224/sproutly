@@ -189,10 +189,9 @@ export default function CartPage() {
             </div>
             <Link
               href={`/${slug}/cart/checkout`}
-              className="rounded-full px-10 py-4 text-sm tracking-wider transition hover:opacity-90"
-              style={{ background: "var(--store-primary)", color: "var(--store-surface)" }}
+              className="sproutly-btn sproutly-btn-primary sproutly-btn-lg"
             >
-              去結帳 →
+              去結帳
             </Link>
           </div>
         </>

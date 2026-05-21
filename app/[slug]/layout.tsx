@@ -396,6 +396,85 @@ export default async function PublicStoreLayout({
           transform: translateY(0);
         }
 
+        /* Button system - 3 variants 對應 Wix / Squarespace 級的 button 質感 */
+        .sproutly-btn {
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          gap: 0.5rem;
+          padding: 0.875rem 1.75rem;
+          border-radius: 9999px;
+          font-size: 0.8125rem;
+          letter-spacing: 0.18em;
+          text-transform: uppercase;
+          font-family: var(--store-font), inherit;
+          font-weight: 500;
+          line-height: 1;
+          cursor: pointer;
+          text-decoration: none;
+          transition: box-shadow 0.5s cubic-bezier(0.22, 1, 0.36, 1),
+                      transform 0.5s cubic-bezier(0.22, 1, 0.36, 1),
+                      background-color 0.4s ease,
+                      color 0.4s ease,
+                      opacity 0.4s ease,
+                      border-color 0.4s ease;
+          -webkit-appearance: none;
+          appearance: none;
+          border: 1px solid transparent;
+        }
+        .sproutly-btn-sm {
+          padding: 0.625rem 1.25rem;
+          font-size: 0.75rem;
+        }
+        .sproutly-btn-lg {
+          padding: 1.125rem 2.25rem;
+          font-size: 0.875rem;
+        }
+        .sproutly-btn-primary {
+          background: var(--store-text, #1a1a1a);
+          color: var(--store-bg, #ffffff);
+          box-shadow: var(--sproutly-elev-1);
+        }
+        .sproutly-btn-primary:hover {
+          box-shadow: var(--sproutly-elev-3);
+          transform: translateY(-2px);
+          opacity: 0.92;
+        }
+        .sproutly-btn-primary:active {
+          transform: translateY(0);
+          box-shadow: var(--sproutly-elev-1);
+        }
+        .sproutly-btn-secondary {
+          background: transparent;
+          color: var(--store-text, #1a1a1a);
+          border-color: var(--store-border, rgba(0,0,0,0.12));
+        }
+        .sproutly-btn-secondary:hover {
+          background: var(--store-surface, rgba(0,0,0,0.03));
+          border-color: var(--store-text, rgba(0,0,0,0.4));
+          transform: translateY(-1px);
+        }
+        .sproutly-btn-ghost {
+          background: transparent;
+          color: var(--store-text-muted, rgba(0,0,0,0.6));
+          padding: 0.625rem 1rem;
+          letter-spacing: 0.14em;
+        }
+        .sproutly-btn-ghost:hover {
+          color: var(--store-text, #1a1a1a);
+          background: var(--store-surface, rgba(0,0,0,0.04));
+        }
+        .sproutly-btn:disabled,
+        .sproutly-btn[aria-disabled="true"] {
+          opacity: 0.4;
+          cursor: not-allowed;
+          pointer-events: none;
+        }
+        @media (prefers-reduced-motion: reduce) {
+          .sproutly-btn { transition: none !important; }
+          .sproutly-btn:hover { transform: none !important; }
+        }
+
         /* 圖片 hover 浮起 (商品詳情主圖) */
         .sproutly-zoomable {
           cursor: zoom-in;

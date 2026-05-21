@@ -148,11 +148,7 @@ export default async function CustomerLoginPage({
             </div>
             <button
               type="submit"
-              className="w-full rounded-full px-6 py-3.5 text-sm tracking-[0.2em] uppercase transition hover:opacity-85"
-              style={{
-                background: theme.text,
-                color: theme.bg,
-              }}
+              className="sproutly-btn sproutly-btn-primary sproutly-btn-lg w-full"
             >
               寄登入連結
             </button>
