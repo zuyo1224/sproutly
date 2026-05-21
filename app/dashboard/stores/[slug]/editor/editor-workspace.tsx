@@ -452,60 +452,211 @@ export function EditorWorkspace({
   }
 
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-[240px_1fr_300px] min-h-[calc(100vh-80px)] bg-stone-50">
-      {/* === 左 sidebar：section 列表 === */}
-      <aside className="bg-white border-r border-stone-200 flex flex-col">
-        <div className="p-5 border-b border-stone-200">
-          <p className="text-[10px] tracking-[0.32em] uppercase text-emerald-700/70 mb-1">
-            Editor
-          </p>
-          <h1 className="text-base font-semibold text-emerald-950 truncate">
-            {storeName}
-          </h1>
-          <div className="mt-2 flex items-center gap-2">
+    <div className="flex flex-col min-h-[calc(100vh-80px)] bg-stone-50 -mx-8 -mb-16">
+      {/* === Top header bar（對標 Wix Studio）=== */}
+      <header className="flex items-center justify-between bg-white border-b border-stone-200 px-4 py-2.5 sticky top-0 z-30">
+        {/* Left: 返回 + store name + 狀態 */}
+        <div className="flex items-center gap-3 min-w-0">
+          <Link
+            href={`/dashboard/stores/${slug}`}
+            className="text-stone-500 hover:text-emerald-900 transition text-sm flex items-center gap-1"
+            title="回到店面總覽"
+          >
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+          </Link>
+          <div className="h-5 w-px bg-stone-200" />
+          <div className="flex items-center gap-2 min-w-0">
+            <span className="text-sm font-semibold text-emerald-950 truncate max-w-48">
+              {storeName}
+            </span>
             <span
-              className={`inline-flex w-1.5 h-1.5 rounded-full ${isPublished ? "bg-emerald-500" : "bg-amber-500"}`}
-            />
-            <span className="text-[11px] text-emerald-900/55">
+              className={`inline-flex items-center gap-1 text-[10px] px-1.5 py-0.5 rounded-full ${
+                isPublished
+                  ? "bg-emerald-100 text-emerald-800"
+                  : "bg-amber-100 text-amber-800"
+              }`}
+            >
+              <span
+                className={`w-1.5 h-1.5 rounded-full ${
+                  isPublished ? "bg-emerald-500" : "bg-amber-500"
+                }`}
+              />
               {isPublished ? "已發布" : "草稿"}
             </span>
           </div>
         </div>
 
-        <div className="p-3">
+        {/* Center: undo/redo + viewport switcher */}
+        <div className="flex items-center gap-3">
+          <div className="flex items-center gap-0.5">
+            <button
+              type="button"
+              onClick={undo}
+              disabled={pastRef.current.length === 0}
+              title="復原 (Cmd+Z)"
+              className="w-8 h-8 rounded text-stone-600 hover:bg-stone-100 transition disabled:opacity-30 disabled:cursor-not-allowed flex items-center justify-center"
+              data-history-tick={historyTick}
+            >
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M3 7v6h6" />
+                <path d="M21 17a9 9 0 00-15-6.7L3 13" />
+              </svg>
+            </button>
+            <button
+              type="button"
+              onClick={redo}
+              disabled={futureRef.current.length === 0}
+              title="重做 (Cmd+Shift+Z)"
+              className="w-8 h-8 rounded text-stone-600 hover:bg-stone-100 transition disabled:opacity-30 disabled:cursor-not-allowed flex items-center justify-center"
+            >
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M21 7v6h-6" />
+                <path d="M3 17a9 9 0 0115-6.7L21 13" />
+              </svg>
+            </button>
+          </div>
+
+          <div className="h-5 w-px bg-stone-200" />
+
+          <div className="flex items-center gap-0.5 bg-stone-100 rounded-md p-0.5">
+            {(
+              [
+                { v: "desktop" as const, label: "桌機 1280", icon: <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><rect x="2" y="4" width="20" height="13" rx="1.5"/><path d="M8 20h8"/><path d="M12 17v3"/></svg> },
+                { v: "tablet" as const, label: "平板 768", icon: <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><rect x="5" y="2" width="14" height="20" rx="2"/><circle cx="12" cy="18.5" r="0.5" fill="currentColor"/></svg> },
+                { v: "mobile" as const, label: "手機 375", icon: <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><rect x="7" y="2" width="10" height="20" rx="2"/><path d="M11 18h2"/></svg> },
+              ]
+            ).map(({ v, label, icon }) => (
+              <button
+                key={v}
+                type="button"
+                onClick={() => setViewport(v)}
+                className={`w-8 h-8 rounded flex items-center justify-center transition ${
+                  viewport === v
+                    ? "bg-white text-emerald-900 shadow-sm"
+                    : "text-stone-500 hover:text-stone-900"
+                }`}
+                title={label}
+                aria-label={label}
+              >
+                {icon}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* Right: save status + 預覽 + 發佈 */}
+        <div className="flex items-center gap-3">
+          <span
+            className={`text-[11px] hidden sm:inline ${
+              pending
+                ? "text-emerald-700"
+                : dirty
+                  ? autoSaveEnabled
+                    ? "text-stone-500"
+                    : "text-amber-700"
+                  : savedAt
+                    ? "text-emerald-700"
+                    : "text-stone-400"
+            }`}
+            title={savedAt ? new Date(savedAt).toLocaleString("zh-TW") : ""}
+          >
+            {pending
+              ? "● 儲存中"
+              : dirty
+                ? autoSaveEnabled
+                  ? "● 2 秒後自動存"
+                  : "● 未儲存"
+                : savedAt
+                  ? `● 已存 ${new Date(savedAt).toLocaleTimeString("zh-TW", { hour: "2-digit", minute: "2-digit" })}`
+                  : "—"}
+          </span>
+          <a
+            href={`/${slug}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="rounded-full px-4 py-1.5 text-xs font-medium text-emerald-900/80 hover:text-emerald-900 hover:bg-stone-100 transition"
+          >
+            預覽 ↗
+          </a>
           <button
             type="button"
-            onClick={() => setActiveTab("section")}
-            className={`w-full text-left px-3 py-2 rounded-lg text-sm mb-1 transition ${
-              activeTab === "section"
-                ? "bg-emerald-50 text-emerald-900 font-medium"
-                : "text-emerald-900/70 hover:bg-stone-50"
-            }`}
+            onClick={handleSave}
+            disabled={!dirty || pending}
+            className="rounded-full bg-emerald-700 text-white text-xs font-medium px-5 py-1.5 hover:bg-emerald-800 transition disabled:opacity-40 disabled:cursor-not-allowed"
           >
-            版面結構
+            {pending ? "儲存中…" : "儲存"}
           </button>
+        </div>
+      </header>
+
+      {/* === 主編輯區（3 column） === */}
+      <div className="grid grid-cols-1 lg:grid-cols-[80px_240px_1fr_300px] flex-1 overflow-hidden">
+      {/* === Icon nav（最左）=== */}
+      <nav className="bg-white border-r border-stone-200 flex flex-col items-center py-4 gap-1">
+        {(
+          [
+            { tab: "section" as const, label: "版面結構", icon: <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="3" width="18" height="5" rx="1"/><rect x="3" y="11" width="18" height="5" rx="1"/><rect x="3" y="19" width="18" height="2" rx="1"/></svg> },
+            { tab: "design" as const, label: "視覺風格", icon: <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"><circle cx="13.5" cy="6.5" r="2.5"/><circle cx="18.5" cy="11.5" r="2.5"/><circle cx="11.5" cy="16.5" r="2.5"/><circle cx="5.5" cy="11.5" r="2.5"/><path d="M12 22a10 10 0 110-20 10 10 0 010 20z"/></svg> },
+            { tab: "content" as const, label: "文案", icon: <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"><polyline points="4 7 4 4 20 4 20 7"/><line x1="9" y1="20" x2="15" y2="20"/><line x1="12" y1="4" x2="12" y2="20"/></svg> },
+          ]
+        ).map(({ tab, label, icon }) => (
           <button
+            key={tab}
             type="button"
-            onClick={() => setActiveTab("design")}
-            className={`w-full text-left px-3 py-2 rounded-lg text-sm mb-1 transition ${
-              activeTab === "design"
-                ? "bg-emerald-50 text-emerald-900 font-medium"
-                : "text-emerald-900/70 hover:bg-stone-50"
+            onClick={() => setActiveTab(tab)}
+            className={`w-12 h-12 rounded-lg flex items-center justify-center transition group relative ${
+              activeTab === tab
+                ? "bg-emerald-50 text-emerald-900"
+                : "text-stone-500 hover:text-emerald-900 hover:bg-stone-50"
             }`}
+            title={label}
+            aria-label={label}
           >
-            視覺風格
+            {icon}
+            {activeTab === tab && (
+              <span className="absolute left-0 top-1/2 -translate-y-1/2 w-0.5 h-6 bg-emerald-600 rounded-r" />
+            )}
           </button>
-          <button
-            type="button"
-            onClick={() => setActiveTab("content")}
-            className={`w-full text-left px-3 py-2 rounded-lg text-sm transition ${
-              activeTab === "content"
-                ? "bg-emerald-50 text-emerald-900 font-medium"
-                : "text-emerald-900/70 hover:bg-stone-50"
-            }`}
-          >
-            文案內容
-          </button>
+        ))}
+
+        <div className="flex-1" />
+
+        {/* AutoSave toggle in bottom of icon nav */}
+        <button
+          type="button"
+          onClick={() => setAutoSaveEnabled(!autoSaveEnabled)}
+          className={`w-12 h-12 rounded-lg flex items-center justify-center transition text-[10px] ${
+            autoSaveEnabled
+              ? "text-emerald-700 hover:bg-emerald-50"
+              : "text-stone-400 hover:bg-stone-50"
+          }`}
+          title={autoSaveEnabled ? "自動儲存開啟" : "自動儲存關閉"}
+        >
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z" />
+            <polyline points="17 21 17 13 7 13 7 21" />
+            <polyline points="7 3 7 8 15 8" />
+          </svg>
+        </button>
+      </nav>
+
+      {/* === 左 sidebar：tab content === */}
+      <aside className="bg-white border-r border-stone-200 flex flex-col overflow-y-auto">
+        <div className="p-4 border-b border-stone-100">
+          <h2 className="text-sm font-semibold text-emerald-950">
+            {activeTab === "section"
+              ? "版面結構"
+              : activeTab === "design"
+                ? "視覺風格"
+                : "文案內容"}
+          </h2>
+          <p className="text-[11px] text-stone-500 mt-0.5">
+            {activeTab === "section"
+              ? "拖曳排序 / 點選編輯"
+              : activeTab === "design"
+                ? "色彩 / Logo"
+                : "Tagline / 子頁開關"}
+          </p>
         </div>
 
         {activeTab === "section" && (
@@ -590,177 +741,24 @@ export function EditorWorkspace({
           </div>
         )}
 
-        <div className="p-3 border-t border-stone-200 mt-auto space-y-2">
-          <div className="flex items-center justify-between px-1 mb-1">
-            <label className="flex items-center gap-1.5 text-[11px] text-emerald-900/70 cursor-pointer select-none">
-              <input
-                type="checkbox"
-                checked={autoSaveEnabled}
-                onChange={(e) => setAutoSaveEnabled(e.target.checked)}
-                className="w-3.5 h-3.5 rounded text-emerald-700"
-              />
-              自動儲存
-            </label>
-            <span
-              className={`text-[11px] ${
-                pending
-                  ? "text-emerald-700"
-                  : dirty
-                    ? autoSaveEnabled
-                      ? "text-stone-500"
-                      : "text-amber-700"
-                    : savedAt
-                      ? "text-emerald-700"
-                      : "text-stone-400"
-              }`}
-              title={savedAt ? new Date(savedAt).toLocaleString("zh-TW") : ""}
-            >
-              {pending
-                ? "儲存中…"
-                : dirty
-                  ? autoSaveEnabled
-                    ? "2 秒後自動存"
-                    : "未儲存"
-                  : savedAt
-                    ? `已存 · ${new Date(savedAt).toLocaleTimeString("zh-TW", { hour: "2-digit", minute: "2-digit" })}`
-                    : "—"}
-            </span>
-          </div>
-          <button
-            type="button"
-            onClick={handleSave}
-            disabled={!dirty || pending}
-            className="w-full rounded-full bg-emerald-700 text-white text-sm font-medium px-4 py-2.5 hover:bg-emerald-800 transition disabled:opacity-40 disabled:cursor-not-allowed"
-          >
-            {pending ? "儲存中…" : "立刻儲存"}
-          </button>
-          <Link
-            href={`/dashboard/stores/${slug}/settings`}
-            className="block text-center text-xs text-emerald-900/55 hover:text-emerald-900 transition"
-          >
-            ← 回傳統設定頁
-          </Link>
-        </div>
       </aside>
 
       {/* === 中央 canvas: 公開頁 preview === */}
       <main className="bg-stone-100 p-4 lg:p-6 overflow-hidden flex flex-col">
         <div className="flex-1 rounded-xl overflow-hidden shadow-lg shadow-stone-200/60 border border-stone-200 bg-white flex flex-col">
-          <div className="flex items-center justify-between px-4 py-2.5 border-b border-stone-200 bg-stone-50">
-            <div className="flex items-center gap-3">
-              <div className="flex items-center gap-1.5">
-                <span className="w-2.5 h-2.5 rounded-full bg-red-300" />
-                <span className="w-2.5 h-2.5 rounded-full bg-amber-300" />
-                <span className="w-2.5 h-2.5 rounded-full bg-emerald-300" />
-              </div>
-              {/* Undo / Redo */}
-              <div className="flex items-center gap-0.5 ml-2 border-l border-stone-200 pl-3">
-                <button
-                  type="button"
-                  onClick={undo}
-                  disabled={pastRef.current.length === 0}
-                  title="復原 (Cmd+Z)"
-                  className="w-7 h-7 rounded text-stone-600 hover:bg-stone-200 transition disabled:opacity-30 disabled:cursor-not-allowed flex items-center justify-center"
-                  data-history-tick={historyTick}
-                >
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                    <path d="M3 7v6h6" />
-                    <path d="M21 17a9 9 0 00-15-6.7L3 13" />
-                  </svg>
-                </button>
-                <button
-                  type="button"
-                  onClick={redo}
-                  disabled={futureRef.current.length === 0}
-                  title="重做 (Cmd+Shift+Z)"
-                  className="w-7 h-7 rounded text-stone-600 hover:bg-stone-200 transition disabled:opacity-30 disabled:cursor-not-allowed flex items-center justify-center"
-                >
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                    <path d="M21 7v6h-6" />
-                    <path d="M3 17a9 9 0 0115-6.7L21 13" />
-                  </svg>
-                </button>
-              </div>
-            </div>
-
-            {/* Viewport switcher 含 icon */}
-            <div className="flex items-center gap-0.5 bg-stone-200/60 rounded-md p-0.5">
-              {(
-                [
-                  {
-                    v: "desktop" as const,
-                    label: "桌機 1280",
-                    icon: (
-                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-                        <rect x="2" y="4" width="20" height="13" rx="1.5" />
-                        <path d="M8 20h8" />
-                        <path d="M12 17v3" />
-                      </svg>
-                    ),
-                  },
-                  {
-                    v: "tablet" as const,
-                    label: "平板 768",
-                    icon: (
-                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-                        <rect x="5" y="2" width="14" height="20" rx="2" />
-                        <circle cx="12" cy="18.5" r="0.5" fill="currentColor" />
-                      </svg>
-                    ),
-                  },
-                  {
-                    v: "mobile" as const,
-                    label: "手機 375",
-                    icon: (
-                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-                        <rect x="7" y="2" width="10" height="20" rx="2" />
-                        <path d="M11 18h2" />
-                      </svg>
-                    ),
-                  },
-                ]
-              ).map(({ v, label, icon }) => (
-                <button
-                  key={v}
-                  type="button"
-                  onClick={() => setViewport(v)}
-                  className={`flex items-center gap-1.5 px-2.5 py-1.5 text-[11px] font-medium rounded transition ${
-                    viewport === v
-                      ? "bg-white text-emerald-900 shadow-sm"
-                      : "text-stone-600 hover:text-stone-900"
-                  }`}
-                  title={label}
-                >
-                  {icon}
-                  <span className="hidden sm:inline">
-                    {v === "desktop" ? "桌機" : v === "tablet" ? "平板" : "手機"}
-                  </span>
-                </button>
-              ))}
-            </div>
-
-            <div className="flex items-center gap-3">
-              <span className="text-[11px] font-mono text-stone-500 hidden sm:inline">
-                sproutly.app/{slug}
-              </span>
-              <button
-                type="button"
-                onClick={() => setPreviewKey((k) => k + 1)}
-                className="text-xs text-emerald-700 hover:text-emerald-900"
-                title="重新載入預覽"
-              >
-                ↻
-              </button>
-              <a
-                href={`/${slug}`}
-                target="_blank"
-                rel="noopener noreferrer"
-                title="在新分頁打開公開店面"
-                className="text-xs text-emerald-700 hover:text-emerald-900"
-              >
-                ↗
-              </a>
-            </div>
+          {/* Canvas URL bar（簡化、wix-like） */}
+          <div className="flex items-center justify-between px-4 py-2 border-b border-stone-200 bg-stone-50">
+            <span className="text-[11px] font-mono text-stone-500 truncate">
+              sproutly.app/{slug}
+            </span>
+            <button
+              type="button"
+              onClick={() => setPreviewKey((k) => k + 1)}
+              className="text-xs text-emerald-700 hover:text-emerald-900"
+              title="重新載入預覽"
+            >
+              ↻
+            </button>
           </div>
 
           {/* iframe container - viewport-aware with transform scale
@@ -1477,6 +1475,7 @@ export function EditorWorkspace({
           </PanelSection>
         )}
       </aside>
+      </div>
 
       {/* === Asset Picker modal === */}
       <AssetPicker
