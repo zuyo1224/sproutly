@@ -58,6 +58,14 @@ export function EditorClickBridge() {
         outline: 2px solid #d97706 !important;
       }
       html { scroll-behavior: smooth; }
+      /* edit mode 禁用 hero parallax + scroll-shrink nav + section stagger
+         （這些 scroll-timeline 動畫在 iframe 內會引起 image translate 偏移） */
+      .sproutly-hero-parallax,
+      .sproutly-nav-shrink,
+      .sproutly-stagger > *,
+      .sproutly-subtle-fade {
+        animation: none !important;
+      }
     `;
     document.head.appendChild(style);
 
