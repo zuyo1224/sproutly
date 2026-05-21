@@ -152,15 +152,17 @@ export default async function StoreHomePage({
                 data-edit-target="hero"
                 data-edit-label="Hero 區段"
               >
-                <Image
-                  src={theme.heroUrl}
-                  alt={store.name}
-                  fill
-                  priority
-                  sizes="100vw"
-                  quality={85}
-                  className="sproutly-hero-parallax object-cover"
-                />
+                <div className="sproutly-hero-parallax absolute inset-0 overflow-hidden">
+                  <Image
+                    src={theme.heroUrl}
+                    alt={store.name}
+                    fill
+                    priority
+                    sizes="100vw"
+                    quality={85}
+                    style={{ objectFit: "cover", objectPosition: "center" }}
+                  />
+                </div>
                 <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-black/45" />
                 {freePositioned ? (
                   // Phase 5 free-positioned tagline overlay
