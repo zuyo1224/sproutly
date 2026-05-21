@@ -1,0 +1,184 @@
+import { NextResponse } from "next/server";
+import { createClient } from "@/lib/supabase/server";
+import { createAdminClient } from "@/lib/supabase/admin";
+import {
+  encodeShippingIntoNote,
+  PAYMENT_LABELS,
+  SHIPPING_LABELS,
+} from "@/lib/order-labels";
+
+type Params = Promise<{ slug: string }>;
+
+export async function POST(
+  request: Request,
+  { params }: { params: Params }
+) {
+  const { slug } = await params;
+  const fd = await request.formData();
+
+  const customerName = String(fd.get("customer_name") ?? "").trim();
+  const customerPhone = String(fd.get("customer_phone") ?? "").trim();
+  const customerEmail =
+    String(fd.get("customer_email") ?? "").trim() || null;
+  const shippingMethod =
+    String(fd.get("shipping_method") ?? "").trim() || null;
+  const shippingStoreName =
+    String(fd.get("shipping_store_name") ?? "").trim() || null;
+  const shippingAddress =
+    String(fd.get("shipping_address") ?? "").trim() || null;
+  const paymentMethod =
+    String(fd.get("payment_method") ?? "").trim() || null;
+  const userNote = String(fd.get("note") ?? "").trim() || null;
+  const cartItemsRaw = String(fd.get("cart_items") ?? "").trim();
+
+  if (!customerName) return NextResponse.json({ error: "請填收件人姓名" }, { status: 400 });
+  if (!customerPhone) return NextResponse.json({ error: "請填電話" }, { status: 400 });
+  if (!paymentMethod || !PAYMENT_LABELS[paymentMethod])
+    return NextResponse.json({ error: "請選擇付款方式" }, { status: 400 });
+  if (!shippingMethod || !SHIPPING_LABELS[shippingMethod])
+    return NextResponse.json({ error: "請選擇配送方式" }, { status: 400 });
+
+  let cartItems: { productId: string; qty: number }[] = [];
+  try {
+    cartItems = JSON.parse(cartItemsRaw);
+    if (!Array.isArray(cartItems) || cartItems.length === 0) throw new Error();
+  } catch {
+    return NextResponse.json({ error: "購物車是空的" }, { status: 400 });
+  }
+
+  if (
+    (shippingMethod === "cvs_711" ||
+      shippingMethod === "cvs_family" ||
+      shippingMethod === "cvs_hilife") &&
+    !shippingStoreName
+  ) {
+    return NextResponse.json({ error: "超商取貨必須填取貨門市名稱" }, { status: 400 });
+  }
+  if (shippingMethod === "home_delivery" && !shippingAddress) {
+    return NextResponse.json({ error: "宅配必須填收件地址" }, { status: 400 });
+  }
+
+  const supabase = await createClient();
+  const { data: store } = await supabase
+    .from("sproutly_merchants")
+    .select("id, slug, is_published")
+    .eq("slug", slug)
+    .eq("is_published", true)
+    .maybeSingle();
+  if (!store) return NextResponse.json({ error: "店面不存在" }, { status: 404 });
+
+  // 查所有商品
+  const ids = cartItems.map((c) => c.productId);
+  const { data: products } = await supabase
+    .from("sproutly_products")
+    .select("id, name, price_cents, currency, stock, is_active")
+    .eq("merchant_id", store.id)
+    .eq("is_active", true)
+    .in("id", ids);
+  if (!products || products.length !== ids.length) {
+    return NextResponse.json({ error: "部分商品已下架，請重新確認購物車" }, { status: 400 });
+  }
+
+  // 庫存檢查 + atomic 扣減（用 service_role）
+  const admin = createAdminClient();
+  const stockBackup: { id: string; original: number }[] = [];
+  let totalCents = 0;
+  let currency = "TWD";
+
+  for (const item of cartItems) {
+    const product = products.find((p) => p.id === item.productId);
+    if (!product) return NextResponse.json({ error: "商品錯誤" }, { status: 400 });
+    if (product.stock !== null && product.stock < item.qty) {
+      // rollback already decremented
+      for (const b of stockBackup) {
+        await admin
+          .from("sproutly_products")
+          .update({ stock: b.original })
+          .eq("id", b.id);
+      }
+      return NextResponse.json({
+        error: `「${product.name}」庫存不足，剩 ${product.stock}`,
+      }, { status: 400 });
+    }
+    if (product.stock !== null) {
+      const { data: updated, error: uerr } = await admin
+        .from("sproutly_products")
+        .update({ stock: product.stock - item.qty })
+        .eq("id", product.id)
+        .eq("stock", product.stock)
+        .select("id");
+      if (uerr || !updated || updated.length === 0) {
+        // rollback
+        for (const b of stockBackup) {
+          await admin
+            .from("sproutly_products")
+            .update({ stock: b.original })
+            .eq("id", b.id);
+        }
+        return NextResponse.json({
+          error: `「${product.name}」庫存剛被搶光，請重試`,
+        }, { status: 409 });
+      }
+      stockBackup.push({ id: product.id, original: product.stock });
+    }
+    totalCents += product.price_cents * item.qty;
+    currency = product.currency;
+  }
+
+  // 建訂單
+  const finalNote = encodeShippingIntoNote(
+    shippingMethod,
+    shippingStoreName,
+    userNote
+  );
+
+  const { data: order, error: orderError } = await admin
+    .from("sproutly_orders")
+    .insert({
+      merchant_id: store.id,
+      customer_name: customerName,
+      customer_phone: customerPhone,
+      customer_email: customerEmail,
+      shipping_address: shippingAddress,
+      note: finalNote,
+      total_cents: totalCents,
+      currency,
+      status: "pending",
+      payment_method: paymentMethod,
+      payment_status: "unpaid",
+    })
+    .select("id")
+    .single();
+
+  if (orderError || !order) {
+    // rollback
+    for (const b of stockBackup) {
+      await admin.from("sproutly_products").update({ stock: b.original }).eq("id", b.id);
+    }
+    return NextResponse.json({ error: "訂單建立失敗" }, { status: 500 });
+  }
+
+  // 建 order_items
+  const orderItemsData = cartItems.map((item) => {
+    const p = products.find((x) => x.id === item.productId)!;
+    return {
+      order_id: order.id,
+      product_id: p.id,
+      name_snapshot: p.name,
+      price_cents_snapshot: p.price_cents,
+      quantity: item.qty,
+    };
+  });
+  const { error: itemsErr } = await admin
+    .from("sproutly_order_items")
+    .insert(orderItemsData);
+  if (itemsErr) {
+    await admin.from("sproutly_orders").delete().eq("id", order.id);
+    for (const b of stockBackup) {
+      await admin.from("sproutly_products").update({ stock: b.original }).eq("id", b.id);
+    }
+    return NextResponse.json({ error: "訂單明細失敗" }, { status: 500 });
+  }
+
+  return NextResponse.json({ orderId: order.id });
+}

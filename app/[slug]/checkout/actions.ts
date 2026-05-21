@@ -1,0 +1,187 @@
+"use server";
+
+import { createClient } from "@/lib/supabase/server";
+import { createAdminClient } from "@/lib/supabase/admin";
+import { redirect } from "next/navigation";
+import { encodeShippingIntoNote, SHIPPING_LABELS, PAYMENT_LABELS } from "@/lib/order-labels";
+
+export async function placeOrder(slug: string, formData: FormData) {
+  const productId = String(formData.get("product_id") ?? "").trim();
+  const qtyRaw = String(formData.get("quantity") ?? "1").trim();
+  const customerName = String(formData.get("customer_name") ?? "").trim();
+  const customerPhone = String(formData.get("customer_phone") ?? "").trim();
+  const customerEmail =
+    String(formData.get("customer_email") ?? "").trim() || null;
+  const shippingAddress =
+    String(formData.get("shipping_address") ?? "").trim() || null;
+  const userNote = String(formData.get("note") ?? "").trim() || null;
+  const paymentMethod =
+    String(formData.get("payment_method") ?? "").trim() || null;
+  const shippingMethod =
+    String(formData.get("shipping_method") ?? "").trim() || null;
+  const shippingStoreName =
+    String(formData.get("shipping_store_name") ?? "").trim() || null;
+
+  const baseRedirect = `/${slug}/checkout?product_id=${productId}&qty=${qtyRaw}`;
+
+  if (!productId) redirect(`/${slug}`);
+
+  const quantity = Number(qtyRaw);
+  if (!Number.isInteger(quantity) || quantity < 1 || quantity > 99) {
+    redirect(baseRedirect + "&error=" + encodeURIComponent("數量必須是 1-99"));
+  }
+  if (!customerName) {
+    redirect(baseRedirect + "&error=" + encodeURIComponent("請填收件人姓名"));
+  }
+  if (!customerPhone) {
+    redirect(baseRedirect + "&error=" + encodeURIComponent("請填聯絡電話"));
+  }
+  if (!paymentMethod || !PAYMENT_LABELS[paymentMethod]) {
+    redirect(baseRedirect + "&error=" + encodeURIComponent("請選擇付款方式"));
+  }
+  if (!shippingMethod || !SHIPPING_LABELS[shippingMethod]) {
+    redirect(baseRedirect + "&error=" + encodeURIComponent("請選擇配送方式"));
+  }
+  // 超商取貨必須填門市
+  if (
+    (shippingMethod === "cvs_711" ||
+      shippingMethod === "cvs_family" ||
+      shippingMethod === "cvs_hilife") &&
+    !shippingStoreName
+  ) {
+    redirect(
+      baseRedirect +
+        "&error=" +
+        encodeURIComponent("超商取貨必須填取貨門市名稱")
+    );
+  }
+  // 宅配必須填地址
+  if (shippingMethod === "home_delivery" && !shippingAddress) {
+    redirect(
+      baseRedirect + "&error=" + encodeURIComponent("宅配必須填收件地址")
+    );
+  }
+
+  const supabase = await createClient();
+
+  const { data: store } = await supabase
+    .from("sproutly_merchants")
+    .select("id, name, slug, is_published")
+    .eq("slug", slug)
+    .eq("is_published", true)
+    .maybeSingle();
+  if (!store) redirect(`/${slug}`);
+
+  const { data: product } = await supabase
+    .from("sproutly_products")
+    .select("id, name, price_cents, currency, stock, is_active, merchant_id")
+    .eq("id", productId)
+    .eq("merchant_id", store.id)
+    .eq("is_active", true)
+    .maybeSingle();
+  if (!product) {
+    redirect(baseRedirect + "&error=" + encodeURIComponent("商品已下架"));
+  }
+
+  if (product.stock !== null && product.stock < quantity) {
+    redirect(
+      baseRedirect +
+        "&error=" +
+        encodeURIComponent(
+          product.stock === 0
+            ? "商品已售完"
+            : `庫存只剩 ${product.stock} 件`
+        )
+    );
+  }
+
+  // Atomic 庫存扣減（optimistic locking 防超賣）
+  const admin = createAdminClient();
+  if (product.stock !== null) {
+    const { data: updated, error: updateError } = await admin
+      .from("sproutly_products")
+      .update({ stock: product.stock - quantity })
+      .eq("id", productId)
+      .eq("stock", product.stock)
+      .select("id");
+    if (updateError) {
+      redirect(
+        baseRedirect + "&error=" + encodeURIComponent(updateError.message)
+      );
+    }
+    if (!updated || updated.length === 0) {
+      redirect(
+        baseRedirect +
+          "&error=" +
+          encodeURIComponent("剛剛有其他客人下單，庫存已變動，請重新確認")
+      );
+    }
+  }
+
+  // 把物流資訊編碼進 note 欄位（避免需要 schema migration）
+  const finalNote = encodeShippingIntoNote(
+    shippingMethod,
+    shippingStoreName,
+    userNote
+  );
+
+  const totalCents = product.price_cents * quantity;
+  const { data: order, error: orderError } = await admin
+    .from("sproutly_orders")
+    .insert({
+      merchant_id: store.id,
+      customer_name: customerName,
+      customer_phone: customerPhone,
+      customer_email: customerEmail,
+      shipping_address: shippingAddress,
+      note: finalNote,
+      total_cents: totalCents,
+      currency: product.currency,
+      status: "pending",
+      payment_method: paymentMethod,
+      payment_status: "unpaid",
+    })
+    .select("id")
+    .single();
+
+  if (orderError || !order) {
+    if (product.stock !== null) {
+      await admin
+        .from("sproutly_products")
+        .update({ stock: product.stock })
+        .eq("id", productId);
+    }
+    redirect(
+      baseRedirect +
+        "&error=" +
+        encodeURIComponent("訂單建立失敗：" + (orderError?.message ?? ""))
+    );
+  }
+
+  const { error: itemError } = await admin
+    .from("sproutly_order_items")
+    .insert({
+      order_id: order.id,
+      product_id: product.id,
+      name_snapshot: product.name,
+      price_cents_snapshot: product.price_cents,
+      quantity,
+    });
+
+  if (itemError) {
+    await admin.from("sproutly_orders").delete().eq("id", order.id);
+    if (product.stock !== null) {
+      await admin
+        .from("sproutly_products")
+        .update({ stock: product.stock })
+        .eq("id", productId);
+    }
+    redirect(
+      baseRedirect +
+        "&error=" +
+        encodeURIComponent("訂單明細建立失敗：" + itemError.message)
+    );
+  }
+
+  redirect(`/${slug}/checkout/success/${order.id}`);
+}

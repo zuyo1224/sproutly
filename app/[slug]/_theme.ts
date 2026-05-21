@@ -1,0 +1,233 @@
+// 公開店面主題系統：4 個 preset + 商家可微調主色 / 強調色 / 字體 / Logo / Hero / Section 開關 / 社群連結 / 標語
+
+export type PresetKey = "editorial" | "plant-zen" | "nordic" | "aesop" | "modern";
+export type FontKey =
+  | "cormorant"
+  | "playfair"
+  | "inter"
+  | "noto"
+  | "noto-serif"
+  | "lora";
+
+export interface StoreTheme {
+  preset: PresetKey;
+  primary: string;
+  accent: string;
+  bg: string;
+  surface: string;
+  text: string;
+  textMuted: string;
+  border: string;
+  font: FontKey;
+  logoUrl: string | null;
+  heroUrl: string | null;
+  sections: {
+    about: boolean;
+    contact: boolean;
+    hours: boolean;
+    faq: boolean;
+    social: boolean;
+  };
+  social: {
+    instagram: string | null;
+    facebook: string | null;
+    line: string | null;
+  };
+  tagline: string | null;
+  collections: Record<string, string>;
+  homepage: {
+    collectionsIntro: string | null;
+    collectionItems: Array<{ key: string; title: string; subtitle: string }>;
+    promise: string | null;
+    visitTitle: string | null;
+    enableAnimation: boolean;
+  };
+}
+
+export const HOMEPAGE_DEFAULT_COLLECTIONS: { key: string; title: string; subtitle: string }[] =
+  [
+    { key: "window", title: "給窗邊的", subtitle: "明亮散光也活得好" },
+    { key: "living", title: "給客廳的", subtitle: "撐起整個空間" },
+    { key: "desk", title: "給辦公桌的", subtitle: "小巧好顧" },
+    { key: "bathroom", title: "給浴室的", subtitle: "潮濕也不怕" },
+    { key: "nordic", title: "給北歐風的", subtitle: "搭淺木色家具" },
+    { key: "japanese", title: "給日式空間的", subtitle: "配榻榻米和障子" },
+  ];
+
+export const HOMEPAGE_DEFAULTS = {
+  collectionsIntro: "告訴我們你的空間，我們幫你選對的那一株。",
+  promise:
+    "帶回家以後，我們不會消失。\n植物有狀況，傳訊息給我們。\n九十天內沒養活，原價換新一次。",
+  visitTitle: "來店裡走走",
+};
+
+export const PRESETS: Record<PresetKey, Omit<StoreTheme, "preset" | "logoUrl" | "heroUrl" | "sections" | "social" | "tagline" | "collections" | "homepage">> = {
+  editorial: {
+    primary: "#2C2C2C",
+    accent: "#5F6F52",
+    bg: "#F7F4ED",
+    surface: "#FFFFFF",
+    text: "#1A1A1A",
+    textMuted: "#7A7570",
+    border: "#E8E4DA",
+    font: "noto-serif",
+  },
+  "plant-zen": {
+    primary: "#3F5132",
+    accent: "#C9A961",
+    bg: "#FAF6EE",
+    surface: "#FFFFFF",
+    text: "#2E2A1F",
+    textMuted: "#8B7F6A",
+    border: "#E8DFD0",
+    font: "cormorant",
+  },
+  nordic: {
+    primary: "#6B4F3F",
+    accent: "#D4A36A",
+    bg: "#F4EFE8",
+    surface: "#FFFFFF",
+    text: "#2B2929",
+    textMuted: "#857B72",
+    border: "#E5DCD0",
+    font: "playfair",
+  },
+  aesop: {
+    primary: "#1A1A1A",
+    accent: "#7A7A7A",
+    bg: "#FAFAFA",
+    surface: "#FFFFFF",
+    text: "#1A1A1A",
+    textMuted: "#666666",
+    border: "#E5E5E5",
+    font: "inter",
+  },
+  modern: {
+    primary: "#10B981",
+    accent: "#34D399",
+    bg: "#ECFDF5",
+    surface: "#FFFFFF",
+    text: "#064E3B",
+    textMuted: "#475569",
+    border: "#D1FAE5",
+    font: "inter",
+  },
+};
+
+export const PRESET_LABELS: Record<PresetKey, { label: string; description: string }> = {
+  editorial: { label: "雜誌風", description: "米白 + 墨綠，serif 大字，低彩度氣質" },
+  "plant-zen": { label: "植物文青", description: "暖米黃 + 復古 serif，攝影感" },
+  nordic: { label: "日系雜貨", description: "淺木色 + 圓潤暖調，質樸" },
+  aesop: { label: "Aesop 精緻", description: "純白極簡 + 大留白，精品" },
+  modern: { label: "現代漸層", description: "綠色漸層 + 玻璃質感，當代" },
+};
+
+export const FONT_LABELS: Record<FontKey, { label: string; family: string }> = {
+  cormorant: { label: "Cormorant（西文典雅 serif）", family: "var(--font-cormorant), var(--font-noto-serif), serif" },
+  playfair: { label: "Playfair（西文雜誌 serif）", family: "var(--font-playfair), var(--font-noto-serif), serif" },
+  inter: { label: "Inter（西文現代 sans）", family: "var(--font-inter), var(--font-noto), system-ui, sans-serif" },
+  noto: { label: "思源黑體（中文現代）", family: "var(--font-noto), system-ui, sans-serif" },
+  "noto-serif": { label: "思源宋體（中文雜誌風）", family: "var(--font-noto-serif), 'Times New Roman', serif" },
+  lora: { label: "Lora（西文文藝 serif）", family: "var(--font-lora), var(--font-noto-serif), serif" },
+};
+
+// 從 store.theme jsonb 計算最終主題（preset + 微調）
+export function resolveTheme(raw: unknown): StoreTheme {
+  const t = (raw && typeof raw === "object" ? raw : {}) as Record<string, unknown>;
+  const preset = (typeof t.preset === "string" && t.preset in PRESETS
+    ? t.preset
+    : "aesop") as PresetKey;
+  const base = PRESETS[preset];
+
+  const fontKey = (typeof t.font === "string" && t.font in FONT_LABELS
+    ? t.font
+    : base.font) as FontKey;
+
+  const sections = (t.sections && typeof t.sections === "object"
+    ? (t.sections as Record<string, unknown>)
+    : {}) as Record<string, boolean>;
+
+  const social = (t.social && typeof t.social === "object"
+    ? (t.social as Record<string, unknown>)
+    : {}) as Record<string, string>;
+
+  return {
+    preset,
+    primary: typeof t.primary === "string" ? t.primary : base.primary,
+    accent: typeof t.accent === "string" ? t.accent : base.accent,
+    bg: base.bg,
+    surface: base.surface,
+    text: base.text,
+    textMuted: base.textMuted,
+    border: base.border,
+    font: fontKey,
+    logoUrl: typeof t.logo_url === "string" && t.logo_url ? t.logo_url : null,
+    heroUrl: typeof t.hero_url === "string" && t.hero_url ? t.hero_url : null,
+    sections: {
+      about: sections.about !== false,
+      contact: sections.contact !== false,
+      hours: sections.hours !== false,
+      faq: sections.faq !== false,
+      social: sections.social === true,
+    },
+    social: {
+      instagram: typeof social.instagram === "string" && social.instagram ? social.instagram : null,
+      facebook: typeof social.facebook === "string" && social.facebook ? social.facebook : null,
+      line: typeof social.line === "string" && social.line ? social.line : null,
+    },
+    tagline: typeof t.tagline === "string" && t.tagline ? t.tagline : null,
+    collections:
+      t.collections && typeof t.collections === "object"
+        ? Object.fromEntries(
+            Object.entries(t.collections as Record<string, unknown>).filter(
+              ([, v]) => typeof v === "string" && v.length > 0
+            ) as [string, string][]
+          )
+        : {},
+    homepage: resolveHomepage(t.homepage),
+  };
+}
+
+function resolveHomepage(raw: unknown): StoreTheme["homepage"] {
+  const h = (raw && typeof raw === "object" ? raw : {}) as Record<string, unknown>;
+  const itemsRaw = Array.isArray(h.collectionItems) ? h.collectionItems : [];
+  const items = itemsRaw
+    .filter((c) => c && typeof c === "object")
+    .map((c) => {
+      const obj = c as Record<string, unknown>;
+      return {
+        key: typeof obj.key === "string" ? obj.key : "",
+        title: typeof obj.title === "string" ? obj.title.trim() : "",
+        subtitle: typeof obj.subtitle === "string" ? obj.subtitle.trim() : "",
+      };
+    })
+    .filter((c) => c.key && c.title);
+  return {
+    collectionsIntro:
+      typeof h.collectionsIntro === "string" && h.collectionsIntro.trim()
+        ? h.collectionsIntro
+        : null,
+    collectionItems: items,
+    promise:
+      typeof h.promise === "string" && h.promise.trim() ? h.promise : null,
+    visitTitle:
+      typeof h.visitTitle === "string" && h.visitTitle.trim()
+        ? h.visitTitle
+        : null,
+    enableAnimation: h.enableAnimation === false ? false : true, // default true
+  };
+}
+
+// 從 theme 物件產生 CSS variables（套到 layout root style）
+export function themeToCssVars(theme: StoreTheme): React.CSSProperties {
+  return {
+    "--store-primary": theme.primary,
+    "--store-accent": theme.accent,
+    "--store-bg": theme.bg,
+    "--store-surface": theme.surface,
+    "--store-text": theme.text,
+    "--store-text-muted": theme.textMuted,
+    "--store-border": theme.border,
+    "--store-font": FONT_LABELS[theme.font].family,
+  } as React.CSSProperties;
+}
