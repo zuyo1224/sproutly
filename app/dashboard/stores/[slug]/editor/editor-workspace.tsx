@@ -2,6 +2,23 @@
 
 import { useState, useTransition } from "react";
 import Link from "next/link";
+import {
+  DndContext,
+  closestCenter,
+  KeyboardSensor,
+  PointerSensor,
+  useSensor,
+  useSensors,
+  type DragEndEvent,
+} from "@dnd-kit/core";
+import {
+  arrayMove,
+  SortableContext,
+  sortableKeyboardCoordinates,
+  useSortable,
+  verticalListSortingStrategy,
+} from "@dnd-kit/sortable";
+import { CSS } from "@dnd-kit/utilities";
 import { saveEditorState } from "./actions";
 
 type SectionKey = "hero" | "collections" | "featured" | "journal" | "promise" | "visit";
@@ -81,6 +98,22 @@ export function EditorWorkspace({
     const [moved] = next.splice(from, 1);
     next.splice(to, 0, moved);
     updateLayout({ sectionOrder: next });
+  }
+
+  const sensors = useSensors(
+    useSensor(PointerSensor, { activationConstraint: { distance: 4 } }),
+    useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates })
+  );
+
+  function handleDragEnd(event: DragEndEvent) {
+    const { active, over } = event;
+    if (!over || active.id === over.id) return;
+    const oldIdx = theme.layout.sectionOrder.indexOf(active.id as SectionKey);
+    const newIdx = theme.layout.sectionOrder.indexOf(over.id as SectionKey);
+    if (oldIdx === -1 || newIdx === -1) return;
+    updateLayout({
+      sectionOrder: arrayMove(theme.layout.sectionOrder, oldIdx, newIdx),
+    });
   }
 
   function handleSave() {
@@ -169,56 +202,30 @@ export function EditorWorkspace({
         {activeTab === "section" && (
           <div className="px-3 pb-3 flex-1 overflow-y-auto border-t border-stone-100 pt-3">
             <p className="px-2 mb-2 text-[10px] tracking-wider uppercase text-emerald-900/45">
-              首頁 Sections（點選編輯）
+              首頁 Sections（拖曳排序）
             </p>
-            <ul className="space-y-1">
-              {theme.layout.sectionOrder.map((key, idx) => (
-                <li
-                  key={key}
-                  className={`group rounded-lg border ${
-                    selectedSection === key
-                      ? "border-emerald-300 bg-emerald-50/50"
-                      : "border-stone-200 bg-white"
-                  } transition`}
-                >
-                  <button
-                    type="button"
-                    onClick={() => setSelectedSection(key)}
-                    className="w-full text-left px-3 py-2.5 flex items-center justify-between"
-                  >
-                    <span className="text-sm text-emerald-950">
-                      {sectionLabels[key]}
-                    </span>
-                    <span className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition">
-                      <button
-                        type="button"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          moveSection(idx, idx - 1);
-                        }}
-                        disabled={idx === 0}
-                        className="text-emerald-700/60 hover:text-emerald-900 px-1 disabled:opacity-30"
-                        title="往上"
-                      >
-                        ↑
-                      </button>
-                      <button
-                        type="button"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          moveSection(idx, idx + 1);
-                        }}
-                        disabled={idx === theme.layout.sectionOrder.length - 1}
-                        className="text-emerald-700/60 hover:text-emerald-900 px-1 disabled:opacity-30"
-                        title="往下"
-                      >
-                        ↓
-                      </button>
-                    </span>
-                  </button>
-                </li>
-              ))}
-            </ul>
+            <DndContext
+              sensors={sensors}
+              collisionDetection={closestCenter}
+              onDragEnd={handleDragEnd}
+            >
+              <SortableContext
+                items={theme.layout.sectionOrder}
+                strategy={verticalListSortingStrategy}
+              >
+                <ul className="space-y-1">
+                  {theme.layout.sectionOrder.map((key) => (
+                    <SortableSectionItem
+                      key={key}
+                      sectionKey={key}
+                      label={sectionLabels[key]}
+                      selected={selectedSection === key}
+                      onSelect={() => setSelectedSection(key)}
+                    />
+                  ))}
+                </ul>
+              </SortableContext>
+            </DndContext>
           </div>
         )}
 
@@ -502,6 +509,72 @@ export function EditorWorkspace({
         )}
       </aside>
     </div>
+  );
+}
+
+function SortableSectionItem({
+  sectionKey,
+  label,
+  selected,
+  onSelect,
+}: {
+  sectionKey: string;
+  label: string;
+  selected: boolean;
+  onSelect: () => void;
+}) {
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    transform,
+    transition,
+    isDragging,
+  } = useSortable({ id: sectionKey });
+
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+    opacity: isDragging ? 0.6 : 1,
+    zIndex: isDragging ? 10 : "auto",
+  } as React.CSSProperties;
+
+  return (
+    <li
+      ref={setNodeRef}
+      style={style}
+      className={`group rounded-lg border ${
+        selected
+          ? "border-emerald-400 bg-emerald-50/60 shadow-sm shadow-emerald-700/10"
+          : "border-stone-200 bg-white hover:border-stone-300"
+      } transition ${isDragging ? "shadow-lg shadow-stone-300" : ""}`}
+    >
+      <div className="flex items-center">
+        <button
+          type="button"
+          className="px-2 py-2.5 text-stone-400 hover:text-stone-700 cursor-grab active:cursor-grabbing touch-none"
+          aria-label="拖曳重排"
+          {...attributes}
+          {...listeners}
+        >
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
+            <circle cx="9" cy="6" r="1.5" fill="currentColor" />
+            <circle cx="15" cy="6" r="1.5" fill="currentColor" />
+            <circle cx="9" cy="12" r="1.5" fill="currentColor" />
+            <circle cx="15" cy="12" r="1.5" fill="currentColor" />
+            <circle cx="9" cy="18" r="1.5" fill="currentColor" />
+            <circle cx="15" cy="18" r="1.5" fill="currentColor" />
+          </svg>
+        </button>
+        <button
+          type="button"
+          onClick={onSelect}
+          className="flex-1 text-left py-2.5 pr-3 text-sm text-emerald-950"
+        >
+          {label}
+        </button>
+      </div>
+    </li>
   );
 }
 
