@@ -75,7 +75,7 @@ export default async function CheckoutPage({
       </Link>
 
       <h1
-        className="text-3xl font-semibold tracking-tight mb-8"
+        className="text-2xl sm:text-3xl font-semibold tracking-tight mb-8"
         style={{ color: theme.text }}
       >
         結帳

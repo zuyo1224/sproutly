@@ -70,7 +70,7 @@ export default async function OrderSuccessPage({
           Order Received
         </p>
         <h1
-          className="text-3xl font-semibold tracking-tight"
+          className="text-2xl sm:text-3xl font-semibold tracking-tight"
           style={{ color: theme.text }}
         >
           訂單已送出

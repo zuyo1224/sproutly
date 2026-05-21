@@ -101,7 +101,7 @@ export default function CartCheckoutPage() {
   return (
     <main className="max-w-5xl mx-auto px-6 py-12">
       <h1
-        className="text-3xl tracking-tight mb-8"
+        className="text-2xl sm:text-3xl tracking-tight mb-8"
         style={{ fontFamily: "var(--store-font)", fontWeight: 400 }}
       >
         結帳
@@ -138,8 +138,8 @@ export default function CartCheckoutPage() {
                 </label>
               ))}
             </div>
-            <input name="shipping_store_name" placeholder="超商門市名稱（超商取貨必填）" className="w-full rounded-xl px-4 py-3 outline-none border border-stone-300 text-sm" />
-            <input name="shipping_address" placeholder="收件地址（宅配必填）" className="w-full rounded-xl px-4 py-3 outline-none border border-stone-300 text-sm" />
+            <input name="shipping_store_name" placeholder="超商門市名稱（超商取貨必填）" className="w-full rounded-xl px-4 py-3 outline-none border border-stone-300 text-base" />
+            <input name="shipping_address" placeholder="收件地址（宅配必填）" className="w-full rounded-xl px-4 py-3 outline-none border border-stone-300 text-base" />
           </section>
 
           <section className="space-y-3">

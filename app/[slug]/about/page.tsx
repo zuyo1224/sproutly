@@ -101,7 +101,7 @@ export default async function AboutPage({ params }: { params: Params }) {
       {theme.sections.faq && faqItems.length > 0 && (
         <section className={theme.sections.about ? "mt-16" : ""}>
           <h2
-            className="text-3xl font-semibold mb-8"
+            className="text-2xl sm:text-3xl font-semibold mb-8"
             style={{ color: theme.text }}
           >
             常見問題

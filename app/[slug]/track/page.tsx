@@ -111,7 +111,7 @@ export default async function TrackPage({
           Order Tracking
         </p>
         <h1
-          className="mt-2 text-3xl font-semibold tracking-tight"
+          className="mt-2 text-2xl sm:text-3xl font-semibold tracking-tight"
           style={{ color: theme.text }}
         >
           訂單追蹤
