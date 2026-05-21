@@ -12,9 +12,27 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
+const siteUrl =
+  process.env.NEXT_PUBLIC_SITE_URL ?? "https://sproutly-drab.vercel.app";
+
 export const metadata: Metadata = {
+  metadataBase: new URL(siteUrl),
   title: "Sproutly · 讓你的小生意發芽",
   description: "為小商家打造的線上店面。商品、訂單、付款，整齊收在你的網址。",
+  openGraph: {
+    title: "Sproutly · 讓你的小生意發芽",
+    description:
+      "為小商家打造的線上店面。商品、訂單、付款，整齊收在你的網址。",
+    siteName: "Sproutly",
+    type: "website",
+    locale: "zh_TW",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Sproutly · 讓你的小生意發芽",
+    description:
+      "為小商家打造的線上店面。商品、訂單、付款，整齊收在你的網址。",
+  },
 };
 
 export const viewport: Viewport = {
