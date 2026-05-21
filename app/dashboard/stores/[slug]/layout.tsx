@@ -155,19 +155,22 @@ export default async function StoreLayout({
       </header>
 
       <div className="max-w-6xl mx-auto px-8 pb-16">
-        <div className="bg-white rounded-2xl p-6 shadow-lg shadow-emerald-700/5 mb-6">
+        <div className="bg-white rounded-2xl p-7 shadow-lg shadow-emerald-700/5 mb-6">
           <div className="flex items-start justify-between gap-4">
             <div className="min-w-0">
-              <h1 className="text-2xl font-bold text-emerald-950">
+              <p className="text-[11px] tracking-[0.32em] uppercase text-emerald-700/70">
+                Storefront
+              </p>
+              <h1 className="mt-2 text-3xl md:text-4xl font-medium text-emerald-950 tracking-tight leading-[1.15]">
                 {store.name}
               </h1>
-              <p className="text-sm text-emerald-900/50 mt-1 font-mono break-all">
+              <p className="text-xs text-emerald-900/45 mt-2 font-mono break-all tracking-tight">
                 sproutly.app/{store.slug}
               </p>
             </div>
             <div className="flex flex-col items-end gap-2 flex-shrink-0">
               <span
-                className={`text-xs px-3 py-1 rounded-full ${
+                className={`text-[10px] uppercase tracking-[0.18em] px-3 py-1 rounded-full ${
                   store.is_published
                     ? "bg-emerald-100 text-emerald-800"
                     : "bg-amber-100 text-amber-800"
@@ -193,11 +196,11 @@ export default async function StoreLayout({
             <Link
               key={tab.href}
               href={tab.href}
-              className="px-4 py-3 text-sm text-emerald-900/70 hover:text-emerald-900 hover:bg-emerald-50 rounded-t-lg transition flex items-center gap-2 whitespace-nowrap"
+              className="px-4 py-3 text-xs tracking-[0.18em] uppercase text-emerald-900/60 hover:text-emerald-900 hover:bg-emerald-50 rounded-t-lg transition flex items-center gap-2 whitespace-nowrap"
             >
               <span>{tab.label}</span>
               {tab.badge > 0 && (
-                <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-red-500 text-white font-bold">
+                <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-red-500 text-white font-bold tracking-normal">
                   {tab.badge}
                 </span>
               )}

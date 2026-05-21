@@ -124,45 +124,48 @@ export default async function DashboardPage() {
       </header>
 
       <main className="max-w-5xl mx-auto px-8 pb-16">
-        <div className="mb-10">
-          <h1 className="text-3xl font-bold text-emerald-950">
+        <div className="mb-12">
+          <p className="text-[11px] tracking-[0.32em] uppercase text-emerald-700/70">
+            Dashboard
+          </p>
+          <h1 className="mt-3 text-4xl md:text-5xl font-medium text-emerald-950 tracking-tight leading-[1.1]">
             Hi {name}
           </h1>
-          <p className="mt-2 text-emerald-900/60">{user.email}</p>
+          <p className="mt-3 text-sm text-emerald-900/55">{user.email}</p>
         </div>
 
         {/* 多店業績概覽 */}
         {stores && stores.length > 0 && (
-          <section className="mb-10">
+          <section className="mb-12">
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
               <div className="bg-white rounded-2xl p-5 shadow-lg shadow-emerald-700/5">
-                <p className="text-xs text-emerald-900/60 uppercase tracking-wider">
+                <p className="text-[10px] text-emerald-700/70 uppercase tracking-[0.28em]">
                   總營收
                 </p>
-                <p className="mt-2 text-2xl font-bold text-emerald-950">
+                <p className="mt-3 text-2xl font-medium text-emerald-950 tracking-tight">
                   {formatPrice(totalRevenue)}
                 </p>
-                <p className="mt-1 text-xs text-emerald-900/50">
+                <p className="mt-1.5 text-xs text-emerald-900/50">
                   {stores.length} 間店合計
                 </p>
               </div>
               <div className="bg-white rounded-2xl p-5 shadow-lg shadow-emerald-700/5">
-                <p className="text-xs text-emerald-900/60 uppercase tracking-wider">
+                <p className="text-[10px] text-emerald-700/70 uppercase tracking-[0.28em]">
                   本月營收
                 </p>
-                <p className="mt-2 text-2xl font-bold text-emerald-950">
+                <p className="mt-3 text-2xl font-medium text-emerald-950 tracking-tight">
                   {formatPrice(totalMonthRevenue)}
                 </p>
-                <p className="mt-1 text-xs text-emerald-900/50">已付款</p>
+                <p className="mt-1.5 text-xs text-emerald-900/50">已付款</p>
               </div>
               <div className="bg-white rounded-2xl p-5 shadow-lg shadow-emerald-700/5">
-                <p className="text-xs text-emerald-900/60 uppercase tracking-wider">
+                <p className="text-[10px] text-emerald-700/70 uppercase tracking-[0.28em]">
                   訂單數
                 </p>
-                <p className="mt-2 text-2xl font-bold text-emerald-950">
+                <p className="mt-3 text-2xl font-medium text-emerald-950 tracking-tight">
                   {totalOrders}
                 </p>
-                <p className="mt-1 text-xs text-emerald-900/50">累計</p>
+                <p className="mt-1.5 text-xs text-emerald-900/50">累計</p>
               </div>
               <div
                 className={`rounded-2xl p-5 shadow-lg ${
@@ -172,23 +175,23 @@ export default async function DashboardPage() {
                 }`}
               >
                 <p
-                  className={`text-xs uppercase tracking-wider ${
+                  className={`text-[10px] uppercase tracking-[0.28em] ${
                     totalPending > 0
                       ? "text-amber-700"
-                      : "text-emerald-900/60"
+                      : "text-emerald-700/70"
                   }`}
                 >
                   待處理訂單
                 </p>
                 <p
-                  className={`mt-2 text-2xl font-bold ${
+                  className={`mt-3 text-2xl font-medium tracking-tight ${
                     totalPending > 0 ? "text-amber-700" : "text-emerald-950"
                   }`}
                 >
                   {totalPending}
                 </p>
                 <p
-                  className={`mt-1 text-xs ${
+                  className={`mt-1.5 text-xs ${
                     totalPending > 0
                       ? "text-amber-700/70"
                       : "text-emerald-900/50"
@@ -202,10 +205,15 @@ export default async function DashboardPage() {
         )}
 
         <section>
-          <div className="flex items-center justify-between mb-6">
+          <div className="flex items-center justify-between mb-8">
             <div>
-              <h2 className="text-xl font-bold text-emerald-950">我的店</h2>
-              <p className="text-sm text-emerald-900/60 mt-1">
+              <p className="text-[11px] tracking-[0.32em] uppercase text-emerald-700/70">
+                Storefronts
+              </p>
+              <h2 className="mt-2 text-2xl md:text-3xl font-medium text-emerald-950 tracking-tight">
+                我的店
+              </h2>
+              <p className="text-sm text-emerald-900/55 mt-1.5">
                 {stores && stores.length > 0
                   ? `共 ${stores.length} 間`
                   : "還沒有店面"}
@@ -234,11 +242,11 @@ export default async function DashboardPage() {
                     className="bg-white rounded-2xl p-6 shadow-lg shadow-emerald-700/5 hover:shadow-xl hover:shadow-emerald-700/10 transition"
                   >
                     <div className="flex items-start justify-between mb-3 gap-2">
-                      <h3 className="text-lg font-bold text-emerald-950 min-w-0 truncate">
+                      <h3 className="text-xl font-medium text-emerald-950 min-w-0 truncate tracking-tight">
                         {store.name}
                       </h3>
                       <span
-                        className={`text-xs px-2 py-1 rounded-full flex-shrink-0 ${
+                        className={`text-[10px] uppercase tracking-[0.18em] px-2.5 py-1 rounded-full flex-shrink-0 ${
                           store.is_published
                             ? "bg-emerald-100 text-emerald-800"
                             : "bg-amber-100 text-amber-800"
@@ -247,30 +255,30 @@ export default async function DashboardPage() {
                         {store.is_published ? "已發布" : "草稿"}
                       </span>
                     </div>
-                    <p className="text-sm text-emerald-900/50 mb-3 font-mono break-all">
+                    <p className="text-xs text-emerald-900/45 mb-3 font-mono break-all tracking-tight">
                       sproutly.app/{store.slug}
                     </p>
                     {store.description && (
-                      <p className="text-sm text-emerald-900/70 line-clamp-2 mb-4">
+                      <p className="text-sm text-emerald-900/65 line-clamp-2 mb-4 leading-relaxed">
                         {store.description}
                       </p>
                     )}
 
                     {/* mini stats */}
                     <div className="grid grid-cols-3 gap-2 mb-4 text-center">
-                      <div className="rounded-lg bg-emerald-50/60 px-2 py-2">
-                        <p className="text-[10px] text-emerald-900/60 uppercase tracking-wider">
+                      <div className="rounded-lg bg-emerald-50/60 px-2 py-2.5">
+                        <p className="text-[9px] text-emerald-700/70 uppercase tracking-[0.22em]">
                           商品
                         </p>
-                        <p className="text-sm font-bold text-emerald-950 mt-0.5">
+                        <p className="text-sm font-medium text-emerald-950 mt-1 tracking-tight">
                           {productCount}
                         </p>
                       </div>
-                      <div className="rounded-lg bg-emerald-50/60 px-2 py-2">
-                        <p className="text-[10px] text-emerald-900/60 uppercase tracking-wider">
+                      <div className="rounded-lg bg-emerald-50/60 px-2 py-2.5">
+                        <p className="text-[9px] text-emerald-700/70 uppercase tracking-[0.22em]">
                           訂單
                         </p>
-                        <p className="text-sm font-bold text-emerald-950 mt-0.5">
+                        <p className="text-sm font-medium text-emerald-950 mt-1 tracking-tight">
                           {orderCount}
                           {pending > 0 && (
                             <span className="ml-1 text-[10px] text-amber-700 font-medium">
@@ -279,11 +287,11 @@ export default async function DashboardPage() {
                           )}
                         </p>
                       </div>
-                      <div className="rounded-lg bg-emerald-50/60 px-2 py-2">
-                        <p className="text-[10px] text-emerald-900/60 uppercase tracking-wider">
+                      <div className="rounded-lg bg-emerald-50/60 px-2 py-2.5">
+                        <p className="text-[9px] text-emerald-700/70 uppercase tracking-[0.22em]">
                           本月
                         </p>
-                        <p className="text-sm font-bold text-emerald-950 mt-0.5">
+                        <p className="text-sm font-medium text-emerald-950 mt-1 tracking-tight">
                           {monthRev > 0
                             ? formatPrice(monthRev)
                             : "—"}
@@ -320,14 +328,14 @@ export default async function DashboardPage() {
               })}
             </div>
           ) : (
-            <div className="bg-white rounded-3xl p-12 text-center shadow-xl shadow-emerald-700/5">
-              <p className="text-xs tracking-widest uppercase text-emerald-600 mb-3">
+            <div className="bg-white rounded-3xl p-14 text-center shadow-xl shadow-emerald-700/5">
+              <p className="text-[11px] tracking-[0.32em] uppercase text-emerald-700/70 mb-4">
                 Welcome
               </p>
-              <h3 className="text-xl font-bold text-emerald-950">
+              <h3 className="text-2xl md:text-3xl font-medium text-emerald-950 tracking-tight">
                 還沒有店面
               </h3>
-              <p className="mt-2 text-emerald-900/60 max-w-md mx-auto">
+              <p className="mt-3 text-emerald-900/55 max-w-md mx-auto leading-relaxed">
                 建立你的第一間店，開始你的線上小生意
               </p>
               <Link

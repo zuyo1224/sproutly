@@ -232,18 +232,21 @@ export default async function StoreInsightsPage({
         <section className="bg-white rounded-2xl p-6 shadow-lg shadow-emerald-700/5">
           <div className="flex items-start justify-between mb-5 gap-4">
             <div>
-              <h3 className="font-semibold text-emerald-950">
+              <p className="text-[10px] tracking-[0.28em] uppercase text-emerald-700/70">
+                Onboarding
+              </p>
+              <h3 className="mt-1.5 text-lg font-medium text-emerald-950 tracking-tight">
                 店面設置進度
               </h3>
-              <p className="text-xs text-emerald-900/60 mt-1">
+              <p className="text-xs text-emerald-900/55 mt-1">
                 完成這 6 步，朋友就能看到你的店、客人也能下單
               </p>
             </div>
             <div className="text-right flex-shrink-0">
-              <div className="text-2xl font-bold text-emerald-700">
+              <div className="text-2xl font-medium text-emerald-700 tracking-tight">
                 {completedSteps}/{onboardingSteps.length}
               </div>
-              <div className="text-xs text-emerald-900/50">
+              <div className="text-xs text-emerald-900/50 mt-0.5">
                 {Math.round(progressPct)}% 完成
               </div>
             </div>
@@ -310,13 +313,13 @@ export default async function StoreInsightsPage({
       {/* 4 個主要指標 */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         <div className="bg-white rounded-2xl p-5 shadow-lg shadow-emerald-700/5">
-          <p className="text-xs text-emerald-900/60 uppercase tracking-wider">
+          <p className="text-[10px] text-emerald-700/70 uppercase tracking-[0.28em]">
             總營收（已付款）
           </p>
-          <p className="mt-2 text-2xl font-bold text-emerald-950">
+          <p className="mt-3 text-2xl font-medium text-emerald-950 tracking-tight">
             {formatPrice(totalRevenue)}
           </p>
-          <p className="mt-1 text-xs text-emerald-900/50">
+          <p className="mt-1.5 text-xs text-emerald-900/50">
             來自 {allOrders?.filter((o) => o.payment_status === "paid").length ?? 0} 筆訂單
           </p>
         </div>
@@ -324,13 +327,13 @@ export default async function StoreInsightsPage({
           href={`/dashboard/stores/${slug}/orders`}
           className="bg-white rounded-2xl p-5 shadow-lg shadow-emerald-700/5 hover:shadow-xl transition"
         >
-          <p className="text-xs text-emerald-900/60 uppercase tracking-wider">
+          <p className="text-[10px] text-emerald-700/70 uppercase tracking-[0.28em]">
             訂單總數
           </p>
-          <p className="mt-2 text-2xl font-bold text-emerald-950">
+          <p className="mt-3 text-2xl font-medium text-emerald-950 tracking-tight">
             {totalOrders}
           </p>
-          <p className="mt-1 text-xs text-emerald-900/50">
+          <p className="mt-1.5 text-xs text-emerald-900/50">
             平均 {formatPrice(avgOrderValue)}/筆
           </p>
         </Link>
@@ -338,28 +341,28 @@ export default async function StoreInsightsPage({
           href={`/dashboard/stores/${slug}/orders`}
           className="bg-white rounded-2xl p-5 shadow-lg shadow-emerald-700/5 hover:shadow-xl transition"
         >
-          <p className="text-xs text-emerald-900/60 uppercase tracking-wider">
+          <p className="text-[10px] text-emerald-700/70 uppercase tracking-[0.28em]">
             待處理訂單
           </p>
           <p
-            className={`mt-2 text-2xl font-bold ${
+            className={`mt-3 text-2xl font-medium tracking-tight ${
               pendingOrders > 0 ? "text-amber-600" : "text-emerald-950"
             }`}
           >
             {pendingOrders}
           </p>
-          <p className="mt-1 text-xs text-emerald-900/50">
+          <p className="mt-1.5 text-xs text-emerald-900/50">
             {pendingOrders > 0 ? "請盡快確認" : "都處理完了"}
           </p>
         </Link>
         <div className="bg-white rounded-2xl p-5 shadow-lg shadow-emerald-700/5">
-          <p className="text-xs text-emerald-900/60 uppercase tracking-wider">
+          <p className="text-[10px] text-emerald-700/70 uppercase tracking-[0.28em]">
             本月營收
           </p>
-          <p className="mt-2 text-2xl font-bold text-emerald-950">
+          <p className="mt-3 text-2xl font-medium text-emerald-950 tracking-tight">
             {formatPrice(monthRevenue)}
           </p>
-          <p className="mt-1 text-xs text-emerald-900/50">
+          <p className="mt-1.5 text-xs text-emerald-900/50">
             本月 {monthOrderCount} 筆訂單
           </p>
         </div>
@@ -370,14 +373,17 @@ export default async function StoreInsightsPage({
         <section className="lg:col-span-2 bg-white rounded-2xl p-6 shadow-lg shadow-emerald-700/5">
           <div className="flex items-center justify-between mb-6">
             <div>
-              <h3 className="font-semibold text-emerald-950">
+              <p className="text-[10px] tracking-[0.28em] uppercase text-emerald-700/70">
+                Trend · 14d
+              </p>
+              <h3 className="mt-1.5 text-lg font-medium text-emerald-950 tracking-tight">
                 過去 14 天訂單趨勢
               </h3>
-              <p className="text-xs text-emerald-900/50 mt-0.5">
+              <p className="text-xs text-emerald-900/50 mt-1">
                 每天接到的訂單數
               </p>
             </div>
-            <p className="text-xs text-emerald-900/60">
+            <p className="text-xs text-emerald-900/55">
               共 {trendData.reduce((s, d) => s + d.orders, 0)} 筆
             </p>
           </div>
@@ -428,8 +434,13 @@ export default async function StoreInsightsPage({
 
         {/* 熱銷商品 top 5 */}
         <section className="bg-white rounded-2xl p-6 shadow-lg shadow-emerald-700/5">
-          <h3 className="font-semibold text-emerald-950 mb-1">熱銷商品</h3>
-          <p className="text-xs text-emerald-900/50 mb-4">依營收排序</p>
+          <p className="text-[10px] tracking-[0.28em] uppercase text-emerald-700/70">
+            Top Sellers
+          </p>
+          <h3 className="mt-1.5 text-lg font-medium text-emerald-950 tracking-tight">
+            熱銷商品
+          </h3>
+          <p className="text-xs text-emerald-900/50 mb-5 mt-1">依營收排序</p>
           {topProducts.length > 0 ? (
             <ol className="space-y-3">
               {topProducts.map((p, i) => (
@@ -472,12 +483,15 @@ export default async function StoreInsightsPage({
       {/* 庫存警示 */}
       {lowStockProducts && lowStockProducts.length > 0 && (
         <section className="bg-white rounded-2xl p-6 shadow-lg shadow-emerald-700/5 border-l-4 border-amber-400">
-          <div className="flex items-center justify-between mb-4">
+          <div className="flex items-center justify-between mb-5">
             <div>
-              <h3 className="font-semibold text-emerald-950">
-                ⚠ 庫存不足
+              <p className="text-[10px] tracking-[0.28em] uppercase text-amber-700/80">
+                Low Stock
+              </p>
+              <h3 className="mt-1.5 text-lg font-medium text-emerald-950 tracking-tight">
+                庫存不足
               </h3>
-              <p className="text-xs text-emerald-900/50 mt-0.5">
+              <p className="text-xs text-emerald-900/50 mt-1">
                 {lowStockProducts.length} 件商品庫存少於 5
               </p>
             </div>
@@ -528,8 +542,15 @@ export default async function StoreInsightsPage({
 
       {/* 近期訂單 */}
       <section className="bg-white rounded-2xl p-6 shadow-lg shadow-emerald-700/5">
-        <div className="flex items-center justify-between mb-4">
-          <h3 className="font-semibold text-emerald-950">近期訂單</h3>
+        <div className="flex items-end justify-between mb-5">
+          <div>
+            <p className="text-[10px] tracking-[0.28em] uppercase text-emerald-700/70">
+              Recent
+            </p>
+            <h3 className="mt-1.5 text-lg font-medium text-emerald-950 tracking-tight">
+              近期訂單
+            </h3>
+          </div>
           <Link
             href={`/dashboard/stores/${slug}/orders`}
             className="text-xs text-emerald-700 hover:text-emerald-900 transition"
@@ -611,9 +632,16 @@ export default async function StoreInsightsPage({
 
       {/* 店資訊（縮成小 row）*/}
       <section className="bg-white rounded-2xl p-6 shadow-lg shadow-emerald-700/5">
-        <div className="flex items-center justify-between mb-3">
-          <h3 className="text-sm font-semibold text-emerald-900">基本資訊</h3>
-          <span className="text-xs text-emerald-900/40">
+        <div className="flex items-end justify-between mb-4">
+          <div>
+            <p className="text-[10px] tracking-[0.28em] uppercase text-emerald-700/70">
+              Info
+            </p>
+            <h3 className="mt-1.5 text-base font-medium text-emerald-900 tracking-tight">
+              基本資訊
+            </h3>
+          </div>
+          <span className="text-xs text-emerald-900/45">
             商品 {productCount ?? 0} 件
           </span>
         </div>
