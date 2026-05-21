@@ -95,99 +95,122 @@ export default async function TrackPage({
     }
   }
 
-  const inputStyle = {
-    background: theme.surface,
-    color: theme.text,
-    border: `1px solid ${theme.border}`,
-  };
-
   return (
-    <main className="max-w-2xl mx-auto px-6 py-12">
-      <div className="mb-10">
+    <main className="max-w-2xl mx-auto px-6 py-16 sm:py-20">
+      <div className="mb-12 sm:mb-14">
         <p
-          className="text-xs uppercase tracking-widest"
-          style={{ color: theme.accent }}
+          className="text-[0.6875rem] uppercase font-medium"
+          style={{ color: theme.accent, letterSpacing: "0.4em" }}
         >
           Order Tracking
         </p>
         <h1
-          className="mt-2 text-2xl sm:text-3xl font-semibold tracking-tight"
-          style={{ color: theme.text }}
+          className="mt-4 text-3xl sm:text-4xl font-medium"
+          style={{
+            color: theme.text,
+            letterSpacing: "-0.01em",
+            lineHeight: 1.15,
+          }}
         >
           訂單追蹤
         </h1>
-        <p className="mt-3 text-sm" style={{ color: theme.textMuted }}>
+        <div
+          className="mt-5 h-px w-12"
+          style={{ background: theme.accent, opacity: 0.5 }}
+        />
+        <p
+          className="mt-5 text-[0.9375rem]"
+          style={{ color: theme.textMuted, lineHeight: 1.7 }}
+        >
           輸入下單時拿到的訂單編號 + 聯絡電話，就能查當前狀態
         </p>
       </div>
 
       <form
         method="GET"
-        className="rounded-2xl p-6 shadow-sm mb-8 space-y-4"
-        style={{ background: theme.surface }}
+        className="rounded-2xl p-7 sm:p-8 mb-10 space-y-5"
+        style={{
+          background: theme.surface,
+          border: `1px solid ${theme.border}`,
+          boxShadow: "var(--sproutly-elev-2)",
+        }}
       >
         <div>
           <label
-            className="block text-sm font-medium mb-1.5"
-            style={{ color: theme.text }}
+            htmlFor="track-id"
+            className="block text-[0.6875rem] uppercase mb-2.5 font-medium"
+            style={{ color: theme.textMuted, letterSpacing: "0.3em" }}
           >
             訂單編號
           </label>
           <input
+            id="track-id"
             name="id"
             type="text"
             required
             defaultValue={rawId}
             placeholder="例如 #A1B2C3D4"
-            className="w-full rounded-xl px-4 py-3 outline-none transition font-mono"
-            style={inputStyle}
+            className="sproutly-input font-mono"
           />
         </div>
         <div>
           <label
-            className="block text-sm font-medium mb-1.5"
-            style={{ color: theme.text }}
+            htmlFor="track-phone"
+            className="block text-[0.6875rem] uppercase mb-2.5 font-medium"
+            style={{ color: theme.textMuted, letterSpacing: "0.3em" }}
           >
             聯絡電話
           </label>
           <input
+            id="track-phone"
             name="phone"
             type="tel"
             required
             defaultValue={phone}
             placeholder="下單時填的電話"
-            className="w-full rounded-xl px-4 py-3 outline-none transition"
-            style={inputStyle}
+            className="sproutly-input"
           />
         </div>
         <button
           type="submit"
-          className="w-full rounded-full px-8 py-3.5 font-medium transition hover:opacity-90"
-          style={{ background: theme.primary, color: theme.surface }}
+          className="sproutly-btn sproutly-btn-primary sproutly-btn-lg w-full"
         >
-          查詢
+          查詢訂單
         </button>
       </form>
 
       {searched && !order && (
         <div
-          className="rounded-2xl p-8 text-center"
-          style={{ background: theme.surface }}
+          className="rounded-2xl p-10 text-center"
+          style={{
+            background: theme.surface,
+            border: `1px solid ${theme.border}`,
+            boxShadow: "var(--sproutly-elev-1)",
+          }}
         >
           <p
-            className="text-xs tracking-widest uppercase mb-3"
-            style={{ color: theme.textMuted }}
+            className="text-[0.6875rem] uppercase mb-4 font-medium"
+            style={{ color: theme.textMuted, letterSpacing: "0.4em" }}
           >
             Not Found
           </p>
-          <p className="font-medium" style={{ color: theme.text }}>
+          <p
+            className="text-xl font-medium"
+            style={{ color: theme.text, letterSpacing: "-0.005em" }}
+          >
             找不到對應的訂單
           </p>
+          <div
+            className="my-5 h-px w-10 mx-auto"
+            style={{ background: theme.border }}
+          />
           <p
-            className="mt-2 text-sm"
-            style={{ color: theme.textMuted }}
+            className="text-sm"
+            style={{ color: theme.textMuted, lineHeight: 1.7 }}
           >
-            請確認訂單編號跟電話都正確。或直接聯絡店家詢問
+            請確認訂單編號跟電話都正確
+            <br className="sm:hidden" />
+            。或直接聯絡店家詢問
           </p>
         </div>
       )}
@@ -196,20 +219,24 @@ export default async function TrackPage({
         <div className="space-y-6">
           {/* 狀態 step indicator */}
           <section
-            className="rounded-2xl p-6 shadow-sm"
-            style={{ background: theme.surface }}
+            className="rounded-2xl p-7 sm:p-8"
+            style={{
+              background: theme.surface,
+              border: `1px solid ${theme.border}`,
+              boxShadow: "var(--sproutly-elev-2)",
+            }}
           >
             {order.status === "cancelled" ? (
-              <div className="text-center py-6">
+              <div className="text-center py-8">
                 <p
-                  className="text-sm tracking-widest uppercase"
-                  style={{ color: theme.textMuted }}
+                  className="text-[0.6875rem] uppercase font-medium"
+                  style={{ color: theme.textMuted, letterSpacing: "0.4em" }}
                 >
                   Cancelled
                 </p>
                 <p
-                  className="mt-3 text-lg font-medium"
-                  style={{ color: theme.text }}
+                  className="mt-4 text-xl font-medium"
+                  style={{ color: theme.text, letterSpacing: "-0.005em" }}
                 >
                   訂單已取消
                 </p>
@@ -279,19 +306,23 @@ export default async function TrackPage({
 
           {/* 訂單詳細 */}
           <section
-            className="rounded-2xl p-6 shadow-sm space-y-4"
-            style={{ background: theme.surface }}
+            className="rounded-2xl p-7 sm:p-8 space-y-6"
+            style={{
+              background: theme.surface,
+              border: `1px solid ${theme.border}`,
+              boxShadow: "var(--sproutly-elev-2)",
+            }}
           >
             <div className="flex items-baseline justify-between gap-3 flex-wrap">
               <p
-                className="text-xs uppercase tracking-widest"
-                style={{ color: theme.accent }}
+                className="text-[0.6875rem] uppercase font-medium"
+                style={{ color: theme.accent, letterSpacing: "0.4em" }}
               >
                 訂單編號
               </p>
               <p
-                className="font-mono font-semibold"
-                style={{ color: theme.text }}
+                className="font-mono text-[0.9375rem] font-semibold"
+                style={{ color: theme.text, letterSpacing: "0.02em" }}
               >
                 #{order.id.split("-")[0].toUpperCase()}
               </p>
@@ -301,37 +332,48 @@ export default async function TrackPage({
 
             <div>
               <p
-                className="text-xs uppercase tracking-widest mb-2"
-                style={{ color: theme.accent }}
+                className="text-[0.6875rem] uppercase mb-4 font-medium"
+                style={{ color: theme.accent, letterSpacing: "0.4em" }}
               >
                 商品
               </p>
-              {items.map((it, i) => (
-                <div
-                  key={i}
-                  className="flex justify-between items-baseline py-1 text-sm"
-                  style={{ color: theme.text }}
-                >
-                  <span>
-                    {it.name_snapshot} × {it.quantity}
-                  </span>
-                  <span>
-                    {formatPrice(
-                      it.price_cents_snapshot * it.quantity,
-                      order.currency
-                    )}
-                  </span>
-                </div>
-              ))}
+              <div className="space-y-2">
+                {items.map((it, i) => (
+                  <div
+                    key={i}
+                    className="flex justify-between items-baseline text-[0.9375rem]"
+                    style={{ color: theme.text }}
+                  >
+                    <span>
+                      {it.name_snapshot} × {it.quantity}
+                    </span>
+                    <span style={{ fontVariantNumeric: "tabular-nums" }}>
+                      {formatPrice(
+                        it.price_cents_snapshot * it.quantity,
+                        order.currency
+                      )}
+                    </span>
+                  </div>
+                ))}
+              </div>
             </div>
 
             <hr style={{ borderColor: theme.border }} />
 
             <div className="flex justify-between items-end">
-              <span style={{ color: theme.textMuted }}>合計</span>
               <span
-                className="text-xl font-bold"
-                style={{ color: theme.accent }}
+                className="text-[0.6875rem] uppercase font-medium"
+                style={{ color: theme.textMuted, letterSpacing: "0.4em" }}
+              >
+                合計
+              </span>
+              <span
+                className="text-2xl font-medium"
+                style={{
+                  color: theme.accent,
+                  letterSpacing: "-0.02em",
+                  fontVariantNumeric: "tabular-nums",
+                }}
               >
                 {formatPrice(order.total_cents, order.currency)}
               </span>
@@ -346,23 +388,45 @@ export default async function TrackPage({
               return (
                 <>
                   <hr style={{ borderColor: theme.border }} />
-                  <div className="text-sm space-y-1">
+                  <dl className="text-[0.9375rem] space-y-2">
                     {decoded.shippingLabel && (
-                      <p style={{ color: theme.text }}>
-                        配送方式：{decoded.shippingLabel}
-                      </p>
+                      <div className="flex gap-3">
+                        <dt
+                          className="w-20 shrink-0"
+                          style={{ color: theme.textMuted }}
+                        >
+                          配送方式
+                        </dt>
+                        <dd style={{ color: theme.text }}>
+                          {decoded.shippingLabel}
+                        </dd>
+                      </div>
                     )}
                     {decoded.storeName && (
-                      <p style={{ color: theme.text }}>
-                        取貨門市：{decoded.storeName}
-                      </p>
+                      <div className="flex gap-3">
+                        <dt
+                          className="w-20 shrink-0"
+                          style={{ color: theme.textMuted }}
+                        >
+                          取貨門市
+                        </dt>
+                        <dd style={{ color: theme.text }}>
+                          {decoded.storeName}
+                        </dd>
+                      </div>
                     )}
                     {paymentLabel && (
-                      <p style={{ color: theme.text }}>
-                        付款方式：{paymentLabel}
-                      </p>
+                      <div className="flex gap-3">
+                        <dt
+                          className="w-20 shrink-0"
+                          style={{ color: theme.textMuted }}
+                        >
+                          付款方式
+                        </dt>
+                        <dd style={{ color: theme.text }}>{paymentLabel}</dd>
+                      </div>
                     )}
-                  </div>
+                  </dl>
                 </>
               );
             })()}
@@ -370,11 +434,11 @@ export default async function TrackPage({
         </div>
       )}
 
-      <div className="mt-12 text-center">
+      <div className="mt-14 text-center">
         <Link
           href={`/${slug}`}
-          className="text-sm transition hover:opacity-70"
-          style={{ color: theme.textMuted }}
+          className="sproutly-link text-[0.6875rem] uppercase font-medium transition"
+          style={{ color: theme.textMuted, letterSpacing: "0.3em" }}
         >
           ← 回 {store.name}
         </Link>
