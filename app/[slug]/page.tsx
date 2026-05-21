@@ -123,34 +123,246 @@ export default async function StoreHomePage({
         }
         .sproutly-hero-fade-1 { animation: sproutly-hero-fade 1.4s cubic-bezier(0.22, 1, 0.36, 1) 0.3s both; }
         .sproutly-hero-fade-2 { animation: sproutly-hero-fade 1.4s cubic-bezier(0.22, 1, 0.36, 1) 0.8s both; }
+        .sproutly-hero-fade-3 { animation: sproutly-hero-fade 1.4s cubic-bezier(0.22, 1, 0.36, 1) 1.3s both; }
         @media (prefers-reduced-motion: reduce) {
-          .sproutly-subtle-fade, .sproutly-hero-fade-1, .sproutly-hero-fade-2 {
+          .sproutly-subtle-fade,
+          .sproutly-hero-fade-1,
+          .sproutly-hero-fade-2,
+          .sproutly-hero-fade-3 {
             animation: none !important;
           }
         }
       `}</style>
 
       <main>
-        {/* === Hero === */}
-        {theme.heroUrl ? (
-          <section className="relative h-screen overflow-hidden">
-            <Image
-              src={theme.heroUrl}
-              alt={store.name}
-              fill
-              priority
-              sizes="100vw"
-              quality={85}
-              className="sproutly-hero-parallax object-cover"
-            />
-            <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-black/45" />
-            <div className="relative h-full max-w-6xl mx-auto px-8 sm:px-12 flex flex-col justify-end pb-24 sm:pb-32">
+        {/* === Hero（4 種 variant，商家可選） === */}
+        {(() => {
+          const heroStyle = theme.layout.heroStyle;
+          const fade1 = theme.homepage.enableAnimation ? "sproutly-hero-fade-1" : "";
+          const fade2 = theme.homepage.enableAnimation ? "sproutly-hero-fade-2" : "";
+          const fade3 = theme.homepage.enableAnimation ? "sproutly-hero-fade-3" : "";
+
+          // Variant 1: full-image（既有預設）— 整屏圖 + 底部 overlay 文字
+          if (heroStyle === "full-image" && theme.heroUrl) {
+            return (
+              <section className="relative h-screen overflow-hidden">
+                <Image
+                  src={theme.heroUrl}
+                  alt={store.name}
+                  fill
+                  priority
+                  sizes="100vw"
+                  quality={85}
+                  className="sproutly-hero-parallax object-cover"
+                />
+                <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-black/45" />
+                <div className="relative h-full max-w-6xl mx-auto px-8 sm:px-12 flex flex-col justify-end pb-24 sm:pb-32">
+                  <h1
+                    className={`text-2xl sm:text-4xl lg:text-5xl text-white leading-[1.6] ${fade1}`}
+                    style={{
+                      fontFamily: "var(--store-font)",
+                      fontWeight: 400,
+                      letterSpacing: "0.02em",
+                      wordBreak: "keep-all",
+                      overflowWrap: "break-word",
+                    }}
+                  >
+                    {taglineLines.map((line, i) => (
+                      <span key={i} className="block">
+                        {line}
+                      </span>
+                    ))}
+                  </h1>
+                  <Link
+                    href={`/${slug}/shop`}
+                    className={`sproutly-link mt-12 self-start text-white text-sm tracking-wider ${fade2}`}
+                    data-default-line="true"
+                    style={{ fontFamily: "var(--store-font)" }}
+                  >
+                    看商品
+                  </Link>
+                </div>
+              </section>
+            );
+          }
+
+          // Variant 2: split — 左/右 50:50（圖 + 文字）
+          if (heroStyle === "split" && theme.heroUrl) {
+            const imageOnRight = theme.layout.heroImageSide === "right";
+            return (
+              <section
+                className="relative grid grid-cols-1 md:grid-cols-2 min-h-[80vh] md:min-h-screen overflow-hidden"
+                style={{ background: theme.bg }}
+              >
+                <div
+                  className={`relative aspect-square md:aspect-auto md:h-full ${imageOnRight ? "md:order-2" : ""}`}
+                >
+                  <Image
+                    src={theme.heroUrl}
+                    alt={store.name}
+                    fill
+                    priority
+                    sizes="(min-width: 768px) 50vw, 100vw"
+                    quality={85}
+                    className="object-cover"
+                  />
+                </div>
+                <div
+                  className={`flex flex-col justify-center px-8 sm:px-12 md:px-16 lg:px-24 py-20 md:py-0 ${imageOnRight ? "md:order-1" : ""}`}
+                >
+                  {theme.layout.heroEyebrow && (
+                    <p
+                      className={`text-[10px] tracking-[0.4em] uppercase mb-6 ${fade1}`}
+                      style={{ color: theme.accent }}
+                    >
+                      {theme.layout.heroEyebrow}
+                    </p>
+                  )}
+                  <h1
+                    className={`text-3xl sm:text-4xl lg:text-5xl xl:text-6xl leading-[1.15] ${fade1}`}
+                    style={{
+                      color: theme.text,
+                      fontFamily: "var(--store-font)",
+                      fontWeight: 400,
+                      letterSpacing: "-0.01em",
+                      wordBreak: "keep-all",
+                      overflowWrap: "break-word",
+                    }}
+                  >
+                    {taglineLines.map((line, i) => (
+                      <span key={i} className="block">
+                        {line}
+                      </span>
+                    ))}
+                  </h1>
+                  {theme.layout.heroSubtitle && (
+                    <p
+                      className={`mt-6 text-base sm:text-lg leading-[1.9] max-w-md ${fade2}`}
+                      style={{ color: theme.textMuted }}
+                    >
+                      {theme.layout.heroSubtitle}
+                    </p>
+                  )}
+                  <div className={`mt-10 flex gap-5 ${fade3}`}>
+                    <Link
+                      href={`/${slug}/shop`}
+                      className="sproutly-btn sproutly-btn-primary sproutly-btn-lg"
+                    >
+                      看商品
+                    </Link>
+                    {theme.sections.about && (
+                      <Link
+                        href={`/${slug}/about`}
+                        className="sproutly-btn sproutly-btn-secondary sproutly-btn-lg"
+                      >
+                        關於我們
+                      </Link>
+                    )}
+                  </div>
+                </div>
+              </section>
+            );
+          }
+
+          // Variant 3: magazine — 雜誌封面風（上 metadata、中央大字、下 byline）
+          if (heroStyle === "magazine") {
+            return (
+              <section
+                className="relative min-h-screen flex flex-col justify-between py-20 sm:py-28"
+                style={{ background: theme.bg }}
+              >
+                {/* 上方 metadata 條 */}
+                <div className="max-w-6xl mx-auto px-8 sm:px-12 w-full">
+                  <div
+                    className={`flex justify-between items-center text-[10px] tracking-[0.32em] uppercase ${fade1}`}
+                    style={{ color: theme.textMuted }}
+                  >
+                    <span>{theme.layout.heroEyebrow || "Issue"}</span>
+                    <span>{store.name}</span>
+                  </div>
+                  <div
+                    className="mt-4 h-px w-full"
+                    style={{ background: theme.border }}
+                  />
+                </div>
+
+                {/* 中央大字 */}
+                <div className="max-w-5xl mx-auto px-8 sm:px-12 text-center w-full">
+                  <h1
+                    className={`text-4xl sm:text-6xl md:text-7xl lg:text-8xl leading-[1.05] ${fade1}`}
+                    style={{
+                      color: theme.text,
+                      fontFamily: "var(--store-font)",
+                      fontWeight: 400,
+                      letterSpacing: "-0.02em",
+                      wordBreak: "keep-all",
+                      overflowWrap: "break-word",
+                    }}
+                  >
+                    {taglineLines.map((line, i) => (
+                      <span key={i} className="block">
+                        {line}
+                      </span>
+                    ))}
+                  </h1>
+                  {theme.layout.heroSubtitle && (
+                    <p
+                      className={`mt-8 text-base sm:text-lg italic max-w-xl mx-auto leading-[1.9] ${fade2}`}
+                      style={{ color: theme.textMuted }}
+                    >
+                      {theme.layout.heroSubtitle}
+                    </p>
+                  )}
+                </div>
+
+                {/* 下方 byline + CTA */}
+                <div className="max-w-6xl mx-auto px-8 sm:px-12 w-full">
+                  <div
+                    className="h-px w-full mb-4"
+                    style={{ background: theme.border }}
+                  />
+                  <div
+                    className={`flex justify-between items-center text-[10px] tracking-[0.32em] uppercase ${fade3}`}
+                    style={{ color: theme.textMuted }}
+                  >
+                    <span>
+                      Curated by {store.name}
+                    </span>
+                    <Link
+                      href={`/${slug}/shop`}
+                      className="sproutly-link"
+                      data-default-line="true"
+                      style={{ color: theme.text }}
+                    >
+                      看商品 →
+                    </Link>
+                  </div>
+                </div>
+              </section>
+            );
+          }
+
+          // Variant 4: minimal（無圖純文字大字 hero）+ 既有 full-image 但無 heroUrl 的 fallback
+          return (
+            <section
+              className="max-w-3xl mx-auto px-6 py-40 sm:py-56 text-center"
+              style={{ background: theme.bg }}
+            >
+              {theme.layout.heroEyebrow && (
+                <p
+                  className={`text-[10px] tracking-[0.4em] uppercase mb-8 ${fade1}`}
+                  style={{ color: theme.accent }}
+                >
+                  {theme.layout.heroEyebrow}
+                </p>
+              )}
               <h1
-                className={`text-2xl sm:text-4xl lg:text-5xl text-white leading-[1.6] ${theme.homepage.enableAnimation ? "sproutly-hero-fade-1" : ""}`}
+                className={`text-3xl sm:text-5xl md:text-6xl leading-[1.2] ${fade1}`}
                 style={{
+                  color: theme.text,
                   fontFamily: "var(--store-font)",
                   fontWeight: 400,
-                  letterSpacing: "0.02em",
+                  letterSpacing: "-0.015em",
                   wordBreak: "keep-all",
                   overflowWrap: "break-word",
                 }}
@@ -161,44 +373,32 @@ export default async function StoreHomePage({
                   </span>
                 ))}
               </h1>
+              {theme.layout.heroSubtitle && (
+                <p
+                  className={`mt-8 text-base sm:text-lg max-w-xl mx-auto leading-[1.9] ${fade2}`}
+                  style={{ color: theme.textMuted }}
+                >
+                  {theme.layout.heroSubtitle}
+                </p>
+              )}
+              <div
+                className={`mx-auto mt-10 ${fade2}`}
+                style={{
+                  width: "48px",
+                  height: "1px",
+                  background: theme.accent,
+                  opacity: 0.5,
+                }}
+              />
               <Link
                 href={`/${slug}/shop`}
-                className={`sproutly-link mt-12 self-start text-white text-sm tracking-wider ${theme.homepage.enableAnimation ? "sproutly-hero-fade-2" : ""}`}
-                data-default-line="true"
-                style={{ fontFamily: "var(--store-font)" }}
+                className={`sproutly-btn sproutly-btn-primary sproutly-btn-lg mt-12 ${fade3}`}
               >
                 看商品
               </Link>
-            </div>
-          </section>
-        ) : (
-          <section className="max-w-2xl mx-auto px-6 py-48 text-center">
-            <h1
-              className={`text-2xl sm:text-4xl leading-[1.7] ${theme.homepage.enableAnimation ? "sproutly-hero-fade-1" : ""}`}
-              style={{
-                color: theme.text,
-                fontFamily: "var(--store-font)",
-                fontWeight: 400,
-                wordBreak: "keep-all",
-                overflowWrap: "break-word",
-              }}
-            >
-              {taglineLines.map((line, i) => (
-                <span key={i} className="block">
-                  {line}
-                </span>
-              ))}
-            </h1>
-            <Link
-              href={`/${slug}/shop`}
-              className={`sproutly-link mt-12 inline-block text-sm tracking-wider ${theme.homepage.enableAnimation ? "sproutly-hero-fade-2" : ""}`}
-              data-default-line="true"
-              style={{ color: theme.text }}
-            >
-              看商品
-            </Link>
-          </section>
-        )}
+            </section>
+          );
+        })()}
 
         {/* === 選物提案 === */}
         {visibleCollections.length > 0 && (

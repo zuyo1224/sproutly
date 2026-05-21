@@ -1,6 +1,44 @@
 // 公開店面主題系統：4 個 preset + 商家可微調主色 / 強調色 / 字體 / Logo / Hero / Section 開關 / 社群連結 / 標語
 
 export type PresetKey = "editorial" | "plant-zen" | "nordic" | "aesop" | "modern";
+
+// Hero 4 種 layout variants - 對應 Wix 拖拉編輯器內常見 hero 模板
+export type HeroStyle =
+  | "full-image"      // 全屏圖 + tagline overlay（既有預設）
+  | "split"           // 左圖右文 / 右圖左文 50:50
+  | "minimal"         // 純文字 hero，無圖，大字 tagline + 副標
+  | "magazine";       // 雜誌封面風：上方 metadata、中間大字、下方 byline
+export const HERO_STYLES: { key: HeroStyle; label: string; description: string }[] = [
+  { key: "full-image", label: "全屏沉浸", description: "整屏背景圖 + 文字 overlay，最有沉浸感" },
+  { key: "split", label: "左右分割", description: "左圖右文（或右圖左文），編輯雜誌風" },
+  { key: "minimal", label: "極簡文字", description: "純文字大字 hero，無圖，最少干擾" },
+  { key: "magazine", label: "雜誌封面", description: "上 metadata + 中央大字 + 下 byline" },
+];
+
+// Section 排序（商家可調順序，部分 section 也可隱藏）
+export type SectionKey =
+  | "hero"
+  | "collections"
+  | "featured"
+  | "journal"
+  | "promise"
+  | "visit";
+export const DEFAULT_SECTION_ORDER: SectionKey[] = [
+  "hero",
+  "collections",
+  "featured",
+  "journal",
+  "promise",
+  "visit",
+];
+export const SECTION_LABELS: Record<SectionKey, string> = {
+  hero: "Hero（首屏）",
+  collections: "選物提案",
+  featured: "本月選物",
+  journal: "Journal（慢讀）",
+  promise: "Our Promise",
+  visit: "來訪資訊",
+};
 export type FontKey =
   | "cormorant"
   | "playfair"
@@ -42,6 +80,13 @@ export interface StoreTheme {
     visitTitle: string | null;
     enableAnimation: boolean;
   };
+  layout: {
+    heroStyle: HeroStyle;
+    heroSubtitle: string | null;       // minimal / magazine 用副標
+    heroEyebrow: string | null;        // magazine top metadata
+    heroImageSide: "left" | "right";   // split 用
+    sectionOrder: SectionKey[];
+  };
 }
 
 export const HOMEPAGE_DEFAULT_COLLECTIONS: { key: string; title: string; subtitle: string }[] =
@@ -61,7 +106,7 @@ export const HOMEPAGE_DEFAULTS = {
   visitTitle: "來店裡走走",
 };
 
-export const PRESETS: Record<PresetKey, Omit<StoreTheme, "preset" | "logoUrl" | "heroUrl" | "sections" | "social" | "tagline" | "collections" | "homepage">> = {
+export const PRESETS: Record<PresetKey, Omit<StoreTheme, "preset" | "logoUrl" | "heroUrl" | "sections" | "social" | "tagline" | "collections" | "homepage" | "layout">> = {
   editorial: {
     primary: "#2C2C2C",
     accent: "#5F6F52",
@@ -185,6 +230,42 @@ export function resolveTheme(raw: unknown): StoreTheme {
           )
         : {},
     homepage: resolveHomepage(t.homepage),
+    layout: resolveLayout(t.layout),
+  };
+}
+
+function resolveLayout(raw: unknown): StoreTheme["layout"] {
+  const l = (raw && typeof raw === "object" ? raw : {}) as Record<string, unknown>;
+  const heroStyle = (typeof l.heroStyle === "string" &&
+    HERO_STYLES.some((h) => h.key === l.heroStyle)
+    ? l.heroStyle
+    : "full-image") as HeroStyle;
+  const heroImageSide =
+    l.heroImageSide === "right" ? "right" : "left";
+  const orderRaw = Array.isArray(l.sectionOrder) ? l.sectionOrder : [];
+  const validKeys = new Set<SectionKey>(DEFAULT_SECTION_ORDER);
+  const order: SectionKey[] = [];
+  for (const k of orderRaw) {
+    if (typeof k === "string" && validKeys.has(k as SectionKey) && !order.includes(k as SectionKey)) {
+      order.push(k as SectionKey);
+    }
+  }
+  // 沒在 user 的 order 內的 section 加到尾巴，保證所有 section 都會 render
+  for (const k of DEFAULT_SECTION_ORDER) {
+    if (!order.includes(k)) order.push(k);
+  }
+  return {
+    heroStyle,
+    heroSubtitle:
+      typeof l.heroSubtitle === "string" && l.heroSubtitle.trim()
+        ? l.heroSubtitle.trim()
+        : null,
+    heroEyebrow:
+      typeof l.heroEyebrow === "string" && l.heroEyebrow.trim()
+        ? l.heroEyebrow.trim()
+        : null,
+    heroImageSide,
+    sectionOrder: order,
   };
 }
 
