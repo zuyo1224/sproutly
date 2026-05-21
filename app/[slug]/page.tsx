@@ -148,18 +148,24 @@ export default async function StoreHomePage({
             const freePositioned = pos !== null;
             return (
               <section
-                className="relative h-screen overflow-hidden block"
+                className="relative h-screen overflow-hidden"
                 data-edit-target="hero"
                 data-edit-label="Hero 區段"
-                style={{
-                  backgroundImage: `url(${theme.heroUrl})`,
-                  backgroundSize: "cover",
-                  backgroundPosition: "center",
-                  backgroundRepeat: "no-repeat",
-                  margin: 0,
-                  padding: 0,
-                }}
               >
+                {/* 圖片 wrapper：用 scale 1.3 把圖片自帶上下米色 padding 推出 section 邊界 */}
+                <div
+                  className="absolute inset-0"
+                  role="img"
+                  aria-label={store.name}
+                  style={{
+                    backgroundImage: `url(${theme.heroUrl})`,
+                    backgroundSize: "cover",
+                    backgroundPosition: "center",
+                    backgroundRepeat: "no-repeat",
+                    transform: "scale(1.3)",
+                    transformOrigin: "center center",
+                  }}
+                />
                 <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-black/45" />
                 {freePositioned ? (
                   // Phase 5 free-positioned tagline overlay

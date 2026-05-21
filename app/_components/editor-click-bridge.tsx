@@ -57,12 +57,16 @@ export function EditorClickBridge() {
       [data-edit-text][contenteditable="true"]:focus {
         outline: 2px solid #d97706 !important;
       }
-      [data-edit-drag] {
+      [data-edit-drag],
+      [data-edit-drag] * {
         cursor: move !important;
       }
       [data-edit-drag]:hover {
         outline: 1px dashed #0ea5e9 !important;
         outline-offset: 8px;
+      }
+      [data-edit-drag]:hover * {
+        cursor: move !important;
       }
       [data-edit-drag][data-dragging="true"] {
         outline: 2px solid #0ea5e9 !important;
