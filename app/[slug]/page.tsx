@@ -316,6 +316,117 @@ export default async function StoreHomePage({
           </section>
         )}
 
+        {/* === Journal（placeholder：尚無實際文章） === */}
+        <section className={`py-40 sm:py-56 ${animClass}`}>
+          <div className="max-w-5xl mx-auto px-8 sm:px-12">
+            <div className="mb-20 sm:mb-28">
+              <p
+                className="text-[10px] tracking-[0.4em] uppercase mb-5"
+                style={{ color: theme.accent }}
+              >
+                Journal
+              </p>
+              <h2
+                className="text-3xl sm:text-4xl lg:text-[2.5rem]"
+                style={{
+                  color: theme.text,
+                  fontFamily: "var(--store-font)",
+                  fontWeight: 400,
+                  letterSpacing: "-0.01em",
+                  lineHeight: 1.2,
+                }}
+              >
+                慢讀
+              </h2>
+              <p
+                className="mt-6 text-sm sm:text-base max-w-xl leading-[1.9]"
+                style={{ color: theme.textMuted }}
+              >
+                關於植物、空間，與這間店的日常筆記。
+              </p>
+            </div>
+
+            <div className="sproutly-stagger grid grid-cols-1 sm:grid-cols-3 gap-x-8 sm:gap-x-10 gap-y-16">
+              {[
+                {
+                  key: "care",
+                  eyebrow: "Care",
+                  title: "新手綠手指的第一步",
+                  excerpt: "光線、澆水頻率、換盆時機 — 把基本功講清楚，少走幾年彎路。",
+                },
+                {
+                  key: "space",
+                  eyebrow: "Space",
+                  title: "把植物放進小空間",
+                  excerpt: "套房、租屋、窗台一隅，不同光線條件下的擺放提案。",
+                },
+                {
+                  key: "story",
+                  eyebrow: "Story",
+                  title: "我們挑植物的方式",
+                  excerpt: "從花市到溫室，這些植物是怎麼被選進這間店的。",
+                },
+              ].map((entry, i) => {
+                const fallbackImage = visibleCollections[i]?.image;
+                return (
+                  <article key={entry.key} className="sproutly-card">
+                    <div
+                      className="sproutly-card-image aspect-[5/3] overflow-hidden"
+                      style={{ background: theme.surface }}
+                    >
+                      {fallbackImage ? (
+                        // eslint-disable-next-line @next/next/no-img-element
+                        <img
+                          src={fallbackImage}
+                          alt=""
+                          className="w-full h-full object-cover"
+                          style={{ opacity: 0.55 }}
+                        />
+                      ) : (
+                        <div
+                          className="w-full h-full flex items-center justify-center"
+                          style={{
+                            background: `linear-gradient(135deg, ${theme.surface} 0%, ${theme.bg} 100%)`,
+                          }}
+                        />
+                      )}
+                    </div>
+                    <p
+                      className="mt-6 text-[10px] tracking-[0.4em] uppercase"
+                      style={{ color: theme.accent }}
+                    >
+                      {entry.eyebrow}
+                    </p>
+                    <h3
+                      className="sproutly-card-title mt-3 text-lg sm:text-xl leading-[1.4]"
+                      style={{
+                        color: theme.text,
+                        fontFamily: "var(--store-font)",
+                        fontWeight: 400,
+                        letterSpacing: "-0.005em",
+                      }}
+                    >
+                      {entry.title}
+                    </h3>
+                    <p
+                      className="mt-3 text-sm leading-[1.85]"
+                      style={{ color: theme.textMuted }}
+                    >
+                      {entry.excerpt}
+                    </p>
+                    <p
+                      className="mt-5 text-[10px] tracking-[0.3em] uppercase"
+                      style={{ color: theme.textMuted, opacity: 0.65 }}
+                    >
+                      Coming soon
+                    </p>
+                  </article>
+                );
+              })}
+            </div>
+          </div>
+        </section>
+
         {/* === Promise === */}
         {promiseLines.length > 0 && (
           <section className={`py-40 sm:py-56 ${animClass}`}>
