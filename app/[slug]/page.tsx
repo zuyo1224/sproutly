@@ -692,38 +692,81 @@ export default async function StoreHomePage({
         })()}
 
         {/* === Journal（placeholder：尚無實際文章） === */}
-        <section
-          className={`py-40 sm:py-56 ${animClass}`}
-          data-edit-target="journal"
-          data-edit-label="Journal 區段"
-        >
+        {(() => {
+          const journalPos = theme.layout.freePositions["journal-intro"] ?? null;
+          const journalFree = journalPos !== null;
+          return (
+          <section
+            className={`relative py-40 sm:py-56 ${animClass} ${journalFree ? "min-h-[60vh]" : ""}`}
+            data-edit-target="journal"
+            data-edit-label="Journal 區段"
+          >
           <div className="max-w-5xl mx-auto px-8 sm:px-12">
-            <div className="mb-20 sm:mb-28">
-              <p
-                className="text-[10px] tracking-[0.4em] uppercase mb-5"
-                style={{ color: theme.accent }}
-              >
-                Journal
-              </p>
-              <h2
-                className="text-3xl sm:text-4xl lg:text-[2.5rem]"
+            {journalFree ? (
+              <div
+                data-edit-drag="journal-intro"
+                className="absolute"
                 style={{
-                  color: theme.text,
-                  fontFamily: "var(--store-font)",
-                  fontWeight: 400,
-                  letterSpacing: "-0.01em",
-                  lineHeight: 1.2,
+                  left: `${journalPos!.x * 100}%`,
+                  top: `${journalPos!.y * 100}%`,
+                  transform: "translate(-50%, -50%)",
+                  maxWidth: "min(560px, 80vw)",
+                  width: "100%",
                 }}
               >
-                慢讀
-              </h2>
-              <p
-                className="mt-6 text-sm sm:text-base max-w-xl leading-[1.9]"
-                style={{ color: theme.textMuted }}
-              >
-                關於植物、空間，與這間店的日常筆記。
-              </p>
-            </div>
+                <p
+                  className="text-[10px] tracking-[0.4em] uppercase mb-5"
+                  style={{ color: theme.accent }}
+                >
+                  Journal
+                </p>
+                <h2
+                  className="text-3xl sm:text-4xl lg:text-[2.5rem]"
+                  style={{
+                    color: theme.text,
+                    fontFamily: "var(--store-font)",
+                    fontWeight: 400,
+                    letterSpacing: "-0.01em",
+                    lineHeight: 1.2,
+                  }}
+                >
+                  慢讀
+                </h2>
+                <p
+                  className="mt-6 text-sm sm:text-base leading-[1.9]"
+                  style={{ color: theme.textMuted }}
+                >
+                  關於植物、空間，與這間店的日常筆記。
+                </p>
+              </div>
+            ) : (
+              <div className="mb-20 sm:mb-28" data-edit-drag="journal-intro">
+                <p
+                  className="text-[10px] tracking-[0.4em] uppercase mb-5"
+                  style={{ color: theme.accent }}
+                >
+                  Journal
+                </p>
+                <h2
+                  className="text-3xl sm:text-4xl lg:text-[2.5rem]"
+                  style={{
+                    color: theme.text,
+                    fontFamily: "var(--store-font)",
+                    fontWeight: 400,
+                    letterSpacing: "-0.01em",
+                    lineHeight: 1.2,
+                  }}
+                >
+                  慢讀
+                </h2>
+                <p
+                  className="mt-6 text-sm sm:text-base max-w-xl leading-[1.9]"
+                  style={{ color: theme.textMuted }}
+                >
+                  關於植物、空間，與這間店的日常筆記。
+                </p>
+              </div>
+            )}
 
             <div className="sproutly-stagger grid grid-cols-1 sm:grid-cols-3 gap-x-8 sm:gap-x-10 gap-y-16">
               {[
@@ -807,7 +850,9 @@ export default async function StoreHomePage({
               })}
             </div>
           </div>
-        </section>
+          </section>
+          );
+        })()}
 
         {/* === Promise（雜誌風 quote card） === */}
         {promiseLines.length > 0 && (() => {
