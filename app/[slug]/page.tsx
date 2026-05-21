@@ -1041,43 +1041,93 @@ export default async function StoreHomePage({
 
         {/* === Testimonials（optional block，商家從 editor 加） === */}
         {theme.layout.sectionOrder.includes("testimonials") &&
-          theme.layout.testimonials.length > 0 && (
+          theme.layout.testimonials.length > 0 &&
+          (() => {
+            const testimonialsPos =
+              theme.layout.freePositions["testimonials-title"] ?? null;
+            const testimonialsFree = testimonialsPos !== null;
+            return (
             <section
-              className={`py-40 sm:py-56 ${animClass}`}
+              className={`relative py-40 sm:py-56 ${animClass} ${testimonialsFree ? "min-h-[60vh]" : ""}`}
               style={{ background: theme.surface }}
               data-edit-target="testimonials"
               data-edit-label="顧客評語"
             >
               <div className="max-w-5xl mx-auto px-8 sm:px-12">
-                <div className="text-center mb-20 sm:mb-28">
-                  <p
-                    className="text-[10px] tracking-[0.4em] uppercase mb-5"
-                    style={{ color: theme.accent }}
-                  >
-                    Testimonials
-                  </p>
-                  <h2
-                    className="text-2xl sm:text-3xl md:text-4xl"
-                    style={{
-                      color: theme.text,
-                      fontFamily: "var(--store-font)",
-                      fontWeight: 400,
-                      letterSpacing: "-0.01em",
-                      lineHeight: 1.2,
-                    }}
-                  >
-                    顧客的話
-                  </h2>
+                {testimonialsFree ? (
                   <div
-                    className="mx-auto mt-6"
+                    data-edit-drag="testimonials-title"
+                    className="absolute"
                     style={{
-                      width: "32px",
-                      height: "1px",
-                      background: theme.accent,
-                      opacity: 0.5,
+                      left: `${testimonialsPos!.x * 100}%`,
+                      top: `${testimonialsPos!.y * 100}%`,
+                      transform: "translate(-50%, -50%)",
+                      maxWidth: "min(560px, 80vw)",
+                      width: "100%",
                     }}
-                  />
-                </div>
+                  >
+                    <p
+                      className="text-[10px] tracking-[0.4em] uppercase mb-5"
+                      style={{ color: theme.accent }}
+                    >
+                      Testimonials
+                    </p>
+                    <h2
+                      className="text-2xl sm:text-3xl md:text-4xl"
+                      style={{
+                        color: theme.text,
+                        fontFamily: "var(--store-font)",
+                        fontWeight: 400,
+                        letterSpacing: "-0.01em",
+                        lineHeight: 1.2,
+                      }}
+                    >
+                      顧客的話
+                    </h2>
+                    <div
+                      className="mt-6"
+                      style={{
+                        width: "32px",
+                        height: "1px",
+                        background: theme.accent,
+                        opacity: 0.5,
+                      }}
+                    />
+                  </div>
+                ) : (
+                  <div
+                    className="text-center mb-20 sm:mb-28"
+                    data-edit-drag="testimonials-title"
+                  >
+                    <p
+                      className="text-[10px] tracking-[0.4em] uppercase mb-5"
+                      style={{ color: theme.accent }}
+                    >
+                      Testimonials
+                    </p>
+                    <h2
+                      className="text-2xl sm:text-3xl md:text-4xl"
+                      style={{
+                        color: theme.text,
+                        fontFamily: "var(--store-font)",
+                        fontWeight: 400,
+                        letterSpacing: "-0.01em",
+                        lineHeight: 1.2,
+                      }}
+                    >
+                      顧客的話
+                    </h2>
+                    <div
+                      className="mx-auto mt-6"
+                      style={{
+                        width: "32px",
+                        height: "1px",
+                        background: theme.accent,
+                        opacity: 0.5,
+                      }}
+                    />
+                  </div>
+                )}
 
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8">
                   {theme.layout.testimonials.slice(0, 6).map((t, i) => (
@@ -1138,7 +1188,8 @@ export default async function StoreHomePage({
                 </div>
               </div>
             </section>
-          )}
+            );
+          })()}
 
         {/* === FAQ Accordion（optional block，<details> 原生 accordion） === */}
         {theme.layout.sectionOrder.includes("faq") &&
