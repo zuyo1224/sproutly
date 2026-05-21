@@ -582,24 +582,46 @@ export default async function StoreHomePage({
         })()}
 
         {/* === 本月選物 === */}
-        {featuredProducts && featuredProducts.length > 0 && (
+        {featuredProducts && featuredProducts.length > 0 && (() => {
+          const featuredPos = theme.layout.freePositions["featured-title"] ?? null;
+          const featuredFree = featuredPos !== null;
+          return (
           <section
-            className={`py-40 sm:py-56 ${animClass}`}
+            className={`relative py-40 sm:py-56 ${animClass} ${featuredFree ? "min-h-[60vh]" : ""}`}
             style={{ background: theme.surface }}
             data-edit-target="featured"
             data-edit-label="本月選物"
           >
             <div className="max-w-5xl mx-auto px-8 sm:px-12">
-              <h2
-                className="text-xl sm:text-2xl mb-20 sm:mb-28"
-                style={{
-                  color: theme.text,
-                  fontFamily: "var(--store-font)",
-                  fontWeight: 400,
-                }}
-              >
-                本月選物
-              </h2>
+              {featuredFree ? (
+                <h2
+                  data-edit-drag="featured-title"
+                  className="absolute text-xl sm:text-2xl"
+                  style={{
+                    left: `${featuredPos!.x * 100}%`,
+                    top: `${featuredPos!.y * 100}%`,
+                    transform: "translate(-50%, -50%)",
+                    color: theme.text,
+                    fontFamily: "var(--store-font)",
+                    fontWeight: 400,
+                    whiteSpace: "nowrap",
+                  }}
+                >
+                  本月選物
+                </h2>
+              ) : (
+                <h2
+                  data-edit-drag="featured-title"
+                  className="text-xl sm:text-2xl mb-20 sm:mb-28"
+                  style={{
+                    color: theme.text,
+                    fontFamily: "var(--store-font)",
+                    fontWeight: 400,
+                  }}
+                >
+                  本月選物
+                </h2>
+              )}
               <div className="sproutly-stagger grid grid-cols-2 md:grid-cols-3 gap-x-6 sm:gap-x-10 gap-y-16">
                 {featuredProducts.map((p) => (
                   <Link
@@ -666,7 +688,8 @@ export default async function StoreHomePage({
               </div>
             </div>
           </section>
-        )}
+          );
+        })()}
 
         {/* === Journal（placeholder：尚無實際文章） === */}
         <section
