@@ -37,6 +37,8 @@ export default async function EditorPage({
     primary: theme.primary,
     accent: theme.accent,
     tagline: theme.tagline ?? "",
+    heroUrl: theme.heroUrl,
+    logoUrl: theme.logoUrl,
     layout: theme.layout,
     homepage: {
       promise: theme.homepage.promise ?? "",

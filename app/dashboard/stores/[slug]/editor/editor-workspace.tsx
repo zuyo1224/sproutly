@@ -54,6 +54,8 @@ type EditorTheme = {
   primary: string;
   accent: string;
   tagline: string;
+  heroUrl: string | null;
+  logoUrl: string | null;
   layout: {
     heroStyle: HeroStyle;
     heroEyebrow: string | null;
@@ -118,6 +120,8 @@ export function EditorWorkspace({
     | { kind: "gallery-add" }
     | { kind: "gallery-replace"; index: number }
     | { kind: "partner-logo"; index: number }
+    | { kind: "hero" }
+    | { kind: "logo" }
   >(null);
 
   // Undo / Redo state — past / future stacks of theme snapshots
@@ -328,6 +332,10 @@ export function EditorWorkspace({
         logoUrl: url,
       };
       updateLayout({ partners: next });
+    } else if (assetPickerMode.kind === "hero") {
+      update("heroUrl", url);
+    } else if (assetPickerMode.kind === "logo") {
+      update("logoUrl", url);
     }
   }
 
@@ -337,6 +345,8 @@ export function EditorWorkspace({
         primary: theme.primary,
         accent: theme.accent,
         tagline: theme.tagline,
+        heroUrl: theme.heroUrl,
+        logoUrl: theme.logoUrl,
         layout: {
           heroStyle: theme.layout.heroStyle,
           heroEyebrow: theme.layout.heroEyebrow ?? "",
@@ -686,6 +696,47 @@ export function EditorWorkspace({
                   )
                 )}
               </select>
+            </Field>
+            {/* Hero 圖片 */}
+            <Field label="Hero 圖片">
+              {theme.heroUrl ? (
+                <div className="space-y-2">
+                  <div className="relative aspect-video rounded-lg overflow-hidden bg-stone-100 border border-stone-200">
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img
+                      src={theme.heroUrl}
+                      alt="Hero"
+                      className="w-full h-full object-cover"
+                    />
+                  </div>
+                  <div className="flex gap-1.5">
+                    <button
+                      type="button"
+                      onClick={() => setAssetPickerMode({ kind: "hero" })}
+                      className="flex-1 rounded-lg bg-emerald-700 text-white text-xs py-2 hover:bg-emerald-800 transition"
+                    >
+                      ✦ 換一張
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => update("heroUrl", null)}
+                      className="rounded-lg border border-stone-200 text-stone-600 text-xs px-3 hover:bg-stone-50 transition"
+                      title="移除 hero 圖（minimal 樣式不需要）"
+                    >
+                      移除
+                    </button>
+                  </div>
+                </div>
+              ) : (
+                <button
+                  type="button"
+                  onClick={() => setAssetPickerMode({ kind: "hero" })}
+                  className="w-full aspect-video rounded-lg border border-dashed border-stone-300 hover:border-emerald-400 hover:bg-emerald-50/30 transition flex flex-col items-center justify-center text-stone-500"
+                >
+                  <span className="text-2xl mb-1">✦</span>
+                  <span className="text-xs">從圖庫挑張 Hero 圖</span>
+                </button>
+              )}
             </Field>
             <Field label="Eyebrow（小標）">
               <input

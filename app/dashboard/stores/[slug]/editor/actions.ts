@@ -10,6 +10,8 @@ type EditorPayload = {
   primary?: string;
   accent?: string;
   tagline?: string;
+  heroUrl?: string | null;
+  logoUrl?: string | null;
   layout?: {
     heroStyle?: string;
     heroEyebrow?: string;
@@ -75,6 +77,12 @@ export async function saveEditorState(slug: string, payload: EditorPayload) {
   }
   if (payload.tagline !== undefined) {
     merged.tagline = String(payload.tagline).slice(0, 500);
+  }
+  if (payload.heroUrl !== undefined) {
+    merged.hero_url = payload.heroUrl ? String(payload.heroUrl).slice(0, 500) : null;
+  }
+  if (payload.logoUrl !== undefined) {
+    merged.logo_url = payload.logoUrl ? String(payload.logoUrl).slice(0, 500) : null;
   }
 
   if (payload.layout) {
