@@ -44,6 +44,7 @@ export default async function StoreLayout({
 
   const tabs = [
     { label: "總覽", href: `/dashboard/stores/${slug}`, badge: 0 },
+    { label: "編輯器", href: `/dashboard/stores/${slug}/editor`, badge: 0 },
     { label: "商品", href: `/dashboard/stores/${slug}/products`, badge: 0 },
     {
       label: "訂單",
