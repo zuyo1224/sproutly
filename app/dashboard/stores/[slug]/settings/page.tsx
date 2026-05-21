@@ -10,6 +10,7 @@ import {
   resolveTheme,
   HOMEPAGE_DEFAULTS,
   HOMEPAGE_DEFAULT_COLLECTIONS,
+  HERO_STYLES,
   type PresetKey,
   type FontKey,
 } from "@/app/[slug]/_theme";
@@ -595,6 +596,127 @@ A: 可以，地點為台北車站。`}</pre>
               </p>
             </div>
           </label>
+        </section>
+
+        {/* ===== 版面設計（hero variant + section order）===== */}
+        <section className="bg-white rounded-2xl p-6 shadow-lg shadow-emerald-700/5 space-y-6">
+          <div>
+            <h2 className="text-lg font-semibold text-emerald-950 mb-1">
+              版面設計
+            </h2>
+            <p className="text-sm text-emerald-900/55">
+              4 種首屏 layout 變體 + 拖曳調整首頁 section 順序
+            </p>
+          </div>
+
+          <div>
+            <label
+              htmlFor="layout_hero_style"
+              className="block text-sm font-medium text-emerald-900 mb-2"
+            >
+              Hero 樣式
+            </label>
+            <select
+              id="layout_hero_style"
+              name="layout_hero_style"
+              defaultValue={theme.layout.heroStyle}
+              className="w-full rounded-xl border border-emerald-100 bg-white px-4 py-3 text-sm outline-none focus:border-emerald-400 focus:ring-2 focus:ring-emerald-100"
+            >
+              {HERO_STYLES.map((h) => (
+                <option key={h.key} value={h.key}>
+                  {h.label} — {h.description}
+                </option>
+              ))}
+            </select>
+            <p className="text-xs text-emerald-900/55 mt-2">
+              full-image / magazine 需要 Hero 圖；minimal 不需要；split 也建議放圖。
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label
+                htmlFor="layout_hero_eyebrow"
+                className="block text-sm font-medium text-emerald-900 mb-2"
+              >
+                Hero Eyebrow（小標）
+              </label>
+              <input
+                id="layout_hero_eyebrow"
+                name="layout_hero_eyebrow"
+                type="text"
+                defaultValue={theme.layout.heroEyebrow ?? ""}
+                placeholder="Est. 2019 / Issue 03 / Spring Collection..."
+                className="w-full rounded-xl border border-emerald-100 bg-white px-4 py-3 text-sm outline-none focus:border-emerald-400 focus:ring-2 focus:ring-emerald-100"
+              />
+              <p className="text-xs text-emerald-900/55 mt-2">
+                Magazine / Split / Minimal 樣式會顯示，全大寫小字
+              </p>
+            </div>
+            <div>
+              <label
+                htmlFor="layout_hero_image_side"
+                className="block text-sm font-medium text-emerald-900 mb-2"
+              >
+                Split 圖片位置
+              </label>
+              <select
+                id="layout_hero_image_side"
+                name="layout_hero_image_side"
+                defaultValue={theme.layout.heroImageSide}
+                className="w-full rounded-xl border border-emerald-100 bg-white px-4 py-3 text-sm outline-none focus:border-emerald-400 focus:ring-2 focus:ring-emerald-100"
+              >
+                <option value="left">圖在左、文字在右</option>
+                <option value="right">文字在左、圖在右</option>
+              </select>
+              <p className="text-xs text-emerald-900/55 mt-2">
+                只在 Hero 樣式選「左右分割」時生效
+              </p>
+            </div>
+          </div>
+
+          <div>
+            <label
+              htmlFor="layout_hero_subtitle"
+              className="block text-sm font-medium text-emerald-900 mb-2"
+            >
+              Hero 副標 / 引文（選填）
+            </label>
+            <textarea
+              id="layout_hero_subtitle"
+              name="layout_hero_subtitle"
+              defaultValue={theme.layout.heroSubtitle ?? ""}
+              rows={2}
+              placeholder="一段詩意的副標，給 Split / Magazine / Minimal 用..."
+              className="w-full rounded-xl border border-emerald-100 bg-white px-4 py-3 text-sm outline-none focus:border-emerald-400 focus:ring-2 focus:ring-emerald-100 resize-none"
+            />
+          </div>
+
+          <div>
+            <label
+              htmlFor="layout_section_order"
+              className="block text-sm font-medium text-emerald-900 mb-2"
+            >
+              首頁 Section 順序
+            </label>
+            <input
+              id="layout_section_order"
+              name="layout_section_order"
+              type="text"
+              defaultValue={theme.layout.sectionOrder.join(",")}
+              className="w-full rounded-xl border border-emerald-100 bg-white px-4 py-3 text-sm font-mono outline-none focus:border-emerald-400 focus:ring-2 focus:ring-emerald-100"
+            />
+            <p className="text-xs text-emerald-900/55 mt-2">
+              逗號分隔（不要空白）。可用 key：
+              <code className="px-1 mx-0.5 bg-emerald-50 rounded">hero</code>
+              <code className="px-1 mx-0.5 bg-emerald-50 rounded">collections</code>
+              <code className="px-1 mx-0.5 bg-emerald-50 rounded">featured</code>
+              <code className="px-1 mx-0.5 bg-emerald-50 rounded">journal</code>
+              <code className="px-1 mx-0.5 bg-emerald-50 rounded">promise</code>
+              <code className="px-1 mx-0.5 bg-emerald-50 rounded">visit</code>
+              。沒列到的 section 自動 append 在尾巴。
+            </p>
+          </div>
         </section>
 
         <div className="flex gap-3">

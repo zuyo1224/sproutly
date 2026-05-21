@@ -123,6 +123,39 @@ export async function updateStore(slug: string, formData: FormData) {
     enableAnimation: formData.get("hp_enable_animation") === "on",
   };
 
+  // 版面設計 layout：hero variant + section sortable
+  const HERO_STYLES_SET = new Set(["full-image", "split", "minimal", "magazine"]);
+  const heroStyleRaw = String(formData.get("layout_hero_style") ?? "full-image");
+  const heroStyle = HERO_STYLES_SET.has(heroStyleRaw)
+    ? heroStyleRaw
+    : "full-image";
+
+  const heroImageSideRaw = String(formData.get("layout_hero_image_side") ?? "left");
+  const heroImageSide = heroImageSideRaw === "right" ? "right" : "left";
+
+  const SECTION_KEYS = ["hero", "collections", "featured", "journal", "promise", "visit"];
+  const sectionOrderRaw = String(formData.get("layout_section_order") ?? "")
+    .split(",")
+    .map((s) => s.trim())
+    .filter((s) => SECTION_KEYS.includes(s));
+  const sectionOrder: string[] = [];
+  for (const k of sectionOrderRaw) {
+    if (!sectionOrder.includes(k)) sectionOrder.push(k);
+  }
+  for (const k of SECTION_KEYS) {
+    if (!sectionOrder.includes(k)) sectionOrder.push(k);
+  }
+
+  const layout = {
+    heroStyle,
+    heroSubtitle:
+      String(formData.get("layout_hero_subtitle") ?? "").trim() || null,
+    heroEyebrow:
+      String(formData.get("layout_hero_eyebrow") ?? "").trim() || null,
+    heroImageSide,
+    sectionOrder,
+  };
+
   const theme = {
     preset,
     font,
@@ -147,6 +180,7 @@ export async function updateStore(slug: string, formData: FormData) {
     tagline,
     collections: existingCollections,
     homepage,
+    layout,
   };
 
   const businessHours = businessHoursText ? { text: businessHoursText } : null;
