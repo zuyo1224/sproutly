@@ -29,23 +29,24 @@ type SectionKey =
   | "promise"
   | "testimonials"
   | "faq"
+  | "stats"
+  | "partners"
+  | "gallery"
   | "visit";
 type HeroStyle = "full-image" | "split" | "minimal" | "magazine";
 
 type Testimonial = { quote: string; author: string; role: string | null };
 type FaqItem = { question: string; answer: string };
+type StatItem = { value: string; label: string };
+type PartnerItem = { name: string; logoUrl: string; href: string | null };
+type GalleryItem = { url: string; caption: string | null };
 
 const ADDABLE_BLOCKS: { key: SectionKey; label: string; description: string }[] = [
-  {
-    key: "testimonials",
-    label: "顧客評語",
-    description: "3 個 quote card 顯示真實顧客評價",
-  },
-  {
-    key: "faq",
-    label: "常見問題",
-    description: "Accordion 展開式問答",
-  },
+  { key: "testimonials", label: "顧客評語", description: "3 個 quote card" },
+  { key: "faq", label: "常見問題", description: "Accordion 展開式問答" },
+  { key: "stats", label: "數字 / 成就", description: "4 個大數字 + 標籤" },
+  { key: "partners", label: "合作夥伴", description: "logo 灰階展示" },
+  { key: "gallery", label: "圖片相簿", description: "3 欄圖片網格 + caption" },
 ];
 
 type EditorTheme = {
@@ -60,6 +61,9 @@ type EditorTheme = {
     sectionOrder: SectionKey[];
     testimonials: Testimonial[];
     faqItems: FaqItem[];
+    stats: StatItem[];
+    partners: PartnerItem[];
+    gallery: GalleryItem[];
   };
   homepage: {
     promise: string;
@@ -200,6 +204,29 @@ export function EditorWorkspace({
     });
   }
 
+  // Stats / Partners / Gallery 通用 list helpers
+  function updateListItem<T>(field: "stats" | "partners" | "gallery", idx: number, patch: Partial<T>) {
+    const list = theme.layout[field] as T[];
+    const next = [...list];
+    next[idx] = { ...next[idx], ...patch };
+    updateLayout({ [field]: next } as Partial<EditorTheme["layout"]>);
+  }
+  function addListItem(field: "stats" | "partners" | "gallery") {
+    const cur = theme.layout[field] as Array<unknown>;
+    const max = field === "stats" ? 6 : 12;
+    if (cur.length >= max) return;
+    const blank: Record<string, unknown> = {
+      stats: { value: "", label: "" },
+      partners: { name: "", logoUrl: "", href: null },
+      gallery: { url: "", caption: null },
+    }[field] as Record<string, unknown>;
+    updateLayout({ [field]: [...cur, blank] } as Partial<EditorTheme["layout"]>);
+  }
+  function removeListItem(field: "stats" | "partners" | "gallery", idx: number) {
+    const cur = theme.layout[field] as Array<unknown>;
+    updateLayout({ [field]: cur.filter((_, i) => i !== idx) } as Partial<EditorTheme["layout"]>);
+  }
+
   function handleSave() {
     startTransition(async () => {
       const res = await saveEditorState(slug, {
@@ -222,6 +249,15 @@ export function EditorWorkspace({
           faqItems: theme.layout.faqItems
             .filter((f) => f.question.trim() && f.answer.trim())
             .map((f) => ({ question: f.question, answer: f.answer })),
+          stats: theme.layout.stats
+            .filter((s) => s.value.trim() && s.label.trim())
+            .map((s) => ({ value: s.value, label: s.label })),
+          partners: theme.layout.partners
+            .filter((p) => p.name.trim() && p.logoUrl.trim())
+            .map((p) => ({ name: p.name, logoUrl: p.logoUrl, href: p.href })),
+          gallery: theme.layout.gallery
+            .filter((g) => g.url.trim())
+            .map((g) => ({ url: g.url, caption: g.caption })),
         },
         homepage: theme.homepage,
         sections: theme.sections,
@@ -544,6 +580,200 @@ export function EditorWorkspace({
             <p className="text-xs text-stone-500 leading-relaxed">
               地址 / 營業時間 / 電話 / Email 在「傳統設定頁」改。
             </p>
+          </PanelSection>
+        )}
+
+        {activeTab === "section" && selectedSection === "stats" && (
+          <PanelSection title="數字 / 成就">
+            {theme.layout.stats.length === 0 ? (
+              <p className="text-sm text-stone-600">還沒填，先加一筆數字。</p>
+            ) : (
+              <div className="space-y-3">
+                {theme.layout.stats.map((s, i) => (
+                  <div
+                    key={i}
+                    className="rounded-lg border border-stone-200 p-3 space-y-2 bg-stone-50/50"
+                  >
+                    <div className="flex justify-between items-center">
+                      <p className="text-[10px] uppercase tracking-wider text-stone-500">
+                        #{i + 1}
+                      </p>
+                      <button
+                        type="button"
+                        onClick={() => removeListItem("stats", i)}
+                        className="text-xs text-red-600 hover:text-red-800"
+                      >
+                        移除
+                      </button>
+                    </div>
+                    <input
+                      type="text"
+                      value={s.value}
+                      onChange={(e) =>
+                        updateListItem<StatItem>("stats", i, { value: e.target.value })
+                      }
+                      placeholder="2019 / 250+ / 1500"
+                      className="w-full rounded border border-stone-200 px-2 py-1.5 text-sm font-medium font-mono"
+                    />
+                    <input
+                      type="text"
+                      value={s.label}
+                      onChange={(e) =>
+                        updateListItem<StatItem>("stats", i, { label: e.target.value })
+                      }
+                      placeholder="標籤（成立年份 / 植物種數 / 客人累計）"
+                      className="w-full rounded border border-stone-200 px-2 py-1.5 text-sm"
+                    />
+                  </div>
+                ))}
+              </div>
+            )}
+            <button
+              type="button"
+              onClick={() => addListItem("stats")}
+              disabled={theme.layout.stats.length >= 6}
+              className="w-full mt-3 rounded-lg border border-dashed border-stone-300 hover:border-emerald-400 hover:bg-emerald-50/50 py-2.5 text-sm text-emerald-800 transition disabled:opacity-40 disabled:cursor-not-allowed"
+            >
+              + 加一筆數字{" "}
+              <span className="text-stone-400 text-xs">
+                ({theme.layout.stats.length}/6)
+              </span>
+            </button>
+          </PanelSection>
+        )}
+
+        {activeTab === "section" && selectedSection === "partners" && (
+          <PanelSection title="合作夥伴 / 媒體 logos">
+            {theme.layout.partners.length === 0 ? (
+              <p className="text-sm text-stone-600">
+                還沒加 partner，先加一個 logo。Logo URL 用任何公開 HTTPS 圖片。
+              </p>
+            ) : (
+              <div className="space-y-3">
+                {theme.layout.partners.map((p, i) => (
+                  <div
+                    key={i}
+                    className="rounded-lg border border-stone-200 p-3 space-y-2 bg-stone-50/50"
+                  >
+                    <div className="flex justify-between items-center">
+                      <p className="text-[10px] uppercase tracking-wider text-stone-500">
+                        #{i + 1}
+                      </p>
+                      <button
+                        type="button"
+                        onClick={() => removeListItem("partners", i)}
+                        className="text-xs text-red-600 hover:text-red-800"
+                      >
+                        移除
+                      </button>
+                    </div>
+                    <input
+                      type="text"
+                      value={p.name}
+                      onChange={(e) =>
+                        updateListItem<PartnerItem>("partners", i, { name: e.target.value })
+                      }
+                      placeholder="名稱（給無障礙 alt 用）"
+                      className="w-full rounded border border-stone-200 px-2 py-1.5 text-sm"
+                    />
+                    <input
+                      type="text"
+                      value={p.logoUrl}
+                      onChange={(e) =>
+                        updateListItem<PartnerItem>("partners", i, { logoUrl: e.target.value })
+                      }
+                      placeholder="Logo URL（https://...）"
+                      className="w-full rounded border border-stone-200 px-2 py-1.5 text-xs font-mono"
+                    />
+                    <input
+                      type="text"
+                      value={p.href ?? ""}
+                      onChange={(e) =>
+                        updateListItem<PartnerItem>("partners", i, {
+                          href: e.target.value || null,
+                        })
+                      }
+                      placeholder="連結（選填）"
+                      className="w-full rounded border border-stone-200 px-2 py-1.5 text-xs font-mono"
+                    />
+                  </div>
+                ))}
+              </div>
+            )}
+            <button
+              type="button"
+              onClick={() => addListItem("partners")}
+              disabled={theme.layout.partners.length >= 12}
+              className="w-full mt-3 rounded-lg border border-dashed border-stone-300 hover:border-emerald-400 hover:bg-emerald-50/50 py-2.5 text-sm text-emerald-800 transition disabled:opacity-40 disabled:cursor-not-allowed"
+            >
+              + 加一個 logo{" "}
+              <span className="text-stone-400 text-xs">
+                ({theme.layout.partners.length}/12)
+              </span>
+            </button>
+          </PanelSection>
+        )}
+
+        {activeTab === "section" && selectedSection === "gallery" && (
+          <PanelSection title="圖片相簿">
+            {theme.layout.gallery.length === 0 ? (
+              <p className="text-sm text-stone-600">
+                還沒加圖，先加一張。URL 用任何公開 HTTPS 圖片。
+              </p>
+            ) : (
+              <div className="space-y-3">
+                {theme.layout.gallery.map((g, i) => (
+                  <div
+                    key={i}
+                    className="rounded-lg border border-stone-200 p-3 space-y-2 bg-stone-50/50"
+                  >
+                    <div className="flex justify-between items-center">
+                      <p className="text-[10px] uppercase tracking-wider text-stone-500">
+                        #{i + 1}
+                      </p>
+                      <button
+                        type="button"
+                        onClick={() => removeListItem("gallery", i)}
+                        className="text-xs text-red-600 hover:text-red-800"
+                      >
+                        移除
+                      </button>
+                    </div>
+                    <input
+                      type="text"
+                      value={g.url}
+                      onChange={(e) =>
+                        updateListItem<GalleryItem>("gallery", i, { url: e.target.value })
+                      }
+                      placeholder="圖片 URL（https://...）"
+                      className="w-full rounded border border-stone-200 px-2 py-1.5 text-xs font-mono"
+                    />
+                    <input
+                      type="text"
+                      value={g.caption ?? ""}
+                      onChange={(e) =>
+                        updateListItem<GalleryItem>("gallery", i, {
+                          caption: e.target.value || null,
+                        })
+                      }
+                      placeholder="圖說 / caption（選填）"
+                      className="w-full rounded border border-stone-200 px-2 py-1.5 text-sm"
+                    />
+                  </div>
+                ))}
+              </div>
+            )}
+            <button
+              type="button"
+              onClick={() => addListItem("gallery")}
+              disabled={theme.layout.gallery.length >= 12}
+              className="w-full mt-3 rounded-lg border border-dashed border-stone-300 hover:border-emerald-400 hover:bg-emerald-50/50 py-2.5 text-sm text-emerald-800 transition disabled:opacity-40 disabled:cursor-not-allowed"
+            >
+              + 加一張圖{" "}
+              <span className="text-stone-400 text-xs">
+                ({theme.layout.gallery.length}/12)
+              </span>
+            </button>
           </PanelSection>
         )}
 

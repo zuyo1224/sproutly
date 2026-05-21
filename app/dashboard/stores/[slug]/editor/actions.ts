@@ -4,7 +4,7 @@ import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
 
 const HERO_STYLES = new Set(["full-image", "split", "minimal", "magazine"]);
-const SECTION_KEYS = ["hero", "collections", "featured", "journal", "promise", "testimonials", "faq", "visit"];
+const SECTION_KEYS = ["hero", "collections", "featured", "journal", "promise", "testimonials", "faq", "stats", "partners", "gallery", "visit"];
 
 type EditorPayload = {
   primary?: string;
@@ -18,6 +18,9 @@ type EditorPayload = {
     sectionOrder?: string[];
     testimonials?: Array<{ quote: string; author: string; role?: string }>;
     faqItems?: Array<{ question: string; answer: string }>;
+    stats?: Array<{ value: string; label: string }>;
+    partners?: Array<{ name: string; logoUrl: string; href?: string | null }>;
+    gallery?: Array<{ url: string; caption?: string | null }>;
   };
   homepage?: {
     promise?: string;
@@ -124,7 +127,38 @@ export async function saveEditorState(slug: string, payload: EditorPayload) {
           answer: String(f.answer ?? "").slice(0, 2000).trim(),
         }))
         .filter((f) => f.question && f.answer)
-        .slice(0, 20); // 上限 20 個 FAQ
+        .slice(0, 20);
+    }
+    if (payload.layout.stats !== undefined && Array.isArray(payload.layout.stats)) {
+      layoutPatch.stats = payload.layout.stats
+        .filter((s) => s && typeof s === "object")
+        .map((s) => ({
+          value: String(s.value ?? "").slice(0, 30).trim(),
+          label: String(s.label ?? "").slice(0, 60).trim(),
+        }))
+        .filter((s) => s.value && s.label)
+        .slice(0, 6);
+    }
+    if (payload.layout.partners !== undefined && Array.isArray(payload.layout.partners)) {
+      layoutPatch.partners = payload.layout.partners
+        .filter((p) => p && typeof p === "object")
+        .map((p) => ({
+          name: String(p.name ?? "").slice(0, 100).trim(),
+          logoUrl: String(p.logoUrl ?? "").slice(0, 500).trim(),
+          href: p.href ? String(p.href).slice(0, 500).trim() : null,
+        }))
+        .filter((p) => p.name && p.logoUrl)
+        .slice(0, 12);
+    }
+    if (payload.layout.gallery !== undefined && Array.isArray(payload.layout.gallery)) {
+      layoutPatch.gallery = payload.layout.gallery
+        .filter((g) => g && typeof g === "object")
+        .map((g) => ({
+          url: String(g.url ?? "").slice(0, 500).trim(),
+          caption: g.caption ? String(g.caption).slice(0, 200).trim() : null,
+        }))
+        .filter((g) => g.url)
+        .slice(0, 12);
     }
     merged.layout = layoutPatch;
   }

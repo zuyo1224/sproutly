@@ -24,6 +24,9 @@ export type SectionKey =
   | "promise"
   | "testimonials"
   | "faq"
+  | "stats"
+  | "partners"
+  | "gallery"
   | "visit";
 export const DEFAULT_SECTION_ORDER: SectionKey[] = [
   "hero",
@@ -41,6 +44,9 @@ export const SECTION_LABELS: Record<SectionKey, string> = {
   promise: "Our Promise",
   testimonials: "顧客評語",
   faq: "常見問題（FAQ）",
+  stats: "數字 / 成就",
+  partners: "合作夥伴 / 媒體",
+  gallery: "圖片相簿",
   visit: "來訪資訊",
 };
 
@@ -56,6 +62,21 @@ export const OPTIONAL_BLOCK_TYPES: { key: SectionKey; label: string; description
     label: "常見問題",
     description: "Accordion 展開式問答，每筆 click 展開",
   },
+  {
+    key: "stats",
+    label: "數字 / 成就",
+    description: "4 個大數字 +  label，展示成立年數、植物種數、客人數等",
+  },
+  {
+    key: "partners",
+    label: "合作夥伴 / 媒體",
+    description: "6 個 logo 灰階展示，被誰報導 / 跟誰合作",
+  },
+  {
+    key: "gallery",
+    label: "圖片相簿",
+    description: "3 欄圖片網格 + caption，店面 / 商品情境照",
+  },
 ];
 
 export interface Testimonial {
@@ -67,6 +88,22 @@ export interface Testimonial {
 export interface FaqItem {
   question: string;
   answer: string;
+}
+
+export interface StatItem {
+  value: string;       // "2019" / "250+" / "1500"
+  label: string;       // "成立年份" / "植物種數" / "客人累計"
+}
+
+export interface PartnerItem {
+  name: string;
+  logoUrl: string;
+  href: string | null;
+}
+
+export interface GalleryItem {
+  url: string;
+  caption: string | null;
 }
 export type FontKey =
   | "cormorant"
@@ -116,7 +153,10 @@ export interface StoreTheme {
     heroImageSide: "left" | "right";   // split 用
     sectionOrder: SectionKey[];
     testimonials: Testimonial[];       // 顧客評語（optional block）
-    faqItems: FaqItem[];               // 首頁 FAQ（optional block；和現有 about/contact FAQ 分開）
+    faqItems: FaqItem[];               // 首頁 FAQ（optional block）
+    stats: StatItem[];                 // 數字 / 成就（optional block）
+    partners: PartnerItem[];           // 合作夥伴 logos（optional block）
+    gallery: GalleryItem[];            // 圖片相簿（optional block）
   };
 }
 
@@ -282,6 +322,9 @@ function resolveLayout(raw: unknown): StoreTheme["layout"] {
     "promise",
     "testimonials",
     "faq",
+    "stats",
+    "partners",
+    "gallery",
     "visit",
   ]);
   const order: SectionKey[] = [];
@@ -320,6 +363,44 @@ function resolveLayout(raw: unknown): StoreTheme["layout"] {
     })
     .filter((f) => f.question && f.answer);
 
+  // stats sanitize
+  const statsRaw = Array.isArray(l.stats) ? l.stats : [];
+  const stats: StatItem[] = statsRaw
+    .filter((s) => s && typeof s === "object")
+    .map((s) => {
+      const obj = s as Record<string, unknown>;
+      const value = typeof obj.value === "string" ? obj.value.trim() : "";
+      const label = typeof obj.label === "string" ? obj.label.trim() : "";
+      return { value, label };
+    })
+    .filter((s) => s.value && s.label);
+
+  // partners sanitize
+  const partnersRaw = Array.isArray(l.partners) ? l.partners : [];
+  const partners: PartnerItem[] = partnersRaw
+    .filter((p) => p && typeof p === "object")
+    .map((p) => {
+      const obj = p as Record<string, unknown>;
+      const name = typeof obj.name === "string" ? obj.name.trim() : "";
+      const logoUrl = typeof obj.logoUrl === "string" ? obj.logoUrl.trim() : "";
+      const href = typeof obj.href === "string" && obj.href.trim() ? obj.href.trim() : null;
+      return { name, logoUrl, href };
+    })
+    .filter((p) => p.name && p.logoUrl);
+
+  // gallery sanitize
+  const galleryRaw = Array.isArray(l.gallery) ? l.gallery : [];
+  const gallery: GalleryItem[] = galleryRaw
+    .filter((g) => g && typeof g === "object")
+    .map((g) => {
+      const obj = g as Record<string, unknown>;
+      const url = typeof obj.url === "string" ? obj.url.trim() : "";
+      const caption =
+        typeof obj.caption === "string" && obj.caption.trim() ? obj.caption.trim() : null;
+      return { url, caption };
+    })
+    .filter((g) => g.url);
+
   return {
     heroStyle,
     heroSubtitle:
@@ -334,6 +415,9 @@ function resolveLayout(raw: unknown): StoreTheme["layout"] {
     sectionOrder: order,
     testimonials,
     faqItems,
+    stats,
+    partners,
+    gallery,
   };
 }
 

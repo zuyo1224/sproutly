@@ -938,6 +938,160 @@ export default async function StoreHomePage({
             </section>
           )}
 
+        {/* === Stats（optional block：4 個大數字 + label） === */}
+        {theme.layout.sectionOrder.includes("stats") &&
+          theme.layout.stats.length > 0 && (
+            <section className={`py-32 sm:py-44 ${animClass}`} style={{ background: theme.surface }}>
+              <div className="max-w-5xl mx-auto px-8 sm:px-12">
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-y-12 gap-x-8 text-center">
+                  {theme.layout.stats.slice(0, 6).map((s, i) => (
+                    <div key={i} className="space-y-3">
+                      <p
+                        className="text-4xl sm:text-5xl md:text-6xl tabular-nums"
+                        style={{
+                          color: theme.text,
+                          fontFamily: "var(--store-font)",
+                          fontWeight: 400,
+                          letterSpacing: "-0.02em",
+                          lineHeight: 1,
+                        }}
+                      >
+                        {s.value}
+                      </p>
+                      <div
+                        className="mx-auto"
+                        style={{
+                          width: "20px",
+                          height: "1px",
+                          background: theme.accent,
+                          opacity: 0.6,
+                        }}
+                      />
+                      <p
+                        className="text-xs sm:text-sm tracking-[0.2em] uppercase"
+                        style={{ color: theme.textMuted }}
+                      >
+                        {s.label}
+                      </p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </section>
+          )}
+
+        {/* === Partners（optional block：合作夥伴 logos 灰階） === */}
+        {theme.layout.sectionOrder.includes("partners") &&
+          theme.layout.partners.length > 0 && (
+            <section className={`py-32 sm:py-44 ${animClass}`}>
+              <div className="max-w-5xl mx-auto px-8 sm:px-12">
+                <p
+                  className="text-[10px] tracking-[0.4em] uppercase mb-12 text-center"
+                  style={{ color: theme.textMuted }}
+                >
+                  As featured in
+                </p>
+                <div className="flex flex-wrap items-center justify-center gap-8 sm:gap-12 md:gap-16">
+                  {theme.layout.partners.slice(0, 12).map((p, i) => {
+                    const inner = (
+                      // eslint-disable-next-line @next/next/no-img-element
+                      <img
+                        src={p.logoUrl}
+                        alt={p.name}
+                        loading="lazy"
+                        decoding="async"
+                        className="h-8 sm:h-10 md:h-12 w-auto opacity-50 hover:opacity-100 transition duration-500"
+                        style={{ filter: "grayscale(100%)" }}
+                      />
+                    );
+                    return p.href ? (
+                      <a
+                        key={i}
+                        href={p.href}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-block"
+                      >
+                        {inner}
+                      </a>
+                    ) : (
+                      <div key={i} className="inline-block">
+                        {inner}
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            </section>
+          )}
+
+        {/* === Gallery（optional block：3 欄圖片網格） === */}
+        {theme.layout.sectionOrder.includes("gallery") &&
+          theme.layout.gallery.length > 0 && (
+            <section className={`py-40 sm:py-56 ${animClass}`}>
+              <div className="max-w-6xl mx-auto px-6 sm:px-10">
+                <div className="text-center mb-16 sm:mb-20">
+                  <p
+                    className="text-[10px] tracking-[0.4em] uppercase mb-5"
+                    style={{ color: theme.accent }}
+                  >
+                    Gallery
+                  </p>
+                  <h2
+                    className="text-2xl sm:text-3xl md:text-4xl"
+                    style={{
+                      color: theme.text,
+                      fontFamily: "var(--store-font)",
+                      fontWeight: 400,
+                      letterSpacing: "-0.01em",
+                      lineHeight: 1.2,
+                    }}
+                  >
+                    相片紀錄
+                  </h2>
+                  <div
+                    className="mx-auto mt-6"
+                    style={{
+                      width: "32px",
+                      height: "1px",
+                      background: theme.accent,
+                      opacity: 0.5,
+                    }}
+                  />
+                </div>
+
+                <div className="sproutly-stagger grid grid-cols-2 md:grid-cols-3 gap-3 sm:gap-5">
+                  {theme.layout.gallery.slice(0, 12).map((g, i) => (
+                    <figure
+                      key={i}
+                      className="sproutly-card"
+                    >
+                      <div className="sproutly-card-image aspect-square relative">
+                        <Image
+                          src={g.url}
+                          alt={g.caption ?? ""}
+                          fill
+                          sizes="(min-width: 768px) 350px, 50vw"
+                          quality={78}
+                          loading="lazy"
+                          className="object-cover"
+                        />
+                      </div>
+                      {g.caption && (
+                        <figcaption
+                          className="mt-3 text-xs sm:text-sm leading-relaxed"
+                          style={{ color: theme.textMuted }}
+                        >
+                          {g.caption}
+                        </figcaption>
+                      )}
+                    </figure>
+                  ))}
+                </div>
+              </div>
+            </section>
+          )}
+
         {/* === Visit === */}
         {(store.address || businessHoursText) && (
           <section
