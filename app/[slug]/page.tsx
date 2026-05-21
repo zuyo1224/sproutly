@@ -471,31 +471,62 @@ export default async function StoreHomePage({
         })()}
 
         {/* === 選物提案 === */}
-        {visibleCollections.length > 0 && (
+        {visibleCollections.length > 0 && (() => {
+          const introPos = theme.layout.freePositions["collection-intro"] ?? null;
+          const introFree = introPos !== null;
+          return (
           <section
-            className={`py-40 sm:py-56 ${animClass}`}
+            className={`relative py-40 sm:py-56 ${animClass} ${introFree ? "min-h-[60vh]" : ""}`}
             data-edit-target="collections"
             data-edit-label="選物提案"
           >
             <div className="max-w-5xl mx-auto px-8 sm:px-12">
-              <h2
-                data-edit-text
-                data-edit-field="collectionsIntro"
-                className="text-xl sm:text-2xl text-center max-w-xl mx-auto mb-32 leading-[1.9]"
-                style={{
-                  color: theme.text,
-                  fontFamily: "var(--store-font)",
-                  fontWeight: 400,
-                  wordBreak: "keep-all",
-                  overflowWrap: "break-word",
-                }}
-              >
-                {introLines.map((line, i) => (
-                  <span key={i} className="block">
-                    {line}
-                  </span>
-                ))}
-              </h2>
+              {introFree ? (
+                <h2
+                  data-edit-text
+                  data-edit-field="collectionsIntro"
+                  data-edit-drag="collection-intro"
+                  className="absolute text-xl sm:text-2xl text-center leading-[1.9]"
+                  style={{
+                    left: `${introPos!.x * 100}%`,
+                    top: `${introPos!.y * 100}%`,
+                    transform: "translate(-50%, -50%)",
+                    maxWidth: "min(560px, 80vw)",
+                    width: "100%",
+                    color: theme.text,
+                    fontFamily: "var(--store-font)",
+                    fontWeight: 400,
+                    wordBreak: "keep-all",
+                    overflowWrap: "break-word",
+                  }}
+                >
+                  {introLines.map((line, i) => (
+                    <span key={i} className="block">
+                      {line}
+                    </span>
+                  ))}
+                </h2>
+              ) : (
+                <h2
+                  data-edit-text
+                  data-edit-field="collectionsIntro"
+                  data-edit-drag="collection-intro"
+                  className="text-xl sm:text-2xl text-center max-w-xl mx-auto mb-32 leading-[1.9]"
+                  style={{
+                    color: theme.text,
+                    fontFamily: "var(--store-font)",
+                    fontWeight: 400,
+                    wordBreak: "keep-all",
+                    overflowWrap: "break-word",
+                  }}
+                >
+                  {introLines.map((line, i) => (
+                    <span key={i} className="block">
+                      {line}
+                    </span>
+                  ))}
+                </h2>
+              )}
 
               <div className="sproutly-stagger grid grid-cols-2 gap-x-6 sm:gap-x-12 gap-y-20 sm:gap-y-24">
                 {visibleCollections.map((c) => (
@@ -544,7 +575,8 @@ export default async function StoreHomePage({
               </div>
             </div>
           </section>
-        )}
+          );
+        })()}
 
         {/* === 本月選物 === */}
         {featuredProducts && featuredProducts.length > 0 && (
