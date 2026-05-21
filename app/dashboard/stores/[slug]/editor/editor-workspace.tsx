@@ -20,6 +20,7 @@ import {
 } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import { saveEditorState } from "./actions";
+import { AssetPicker } from "@/app/_components/asset-picker";
 
 type SectionKey =
   | "hero"
@@ -111,6 +112,13 @@ export function EditorWorkspace({
   const [viewport, setViewport] = useState<"desktop" | "tablet" | "mobile">("desktop");
   const [autoSaveEnabled, setAutoSaveEnabled] = useState(true);
   const autoSaveTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  // AssetPicker：null = closed；其他 = 開啟中對應目標
+  const [assetPickerMode, setAssetPickerMode] = useState<
+    | null
+    | { kind: "gallery-add" }
+    | { kind: "gallery-replace"; index: number }
+    | { kind: "partner-logo"; index: number }
+  >(null);
 
   // Undo / Redo state — past / future stacks of theme snapshots
   const pastRef = useRef<EditorTheme[]>([]);
@@ -300,6 +308,27 @@ export function EditorWorkspace({
   function removeListItem(field: "stats" | "partners" | "gallery", idx: number) {
     const cur = theme.layout[field] as Array<unknown>;
     updateLayout({ [field]: cur.filter((_, i) => i !== idx) } as Partial<EditorTheme["layout"]>);
+  }
+
+  function handleAssetSelected(url: string) {
+    if (!assetPickerMode) return;
+    if (assetPickerMode.kind === "gallery-add") {
+      if (theme.layout.gallery.length >= 12) return;
+      updateLayout({
+        gallery: [...theme.layout.gallery, { url, caption: null }],
+      });
+    } else if (assetPickerMode.kind === "gallery-replace") {
+      const next = [...theme.layout.gallery];
+      next[assetPickerMode.index] = { ...next[assetPickerMode.index], url };
+      updateLayout({ gallery: next });
+    } else if (assetPickerMode.kind === "partner-logo") {
+      const next = [...theme.layout.partners];
+      next[assetPickerMode.index] = {
+        ...next[assetPickerMode.index],
+        logoUrl: url,
+      };
+      updateLayout({ partners: next });
+    }
   }
 
   function handleSave() {
@@ -861,15 +890,27 @@ export function EditorWorkspace({
                       placeholder="名稱（給無障礙 alt 用）"
                       className="w-full rounded border border-stone-200 px-2 py-1.5 text-sm"
                     />
-                    <input
-                      type="text"
-                      value={p.logoUrl}
-                      onChange={(e) =>
-                        updateListItem<PartnerItem>("partners", i, { logoUrl: e.target.value })
-                      }
-                      placeholder="Logo URL（https://...）"
-                      className="w-full rounded border border-stone-200 px-2 py-1.5 text-xs font-mono"
-                    />
+                    <div className="flex gap-1.5">
+                      <input
+                        type="text"
+                        value={p.logoUrl}
+                        onChange={(e) =>
+                          updateListItem<PartnerItem>("partners", i, { logoUrl: e.target.value })
+                        }
+                        placeholder="Logo URL（https://...）"
+                        className="flex-1 rounded border border-stone-200 px-2 py-1.5 text-xs font-mono"
+                      />
+                      <button
+                        type="button"
+                        onClick={() =>
+                          setAssetPickerMode({ kind: "partner-logo", index: i })
+                        }
+                        title="從圖庫挑"
+                        className="px-2 rounded bg-emerald-700 text-white text-xs hover:bg-emerald-800 transition"
+                      >
+                        ✦
+                      </button>
+                    </div>
                     <input
                       type="text"
                       value={p.href ?? ""}
@@ -948,17 +989,27 @@ export function EditorWorkspace({
                 ))}
               </div>
             )}
-            <button
-              type="button"
-              onClick={() => addListItem("gallery")}
-              disabled={theme.layout.gallery.length >= 12}
-              className="w-full mt-3 rounded-lg border border-dashed border-stone-300 hover:border-emerald-400 hover:bg-emerald-50/50 py-2.5 text-sm text-emerald-800 transition disabled:opacity-40 disabled:cursor-not-allowed"
-            >
-              + 加一張圖{" "}
-              <span className="text-stone-400 text-xs">
-                ({theme.layout.gallery.length}/12)
-              </span>
-            </button>
+            <div className="grid grid-cols-2 gap-2 mt-3">
+              <button
+                type="button"
+                onClick={() => addListItem("gallery")}
+                disabled={theme.layout.gallery.length >= 12}
+                className="rounded-lg border border-dashed border-stone-300 hover:border-emerald-400 hover:bg-emerald-50/50 py-2.5 text-xs text-emerald-800 transition disabled:opacity-40 disabled:cursor-not-allowed"
+              >
+                + 貼 URL
+              </button>
+              <button
+                type="button"
+                onClick={() => setAssetPickerMode({ kind: "gallery-add" })}
+                disabled={theme.layout.gallery.length >= 12}
+                className="rounded-lg bg-emerald-700 text-white py-2.5 text-xs hover:bg-emerald-800 transition disabled:opacity-40 disabled:cursor-not-allowed"
+              >
+                ✦ 從圖庫挑
+              </button>
+            </div>
+            <p className="mt-2 text-[10px] text-stone-500 text-center">
+              {theme.layout.gallery.length}/12 張 · 圖庫由 Pexels 提供商用免費
+            </p>
           </PanelSection>
         )}
 
@@ -1189,6 +1240,18 @@ export function EditorWorkspace({
           </PanelSection>
         )}
       </aside>
+
+      {/* === Asset Picker modal === */}
+      <AssetPicker
+        open={assetPickerMode !== null}
+        onClose={() => setAssetPickerMode(null)}
+        onSelect={handleAssetSelected}
+        title={
+          assetPickerMode?.kind === "partner-logo"
+            ? "從圖庫挑 Logo（建議搜 brand / logo）"
+            : "從圖庫挑圖"
+        }
+      />
     </div>
   );
 }
