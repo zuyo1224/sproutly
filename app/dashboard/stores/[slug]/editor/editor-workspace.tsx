@@ -224,6 +224,10 @@ export function EditorWorkspace({
           updateHomepage({ visitTitle: value });
         } else if (msg.field === "collectionsIntro") {
           updateHomepage({ collectionsIntro: value });
+        } else if (msg.field === "heroEyebrow") {
+          updateLayout({ heroEyebrow: value || null });
+        } else if (msg.field === "heroSubtitle") {
+          updateLayout({ heroSubtitle: value || null });
         }
       }
     }

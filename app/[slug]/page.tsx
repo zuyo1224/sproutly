@@ -220,6 +220,8 @@ export default async function StoreHomePage({
                 >
                   {theme.layout.heroEyebrow && (
                     <p
+                      data-edit-text
+                      data-edit-field="heroEyebrow"
                       className={`text-[10px] tracking-[0.4em] uppercase mb-6 ${fade1}`}
                       style={{ color: theme.accent }}
                     >
@@ -247,6 +249,8 @@ export default async function StoreHomePage({
                   </h1>
                   {theme.layout.heroSubtitle && (
                     <p
+                      data-edit-text
+                      data-edit-field="heroSubtitle"
                       className={`mt-6 text-base sm:text-lg leading-[1.9] max-w-md ${fade2}`}
                       style={{ color: theme.textMuted }}
                     >
@@ -427,6 +431,8 @@ export default async function StoreHomePage({
           >
             <div className="max-w-5xl mx-auto px-8 sm:px-12">
               <h2
+                data-edit-text
+                data-edit-field="collectionsIntro"
                 className="text-xl sm:text-2xl text-center max-w-xl mx-auto mb-32 leading-[1.9]"
                 style={{
                   color: theme.text,
