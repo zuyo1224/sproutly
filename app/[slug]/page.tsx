@@ -456,26 +456,89 @@ export default async function StoreHomePage({
           </div>
         </section>
 
-        {/* === Promise === */}
+        {/* === Promise（雜誌風 quote card） === */}
         {promiseLines.length > 0 && (
           <section className={`py-40 sm:py-56 ${animClass}`}>
-            <div className="max-w-xl mx-auto px-8 sm:px-12 text-center">
-              <p
-                className="text-base sm:text-lg leading-[2.4]"
+            <div className="max-w-3xl mx-auto px-6 sm:px-12">
+              <figure
+                className="relative px-8 py-16 sm:px-16 sm:py-24 text-center rounded-sm"
                 style={{
-                  color: theme.text,
-                  fontFamily: "var(--store-font)",
-                  fontWeight: 400,
-                  wordBreak: "keep-all",
-                  overflowWrap: "break-word",
+                  background: theme.surface,
+                  boxShadow: "var(--sproutly-elev-3)",
+                  border: `1px solid ${theme.border}`,
                 }}
               >
-                {promiseLines.map((line, i) => (
-                  <span key={i} className="block">
-                    {line}
-                  </span>
-                ))}
-              </p>
+                {/* 大引號 visual */}
+                <span
+                  aria-hidden="true"
+                  className="absolute select-none pointer-events-none"
+                  style={{
+                    top: "1.5rem",
+                    left: "2rem",
+                    fontFamily: "var(--store-font)",
+                    fontSize: "5rem",
+                    lineHeight: 1,
+                    color: theme.accent,
+                    opacity: 0.18,
+                    fontWeight: 400,
+                  }}
+                >
+                  &ldquo;
+                </span>
+                <span
+                  aria-hidden="true"
+                  className="absolute select-none pointer-events-none"
+                  style={{
+                    bottom: "0.5rem",
+                    right: "2rem",
+                    fontFamily: "var(--store-font)",
+                    fontSize: "5rem",
+                    lineHeight: 1,
+                    color: theme.accent,
+                    opacity: 0.18,
+                    fontWeight: 400,
+                  }}
+                >
+                  &rdquo;
+                </span>
+
+                {/* 上方 eyebrow */}
+                <p
+                  className="text-[10px] tracking-[0.4em] uppercase mb-8 relative z-10"
+                  style={{ color: theme.accent }}
+                >
+                  Our Promise
+                </p>
+
+                <blockquote
+                  className="text-lg sm:text-xl md:text-2xl leading-[2] relative z-10"
+                  style={{
+                    color: theme.text,
+                    fontFamily: "var(--store-font)",
+                    fontWeight: 400,
+                    letterSpacing: "0.01em",
+                    wordBreak: "keep-all",
+                    overflowWrap: "break-word",
+                  }}
+                >
+                  {promiseLines.map((line, i) => (
+                    <span key={i} className="block">
+                      {line}
+                    </span>
+                  ))}
+                </blockquote>
+
+                {/* 底部裝飾線 */}
+                <div
+                  className="mx-auto mt-10 relative z-10"
+                  style={{
+                    width: "48px",
+                    height: "1px",
+                    background: theme.accent,
+                    opacity: 0.4,
+                  }}
+                />
+              </figure>
             </div>
           </section>
         )}
@@ -487,16 +550,33 @@ export default async function StoreHomePage({
             style={{ background: theme.surface }}
           >
             <div className="max-w-xl mx-auto px-8 sm:px-12 text-center">
+              <p
+                className="text-[10px] tracking-[0.4em] uppercase mb-5"
+                style={{ color: theme.accent }}
+              >
+                Visit
+              </p>
               <h2
-                className="text-xl sm:text-2xl mb-12"
+                className="text-2xl sm:text-3xl md:text-4xl mb-4"
                 style={{
                   color: theme.text,
                   fontFamily: "var(--store-font)",
                   fontWeight: 400,
+                  letterSpacing: "-0.01em",
+                  lineHeight: 1.2,
                 }}
               >
                 {visitTitle}
               </h2>
+              <div
+                className="mx-auto mb-12"
+                style={{
+                  width: "32px",
+                  height: "1px",
+                  background: theme.accent,
+                  opacity: 0.5,
+                }}
+              />
               {store.address && (
                 <p
                   className="text-base leading-loose"
