@@ -106,8 +106,43 @@ export default async function PublicProductPage({
   const inStock = product.stock === null || product.stock > 0;
   const maxQty = product.stock !== null ? Math.min(product.stock, 99) : 99;
 
+  const BASE_URL =
+    process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/$/, "") ??
+    "https://sproutly-drab.vercel.app";
+
+  const productJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "Product",
+    name: product.name,
+    description: product.description ?? undefined,
+    image: images.length > 0 ? images : undefined,
+    sku: product.id,
+    brand: {
+      "@type": "Brand",
+      name: store.name,
+    },
+    offers: {
+      "@type": "Offer",
+      url: `${BASE_URL}/${slug}/products/${product.id}`,
+      priceCurrency: product.currency,
+      price: (product.price_cents / 100).toFixed(2),
+      availability: inStock
+        ? "https://schema.org/InStock"
+        : "https://schema.org/OutOfStock",
+      seller: {
+        "@type": "Organization",
+        name: store.name,
+      },
+    },
+  };
+
   return (
     <main className="max-w-6xl mx-auto px-6 py-12">
+      <script
+        type="application/ld+json"
+        // eslint-disable-next-line react/no-danger
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(productJsonLd) }}
+      />
       <Link
         href={`/${slug}/shop`}
         className="sproutly-link inline-block mb-10 text-[11px] tracking-[0.3em] uppercase"

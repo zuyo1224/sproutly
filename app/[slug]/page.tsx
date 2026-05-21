@@ -75,8 +75,37 @@ export default async function StoreHomePage({
 
   const animClass = theme.homepage.enableAnimation ? "sproutly-subtle-fade" : "";
 
+  const BASE_URL =
+    process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/$/, "") ??
+    "https://sproutly-drab.vercel.app";
+
+  const storeJsonLd: Record<string, unknown> = {
+    "@context": "https://schema.org",
+    "@type": "Store",
+    name: store.name,
+    url: `${BASE_URL}/${slug}`,
+  };
+  if (store.description) storeJsonLd.description = store.description;
+  if (theme.heroUrl) storeJsonLd.image = theme.heroUrl;
+  if (store.logo_url) storeJsonLd.logo = store.logo_url;
+  if (store.contact_phone) storeJsonLd.telephone = store.contact_phone;
+  if (store.contact_email) storeJsonLd.email = store.contact_email;
+  if (store.address) {
+    storeJsonLd.address = {
+      "@type": "PostalAddress",
+      streetAddress: store.address,
+      addressCountry: "TW",
+    };
+  }
+  if (businessHoursText) storeJsonLd.openingHours = businessHoursText;
+
   return (
     <>
+      <script
+        type="application/ld+json"
+        // eslint-disable-next-line react/no-danger
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(storeJsonLd) }}
+      />
       <style>{`
         @keyframes sproutly-subtle-fade {
           from { opacity: 0; transform: translateY(24px); }
