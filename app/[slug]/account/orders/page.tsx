@@ -152,103 +152,115 @@ export default async function CustomerOrdersPage({
             const orderItems = items.filter((i) => i.order_id === order.id);
             const shortId = order.id.slice(0, 8).toUpperCase();
             return (
-              <li
-                key={order.id}
-                className="rounded-2xl p-7"
-                style={{
-                  background: theme.surface,
-                  border: `1px solid ${theme.border}`,
-                }}
-              >
-                <div className="flex items-start justify-between gap-4 mb-5">
-                  <div className="min-w-0">
-                    <p
-                      className="text-[10px] tracking-[0.4em] uppercase mb-2"
-                      style={{ color: theme.accent }}
-                    >
-                      #{shortId}
-                    </p>
-                    <p
-                      className="text-sm"
-                      style={{ color: theme.textMuted }}
-                    >
-                      {formatDate(order.created_at)}
-                    </p>
-                  </div>
-                  <div className="text-right">
-                    <span
-                      className="inline-block text-[10px] tracking-[0.3em] uppercase px-3 py-1 rounded-full"
-                      style={{
-                        background: theme.bg,
-                        color: theme.text,
-                        border: `1px solid ${theme.border}`,
-                      }}
-                    >
-                      {STATUS_LABELS[order.status] ?? order.status}
-                    </span>
-                  </div>
-                </div>
-
-                <ul
-                  className="space-y-2.5 pb-5 mb-5 border-b text-sm leading-[1.8]"
+              <li key={order.id}>
+                <Link
+                  href={`/${slug}/account/orders/${order.id}`}
+                  className="block rounded-2xl p-7 transition hover:opacity-90"
                   style={{
-                    borderColor: theme.border,
-                    color: theme.text,
+                    background: theme.surface,
+                    border: `1px solid ${theme.border}`,
                   }}
                 >
-                  {orderItems.map((item, i) => (
-                    <li key={i} className="flex justify-between gap-4">
-                      <span className="min-w-0 truncate">
-                        {item.name_snapshot}
-                        <span
-                          className="ml-2"
-                          style={{ color: theme.textMuted }}
-                        >
-                          × {item.quantity}
-                        </span>
-                      </span>
-                      <span
-                        className="tabular-nums whitespace-nowrap"
+                  <div className="flex items-start justify-between gap-4 mb-5">
+                    <div className="min-w-0">
+                      <p
+                        className="text-[10px] tracking-[0.4em] uppercase mb-2"
+                        style={{ color: theme.accent }}
+                      >
+                        #{shortId}
+                      </p>
+                      <p
+                        className="text-sm"
                         style={{ color: theme.textMuted }}
                       >
-                        {formatPrice(
-                          item.price_cents_snapshot * item.quantity,
-                          order.currency
-                        )}
-                      </span>
-                    </li>
-                  ))}
-                </ul>
-
-                <div className="flex items-end justify-between gap-4">
-                  <div className="text-xs space-y-1" style={{ color: theme.textMuted }}>
-                    {order.payment_method && (
-                      <p>
-                        付款方式：
-                        {PAYMENT_LABELS[order.payment_method] ?? order.payment_method}
+                        {formatDate(order.created_at)}
                       </p>
-                    )}
-                    <p>
-                      付款狀態：
-                      {order.payment_status === "paid"
-                        ? "已付款"
-                        : order.payment_status === "refunded"
-                          ? "已退款"
-                          : "未付款"}
-                    </p>
+                    </div>
+                    <div className="text-right">
+                      <span
+                        className="inline-block text-[10px] tracking-[0.3em] uppercase px-3 py-1 rounded-full"
+                        style={{
+                          background: theme.bg,
+                          color: theme.text,
+                          border: `1px solid ${theme.border}`,
+                        }}
+                      >
+                        {STATUS_LABELS[order.status] ?? order.status}
+                      </span>
+                    </div>
                   </div>
-                  <p
-                    className="text-xl sm:text-2xl tabular-nums"
+
+                  <ul
+                    className="space-y-2.5 pb-5 mb-5 border-b text-sm leading-[1.8]"
                     style={{
+                      borderColor: theme.border,
                       color: theme.text,
-                      fontFamily: "var(--store-font)",
-                      fontWeight: 400,
-                      letterSpacing: "-0.01em",
                     }}
                   >
-                    {formatPrice(order.total_cents, order.currency)}
+                    {orderItems.map((item, i) => (
+                      <li key={i} className="flex justify-between gap-4">
+                        <span className="min-w-0 truncate">
+                          {item.name_snapshot}
+                          <span
+                            className="ml-2"
+                            style={{ color: theme.textMuted }}
+                          >
+                            × {item.quantity}
+                          </span>
+                        </span>
+                        <span
+                          className="tabular-nums whitespace-nowrap"
+                          style={{ color: theme.textMuted }}
+                        >
+                          {formatPrice(
+                            item.price_cents_snapshot * item.quantity,
+                            order.currency
+                          )}
+                        </span>
+                      </li>
+                    ))}
+                  </ul>
+
+                  <div className="flex items-end justify-between gap-4">
+                    <div className="text-xs space-y-1" style={{ color: theme.textMuted }}>
+                      {order.payment_method && (
+                        <p>
+                          付款方式：
+                          {PAYMENT_LABELS[order.payment_method] ?? order.payment_method}
+                        </p>
+                      )}
+                      <p>
+                        付款狀態：
+                        {order.payment_status === "paid"
+                          ? "已付款"
+                          : order.payment_status === "refunded"
+                            ? "已退款"
+                            : "未付款"}
+                      </p>
+                    </div>
+                    <p
+                      className="text-xl sm:text-2xl tabular-nums"
+                      style={{
+                        color: theme.text,
+                        fontFamily: "var(--store-font)",
+                        fontWeight: 400,
+                        letterSpacing: "-0.01em",
+                      }}
+                    >
+                      {formatPrice(order.total_cents, order.currency)}
+                    </p>
+                  </div>
+
+                  <p
+                    className="mt-5 pt-5 border-t text-[10px] tracking-[0.3em] uppercase text-right"
+                    style={{
+                      borderColor: theme.border,
+                      color: theme.accent,
+                    }}
+                  >
+                    查看訂單 →
                   </p>
-                </div>
+                </Link>
               </li>
             );
           })}
