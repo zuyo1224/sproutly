@@ -15,6 +15,7 @@ import { FavoritesCounter } from "@/app/_components/favorite-button";
 import { CartIcon } from "@/app/_components/cart-icon";
 import { SearchOverlay } from "@/app/_components/search-overlay";
 import { EditorClickBridge } from "@/app/_components/editor-click-bridge";
+import { StoreNavLink } from "@/app/_components/store-nav-link";
 
 const RESERVED = new Set([
   "api",
@@ -203,6 +204,47 @@ export default async function PublicStoreLayout({
       }}
     >
       <style>{`
+        /* Skip link：鍵盤 focus 才出現，跳過 nav 到主要內容 */
+        .sproutly-skip {
+          position: fixed;
+          top: -100%;
+          left: 1rem;
+          z-index: 100;
+          padding: 0.625rem 1rem;
+          background: var(--store-text, #1a1a1a);
+          color: var(--store-bg, #ffffff);
+          font-size: 0.8125rem;
+          letter-spacing: 0.06em;
+          border-radius: 9999px;
+          text-decoration: none;
+          box-shadow: var(--sproutly-elev-2);
+          transition: top 0.25s cubic-bezier(0.22, 1, 0.36, 1);
+        }
+        .sproutly-skip:focus-visible {
+          top: 1rem;
+          outline: 2px solid var(--store-accent, currentColor);
+          outline-offset: 2px;
+        }
+
+        /* 全站 focus-visible：鍵盤 tab 才出現，滑鼠點不出現（不擾視覺） */
+        a:focus-visible,
+        button:focus-visible,
+        [tabindex]:focus-visible {
+          outline: 2px solid var(--store-accent, currentColor);
+          outline-offset: 3px;
+          border-radius: 4px;
+        }
+        /* .sproutly-btn 已有 padding/rounded，focus offset 略加大避免吃進 button 內 */
+        .sproutly-btn:focus-visible {
+          outline: 2px solid var(--store-accent, currentColor);
+          outline-offset: 4px;
+        }
+        /* input / textarea / select 自己已有 :focus border + ring，這裡 :focus-visible 額外加 outline 給鍵盤 */
+        .sproutly-input:focus-visible {
+          outline: 2px solid var(--store-accent, currentColor);
+          outline-offset: 2px;
+        }
+
         /* 全站平滑滾動 */
         html { scroll-behavior: smooth; }
 
@@ -579,6 +621,11 @@ export default async function PublicStoreLayout({
       {/* iframe edit mode bridge（只在 ?edit=1 啟動） */}
       <EditorClickBridge />
 
+      {/* a11y：鍵盤跳過 nav 到主內容 */}
+      <a href="#main-content" className="sproutly-skip">
+        跳至主要內容
+      </a>
+
       {/* 頂部滾動進度（用 store accent 色） */}
       <div
         className="sproutly-scroll-progress"
@@ -611,16 +658,16 @@ export default async function PublicStoreLayout({
               {store.name}
             </span>
           </Link>
-          <nav className="flex items-center gap-1 overflow-x-auto">
+          <nav aria-label="店面主導覽" className="flex items-center gap-1 overflow-x-auto">
             {navItems.map((item) => (
-              <Link
+              <StoreNavLink
                 key={item.href}
                 href={item.href}
-                className="px-3 sm:px-4 py-2 text-sm transition whitespace-nowrap hover:opacity-100"
-                style={{ color: theme.textMuted }}
-              >
-                {item.label}
-              </Link>
+                label={item.label}
+                isHome={item.href === `/${slug}`}
+                colorMuted={theme.textMuted}
+                colorActive={theme.text}
+              />
             ))}
             <Link
               href={accountHref}
@@ -667,7 +714,8 @@ export default async function PublicStoreLayout({
         </div>
       </header>
 
-      <div className="flex-1">{children}</div>
+      {/* 各 page 內部會包自己的 <main>，這裡用 div 避免 nested main */}
+      <div id="main-content" className="flex-1">{children}</div>
 
       <footer
         className="border-t mt-16"
