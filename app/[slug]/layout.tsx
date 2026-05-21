@@ -303,17 +303,58 @@ export default async function PublicStoreLayout({
           opacity: 1;
         }
 
-        /* 商品 card：hover 圖 zoom + 暗化 + 文字字距開 */
+        /* Layered elevation tokens（給卡片 / hero / button 共用） */
+        :root {
+          --sproutly-elev-1:
+            0 1px 2px rgba(0, 0, 0, 0.04),
+            0 2px 8px -2px rgba(0, 0, 0, 0.04);
+          --sproutly-elev-2:
+            0 1px 2px rgba(0, 0, 0, 0.04),
+            0 4px 14px -4px rgba(0, 0, 0, 0.06),
+            0 16px 32px -16px rgba(0, 0, 0, 0.06);
+          --sproutly-elev-3:
+            0 2px 4px rgba(0, 0, 0, 0.05),
+            0 12px 28px -8px rgba(0, 0, 0, 0.08),
+            0 32px 56px -24px rgba(0, 0, 0, 0.12);
+          --sproutly-elev-4:
+            0 4px 8px rgba(0, 0, 0, 0.06),
+            0 24px 40px -12px rgba(0, 0, 0, 0.12),
+            0 48px 80px -32px rgba(0, 0, 0, 0.18);
+        }
+
+        /* 商品 card：layered shadow + hover lift + 圖 zoom + 暗化 + 文字字距開 */
         .sproutly-card { display: block; }
         .sproutly-card .sproutly-card-image {
           overflow: hidden;
           position: relative;
+          border-radius: 4px;
+          box-shadow: var(--sproutly-elev-2);
+          transition: box-shadow 0.7s cubic-bezier(0.22, 1, 0.36, 1),
+                      transform 0.7s cubic-bezier(0.22, 1, 0.36, 1);
+        }
+        .sproutly-card:hover .sproutly-card-image {
+          box-shadow: var(--sproutly-elev-4);
+          transform: translateY(-6px);
         }
         .sproutly-card .sproutly-card-image img {
           transition: transform 2.4s cubic-bezier(0.22, 1, 0.36, 1);
         }
         .sproutly-card:hover .sproutly-card-image img {
           transform: scale(1.05);
+        }
+        /* image inner 漸層暗化 + hover 推進 */
+        .sproutly-card .sproutly-card-image::before {
+          content: "";
+          position: absolute;
+          inset: 0;
+          background: linear-gradient(
+            to bottom,
+            rgba(0, 0, 0, 0) 60%,
+            rgba(0, 0, 0, 0.08) 100%
+          );
+          pointer-events: none;
+          z-index: 1;
+          opacity: 0.7;
         }
         .sproutly-card .sproutly-card-image::after {
           content: "";
@@ -322,9 +363,10 @@ export default async function PublicStoreLayout({
           background: rgba(0, 0, 0, 0);
           transition: background 0.6s cubic-bezier(0.22, 1, 0.36, 1);
           pointer-events: none;
+          z-index: 2;
         }
         .sproutly-card:hover .sproutly-card-image::after {
-          background: rgba(0, 0, 0, 0.08);
+          background: rgba(0, 0, 0, 0.06);
         }
         .sproutly-card .sproutly-card-title {
           transition: letter-spacing 0.6s cubic-bezier(0.22, 1, 0.36, 1),
@@ -366,6 +408,7 @@ export default async function PublicStoreLayout({
         @media (prefers-reduced-motion: reduce) {
           html { scroll-behavior: auto; }
           .sproutly-link::after,
+          .sproutly-card .sproutly-card-image,
           .sproutly-card .sproutly-card-image img,
           .sproutly-card .sproutly-card-image::after,
           .sproutly-card .sproutly-card-title,
