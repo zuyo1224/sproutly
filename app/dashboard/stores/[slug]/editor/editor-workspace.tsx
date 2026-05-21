@@ -117,6 +117,8 @@ export function EditorWorkspace({
   const autoSaveTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   // 全螢幕預覽（隱藏 sidebar / panel，iframe 直接 100% 寬高）
   const [fullscreen, setFullscreen] = useState(false);
+  // 240 second sidebar 變 floating popover；null = 關閉
+  const [popover, setPopover] = useState<SelectedTab | null>(null);
   // 修 dnd-kit hydration error：useSortable 用 counter 生 ID，SSR / client 不一致
   // → 只在 client mount 後才 render DndContext / SortableContext
   const [mounted, setMounted] = useState(false);
@@ -241,6 +243,17 @@ export function EditorWorkspace({
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [theme, dirty, autoSaveEnabled]);
+
+  // Esc 關 floating popover
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape" && popover) {
+        setPopover(null);
+      }
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [popover]);
 
   // Cmd/Ctrl+Z / Cmd/Ctrl+Shift+Z keyboard shortcut
   useEffect(() => {
@@ -591,11 +604,11 @@ export function EditorWorkspace({
         </div>
       </header>
 
-      {/* === 主編輯區（4 column；fullscreen 模式下只剩 canvas） === */}
-      <div className={`grid flex-1 overflow-hidden ${
+      {/* === 主編輯區（3 column；240 sidebar 改成 floating popover；fullscreen 只剩 canvas） === */}
+      <div className={`grid flex-1 overflow-hidden relative ${
         fullscreen
           ? "grid-cols-1"
-          : "grid-cols-1 lg:grid-cols-[80px_240px_1fr_300px]"
+          : "grid-cols-1 lg:grid-cols-[80px_1fr_320px]"
       }`}>
       {/* === Icon nav（最左；fullscreen 時隱藏）=== */}
       {!fullscreen && (
@@ -610,9 +623,12 @@ export function EditorWorkspace({
           <button
             key={tab}
             type="button"
-            onClick={() => setActiveTab(tab)}
+            onClick={() => {
+              setActiveTab(tab);
+              setPopover((cur) => (cur === tab ? null : tab));
+            }}
             className={`w-12 h-12 rounded-lg flex items-center justify-center transition group relative ${
-              activeTab === tab
+              popover === tab
                 ? "bg-emerald-50 text-emerald-900"
                 : "text-stone-500 hover:text-emerald-900 hover:bg-stone-50"
             }`}
@@ -620,7 +636,7 @@ export function EditorWorkspace({
             aria-label={label}
           >
             {icon}
-            {activeTab === tab && (
+            {popover === tab && (
               <span className="absolute left-0 top-1/2 -translate-y-1/2 w-0.5 h-6 bg-emerald-600 rounded-r" />
             )}
           </button>
@@ -648,9 +664,18 @@ export function EditorWorkspace({
       </nav>
       )}
 
-      {/* === 左 sidebar：tab content（fullscreen 時隱藏）=== */}
-      {!fullscreen && (
-      <aside className="bg-white border-r border-stone-200 flex flex-col overflow-y-auto">
+      {/* === Floating popover sidebar（從 icon nav 滑出）=== */}
+      {!fullscreen && popover && (
+      <aside
+        className="absolute top-0 bottom-0 left-[80px] w-[280px] z-30 bg-white border-r border-stone-200 flex flex-col overflow-y-auto shadow-2xl shadow-stone-300/60"
+        style={{ animation: "sproutly-popover-slide 0.25s cubic-bezier(0.22,1,0.36,1) both" }}
+      >
+        <style>{`
+          @keyframes sproutly-popover-slide {
+            from { opacity: 0; transform: translateX(-12px); }
+            to { opacity: 1; transform: translateX(0); }
+          }
+        `}</style>
         <div className="p-4 border-b border-stone-100">
           <h2 className="text-sm font-semibold text-emerald-950">
             {activeTab === "section"
