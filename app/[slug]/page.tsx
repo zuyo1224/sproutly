@@ -146,21 +146,82 @@ export default async function StoreHomePage({
           if (heroStyle === "full-image" && theme.heroUrl) {
             const pos = theme.layout.freePositions["hero-tagline"] ?? null;
             const freePositioned = pos !== null;
-            const zm = theme.layout.heroZoomMobile;
             const zt = theme.layout.heroZoomTablet;
             const zd = theme.layout.heroZoomDesktop;
             return (
-              <section
-                className="relative h-screen overflow-hidden"
-                data-edit-target="hero"
-                data-edit-label="Hero 區段"
-              >
-                {/* Per-viewport zoom：mobile / tablet / desktop 各自一個 scale 值，
-                    用 CSS media query 切換。同一張圖在不同寬度套不同裁切量，
-                    避免單一 zoom 套到所有 device 時頂部/底部漏出米色 padding。 */}
+              <>
+                {/* === 手機版（< 640px）：完全不同 layout — 短 banner + 文字另一段在下面 ===
+                    桌機那套 cover + scale 在窄屏永遠會漏米色（圖是橫長 landscape，
+                    container 是 portrait，cover 必裁掉左右、保留上下完整圖高 = 米色全露）。
+                    根本解：手機放棄 full-bleed overlay，改成 banner（短）+ 文字段，
+                    banner 用 cover 在矮容器上自然裁掉米色，文字在純色區好讀。 */}
+                <section
+                  className="block sm:hidden"
+                  data-edit-target="hero"
+                  data-edit-label="Hero 區段（手機）"
+                >
+                  <div className="relative h-[42vh] overflow-hidden">
+                    {/* 加 8% 上下溢出進一步保險裁掉圖片自帶的米色 padding */}
+                    <div
+                      className="absolute -top-[8%] -bottom-[8%] left-0 right-0"
+                      role="img"
+                      aria-label={store.name}
+                      style={{
+                        backgroundImage: `url(${theme.heroUrl})`,
+                        backgroundSize: "cover",
+                        backgroundPosition: "center",
+                        backgroundRepeat: "no-repeat",
+                      }}
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-b from-transparent to-black/20" />
+                  </div>
+                  <div
+                    className="px-6 py-14"
+                    style={{ backgroundColor: theme.bg }}
+                    data-edit-drag="hero-tagline"
+                  >
+                    <h1
+                      className={`text-2xl leading-[1.6] ${fade1}`}
+                      style={{
+                        color: theme.text,
+                        fontFamily: "var(--store-font)",
+                        fontWeight: 400,
+                        letterSpacing: "0.02em",
+                        wordBreak: "keep-all",
+                        overflowWrap: "break-word",
+                      }}
+                      data-edit-text
+                      data-edit-field="tagline"
+                    >
+                      {taglineLines.map((line, i) => (
+                        <span key={i} className="block">
+                          {line}
+                        </span>
+                      ))}
+                    </h1>
+                    <Link
+                      href={`/${slug}/shop`}
+                      className={`sproutly-link mt-8 inline-block text-sm tracking-wider ${fade2}`}
+                      data-default-line="true"
+                      style={{
+                        color: theme.text,
+                        fontFamily: "var(--store-font)",
+                      }}
+                    >
+                      看商品
+                    </Link>
+                  </div>
+                </section>
+
+                {/* === 平板 + 桌機（≥ 640px）：保留原本 full-bleed overlay layout === */}
+                <section
+                  className="hidden sm:block relative h-screen overflow-hidden"
+                  data-edit-target="hero"
+                  data-edit-label="Hero 區段"
+                >
+                {/* Per-viewport zoom（只給平板 + 桌機用，手機走不同 layout 已無此需求） */}
                 <style>{`
-                  .sproutly-hero-bg-scaled { transform: scale(${zm}); transform-origin: center center; }
-                  @media (min-width: 640px) { .sproutly-hero-bg-scaled { transform: scale(${zt}); } }
+                  .sproutly-hero-bg-scaled { transform: scale(${zt}); transform-origin: center center; }
                   @media (min-width: 1024px) { .sproutly-hero-bg-scaled { transform: scale(${zd}); } }
                 `}</style>
                 <div
@@ -248,6 +309,7 @@ export default async function StoreHomePage({
                   </div>
                 )}
               </section>
+              </>
             );
           }
 
