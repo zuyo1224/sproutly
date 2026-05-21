@@ -110,10 +110,10 @@ export default async function PublicProductPage({
     <main className="max-w-6xl mx-auto px-6 py-12">
       <Link
         href={`/${slug}/shop`}
-        className="text-sm inline-block mb-8 hover:opacity-70 transition"
+        className="sproutly-link inline-block mb-10 text-[11px] tracking-[0.3em] uppercase"
         style={{ color: theme.textMuted }}
       >
-        ← 看更多商品
+        所有商品
       </Link>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-14">
@@ -139,15 +139,24 @@ export default async function PublicProductPage({
           )}
         </div>
 
-        <div className="md:pt-8">
+        <div className="md:pt-6">
+          <p
+            className="text-[10px] tracking-[0.4em] uppercase mb-5"
+            style={{ color: theme.textMuted, opacity: 0.7 }}
+          >
+            {store.name}
+          </p>
           <div className="flex items-start justify-between gap-4">
             <h1
-              className="text-3xl md:text-4xl leading-tight"
+              className="text-4xl md:text-5xl lg:text-[3rem]"
               style={{
                 color: theme.text,
                 fontFamily: "var(--store-font)",
                 fontWeight: 400,
-                letterSpacing: "0.01em",
+                letterSpacing: "-0.01em",
+                lineHeight: 1.15,
+                wordBreak: "keep-all",
+                overflowWrap: "break-word",
               }}
             >
               {product.name}
@@ -160,46 +169,85 @@ export default async function PublicProductPage({
           </div>
 
           {product.description && (
-            <div
-              className="mt-8 leading-loose whitespace-pre-line text-base"
-              style={{ color: theme.text }}
-            >
-              {product.description}
+            <div className="mt-10">
+              <p
+                className="text-[10px] tracking-[0.35em] uppercase mb-4"
+                style={{ color: theme.accent }}
+              >
+                關於這株
+              </p>
+              <div
+                className="whitespace-pre-line text-[15px]"
+                style={{
+                  color: theme.text,
+                  opacity: 0.85,
+                  lineHeight: 1.9,
+                  letterSpacing: "0.015em",
+                  wordBreak: "keep-all",
+                  overflowWrap: "break-word",
+                }}
+              >
+                {product.description}
+              </div>
             </div>
           )}
 
           <div
-            className="mt-12 pt-8 border-t"
+            className="mt-12 pt-8 border-t flex items-baseline justify-between gap-4"
             style={{ borderColor: theme.border }}
           >
-            <p
-              className="text-xs tracking-widest uppercase"
-              style={{ color: theme.textMuted }}
-            >
-              Price
-            </p>
-            <p
-              className="mt-2 text-2xl"
-              style={{
-                color: theme.text,
-                fontFamily: "var(--store-font)",
-                fontWeight: 400,
-              }}
-            >
-              {formatPrice(product.price_cents, product.currency)}
-            </p>
-
-            {product.stock !== null && (
+            <div>
               <p
-                className="mt-3 text-xs"
+                className="text-[10px] tracking-[0.4em] uppercase mb-2"
                 style={{ color: theme.textMuted }}
               >
-                {inStock
-                  ? product.stock <= 3
-                    ? `僅剩 ${product.stock} 株`
-                    : `共 ${product.stock} 株`
-                  : "目前已無庫存"}
+                售價
               </p>
+              <p
+                className="text-3xl md:text-[2.25rem]"
+                style={{
+                  color: theme.text,
+                  fontFamily: "var(--store-font)",
+                  fontWeight: 400,
+                  letterSpacing: "-0.02em",
+                  lineHeight: 1,
+                  fontVariantNumeric: "tabular-nums",
+                }}
+              >
+                {formatPrice(product.price_cents, product.currency)}
+              </p>
+            </div>
+
+            {product.stock !== null && (
+              <div className="flex items-center gap-2">
+                <span
+                  className="inline-block w-1.5 h-1.5 rounded-full"
+                  style={{
+                    background:
+                      !inStock
+                        ? "#9CA3AF"
+                        : product.stock <= 3
+                          ? "#D97706"
+                          : theme.accent,
+                  }}
+                />
+                <p
+                  className="text-[11px] tracking-wide"
+                  style={{
+                    color: !inStock
+                      ? theme.textMuted
+                      : product.stock <= 3
+                        ? "#92400E"
+                        : theme.textMuted,
+                  }}
+                >
+                  {!inStock
+                    ? "目前已無庫存"
+                    : product.stock <= 3
+                      ? `僅剩 ${product.stock} 株`
+                      : `尚有 ${product.stock} 株`}
+                </p>
+              </div>
             )}
           </div>
 
