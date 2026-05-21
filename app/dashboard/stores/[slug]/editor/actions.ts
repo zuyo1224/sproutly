@@ -24,6 +24,7 @@ type EditorPayload = {
     partners?: Array<{ name: string; logoUrl: string; href?: string | null }>;
     gallery?: Array<{ url: string; caption?: string | null }>;
     mapEmbedUrl?: string | null;
+    heroTaglinePosition?: { x: number; y: number } | null;
   };
   homepage?: {
     promise?: string;
@@ -169,6 +170,24 @@ export async function saveEditorState(slug: string, payload: EditorPayload) {
         /^https:\/\/(www\.)?google\.com\/maps\/embed/i.test(v)
       ) {
         layoutPatch.mapEmbedUrl = v.slice(0, 1000).trim();
+      }
+    }
+    if (payload.layout.heroTaglinePosition !== undefined) {
+      const p = payload.layout.heroTaglinePosition;
+      if (p === null) {
+        layoutPatch.heroTaglinePosition = null;
+      } else if (
+        p &&
+        typeof p === "object" &&
+        typeof p.x === "number" &&
+        typeof p.y === "number" &&
+        Number.isFinite(p.x) &&
+        Number.isFinite(p.y)
+      ) {
+        layoutPatch.heroTaglinePosition = {
+          x: Math.max(0, Math.min(1, p.x)),
+          y: Math.max(0, Math.min(1, p.y)),
+        };
       }
     }
     if (payload.layout.gallery !== undefined && Array.isArray(payload.layout.gallery)) {

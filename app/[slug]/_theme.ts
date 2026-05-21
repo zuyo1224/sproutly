@@ -158,6 +158,9 @@ export interface StoreTheme {
     partners: PartnerItem[];           // 合作夥伴 logos（optional block）
     gallery: GalleryItem[];            // 圖片相簿（optional block）
     mapEmbedUrl: string | null;        // Google Maps embed URL（visit section 顯示）
+    // Phase 5 Free Positioning MVP：hero tagline 可拖到 hero 區內任意位置
+    // null = 預設位置（既有 flex layout）；{x,y} = 0-1 比例（hero section 內 % 位置）
+    heroTaglinePosition: { x: number; y: number } | null;
   };
 }
 
@@ -423,6 +426,18 @@ function resolveLayout(raw: unknown): StoreTheme["layout"] {
       typeof l.mapEmbedUrl === "string" && l.mapEmbedUrl.trim()
         ? l.mapEmbedUrl.trim()
         : null,
+    heroTaglinePosition: (() => {
+      const p = l.heroTaglinePosition;
+      if (!p || typeof p !== "object") return null;
+      const obj = p as Record<string, unknown>;
+      const x = typeof obj.x === "number" ? obj.x : NaN;
+      const y = typeof obj.y === "number" ? obj.y : NaN;
+      if (!Number.isFinite(x) || !Number.isFinite(y)) return null;
+      return {
+        x: Math.max(0, Math.min(1, x)),
+        y: Math.max(0, Math.min(1, y)),
+      };
+    })(),
   };
 }
 

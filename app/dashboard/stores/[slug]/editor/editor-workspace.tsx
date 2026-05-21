@@ -69,6 +69,7 @@ type EditorTheme = {
     partners: PartnerItem[];
     gallery: GalleryItem[];
     mapEmbedUrl: string | null;
+    heroTaglinePosition: { x: number; y: number } | null;
   };
   homepage: {
     promise: string;
@@ -210,6 +211,16 @@ export function EditorWorkspace({
           setSelectedSection(msg.target as SectionKey);
           setActiveTab("section");
           setPopover("section");
+        }
+      } else if (
+        msg.type === "sproutly-edit-position-update" &&
+        typeof (msg as { element?: string }).element === "string" &&
+        typeof (msg as { x?: number }).x === "number" &&
+        typeof (msg as { y?: number }).y === "number"
+      ) {
+        const m = msg as unknown as { element: string; x: number; y: number };
+        if (m.element === "hero-tagline") {
+          updateLayout({ heroTaglinePosition: { x: m.x, y: m.y } });
         }
       } else if (
         msg.type === "sproutly-edit-text-update" &&
@@ -446,6 +457,7 @@ export function EditorWorkspace({
             .filter((g) => g.url.trim())
             .map((g) => ({ url: g.url, caption: g.caption })),
           mapEmbedUrl: theme.layout.mapEmbedUrl,
+          heroTaglinePosition: theme.layout.heroTaglinePosition,
         },
         homepage: theme.homepage,
         sections: theme.sections,
@@ -975,6 +987,31 @@ export function EditorWorkspace({
                 className="w-full rounded-lg border border-stone-200 px-3 py-2 text-sm resize-none"
               />
             </Field>
+            {theme.layout.heroStyle === "full-image" && (
+              <Field label="Tagline 位置（Phase 5 free positioning）">
+                {theme.layout.heroTaglinePosition ? (
+                  <div className="space-y-2">
+                    <p className="text-[11px] text-stone-600">
+                      已自訂位置：X={Math.round(theme.layout.heroTaglinePosition.x * 100)}%、
+                      Y={Math.round(theme.layout.heroTaglinePosition.y * 100)}%
+                    </p>
+                    <button
+                      type="button"
+                      onClick={() =>
+                        updateLayout({ heroTaglinePosition: null })
+                      }
+                      className="w-full rounded-lg border border-stone-200 text-stone-700 text-xs py-2 hover:bg-stone-50 transition"
+                    >
+                      重設為預設位置（左下）
+                    </button>
+                  </div>
+                ) : (
+                  <p className="text-[11px] text-stone-500 leading-relaxed">
+                    在 iframe 內**拖**藍色虛線 tagline 框到任何位置 → 自動儲存位置。
+                  </p>
+                )}
+              </Field>
+            )}
             {theme.layout.heroStyle === "split" && (
               <Field label="圖位置">
                 <div className="grid grid-cols-2 gap-2">

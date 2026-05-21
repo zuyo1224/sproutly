@@ -142,8 +142,10 @@ export default async function StoreHomePage({
           const fade2 = theme.homepage.enableAnimation ? "sproutly-hero-fade-2" : "";
           const fade3 = theme.homepage.enableAnimation ? "sproutly-hero-fade-3" : "";
 
-          // Variant 1: full-image（既有預設）— 整屏圖 + 底部 overlay 文字
+          // Variant 1: full-image（既有預設）— 整屏圖 + tagline overlay 文字
           if (heroStyle === "full-image" && theme.heroUrl) {
+            const pos = theme.layout.heroTaglinePosition;
+            const freePositioned = pos !== null;
             return (
               <section
                 className="relative h-screen overflow-hidden"
@@ -160,34 +162,78 @@ export default async function StoreHomePage({
                   className="sproutly-hero-parallax object-cover"
                 />
                 <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-black/45" />
-                <div className="relative h-full max-w-6xl mx-auto px-8 sm:px-12 flex flex-col justify-end pb-24 sm:pb-32">
-                  <h1
-                    className={`text-2xl sm:text-4xl lg:text-5xl text-white leading-[1.6] ${fade1}`}
+                {freePositioned ? (
+                  // Phase 5 free-positioned tagline overlay
+                  <div
+                    className="absolute"
+                    data-edit-drag="hero-tagline"
                     style={{
-                      fontFamily: "var(--store-font)",
-                      fontWeight: 400,
-                      letterSpacing: "0.02em",
-                      wordBreak: "keep-all",
-                      overflowWrap: "break-word",
+                      left: `${pos!.x * 100}%`,
+                      top: `${pos!.y * 100}%`,
+                      transform: "translate(-50%, -50%)",
+                      maxWidth: "min(800px, 80vw)",
                     }}
-                    data-edit-text
-                    data-edit-field="tagline"
                   >
-                    {taglineLines.map((line, i) => (
-                      <span key={i} className="block">
-                        {line}
-                      </span>
-                    ))}
-                  </h1>
-                  <Link
-                    href={`/${slug}/shop`}
-                    className={`sproutly-link mt-12 self-start text-white text-sm tracking-wider ${fade2}`}
-                    data-default-line="true"
-                    style={{ fontFamily: "var(--store-font)" }}
+                    <h1
+                      className={`text-2xl sm:text-4xl lg:text-5xl text-white leading-[1.6] ${fade1}`}
+                      style={{
+                        fontFamily: "var(--store-font)",
+                        fontWeight: 400,
+                        letterSpacing: "0.02em",
+                        wordBreak: "keep-all",
+                        overflowWrap: "break-word",
+                      }}
+                      data-edit-text
+                      data-edit-field="tagline"
+                    >
+                      {taglineLines.map((line, i) => (
+                        <span key={i} className="block">
+                          {line}
+                        </span>
+                      ))}
+                    </h1>
+                    <Link
+                      href={`/${slug}/shop`}
+                      className={`sproutly-link mt-8 inline-block text-white text-sm tracking-wider ${fade2}`}
+                      data-default-line="true"
+                      style={{ fontFamily: "var(--store-font)" }}
+                    >
+                      看商品
+                    </Link>
+                  </div>
+                ) : (
+                  <div
+                    className="relative h-full max-w-6xl mx-auto px-8 sm:px-12 flex flex-col justify-end pb-24 sm:pb-32"
+                    data-edit-drag="hero-tagline"
                   >
-                    看商品
-                  </Link>
-                </div>
+                    <h1
+                      className={`text-2xl sm:text-4xl lg:text-5xl text-white leading-[1.6] ${fade1}`}
+                      style={{
+                        fontFamily: "var(--store-font)",
+                        fontWeight: 400,
+                        letterSpacing: "0.02em",
+                        wordBreak: "keep-all",
+                        overflowWrap: "break-word",
+                      }}
+                      data-edit-text
+                      data-edit-field="tagline"
+                    >
+                      {taglineLines.map((line, i) => (
+                        <span key={i} className="block">
+                          {line}
+                        </span>
+                      ))}
+                    </h1>
+                    <Link
+                      href={`/${slug}/shop`}
+                      className={`sproutly-link mt-12 self-start text-white text-sm tracking-wider ${fade2}`}
+                      data-default-line="true"
+                      style={{ fontFamily: "var(--store-font)" }}
+                    >
+                      看商品
+                    </Link>
+                  </div>
+                )}
               </section>
             );
           }
