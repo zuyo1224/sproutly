@@ -496,6 +496,7 @@ export function EditorWorkspace({
                       ? "text-emerald-700"
                       : "text-stone-400"
               }`}
+              title={savedAt ? new Date(savedAt).toLocaleString("zh-TW") : ""}
             >
               {pending
                 ? "儲存中…"
@@ -504,7 +505,7 @@ export function EditorWorkspace({
                     ? "2 秒後自動存"
                     : "未儲存"
                   : savedAt
-                    ? "已儲存"
+                    ? `已存 · ${new Date(savedAt).toLocaleTimeString("zh-TW", { hour: "2-digit", minute: "2-digit" })}`
                     : "—"}
             </span>
           </div>
@@ -598,6 +599,15 @@ export function EditorWorkspace({
               >
                 ↻
               </button>
+              <a
+                href={`/${slug}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                title="在新分頁打開公開店面"
+                className="text-xs text-emerald-700 hover:text-emerald-900"
+              >
+                ↗
+              </a>
             </div>
           </div>
 
