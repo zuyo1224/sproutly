@@ -127,6 +127,12 @@ export function EditorWorkspace({
     ro.observe(el);
     return () => ro.disconnect();
   }, []);
+  // 修 dnd-kit hydration error：useSortable 用 counter 生 ID，SSR / client 不一致
+  // → 只在 client mount 後才 render DndContext / SortableContext
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => {
+    setMounted(true);
+  }, []);
   // AssetPicker：null = closed；其他 = 開啟中對應目標
   const [assetPickerMode, setAssetPickerMode] = useState<
     | null
@@ -446,7 +452,7 @@ export function EditorWorkspace({
   }
 
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-[280px_1fr_360px] min-h-[calc(100vh-80px)] bg-stone-50">
+    <div className="grid grid-cols-1 lg:grid-cols-[240px_1fr_300px] min-h-[calc(100vh-80px)] bg-stone-50">
       {/* === 左 sidebar：section 列表 === */}
       <aside className="bg-white border-r border-stone-200 flex flex-col">
         <div className="p-5 border-b border-stone-200">
@@ -507,33 +513,46 @@ export function EditorWorkspace({
             <p className="px-2 mb-2 text-[10px] tracking-wider uppercase text-emerald-900/45">
               首頁 Sections（拖曳排序）
             </p>
-            <DndContext
-              sensors={sensors}
-              collisionDetection={closestCenter}
-              onDragEnd={handleDragEnd}
-            >
-              <SortableContext
-                items={theme.layout.sectionOrder}
-                strategy={verticalListSortingStrategy}
+            {mounted ? (
+              <DndContext
+                sensors={sensors}
+                collisionDetection={closestCenter}
+                onDragEnd={handleDragEnd}
               >
-                <ul className="space-y-1">
-                  {theme.layout.sectionOrder.map((key) => {
-                    const removable = ADDABLE_BLOCKS.some((b) => b.key === key);
-                    return (
-                      <SortableSectionItem
-                        key={key}
-                        sectionKey={key}
-                        label={sectionLabels[key]}
-                        selected={selectedSection === key}
-                        onSelect={() => setSelectedSection(key)}
-                        removable={removable}
-                        onRemove={removable ? () => removeBlock(key) : undefined}
-                      />
-                    );
-                  })}
-                </ul>
-              </SortableContext>
-            </DndContext>
+                <SortableContext
+                  items={theme.layout.sectionOrder}
+                  strategy={verticalListSortingStrategy}
+                >
+                  <ul className="space-y-1">
+                    {theme.layout.sectionOrder.map((key) => {
+                      const removable = ADDABLE_BLOCKS.some((b) => b.key === key);
+                      return (
+                        <SortableSectionItem
+                          key={key}
+                          sectionKey={key}
+                          label={sectionLabels[key]}
+                          selected={selectedSection === key}
+                          onSelect={() => setSelectedSection(key)}
+                          removable={removable}
+                          onRemove={removable ? () => removeBlock(key) : undefined}
+                        />
+                      );
+                    })}
+                  </ul>
+                </SortableContext>
+              </DndContext>
+            ) : (
+              <ul className="space-y-1">
+                {theme.layout.sectionOrder.map((key) => (
+                  <li
+                    key={key}
+                    className="rounded-lg border border-stone-200 bg-white px-3 py-2.5 text-sm text-emerald-950 opacity-50"
+                  >
+                    {sectionLabels[key]}
+                  </li>
+                ))}
+              </ul>
+            )}
 
             {ADDABLE_BLOCKS.filter(
               (b) => !theme.layout.sectionOrder.includes(b.key)
@@ -664,23 +683,58 @@ export function EditorWorkspace({
               </div>
             </div>
 
-            {/* Viewport switcher */}
+            {/* Viewport switcher 含 icon */}
             <div className="flex items-center gap-0.5 bg-stone-200/60 rounded-md p-0.5">
-              {(["desktop", "tablet", "mobile"] as const).map((v) => (
+              {(
+                [
+                  {
+                    v: "desktop" as const,
+                    label: "桌機 1280",
+                    icon: (
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                        <rect x="2" y="4" width="20" height="13" rx="1.5" />
+                        <path d="M8 20h8" />
+                        <path d="M12 17v3" />
+                      </svg>
+                    ),
+                  },
+                  {
+                    v: "tablet" as const,
+                    label: "平板 768",
+                    icon: (
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                        <rect x="5" y="2" width="14" height="20" rx="2" />
+                        <circle cx="12" cy="18.5" r="0.5" fill="currentColor" />
+                      </svg>
+                    ),
+                  },
+                  {
+                    v: "mobile" as const,
+                    label: "手機 375",
+                    icon: (
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                        <rect x="7" y="2" width="10" height="20" rx="2" />
+                        <path d="M11 18h2" />
+                      </svg>
+                    ),
+                  },
+                ]
+              ).map(({ v, label, icon }) => (
                 <button
                   key={v}
                   type="button"
                   onClick={() => setViewport(v)}
-                  className={`px-2.5 py-1 text-[11px] font-medium rounded transition ${
+                  className={`flex items-center gap-1.5 px-2.5 py-1.5 text-[11px] font-medium rounded transition ${
                     viewport === v
                       ? "bg-white text-emerald-900 shadow-sm"
                       : "text-stone-600 hover:text-stone-900"
                   }`}
-                  title={
-                    v === "desktop" ? "桌機 (1280)" : v === "tablet" ? "平板 (768)" : "手機 (375)"
-                  }
+                  title={label}
                 >
-                  {v === "desktop" ? "桌機" : v === "tablet" ? "平板" : "手機"}
+                  {icon}
+                  <span className="hidden sm:inline">
+                    {v === "desktop" ? "桌機" : v === "tablet" ? "平板" : "手機"}
+                  </span>
                 </button>
               ))}
             </div>
