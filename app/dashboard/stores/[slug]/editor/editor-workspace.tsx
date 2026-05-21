@@ -115,6 +115,18 @@ export function EditorWorkspace({
   const [viewport, setViewport] = useState<"desktop" | "tablet" | "mobile">("desktop");
   const [autoSaveEnabled, setAutoSaveEnabled] = useState(true);
   const autoSaveTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  // Canvas 容器 ref + 寬度測量（用 transform scale 把 1280px / 768 / 375 縮放到 canvas）
+  const canvasRef = useRef<HTMLDivElement>(null);
+  const [canvasWidth, setCanvasWidth] = useState(1280);
+  useEffect(() => {
+    const el = canvasRef.current;
+    if (!el) return;
+    const measure = () => setCanvasWidth(el.clientWidth);
+    measure();
+    const ro = new ResizeObserver(measure);
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, []);
   // AssetPicker：null = closed；其他 = 開啟中對應目標
   const [assetPickerMode, setAssetPickerMode] = useState<
     | null
@@ -697,30 +709,45 @@ export function EditorWorkspace({
             </div>
           </div>
 
-          {/* iframe container - viewport-aware */}
-          <div className="flex-1 bg-stone-200/40 overflow-auto p-0 sm:p-4">
-            <div className="min-h-full flex items-start justify-center">
-              <div
-                className="bg-white shadow-md shadow-stone-300/50 transition-all duration-500 flex-shrink-0"
-                style={{
-                  width:
-                    viewport === "desktop"
-                      ? "1280px"
-                      : viewport === "tablet"
-                        ? "768px"
-                        : "375px",
-                  height: "100%",
-                  minHeight: "100%",
-                }}
-              >
-                <iframe
-                  key={previewKey}
-                  src={`/${slug}?edit=1`}
-                  title="店面預覽"
-                  className="w-full h-full bg-white"
-                />
-              </div>
-            </div>
+          {/* iframe container - viewport-aware with transform scale
+              iframe viewport 用真實桌機寬度 (1280)，再 transform scale 到 canvas 大小，
+              這樣 Tailwind lg: / xl: breakpoint 會 trigger，看起來是 desktop layout */}
+          <div
+            ref={canvasRef}
+            className="flex-1 bg-stone-200/40 overflow-hidden p-0 sm:p-4"
+          >
+            {(() => {
+              const baseW =
+                viewport === "desktop" ? 1280 : viewport === "tablet" ? 768 : 375;
+              const padding = 32;
+              const scale = Math.min(1, (canvasWidth - padding) / baseW);
+              const displayW = baseW * scale;
+
+              return (
+                <div
+                  className="bg-white shadow-md shadow-stone-300/50 transition-[width] duration-500"
+                  style={{
+                    width: `${displayW}px`,
+                    height: "100%",
+                    margin: "0 auto",
+                    overflow: "hidden",
+                  }}
+                >
+                  <iframe
+                    key={previewKey}
+                    src={`/${slug}?edit=1`}
+                    title="店面預覽"
+                    className="bg-white border-0 block"
+                    style={{
+                      width: `${baseW}px`,
+                      height: `${100 / scale}%`,
+                      transform: `scale(${scale})`,
+                      transformOrigin: "top left",
+                    }}
+                  />
+                </div>
+              );
+            })()}
           </div>
         </div>
       </main>
