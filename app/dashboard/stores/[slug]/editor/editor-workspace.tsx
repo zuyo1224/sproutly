@@ -109,6 +109,8 @@ export function EditorWorkspace({
   const [savedAt, setSavedAt] = useState<number | null>(null);
   const [previewKey, setPreviewKey] = useState(0);
   const [viewport, setViewport] = useState<"desktop" | "tablet" | "mobile">("desktop");
+  const [autoSaveEnabled, setAutoSaveEnabled] = useState(true);
+  const autoSaveTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   // Undo / Redo state — past / future stacks of theme snapshots
   const pastRef = useRef<EditorTheme[]>([]);
@@ -160,6 +162,19 @@ export function EditorWorkspace({
     setDirty(true);
     setHistoryTick((t) => t + 1);
   }
+
+  // Auto-save: 改動後 2 秒沒新動作就自動 save + reload iframe
+  useEffect(() => {
+    if (!dirty || !autoSaveEnabled) return;
+    if (autoSaveTimerRef.current) clearTimeout(autoSaveTimerRef.current);
+    autoSaveTimerRef.current = setTimeout(() => {
+      handleSave();
+    }, 2000);
+    return () => {
+      if (autoSaveTimerRef.current) clearTimeout(autoSaveTimerRef.current);
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [theme, dirty, autoSaveEnabled]);
 
   // Cmd/Ctrl+Z / Cmd/Ctrl+Shift+Z keyboard shortcut
   useEffect(() => {
@@ -459,19 +474,47 @@ export function EditorWorkspace({
         )}
 
         <div className="p-3 border-t border-stone-200 mt-auto space-y-2">
-          {dirty && (
-            <p className="text-[11px] text-amber-700 text-center">未儲存的變動</p>
-          )}
-          {!dirty && savedAt && (
-            <p className="text-[11px] text-emerald-700 text-center">已儲存</p>
-          )}
+          <div className="flex items-center justify-between px-1 mb-1">
+            <label className="flex items-center gap-1.5 text-[11px] text-emerald-900/70 cursor-pointer select-none">
+              <input
+                type="checkbox"
+                checked={autoSaveEnabled}
+                onChange={(e) => setAutoSaveEnabled(e.target.checked)}
+                className="w-3.5 h-3.5 rounded text-emerald-700"
+              />
+              自動儲存
+            </label>
+            <span
+              className={`text-[11px] ${
+                pending
+                  ? "text-emerald-700"
+                  : dirty
+                    ? autoSaveEnabled
+                      ? "text-stone-500"
+                      : "text-amber-700"
+                    : savedAt
+                      ? "text-emerald-700"
+                      : "text-stone-400"
+              }`}
+            >
+              {pending
+                ? "儲存中…"
+                : dirty
+                  ? autoSaveEnabled
+                    ? "2 秒後自動存"
+                    : "未儲存"
+                  : savedAt
+                    ? "已儲存"
+                    : "—"}
+            </span>
+          </div>
           <button
             type="button"
             onClick={handleSave}
             disabled={!dirty || pending}
             className="w-full rounded-full bg-emerald-700 text-white text-sm font-medium px-4 py-2.5 hover:bg-emerald-800 transition disabled:opacity-40 disabled:cursor-not-allowed"
           >
-            {pending ? "儲存中…" : "儲存變更"}
+            {pending ? "儲存中…" : "立刻儲存"}
           </button>
           <Link
             href={`/dashboard/stores/${slug}/settings`}
