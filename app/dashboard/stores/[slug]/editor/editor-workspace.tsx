@@ -209,6 +209,7 @@ export function EditorWorkspace({
         if ((validKeys as readonly string[]).includes(msg.target)) {
           setSelectedSection(msg.target as SectionKey);
           setActiveTab("section");
+          setPopover("section");
         }
       } else if (
         msg.type === "sproutly-edit-text-update" &&
@@ -609,11 +610,11 @@ export function EditorWorkspace({
         </div>
       </header>
 
-      {/* === 主編輯區（contextual：右 panel 只在選了 section 才出現） === */}
+      {/* === 主編輯區（contextual：右 panel 跟 selectedSection 走，不跟 popover 走） === */}
       <div className={`grid flex-1 overflow-hidden relative ${
         fullscreen
           ? "grid-cols-1"
-          : popover === "section" && selectedSection
+          : selectedSection
             ? "grid-cols-1 lg:grid-cols-[80px_1fr_320px]"
             : "grid-cols-1 lg:grid-cols-[80px_1fr]"
       }`}>
@@ -875,9 +876,19 @@ export function EditorWorkspace({
         </div>
       </main>
 
-      {/* === 右 panel: 屬性編輯（contextual：選了 section 才出現）=== */}
-      {!fullscreen && popover === "section" && selectedSection && (
-      <aside className="bg-white border-l border-stone-200 overflow-y-auto">
+      {/* === 右 panel: 屬性編輯（contextual：選了 section 才出現，跟 popover 分開）=== */}
+      {!fullscreen && selectedSection && (
+      <aside className="bg-white border-l border-stone-200 overflow-y-auto relative">
+        {/* 關閉按鈕（清除 selectedSection 讓 panel 收回） */}
+        <button
+          type="button"
+          onClick={() => setSelectedSection("hero")}
+          className="absolute top-3 right-3 w-7 h-7 rounded-full hover:bg-stone-100 text-stone-400 hover:text-stone-700 transition flex items-center justify-center z-10"
+          title="清除選取"
+          aria-label="清除選取"
+        >
+          ×
+        </button>
         {activeTab === "section" && selectedSection === "hero" && (
           <PanelSection title="Hero 區段">
             <Field label="樣式">
