@@ -170,6 +170,8 @@ export default async function StoreHomePage({
                       wordBreak: "keep-all",
                       overflowWrap: "break-word",
                     }}
+                    data-edit-text
+                    data-edit-field="tagline"
                   >
                     {taglineLines.map((line, i) => (
                       <span key={i} className="block">
@@ -234,6 +236,8 @@ export default async function StoreHomePage({
                       wordBreak: "keep-all",
                       overflowWrap: "break-word",
                     }}
+                    data-edit-text
+                    data-edit-field="tagline"
                   >
                     {taglineLines.map((line, i) => (
                       <span key={i} className="block">
@@ -306,6 +310,8 @@ export default async function StoreHomePage({
                       wordBreak: "keep-all",
                       overflowWrap: "break-word",
                     }}
+                    data-edit-text
+                    data-edit-field="tagline"
                   >
                     {taglineLines.map((line, i) => (
                       <span key={i} className="block">
@@ -376,6 +382,8 @@ export default async function StoreHomePage({
                   wordBreak: "keep-all",
                   overflowWrap: "break-word",
                 }}
+                data-edit-text
+                data-edit-field="tagline"
               >
                 {taglineLines.map((line, i) => (
                   <span key={i} className="block">
@@ -748,6 +756,8 @@ export default async function StoreHomePage({
                 </p>
 
                 <blockquote
+                  data-edit-text
+                  data-edit-field="promise"
                   className="text-lg sm:text-xl md:text-2xl leading-[2] relative z-10"
                   style={{
                     color: theme.text,
@@ -1151,6 +1161,8 @@ export default async function StoreHomePage({
                 Visit
               </p>
               <h2
+                data-edit-text
+                data-edit-field="visitTitle"
                 className="text-2xl sm:text-3xl md:text-4xl mb-4"
                 style={{
                   color: theme.text,

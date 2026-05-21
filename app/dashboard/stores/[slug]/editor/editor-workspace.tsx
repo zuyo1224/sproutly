@@ -176,11 +176,11 @@ export function EditorWorkspace({
     setHistoryTick((t) => t + 1);
   }
 
-  // 接 iframe edit click postMessage
+  // 接 iframe edit click + inline text edit postMessage
   useEffect(() => {
     function onMessage(e: MessageEvent) {
       if (typeof e.data !== "object" || !e.data) return;
-      const msg = e.data as { type?: string; target?: string };
+      const msg = e.data as { type?: string; target?: string; field?: string; value?: string };
       if (msg.type === "sproutly-edit-click" && typeof msg.target === "string") {
         const validKeys = [
           "hero",
@@ -199,10 +199,26 @@ export function EditorWorkspace({
           setSelectedSection(msg.target as SectionKey);
           setActiveTab("section");
         }
+      } else if (
+        msg.type === "sproutly-edit-text-update" &&
+        typeof msg.field === "string" &&
+        typeof msg.value === "string"
+      ) {
+        const value = msg.value;
+        if (msg.field === "tagline") {
+          update("tagline", value);
+        } else if (msg.field === "promise") {
+          updateHomepage({ promise: value });
+        } else if (msg.field === "visitTitle") {
+          updateHomepage({ visitTitle: value });
+        } else if (msg.field === "collectionsIntro") {
+          updateHomepage({ collectionsIntro: value });
+        }
       }
     }
     window.addEventListener("message", onMessage);
     return () => window.removeEventListener("message", onMessage);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // Auto-save: 改動後 2 秒沒新動作就自動 save + reload iframe

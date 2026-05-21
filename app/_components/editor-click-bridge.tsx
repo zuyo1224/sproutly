@@ -40,11 +40,89 @@ export function EditorClickBridge() {
         outline: 2px solid #10b981 !important;
         outline-offset: 4px;
       }
+      [data-edit-text] {
+        outline-offset: 2px;
+        transition: outline 0.15s ease, background-color 0.15s ease;
+        cursor: text !important;
+      }
+      [data-edit-text]:hover {
+        outline: 1px dashed #f59e0b !important;
+        background-color: rgba(245, 158, 11, 0.06) !important;
+      }
+      [data-edit-text][contenteditable="true"] {
+        outline: 2px solid #f59e0b !important;
+        background-color: rgba(245, 158, 11, 0.08) !important;
+        cursor: text !important;
+      }
+      [data-edit-text][contenteditable="true"]:focus {
+        outline: 2px solid #d97706 !important;
+      }
       html { scroll-behavior: smooth; }
     `;
     document.head.appendChild(style);
 
+    function commitTextEdit(el: HTMLElement) {
+      const field = el.dataset.editField;
+      if (!field) return;
+      const value = (el.textContent ?? "").trim();
+      el.removeAttribute("contenteditable");
+      if (window.parent !== window) {
+        window.parent.postMessage(
+          {
+            type: "sproutly-edit-text-update",
+            field,
+            value,
+          },
+          "*"
+        );
+      }
+    }
+
+    function onDblClick(e: MouseEvent) {
+      const textEl = (e.target as HTMLElement | null)?.closest("[data-edit-text]") as HTMLElement | null;
+      if (!textEl) return;
+      e.preventDefault();
+      e.stopPropagation();
+      textEl.setAttribute("contenteditable", "true");
+      textEl.focus();
+      // 選取全部文字方便重打
+      const sel = window.getSelection();
+      const range = document.createRange();
+      range.selectNodeContents(textEl);
+      sel?.removeAllRanges();
+      sel?.addRange(range);
+
+      const onBlur = () => {
+        commitTextEdit(textEl);
+        textEl.removeEventListener("blur", onBlur);
+        textEl.removeEventListener("keydown", onKey);
+      };
+      const onKey = (ke: KeyboardEvent) => {
+        if (ke.key === "Enter" && !ke.shiftKey) {
+          ke.preventDefault();
+          textEl.blur();
+        } else if (ke.key === "Escape") {
+          ke.preventDefault();
+          textEl.removeAttribute("contenteditable");
+          textEl.removeEventListener("blur", onBlur);
+          textEl.removeEventListener("keydown", onKey);
+        }
+      };
+      textEl.addEventListener("blur", onBlur);
+      textEl.addEventListener("keydown", onKey);
+    }
+
     function onClick(e: MouseEvent) {
+      // 在 contentEditable 狀態下不攔截
+      const editingNow = (e.target as HTMLElement | null)?.closest('[contenteditable="true"]');
+      if (editingNow) return;
+
+      // text-level 雙擊已處理；單擊 text element 不開 section panel（要 section block）
+      const textEl = (e.target as HTMLElement | null)?.closest("[data-edit-text]");
+      if (textEl) {
+        // 落到 section level handler — 但仍處理 section
+      }
+
       const target = (e.target as HTMLElement | null)?.closest("[data-edit-target]") as HTMLElement | null;
       if (!target) return;
       e.preventDefault();
@@ -72,6 +150,8 @@ export function EditorClickBridge() {
 
     // 攔截所有 link / button 點擊，避免在 edit mode 內 navigate
     function onLinkBlock(e: MouseEvent) {
+      // contentEditable 內不擋（user 可能在編 text 想點 cursor）
+      if ((e.target as HTMLElement | null)?.closest('[contenteditable="true"]')) return;
       const link = (e.target as HTMLElement | null)?.closest("a, button");
       if (link && !link.closest("[data-edit-allow-click]")) {
         e.preventDefault();
@@ -79,10 +159,12 @@ export function EditorClickBridge() {
     }
 
     document.addEventListener("click", onClick, true);
+    document.addEventListener("dblclick", onDblClick, true);
     document.addEventListener("click", onLinkBlock, false);
 
     return () => {
       document.removeEventListener("click", onClick, true);
+      document.removeEventListener("dblclick", onDblClick, true);
       document.removeEventListener("click", onLinkBlock, false);
       style.remove();
     };
