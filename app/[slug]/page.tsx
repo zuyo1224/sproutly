@@ -148,21 +148,18 @@ export default async function StoreHomePage({
             const freePositioned = pos !== null;
             return (
               <section
-                className="relative h-screen overflow-hidden"
+                className="relative h-screen overflow-hidden block"
                 data-edit-target="hero"
                 data-edit-label="Hero 區段"
+                style={{
+                  backgroundImage: `url(${theme.heroUrl})`,
+                  backgroundSize: "cover",
+                  backgroundPosition: "center",
+                  backgroundRepeat: "no-repeat",
+                  margin: 0,
+                  padding: 0,
+                }}
               >
-                <div
-                  className="sproutly-hero-parallax absolute inset-0"
-                  role="img"
-                  aria-label={store.name}
-                  style={{
-                    backgroundImage: `url(${theme.heroUrl})`,
-                    backgroundSize: "cover",
-                    backgroundPosition: "center",
-                    backgroundRepeat: "no-repeat",
-                  }}
-                />
                 <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-black/45" />
                 {freePositioned ? (
                   // Phase 5 free-positioned tagline overlay
