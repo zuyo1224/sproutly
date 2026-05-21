@@ -475,6 +475,55 @@ export default async function PublicStoreLayout({
           .sproutly-btn:hover { transform: none !important; }
         }
 
+        /* Form input system - 跟 button 對齊質感 */
+        .sproutly-input {
+          width: 100%;
+          padding: 0.875rem 1.25rem;
+          border-radius: 9999px;
+          background: var(--store-surface, #fafaf9);
+          color: var(--store-text, #1a1a1a);
+          border: 1px solid var(--store-border, rgba(0,0,0,0.12));
+          font-size: 0.9375rem;
+          line-height: 1.4;
+          outline: none;
+          transition: border-color 0.3s ease,
+                      box-shadow 0.3s ease,
+                      background-color 0.3s ease;
+          font-family: inherit;
+          -webkit-appearance: none;
+          appearance: none;
+        }
+        .sproutly-input::placeholder {
+          color: var(--store-text-muted, rgba(0,0,0,0.4));
+          opacity: 0.7;
+        }
+        .sproutly-input:hover {
+          border-color: var(--store-text-muted, rgba(0,0,0,0.3));
+        }
+        .sproutly-input:focus {
+          border-color: var(--store-text, #1a1a1a);
+          box-shadow: 0 0 0 4px var(--store-accent-ring, rgba(0,0,0,0.06)),
+                      var(--sproutly-elev-1);
+          background: var(--store-bg, #ffffff);
+        }
+        .sproutly-input:disabled {
+          opacity: 0.5;
+          cursor: not-allowed;
+        }
+        textarea.sproutly-input {
+          border-radius: 1.25rem;
+          padding: 1rem 1.25rem;
+          resize: vertical;
+          min-height: 5rem;
+        }
+        select.sproutly-input {
+          padding-right: 2.5rem;
+          background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8' fill='none'%3E%3Cpath d='M1 1.5L6 6.5L11 1.5' stroke='currentColor' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+          background-repeat: no-repeat;
+          background-position: right 1.25rem center;
+          background-size: 0.75rem;
+        }
+
         /* 圖片 hover 浮起 (商品詳情主圖) */
         .sproutly-zoomable {
           cursor: zoom-in;

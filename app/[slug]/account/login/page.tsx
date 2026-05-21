@@ -138,12 +138,7 @@ export default async function CustomerLoginPage({
                 required
                 autoComplete="email"
                 placeholder="you@example.com"
-                className="w-full rounded-full px-5 py-3.5 outline-none transition text-sm"
-                style={{
-                  background: theme.surface,
-                  color: theme.text,
-                  border: `1px solid ${theme.border}`,
-                }}
+                className="sproutly-input"
               />
             </div>
             <button
