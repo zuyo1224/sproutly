@@ -28,16 +28,23 @@ type SectionKey =
   | "journal"
   | "promise"
   | "testimonials"
+  | "faq"
   | "visit";
 type HeroStyle = "full-image" | "split" | "minimal" | "magazine";
 
 type Testimonial = { quote: string; author: string; role: string | null };
+type FaqItem = { question: string; answer: string };
 
 const ADDABLE_BLOCKS: { key: SectionKey; label: string; description: string }[] = [
   {
     key: "testimonials",
     label: "顧客評語",
     description: "3 個 quote card 顯示真實顧客評價",
+  },
+  {
+    key: "faq",
+    label: "常見問題",
+    description: "Accordion 展開式問答",
   },
 ];
 
@@ -52,6 +59,7 @@ type EditorTheme = {
     heroImageSide: "left" | "right";
     sectionOrder: SectionKey[];
     testimonials: Testimonial[];
+    faqItems: FaqItem[];
   };
   homepage: {
     promise: string;
@@ -175,6 +183,23 @@ export function EditorWorkspace({
     });
   }
 
+  function updateFaq(idx: number, patch: Partial<FaqItem>) {
+    const next = [...theme.layout.faqItems];
+    next[idx] = { ...next[idx], ...patch };
+    updateLayout({ faqItems: next });
+  }
+  function addFaq() {
+    if (theme.layout.faqItems.length >= 20) return;
+    updateLayout({
+      faqItems: [...theme.layout.faqItems, { question: "", answer: "" }],
+    });
+  }
+  function removeFaq(idx: number) {
+    updateLayout({
+      faqItems: theme.layout.faqItems.filter((_, i) => i !== idx),
+    });
+  }
+
   function handleSave() {
     startTransition(async () => {
       const res = await saveEditorState(slug, {
@@ -194,6 +219,9 @@ export function EditorWorkspace({
               author: t.author,
               role: t.role ?? undefined,
             })),
+          faqItems: theme.layout.faqItems
+            .filter((f) => f.question.trim() && f.answer.trim())
+            .map((f) => ({ question: f.question, answer: f.answer })),
         },
         homepage: theme.homepage,
         sections: theme.sections,
@@ -516,6 +544,67 @@ export function EditorWorkspace({
             <p className="text-xs text-stone-500 leading-relaxed">
               地址 / 營業時間 / 電話 / Email 在「傳統設定頁」改。
             </p>
+          </PanelSection>
+        )}
+
+        {activeTab === "section" && selectedSection === "faq" && (
+          <PanelSection title="常見問題（FAQ）區段">
+            {theme.layout.faqItems.length === 0 ? (
+              <p className="text-sm text-stone-600 leading-relaxed">
+                還沒有 FAQ，先加一筆。
+              </p>
+            ) : (
+              <div className="space-y-3">
+                {theme.layout.faqItems.map((f, i) => (
+                  <div
+                    key={i}
+                    className="rounded-lg border border-stone-200 p-3 space-y-2 bg-stone-50/50"
+                  >
+                    <div className="flex justify-between items-center">
+                      <p className="text-[10px] uppercase tracking-wider text-stone-500">
+                        FAQ #{i + 1}
+                      </p>
+                      <button
+                        type="button"
+                        onClick={() => removeFaq(i)}
+                        className="text-xs text-red-600 hover:text-red-800"
+                      >
+                        移除
+                      </button>
+                    </div>
+                    <input
+                      type="text"
+                      value={f.question}
+                      onChange={(e) =>
+                        updateFaq(i, { question: e.target.value })
+                      }
+                      placeholder="問題..."
+                      className="w-full rounded border border-stone-200 px-2 py-1.5 text-sm font-medium"
+                    />
+                    <textarea
+                      value={f.answer}
+                      onChange={(e) =>
+                        updateFaq(i, { answer: e.target.value })
+                      }
+                      rows={3}
+                      placeholder="答案... 換行用 Enter"
+                      className="w-full rounded border border-stone-200 px-2 py-1.5 text-sm resize-none"
+                    />
+                  </div>
+                ))}
+              </div>
+            )}
+            <button
+              type="button"
+              onClick={addFaq}
+              disabled={theme.layout.faqItems.length >= 20}
+              className="w-full mt-3 rounded-lg border border-dashed border-stone-300 hover:border-emerald-400 hover:bg-emerald-50/50 py-2.5 text-sm text-emerald-800 transition disabled:opacity-40 disabled:cursor-not-allowed"
+            >
+              + 加一筆 FAQ{" "}
+              <span className="text-stone-400 text-xs">
+                ({theme.layout.faqItems.length}/20)
+              </span>
+            </button>
           </PanelSection>
         )}
 

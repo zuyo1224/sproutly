@@ -23,6 +23,7 @@ export type SectionKey =
   | "journal"
   | "promise"
   | "testimonials"
+  | "faq"
   | "visit";
 export const DEFAULT_SECTION_ORDER: SectionKey[] = [
   "hero",
@@ -39,6 +40,7 @@ export const SECTION_LABELS: Record<SectionKey, string> = {
   journal: "Journal（慢讀）",
   promise: "Our Promise",
   testimonials: "顧客評語",
+  faq: "常見問題（FAQ）",
   visit: "來訪資訊",
 };
 
@@ -49,12 +51,22 @@ export const OPTIONAL_BLOCK_TYPES: { key: SectionKey; label: string; description
     label: "顧客評語",
     description: "3 個 quote card 顯示真實顧客評價",
   },
+  {
+    key: "faq",
+    label: "常見問題",
+    description: "Accordion 展開式問答，每筆 click 展開",
+  },
 ];
 
 export interface Testimonial {
   quote: string;
   author: string;
   role: string | null;
+}
+
+export interface FaqItem {
+  question: string;
+  answer: string;
 }
 export type FontKey =
   | "cormorant"
@@ -104,6 +116,7 @@ export interface StoreTheme {
     heroImageSide: "left" | "right";   // split 用
     sectionOrder: SectionKey[];
     testimonials: Testimonial[];       // 顧客評語（optional block）
+    faqItems: FaqItem[];               // 首頁 FAQ（optional block；和現有 about/contact FAQ 分開）
   };
 }
 
@@ -268,6 +281,7 @@ function resolveLayout(raw: unknown): StoreTheme["layout"] {
     "journal",
     "promise",
     "testimonials",
+    "faq",
     "visit",
   ]);
   const order: SectionKey[] = [];
@@ -294,6 +308,18 @@ function resolveLayout(raw: unknown): StoreTheme["layout"] {
     })
     .filter((t) => t.quote && t.author);
 
+  // faqItems array sanitize
+  const faqRaw = Array.isArray(l.faqItems) ? l.faqItems : [];
+  const faqItems: FaqItem[] = faqRaw
+    .filter((f) => f && typeof f === "object")
+    .map((f) => {
+      const obj = f as Record<string, unknown>;
+      const question = typeof obj.question === "string" ? obj.question.trim() : "";
+      const answer = typeof obj.answer === "string" ? obj.answer.trim() : "";
+      return { question, answer };
+    })
+    .filter((f) => f.question && f.answer);
+
   return {
     heroStyle,
     heroSubtitle:
@@ -307,6 +333,7 @@ function resolveLayout(raw: unknown): StoreTheme["layout"] {
     heroImageSide,
     sectionOrder: order,
     testimonials,
+    faqItems,
   };
 }
 

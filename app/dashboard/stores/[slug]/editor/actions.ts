@@ -4,7 +4,7 @@ import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
 
 const HERO_STYLES = new Set(["full-image", "split", "minimal", "magazine"]);
-const SECTION_KEYS = ["hero", "collections", "featured", "journal", "promise", "testimonials", "visit"];
+const SECTION_KEYS = ["hero", "collections", "featured", "journal", "promise", "testimonials", "faq", "visit"];
 
 type EditorPayload = {
   primary?: string;
@@ -17,6 +17,7 @@ type EditorPayload = {
     heroImageSide?: string;
     sectionOrder?: string[];
     testimonials?: Array<{ quote: string; author: string; role?: string }>;
+    faqItems?: Array<{ question: string; answer: string }>;
   };
   homepage?: {
     promise?: string;
@@ -114,6 +115,16 @@ export async function saveEditorState(slug: string, payload: EditorPayload) {
         }))
         .filter((t) => t.quote && t.author)
         .slice(0, 6); // 上限 6 個 testimonial
+    }
+    if (payload.layout.faqItems !== undefined && Array.isArray(payload.layout.faqItems)) {
+      layoutPatch.faqItems = payload.layout.faqItems
+        .filter((f) => f && typeof f === "object")
+        .map((f) => ({
+          question: String(f.question ?? "").slice(0, 300).trim(),
+          answer: String(f.answer ?? "").slice(0, 2000).trim(),
+        }))
+        .filter((f) => f.question && f.answer)
+        .slice(0, 20); // 上限 20 個 FAQ
     }
     merged.layout = layoutPatch;
   }

@@ -855,6 +855,89 @@ export default async function StoreHomePage({
             </section>
           )}
 
+        {/* === FAQ Accordion（optional block，<details> 原生 accordion） === */}
+        {theme.layout.sectionOrder.includes("faq") &&
+          theme.layout.faqItems.length > 0 && (
+            <section className={`py-40 sm:py-56 ${animClass}`}>
+              <div className="max-w-2xl mx-auto px-6 sm:px-12">
+                <div className="text-center mb-16">
+                  <p
+                    className="text-[10px] tracking-[0.4em] uppercase mb-5"
+                    style={{ color: theme.accent }}
+                  >
+                    FAQ
+                  </p>
+                  <h2
+                    className="text-2xl sm:text-3xl md:text-4xl"
+                    style={{
+                      color: theme.text,
+                      fontFamily: "var(--store-font)",
+                      fontWeight: 400,
+                      letterSpacing: "-0.01em",
+                      lineHeight: 1.2,
+                    }}
+                  >
+                    常見問題
+                  </h2>
+                  <div
+                    className="mx-auto mt-6"
+                    style={{
+                      width: "32px",
+                      height: "1px",
+                      background: theme.accent,
+                      opacity: 0.5,
+                    }}
+                  />
+                </div>
+
+                <ul className="divide-y" style={{ borderColor: theme.border }}>
+                  {theme.layout.faqItems.map((item, i) => (
+                    <li
+                      key={i}
+                      style={{ borderColor: theme.border }}
+                      className="border-t last:border-b"
+                    >
+                      <details className="group">
+                        <summary
+                          className="flex items-center justify-between cursor-pointer py-6 list-none transition hover:opacity-80"
+                          style={{ color: theme.text }}
+                        >
+                          <span
+                            className="text-base sm:text-lg pr-4"
+                            style={{
+                              fontFamily: "var(--store-font)",
+                              fontWeight: 400,
+                              letterSpacing: "-0.005em",
+                            }}
+                          >
+                            {item.question}
+                          </span>
+                          <span
+                            className="text-2xl leading-none flex-shrink-0 transition-transform duration-500 group-open:rotate-45"
+                            style={{ color: theme.accent }}
+                            aria-hidden="true"
+                          >
+                            +
+                          </span>
+                        </summary>
+                        <div
+                          className="pb-7 pr-8 text-sm sm:text-base leading-[1.95]"
+                          style={{ color: theme.textMuted }}
+                        >
+                          {item.answer.split(/\n+/).map((line, idx) => (
+                            <p key={idx} className={idx > 0 ? "mt-3" : ""}>
+                              {line}
+                            </p>
+                          ))}
+                        </div>
+                      </details>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </section>
+          )}
+
         {/* === Visit === */}
         {(store.address || businessHoursText) && (
           <section
