@@ -1213,6 +1213,44 @@ export function EditorWorkspace({
 
         {activeTab === "design" && (
           <PanelSection title="視覺風格">
+            <Field label="Logo（顯示在 nav）">
+              {theme.logoUrl ? (
+                <div className="space-y-2">
+                  <div className="relative h-16 rounded-lg overflow-hidden bg-stone-100 border border-stone-200 flex items-center justify-center p-2">
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img
+                      src={theme.logoUrl}
+                      alt="Logo"
+                      className="max-h-full max-w-full object-contain"
+                    />
+                  </div>
+                  <div className="flex gap-1.5">
+                    <button
+                      type="button"
+                      onClick={() => setAssetPickerMode({ kind: "logo" })}
+                      className="flex-1 rounded-lg bg-emerald-700 text-white text-xs py-2 hover:bg-emerald-800 transition"
+                    >
+                      ✦ 換 Logo
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => update("logoUrl", null)}
+                      className="rounded-lg border border-stone-200 text-stone-600 text-xs px-3 hover:bg-stone-50 transition"
+                    >
+                      移除
+                    </button>
+                  </div>
+                </div>
+              ) : (
+                <button
+                  type="button"
+                  onClick={() => setAssetPickerMode({ kind: "logo" })}
+                  className="w-full h-16 rounded-lg border border-dashed border-stone-300 hover:border-emerald-400 hover:bg-emerald-50/30 transition text-xs text-stone-500"
+                >
+                  ✦ 從圖庫挑 Logo
+                </button>
+              )}
+            </Field>
             <Field label="主色 Primary">
               <div className="flex gap-2">
                 <input
