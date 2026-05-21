@@ -771,32 +771,27 @@ export function EditorWorkspace({
             </button>
           </div>
 
-          {/* iframe container - 自然尺寸（不 transform scale）
-              桌機 100% canvas / 平板 768 / 手機 375 — Tailwind 用 iframe element 寬度判斷 breakpoint */}
-          <div className="flex-1 bg-stone-200/40 overflow-auto p-0 sm:p-4">
-            <div className="min-h-full flex items-start justify-center">
-              <div
-                className="bg-white shadow-md shadow-stone-300/50 transition-[width] duration-500 flex-shrink-0"
-                style={{
-                  width:
-                    viewport === "desktop"
-                      ? "100%"
-                      : viewport === "tablet"
-                        ? "768px"
-                        : "375px",
-                  maxWidth: "100%",
-                  height: "100%",
-                  minHeight: "100%",
-                }}
-              >
-                <iframe
-                  key={previewKey}
-                  src={`/${slug}?edit=1`}
-                  title="店面預覽"
-                  className="w-full h-full bg-white border-0 block"
-                />
-              </div>
-            </div>
+          {/* iframe container - iframe 明確 calc(100vh - header) 高度，避免 h-screen collapse */}
+          <div className="flex-1 bg-stone-200/40 overflow-auto p-0 sm:p-4 flex items-start justify-center min-h-0">
+            <iframe
+              key={previewKey}
+              src={`/${slug}?edit=1`}
+              title="店面預覽"
+              className="bg-white border-0 block shadow-md shadow-stone-300/50 transition-[width] duration-500"
+              style={{
+                width:
+                  viewport === "desktop"
+                    ? "100%"
+                    : viewport === "tablet"
+                      ? "768px"
+                      : "375px",
+                maxWidth: "100%",
+                height: fullscreen
+                  ? "calc(100vh - 49px)"
+                  : "calc(100vh - 49px - 65px - 64px)",
+                // 49 = top header height; 65 = dashboard layout 上方店面 chrome 高（非 fullscreen 才扣）; 64 = canvas + url-bar padding
+              }}
+            />
           </div>
         </div>
       </main>
