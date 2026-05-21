@@ -162,7 +162,10 @@ export interface StoreTheme {
     // key = element identifier（"hero-tagline" / "hero-subtitle" / "promise-quote" / "visit-title"...）
     // value = { x, y } in 0-1 ratio of parent section
     freePositions: Record<string, { x: number; y: number }>;
-    heroZoom: number;                  // hero 圖片縮放（1.0 = 不縮放，1.5 = 放大 50%）
+    heroZoom: number;                  // legacy 共用縮放（如果 per-viewport 未設定就 fallback 用這個）
+    heroZoomMobile: number;            // 手機（< 640px）獨立縮放，預設 1.5
+    heroZoomTablet: number;            // 平板（640-1024px）獨立縮放，預設 1.3
+    heroZoomDesktop: number;           // 桌機（≥ 1024px）獨立縮放，預設 1.0
   };
 }
 
@@ -432,6 +435,41 @@ function resolveLayout(raw: unknown): StoreTheme["layout"] {
       const z = l.heroZoom;
       if (typeof z !== "number" || !Number.isFinite(z)) return 1.0;
       return Math.max(1.0, Math.min(2.5, z));
+    })(),
+    // Per-viewport zoom — 預設不同 viewport 套不同值修米色 strip
+    // 沒設定就 fallback：若 legacy heroZoom 有值就用它，否則套各 viewport 預設
+    heroZoomMobile: (() => {
+      const z = l.heroZoomMobile;
+      if (typeof z === "number" && Number.isFinite(z)) {
+        return Math.max(1.0, Math.min(2.5, z));
+      }
+      const fallback = l.heroZoom;
+      if (typeof fallback === "number" && Number.isFinite(fallback)) {
+        return Math.max(1.0, Math.min(2.5, fallback));
+      }
+      return 1.5;
+    })(),
+    heroZoomTablet: (() => {
+      const z = l.heroZoomTablet;
+      if (typeof z === "number" && Number.isFinite(z)) {
+        return Math.max(1.0, Math.min(2.5, z));
+      }
+      const fallback = l.heroZoom;
+      if (typeof fallback === "number" && Number.isFinite(fallback)) {
+        return Math.max(1.0, Math.min(2.5, fallback));
+      }
+      return 1.3;
+    })(),
+    heroZoomDesktop: (() => {
+      const z = l.heroZoomDesktop;
+      if (typeof z === "number" && Number.isFinite(z)) {
+        return Math.max(1.0, Math.min(2.5, z));
+      }
+      const fallback = l.heroZoom;
+      if (typeof fallback === "number" && Number.isFinite(fallback)) {
+        return Math.max(1.0, Math.min(2.5, fallback));
+      }
+      return 1.0;
     })(),
     freePositions: (() => {
       // 1. unified freePositions Record (preferred new path)

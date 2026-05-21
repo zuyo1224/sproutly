@@ -71,6 +71,9 @@ type EditorTheme = {
     mapEmbedUrl: string | null;
     freePositions: Record<string, { x: number; y: number }>;
     heroZoom: number;
+    heroZoomMobile: number;
+    heroZoomTablet: number;
+    heroZoomDesktop: number;
   };
   homepage: {
     promise: string;
@@ -472,6 +475,9 @@ export function EditorWorkspace({
           mapEmbedUrl: theme.layout.mapEmbedUrl,
           freePositions: theme.layout.freePositions,
           heroZoom: theme.layout.heroZoom,
+          heroZoomMobile: theme.layout.heroZoomMobile,
+          heroZoomTablet: theme.layout.heroZoomTablet,
+          heroZoomDesktop: theme.layout.heroZoomDesktop,
         },
         homepage: theme.homepage,
         sections: theme.sections,
@@ -1001,28 +1007,45 @@ export function EditorWorkspace({
                 className="w-full rounded-lg border border-stone-200 px-3 py-2 text-sm resize-none"
               />
             </Field>
-            {theme.layout.heroStyle === "full-image" && (
-              <Field label="圖片縮放（裁掉自帶 padding）">
-                <div className="space-y-1.5">
-                  <input
-                    type="range"
-                    min="1.0"
-                    max="2.5"
-                    step="0.05"
-                    value={theme.layout.heroZoom}
-                    onChange={(e) =>
-                      updateLayout({ heroZoom: parseFloat(e.target.value) })
-                    }
-                    className="w-full"
-                  />
-                  <div className="flex justify-between text-[10px] text-stone-500">
-                    <span>1.0x（原始）</span>
-                    <span>{theme.layout.heroZoom.toFixed(2)}x</span>
-                    <span>2.5x</span>
+            {theme.layout.heroStyle === "full-image" && (() => {
+              // Per-viewport zoom：依當前預覽裝置決定編哪個欄位
+              const zoomKey =
+                viewport === "mobile"
+                  ? ("heroZoomMobile" as const)
+                  : viewport === "tablet"
+                  ? ("heroZoomTablet" as const)
+                  : ("heroZoomDesktop" as const);
+              const zoomValue = theme.layout[zoomKey];
+              const viewportLabel =
+                viewport === "mobile" ? "手機" : viewport === "tablet" ? "平板" : "桌機";
+              return (
+                <Field label={`圖片縮放（${viewportLabel}）`}>
+                  <div className="space-y-1.5">
+                    <input
+                      type="range"
+                      min="1.0"
+                      max="2.5"
+                      step="0.05"
+                      value={zoomValue}
+                      onChange={(e) =>
+                        updateLayout({ [zoomKey]: parseFloat(e.target.value) })
+                      }
+                      className="w-full"
+                    />
+                    <div className="flex justify-between text-[10px] text-stone-500">
+                      <span>1.0x（原始）</span>
+                      <span>{zoomValue.toFixed(2)}x</span>
+                      <span>2.5x</span>
+                    </div>
+                    <p className="text-[10px] text-stone-500 leading-relaxed pt-1">
+                      手機 / 平板 / 桌機 各自一個值。切上面預覽裝置調對應的。
+                      <br />
+                      手機 {theme.layout.heroZoomMobile.toFixed(2)}x · 平板 {theme.layout.heroZoomTablet.toFixed(2)}x · 桌機 {theme.layout.heroZoomDesktop.toFixed(2)}x
+                    </p>
                   </div>
-                </div>
-              </Field>
-            )}
+                </Field>
+              );
+            })()}
             {theme.layout.heroStyle === "full-image" && (
               <Field label="Free Positioning（Phase 5）">
                 {(() => {

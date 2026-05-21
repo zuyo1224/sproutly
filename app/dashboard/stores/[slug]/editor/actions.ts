@@ -26,6 +26,9 @@ type EditorPayload = {
     mapEmbedUrl?: string | null;
     freePositions?: Record<string, { x: number; y: number }>;
     heroZoom?: number;
+    heroZoomMobile?: number;
+    heroZoomTablet?: number;
+    heroZoomDesktop?: number;
   };
   homepage?: {
     promise?: string;
@@ -177,6 +180,12 @@ export async function saveEditorState(slug: string, payload: EditorPayload) {
       const z = payload.layout.heroZoom;
       if (typeof z === "number" && Number.isFinite(z)) {
         layoutPatch.heroZoom = Math.max(1.0, Math.min(2.5, z));
+      }
+    }
+    for (const key of ["heroZoomMobile", "heroZoomTablet", "heroZoomDesktop"] as const) {
+      const z = payload.layout[key];
+      if (z !== undefined && typeof z === "number" && Number.isFinite(z)) {
+        layoutPatch[key] = Math.max(1.0, Math.min(2.5, z));
       }
     }
     if (payload.layout.freePositions !== undefined) {

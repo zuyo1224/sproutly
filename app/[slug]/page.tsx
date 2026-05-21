@@ -146,15 +146,25 @@ export default async function StoreHomePage({
           if (heroStyle === "full-image" && theme.heroUrl) {
             const pos = theme.layout.freePositions["hero-tagline"] ?? null;
             const freePositioned = pos !== null;
+            const zm = theme.layout.heroZoomMobile;
+            const zt = theme.layout.heroZoomTablet;
+            const zd = theme.layout.heroZoomDesktop;
             return (
               <section
                 className="relative h-screen overflow-hidden"
                 data-edit-target="hero"
                 data-edit-label="Hero 區段"
               >
-                {/* 圖片 wrapper：用 scale 1.3 把圖片自帶上下米色 padding 推出 section 邊界 */}
+                {/* Per-viewport zoom：mobile / tablet / desktop 各自一個 scale 值，
+                    用 CSS media query 切換。同一張圖在不同寬度套不同裁切量，
+                    避免單一 zoom 套到所有 device 時頂部/底部漏出米色 padding。 */}
+                <style>{`
+                  .sproutly-hero-bg-scaled { transform: scale(${zm}); transform-origin: center center; }
+                  @media (min-width: 640px) { .sproutly-hero-bg-scaled { transform: scale(${zt}); } }
+                  @media (min-width: 1024px) { .sproutly-hero-bg-scaled { transform: scale(${zd}); } }
+                `}</style>
                 <div
-                  className="absolute inset-0"
+                  className="absolute inset-0 sproutly-hero-bg-scaled"
                   role="img"
                   aria-label={store.name}
                   style={{
@@ -162,8 +172,6 @@ export default async function StoreHomePage({
                     backgroundSize: "cover",
                     backgroundPosition: "center",
                     backgroundRepeat: "no-repeat",
-                    transform: `scale(${theme.layout.heroZoom})`,
-                    transformOrigin: "center center",
                   }}
                 />
                 <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-black/45" />
