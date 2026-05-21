@@ -21,6 +21,7 @@ import {
 import { CSS } from "@dnd-kit/utilities";
 import { saveEditorState } from "./actions";
 import { AssetPicker } from "@/app/_components/asset-picker";
+import { EditorAIChat } from "./editor-ai-chat";
 
 type SectionKey =
   | "hero"
@@ -83,7 +84,7 @@ type EditorTheme = {
   };
 };
 
-type SelectedTab = "section" | "design" | "content";
+type SelectedTab = "section" | "design" | "content" | "ai";
 
 const HERO_STYLE_LABELS: Record<HeroStyle, string> = {
   "full-image": "全屏沉浸",
@@ -620,6 +621,7 @@ export function EditorWorkspace({
             { tab: "section" as const, label: "版面結構", icon: <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="3" width="18" height="5" rx="1"/><rect x="3" y="11" width="18" height="5" rx="1"/><rect x="3" y="19" width="18" height="2" rx="1"/></svg> },
             { tab: "design" as const, label: "視覺風格", icon: <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"><circle cx="13.5" cy="6.5" r="2.5"/><circle cx="18.5" cy="11.5" r="2.5"/><circle cx="11.5" cy="16.5" r="2.5"/><circle cx="5.5" cy="11.5" r="2.5"/><path d="M12 22a10 10 0 110-20 10 10 0 010 20z"/></svg> },
             { tab: "content" as const, label: "文案", icon: <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"><polyline points="4 7 4 4 20 4 20 7"/><line x1="9" y1="20" x2="15" y2="20"/><line x1="12" y1="4" x2="12" y2="20"/></svg> },
+            { tab: "ai" as const, label: "AI 助手", icon: <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"><path d="M12 2L13.5 8.5L20 10L13.5 11.5L12 18L10.5 11.5L4 10L10.5 8.5L12 2Z" /><circle cx="19" cy="5" r="1.5"/><circle cx="6" cy="19" r="1"/></svg> },
           ]
         ).map(({ tab, label, icon }) => (
           <button
@@ -684,16 +686,56 @@ export function EditorWorkspace({
               ? "版面結構"
               : activeTab === "design"
                 ? "視覺風格"
-                : "文案內容"}
+                : activeTab === "ai"
+                  ? "AI 助手"
+                  : "文案內容"}
           </h2>
           <p className="text-[11px] text-stone-500 mt-0.5">
             {activeTab === "section"
               ? "拖曳排序 / 點選編輯"
               : activeTab === "design"
                 ? "色彩 / Logo"
-                : "Tagline / 子頁開關"}
+                : activeTab === "ai"
+                  ? "用自然語言改設計"
+                  : "Tagline / 子頁開關"}
           </p>
         </div>
+
+        {activeTab === "ai" && (
+          <EditorAIChat
+            theme={{
+              primary: theme.primary,
+              accent: theme.accent,
+              tagline: theme.tagline,
+              layout: theme.layout,
+              homepage: theme.homepage,
+            }}
+            onPatch={(patch) => {
+              if (patch.primary) update("primary", patch.primary);
+              if (patch.accent) update("accent", patch.accent);
+              if (patch.tagline !== undefined) update("tagline", patch.tagline);
+              if (patch.layout) {
+                const l = patch.layout;
+                const patchObj: Partial<EditorTheme["layout"]> = {};
+                if (l.heroStyle) patchObj.heroStyle = l.heroStyle as HeroStyle;
+                if (l.heroEyebrow !== undefined) patchObj.heroEyebrow = l.heroEyebrow;
+                if (l.heroSubtitle !== undefined) patchObj.heroSubtitle = l.heroSubtitle;
+                if (l.heroImageSide) patchObj.heroImageSide = l.heroImageSide as "left" | "right";
+                if (l.sectionOrder && Array.isArray(l.sectionOrder)) {
+                  patchObj.sectionOrder = l.sectionOrder as SectionKey[];
+                }
+                if (Object.keys(patchObj).length) updateLayout(patchObj);
+              }
+              if (patch.homepage) {
+                const hpPatch: Partial<EditorTheme["homepage"]> = {};
+                if (patch.homepage.promise !== undefined) hpPatch.promise = patch.homepage.promise;
+                if (patch.homepage.collectionsIntro !== undefined) hpPatch.collectionsIntro = patch.homepage.collectionsIntro;
+                if (patch.homepage.visitTitle !== undefined) hpPatch.visitTitle = patch.homepage.visitTitle;
+                if (Object.keys(hpPatch).length) updateHomepage(hpPatch);
+              }
+            }}
+          />
+        )}
 
         {activeTab === "section" && (
           <div className="px-3 pb-3 flex-1 overflow-y-auto border-t border-stone-100 pt-3">
