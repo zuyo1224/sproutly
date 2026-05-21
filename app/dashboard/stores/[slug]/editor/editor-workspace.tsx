@@ -115,18 +115,8 @@ export function EditorWorkspace({
   const [viewport, setViewport] = useState<"desktop" | "tablet" | "mobile">("desktop");
   const [autoSaveEnabled, setAutoSaveEnabled] = useState(true);
   const autoSaveTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  // Canvas 容器 ref + 寬度測量（用 transform scale 把 1280px / 768 / 375 縮放到 canvas）
-  const canvasRef = useRef<HTMLDivElement>(null);
-  const [canvasWidth, setCanvasWidth] = useState(1280);
-  useEffect(() => {
-    const el = canvasRef.current;
-    if (!el) return;
-    const measure = () => setCanvasWidth(el.clientWidth);
-    measure();
-    const ro = new ResizeObserver(measure);
-    ro.observe(el);
-    return () => ro.disconnect();
-  }, []);
+  // 全螢幕預覽（隱藏 sidebar / panel，iframe 直接 100% 寬高）
+  const [fullscreen, setFullscreen] = useState(false);
   // 修 dnd-kit hydration error：useSortable 用 counter 生 ID，SSR / client 不一致
   // → 只在 client mount 後才 render DndContext / SortableContext
   const [mounted, setMounted] = useState(false);
@@ -570,6 +560,18 @@ export function EditorWorkspace({
                   ? `● 已存 ${new Date(savedAt).toLocaleTimeString("zh-TW", { hour: "2-digit", minute: "2-digit" })}`
                   : "—"}
           </span>
+          <button
+            type="button"
+            onClick={() => setFullscreen(!fullscreen)}
+            className={`rounded-full px-3 py-1.5 text-xs font-medium transition ${
+              fullscreen
+                ? "bg-emerald-100 text-emerald-900"
+                : "text-emerald-900/80 hover:text-emerald-900 hover:bg-stone-100"
+            }`}
+            title={fullscreen ? "退出全螢幕（顯示編輯欄）" : "全螢幕預覽（藏編輯欄）"}
+          >
+            {fullscreen ? "編輯" : "全螢幕"}
+          </button>
           <a
             href={`/${slug}`}
             target="_blank"
@@ -589,9 +591,14 @@ export function EditorWorkspace({
         </div>
       </header>
 
-      {/* === 主編輯區（3 column） === */}
-      <div className="grid grid-cols-1 lg:grid-cols-[80px_240px_1fr_300px] flex-1 overflow-hidden">
-      {/* === Icon nav（最左）=== */}
+      {/* === 主編輯區（4 column；fullscreen 模式下只剩 canvas） === */}
+      <div className={`grid flex-1 overflow-hidden ${
+        fullscreen
+          ? "grid-cols-1"
+          : "grid-cols-1 lg:grid-cols-[80px_240px_1fr_300px]"
+      }`}>
+      {/* === Icon nav（最左；fullscreen 時隱藏）=== */}
+      {!fullscreen && (
       <nav className="bg-white border-r border-stone-200 flex flex-col items-center py-4 gap-1">
         {(
           [
@@ -639,8 +646,10 @@ export function EditorWorkspace({
           </svg>
         </button>
       </nav>
+      )}
 
-      {/* === 左 sidebar：tab content === */}
+      {/* === 左 sidebar：tab content（fullscreen 時隱藏）=== */}
+      {!fullscreen && (
       <aside className="bg-white border-r border-stone-200 flex flex-col overflow-y-auto">
         <div className="p-4 border-b border-stone-100">
           <h2 className="text-sm font-semibold text-emerald-950">
@@ -742,10 +751,11 @@ export function EditorWorkspace({
         )}
 
       </aside>
+      )}
 
       {/* === 中央 canvas: 公開頁 preview === */}
-      <main className="bg-stone-100 p-4 lg:p-6 overflow-hidden flex flex-col">
-        <div className="flex-1 rounded-xl overflow-hidden shadow-lg shadow-stone-200/60 border border-stone-200 bg-white flex flex-col">
+      <main className={`bg-stone-100 overflow-hidden flex flex-col ${fullscreen ? "p-0" : "p-4 lg:p-6"}`}>
+        <div className={`flex-1 overflow-hidden bg-white flex flex-col ${fullscreen ? "" : "rounded-xl shadow-lg shadow-stone-200/60 border border-stone-200"}`}>
           {/* Canvas URL bar（簡化、wix-like） */}
           <div className="flex items-center justify-between px-4 py-2 border-b border-stone-200 bg-stone-50">
             <span className="text-[11px] font-mono text-stone-500 truncate">
@@ -761,50 +771,38 @@ export function EditorWorkspace({
             </button>
           </div>
 
-          {/* iframe container - viewport-aware with transform scale
-              iframe viewport 用真實桌機寬度 (1280)，再 transform scale 到 canvas 大小，
-              這樣 Tailwind lg: / xl: breakpoint 會 trigger，看起來是 desktop layout */}
-          <div
-            ref={canvasRef}
-            className="flex-1 bg-stone-200/40 overflow-hidden p-0 sm:p-4"
-          >
-            {(() => {
-              const baseW =
-                viewport === "desktop" ? 1280 : viewport === "tablet" ? 768 : 375;
-              const padding = 32;
-              const scale = Math.min(1, (canvasWidth - padding) / baseW);
-              const displayW = baseW * scale;
-
-              return (
-                <div
-                  className="bg-white shadow-md shadow-stone-300/50 transition-[width] duration-500"
-                  style={{
-                    width: `${displayW}px`,
-                    height: "100%",
-                    margin: "0 auto",
-                    overflow: "hidden",
-                  }}
-                >
-                  <iframe
-                    key={previewKey}
-                    src={`/${slug}?edit=1`}
-                    title="店面預覽"
-                    className="bg-white border-0 block"
-                    style={{
-                      width: `${baseW}px`,
-                      height: `${100 / scale}%`,
-                      transform: `scale(${scale})`,
-                      transformOrigin: "top left",
-                    }}
-                  />
-                </div>
-              );
-            })()}
+          {/* iframe container - 自然尺寸（不 transform scale）
+              桌機 100% canvas / 平板 768 / 手機 375 — Tailwind 用 iframe element 寬度判斷 breakpoint */}
+          <div className="flex-1 bg-stone-200/40 overflow-auto p-0 sm:p-4">
+            <div className="min-h-full flex items-start justify-center">
+              <div
+                className="bg-white shadow-md shadow-stone-300/50 transition-[width] duration-500 flex-shrink-0"
+                style={{
+                  width:
+                    viewport === "desktop"
+                      ? "100%"
+                      : viewport === "tablet"
+                        ? "768px"
+                        : "375px",
+                  maxWidth: "100%",
+                  height: "100%",
+                  minHeight: "100%",
+                }}
+              >
+                <iframe
+                  key={previewKey}
+                  src={`/${slug}?edit=1`}
+                  title="店面預覽"
+                  className="w-full h-full bg-white border-0 block"
+                />
+              </div>
+            </div>
           </div>
         </div>
       </main>
 
-      {/* === 右 panel: 屬性編輯 === */}
+      {/* === 右 panel: 屬性編輯（fullscreen 時隱藏） === */}
+      {!fullscreen && (
       <aside className="bg-white border-l border-stone-200 overflow-y-auto">
         {activeTab === "section" && selectedSection === "hero" && (
           <PanelSection title="Hero 區段">
@@ -1475,6 +1473,7 @@ export function EditorWorkspace({
           </PanelSection>
         )}
       </aside>
+      )}
       </div>
 
       {/* === Asset Picker modal === */}
