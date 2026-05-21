@@ -25,6 +25,7 @@ type EditorPayload = {
     gallery?: Array<{ url: string; caption?: string | null }>;
     mapEmbedUrl?: string | null;
     freePositions?: Record<string, { x: number; y: number }>;
+    heroZoom?: number;
   };
   homepage?: {
     promise?: string;
@@ -170,6 +171,12 @@ export async function saveEditorState(slug: string, payload: EditorPayload) {
         /^https:\/\/(www\.)?google\.com\/maps\/embed/i.test(v)
       ) {
         layoutPatch.mapEmbedUrl = v.slice(0, 1000).trim();
+      }
+    }
+    if (payload.layout.heroZoom !== undefined) {
+      const z = payload.layout.heroZoom;
+      if (typeof z === "number" && Number.isFinite(z)) {
+        layoutPatch.heroZoom = Math.max(1.0, Math.min(2.5, z));
       }
     }
     if (payload.layout.freePositions !== undefined) {

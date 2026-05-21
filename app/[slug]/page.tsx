@@ -162,7 +162,7 @@ export default async function StoreHomePage({
                     backgroundSize: "cover",
                     backgroundPosition: "center",
                     backgroundRepeat: "no-repeat",
-                    transform: "scale(1.6)",
+                    transform: `scale(${theme.layout.heroZoom})`,
                     transformOrigin: "center center",
                   }}
                 />

@@ -70,6 +70,7 @@ type EditorTheme = {
     gallery: GalleryItem[];
     mapEmbedUrl: string | null;
     freePositions: Record<string, { x: number; y: number }>;
+    heroZoom: number;
   };
   homepage: {
     promise: string;
@@ -470,6 +471,7 @@ export function EditorWorkspace({
             .map((g) => ({ url: g.url, caption: g.caption })),
           mapEmbedUrl: theme.layout.mapEmbedUrl,
           freePositions: theme.layout.freePositions,
+          heroZoom: theme.layout.heroZoom,
         },
         homepage: theme.homepage,
         sections: theme.sections,
@@ -999,6 +1001,28 @@ export function EditorWorkspace({
                 className="w-full rounded-lg border border-stone-200 px-3 py-2 text-sm resize-none"
               />
             </Field>
+            {theme.layout.heroStyle === "full-image" && (
+              <Field label="圖片縮放（裁掉自帶 padding）">
+                <div className="space-y-1.5">
+                  <input
+                    type="range"
+                    min="1.0"
+                    max="2.5"
+                    step="0.05"
+                    value={theme.layout.heroZoom}
+                    onChange={(e) =>
+                      updateLayout({ heroZoom: parseFloat(e.target.value) })
+                    }
+                    className="w-full"
+                  />
+                  <div className="flex justify-between text-[10px] text-stone-500">
+                    <span>1.0x（原始）</span>
+                    <span>{theme.layout.heroZoom.toFixed(2)}x</span>
+                    <span>2.5x</span>
+                  </div>
+                </div>
+              </Field>
+            )}
             {theme.layout.heroStyle === "full-image" && (
               <Field label="Free Positioning（Phase 5）">
                 {(() => {

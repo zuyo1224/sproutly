@@ -162,6 +162,7 @@ export interface StoreTheme {
     // key = element identifier（"hero-tagline" / "hero-subtitle" / "promise-quote" / "visit-title"...）
     // value = { x, y } in 0-1 ratio of parent section
     freePositions: Record<string, { x: number; y: number }>;
+    heroZoom: number;                  // hero 圖片縮放（1.0 = 不縮放，1.5 = 放大 50%）
   };
 }
 
@@ -427,6 +428,11 @@ function resolveLayout(raw: unknown): StoreTheme["layout"] {
       typeof l.mapEmbedUrl === "string" && l.mapEmbedUrl.trim()
         ? l.mapEmbedUrl.trim()
         : null,
+    heroZoom: (() => {
+      const z = l.heroZoom;
+      if (typeof z !== "number" || !Number.isFinite(z)) return 1.0;
+      return Math.max(1.0, Math.min(2.5, z));
+    })(),
     freePositions: (() => {
       // 1. unified freePositions Record (preferred new path)
       const fp = l.freePositions;
