@@ -14,6 +14,7 @@ import {
   type PresetKey,
   type FontKey,
 } from "@/app/[slug]/_theme";
+import { AIEditPanel } from "@/app/_components/ai-edit-panel";
 
 type Params = Promise<{ slug: string }>;
 type SearchParams = Promise<{ error?: string; saved?: string }>;
@@ -55,8 +56,22 @@ export default async function StoreSettingsPage({
 
   const theme = resolveTheme(store.theme);
 
+  // 給 AI panel 用的 theme 快照（client component 用）
+  const themeSnapshot = {
+    primary: theme.primary,
+    accent: theme.accent,
+    tagline: theme.tagline,
+    layout: theme.layout,
+    homepage: {
+      promise: theme.homepage.promise,
+      collectionsIntro: theme.homepage.collectionsIntro,
+      visitTitle: theme.homepage.visitTitle,
+    },
+  };
+
   return (
-    <div>
+    <div className="grid grid-cols-1 lg:grid-cols-[1fr_360px] gap-6">
+      <div>
       <h2 className="text-xl font-bold text-emerald-950 mb-6">店面設定</h2>
 
       {error && (
@@ -91,7 +106,7 @@ export default async function StoreSettingsPage({
         </div>
       )}
 
-      <form action={updateBound} className="space-y-6">
+      <form id="store-settings-form" action={updateBound} className="space-y-6">
         <section className="bg-white rounded-2xl p-6 shadow-lg shadow-emerald-700/5">
           <h3 className="text-sm font-semibold text-emerald-900 mb-4">
             發布狀態
@@ -734,6 +749,15 @@ A: 可以，地點為台北車站。`}</pre>
           </Link>
         </div>
       </form>
+      </div>
+
+      {/* AI 助手 panel（對標 Wix Aria）— sticky 右側 360px */}
+      <div className="hidden lg:block">
+        <AIEditPanel
+          currentTheme={themeSnapshot}
+          formId="store-settings-form"
+        />
+      </div>
     </div>
   );
 }
