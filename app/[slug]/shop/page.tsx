@@ -81,17 +81,23 @@ export default async function ShopPage({
   };
 
   return (
-    <main className="max-w-6xl mx-auto px-6 py-12 sm:py-16">
-      <div className="mb-8">
+    <main className="max-w-6xl mx-auto px-6 py-16 sm:py-24">
+      <div className="mb-16 sm:mb-20">
         <p
-          className="text-xs uppercase tracking-widest"
+          className="text-[10px] tracking-[0.4em] uppercase mb-5"
           style={{ color: theme.accent }}
         >
           Shop
         </p>
         <h1
-          className="mt-2 text-3xl sm:text-4xl font-semibold tracking-tight"
-          style={{ color: theme.text }}
+          className="text-4xl md:text-5xl lg:text-[3rem]"
+          style={{
+            color: theme.text,
+            fontFamily: "var(--store-font)",
+            fontWeight: 400,
+            letterSpacing: "-0.01em",
+            lineHeight: 1.15,
+          }}
         >
           所有商品
         </h1>

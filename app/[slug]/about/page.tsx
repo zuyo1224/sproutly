@@ -57,16 +57,22 @@ export default async function AboutPage({ params }: { params: Params }) {
     <main className="max-w-3xl mx-auto px-6 py-16">
       {theme.sections.about && (
         <>
-          <div className="mb-10">
+          <div className="mb-16 sm:mb-20">
             <p
-              className="text-xs uppercase tracking-widest"
+              className="text-[10px] tracking-[0.4em] uppercase mb-5"
               style={{ color: theme.accent }}
             >
               About
             </p>
             <h1
-              className="mt-2 text-4xl font-semibold tracking-tight"
-              style={{ color: theme.text }}
+              className="text-4xl md:text-5xl lg:text-[3rem]"
+              style={{
+                color: theme.text,
+                fontFamily: "var(--store-font)",
+                fontWeight: 400,
+                letterSpacing: "-0.01em",
+                lineHeight: 1.15,
+              }}
             >
               關於我們
             </h1>
