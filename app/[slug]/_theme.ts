@@ -158,9 +158,10 @@ export interface StoreTheme {
     partners: PartnerItem[];           // 合作夥伴 logos（optional block）
     gallery: GalleryItem[];            // 圖片相簿（optional block）
     mapEmbedUrl: string | null;        // Google Maps embed URL（visit section 顯示）
-    // Phase 5 Free Positioning MVP：hero tagline 可拖到 hero 區內任意位置
-    // null = 預設位置（既有 flex layout）；{x,y} = 0-1 比例（hero section 內 % 位置）
-    heroTaglinePosition: { x: number; y: number } | null;
+    // Phase 5 Free Positioning：unified record of element positions
+    // key = element identifier（"hero-tagline" / "hero-subtitle" / "promise-quote" / "visit-title"...）
+    // value = { x, y } in 0-1 ratio of parent section
+    freePositions: Record<string, { x: number; y: number }>;
   };
 }
 
@@ -426,17 +427,37 @@ function resolveLayout(raw: unknown): StoreTheme["layout"] {
       typeof l.mapEmbedUrl === "string" && l.mapEmbedUrl.trim()
         ? l.mapEmbedUrl.trim()
         : null,
-    heroTaglinePosition: (() => {
-      const p = l.heroTaglinePosition;
-      if (!p || typeof p !== "object") return null;
-      const obj = p as Record<string, unknown>;
-      const x = typeof obj.x === "number" ? obj.x : NaN;
-      const y = typeof obj.y === "number" ? obj.y : NaN;
-      if (!Number.isFinite(x) || !Number.isFinite(y)) return null;
-      return {
-        x: Math.max(0, Math.min(1, x)),
-        y: Math.max(0, Math.min(1, y)),
-      };
+    freePositions: (() => {
+      // 1. unified freePositions Record (preferred new path)
+      const fp = l.freePositions;
+      const result: Record<string, { x: number; y: number }> = {};
+      if (fp && typeof fp === "object" && !Array.isArray(fp)) {
+        for (const [k, v] of Object.entries(fp as Record<string, unknown>)) {
+          if (!v || typeof v !== "object") continue;
+          const obj = v as Record<string, unknown>;
+          const x = typeof obj.x === "number" ? obj.x : NaN;
+          const y = typeof obj.y === "number" ? obj.y : NaN;
+          if (!Number.isFinite(x) || !Number.isFinite(y)) continue;
+          result[k] = {
+            x: Math.max(0, Math.min(1, x)),
+            y: Math.max(0, Math.min(1, y)),
+          };
+        }
+      }
+      // 2. legacy fallback：把舊 heroTaglinePosition 自動 migrate 到 freePositions["hero-tagline"]
+      const legacy = (l as { heroTaglinePosition?: unknown }).heroTaglinePosition;
+      if (legacy && typeof legacy === "object" && !result["hero-tagline"]) {
+        const obj = legacy as Record<string, unknown>;
+        const x = typeof obj.x === "number" ? obj.x : NaN;
+        const y = typeof obj.y === "number" ? obj.y : NaN;
+        if (Number.isFinite(x) && Number.isFinite(y)) {
+          result["hero-tagline"] = {
+            x: Math.max(0, Math.min(1, x)),
+            y: Math.max(0, Math.min(1, y)),
+          };
+        }
+      }
+      return result;
     })(),
   };
 }

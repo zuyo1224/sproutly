@@ -24,7 +24,7 @@ type EditorPayload = {
     partners?: Array<{ name: string; logoUrl: string; href?: string | null }>;
     gallery?: Array<{ url: string; caption?: string | null }>;
     mapEmbedUrl?: string | null;
-    heroTaglinePosition?: { x: number; y: number } | null;
+    freePositions?: Record<string, { x: number; y: number }>;
   };
   homepage?: {
     promise?: string;
@@ -172,23 +172,24 @@ export async function saveEditorState(slug: string, payload: EditorPayload) {
         layoutPatch.mapEmbedUrl = v.slice(0, 1000).trim();
       }
     }
-    if (payload.layout.heroTaglinePosition !== undefined) {
-      const p = payload.layout.heroTaglinePosition;
-      if (p === null) {
-        layoutPatch.heroTaglinePosition = null;
-      } else if (
-        p &&
-        typeof p === "object" &&
-        typeof p.x === "number" &&
-        typeof p.y === "number" &&
-        Number.isFinite(p.x) &&
-        Number.isFinite(p.y)
-      ) {
-        layoutPatch.heroTaglinePosition = {
-          x: Math.max(0, Math.min(1, p.x)),
-          y: Math.max(0, Math.min(1, p.y)),
-        };
+    if (payload.layout.freePositions !== undefined) {
+      const fp = payload.layout.freePositions;
+      const sanitized: Record<string, { x: number; y: number }> = {};
+      if (fp && typeof fp === "object" && !Array.isArray(fp)) {
+        for (const [k, v] of Object.entries(fp)) {
+          if (!k || typeof k !== "string" || k.length > 60) continue;
+          if (!v || typeof v !== "object") continue;
+          const x = v.x;
+          const y = v.y;
+          if (typeof x !== "number" || typeof y !== "number") continue;
+          if (!Number.isFinite(x) || !Number.isFinite(y)) continue;
+          sanitized[k] = {
+            x: Math.max(0, Math.min(1, x)),
+            y: Math.max(0, Math.min(1, y)),
+          };
+        }
       }
+      layoutPatch.freePositions = sanitized;
     }
     if (payload.layout.gallery !== undefined && Array.isArray(payload.layout.gallery)) {
       layoutPatch.gallery = payload.layout.gallery

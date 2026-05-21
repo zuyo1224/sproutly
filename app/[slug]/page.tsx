@@ -144,7 +144,7 @@ export default async function StoreHomePage({
 
           // Variant 1: full-image（既有預設）— 整屏圖 + tagline overlay 文字
           if (heroStyle === "full-image" && theme.heroUrl) {
-            const pos = theme.layout.heroTaglinePosition;
+            const pos = theme.layout.freePositions["hero-tagline"] ?? null;
             const freePositioned = pos !== null;
             return (
               <section

@@ -69,7 +69,7 @@ type EditorTheme = {
     partners: PartnerItem[];
     gallery: GalleryItem[];
     mapEmbedUrl: string | null;
-    heroTaglinePosition: { x: number; y: number } | null;
+    freePositions: Record<string, { x: number; y: number }>;
   };
   homepage: {
     promise: string;
@@ -219,9 +219,21 @@ export function EditorWorkspace({
         typeof (msg as { y?: number }).y === "number"
       ) {
         const m = msg as unknown as { element: string; x: number; y: number };
-        if (m.element === "hero-tagline") {
-          updateLayout({ heroTaglinePosition: { x: m.x, y: m.y } });
-        }
+        // unified freePositions Record（任何 element 都走這條路徑）
+        setTheme((t) => {
+          pushHistory(t);
+          return {
+            ...t,
+            layout: {
+              ...t.layout,
+              freePositions: {
+                ...t.layout.freePositions,
+                [m.element]: { x: m.x, y: m.y },
+              },
+            },
+          };
+        });
+        setDirty(true);
       } else if (
         msg.type === "sproutly-edit-text-update" &&
         typeof msg.field === "string" &&
@@ -457,7 +469,7 @@ export function EditorWorkspace({
             .filter((g) => g.url.trim())
             .map((g) => ({ url: g.url, caption: g.caption })),
           mapEmbedUrl: theme.layout.mapEmbedUrl,
-          heroTaglinePosition: theme.layout.heroTaglinePosition,
+          freePositions: theme.layout.freePositions,
         },
         homepage: theme.homepage,
         sections: theme.sections,
@@ -988,28 +1000,35 @@ export function EditorWorkspace({
               />
             </Field>
             {theme.layout.heroStyle === "full-image" && (
-              <Field label="Tagline 位置（Phase 5 free positioning）">
-                {theme.layout.heroTaglinePosition ? (
-                  <div className="space-y-2">
-                    <p className="text-[11px] text-stone-600">
-                      已自訂位置：X={Math.round(theme.layout.heroTaglinePosition.x * 100)}%、
-                      Y={Math.round(theme.layout.heroTaglinePosition.y * 100)}%
+              <Field label="Free Positioning（Phase 5）">
+                {(() => {
+                  const pos = theme.layout.freePositions["hero-tagline"];
+                  if (pos) {
+                    return (
+                      <div className="space-y-2">
+                        <p className="text-[11px] text-stone-600">
+                          Tagline 自訂位置：X={Math.round(pos.x * 100)}% Y={Math.round(pos.y * 100)}%
+                        </p>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            const { ["hero-tagline"]: _, ...rest } =
+                              theme.layout.freePositions;
+                            updateLayout({ freePositions: rest });
+                          }}
+                          className="w-full rounded-lg border border-stone-200 text-stone-700 text-xs py-2 hover:bg-stone-50 transition"
+                        >
+                          重設為預設位置（左下）
+                        </button>
+                      </div>
+                    );
+                  }
+                  return (
+                    <p className="text-[11px] text-stone-500 leading-relaxed">
+                      在 iframe 內拖藍色虛線 tagline 框到任何位置 → 自動儲存位置。
                     </p>
-                    <button
-                      type="button"
-                      onClick={() =>
-                        updateLayout({ heroTaglinePosition: null })
-                      }
-                      className="w-full rounded-lg border border-stone-200 text-stone-700 text-xs py-2 hover:bg-stone-50 transition"
-                    >
-                      重設為預設位置（左下）
-                    </button>
-                  </div>
-                ) : (
-                  <p className="text-[11px] text-stone-500 leading-relaxed">
-                    在 iframe 內**拖**藍色虛線 tagline 框到任何位置 → 自動儲存位置。
-                  </p>
-                )}
+                  );
+                })()}
               </Field>
             )}
             {theme.layout.heroStyle === "split" && (
