@@ -1220,14 +1220,36 @@ export default async function StoreHomePage({
           )}
 
         {/* === Visit === */}
-        {(store.address || businessHoursText) && (
+        {(store.address || businessHoursText) && (() => {
+          const visitPos = theme.layout.freePositions["visit-card"] ?? null;
+          return (
           <section
-            className={`py-40 sm:py-56 ${animClass}`}
+            className={`relative py-40 sm:py-56 ${animClass} ${visitPos ? "min-h-screen" : ""}`}
             style={{ background: theme.surface }}
             data-edit-target="visit"
             data-edit-label="來訪資訊"
           >
-            <div className="max-w-xl mx-auto px-8 sm:px-12 text-center">
+            <div
+              data-edit-drag="visit-card"
+              className={
+                visitPos
+                  ? "absolute"
+                  : "max-w-xl mx-auto px-8 sm:px-12 text-center"
+              }
+              style={
+                visitPos
+                  ? {
+                      left: `${visitPos.x * 100}%`,
+                      top: `${visitPos.y * 100}%`,
+                      transform: "translate(-50%, -50%)",
+                      maxWidth: "min(560px, 90vw)",
+                      width: "100%",
+                      padding: "0 1.5rem",
+                      textAlign: "center",
+                    }
+                  : undefined
+              }
+            >
               <p
                 className="text-[10px] tracking-[0.4em] uppercase mb-5"
                 style={{ color: theme.accent }}
@@ -1316,7 +1338,8 @@ export default async function StoreHomePage({
               )}
             </div>
           </section>
-        )}
+          );
+        })()}
       </main>
     </>
   );
