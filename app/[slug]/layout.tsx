@@ -285,15 +285,10 @@ export default async function PublicStoreLayout({
           to { transform: scaleX(1); }
         }
 
-        /* Hero 圖視差：滾動時圖往上推、放大 */
+        /* Hero 圖視差：完全停用（scroll-timeline 在某些 viewport 會引起 transform 偏移留白）*/
         .sproutly-hero-parallax {
-          animation: sproutly-hero-parallax linear;
-          animation-timeline: scroll(root);
-          animation-range: 0vh 100vh;
-        }
-        @keyframes sproutly-hero-parallax {
-          from { transform: scale(1.0) translate3d(0, 0, 0); }
-          to { transform: scale(1.15) translate3d(0, -80px, 0); }
+          animation: none !important;
+          transform: none !important;
         }
 
         /* 頂部 header scroll 時縮高 + 加深 blur */
