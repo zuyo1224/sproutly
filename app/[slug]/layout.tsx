@@ -611,6 +611,33 @@ export default async function PublicStoreLayout({
             animation: none !important;
           }
         }
+
+        /* 區段上下空白：editor 的「區段上下空白」slider 透過 --store-section-pad 套到所有區段。
+           原本各 section 寫死 py-40 sm:py-56（=10rem/14rem），這個控制其實沒生效（沒人讀 var）。
+           這裡用 attribute selector 0,1,1 蓋掉 Tailwind class 的 0,1,0，乘上倍率
+           （compact 0.6 / default 1 / spacious 1.4）。
+           排除 hero — hero 有自己的 heroHeight 控制（auto / short / tall / full），不該被全站 padding 動。
+           stats / partners 原本 base 較小（py-32 sm:py-44），分組保留差異後再乘倍率。 */
+        section[data-edit-target]:not([data-edit-target="hero"]):not([data-edit-target="stats"]):not([data-edit-target="partners"]) {
+          padding-top: calc(10rem * var(--store-section-pad, 1));
+          padding-bottom: calc(10rem * var(--store-section-pad, 1));
+        }
+        section[data-edit-target="stats"],
+        section[data-edit-target="partners"] {
+          padding-top: calc(8rem * var(--store-section-pad, 1));
+          padding-bottom: calc(8rem * var(--store-section-pad, 1));
+        }
+        @media (min-width: 640px) {
+          section[data-edit-target]:not([data-edit-target="hero"]):not([data-edit-target="stats"]):not([data-edit-target="partners"]) {
+            padding-top: calc(14rem * var(--store-section-pad, 1));
+            padding-bottom: calc(14rem * var(--store-section-pad, 1));
+          }
+          section[data-edit-target="stats"],
+          section[data-edit-target="partners"] {
+            padding-top: calc(11rem * var(--store-section-pad, 1));
+            padding-bottom: calc(11rem * var(--store-section-pad, 1));
+          }
+        }
       `}</style>
 
       {/* iframe edit mode bridge（只在 ?edit=1 啟動） */}
