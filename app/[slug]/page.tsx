@@ -146,8 +146,6 @@ export default async function StoreHomePage({
           if (heroStyle === "full-image" && theme.heroUrl) {
             const pos = theme.layout.freePositions["hero-tagline"] ?? null;
             const freePositioned = pos !== null;
-            const zt = theme.layout.heroZoomTablet;
-            const zd = theme.layout.heroZoomDesktop;
             return (
               <>
                 {/* === 手機版（< 640px）：完全不同 layout — 短 banner + 文字另一段在下面 ===
@@ -215,19 +213,18 @@ export default async function StoreHomePage({
                   </div>
                 </section>
 
-                {/* === 平板 + 桌機（≥ 640px）：保留原本 full-bleed overlay layout === */}
+                {/* === 平板 + 桌機（≥ 640px）：full-bleed overlay layout ===
+                    放棄 transform scale 那套（用同一個 cover 邏輯加數字治標）。
+                    bg div 上下延伸 30%，cover 自動把 file 的米色 padding 推出
+                    h-screen viewport — 不論平板（接近 square）或桌機 landscape
+                    一律生效，因為 cover 填的是「延伸後的 div」不是 viewport 本身。 */}
                 <section
                   className="hidden sm:block relative h-screen overflow-hidden"
                   data-edit-target="hero"
                   data-edit-label="Hero 區段"
                 >
-                {/* Per-viewport zoom（只給平板 + 桌機用，手機走不同 layout 已無此需求） */}
-                <style>{`
-                  .sproutly-hero-bg-scaled { transform: scale(${zt}); transform-origin: center center; }
-                  @media (min-width: 1024px) { .sproutly-hero-bg-scaled { transform: scale(${zd}); } }
-                `}</style>
                 <div
-                  className="absolute inset-0 sproutly-hero-bg-scaled"
+                  className="absolute -top-[30%] -bottom-[30%] left-0 right-0"
                   role="img"
                   aria-label={store.name}
                   style={{
