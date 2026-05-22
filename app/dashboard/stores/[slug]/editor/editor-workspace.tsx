@@ -214,7 +214,9 @@ export function EditorWorkspace({
         if ((validKeys as readonly string[]).includes(msg.target)) {
           setSelectedSection(msg.target as SectionKey);
           setActiveTab("section");
-          setPopover("section");
+          // 不自動開左邊 popover — 之前每次點要拉都跳出來擋住 canvas。
+          // 右側屬性 panel 依然會根據 selectedSection 更新，
+          // 要看版面結構左邊 popover 改用 icon nav 手動點。
         }
       } else if (
         msg.type === "sproutly-edit-position-update" &&

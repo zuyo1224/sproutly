@@ -143,35 +143,25 @@ export default async function StoreHomePage({
           const fade2 = theme.homepage.enableAnimation ? "sproutly-hero-fade-2" : "";
           const fade3 = theme.homepage.enableAnimation ? "sproutly-hero-fade-3" : "";
 
-          // Variant 1: full-image（既有預設）— 整屏圖 + tagline overlay 文字
+          // Variant 1: full-image — 自適應 banner（圖 + 文字段），手機 / 桌機 同一套
           if (heroStyle === "full-image" && theme.heroUrl) {
-            const pos = theme.layout.freePositions["hero-tagline"] ?? null;
-            const freePositioned = pos !== null;
             return (
-              <>
-                {/* === 手機版（< 640px）：完全不同 layout — 短 banner + 文字另一段在下面 ===
-                    桌機那套 cover + scale 在窄屏永遠會漏米色（圖是橫長 landscape，
-                    container 是 portrait，cover 必裁掉左右、保留上下完整圖高 = 米色全露）。
-                    根本解：手機放棄 full-bleed overlay，改成 banner（短）+ 文字段，
-                    banner 用 cover 在矮容器上自然裁掉米色，文字在純色區好讀。 */}
-                <section
-                  className="block sm:hidden"
-                  data-edit-target="hero"
-                  data-edit-label="Hero 區段（手機）"
+              <section
+                data-edit-target="hero"
+                data-edit-label="Hero 區段"
+              >
+                {/* 自適應 banner — client 偵測圖片自帶 padding，banner aspect 動態算成
+                    剛好框住內容本體的比例，不論手機 / 平板 / 桌機都用同一套：
+                    圖以自身比例顯示，不再 h-screen 強制 overlay、不再 transform scale 放大圖片。 */}
+                <HeroAdaptiveBanner url={theme.heroUrl} alt={store.name} />
+                <div
+                  className="px-6 sm:px-12 py-14 sm:py-20"
+                  style={{ backgroundColor: theme.bg }}
+                  data-edit-drag="hero-tagline"
                 >
-                  {/* 圖片自然比例 — width 100% 寬，height auto，瀏覽器用圖檔
-                      intrinsic dimensions 算 height，完全符合照片自身比例，
-                      沒有 cover crop、沒有 scale、沒有任意 vh 高度。 */}
-                  {/* 自適應 banner：client 偵測圖片自帶 padding，aspect 動態算成
-                      剛好框住內容本體的比例。padding 多就 banner 矮、padding 少就高。 */}
-                  <HeroAdaptiveBanner url={theme.heroUrl} alt={store.name} />
-                  <div
-                    className="px-6 py-14"
-                    style={{ backgroundColor: theme.bg }}
-                    data-edit-drag="hero-tagline"
-                  >
+                  <div className="max-w-4xl mx-auto">
                     <h1
-                      className={`text-2xl leading-[1.6] ${fade1}`}
+                      className={`text-2xl sm:text-4xl lg:text-5xl leading-[1.6] ${fade1}`}
                       style={{
                         color: theme.text,
                         fontFamily: "var(--store-font)",
@@ -201,105 +191,8 @@ export default async function StoreHomePage({
                       看商品
                     </Link>
                   </div>
-                </section>
-
-                {/* === 平板 + 桌機（≥ 640px）：full-bleed overlay layout ===
-                    bg div 上下延伸 75% 把 file 純米色 padding (0-22%)
-                    + 淺米色轉場帶 (22-30%) 全部推出 h-screen viewport。
-                    （50% 只裁到 file 25%，轉場帶還是看得到一條淺米色。
-                     Math: 對 1:1 file 在 h-screen 內裁掉 0-30%，
-                     在 height-driven cover 的 case 需要 X >= 0.75。） */}
-                <section
-                  className="hidden sm:block relative h-screen overflow-hidden"
-                  data-edit-target="hero"
-                  data-edit-label="Hero 區段"
-                >
-                <div
-                  className="absolute -top-[75%] -bottom-[75%] left-0 right-0"
-                  role="img"
-                  aria-label={store.name}
-                  style={{
-                    backgroundImage: `url(${theme.heroUrl})`,
-                    backgroundSize: "cover",
-                    backgroundPosition: "center",
-                    backgroundRepeat: "no-repeat",
-                  }}
-                />
-                <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-black/45" />
-                {freePositioned ? (
-                  // Phase 5 free-positioned tagline overlay
-                  <div
-                    className="absolute"
-                    data-edit-drag="hero-tagline"
-                    style={{
-                      left: `${pos!.x * 100}%`,
-                      top: `${pos!.y * 100}%`,
-                      transform: "translate(-50%, -50%)",
-                      maxWidth: "min(800px, 80vw)",
-                    }}
-                  >
-                    <h1
-                      className={`text-2xl sm:text-4xl lg:text-5xl text-white leading-[1.6] ${fade1}`}
-                      style={{
-                        fontFamily: "var(--store-font)",
-                        fontWeight: 400,
-                        letterSpacing: "0.02em",
-                        wordBreak: "keep-all",
-                        overflowWrap: "break-word",
-                      }}
-                      data-edit-text
-                      data-edit-field="tagline"
-                    >
-                      {taglineLines.map((line, i) => (
-                        <span key={i} className="block">
-                          {line}
-                        </span>
-                      ))}
-                    </h1>
-                    <Link
-                      href={`/${slug}/shop`}
-                      className={`sproutly-link mt-8 inline-block text-white text-sm tracking-wider ${fade2}`}
-                      data-default-line="true"
-                      style={{ fontFamily: "var(--store-font)" }}
-                    >
-                      看商品
-                    </Link>
-                  </div>
-                ) : (
-                  <div
-                    className="relative h-full max-w-6xl mx-auto px-8 sm:px-12 flex flex-col justify-end pb-24 sm:pb-32"
-                    data-edit-drag="hero-tagline"
-                  >
-                    <h1
-                      className={`text-2xl sm:text-4xl lg:text-5xl text-white leading-[1.6] ${fade1}`}
-                      style={{
-                        fontFamily: "var(--store-font)",
-                        fontWeight: 400,
-                        letterSpacing: "0.02em",
-                        wordBreak: "keep-all",
-                        overflowWrap: "break-word",
-                      }}
-                      data-edit-text
-                      data-edit-field="tagline"
-                    >
-                      {taglineLines.map((line, i) => (
-                        <span key={i} className="block">
-                          {line}
-                        </span>
-                      ))}
-                    </h1>
-                    <Link
-                      href={`/${slug}/shop`}
-                      className={`sproutly-link mt-12 self-start text-white text-sm tracking-wider ${fade2}`}
-                      data-default-line="true"
-                      style={{ fontFamily: "var(--store-font)" }}
-                    >
-                      看商品
-                    </Link>
-                  </div>
-                )}
+                </div>
               </section>
-              </>
             );
           }
 
