@@ -96,16 +96,46 @@ export default async function OrderDetailPage({
       <div className="no-print">
         <Link
           href={`/dashboard/stores/${slug}/orders`}
-          className="text-sm text-emerald-900/70 hover:text-emerald-900 transition inline-block mb-4"
+          className="inline-block mb-6 text-emerald-700/70 hover:text-emerald-900 transition uppercase"
+          style={{
+            fontSize: "0.6875rem",
+            fontWeight: 500,
+            letterSpacing: "0.3em",
+          }}
         >
-          ← 訂單列表
+          ← Back · 訂單列表
         </Link>
       </div>
 
-      <div className="flex items-center justify-between gap-3 mb-6 flex-wrap">
-        <h2 className="text-2xl font-bold text-emerald-950">
-          訂單 #{shortId}
-        </h2>
+      <div className="flex items-end justify-between gap-3 mb-10 flex-wrap">
+        <div>
+          <p
+            className="uppercase text-emerald-700/70"
+            style={{
+              fontSize: "0.6875rem",
+              fontWeight: 500,
+              letterSpacing: "0.4em",
+            }}
+          >
+            Order · #{shortId}
+          </p>
+          <h2
+            className="mt-3 text-3xl sm:text-4xl text-emerald-950 font-medium tracking-tight"
+            style={{ letterSpacing: "-0.01em", lineHeight: 1.15 }}
+          >
+            單筆訂單詳情
+          </h2>
+          <span
+            aria-hidden
+            className="mt-4 block h-px w-12 bg-emerald-600/60"
+          />
+          <p
+            className="mt-4 text-emerald-900/65"
+            style={{ fontSize: "0.9375rem", lineHeight: 1.7 }}
+          >
+            {new Date(order.created_at).toLocaleString("zh-TW")} 下單 · 在右側更新狀態
+          </p>
+        </div>
         <div className="no-print">
           <PrintButton className="rounded-full bg-white border-2 border-emerald-200 px-4 py-2 text-sm font-medium text-emerald-900 hover:bg-emerald-50 transition">
             列印訂單
@@ -120,22 +150,62 @@ export default async function OrderDetailPage({
       </div>
 
       {error && (
-        <div className="mb-6 rounded-xl bg-red-50 border border-red-100 p-3 text-sm text-red-700">
-          {error}
+        <div
+          className="mb-6 rounded-2xl bg-red-50/80 border border-red-200/60 p-5"
+          style={{ boxShadow: "var(--sproutly-elev-2)" }}
+        >
+          <p
+            className="uppercase text-red-700/80"
+            style={{
+              fontSize: "0.6875rem",
+              fontWeight: 500,
+              letterSpacing: "0.4em",
+            }}
+          >
+            Notice · 錯誤
+          </p>
+          <p className="mt-2 text-sm text-red-700">{error}</p>
         </div>
       )}
       {saved && (
-        <div className="mb-6 rounded-xl bg-emerald-50 border border-emerald-100 p-3 text-sm text-emerald-700">
-          ✓ 訂單狀態已更新
+        <div
+          className="mb-6 rounded-2xl bg-emerald-50/80 border border-emerald-200/60 p-5"
+          style={{ boxShadow: "var(--sproutly-elev-2)" }}
+        >
+          <p
+            className="uppercase text-emerald-700/80"
+            style={{
+              fontSize: "0.6875rem",
+              fontWeight: 500,
+              letterSpacing: "0.4em",
+            }}
+          >
+            Saved · 已儲存
+          </p>
+          <p className="mt-2 text-sm text-emerald-800">訂單狀態已更新</p>
         </div>
       )}
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 print-stack">
         <div className="lg:col-span-2 space-y-6 print-card">
-          <section className="bg-white rounded-2xl p-6 shadow-lg shadow-emerald-700/5">
-            <h3 className="text-sm font-semibold text-emerald-900 mb-4">
-              商品
-            </h3>
+          <section
+            className="bg-white rounded-2xl p-7 sm:p-8 border border-emerald-100/70"
+            style={{ boxShadow: "var(--sproutly-elev-2)" }}
+          >
+            <p
+              className="uppercase text-emerald-700/70 mb-1.5"
+              style={{
+                fontSize: "0.6875rem",
+                fontWeight: 500,
+                letterSpacing: "0.4em",
+              }}
+            >
+              Items · 商品
+            </p>
+            <span
+              aria-hidden
+              className="block h-px w-10 bg-emerald-600/50 mb-5"
+            />
             <div className="space-y-3">
               {items?.map((it) => (
                 <div
@@ -146,13 +216,25 @@ export default async function OrderDetailPage({
                     <p className="text-emerald-950 font-medium">
                       {it.name_snapshot}
                     </p>
-                    <p className="text-xs text-emerald-900/50">
+                    <p
+                      className="text-emerald-900/55 mt-0.5"
+                      style={{
+                        fontSize: "0.75rem",
+                        letterSpacing: "0.02em",
+                      }}
+                    >
                       單價 {formatPrice(it.price_cents_snapshot, order.currency)}
                       {" × "}
                       {it.quantity} 件
                     </p>
                   </div>
-                  <p className="font-semibold text-emerald-950">
+                  <p
+                    className="text-emerald-950 tabular-nums"
+                    style={{
+                      fontWeight: 500,
+                      letterSpacing: "-0.01em",
+                    }}
+                  >
                     {formatPrice(
                       it.price_cents_snapshot * it.quantity,
                       order.currency
@@ -161,19 +243,48 @@ export default async function OrderDetailPage({
                 </div>
               ))}
             </div>
-            <hr className="my-4 border-emerald-100" />
+            <hr className="my-5 border-emerald-100" />
             <div className="flex justify-between items-end">
-              <span className="text-emerald-900/60">合計</span>
-              <span className="text-2xl font-bold text-emerald-950">
+              <p
+                className="uppercase text-emerald-700/70"
+                style={{
+                  fontSize: "0.6875rem",
+                  fontWeight: 500,
+                  letterSpacing: "0.4em",
+                }}
+              >
+                Total · 合計
+              </p>
+              <span
+                className="text-3xl sm:text-4xl text-emerald-700 tabular-nums"
+                style={{
+                  fontWeight: 500,
+                  letterSpacing: "-0.02em",
+                }}
+              >
                 {formatPrice(order.total_cents, order.currency)}
               </span>
             </div>
           </section>
 
-          <section className="bg-white rounded-2xl p-6 shadow-lg shadow-emerald-700/5">
-            <h3 className="text-sm font-semibold text-emerald-900 mb-4">
-              顧客資訊
-            </h3>
+          <section
+            className="bg-white rounded-2xl p-7 sm:p-8 border border-emerald-100/70"
+            style={{ boxShadow: "var(--sproutly-elev-2)" }}
+          >
+            <p
+              className="uppercase text-emerald-700/70 mb-1.5"
+              style={{
+                fontSize: "0.6875rem",
+                fontWeight: 500,
+                letterSpacing: "0.4em",
+              }}
+            >
+              Recipient · 顧客資訊
+            </p>
+            <span
+              aria-hidden
+              className="block h-px w-10 bg-emerald-600/50 mb-5"
+            />
             <dl className="text-sm space-y-2">
               <div className="flex gap-3">
                 <dt className="text-emerald-900/50 w-20">姓名</dt>
@@ -222,10 +333,24 @@ export default async function OrderDetailPage({
 
           {/* 物流 + 付款資訊 */}
           {(decodedNote.shippingLabel || paymentLabel) && (
-            <section className="bg-white rounded-2xl p-6 shadow-lg shadow-emerald-700/5">
-              <h3 className="text-sm font-semibold text-emerald-900 mb-4">
-                配送與付款
-              </h3>
+            <section
+              className="bg-white rounded-2xl p-7 sm:p-8 border border-emerald-100/70"
+              style={{ boxShadow: "var(--sproutly-elev-2)" }}
+            >
+              <p
+                className="uppercase text-emerald-700/70 mb-1.5"
+                style={{
+                  fontSize: "0.6875rem",
+                  fontWeight: 500,
+                  letterSpacing: "0.4em",
+                }}
+              >
+                Logistics · 配送與付款
+              </p>
+              <span
+                aria-hidden
+                className="block h-px w-10 bg-emerald-600/50 mb-5"
+              />
               <dl className="text-sm space-y-2">
                 {decodedNote.shippingLabel && (
                   <div className="flex gap-3">
@@ -254,14 +379,37 @@ export default async function OrderDetailPage({
 
         <aside className="space-y-4 no-print">
           <form action={updateBound}>
-            <section className="bg-white rounded-2xl p-6 shadow-lg shadow-emerald-700/5 space-y-4">
-              <h3 className="text-sm font-semibold text-emerald-900">
-                狀態管理
-              </h3>
+            <section
+              className="bg-white rounded-2xl p-7 sm:p-8 border border-emerald-100/70 space-y-5"
+              style={{ boxShadow: "var(--sproutly-elev-2)" }}
+            >
+              <div>
+                <p
+                  className="uppercase text-emerald-700/70 mb-1.5"
+                  style={{
+                    fontSize: "0.6875rem",
+                    fontWeight: 500,
+                    letterSpacing: "0.4em",
+                  }}
+                >
+                  Manage · 狀態管理
+                </p>
+                <span
+                  aria-hidden
+                  className="block h-px w-10 bg-emerald-600/50"
+                />
+              </div>
 
               <div>
-                <label className="block text-xs text-emerald-900/60 mb-1.5">
-                  訂單狀態
+                <label
+                  className="block text-emerald-900/70 mb-2 uppercase"
+                  style={{
+                    fontSize: "0.6875rem",
+                    fontWeight: 500,
+                    letterSpacing: "0.3em",
+                  }}
+                >
+                  Status · 訂單狀態
                 </label>
                 <select
                   name="status"
@@ -277,8 +425,15 @@ export default async function OrderDetailPage({
               </div>
 
               <div>
-                <label className="block text-xs text-emerald-900/60 mb-1.5">
-                  付款狀態
+                <label
+                  className="block text-emerald-900/70 mb-2 uppercase"
+                  style={{
+                    fontSize: "0.6875rem",
+                    fontWeight: 500,
+                    letterSpacing: "0.3em",
+                  }}
+                >
+                  Payment · 付款狀態
                 </label>
                 <select
                   name="payment_status"
@@ -302,23 +457,65 @@ export default async function OrderDetailPage({
             </section>
           </form>
 
-          <section className="bg-white rounded-2xl p-6 shadow-lg shadow-emerald-700/5 text-xs text-emerald-900/60 space-y-2">
+          <section
+            className="bg-white rounded-2xl p-7 sm:p-8 border border-emerald-100/70 space-y-3"
+            style={{ boxShadow: "var(--sproutly-elev-2)" }}
+          >
             <div>
-              <span className="text-emerald-900/40">下單：</span>
-              {new Date(order.created_at).toLocaleString("zh-TW")}
+              <p
+                className="uppercase text-emerald-700/70 mb-1.5"
+                style={{
+                  fontSize: "0.6875rem",
+                  fontWeight: 500,
+                  letterSpacing: "0.4em",
+                }}
+              >
+                Timeline · 時間軸
+              </p>
+              <span
+                aria-hidden
+                className="block h-px w-10 bg-emerald-600/50 mb-4"
+              />
             </div>
-            {order.paid_at && (
-              <div>
-                <span className="text-emerald-900/40">付款：</span>
-                {new Date(order.paid_at).toLocaleString("zh-TW")}
+            <dl className="space-y-2.5 text-xs text-emerald-900/70">
+              <div className="flex gap-3">
+                <dt
+                  className="text-emerald-700/60 uppercase w-16 shrink-0"
+                  style={{ letterSpacing: "0.25em", fontWeight: 500 }}
+                >
+                  Placed
+                </dt>
+                <dd className="text-emerald-950 tabular-nums">
+                  {new Date(order.created_at).toLocaleString("zh-TW")}
+                </dd>
               </div>
-            )}
-            {order.shipped_at && (
-              <div>
-                <span className="text-emerald-900/40">出貨：</span>
-                {new Date(order.shipped_at).toLocaleString("zh-TW")}
-              </div>
-            )}
+              {order.paid_at && (
+                <div className="flex gap-3">
+                  <dt
+                    className="text-emerald-700/60 uppercase w-16 shrink-0"
+                    style={{ letterSpacing: "0.25em", fontWeight: 500 }}
+                  >
+                    Paid
+                  </dt>
+                  <dd className="text-emerald-950 tabular-nums">
+                    {new Date(order.paid_at).toLocaleString("zh-TW")}
+                  </dd>
+                </div>
+              )}
+              {order.shipped_at && (
+                <div className="flex gap-3">
+                  <dt
+                    className="text-emerald-700/60 uppercase w-16 shrink-0"
+                    style={{ letterSpacing: "0.25em", fontWeight: 500 }}
+                  >
+                    Shipped
+                  </dt>
+                  <dd className="text-emerald-950 tabular-nums">
+                    {new Date(order.shipped_at).toLocaleString("zh-TW")}
+                  </dd>
+                </div>
+              )}
+            </dl>
           </section>
         </aside>
       </div>
