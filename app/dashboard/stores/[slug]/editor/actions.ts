@@ -42,6 +42,7 @@ type EditorPayload = {
       headingAlign?: string;
       bgColor?: string | null;
       paddingScale?: string;
+      divider?: string;
     }>;
   };
   homepage?: {
@@ -256,12 +257,12 @@ export async function saveEditorState(slug: string, payload: EditorPayload) {
     }
     if (payload.layout.sectionStyles !== undefined) {
       const raw = payload.layout.sectionStyles;
-      const sanitized: Record<string, { headingAlign?: string; bgColor?: string | null; paddingScale?: string }> = {};
+      const sanitized: Record<string, { headingAlign?: string; bgColor?: string | null; paddingScale?: string; divider?: string }> = {};
       if (raw && typeof raw === "object") {
         for (const [k, v] of Object.entries(raw)) {
           if (!k || typeof k !== "string" || k.length > 60) continue;
           if (!v || typeof v !== "object") continue;
-          const entry: { headingAlign?: string; bgColor?: string | null; paddingScale?: string } = {};
+          const entry: { headingAlign?: string; bgColor?: string | null; paddingScale?: string; divider?: string } = {};
           if (v.headingAlign === "left" || v.headingAlign === "center" || v.headingAlign === "right") {
             entry.headingAlign = v.headingAlign;
           }
@@ -273,7 +274,10 @@ export async function saveEditorState(slug: string, payload: EditorPayload) {
           if (v.paddingScale === "compact" || v.paddingScale === "default" || v.paddingScale === "spacious") {
             entry.paddingScale = v.paddingScale;
           }
-          if (entry.headingAlign !== undefined || entry.bgColor !== undefined || entry.paddingScale !== undefined) {
+          if (v.divider === "none" || v.divider === "top" || v.divider === "bottom" || v.divider === "both") {
+            entry.divider = v.divider;
+          }
+          if (entry.headingAlign !== undefined || entry.bgColor !== undefined || entry.paddingScale !== undefined || entry.divider !== undefined) {
             sanitized[k] = entry;
           }
         }

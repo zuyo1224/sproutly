@@ -87,6 +87,7 @@ type EditorTheme = {
       headingAlign?: "left" | "center" | "right";
       bgColor?: string | null;
       paddingScale?: "compact" | "default" | "spacious";
+      divider?: "none" | "top" | "bottom" | "both";
     }>;
   };
   homepage: {
@@ -1784,12 +1785,17 @@ export function EditorWorkspace({
           const align = cur.headingAlign ?? "center";
           const bg = cur.bgColor ?? null;
           const pad = cur.paddingScale ?? null;
-          function patch(p: { headingAlign?: "left" | "center" | "right"; bgColor?: string | null; paddingScale?: "compact" | "default" | "spacious" | null }) {
-            const next: { headingAlign?: "left" | "center" | "right"; bgColor?: string | null; paddingScale?: "compact" | "default" | "spacious" } = { ...cur };
+          const divider = cur.divider ?? "none";
+          function patch(p: { headingAlign?: "left" | "center" | "right"; bgColor?: string | null; paddingScale?: "compact" | "default" | "spacious" | null; divider?: "none" | "top" | "bottom" | "both" }) {
+            const next: { headingAlign?: "left" | "center" | "right"; bgColor?: string | null; paddingScale?: "compact" | "default" | "spacious"; divider?: "none" | "top" | "bottom" | "both" } = { ...cur };
             if (p.headingAlign !== undefined) next.headingAlign = p.headingAlign;
             if (p.bgColor !== undefined) next.bgColor = p.bgColor;
             if (p.paddingScale === null) delete next.paddingScale;
             else if (p.paddingScale !== undefined) next.paddingScale = p.paddingScale;
+            if (p.divider !== undefined) {
+              if (p.divider === "none") delete next.divider;
+              else next.divider = p.divider;
+            }
             updateLayout({
               sectionStyles: {
                 ...theme.layout.sectionStyles,
@@ -1880,6 +1886,32 @@ export function EditorWorkspace({
                     </button>
                   )}
                 </div>
+              </Field>
+              <Field label="分隔線">
+                <div className="grid grid-cols-4 gap-1.5">
+                  {([
+                    { v: "none", label: "無" },
+                    { v: "top", label: "上" },
+                    { v: "bottom", label: "下" },
+                    { v: "both", label: "上下" },
+                  ] as const).map((opt) => (
+                    <button
+                      key={opt.v}
+                      type="button"
+                      onClick={() => patch({ divider: opt.v })}
+                      className={`rounded-lg border py-2 text-xs transition ${
+                        divider === opt.v
+                          ? "border-emerald-500 bg-emerald-50 text-emerald-900"
+                          : "border-stone-200 text-stone-600 hover:border-stone-400"
+                      }`}
+                    >
+                      {opt.label}
+                    </button>
+                  ))}
+                </div>
+                <p className="mt-1.5 text-[11px] text-stone-500">
+                  在這段加細線分隔（顏色跟著全網站邊框色）
+                </p>
               </Field>
             </PanelSection>
           );

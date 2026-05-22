@@ -89,19 +89,26 @@ export default async function StoreHomePage({
       bg: s?.bgColor ?? undefined,
       align: s?.headingAlign ?? "center",
       padOverride: padVar,
-    } as { bg: string | undefined; align: "left" | "center" | "right"; padOverride: number | undefined };
+      divider: s?.divider ?? "none",
+    } as { bg: string | undefined; align: "left" | "center" | "right"; padOverride: number | undefined; divider: "none" | "top" | "bottom" | "both" };
   };
 
-  // 把背景色 + padOverride 合併成 section 用的 inline style
+  // 把背景色 + padOverride + 分隔線合併成 section 用的 inline style
   // 自訂 CSS variable 在 TS CSSProperties 預設沒有，所以走 Record<string, unknown> cast
   const mergeSectionStyle = (
-    s: { bg: string | undefined; padOverride: number | undefined },
+    s: { bg: string | undefined; padOverride: number | undefined; divider: "none" | "top" | "bottom" | "both" },
     fallbackBg?: string
   ): React.CSSProperties | undefined => {
     const out: Record<string, unknown> = {};
     const bg = s.bg ?? fallbackBg;
     if (bg) out.backgroundColor = bg;
     if (s.padOverride !== undefined) out["--store-section-pad"] = String(s.padOverride);
+    if (s.divider === "top" || s.divider === "both") {
+      out.borderTop = `1px solid ${theme.border}`;
+    }
+    if (s.divider === "bottom" || s.divider === "both") {
+      out.borderBottom = `1px solid ${theme.border}`;
+    }
     return Object.keys(out).length > 0 ? (out as React.CSSProperties) : undefined;
   };
 

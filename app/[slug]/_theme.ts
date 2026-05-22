@@ -183,6 +183,7 @@ export interface StoreTheme {
       headingAlign?: "left" | "center" | "right";
       bgColor?: string | null;          // null = 用 theme.bg；hex = 覆寫
       paddingScale?: "compact" | "default" | "spacious"; // 該 section 獨立上下空白（覆寫全網站值）
+      divider?: "none" | "top" | "bottom" | "both"; // 分隔線（上 / 下 / 上下都有 / 沒有）
     }>;
   };
 }
@@ -536,12 +537,12 @@ function resolveLayout(raw: unknown): StoreTheme["layout"] {
     })(),
     sectionStyles: (() => {
       const raw = l.sectionStyles;
-      const result: Record<string, { headingAlign?: "left" | "center" | "right"; bgColor?: string | null; paddingScale?: "compact" | "default" | "spacious" }> = {};
+      const result: Record<string, { headingAlign?: "left" | "center" | "right"; bgColor?: string | null; paddingScale?: "compact" | "default" | "spacious"; divider?: "none" | "top" | "bottom" | "both" }> = {};
       if (raw && typeof raw === "object" && !Array.isArray(raw)) {
         for (const [k, v] of Object.entries(raw as Record<string, unknown>)) {
           if (!v || typeof v !== "object" || typeof k !== "string") continue;
           const obj = v as Record<string, unknown>;
-          const entry: { headingAlign?: "left" | "center" | "right"; bgColor?: string | null; paddingScale?: "compact" | "default" | "spacious" } = {};
+          const entry: { headingAlign?: "left" | "center" | "right"; bgColor?: string | null; paddingScale?: "compact" | "default" | "spacious"; divider?: "none" | "top" | "bottom" | "both" } = {};
           if (obj.headingAlign === "left" || obj.headingAlign === "center" || obj.headingAlign === "right") {
             entry.headingAlign = obj.headingAlign;
           }
@@ -553,7 +554,10 @@ function resolveLayout(raw: unknown): StoreTheme["layout"] {
           if (obj.paddingScale === "compact" || obj.paddingScale === "default" || obj.paddingScale === "spacious") {
             entry.paddingScale = obj.paddingScale;
           }
-          if (entry.headingAlign !== undefined || entry.bgColor !== undefined || entry.paddingScale !== undefined) {
+          if (obj.divider === "none" || obj.divider === "top" || obj.divider === "bottom" || obj.divider === "both") {
+            entry.divider = obj.divider;
+          }
+          if (entry.headingAlign !== undefined || entry.bgColor !== undefined || entry.paddingScale !== undefined || entry.divider !== undefined) {
             result[k] = entry;
           }
         }
