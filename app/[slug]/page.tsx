@@ -443,8 +443,13 @@ export default async function StoreHomePage({
 
         {/* === 選物提案 === */}
         {visibleCollections.length > 0 && (() => {
-          const introPos = theme.layout.freePositions["collection-intro"] ?? null;
-          const introFree = introPos !== null;
+          // free positioning 暫時停用（舊座標導致 absolute 重疊）
+          const introPos = theme.layout.freePositions["__disabled__"] ?? null;
+          // 暫時 disable 所有 section 的 free positioning，舊 DB 座標會把
+          // collection-intro / featured-title / journal-intro / promise-card /
+          // visit-card / testimonials-title 各種跑掉 absolute 重疊。等正式
+          // free-positioning feature 重做再開回來。
+          const introFree = false; void introPos;
           return (
           <section
             className={`relative py-40 sm:py-56 ${animClass} ${introFree ? "min-h-[60vh]" : ""}`}
@@ -555,8 +560,8 @@ export default async function StoreHomePage({
 
         {/* === 本月選物 === */}
         {featuredProducts && featuredProducts.length > 0 && (() => {
-          const featuredPos = theme.layout.freePositions["featured-title"] ?? null;
-          const featuredFree = featuredPos !== null;
+          const featuredPos = theme.layout.freePositions["__disabled__"] ?? null;
+          const featuredFree = false; void featuredPos;
           return (
           <section
             className={`relative py-40 sm:py-56 ${animClass} ${featuredFree ? "min-h-[60vh]" : ""}`}
@@ -669,8 +674,8 @@ export default async function StoreHomePage({
 
         {/* === Journal（placeholder：尚無實際文章） === */}
         {(() => {
-          const journalPos = theme.layout.freePositions["journal-intro"] ?? null;
-          const journalFree = journalPos !== null;
+          const journalPos = theme.layout.freePositions["__disabled__"] ?? null;
+          const journalFree = false; void journalPos;
           return (
           <section
             className={`relative py-40 sm:py-56 ${animClass} ${journalFree ? "min-h-[60vh]" : ""}`}
@@ -832,7 +837,8 @@ export default async function StoreHomePage({
 
         {/* === Promise（雜誌風 quote card） === */}
         {promiseLines.length > 0 && (() => {
-          const promisePos = theme.layout.freePositions["promise-card"] ?? null;
+          // free positioning 暫時停用：lookup 一個不存在的 key 拿到 undefined → null
+          const promisePos = theme.layout.freePositions["__disabled__"] ?? null;
           return (
           <section
             className={`relative py-40 sm:py-56 ${animClass} ${promisePos ? "min-h-screen" : ""}`}
@@ -949,9 +955,8 @@ export default async function StoreHomePage({
         {theme.layout.sectionOrder.includes("testimonials") &&
           theme.layout.testimonials.length > 0 &&
           (() => {
-            const testimonialsPos =
-              theme.layout.freePositions["testimonials-title"] ?? null;
-            const testimonialsFree = testimonialsPos !== null;
+            const testimonialsPos = theme.layout.freePositions["__disabled__"] ?? null;
+            const testimonialsFree = false;
             return (
             <section
               className={`relative py-40 sm:py-56 ${animClass} ${testimonialsFree ? "min-h-[60vh]" : ""}`}
@@ -1353,7 +1358,7 @@ export default async function StoreHomePage({
 
         {/* === Visit === */}
         {(store.address || businessHoursText) && (() => {
-          const visitPos = theme.layout.freePositions["visit-card"] ?? null;
+          const visitPos = theme.layout.freePositions["__disabled__"] ?? null;
           return (
           <section
             className={`relative py-40 sm:py-56 ${animClass} ${visitPos ? "min-h-screen" : ""}`}
