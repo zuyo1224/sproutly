@@ -77,13 +77,32 @@ export default async function StoreHomePage({
 
   const animClass = theme.homepage.enableAnimation ? "sproutly-subtle-fade" : "";
 
-  // 各 section 樣式 helper：背景色 + 標題對齊（北極星：超越 Wix 元素級控制覆蓋率）
+  // 各 section 樣式 helper：背景色 + 標題對齊 + 上下空白覆寫（北極星：超越 Wix 元素級控制覆蓋率）
+  // padOverride 用 CSS variable 覆寫該 section 的 --store-section-pad，
+  // 沒設定 = 跟著全網站 sectionPaddingScale（透過 layout.tsx 的 attribute selector 套用）
+  const padScaleToVar = (s: "compact" | "default" | "spacious" | undefined) =>
+    s === "compact" ? 0.6 : s === "spacious" ? 1.4 : s === "default" ? 1 : undefined;
   const sectionStyleFor = (key: string) => {
     const s = theme.layout.sectionStyles[key];
+    const padVar = padScaleToVar(s?.paddingScale);
     return {
       bg: s?.bgColor ?? undefined,
       align: s?.headingAlign ?? "center",
-    } as { bg: string | undefined; align: "left" | "center" | "right" };
+      padOverride: padVar,
+    } as { bg: string | undefined; align: "left" | "center" | "right"; padOverride: number | undefined };
+  };
+
+  // 把背景色 + padOverride 合併成 section 用的 inline style
+  // 自訂 CSS variable 在 TS CSSProperties 預設沒有，所以走 Record<string, unknown> cast
+  const mergeSectionStyle = (
+    s: { bg: string | undefined; padOverride: number | undefined },
+    fallbackBg?: string
+  ): React.CSSProperties | undefined => {
+    const out: Record<string, unknown> = {};
+    const bg = s.bg ?? fallbackBg;
+    if (bg) out.backgroundColor = bg;
+    if (s.padOverride !== undefined) out["--store-section-pad"] = String(s.padOverride);
+    return Object.keys(out).length > 0 ? (out as React.CSSProperties) : undefined;
   };
 
   const BASE_URL =
@@ -495,7 +514,7 @@ export default async function StoreHomePage({
             className={`relative py-40 sm:py-56 ${animClass} ${introFree ? "min-h-[60vh]" : ""}`}
             data-edit-target="collections"
             data-edit-label="選物提案"
-            style={collStyle.bg ? { backgroundColor: collStyle.bg } : undefined}
+            style={mergeSectionStyle(collStyle)}
           >
             <div className="max-w-5xl mx-auto px-8 sm:px-12" style={{ textAlign: collStyle.align }}>
               {introFree ? (
@@ -607,7 +626,7 @@ export default async function StoreHomePage({
           return (
           <section
             className={`relative py-40 sm:py-56 ${animClass} ${featuredFree ? "min-h-[60vh]" : ""}`}
-            style={{ background: featuredStyle.bg ?? theme.surface }}
+            style={mergeSectionStyle(featuredStyle, theme.surface)}
             data-edit-target="featured"
             data-edit-label="本月選物"
           >
@@ -722,7 +741,7 @@ export default async function StoreHomePage({
           return (
           <section
             className={`relative py-40 sm:py-56 ${animClass} ${journalFree ? "min-h-[60vh]" : ""}`}
-            style={journalStyle.bg ? { backgroundColor: journalStyle.bg } : undefined}
+            style={mergeSectionStyle(journalStyle)}
             data-edit-target="journal"
             data-edit-label="Journal 區段"
           >
@@ -893,7 +912,7 @@ export default async function StoreHomePage({
           return (
           <section
             className={`relative py-40 sm:py-56 ${animClass} ${promisePos ? "min-h-screen" : ""}`}
-            style={promiseStyle.bg ? { backgroundColor: promiseStyle.bg } : undefined}
+            style={mergeSectionStyle(promiseStyle)}
             data-edit-target="promise"
             data-edit-label="Promise 區段"
           >
@@ -1019,7 +1038,7 @@ export default async function StoreHomePage({
             return (
             <section
               className={`relative py-40 sm:py-56 ${animClass} ${testimonialsFree ? "min-h-[60vh]" : ""}`}
-              style={{ background: testimonialsStyle.bg ?? theme.surface }}
+              style={mergeSectionStyle(testimonialsStyle, theme.surface)}
               data-edit-target="testimonials"
               data-edit-label="顧客評語"
             >
@@ -1177,7 +1196,7 @@ export default async function StoreHomePage({
             return (
             <section
               className={`py-40 sm:py-56 ${animClass}`}
-              style={faqStyle.bg ? { backgroundColor: faqStyle.bg } : undefined}
+              style={mergeSectionStyle(faqStyle)}
               data-edit-target="faq"
               data-edit-label="常見問題"
             >
@@ -1271,7 +1290,7 @@ export default async function StoreHomePage({
             return (
             <section
               className={`py-32 sm:py-44 ${animClass}`}
-              style={{ background: statsStyle.bg ?? theme.surface }}
+              style={mergeSectionStyle(statsStyle, theme.surface)}
               data-edit-target="stats"
               data-edit-label="數字 / 成就"
             >
@@ -1330,7 +1349,7 @@ export default async function StoreHomePage({
             return (
             <section
               className={`py-32 sm:py-44 ${animClass}`}
-              style={partnersStyle.bg ? { backgroundColor: partnersStyle.bg } : undefined}
+              style={mergeSectionStyle(partnersStyle)}
               data-edit-target="partners"
               data-edit-label="合作夥伴"
             >
@@ -1392,7 +1411,7 @@ export default async function StoreHomePage({
             return (
             <section
               className={`py-40 sm:py-56 ${animClass}`}
-              style={galleryStyle.bg ? { backgroundColor: galleryStyle.bg } : undefined}
+              style={mergeSectionStyle(galleryStyle)}
               data-edit-target="gallery"
               data-edit-label="圖片相簿"
             >
@@ -1482,7 +1501,7 @@ export default async function StoreHomePage({
           return (
           <section
             className={`relative py-40 sm:py-56 ${animClass} ${visitPos ? "min-h-screen" : ""}`}
-            style={{ background: visitStyle.bg ?? theme.surface }}
+            style={mergeSectionStyle(visitStyle, theme.surface)}
             data-edit-target="visit"
             data-edit-label="來訪資訊"
           >

@@ -86,6 +86,7 @@ type EditorTheme = {
     sectionStyles: Record<string, {
       headingAlign?: "left" | "center" | "right";
       bgColor?: string | null;
+      paddingScale?: "compact" | "default" | "spacious";
     }>;
   };
   homepage: {
@@ -1782,11 +1783,17 @@ export function EditorWorkspace({
           const cur = theme.layout.sectionStyles[selectedSection] ?? {};
           const align = cur.headingAlign ?? "center";
           const bg = cur.bgColor ?? null;
-          function patch(p: { headingAlign?: "left" | "center" | "right"; bgColor?: string | null }) {
+          const pad = cur.paddingScale ?? null;
+          function patch(p: { headingAlign?: "left" | "center" | "right"; bgColor?: string | null; paddingScale?: "compact" | "default" | "spacious" | null }) {
+            const next: { headingAlign?: "left" | "center" | "right"; bgColor?: string | null; paddingScale?: "compact" | "default" | "spacious" } = { ...cur };
+            if (p.headingAlign !== undefined) next.headingAlign = p.headingAlign;
+            if (p.bgColor !== undefined) next.bgColor = p.bgColor;
+            if (p.paddingScale === null) delete next.paddingScale;
+            else if (p.paddingScale !== undefined) next.paddingScale = p.paddingScale;
             updateLayout({
               sectionStyles: {
                 ...theme.layout.sectionStyles,
-                [selectedSection!]: { ...cur, ...p },
+                [selectedSection!]: next,
               },
             });
           }
@@ -1834,6 +1841,40 @@ export function EditorWorkspace({
                       type="button"
                       onClick={() => patch({ bgColor: null })}
                       className="text-xs text-stone-500 hover:text-stone-800 underline"
+                    >
+                      清除
+                    </button>
+                  )}
+                </div>
+              </Field>
+              <Field label="這段的上下空白">
+                <div className="grid grid-cols-3 gap-1.5">
+                  {([
+                    { v: "compact", label: "緊湊" },
+                    { v: "default", label: "預設" },
+                    { v: "spacious", label: "寬鬆" },
+                  ] as const).map((opt) => (
+                    <button
+                      key={opt.v}
+                      type="button"
+                      onClick={() => patch({ paddingScale: opt.v })}
+                      className={`rounded-lg border py-2 text-xs transition ${
+                        pad === opt.v
+                          ? "border-emerald-500 bg-emerald-50 text-emerald-900"
+                          : "border-stone-200 text-stone-600 hover:border-stone-400"
+                      }`}
+                    >
+                      {opt.label}
+                    </button>
+                  ))}
+                </div>
+                <div className="mt-1.5 flex items-center justify-between text-[11px] text-stone-500">
+                  <span>沒選 = 跟著全站「區段上下空白」</span>
+                  {pad && (
+                    <button
+                      type="button"
+                      onClick={() => patch({ paddingScale: null })}
+                      className="text-stone-500 hover:text-stone-800 underline"
                     >
                       清除
                     </button>
