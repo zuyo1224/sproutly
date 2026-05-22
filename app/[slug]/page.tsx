@@ -166,8 +166,8 @@ export default async function StoreHomePage({
                   <Image
                     src={theme.heroUrl}
                     alt={store.name}
-                    width={1920}
-                    height={1080}
+                    width={1024}
+                    height={1024}
                     sizes="100vw"
                     priority
                     className="w-full h-auto block"
