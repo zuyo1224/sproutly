@@ -161,11 +161,12 @@ export default async function StoreHomePage({
                   {/* 圖片自然比例 — width 100% 寬，height auto，瀏覽器用圖檔
                       intrinsic dimensions 算 height，完全符合照片自身比例，
                       沒有 cover crop、沒有 scale、沒有任意 vh 高度。 */}
-                  {/* 4:3 container + cover：file 雖然是 1:1，但天生帶上下各 12%
-                      米色 padding。container ratio 設成「植物 scene 本身」的
-                      ~4:3 比例，配 object-fit cover 自動把 file 上下米色裁出
-                      畫面，畫面內只剩植物本體。 */}
-                  <div className="relative w-full overflow-hidden" style={{ aspectRatio: "5 / 3" }}>
+                  {/* 2:1 container + cover：
+                      Playwright pixel sample 顯示 file 米色 padding 實際是 22-25%
+                      （不是早期估的 12%）。對 1:1 file 用 cover 裁掉 25% 米色，
+                      container aspect 必須 ≥ 2.0。5:3 (1.67) 和 16:9 (1.78) 都不夠，
+                      會還露 ~7px 米色。2:1 留 margin。 */}
+                  <div className="relative w-full overflow-hidden" style={{ aspectRatio: "2 / 1" }}>
                     <Image
                       src={theme.heroUrl}
                       alt={store.name}
