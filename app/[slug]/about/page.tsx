@@ -53,81 +53,157 @@ export default async function AboutPage({ params }: { params: Params }) {
     }
   }
 
+  const hasDescription = Boolean(store.description);
+  const aboutCaption = hasDescription
+    ? "關於這間店 · 慢慢讀"
+    : "店家還沒留下介紹";
+
   return (
-    <main className="max-w-3xl mx-auto px-6 py-16">
+    <main className="max-w-3xl mx-auto px-6 sm:px-10 py-20 sm:py-28">
       {theme.sections.about && (
         <>
-          <div className="mb-16 sm:mb-20">
+          <header className="mb-16 sm:mb-20">
             <p
-              className="text-[10px] tracking-[0.4em] uppercase mb-5"
-              style={{ color: theme.accent }}
+              className="text-[0.6875rem] uppercase font-medium"
+              style={{ color: theme.accent, letterSpacing: "0.4em" }}
             >
               About
             </p>
             <h1
-              className="text-4xl md:text-5xl lg:text-[3rem]"
+              className="mt-4 text-3xl sm:text-4xl font-medium"
               style={{
                 color: theme.text,
                 fontFamily: "var(--store-font)",
-                fontWeight: 400,
                 letterSpacing: "-0.01em",
                 lineHeight: 1.15,
               }}
             >
               關於我們
             </h1>
-          </div>
-
-          {store.description ? (
             <div
-              className="rounded-2xl p-8 shadow-sm"
-              style={{ background: theme.surface }}
+              className="mt-5 h-px w-12"
+              style={{ background: theme.accent, opacity: 0.5 }}
+            />
+            <p
+              className="mt-5 text-[0.9375rem]"
+              style={{ color: theme.textMuted, lineHeight: 1.7 }}
+            >
+              {aboutCaption}
+            </p>
+          </header>
+
+          {hasDescription ? (
+            <div
+              className="rounded-2xl p-7 sm:p-8"
+              style={{
+                background: "var(--store-surface)",
+                border: "1px solid var(--store-border)",
+                boxShadow: "var(--sproutly-elev-2)",
+              }}
             >
               <p
-                className="leading-relaxed whitespace-pre-line"
-                style={{ color: theme.text }}
+                className="text-[0.9375rem] whitespace-pre-line"
+                style={{
+                  color: theme.text,
+                  lineHeight: 1.85,
+                }}
               >
                 {store.description}
               </p>
             </div>
           ) : (
-            <p style={{ color: theme.textMuted, opacity: 0.6 }}>
-              店家還沒填寫介紹。
-            </p>
+            <div className="py-12 max-w-md">
+              <p
+                className="text-[0.6875rem] uppercase font-medium"
+                style={{ color: theme.accent, letterSpacing: "0.4em" }}
+              >
+                Empty
+              </p>
+              <div
+                className="mt-5 h-px w-10"
+                style={{ background: theme.accent, opacity: 0.4 }}
+              />
+              <p
+                className="mt-6 text-2xl sm:text-3xl font-medium"
+                style={{
+                  color: theme.text,
+                  fontFamily: "var(--store-font)",
+                  letterSpacing: "-0.01em",
+                  lineHeight: 1.25,
+                }}
+              >
+                店家還沒
+                <br />
+                寫下故事
+              </p>
+              <p
+                className="mt-5 text-[0.9375rem]"
+                style={{ color: theme.textMuted, lineHeight: 1.7 }}
+              >
+                過幾天再回來看看。
+              </p>
+            </div>
           )}
         </>
       )}
 
       {theme.sections.faq && faqItems.length > 0 && (
-        <section className={theme.sections.about ? "mt-16" : ""}>
-          <h2
-            className="text-2xl sm:text-3xl font-semibold mb-8"
-            style={{ color: theme.text }}
-          >
-            常見問題
-          </h2>
+        <section className={theme.sections.about ? "mt-20 sm:mt-24" : ""}>
+          <div className="mb-12 sm:mb-14">
+            <p
+              className="text-[0.6875rem] uppercase font-medium"
+              style={{ color: theme.accent, letterSpacing: "0.4em" }}
+            >
+              FAQ
+            </p>
+            <h2
+              className="mt-4 text-2xl sm:text-3xl font-medium"
+              style={{
+                color: theme.text,
+                fontFamily: "var(--store-font)",
+                letterSpacing: "-0.01em",
+                lineHeight: 1.2,
+              }}
+            >
+              常見問題
+            </h2>
+            <div
+              className="mt-5 h-px w-10"
+              style={{ background: theme.accent, opacity: 0.4 }}
+            />
+          </div>
           <div className="space-y-3">
             {faqItems.map((item, idx) => (
               <details
                 key={idx}
-                className="group rounded-2xl shadow-sm overflow-hidden"
-                style={{ background: theme.surface }}
+                className="group rounded-2xl overflow-hidden"
+                style={{
+                  background: "var(--store-surface)",
+                  border: "1px solid var(--store-border)",
+                  boxShadow: "var(--sproutly-elev-2)",
+                }}
               >
                 <summary
-                  className="px-6 py-5 cursor-pointer font-medium flex items-center justify-between hover:opacity-80 transition list-none"
-                  style={{ color: theme.text }}
+                  className="px-6 sm:px-7 py-5 cursor-pointer flex items-center justify-between gap-6 hover:opacity-80 transition list-none text-[0.9375rem]"
+                  style={{
+                    color: theme.text,
+                    letterSpacing: "-0.005em",
+                  }}
                 >
                   <span>{item.question}</span>
                   <span
-                    className="group-open:rotate-45 transition text-2xl"
+                    className="group-open:rotate-45 transition text-2xl flex-shrink-0"
                     style={{ color: theme.accent }}
                   >
                     +
                   </span>
                 </summary>
                 <div
-                  className="px-6 pb-5 leading-relaxed whitespace-pre-line"
-                  style={{ color: theme.textMuted }}
+                  className="px-6 sm:px-7 pb-6 text-[0.9375rem] whitespace-pre-line"
+                  style={{
+                    color: theme.textMuted,
+                    lineHeight: 1.85,
+                  }}
                 >
                   {item.answer}
                 </div>
