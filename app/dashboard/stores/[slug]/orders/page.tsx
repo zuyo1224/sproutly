@@ -154,17 +154,43 @@ export default async function OrdersListPage({
     return `/dashboard/stores/${slug}/orders${qs ? `?${qs}` : ""}`;
   }
 
+  const filterActive = q !== "" || status !== "all" || range !== "all";
+  const matchCount = orders?.length ?? 0;
+  const headerCaption = filterActive
+    ? `符合條件 ${matchCount} 筆 · 全部 ${statusCounts.all} 筆`
+    : statusCounts.all > 0
+      ? `${statusCounts.all} 筆訂單 · 點任一筆看詳情`
+      : "客人在店面下單後會出現在這裡";
+
   return (
     <div>
-      <div className="flex items-center justify-between mb-6 gap-3 flex-wrap">
+      <div className="flex items-end justify-between mb-10 gap-3 flex-wrap">
         <div>
-          <h2 className="text-xl font-bold text-emerald-950">訂單</h2>
-          <p className="text-sm text-emerald-900/60 mt-1">
-            {q || status !== "all"
-              ? `符合條件 ${orders?.length ?? 0} 筆（共 ${statusCounts.all} 筆）`
-              : statusCounts.all > 0
-                ? `共 ${statusCounts.all} 筆訂單`
-                : "還沒有訂單"}
+          <p
+            className="uppercase text-emerald-700/70"
+            style={{
+              fontSize: "0.6875rem",
+              fontWeight: 500,
+              letterSpacing: "0.4em",
+            }}
+          >
+            Orders · 訂單
+          </p>
+          <h2
+            className="mt-3 text-3xl sm:text-4xl text-emerald-950 font-medium tracking-tight"
+            style={{ letterSpacing: "-0.01em", lineHeight: 1.15 }}
+          >
+            追蹤每一筆訂單
+          </h2>
+          <span
+            aria-hidden
+            className="mt-4 block h-px w-12 bg-emerald-600/60"
+          />
+          <p
+            className="mt-4 text-emerald-900/65"
+            style={{ fontSize: "0.9375rem", lineHeight: 1.7 }}
+          >
+            {headerCaption}
           </p>
         </div>
         {statusCounts.all > 0 && (
@@ -334,17 +360,46 @@ export default async function OrdersListPage({
           </table>
         </div>
       ) : (
-        <div className="bg-white rounded-3xl p-12 text-center shadow-xl shadow-emerald-700/5">
-          <p className="text-xs tracking-widest uppercase text-emerald-600 mb-3">
-            {q || status !== "all" ? "No Match" : "Empty"}
+        <div className="bg-white rounded-3xl p-12 sm:p-16 text-center shadow-xl shadow-emerald-700/5">
+          <p
+            className="uppercase text-emerald-700/70"
+            style={{
+              fontSize: "0.6875rem",
+              fontWeight: 500,
+              letterSpacing: "0.4em",
+            }}
+          >
+            {filterActive ? "No Match · 沒有符合" : "Empty · 還沒接單"}
           </p>
-          <h3 className="text-xl font-bold text-emerald-950">
-            {q || status !== "all" ? "沒有符合的訂單" : "還沒有訂單"}
+          <span
+            aria-hidden
+            className="mt-4 block h-px w-10 bg-emerald-600/60 mx-auto"
+          />
+          <h3
+            className="mt-6 text-2xl sm:text-3xl text-emerald-950 font-medium tracking-tight"
+            style={{ letterSpacing: "-0.01em", lineHeight: 1.2 }}
+          >
+            {filterActive ? (
+              <>
+                沒有符合
+                <br />
+                條件的訂單
+              </>
+            ) : (
+              <>
+                還沒有
+                <br />
+                客人下單
+              </>
+            )}
           </h3>
-          <p className="mt-2 text-emerald-900/60 max-w-md mx-auto">
-            {q || status !== "all"
-              ? "換個條件試試"
-              : "客人在店面下單後，訂單會出現在這裡"}
+          <p
+            className="mt-5 text-emerald-900/65 max-w-md mx-auto"
+            style={{ fontSize: "0.9375rem", lineHeight: 1.7 }}
+          >
+            {filterActive
+              ? "換個篩選條件或清除搜尋試試"
+              : "客人在店面下單後，會出現在這個列表"}
           </p>
         </div>
       )}

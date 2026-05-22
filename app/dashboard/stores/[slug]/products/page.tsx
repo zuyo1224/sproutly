@@ -37,18 +37,42 @@ export default async function ProductsListPage({
     return `${currency} ${amount.toFixed(2)}`;
   };
 
+  const count = products?.length ?? 0;
+  const caption =
+    count > 0 ? `${count} 件商品 · 點任一件編輯` : "新增第一件商品讓店面活起來";
+
   return (
     <div>
-      <div className="flex items-center justify-between mb-6">
+      <div className="flex items-end justify-between mb-10 gap-3 flex-wrap">
         <div>
-          <h2 className="text-xl font-bold text-emerald-950">商品</h2>
-          <p className="text-sm text-emerald-900/60 mt-1">
-            {products && products.length > 0
-              ? `共 ${products.length} 件商品`
-              : "還沒有商品"}
+          <p
+            className="uppercase text-emerald-700/70"
+            style={{
+              fontSize: "0.6875rem",
+              fontWeight: 500,
+              letterSpacing: "0.4em",
+            }}
+          >
+            Products · 商品
+          </p>
+          <h2
+            className="mt-3 text-3xl sm:text-4xl text-emerald-950 font-medium tracking-tight"
+            style={{ letterSpacing: "-0.01em", lineHeight: 1.15 }}
+          >
+            管理你的商品
+          </h2>
+          <span
+            aria-hidden
+            className="mt-4 block h-px w-12 bg-emerald-600/60"
+          />
+          <p
+            className="mt-4 text-emerald-900/65"
+            style={{ fontSize: "0.9375rem", lineHeight: 1.7 }}
+          >
+            {caption}
           </p>
         </div>
-        {products && products.length > 0 && (
+        {count > 0 && (
           <Link
             href={`/dashboard/stores/${slug}/products/new`}
             className="rounded-full bg-emerald-700 px-5 py-2.5 text-white text-sm font-medium hover:bg-emerald-800 transition shadow-lg shadow-emerald-700/20"
@@ -75,8 +99,11 @@ export default async function ProductsListPage({
                     className="w-full h-full object-cover"
                   />
                 ) : (
-                  <span className="text-[10px] text-emerald-900/40 tracking-wider">
-                    無圖
+                  <span
+                    className="uppercase text-emerald-900/40"
+                    style={{ fontSize: "0.625rem", letterSpacing: "0.3em" }}
+                  >
+                    No Image
                   </span>
                 )}
               </div>
@@ -86,8 +113,14 @@ export default async function ProductsListPage({
                     {p.name}
                   </h3>
                   {!p.is_active && (
-                    <span className="text-xs px-2 py-0.5 rounded-full bg-zinc-100 text-zinc-600">
-                      停售
+                    <span
+                      className="uppercase px-2 py-0.5 rounded-full bg-zinc-100 text-zinc-600"
+                      style={{
+                        fontSize: "0.625rem",
+                        letterSpacing: "0.3em",
+                      }}
+                    >
+                      Inactive · 停售
                     </span>
                   )}
                 </div>
@@ -98,12 +131,18 @@ export default async function ProductsListPage({
                 )}
               </div>
               <div className="text-right flex-shrink-0">
-                <p className="font-semibold text-emerald-950">
+                <p
+                  className="text-emerald-950 font-medium tabular-nums"
+                  style={{ letterSpacing: "-0.01em" }}
+                >
                   {formatPrice(p.price_cents, p.currency)}
                 </p>
                 {p.stock !== null && (
-                  <p className="text-xs text-emerald-900/50 mt-0.5">
-                    庫存 {p.stock}
+                  <p
+                    className="mt-1 uppercase text-emerald-900/50"
+                    style={{ fontSize: "0.625rem", letterSpacing: "0.3em" }}
+                  >
+                    Stock {p.stock}
                   </p>
                 )}
               </div>
@@ -111,19 +150,38 @@ export default async function ProductsListPage({
           ))}
         </div>
       ) : (
-        <div className="bg-white rounded-3xl p-12 text-center shadow-xl shadow-emerald-700/5">
-          <p className="text-xs tracking-widest uppercase text-emerald-600 mb-3">
-            Empty
+        <div className="bg-white rounded-3xl p-12 sm:p-16 text-center shadow-xl shadow-emerald-700/5">
+          <p
+            className="uppercase text-emerald-700/70"
+            style={{
+              fontSize: "0.6875rem",
+              fontWeight: 500,
+              letterSpacing: "0.4em",
+            }}
+          >
+            Empty · 還沒開張
           </p>
-          <h3 className="text-xl font-bold text-emerald-950">
-            還沒有商品
+          <span
+            aria-hidden
+            className="mt-4 block h-px w-10 bg-emerald-600/60 mx-auto"
+          />
+          <h3
+            className="mt-6 text-2xl sm:text-3xl text-emerald-950 font-medium tracking-tight"
+            style={{ letterSpacing: "-0.01em", lineHeight: 1.2 }}
+          >
+            還沒有
+            <br />
+            上架的商品
           </h3>
-          <p className="mt-2 text-emerald-900/60 max-w-md mx-auto">
-            新增第一件商品，讓客人開始逛你的店
+          <p
+            className="mt-5 text-emerald-900/65 max-w-md mx-auto"
+            style={{ fontSize: "0.9375rem", lineHeight: 1.7 }}
+          >
+            新增第一件，客人就能開始逛你的店
           </p>
           <Link
             href={`/dashboard/stores/${slug}/products/new`}
-            className="mt-8 inline-block rounded-full bg-emerald-700 px-8 py-3.5 text-white font-medium hover:bg-emerald-800 transition shadow-lg shadow-emerald-700/20"
+            className="mt-10 inline-block rounded-full bg-emerald-700 px-8 py-3.5 text-white font-medium hover:bg-emerald-800 transition shadow-lg shadow-emerald-700/20"
           >
             ＋ 新增第一件商品
           </Link>
