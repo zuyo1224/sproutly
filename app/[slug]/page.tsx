@@ -167,7 +167,7 @@ export default async function StoreHomePage({
                       米色 padding。container ratio 設成「植物 scene 本身」的
                       ~4:3 比例，配 object-fit cover 自動把 file 上下米色裁出
                       畫面，畫面內只剩植物本體。 */}
-                  <div className="relative w-full overflow-hidden" style={{ aspectRatio: "4 / 3" }}>
+                  <div className="relative w-full overflow-hidden" style={{ aspectRatio: "5 / 3" }}>
                     <Image
                       src={theme.heroUrl}
                       alt={store.name}
