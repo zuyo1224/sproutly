@@ -87,21 +87,29 @@ export default async function StoreHomePage({
     const padVar = padScaleToVar(s?.paddingScale);
     return {
       bg: s?.bgColor ?? undefined,
+      text: s?.textColor ?? undefined,
       align: s?.headingAlign ?? "center",
       padOverride: padVar,
       divider: s?.divider ?? "none",
-    } as { bg: string | undefined; align: "left" | "center" | "right"; padOverride: number | undefined; divider: "none" | "top" | "bottom" | "both" };
+    } as { bg: string | undefined; text: string | undefined; align: "left" | "center" | "right"; padOverride: number | undefined; divider: "none" | "top" | "bottom" | "both" };
   };
 
-  // 把背景色 + padOverride + 分隔線合併成 section 用的 inline style
+  // 把背景色 + 文字色 + padOverride + 分隔線合併成 section 用的 inline style
   // 自訂 CSS variable 在 TS CSSProperties 預設沒有，所以走 Record<string, unknown> cast
+  // 文字色用 color + 覆寫 --store-text / --store-text-muted CSS var
+  // 讓 muted 文字（副題 / eyebrow）也跟著走，避免淺底深字 section 突然有深底白字時 muted 還是深的看不見
   const mergeSectionStyle = (
-    s: { bg: string | undefined; padOverride: number | undefined; divider: "none" | "top" | "bottom" | "both" },
+    s: { bg: string | undefined; text: string | undefined; padOverride: number | undefined; divider: "none" | "top" | "bottom" | "both" },
     fallbackBg?: string
   ): React.CSSProperties | undefined => {
     const out: Record<string, unknown> = {};
     const bg = s.bg ?? fallbackBg;
     if (bg) out.backgroundColor = bg;
+    if (s.text) {
+      out.color = s.text;
+      out["--store-text"] = s.text;
+      out["--store-text-muted"] = s.text + "B3"; // 加 ~70% alpha 給 muted 用
+    }
     if (s.padOverride !== undefined) out["--store-section-pad"] = String(s.padOverride);
     if (s.divider === "top" || s.divider === "both") {
       out.borderTop = `1px solid ${theme.border}`;

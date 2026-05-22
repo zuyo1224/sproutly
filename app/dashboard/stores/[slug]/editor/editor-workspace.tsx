@@ -86,6 +86,7 @@ type EditorTheme = {
     sectionStyles: Record<string, {
       headingAlign?: "left" | "center" | "right";
       bgColor?: string | null;
+      textColor?: string | null;
       paddingScale?: "compact" | "default" | "spacious";
       divider?: "none" | "top" | "bottom" | "both";
     }>;
@@ -1784,12 +1785,14 @@ export function EditorWorkspace({
           const cur = theme.layout.sectionStyles[selectedSection] ?? {};
           const align = cur.headingAlign ?? "center";
           const bg = cur.bgColor ?? null;
+          const textCol = cur.textColor ?? null;
           const pad = cur.paddingScale ?? null;
           const divider = cur.divider ?? "none";
-          function patch(p: { headingAlign?: "left" | "center" | "right"; bgColor?: string | null; paddingScale?: "compact" | "default" | "spacious" | null; divider?: "none" | "top" | "bottom" | "both" }) {
-            const next: { headingAlign?: "left" | "center" | "right"; bgColor?: string | null; paddingScale?: "compact" | "default" | "spacious"; divider?: "none" | "top" | "bottom" | "both" } = { ...cur };
+          function patch(p: { headingAlign?: "left" | "center" | "right"; bgColor?: string | null; textColor?: string | null; paddingScale?: "compact" | "default" | "spacious" | null; divider?: "none" | "top" | "bottom" | "both" }) {
+            const next: { headingAlign?: "left" | "center" | "right"; bgColor?: string | null; textColor?: string | null; paddingScale?: "compact" | "default" | "spacious"; divider?: "none" | "top" | "bottom" | "both" } = { ...cur };
             if (p.headingAlign !== undefined) next.headingAlign = p.headingAlign;
             if (p.bgColor !== undefined) next.bgColor = p.bgColor;
+            if (p.textColor !== undefined) next.textColor = p.textColor;
             if (p.paddingScale === null) delete next.paddingScale;
             else if (p.paddingScale !== undefined) next.paddingScale = p.paddingScale;
             if (p.divider !== undefined) {
@@ -1852,6 +1855,35 @@ export function EditorWorkspace({
                     </button>
                   )}
                 </div>
+              </Field>
+              <Field label="文字顏色">
+                <div className="flex items-center gap-2">
+                  <input
+                    type="color"
+                    value={textCol ?? "#1A1A1A"}
+                    onChange={(e) => patch({ textColor: e.target.value })}
+                    className="h-8 w-12 rounded border border-stone-200"
+                  />
+                  <input
+                    type="text"
+                    value={textCol ?? ""}
+                    onChange={(e) => patch({ textColor: e.target.value || null })}
+                    placeholder="預設用全站文字色"
+                    className="flex-1 rounded-lg border border-stone-200 px-3 py-2 text-sm font-mono"
+                  />
+                  {textCol && (
+                    <button
+                      type="button"
+                      onClick={() => patch({ textColor: null })}
+                      className="text-xs text-stone-500 hover:text-stone-800 underline"
+                    >
+                      清除
+                    </button>
+                  )}
+                </div>
+                <p className="mt-1.5 text-[11px] text-stone-500">
+                  改深色背景時搭淺字、淺色背景搭深字
+                </p>
               </Field>
               <Field label="這段的上下空白">
                 <div className="grid grid-cols-3 gap-1.5">

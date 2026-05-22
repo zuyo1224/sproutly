@@ -41,6 +41,7 @@ type EditorPayload = {
     sectionStyles?: Record<string, {
       headingAlign?: string;
       bgColor?: string | null;
+      textColor?: string | null;
       paddingScale?: string;
       divider?: string;
     }>;
@@ -257,12 +258,12 @@ export async function saveEditorState(slug: string, payload: EditorPayload) {
     }
     if (payload.layout.sectionStyles !== undefined) {
       const raw = payload.layout.sectionStyles;
-      const sanitized: Record<string, { headingAlign?: string; bgColor?: string | null; paddingScale?: string; divider?: string }> = {};
+      const sanitized: Record<string, { headingAlign?: string; bgColor?: string | null; textColor?: string | null; paddingScale?: string; divider?: string }> = {};
       if (raw && typeof raw === "object") {
         for (const [k, v] of Object.entries(raw)) {
           if (!k || typeof k !== "string" || k.length > 60) continue;
           if (!v || typeof v !== "object") continue;
-          const entry: { headingAlign?: string; bgColor?: string | null; paddingScale?: string; divider?: string } = {};
+          const entry: { headingAlign?: string; bgColor?: string | null; textColor?: string | null; paddingScale?: string; divider?: string } = {};
           if (v.headingAlign === "left" || v.headingAlign === "center" || v.headingAlign === "right") {
             entry.headingAlign = v.headingAlign;
           }
@@ -271,13 +272,18 @@ export async function saveEditorState(slug: string, payload: EditorPayload) {
           } else if (v.bgColor === null) {
             entry.bgColor = null;
           }
+          if (typeof v.textColor === "string" && /^#[0-9a-fA-F]{6}$/.test(v.textColor.trim())) {
+            entry.textColor = v.textColor.trim();
+          } else if (v.textColor === null) {
+            entry.textColor = null;
+          }
           if (v.paddingScale === "compact" || v.paddingScale === "default" || v.paddingScale === "spacious") {
             entry.paddingScale = v.paddingScale;
           }
           if (v.divider === "none" || v.divider === "top" || v.divider === "bottom" || v.divider === "both") {
             entry.divider = v.divider;
           }
-          if (entry.headingAlign !== undefined || entry.bgColor !== undefined || entry.paddingScale !== undefined || entry.divider !== undefined) {
+          if (entry.headingAlign !== undefined || entry.bgColor !== undefined || entry.textColor !== undefined || entry.paddingScale !== undefined || entry.divider !== undefined) {
             sanitized[k] = entry;
           }
         }
