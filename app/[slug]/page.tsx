@@ -603,14 +603,15 @@ export default async function StoreHomePage({
         {featuredProducts && featuredProducts.length > 0 && (() => {
           const featuredPos = theme.layout.freePositions["__disabled__"] ?? null;
           const featuredFree = false; void featuredPos;
+          const featuredStyle = sectionStyleFor("featured");
           return (
           <section
             className={`relative py-40 sm:py-56 ${animClass} ${featuredFree ? "min-h-[60vh]" : ""}`}
-            style={{ background: theme.surface }}
+            style={{ background: featuredStyle.bg ?? theme.surface }}
             data-edit-target="featured"
             data-edit-label="本月選物"
           >
-            <div className="max-w-5xl mx-auto px-8 sm:px-12">
+            <div className="max-w-5xl mx-auto px-8 sm:px-12" style={{ textAlign: featuredStyle.align }}>
               {featuredFree ? (
                 <h2
                   data-edit-drag="featured-title"
@@ -717,13 +718,15 @@ export default async function StoreHomePage({
         {(() => {
           const journalPos = theme.layout.freePositions["__disabled__"] ?? null;
           const journalFree = false; void journalPos;
+          const journalStyle = sectionStyleFor("journal");
           return (
           <section
             className={`relative py-40 sm:py-56 ${animClass} ${journalFree ? "min-h-[60vh]" : ""}`}
+            style={journalStyle.bg ? { backgroundColor: journalStyle.bg } : undefined}
             data-edit-target="journal"
             data-edit-label="Journal 區段"
           >
-          <div className="max-w-5xl mx-auto px-8 sm:px-12">
+          <div className="max-w-5xl mx-auto px-8 sm:px-12" style={{ textAlign: journalStyle.align }}>
             {journalFree ? (
               <div
                 data-edit-drag="journal-intro"
@@ -880,9 +883,17 @@ export default async function StoreHomePage({
         {promiseLines.length > 0 && (() => {
           // free positioning 暫時停用：lookup 一個不存在的 key 拿到 undefined → null
           const promisePos = theme.layout.freePositions["__disabled__"] ?? null;
+          const promiseStyle = sectionStyleFor("promise");
+          const promiseCardWrap =
+            promiseStyle.align === "right"
+              ? "ml-auto"
+              : promiseStyle.align === "left"
+              ? "mr-auto"
+              : "mx-auto";
           return (
           <section
             className={`relative py-40 sm:py-56 ${animClass} ${promisePos ? "min-h-screen" : ""}`}
+            style={promiseStyle.bg ? { backgroundColor: promiseStyle.bg } : undefined}
             data-edit-target="promise"
             data-edit-label="Promise 區段"
           >
@@ -890,7 +901,7 @@ export default async function StoreHomePage({
               className={
                 promisePos
                   ? "absolute"
-                  : "max-w-3xl mx-auto px-6 sm:px-12"
+                  : `max-w-3xl ${promiseCardWrap} px-6 sm:px-12`
               }
               data-edit-drag="promise-card"
               style={
@@ -998,14 +1009,24 @@ export default async function StoreHomePage({
           (() => {
             const testimonialsPos = theme.layout.freePositions["__disabled__"] ?? null;
             const testimonialsFree = false;
+            const testimonialsStyle = sectionStyleFor("testimonials");
+            const testimonialsDivider =
+              testimonialsStyle.align === "right"
+                ? "ml-auto"
+                : testimonialsStyle.align === "left"
+                ? ""
+                : "mx-auto";
             return (
             <section
               className={`relative py-40 sm:py-56 ${animClass} ${testimonialsFree ? "min-h-[60vh]" : ""}`}
-              style={{ background: theme.surface }}
+              style={{ background: testimonialsStyle.bg ?? theme.surface }}
               data-edit-target="testimonials"
               data-edit-label="顧客評語"
             >
-              <div className="max-w-5xl mx-auto px-8 sm:px-12">
+              <div
+                className="max-w-5xl mx-auto px-8 sm:px-12"
+                style={{ textAlign: testimonialsStyle.align }}
+              >
                 {testimonialsFree ? (
                   <div
                     data-edit-drag="testimonials-title"
@@ -1048,7 +1069,7 @@ export default async function StoreHomePage({
                   </div>
                 ) : (
                   <div
-                    className="text-center mb-20 sm:mb-28"
+                    className="mb-20 sm:mb-28"
                     data-edit-drag="testimonials-title"
                   >
                     <p
@@ -1070,7 +1091,7 @@ export default async function StoreHomePage({
                       顧客的話
                     </h2>
                     <div
-                      className="mx-auto mt-6"
+                      className={`${testimonialsDivider} mt-6`}
                       style={{
                         width: "32px",
                         height: "1px",
@@ -1145,14 +1166,26 @@ export default async function StoreHomePage({
 
         {/* === FAQ Accordion（optional block，<details> 原生 accordion） === */}
         {theme.layout.sectionOrder.includes("faq") &&
-          theme.layout.faqItems.length > 0 && (
+          theme.layout.faqItems.length > 0 && (() => {
+            const faqStyle = sectionStyleFor("faq");
+            const faqDivider =
+              faqStyle.align === "right"
+                ? "ml-auto"
+                : faqStyle.align === "left"
+                ? ""
+                : "mx-auto";
+            return (
             <section
               className={`py-40 sm:py-56 ${animClass}`}
+              style={faqStyle.bg ? { backgroundColor: faqStyle.bg } : undefined}
               data-edit-target="faq"
               data-edit-label="常見問題"
             >
-              <div className="max-w-2xl mx-auto px-6 sm:px-12">
-                <div className="text-center mb-16">
+              <div
+                className="max-w-2xl mx-auto px-6 sm:px-12"
+                style={{ textAlign: faqStyle.align }}
+              >
+                <div className="mb-16">
                   <p
                     className="text-[10px] tracking-[0.4em] uppercase mb-5"
                     style={{ color: theme.accent }}
@@ -1172,7 +1205,7 @@ export default async function StoreHomePage({
                     常見問題
                   </h2>
                   <div
-                    className="mx-auto mt-6"
+                    className={`${faqDivider} mt-6`}
                     style={{
                       width: "32px",
                       height: "1px",
@@ -1228,19 +1261,25 @@ export default async function StoreHomePage({
                 </ul>
               </div>
             </section>
-          )}
+            );
+          })()}
 
         {/* === Stats（optional block：4 個大數字 + label） === */}
         {theme.layout.sectionOrder.includes("stats") &&
-          theme.layout.stats.length > 0 && (
+          theme.layout.stats.length > 0 && (() => {
+            const statsStyle = sectionStyleFor("stats");
+            return (
             <section
               className={`py-32 sm:py-44 ${animClass}`}
-              style={{ background: theme.surface }}
+              style={{ background: statsStyle.bg ?? theme.surface }}
               data-edit-target="stats"
               data-edit-label="數字 / 成就"
             >
-              <div className="max-w-5xl mx-auto px-8 sm:px-12">
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-y-12 gap-x-8 text-center">
+              <div
+                className="max-w-5xl mx-auto px-8 sm:px-12"
+                style={{ textAlign: statsStyle.align }}
+              >
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-y-12 gap-x-8">
                   {theme.layout.stats.slice(0, 6).map((s, i) => (
                     <div key={i} className="space-y-3">
                       <p
@@ -1275,24 +1314,37 @@ export default async function StoreHomePage({
                 </div>
               </div>
             </section>
-          )}
+            );
+          })()}
 
         {/* === Partners（optional block：合作夥伴 logos 灰階） === */}
         {theme.layout.sectionOrder.includes("partners") &&
-          theme.layout.partners.length > 0 && (
+          theme.layout.partners.length > 0 && (() => {
+            const partnersStyle = sectionStyleFor("partners");
+            const partnersJustify =
+              partnersStyle.align === "left"
+                ? "justify-start"
+                : partnersStyle.align === "right"
+                ? "justify-end"
+                : "justify-center";
+            return (
             <section
               className={`py-32 sm:py-44 ${animClass}`}
+              style={partnersStyle.bg ? { backgroundColor: partnersStyle.bg } : undefined}
               data-edit-target="partners"
               data-edit-label="合作夥伴"
             >
-              <div className="max-w-5xl mx-auto px-8 sm:px-12">
+              <div
+                className="max-w-5xl mx-auto px-8 sm:px-12"
+                style={{ textAlign: partnersStyle.align }}
+              >
                 <p
-                  className="text-[10px] tracking-[0.4em] uppercase mb-12 text-center"
+                  className="text-[10px] tracking-[0.4em] uppercase mb-12"
                   style={{ color: theme.textMuted }}
                 >
                   As featured in
                 </p>
-                <div className="flex flex-wrap items-center justify-center gap-8 sm:gap-12 md:gap-16">
+                <div className={`flex flex-wrap items-center ${partnersJustify} gap-8 sm:gap-12 md:gap-16`}>
                   {theme.layout.partners.slice(0, 12).map((p, i) => {
                     const inner = (
                       // eslint-disable-next-line @next/next/no-img-element
@@ -1324,18 +1376,31 @@ export default async function StoreHomePage({
                 </div>
               </div>
             </section>
-          )}
+            );
+          })()}
 
         {/* === Gallery（optional block：3 欄圖片網格） === */}
         {theme.layout.sectionOrder.includes("gallery") &&
-          theme.layout.gallery.length > 0 && (
+          theme.layout.gallery.length > 0 && (() => {
+            const galleryStyle = sectionStyleFor("gallery");
+            const galleryDivider =
+              galleryStyle.align === "right"
+                ? "ml-auto"
+                : galleryStyle.align === "left"
+                ? ""
+                : "mx-auto";
+            return (
             <section
               className={`py-40 sm:py-56 ${animClass}`}
+              style={galleryStyle.bg ? { backgroundColor: galleryStyle.bg } : undefined}
               data-edit-target="gallery"
               data-edit-label="圖片相簿"
             >
-              <div className="max-w-6xl mx-auto px-6 sm:px-10">
-                <div className="text-center mb-16 sm:mb-20">
+              <div
+                className="max-w-6xl mx-auto px-6 sm:px-10"
+                style={{ textAlign: galleryStyle.align }}
+              >
+                <div className="mb-16 sm:mb-20">
                   <p
                     className="text-[10px] tracking-[0.4em] uppercase mb-5"
                     style={{ color: theme.accent }}
@@ -1355,7 +1420,7 @@ export default async function StoreHomePage({
                     相片紀錄
                   </h2>
                   <div
-                    className="mx-auto mt-6"
+                    className={`${galleryDivider} mt-6`}
                     style={{
                       width: "32px",
                       height: "1px",
@@ -1395,15 +1460,29 @@ export default async function StoreHomePage({
                 </div>
               </div>
             </section>
-          )}
+            );
+          })()}
 
         {/* === Visit === */}
         {(store.address || businessHoursText) && (() => {
           const visitPos = theme.layout.freePositions["__disabled__"] ?? null;
+          const visitStyle = sectionStyleFor("visit");
+          const visitDivider =
+            visitStyle.align === "right"
+              ? "ml-auto"
+              : visitStyle.align === "left"
+              ? ""
+              : "mx-auto";
+          const visitContactJustify =
+            visitStyle.align === "left"
+              ? "justify-start"
+              : visitStyle.align === "right"
+              ? "justify-end"
+              : "justify-center";
           return (
           <section
             className={`relative py-40 sm:py-56 ${animClass} ${visitPos ? "min-h-screen" : ""}`}
-            style={{ background: theme.surface }}
+            style={{ background: visitStyle.bg ?? theme.surface }}
             data-edit-target="visit"
             data-edit-label="來訪資訊"
           >
@@ -1412,7 +1491,7 @@ export default async function StoreHomePage({
               className={
                 visitPos
                   ? "absolute"
-                  : "max-w-xl mx-auto px-8 sm:px-12 text-center"
+                  : "max-w-xl mx-auto px-8 sm:px-12"
               }
               style={
                 visitPos
@@ -1425,7 +1504,7 @@ export default async function StoreHomePage({
                       padding: "0 1.5rem",
                       textAlign: "center",
                     }
-                  : undefined
+                  : { textAlign: visitStyle.align }
               }
             >
               <p
@@ -1449,7 +1528,7 @@ export default async function StoreHomePage({
                 {visitTitle}
               </h2>
               <div
-                className="mx-auto mb-12"
+                className={`${visitDivider} mb-12`}
                 style={{
                   width: "32px",
                   height: "1px",
@@ -1475,7 +1554,7 @@ export default async function StoreHomePage({
               )}
               {(store.contact_phone || store.contact_email) && (
                 <div
-                  className="mt-10 flex justify-center gap-8 text-sm tracking-wider"
+                  className={`mt-10 flex ${visitContactJustify} gap-8 text-sm tracking-wider`}
                   style={{ color: theme.text }}
                 >
                   {store.contact_phone && (
