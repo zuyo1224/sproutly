@@ -163,16 +163,20 @@ export default async function StoreHomePage({
                   {/* 圖片自然比例 — width 100% 寬，height auto，瀏覽器用圖檔
                       intrinsic dimensions 算 height，完全符合照片自身比例，
                       沒有 cover crop、沒有 scale、沒有任意 vh 高度。 */}
-                  <Image
-                    src={theme.heroUrl}
-                    alt={store.name}
-                    width={1024}
-                    height={1024}
-                    sizes="100vw"
-                    priority
-                    className="w-full h-auto block"
-                    style={{ height: "auto" }}
-                  />
+                  {/* 4:3 container + cover：file 雖然是 1:1，但天生帶上下各 12%
+                      米色 padding。container ratio 設成「植物 scene 本身」的
+                      ~4:3 比例，配 object-fit cover 自動把 file 上下米色裁出
+                      畫面，畫面內只剩植物本體。 */}
+                  <div className="relative w-full overflow-hidden" style={{ aspectRatio: "4 / 3" }}>
+                    <Image
+                      src={theme.heroUrl}
+                      alt={store.name}
+                      fill
+                      sizes="100vw"
+                      priority
+                      style={{ objectFit: "cover", objectPosition: "center" }}
+                    />
+                  </div>
                   <div
                     className="px-6 py-14"
                     style={{ backgroundColor: theme.bg }}
