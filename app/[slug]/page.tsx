@@ -161,12 +161,12 @@ export default async function StoreHomePage({
                   {/* 圖片自然比例 — width 100% 寬，height auto，瀏覽器用圖檔
                       intrinsic dimensions 算 height，完全符合照片自身比例，
                       沒有 cover crop、沒有 scale、沒有任意 vh 高度。 */}
-                  {/* 2:1 container + cover：
-                      Playwright pixel sample 顯示 file 米色 padding 實際是 22-25%
-                      （不是早期估的 12%）。對 1:1 file 用 cover 裁掉 25% 米色，
-                      container aspect 必須 ≥ 2.0。5:3 (1.67) 和 16:9 (1.78) 都不夠，
-                      會還露 ~7px 米色。2:1 留 margin。 */}
-                  <div className="relative w-full overflow-hidden" style={{ aspectRatio: "2 / 1" }}>
+                  {/* 5:2 container + cover：
+                      File 純米色 padding 0-22%、22-30% 是「淺米色轉場帶」RGB(193,181,160)
+                      肉眼仍讀成米色條。2:1 只裁到 25%（剛好轉場帶起點），會看到淺米色條。
+                      Math: 要裁掉 0-30%，container aspect 必須 ≥ 2.5 (5:2)。
+                      banner 變 375×150 (18% viewport height)，純植物 + 桌面無米色。 */}
+                  <div className="relative w-full overflow-hidden" style={{ aspectRatio: "5 / 2" }}>
                     <Image
                       src={theme.heroUrl}
                       alt={store.name}
@@ -215,19 +215,18 @@ export default async function StoreHomePage({
                 </section>
 
                 {/* === 平板 + 桌機（≥ 640px）：full-bleed overlay layout ===
-                    放棄 transform scale 那套（用同一個 cover 邏輯加數字治標）。
-                    bg div 上下延伸 50% 把 file 自帶的 ~22% 米色 padding 推出
-                    h-screen viewport — 不論平板（接近 square）或桌機 landscape
-                    一律生效，因為 cover 填的是「延伸後的 div」不是 viewport 本身。
-                    （pixel sample 顯示 plantae 圖 y=0-22% 純米色、78-100% 純米色，
-                     30% 延伸只夠裁 12-13% 米色，不夠。）  */}
+                    bg div 上下延伸 75% 把 file 純米色 padding (0-22%)
+                    + 淺米色轉場帶 (22-30%) 全部推出 h-screen viewport。
+                    （50% 只裁到 file 25%，轉場帶還是看得到一條淺米色。
+                     Math: 對 1:1 file 在 h-screen 內裁掉 0-30%，
+                     在 height-driven cover 的 case 需要 X >= 0.75。） */}
                 <section
                   className="hidden sm:block relative h-screen overflow-hidden"
                   data-edit-target="hero"
                   data-edit-label="Hero 區段"
                 >
                 <div
-                  className="absolute -top-[50%] -bottom-[50%] left-0 right-0"
+                  className="absolute -top-[75%] -bottom-[75%] left-0 right-0"
                   role="img"
                   aria-label={store.name}
                   style={{
