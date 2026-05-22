@@ -118,6 +118,18 @@ export function EditorWorkspace({
   const [pending, startTransition] = useTransition();
   const [savedAt, setSavedAt] = useState<number | null>(null);
   const [previewKey, setPreviewKey] = useState(0);
+  const iframeRef = useRef<HTMLIFrameElement | null>(null);
+
+  // 把 theme 推進 iframe，iframe 端的 EditorClickBridge 接到後即時 patch DOM／CSS
+  // 用於 undo/redo 等不需要 reload 的情境
+  function pushThemeToIframe(themeToPush: EditorTheme) {
+    const w = iframeRef.current?.contentWindow;
+    if (!w) return;
+    w.postMessage(
+      { type: "sproutly-theme-apply", theme: themeToPush },
+      "*"
+    );
+  }
   const [viewport, setViewport] = useState<"desktop" | "tablet" | "mobile">("desktop");
   const [autoSaveEnabled, setAutoSaveEnabled] = useState(true);
   const autoSaveTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -182,9 +194,10 @@ export function EditorWorkspace({
     setTheme(last);
     setDirty(true);
     setHistoryTick((t) => t + 1);
-    // 復原後立即 save 復原後的 state 並 reload iframe，user 看得到實際效果。
-    // 用 themeOverride 直接傳 reverted theme，避免 stale closure。
-    handleSave({ reloadIframe: true, themeOverride: last });
+    // 立即把 reverted theme 推進 iframe（顏色 / 文字 / position 即時 patch，不 reload）
+    pushThemeToIframe(last);
+    // 背景 silent save 到 DB，下次 reload 才會反映，但此刻 user 已看到效果
+    handleSave({ reloadIframe: false, themeOverride: last });
   }
   function redo() {
     const next = futureRef.current.pop();
@@ -193,7 +206,8 @@ export function EditorWorkspace({
     setTheme(next);
     setDirty(true);
     setHistoryTick((t) => t + 1);
-    handleSave({ reloadIframe: true, themeOverride: next });
+    pushThemeToIframe(next);
+    handleSave({ reloadIframe: false, themeOverride: next });
   }
 
   // 接 iframe edit click + inline text edit postMessage
@@ -902,6 +916,7 @@ export function EditorWorkspace({
           <div className="flex-1 bg-stone-200/40 overflow-auto p-0 sm:p-4 flex items-start justify-center min-h-0">
             <iframe
               key={previewKey}
+              ref={iframeRef}
               src={`/${slug}?edit=1`}
               title="店面預覽"
               className="bg-white border-0 block shadow-md shadow-stone-300/50 transition-[width] duration-500"

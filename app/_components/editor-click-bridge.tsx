@@ -292,12 +292,79 @@ export function EditorClickBridge() {
       }
     }
 
+    // 接 editor 送來的 theme update — 用來支援「undo 不重新整理頁面」
+    // editor undo → postMessage theme-apply → iframe 即時套 CSS vars / 文字 / position
+    function applyThemePatch(theme: Record<string, unknown>) {
+      if (!theme || typeof theme !== "object") return;
+      const root = document.querySelector(":root") as HTMLElement | null;
+      if (root) {
+        // CSS vars（顏色 / 字型）
+        const colors: Record<string, string> = {
+          "--store-primary": "primary",
+          "--store-accent": "accent",
+          "--store-bg": "bg",
+          "--store-surface": "surface",
+          "--store-text": "text",
+          "--store-text-muted": "textMuted",
+          "--store-border": "border",
+        };
+        for (const [cssVar, key] of Object.entries(colors)) {
+          const v = (theme as Record<string, unknown>)[key];
+          if (typeof v === "string") root.style.setProperty(cssVar, v);
+        }
+      }
+
+      // tagline / eyebrow 等 text 欄位（用 data-edit-field 對應）
+      const tagline = (theme as { tagline?: string }).tagline;
+      if (typeof tagline === "string") {
+        document
+          .querySelectorAll<HTMLElement>('[data-edit-field="tagline"]')
+          .forEach((el) => {
+            // 用 textContent 直接替換（保留 <span class="block"> 結構不容易，先簡單 replace）
+            el.textContent = tagline;
+          });
+      }
+
+      // freePositions 套到 [data-edit-drag]
+      const layout = (theme as { layout?: { freePositions?: Record<string, { x: number; y: number }> } }).layout;
+      if (layout?.freePositions && typeof layout.freePositions === "object") {
+        document
+          .querySelectorAll<HTMLElement>("[data-edit-drag]")
+          .forEach((el) => {
+            const key = el.dataset.editDrag;
+            if (!key) return;
+            const pos = layout.freePositions![key];
+            if (pos && typeof pos.x === "number" && typeof pos.y === "number") {
+              el.style.left = `${pos.x * 100}%`;
+              el.style.top = `${pos.y * 100}%`;
+              el.style.transform = "translate(-50%, -50%)";
+              el.style.position = "absolute";
+            } else {
+              // 無 position → 清掉 inline style，回 layout flow
+              el.style.left = "";
+              el.style.top = "";
+              el.style.transform = "";
+              el.style.position = "";
+            }
+          });
+      }
+    }
+
+    function onParentMessage(ev: MessageEvent) {
+      if (typeof ev.data !== "object" || !ev.data) return;
+      const msg = ev.data as { type?: string; theme?: Record<string, unknown> };
+      if (msg.type === "sproutly-theme-apply" && msg.theme) {
+        applyThemePatch(msg.theme);
+      }
+    }
+
     document.addEventListener("click", onClick, true);
     document.addEventListener("dblclick", onDblClick, true);
     document.addEventListener("click", onLinkBlock, false);
     document.addEventListener("mousedown", onMouseDown, true);
     document.addEventListener("mousemove", onMouseMove);
     document.addEventListener("mouseup", onMouseUp);
+    window.addEventListener("message", onParentMessage);
 
     return () => {
       document.removeEventListener("click", onClick, true);
@@ -306,6 +373,7 @@ export function EditorClickBridge() {
       document.removeEventListener("mousedown", onMouseDown, true);
       document.removeEventListener("mousemove", onMouseMove);
       document.removeEventListener("mouseup", onMouseUp);
+      window.removeEventListener("message", onParentMessage);
       style.remove();
     };
   }, []);
