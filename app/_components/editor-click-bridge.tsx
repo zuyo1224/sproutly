@@ -326,6 +326,10 @@ export function EditorClickBridge() {
       }
 
       // freePositions 套到 [data-edit-drag]
+      // 注意：hero-tagline 在新 layout 已經不再是 absolute-positionable 元件，
+      // 過去 DB 留存的 hero-tagline freePosition 不應該套，否則會把 tagline 段
+      // 變 absolute 導致 collection / featured 區段重疊上來。
+      const SKIP_FREE_POSITION_KEYS = new Set(["hero-tagline"]);
       const layout = (theme as { layout?: { freePositions?: Record<string, { x: number; y: number }> } }).layout;
       if (layout?.freePositions && typeof layout.freePositions === "object") {
         document
@@ -333,6 +337,14 @@ export function EditorClickBridge() {
           .forEach((el) => {
             const key = el.dataset.editDrag;
             if (!key) return;
+            if (SKIP_FREE_POSITION_KEYS.has(key)) {
+              // 強制清掉 inline absolute styles 即使 DB 還留著舊值
+              el.style.left = "";
+              el.style.top = "";
+              el.style.transform = "";
+              el.style.position = "";
+              return;
+            }
             const pos = layout.freePositions![key];
             if (pos && typeof pos.x === "number" && typeof pos.y === "number") {
               el.style.left = `${pos.x * 100}%`;
@@ -340,7 +352,6 @@ export function EditorClickBridge() {
               el.style.transform = "translate(-50%, -50%)";
               el.style.position = "absolute";
             } else {
-              // 無 position → 清掉 inline style，回 layout flow
               el.style.left = "";
               el.style.top = "";
               el.style.transform = "";

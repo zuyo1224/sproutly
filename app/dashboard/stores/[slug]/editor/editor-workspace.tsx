@@ -240,10 +240,9 @@ export function EditorWorkspace({
         if ((validKeys as readonly string[]).includes(msg.target)) {
           setSelectedSection(msg.target as SectionKey);
           setActiveTab("section");
-          // 自動開左邊 popover 顯示編輯選項 — 但加 isDrag flag 避免拖拉時跳出來擋。
-          // 點選 = 開 popover；拖拉開始 = 不開（iframe 端 isDrag=true 時 skip）
-          const isDrag = (msg as { isDrag?: boolean }).isDrag === true;
-          if (!isDrag) setPopover("section");
+          // 不自動開左邊 popover — user 多次說「擋住」。
+          // 右側屬性 panel 依然會 update 顯示選中 section 的欄位。
+          // 要看版面結構左邊 popover 改用 icon nav 手動點。
         }
       } else if (
         msg.type === "sproutly-edit-position-update" &&
