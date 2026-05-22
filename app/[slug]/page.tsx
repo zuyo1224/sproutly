@@ -160,21 +160,19 @@ export default async function StoreHomePage({
                   data-edit-target="hero"
                   data-edit-label="Hero 區段（手機）"
                 >
-                  <div className="relative h-[42vh] overflow-hidden">
-                    {/* 加 8% 上下溢出進一步保險裁掉圖片自帶的米色 padding */}
-                    <div
-                      className="absolute -top-[8%] -bottom-[8%] left-0 right-0"
-                      role="img"
-                      aria-label={store.name}
-                      style={{
-                        backgroundImage: `url(${theme.heroUrl})`,
-                        backgroundSize: "cover",
-                        backgroundPosition: "center",
-                        backgroundRepeat: "no-repeat",
-                      }}
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-b from-transparent to-black/20" />
-                  </div>
+                  {/* 圖片自然比例 — width 100% 寬，height auto，瀏覽器用圖檔
+                      intrinsic dimensions 算 height，完全符合照片自身比例，
+                      沒有 cover crop、沒有 scale、沒有任意 vh 高度。 */}
+                  <Image
+                    src={theme.heroUrl}
+                    alt={store.name}
+                    width={1920}
+                    height={1080}
+                    sizes="100vw"
+                    priority
+                    className="w-full h-auto block"
+                    style={{ height: "auto" }}
+                  />
                   <div
                     className="px-6 py-14"
                     style={{ backgroundColor: theme.bg }}
