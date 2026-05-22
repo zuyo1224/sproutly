@@ -266,12 +266,12 @@ export function EditorWorkspace({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // Auto-save: 改動後 2 秒沒新動作就自動 save + reload iframe
+  // Auto-save: 改動後 2 秒沒新動作就自動 save（silent，不 reload iframe）
   useEffect(() => {
     if (!dirty || !autoSaveEnabled) return;
     if (autoSaveTimerRef.current) clearTimeout(autoSaveTimerRef.current);
     autoSaveTimerRef.current = setTimeout(() => {
-      handleSave();
+      handleSave({ reloadIframe: false });
     }, 2000);
     return () => {
       if (autoSaveTimerRef.current) clearTimeout(autoSaveTimerRef.current);
@@ -441,7 +441,8 @@ export function EditorWorkspace({
     }
   }
 
-  function handleSave() {
+  function handleSave(opts?: { reloadIframe?: boolean }) {
+    const reload = opts?.reloadIframe ?? true;
     startTransition(async () => {
       const res = await saveEditorState(slug, {
         primary: theme.primary,
@@ -487,7 +488,9 @@ export function EditorWorkspace({
       if (res && "ok" in res) {
         setDirty(false);
         setSavedAt(Date.now());
-        setPreviewKey((k) => k + 1);
+        // 只有手動儲存 / 手動 refresh 才 reload iframe。
+        // auto-save 與 undo 後的 silent save 不 reload，避免 user 一按就「重新整理」的感覺。
+        if (reload) setPreviewKey((k) => k + 1);
       } else {
         alert(res?.error ?? "儲存失敗");
       }
@@ -639,7 +642,7 @@ export function EditorWorkspace({
           </a>
           <button
             type="button"
-            onClick={handleSave}
+            onClick={() => handleSave()}
             disabled={!dirty || pending}
             className="rounded-full bg-emerald-700 text-white text-xs font-medium px-5 py-1.5 hover:bg-emerald-800 transition disabled:opacity-40 disabled:cursor-not-allowed"
           >
