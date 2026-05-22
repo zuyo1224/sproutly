@@ -3,6 +3,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { createClient } from "@/lib/supabase/server";
 import { resolveTheme, HOMEPAGE_DEFAULTS, HOMEPAGE_DEFAULT_COLLECTIONS } from "./_theme";
+import HeroAdaptiveBanner from "./HeroAdaptiveBanner";
 
 type Params = Promise<{ slug: string }>;
 
@@ -161,21 +162,9 @@ export default async function StoreHomePage({
                   {/* 圖片自然比例 — width 100% 寬，height auto，瀏覽器用圖檔
                       intrinsic dimensions 算 height，完全符合照片自身比例，
                       沒有 cover crop、沒有 scale、沒有任意 vh 高度。 */}
-                  {/* 5:2 container + cover：
-                      File 純米色 padding 0-22%、22-30% 是「淺米色轉場帶」RGB(193,181,160)
-                      肉眼仍讀成米色條。2:1 只裁到 25%（剛好轉場帶起點），會看到淺米色條。
-                      Math: 要裁掉 0-30%，container aspect 必須 ≥ 2.5 (5:2)。
-                      banner 變 375×150 (18% viewport height)，純植物 + 桌面無米色。 */}
-                  <div className="relative w-full overflow-hidden" style={{ aspectRatio: "5 / 2" }}>
-                    <Image
-                      src={theme.heroUrl}
-                      alt={store.name}
-                      fill
-                      sizes="100vw"
-                      priority
-                      style={{ objectFit: "cover", objectPosition: "center" }}
-                    />
-                  </div>
+                  {/* 自適應 banner：client 偵測圖片自帶 padding，aspect 動態算成
+                      剛好框住內容本體的比例。padding 多就 banner 矮、padding 少就高。 */}
+                  <HeroAdaptiveBanner url={theme.heroUrl} alt={store.name} />
                   <div
                     className="px-6 py-14"
                     style={{ backgroundColor: theme.bg }}
