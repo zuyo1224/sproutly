@@ -58,55 +58,105 @@ export default async function CheckoutPage({
   const total = product.price_cents * quantity;
   const placeBound = placeOrder.bind(null, slug);
 
-  const inputStyle = {
-    background: theme.surface,
-    color: theme.text,
-    border: `1px solid ${theme.border}`,
-  };
-
   return (
-    <main className="max-w-5xl mx-auto px-6 py-12">
+    <main className="max-w-5xl mx-auto px-6 sm:px-10 py-20 sm:py-28">
       <Link
         href={`/${slug}/products/${product.id}`}
-        className="text-sm inline-block mb-8 hover:opacity-70 transition"
-        style={{ color: theme.textMuted }}
+        className="sproutly-link inline-block mb-12"
+        style={{
+          color: "var(--store-text-muted, rgba(0,0,0,0.6))",
+          fontSize: "0.6875rem",
+          letterSpacing: "0.3em",
+          textTransform: "uppercase",
+        }}
       >
-        ← 回商品
+        ← Back · 回到商品
       </Link>
 
-      <h1
-        className="text-2xl sm:text-3xl font-semibold tracking-tight mb-8"
-        style={{ color: theme.text }}
-      >
-        結帳
-      </h1>
+      <header className="mb-16 sm:mb-20">
+        <p
+          className="text-[0.6875rem] uppercase font-medium"
+          style={{
+            color: "var(--store-accent, currentColor)",
+            letterSpacing: "0.4em",
+          }}
+        >
+          Checkout
+        </p>
+        <h1
+          className="mt-4 text-3xl sm:text-4xl font-medium"
+          style={{
+            fontFamily: "var(--store-font)",
+            letterSpacing: "-0.01em",
+            lineHeight: 1.15,
+          }}
+        >
+          結帳
+        </h1>
+        <div
+          className="mt-5 h-px w-12"
+          style={{
+            background: "var(--store-accent, currentColor)",
+            opacity: 0.5,
+          }}
+        />
+        <p
+          className="mt-5 text-[0.9375rem]"
+          style={{
+            color: "var(--store-text-muted, rgba(0,0,0,0.6))",
+            lineHeight: 1.7,
+          }}
+        >
+          填妥資料 · 完成最後一步
+        </p>
+      </header>
 
       {error && (
         <div
-          className="mb-6 rounded-xl border p-4 text-sm"
+          className="mb-10 rounded-2xl p-5"
           style={{
-            background: "#FEF2F2",
-            borderColor: "#FCA5A5",
+            background: "rgba(220, 38, 38, 0.04)",
+            border: "1px solid rgba(220, 38, 38, 0.2)",
             color: "#991B1B",
           }}
         >
-          {error}
+          <p
+            className="text-[0.6875rem] uppercase font-medium mb-2"
+            style={{ letterSpacing: "0.4em", opacity: 0.8 }}
+          >
+            Notice
+          </p>
+          <p className="text-sm" style={{ lineHeight: 1.6 }}>
+            {error}
+          </p>
         </div>
       )}
 
-      <div className="grid grid-cols-1 md:grid-cols-[1fr_320px] gap-8">
-        <form action={placeBound} className="space-y-8">
+      <div className="grid grid-cols-1 md:grid-cols-[1fr_320px] gap-10 md:gap-12">
+        <form action={placeBound} className="space-y-12">
           <input type="hidden" name="product_id" value={product.id} />
           <input type="hidden" name="quantity" value={quantity} />
 
           {/* 收件資訊 */}
           <section className="space-y-5">
-            <h2
-              className="text-xs uppercase tracking-widest"
-              style={{ color: theme.accent }}
-            >
-              收件資訊
-            </h2>
+            <div>
+              <p
+                className="text-[0.6875rem] uppercase font-medium"
+                style={{
+                  color: "var(--store-accent, currentColor)",
+                  letterSpacing: "0.4em",
+                }}
+              >
+                Recipient · 收件資訊
+              </p>
+              <div
+                className="mt-3 h-px w-10"
+                style={{
+                  background: "var(--store-accent, currentColor)",
+                  opacity: 0.5,
+                }}
+              />
+            </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
@@ -114,15 +164,14 @@ export default async function CheckoutPage({
                   className="block text-sm font-medium mb-1.5"
                   style={{ color: theme.text }}
                 >
-                  姓名 <span className="text-red-500">*</span>
+                  姓名 <span style={{ color: theme.accent }}>*</span>
                 </label>
                 <input
                   name="customer_name"
                   type="text"
                   required
                   placeholder="王小明"
-                  className="w-full rounded-xl px-4 py-3 outline-none transition"
-                  style={inputStyle}
+                  className="sproutly-input w-full"
                 />
               </div>
               <div>
@@ -130,15 +179,14 @@ export default async function CheckoutPage({
                   className="block text-sm font-medium mb-1.5"
                   style={{ color: theme.text }}
                 >
-                  電話 <span className="text-red-500">*</span>
+                  電話 <span style={{ color: theme.accent }}>*</span>
                 </label>
                 <input
                   name="customer_phone"
                   type="tel"
                   required
                   placeholder="0912-345-678"
-                  className="w-full rounded-xl px-4 py-3 outline-none transition"
-                  style={inputStyle}
+                  className="sproutly-input w-full"
                 />
               </div>
             </div>
@@ -154,20 +202,31 @@ export default async function CheckoutPage({
                 name="customer_email"
                 type="email"
                 placeholder="you@example.com"
-                className="w-full rounded-xl px-4 py-3 outline-none transition"
-                style={inputStyle}
+                className="sproutly-input w-full"
               />
             </div>
           </section>
 
           {/* 配送方式 */}
-          <section className="space-y-3">
-            <h2
-              className="text-xs uppercase tracking-widest"
-              style={{ color: theme.accent }}
-            >
-              配送方式 <span className="text-red-500">*</span>
-            </h2>
+          <section className="space-y-4">
+            <div>
+              <p
+                className="text-[0.6875rem] uppercase font-medium"
+                style={{
+                  color: "var(--store-accent, currentColor)",
+                  letterSpacing: "0.4em",
+                }}
+              >
+                Shipping · 配送方式 <span>*</span>
+              </p>
+              <div
+                className="mt-3 h-px w-10"
+                style={{
+                  background: "var(--store-accent, currentColor)",
+                  opacity: 0.5,
+                }}
+              />
+            </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
               {SHIPPING_OPTIONS.map((opt) => (
@@ -184,11 +243,11 @@ export default async function CheckoutPage({
                     required
                   />
                   <div
-                    className="rounded-xl p-3 transition peer-checked:font-medium"
+                    className="rounded-xl p-3.5 transition peer-checked:font-medium"
                     style={{
-                      background: theme.surface,
-                      border: `1px solid ${theme.border}`,
-                      color: theme.text,
+                      background: "var(--store-surface, rgba(0,0,0,0.03))",
+                      border: "1px solid var(--store-border, rgba(0,0,0,0.12))",
+                      color: "var(--store-text, #1a1a1a)",
                     }}
                   >
                     <span className="text-sm">{opt.label}</span>
@@ -197,8 +256,8 @@ export default async function CheckoutPage({
               ))}
             </div>
 
-            {/* 超商門市搜尋（用 datalist 提供下拉建議） */}
-            <div>
+            {/* 超商門市搜尋 */}
+            <div className="pt-2">
               <label
                 className="block text-xs mb-1.5"
                 style={{ color: theme.textMuted }}
@@ -211,15 +270,14 @@ export default async function CheckoutPage({
                 list="cvs-stores-list"
                 placeholder="開始打字搜尋⋯例如「信義」「板橋」「7-11」"
                 autoComplete="off"
-                className="w-full rounded-xl px-4 py-3 outline-none transition text-sm"
-                style={inputStyle}
+                className="sproutly-input w-full text-sm"
               />
               <datalist id="cvs-stores-list">
                 {CVS_STORES.map((s) => (
                   <option key={`${s.cvs}-${s.code}`} value={formatStoreLabel(s)} />
                 ))}
               </datalist>
-              <div className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs">
+              <div className="mt-3 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs">
                 <span style={{ color: theme.textMuted, opacity: 0.7 }}>
                   找不到？打開官方查詢：
                 </span>
@@ -227,7 +285,7 @@ export default async function CheckoutPage({
                   href={CVS_LOOKUP_URLS["7-11"]}
                   target="_blank"
                   rel="noopener"
-                  className="underline hover:opacity-80 transition"
+                  className="sproutly-link"
                   style={{ color: theme.accent }}
                 >
                   7-11 ↗
@@ -236,7 +294,7 @@ export default async function CheckoutPage({
                   href={CVS_LOOKUP_URLS["全家"]}
                   target="_blank"
                   rel="noopener"
-                  className="underline hover:opacity-80 transition"
+                  className="sproutly-link"
                   style={{ color: theme.accent }}
                 >
                   全家 ↗
@@ -245,7 +303,7 @@ export default async function CheckoutPage({
                   href={CVS_LOOKUP_URLS["萊爾富"]}
                   target="_blank"
                   rel="noopener"
-                  className="underline hover:opacity-80 transition"
+                  className="sproutly-link"
                   style={{ color: theme.accent }}
                 >
                   萊爾富 ↗
@@ -259,7 +317,7 @@ export default async function CheckoutPage({
               </p>
             </div>
 
-            <div>
+            <div className="pt-2">
               <label
                 className="block text-xs mb-1.5"
                 style={{ color: theme.textMuted }}
@@ -270,20 +328,31 @@ export default async function CheckoutPage({
                 name="shipping_address"
                 type="text"
                 placeholder="台北市 ..."
-                className="w-full rounded-xl px-4 py-3 outline-none transition text-sm"
-                style={inputStyle}
+                className="sproutly-input w-full text-sm"
               />
             </div>
           </section>
 
           {/* 付款方式 */}
-          <section className="space-y-3">
-            <h2
-              className="text-xs uppercase tracking-widest"
-              style={{ color: theme.accent }}
-            >
-              付款方式 <span className="text-red-500">*</span>
-            </h2>
+          <section className="space-y-4">
+            <div>
+              <p
+                className="text-[0.6875rem] uppercase font-medium"
+                style={{
+                  color: "var(--store-accent, currentColor)",
+                  letterSpacing: "0.4em",
+                }}
+              >
+                Payment · 付款方式 <span>*</span>
+              </p>
+              <div
+                className="mt-3 h-px w-10"
+                style={{
+                  background: "var(--store-accent, currentColor)",
+                  opacity: 0.5,
+                }}
+              />
+            </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
               {PAYMENT_OPTIONS.map((opt) => (
@@ -301,11 +370,11 @@ export default async function CheckoutPage({
                     disabled={opt.disabled}
                   />
                   <div
-                    className="rounded-xl p-3 transition peer-checked:font-medium"
+                    className="rounded-xl p-3.5 transition peer-checked:font-medium"
                     style={{
-                      background: theme.surface,
-                      border: `1px solid ${theme.border}`,
-                      color: theme.text,
+                      background: "var(--store-surface, rgba(0,0,0,0.03))",
+                      border: "1px solid var(--store-border, rgba(0,0,0,0.12))",
+                      color: "var(--store-text, #1a1a1a)",
                     }}
                   >
                     <span className="text-sm">{opt.label}</span>
@@ -323,9 +392,9 @@ export default async function CheckoutPage({
           </section>
 
           {/* 備註 */}
-          <section>
+          <section className="space-y-3">
             <label
-              className="block text-sm font-medium mb-1.5"
+              className="block text-sm font-medium"
               style={{ color: theme.text }}
             >
               備註（選填）
@@ -334,20 +403,20 @@ export default async function CheckoutPage({
               name="note"
               rows={3}
               placeholder="特殊需求、希望送達時間..."
-              className="w-full rounded-xl px-4 py-3 outline-none transition resize-none"
-              style={inputStyle}
+              className="sproutly-input w-full resize-none"
             />
           </section>
 
-          <SubmitButton
-            pendingText="送出中…"
-            className="sproutly-btn sproutly-btn-primary sproutly-btn-lg w-full"
-          >
-            送出訂單
-          </SubmitButton>
+          <div className="pt-4">
+            <SubmitButton
+              pendingText="送出中…"
+              className="sproutly-btn sproutly-btn-primary sproutly-btn-lg w-full"
+            >
+              送出訂單
+            </SubmitButton>
+          </div>
           <style>{`
             form button[type="submit"].sproutly-btn-primary {
-              /* sproutly-btn-primary 已套 var(--store-text)，保留覆寫成 primary 配色 */
               background: ${theme.primary};
               color: ${theme.surface};
             }
@@ -360,17 +429,40 @@ export default async function CheckoutPage({
         {/* 訂單摘要（右側 sticky）*/}
         <aside>
           <div
-            className="rounded-2xl p-6 shadow-sm sticky top-24"
-            style={{ background: theme.surface }}
+            className="rounded-2xl p-7 sticky top-24"
+            style={{
+              background: "var(--store-surface, rgba(0,0,0,0.03))",
+              border: "1px solid var(--store-border, rgba(0,0,0,0.12))",
+              boxShadow: "var(--sproutly-elev-2)",
+            }}
           >
-            <h2
-              className="text-xs uppercase tracking-widest mb-4"
-              style={{ color: theme.accent }}
-            >
-              訂單摘要
-            </h2>
-            <div className="flex gap-3">
-              <div className="w-16 h-16 rounded-xl overflow-hidden flex-shrink-0">
+            <div className="mb-6">
+              <p
+                className="text-[0.6875rem] uppercase font-medium"
+                style={{
+                  color: "var(--store-accent, currentColor)",
+                  letterSpacing: "0.4em",
+                }}
+              >
+                Summary · 訂單摘要
+              </p>
+              <div
+                className="mt-3 h-px w-10"
+                style={{
+                  background: "var(--store-accent, currentColor)",
+                  opacity: 0.5,
+                }}
+              />
+            </div>
+
+            <div className="flex gap-4">
+              <div
+                className="w-16 h-16 rounded-xl overflow-hidden flex-shrink-0"
+                style={{
+                  background: "var(--store-bg, #ffffff)",
+                  border: "1px solid var(--store-border, rgba(0,0,0,0.08))",
+                }}
+              >
                 {product.image_urls?.[0] ? (
                   // eslint-disable-next-line @next/next/no-img-element
                   <img
@@ -381,7 +473,6 @@ export default async function CheckoutPage({
                 ) : (
                   <div
                     className="w-full h-full flex items-center justify-center"
-                    style={{ background: theme.bg }}
                   >
                     <span
                       className="text-[10px] tracking-wider"
@@ -395,12 +486,12 @@ export default async function CheckoutPage({
               <div className="flex-1 min-w-0">
                 <h3
                   className="font-medium text-sm line-clamp-2"
-                  style={{ color: theme.text }}
+                  style={{ color: theme.text, lineHeight: 1.5 }}
                 >
                   {product.name}
                 </h3>
                 <p
-                  className="text-xs mt-1"
+                  className="text-xs mt-2 tabular-nums"
                   style={{ color: theme.textMuted }}
                 >
                   × {quantity}
@@ -409,13 +500,13 @@ export default async function CheckoutPage({
             </div>
 
             <hr
-              className="my-5"
-              style={{ borderColor: theme.border }}
+              className="my-6"
+              style={{ borderColor: "var(--store-border, rgba(0,0,0,0.12))" }}
             />
 
-            <div className="space-y-2 text-sm">
+            <div className="space-y-2.5 text-sm">
               <div
-                className="flex justify-between"
+                className="flex justify-between tabular-nums"
                 style={{ color: theme.textMuted }}
               >
                 <span>小計</span>
@@ -431,15 +522,27 @@ export default async function CheckoutPage({
             </div>
 
             <hr
-              className="my-5"
-              style={{ borderColor: theme.border }}
+              className="my-6"
+              style={{ borderColor: "var(--store-border, rgba(0,0,0,0.12))" }}
             />
 
             <div className="flex justify-between items-end">
-              <span style={{ color: theme.textMuted }}>合計</span>
               <span
-                className="text-2xl font-bold"
-                style={{ color: theme.accent }}
+                className="text-[0.6875rem] uppercase font-medium"
+                style={{
+                  color: "var(--store-accent, currentColor)",
+                  letterSpacing: "0.4em",
+                }}
+              >
+                Total
+              </span>
+              <span
+                className="text-3xl sm:text-4xl font-medium tabular-nums"
+                style={{
+                  color: theme.accent,
+                  letterSpacing: "-0.02em",
+                  lineHeight: 1,
+                }}
               >
                 {formatPrice(total, product.currency)}
               </span>
