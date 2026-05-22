@@ -36,7 +36,7 @@ export default async function StoreHomePage({
     .eq("merchant_id", store.id)
     .eq("is_active", true)
     .order("created_at", { ascending: false })
-    .limit(6);
+    .limit(theme.layout.featuredCount);
 
   const businessHoursText =
     typeof store.business_hours === "object" && store.business_hours !== null
@@ -145,8 +145,21 @@ export default async function StoreHomePage({
 
           // Variant 1: full-image — 自適應 banner（圖 + 文字段），手機 / 桌機 同一套
           if (heroStyle === "full-image" && theme.heroUrl) {
+            // Hero 高度策略
+            const heroHeightClass =
+              theme.layout.heroHeight === "short"
+                ? "min-h-[60vh]"
+                : theme.layout.heroHeight === "tall"
+                ? "min-h-[80vh]"
+                : theme.layout.heroHeight === "full"
+                ? "min-h-screen"
+                : ""; // auto
+            const taglineColor =
+              theme.layout.heroTaglineColor ?? theme.text;
+            const taglineFontScale = theme.layout.heroTaglineFontScale;
             return (
               <section
+                className={heroHeightClass}
                 data-edit-target="hero"
                 data-edit-label="Hero 區段"
               >
@@ -161,14 +174,16 @@ export default async function StoreHomePage({
                 >
                   <div className="max-w-4xl mx-auto">
                     <h1
-                      className={`text-2xl sm:text-4xl lg:text-5xl leading-[1.6] ${fade1}`}
+                      className={`leading-[1.6] ${fade1}`}
                       style={{
-                        color: theme.text,
+                        color: taglineColor,
                         fontFamily: "var(--store-font)",
                         fontWeight: 400,
                         letterSpacing: "0.02em",
                         wordBreak: "keep-all",
                         overflowWrap: "break-word",
+                        // 主標基礎大小 × user scale
+                        fontSize: `clamp(${1.5 * taglineFontScale}rem, ${3 * taglineFontScale}vw, ${3 * taglineFontScale}rem)`,
                       }}
                       data-edit-text
                       data-edit-field="tagline"
@@ -484,7 +499,11 @@ export default async function StoreHomePage({
                 </h2>
               )}
 
-              <div className="sproutly-stagger grid grid-cols-2 gap-x-6 sm:gap-x-12 gap-y-20 sm:gap-y-24">
+              <div className={`sproutly-stagger grid grid-cols-2 gap-x-6 sm:gap-x-12 gap-y-20 sm:gap-y-24 ${
+                theme.layout.collectionsColumns === 2 ? "sm:grid-cols-2"
+                : theme.layout.collectionsColumns === 4 ? "sm:grid-cols-4"
+                : "sm:grid-cols-3"
+              }`}>
                 {visibleCollections.map((c) => (
                   <Link
                     key={c.key}
@@ -575,7 +594,11 @@ export default async function StoreHomePage({
                   本月選物
                 </h2>
               )}
-              <div className="sproutly-stagger grid grid-cols-2 md:grid-cols-3 gap-x-6 sm:gap-x-10 gap-y-16">
+              <div className={`sproutly-stagger grid grid-cols-2 gap-x-6 sm:gap-x-10 gap-y-16 ${
+                theme.layout.featuredColumns === 2 ? "md:grid-cols-2"
+                : theme.layout.featuredColumns === 4 ? "md:grid-cols-4"
+                : "md:grid-cols-3"
+              }`}>
                 {featuredProducts.map((p) => (
                   <Link
                     key={p.id}

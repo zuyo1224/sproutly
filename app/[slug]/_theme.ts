@@ -166,6 +166,17 @@ export interface StoreTheme {
     heroZoomMobile: number;            // 手機（< 640px）獨立縮放，預設 1.5
     heroZoomTablet: number;            // 平板（640-1024px）獨立縮放，預設 1.3
     heroZoomDesktop: number;           // 桌機（≥ 1024px）獨立縮放，預設 1.0
+    // Hero 主標自訂：null = 用預設
+    heroTaglineFontScale: number;      // 主標字體 multiplier，0.6-1.8（預設 1.0）
+    heroTaglineColor: string | null;   // 主標顏色，hex；null = 用 theme.text
+    heroHeight: "auto" | "short" | "tall" | "full"; // 預設 auto（adaptive 比例）
+    // 全網站
+    fontScale: number;                 // 全網站字體 multiplier 0.8-1.3（預設 1.0）
+    sectionPaddingScale: "compact" | "default" | "spacious"; // 區段上下空白
+    // Featured / Collections 顯示
+    featuredCount: number;             // 顯示幾個商品 3-12（預設 6）
+    featuredColumns: 2 | 3 | 4;        // 排成幾欄（預設 3）
+    collectionsColumns: 2 | 3 | 4;     // 選物提案排成幾欄（預設 3）
   };
 }
 
@@ -471,6 +482,46 @@ function resolveLayout(raw: unknown): StoreTheme["layout"] {
       }
       return 1.0;
     })(),
+    heroTaglineFontScale: (() => {
+      const v = l.heroTaglineFontScale;
+      if (typeof v !== "number" || !Number.isFinite(v)) return 1.0;
+      return Math.max(0.6, Math.min(1.8, v));
+    })(),
+    heroTaglineColor: (() => {
+      const v = l.heroTaglineColor;
+      if (typeof v !== "string") return null;
+      return /^#[0-9a-fA-F]{6}$/.test(v.trim()) ? v.trim() : null;
+    })(),
+    heroHeight: (() => {
+      const v = l.heroHeight;
+      if (v === "short" || v === "tall" || v === "full" || v === "auto") return v;
+      return "auto" as const;
+    })(),
+    fontScale: (() => {
+      const v = l.fontScale;
+      if (typeof v !== "number" || !Number.isFinite(v)) return 1.0;
+      return Math.max(0.8, Math.min(1.3, v));
+    })(),
+    sectionPaddingScale: (() => {
+      const v = l.sectionPaddingScale;
+      if (v === "compact" || v === "default" || v === "spacious") return v;
+      return "default" as const;
+    })(),
+    featuredCount: (() => {
+      const v = l.featuredCount;
+      if (typeof v !== "number" || !Number.isFinite(v)) return 6;
+      return Math.max(3, Math.min(12, Math.floor(v)));
+    })(),
+    featuredColumns: (() => {
+      const v = l.featuredColumns;
+      if (v === 2 || v === 3 || v === 4) return v;
+      return 3 as const;
+    })(),
+    collectionsColumns: (() => {
+      const v = l.collectionsColumns;
+      if (v === 2 || v === 3 || v === 4) return v;
+      return 3 as const;
+    })(),
     freePositions: (() => {
       // 1. unified freePositions Record (preferred new path)
       const fp = l.freePositions;
@@ -538,6 +589,13 @@ function resolveHomepage(raw: unknown): StoreTheme["homepage"] {
 
 // 從 theme 物件產生 CSS variables（套到 layout root style）
 export function themeToCssVars(theme: StoreTheme): React.CSSProperties {
+  // 區段上下空白 → padding multiplier
+  const sectionPad =
+    theme.layout.sectionPaddingScale === "compact"
+      ? 0.6
+      : theme.layout.sectionPaddingScale === "spacious"
+      ? 1.4
+      : 1.0;
   return {
     "--store-primary": theme.primary,
     "--store-accent": theme.accent,
@@ -547,5 +605,8 @@ export function themeToCssVars(theme: StoreTheme): React.CSSProperties {
     "--store-text-muted": theme.textMuted,
     "--store-border": theme.border,
     "--store-font": FONT_LABELS[theme.font].family,
+    // 全網站字體 scale — body 套用
+    fontSize: `${theme.layout.fontScale * 100}%`,
+    "--store-section-pad": String(sectionPad),
   } as React.CSSProperties;
 }

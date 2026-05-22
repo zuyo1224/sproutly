@@ -29,6 +29,14 @@ type EditorPayload = {
     heroZoomMobile?: number;
     heroZoomTablet?: number;
     heroZoomDesktop?: number;
+    heroTaglineFontScale?: number;
+    heroTaglineColor?: string | null;
+    heroHeight?: string;
+    fontScale?: number;
+    sectionPaddingScale?: string;
+    featuredCount?: number;
+    featuredColumns?: number;
+    collectionsColumns?: number;
   };
   homepage?: {
     promise?: string;
@@ -187,6 +195,52 @@ export async function saveEditorState(slug: string, payload: EditorPayload) {
       if (z !== undefined && typeof z === "number" && Number.isFinite(z)) {
         layoutPatch[key] = Math.max(1.0, Math.min(2.5, z));
       }
+    }
+    if (payload.layout.heroTaglineFontScale !== undefined) {
+      const v = payload.layout.heroTaglineFontScale;
+      if (typeof v === "number" && Number.isFinite(v)) {
+        layoutPatch.heroTaglineFontScale = Math.max(0.6, Math.min(1.8, v));
+      }
+    }
+    if (payload.layout.heroTaglineColor !== undefined) {
+      const v = payload.layout.heroTaglineColor;
+      if (v === null || v === "") {
+        layoutPatch.heroTaglineColor = null;
+      } else if (typeof v === "string" && /^#[0-9a-fA-F]{6}$/.test(v.trim())) {
+        layoutPatch.heroTaglineColor = v.trim();
+      }
+    }
+    if (payload.layout.heroHeight !== undefined) {
+      const v = payload.layout.heroHeight;
+      if (v === "auto" || v === "short" || v === "tall" || v === "full") {
+        layoutPatch.heroHeight = v;
+      }
+    }
+    if (payload.layout.fontScale !== undefined) {
+      const v = payload.layout.fontScale;
+      if (typeof v === "number" && Number.isFinite(v)) {
+        layoutPatch.fontScale = Math.max(0.8, Math.min(1.3, v));
+      }
+    }
+    if (payload.layout.sectionPaddingScale !== undefined) {
+      const v = payload.layout.sectionPaddingScale;
+      if (v === "compact" || v === "default" || v === "spacious") {
+        layoutPatch.sectionPaddingScale = v;
+      }
+    }
+    if (payload.layout.featuredCount !== undefined) {
+      const v = payload.layout.featuredCount;
+      if (typeof v === "number" && Number.isFinite(v)) {
+        layoutPatch.featuredCount = Math.max(3, Math.min(12, Math.floor(v)));
+      }
+    }
+    if (payload.layout.featuredColumns !== undefined) {
+      const v = payload.layout.featuredColumns;
+      if (v === 2 || v === 3 || v === 4) layoutPatch.featuredColumns = v;
+    }
+    if (payload.layout.collectionsColumns !== undefined) {
+      const v = payload.layout.collectionsColumns;
+      if (v === 2 || v === 3 || v === 4) layoutPatch.collectionsColumns = v;
     }
     if (payload.layout.freePositions !== undefined) {
       const fp = payload.layout.freePositions;

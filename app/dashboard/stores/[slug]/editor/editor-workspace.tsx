@@ -74,6 +74,14 @@ type EditorTheme = {
     heroZoomMobile: number;
     heroZoomTablet: number;
     heroZoomDesktop: number;
+    heroTaglineFontScale: number;
+    heroTaglineColor: string | null;
+    heroHeight: "auto" | "short" | "tall" | "full";
+    fontScale: number;
+    sectionPaddingScale: "compact" | "default" | "spacious";
+    featuredCount: number;
+    featuredColumns: 2 | 3 | 4;
+    collectionsColumns: 2 | 3 | 4;
   };
   homepage: {
     promise: string;
@@ -501,6 +509,14 @@ export function EditorWorkspace({
           heroZoomMobile: t.layout.heroZoomMobile,
           heroZoomTablet: t.layout.heroZoomTablet,
           heroZoomDesktop: t.layout.heroZoomDesktop,
+          heroTaglineFontScale: t.layout.heroTaglineFontScale,
+          heroTaglineColor: t.layout.heroTaglineColor,
+          heroHeight: t.layout.heroHeight,
+          fontScale: t.layout.fontScale,
+          sectionPaddingScale: t.layout.sectionPaddingScale,
+          featuredCount: t.layout.featuredCount,
+          featuredColumns: t.layout.featuredColumns,
+          collectionsColumns: t.layout.collectionsColumns,
         },
         homepage: t.homepage,
         sections: t.sections,
@@ -1037,6 +1053,72 @@ export function EditorWorkspace({
                 className="w-full rounded-lg border border-stone-200 px-3 py-2 text-sm resize-none"
               />
             </Field>
+            <Field label={`主標字體大小（${theme.layout.heroTaglineFontScale.toFixed(2)}x）`}>
+              <input
+                type="range"
+                min="0.6"
+                max="1.8"
+                step="0.05"
+                value={theme.layout.heroTaglineFontScale}
+                onChange={(e) => updateLayout({ heroTaglineFontScale: parseFloat(e.target.value) })}
+                className="w-full"
+              />
+              <div className="flex justify-between text-[10px] text-stone-500">
+                <span>小</span>
+                <span>標準 1.0x</span>
+                <span>大</span>
+              </div>
+            </Field>
+            <Field label="主標顏色">
+              <div className="flex items-center gap-2">
+                <input
+                  type="color"
+                  value={theme.layout.heroTaglineColor ?? "#1A1A1A"}
+                  onChange={(e) => updateLayout({ heroTaglineColor: e.target.value })}
+                  className="h-8 w-12 rounded border border-stone-200"
+                />
+                <input
+                  type="text"
+                  value={theme.layout.heroTaglineColor ?? ""}
+                  onChange={(e) => updateLayout({ heroTaglineColor: e.target.value || null })}
+                  placeholder="預設用文字色"
+                  className="flex-1 rounded-lg border border-stone-200 px-3 py-2 text-sm font-mono"
+                />
+                {theme.layout.heroTaglineColor && (
+                  <button
+                    type="button"
+                    onClick={() => updateLayout({ heroTaglineColor: null })}
+                    className="text-xs text-stone-500 hover:text-stone-800 underline"
+                  >
+                    清除
+                  </button>
+                )}
+              </div>
+            </Field>
+            <Field label="Hero 高度">
+              <div className="grid grid-cols-4 gap-1.5">
+                {([
+                  { v: "auto", label: "自適應", hint: "跟著照片比例" },
+                  { v: "short", label: "矮", hint: "60vh" },
+                  { v: "tall", label: "高", hint: "80vh" },
+                  { v: "full", label: "全屏", hint: "100vh" },
+                ] as const).map((opt) => (
+                  <button
+                    key={opt.v}
+                    type="button"
+                    onClick={() => updateLayout({ heroHeight: opt.v })}
+                    className={`rounded-lg border py-2 text-xs transition ${
+                      theme.layout.heroHeight === opt.v
+                        ? "border-emerald-500 bg-emerald-50 text-emerald-900"
+                        : "border-stone-200 text-stone-600 hover:border-stone-400"
+                    }`}
+                    title={opt.hint}
+                  >
+                    {opt.label}
+                  </button>
+                ))}
+              </div>
+            </Field>
             {theme.layout.heroStyle === "full-image" && (() => {
               // Per-viewport zoom：依當前預覽裝置決定編哪個欄位
               const zoomKey =
@@ -1151,6 +1233,24 @@ export function EditorWorkspace({
                 placeholder="告訴我們你的空間，我們幫你選對的那一株..."
                 className="w-full rounded-lg border border-stone-200 px-3 py-2 text-sm resize-none"
               />
+            </Field>
+            <Field label="排幾欄">
+              <div className="grid grid-cols-3 gap-1.5">
+                {([2, 3, 4] as const).map((n) => (
+                  <button
+                    key={n}
+                    type="button"
+                    onClick={() => updateLayout({ collectionsColumns: n })}
+                    className={`rounded-lg border py-2 text-xs transition ${
+                      theme.layout.collectionsColumns === n
+                        ? "border-emerald-500 bg-emerald-50 text-emerald-900"
+                        : "border-stone-200 text-stone-600 hover:border-stone-400"
+                    }`}
+                  >
+                    {n} 欄
+                  </button>
+                ))}
+              </div>
             </Field>
             <p className="text-xs text-stone-500 leading-relaxed">
               個別選物提案的標題、副標、情境照在「傳統設定頁」編輯。
@@ -1560,21 +1660,99 @@ export function EditorWorkspace({
         )}
 
         {activeTab === "section" &&
-          (selectedSection === "featured" || selectedSection === "journal") && (
-            <PanelSection title={sectionLabels[selectedSection]}>
-              <p className="text-sm text-stone-600 leading-relaxed">
-                這個 section 的內容由你後台的{" "}
-                {selectedSection === "featured" ? "商品" : "Journal 預設 placeholder"}{" "}
-                自動生成，目前沒有額外可調的屬性。
-              </p>
-              <p className="mt-3 text-xs text-stone-500">
-                你可以用左側「↑↓」調整這 section 在首頁的位置。
+          selectedSection === "featured" && (
+            <PanelSection title={sectionLabels.featured}>
+              <Field label={`顯示幾個商品（${theme.layout.featuredCount}）`}>
+                <input
+                  type="range"
+                  min="3"
+                  max="12"
+                  step="1"
+                  value={theme.layout.featuredCount}
+                  onChange={(e) => updateLayout({ featuredCount: parseInt(e.target.value, 10) })}
+                  className="w-full"
+                />
+                <div className="flex justify-between text-[10px] text-stone-500">
+                  <span>3</span>
+                  <span>12</span>
+                </div>
+              </Field>
+              <Field label="排幾欄">
+                <div className="grid grid-cols-3 gap-1.5">
+                  {([2, 3, 4] as const).map((n) => (
+                    <button
+                      key={n}
+                      type="button"
+                      onClick={() => updateLayout({ featuredColumns: n })}
+                      className={`rounded-lg border py-2 text-xs transition ${
+                        theme.layout.featuredColumns === n
+                          ? "border-emerald-500 bg-emerald-50 text-emerald-900"
+                          : "border-stone-200 text-stone-600 hover:border-stone-400"
+                      }`}
+                    >
+                      {n} 欄
+                    </button>
+                  ))}
+                </div>
+              </Field>
+              <p className="text-xs text-stone-500 leading-relaxed">
+                商品本身在「商品」頁編輯，這裡只控制首頁顯示幾個 / 怎麼排。
               </p>
             </PanelSection>
           )}
 
+        {activeTab === "section" && selectedSection === "journal" && (
+          <PanelSection title={sectionLabels.journal}>
+            <p className="text-sm text-stone-600 leading-relaxed">
+              慢讀 / Journal 區段，目前用預設 placeholder。
+            </p>
+            <p className="mt-3 text-xs text-stone-500">
+              你可以用左側「版面結構」拖曳排序這個 section 的位置，
+              或在「色彩」改 accent 色換它的調性。
+            </p>
+          </PanelSection>
+        )}
+
         {activeTab === "design" && (
           <PanelSection title="視覺風格">
+            <Field label={`全網站字體大小（${theme.layout.fontScale.toFixed(2)}x）`}>
+              <input
+                type="range"
+                min="0.8"
+                max="1.3"
+                step="0.05"
+                value={theme.layout.fontScale}
+                onChange={(e) => updateLayout({ fontScale: parseFloat(e.target.value) })}
+                className="w-full"
+              />
+              <div className="flex justify-between text-[10px] text-stone-500">
+                <span>小</span>
+                <span>標準</span>
+                <span>大</span>
+              </div>
+            </Field>
+            <Field label="區段上下空白">
+              <div className="grid grid-cols-3 gap-1.5">
+                {([
+                  { v: "compact", label: "緊湊" },
+                  { v: "default", label: "標準" },
+                  { v: "spacious", label: "寬鬆" },
+                ] as const).map((opt) => (
+                  <button
+                    key={opt.v}
+                    type="button"
+                    onClick={() => updateLayout({ sectionPaddingScale: opt.v })}
+                    className={`rounded-lg border py-2 text-xs transition ${
+                      theme.layout.sectionPaddingScale === opt.v
+                        ? "border-emerald-500 bg-emerald-50 text-emerald-900"
+                        : "border-stone-200 text-stone-600 hover:border-stone-400"
+                    }`}
+                  >
+                    {opt.label}
+                  </button>
+                ))}
+              </div>
+            </Field>
             <Field label="Logo（顯示在 nav）">
               {theme.logoUrl ? (
                 <div className="space-y-2">
