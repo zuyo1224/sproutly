@@ -150,6 +150,8 @@ export function EditorWorkspace({
   const [fullscreen, setFullscreen] = useState(false);
   // 240 second sidebar 變 floating popover；null = 關閉
   const [popover, setPopover] = useState<SelectedTab | null>(null);
+  // 鍵盤快捷鍵說明浮層（按 ? 切換、Esc 關）
+  const [showShortcuts, setShowShortcuts] = useState(false);
   // 修 dnd-kit hydration error：useSortable 用 counter 生 ID，SSR / client 不一致
   // → 只在 client mount 後才 render DndContext / SortableContext
   const [mounted, setMounted] = useState(false);
@@ -314,13 +316,22 @@ export function EditorWorkspace({
   // Esc 關 floating popover
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
-      if (e.key === "Escape" && popover) {
-        setPopover(null);
+      // 不要 hijack input / textarea — user 在輸入 ? 時不該誤觸
+      const tag = (e.target as HTMLElement)?.tagName;
+      const inField = tag === "INPUT" || tag === "TEXTAREA" || tag === "SELECT";
+      if (e.key === "Escape") {
+        if (showShortcuts) setShowShortcuts(false);
+        else if (popover) setPopover(null);
+        return;
+      }
+      if (e.key === "?" && !inField) {
+        e.preventDefault();
+        setShowShortcuts((v) => !v);
       }
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, [popover]);
+  }, [popover, showShortcuts]);
 
   // Cmd/Ctrl+Z / Cmd/Ctrl+Shift+Z keyboard shortcut
   useEffect(() => {
@@ -663,6 +674,15 @@ export function EditorWorkspace({
                   ? `● 已存 ${new Date(savedAt).toLocaleTimeString("zh-TW", { hour: "2-digit", minute: "2-digit" })}`
                   : "—"}
           </span>
+          <button
+            type="button"
+            onClick={() => setShowShortcuts(true)}
+            className="rounded-full w-7 h-7 text-xs font-semibold text-stone-500 hover:text-emerald-900 hover:bg-stone-100 border border-stone-200 transition flex items-center justify-center"
+            title="鍵盤快捷鍵說明（按 ? 也可）"
+            aria-label="鍵盤快捷鍵說明"
+          >
+            ?
+          </button>
           <button
             type="button"
             onClick={() => setFullscreen(!fullscreen)}
@@ -1997,6 +2017,63 @@ export function EditorWorkspace({
             : "從圖庫挑圖"
         }
       />
+
+      {/* === 鍵盤快捷鍵說明浮層（按 ? 切換、Esc 關） === */}
+      {showShortcuts && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center p-6 bg-stone-950/40 backdrop-blur-sm"
+          onClick={() => setShowShortcuts(false)}
+        >
+          <div
+            className="bg-white rounded-xl shadow-2xl max-w-md w-full overflow-hidden"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex items-center justify-between px-5 py-4 border-b border-stone-100">
+              <h2 className="text-sm font-semibold text-emerald-950">鍵盤快捷鍵</h2>
+              <button
+                type="button"
+                onClick={() => setShowShortcuts(false)}
+                className="text-stone-400 hover:text-stone-700 transition"
+                aria-label="關閉"
+              >
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 6L6 18M6 6l12 12"/></svg>
+              </button>
+            </div>
+            <div className="px-5 py-4 space-y-3">
+              {(
+                [
+                  { keys: ["⌘", "Z"], desc: "復原上一步" },
+                  { keys: ["⌘", "⇧", "Z"], desc: "重做（也可用 ⌘ + Y）" },
+                  { keys: ["?"], desc: "開／關這個說明" },
+                  { keys: ["Esc"], desc: "關掉浮層、編輯面板" },
+                  { keys: ["雙擊", "標題"], desc: "直接改文字（不用回左邊欄）" },
+                  { keys: ["拖動", "已選元素"], desc: "自由定位（Hero 主標等元素）" },
+                  { keys: ["點 iframe", "section"], desc: "跳到對應的編輯面板" },
+                ] as { keys: string[]; desc: string }[]
+              ).map((row, i) => (
+                <div key={i} className="flex items-center justify-between gap-4">
+                  <div className="flex items-center gap-1">
+                    {row.keys.map((k, j) => (
+                      <kbd
+                        key={j}
+                        className="inline-flex items-center justify-center min-w-[28px] h-6 px-1.5 rounded border border-stone-300 bg-stone-50 text-[11px] font-medium text-stone-700 shadow-[0_1px_0_rgba(0,0,0,0.04)]"
+                      >
+                        {k}
+                      </kbd>
+                    ))}
+                  </div>
+                  <span className="text-xs text-stone-600 text-right flex-1">{row.desc}</span>
+                </div>
+              ))}
+            </div>
+            <div className="px-5 py-3 bg-stone-50 border-t border-stone-100">
+              <p className="text-[11px] text-stone-500 leading-relaxed">
+                Windows / Linux 把 ⌘ 換成 Ctrl。⇧ = Shift。
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
