@@ -241,8 +241,9 @@ export function EditorWorkspace({
           setSelectedSection(msg.target as SectionKey);
           setActiveTab("section");
           // 不自動開左邊 popover — user 多次說「擋住」。
-          // 右側屬性 panel 依然會 update 顯示選中 section 的欄位。
-          // 要看版面結構左邊 popover 改用 icon nav 手動點。
+          // 反過來：user 在 iframe 點 section 就「關掉」 popover，因為他在
+          // 編輯 canvas 內容，popover 不需要擋著。右側屬性 panel 仍 update。
+          setPopover(null);
         }
       } else if (
         msg.type === "sproutly-edit-position-update" &&
@@ -752,7 +753,7 @@ export function EditorWorkspace({
       {/* === Floating popover sidebar（從 icon nav 滑出）=== */}
       {!fullscreen && popover && (
       <aside
-        className="absolute top-0 bottom-0 left-[80px] w-[280px] z-30 bg-white border-r border-stone-200 flex flex-col overflow-y-auto shadow-2xl shadow-stone-300/60"
+        className="absolute top-0 bottom-0 left-[80px] w-[240px] z-30 bg-white border-r border-stone-200 flex flex-col overflow-y-auto shadow-2xl shadow-stone-300/60"
         style={{ animation: "sproutly-popover-slide 0.25s cubic-bezier(0.22,1,0.36,1) both" }}
       >
         <style>{`
@@ -761,7 +762,8 @@ export function EditorWorkspace({
             to { opacity: 1; transform: translateX(0); }
           }
         `}</style>
-        <div className="p-4 border-b border-stone-100">
+        <div className="p-4 border-b border-stone-100 flex items-start justify-between gap-2">
+          <div className="flex-1 min-w-0">
           <h2 className="text-sm font-semibold text-emerald-950">
             {activeTab === "section"
               ? "版面結構"
@@ -780,6 +782,19 @@ export function EditorWorkspace({
                   ? "用自然語言改設計"
                   : "Tagline / 子頁開關"}
           </p>
+          </div>
+          <button
+            type="button"
+            onClick={() => setPopover(null)}
+            className="shrink-0 -mt-1 -mr-1 w-7 h-7 rounded hover:bg-stone-100 flex items-center justify-center text-stone-500 hover:text-stone-900 transition"
+            aria-label="關閉"
+            title="關閉（Esc）"
+          >
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <line x1="18" y1="6" x2="6" y2="18"/>
+              <line x1="6" y1="6" x2="18" y2="18"/>
+            </svg>
+          </button>
         </div>
 
         {activeTab === "ai" && (
