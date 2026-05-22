@@ -157,6 +157,7 @@ export default async function StoreHomePage({
             const taglineColor =
               theme.layout.heroTaglineColor ?? theme.text;
             const taglineFontScale = theme.layout.heroTaglineFontScale;
+            const taglineAlign = theme.layout.heroTaglineAlign;
             return (
               <section
                 className={heroHeightClass}
@@ -172,7 +173,10 @@ export default async function StoreHomePage({
                   style={{ backgroundColor: theme.bg }}
                   data-edit-drag="hero-tagline"
                 >
-                  <div className="max-w-4xl mx-auto">
+                  <div
+                    className="max-w-4xl mx-auto"
+                    style={{ textAlign: taglineAlign }}
+                  >
                     <h1
                       className={`leading-[1.6] ${fade1}`}
                       style={{

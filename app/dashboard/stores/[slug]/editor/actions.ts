@@ -31,6 +31,7 @@ type EditorPayload = {
     heroZoomDesktop?: number;
     heroTaglineFontScale?: number;
     heroTaglineColor?: string | null;
+    heroTaglineAlign?: string;
     heroHeight?: string;
     fontScale?: number;
     sectionPaddingScale?: string;
@@ -214,6 +215,12 @@ export async function saveEditorState(slug: string, payload: EditorPayload) {
       const v = payload.layout.heroHeight;
       if (v === "auto" || v === "short" || v === "tall" || v === "full") {
         layoutPatch.heroHeight = v;
+      }
+    }
+    if (payload.layout.heroTaglineAlign !== undefined) {
+      const v = payload.layout.heroTaglineAlign;
+      if (v === "left" || v === "center" || v === "right") {
+        layoutPatch.heroTaglineAlign = v;
       }
     }
     if (payload.layout.fontScale !== undefined) {

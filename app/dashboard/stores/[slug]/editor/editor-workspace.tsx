@@ -76,6 +76,7 @@ type EditorTheme = {
     heroZoomDesktop: number;
     heroTaglineFontScale: number;
     heroTaglineColor: string | null;
+    heroTaglineAlign: "left" | "center" | "right";
     heroHeight: "auto" | "short" | "tall" | "full";
     fontScale: number;
     sectionPaddingScale: "compact" | "default" | "spacious";
@@ -511,6 +512,7 @@ export function EditorWorkspace({
           heroZoomDesktop: t.layout.heroZoomDesktop,
           heroTaglineFontScale: t.layout.heroTaglineFontScale,
           heroTaglineColor: t.layout.heroTaglineColor,
+          heroTaglineAlign: t.layout.heroTaglineAlign,
           heroHeight: t.layout.heroHeight,
           fontScale: t.layout.fontScale,
           sectionPaddingScale: t.layout.sectionPaddingScale,
@@ -1107,6 +1109,28 @@ export function EditorWorkspace({
                     清除
                   </button>
                 )}
+              </div>
+            </Field>
+            <Field label="主標對齊">
+              <div className="grid grid-cols-3 gap-1.5">
+                {([
+                  { v: "left", label: "左" },
+                  { v: "center", label: "置中" },
+                  { v: "right", label: "右" },
+                ] as const).map((opt) => (
+                  <button
+                    key={opt.v}
+                    type="button"
+                    onClick={() => updateLayout({ heroTaglineAlign: opt.v })}
+                    className={`rounded-lg border py-2 text-xs transition ${
+                      theme.layout.heroTaglineAlign === opt.v
+                        ? "border-emerald-500 bg-emerald-50 text-emerald-900"
+                        : "border-stone-200 text-stone-600 hover:border-stone-400"
+                    }`}
+                  >
+                    {opt.label}
+                  </button>
+                ))}
               </div>
             </Field>
             <Field label="Hero 高度">
@@ -1868,10 +1892,13 @@ export function EditorWorkspace({
                     type="checkbox"
                     checked={theme.sections[s.key]}
                     onChange={(e) => {
-                      setTheme((t) => ({
-                        ...t,
-                        sections: { ...t.sections, [s.key]: e.target.checked },
-                      }));
+                      setTheme((t) => {
+                        pushHistory(t);
+                        return {
+                          ...t,
+                          sections: { ...t.sections, [s.key]: e.target.checked },
+                        };
+                      });
                       setDirty(true);
                     }}
                     className="w-4 h-4 rounded text-emerald-700"
