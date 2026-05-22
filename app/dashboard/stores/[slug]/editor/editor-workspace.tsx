@@ -182,6 +182,9 @@ export function EditorWorkspace({
     setTheme(last);
     setDirty(true);
     setHistoryTick((t) => t + 1);
+    // 復原後立即 save 復原後的 state 並 reload iframe，user 看得到實際效果。
+    // 用 themeOverride 直接傳 reverted theme，避免 stale closure。
+    handleSave({ reloadIframe: true, themeOverride: last });
   }
   function redo() {
     const next = futureRef.current.pop();
@@ -190,6 +193,7 @@ export function EditorWorkspace({
     setTheme(next);
     setDirty(true);
     setHistoryTick((t) => t + 1);
+    handleSave({ reloadIframe: true, themeOverride: next });
   }
 
   // 接 iframe edit click + inline text edit postMessage
@@ -214,9 +218,10 @@ export function EditorWorkspace({
         if ((validKeys as readonly string[]).includes(msg.target)) {
           setSelectedSection(msg.target as SectionKey);
           setActiveTab("section");
-          // 不自動開左邊 popover — 之前每次點要拉都跳出來擋住 canvas。
-          // 右側屬性 panel 依然會根據 selectedSection 更新，
-          // 要看版面結構左邊 popover 改用 icon nav 手動點。
+          // 自動開左邊 popover 顯示編輯選項 — 但加 isDrag flag 避免拖拉時跳出來擋。
+          // 點選 = 開 popover；拖拉開始 = 不開（iframe 端 isDrag=true 時 skip）
+          const isDrag = (msg as { isDrag?: boolean }).isDrag === true;
+          if (!isDrag) setPopover("section");
         }
       } else if (
         msg.type === "sproutly-edit-position-update" &&
@@ -441,49 +446,50 @@ export function EditorWorkspace({
     }
   }
 
-  function handleSave(opts?: { reloadIframe?: boolean }) {
+  function handleSave(opts?: { reloadIframe?: boolean; themeOverride?: EditorTheme }) {
     const reload = opts?.reloadIframe ?? true;
+    const t = opts?.themeOverride ?? theme;
     startTransition(async () => {
       const res = await saveEditorState(slug, {
-        primary: theme.primary,
-        accent: theme.accent,
-        tagline: theme.tagline,
-        heroUrl: theme.heroUrl,
-        logoUrl: theme.logoUrl,
+        primary: t.primary,
+        accent: t.accent,
+        tagline: t.tagline,
+        heroUrl: t.heroUrl,
+        logoUrl: t.logoUrl,
         layout: {
-          heroStyle: theme.layout.heroStyle,
-          heroEyebrow: theme.layout.heroEyebrow ?? "",
-          heroSubtitle: theme.layout.heroSubtitle ?? "",
-          heroImageSide: theme.layout.heroImageSide,
-          sectionOrder: theme.layout.sectionOrder,
-          testimonials: theme.layout.testimonials
-            .filter((t) => t.quote.trim() && t.author.trim())
-            .map((t) => ({
-              quote: t.quote,
-              author: t.author,
-              role: t.role ?? undefined,
+          heroStyle: t.layout.heroStyle,
+          heroEyebrow: t.layout.heroEyebrow ?? "",
+          heroSubtitle: t.layout.heroSubtitle ?? "",
+          heroImageSide: t.layout.heroImageSide,
+          sectionOrder: t.layout.sectionOrder,
+          testimonials: t.layout.testimonials
+            .filter((x) => x.quote.trim() && x.author.trim())
+            .map((x) => ({
+              quote: x.quote,
+              author: x.author,
+              role: x.role ?? undefined,
             })),
-          faqItems: theme.layout.faqItems
+          faqItems: t.layout.faqItems
             .filter((f) => f.question.trim() && f.answer.trim())
             .map((f) => ({ question: f.question, answer: f.answer })),
-          stats: theme.layout.stats
+          stats: t.layout.stats
             .filter((s) => s.value.trim() && s.label.trim())
             .map((s) => ({ value: s.value, label: s.label })),
-          partners: theme.layout.partners
+          partners: t.layout.partners
             .filter((p) => p.name.trim() && p.logoUrl.trim())
             .map((p) => ({ name: p.name, logoUrl: p.logoUrl, href: p.href })),
-          gallery: theme.layout.gallery
+          gallery: t.layout.gallery
             .filter((g) => g.url.trim())
             .map((g) => ({ url: g.url, caption: g.caption })),
-          mapEmbedUrl: theme.layout.mapEmbedUrl,
-          freePositions: theme.layout.freePositions,
-          heroZoom: theme.layout.heroZoom,
-          heroZoomMobile: theme.layout.heroZoomMobile,
-          heroZoomTablet: theme.layout.heroZoomTablet,
-          heroZoomDesktop: theme.layout.heroZoomDesktop,
+          mapEmbedUrl: t.layout.mapEmbedUrl,
+          freePositions: t.layout.freePositions,
+          heroZoom: t.layout.heroZoom,
+          heroZoomMobile: t.layout.heroZoomMobile,
+          heroZoomTablet: t.layout.heroZoomTablet,
+          heroZoomDesktop: t.layout.heroZoomDesktop,
         },
-        homepage: theme.homepage,
-        sections: theme.sections,
+        homepage: t.homepage,
+        sections: t.sections,
       });
       if (res && "ok" in res) {
         setDirty(false);
