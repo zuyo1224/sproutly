@@ -554,21 +554,21 @@ export function EditorWorkspace({
 
         {/* Center: undo/redo + viewport switcher */}
         <div className="flex items-center gap-3">
-          <div className="flex items-center gap-1">
+          <div className="flex items-center gap-1.5">
             <button
               type="button"
               onClick={undo}
               disabled={pastRef.current.length === 0}
               title="復原 (Cmd+Z)"
               aria-label="復原"
-              className="h-8 px-2 sm:px-2.5 rounded text-stone-700 hover:bg-stone-100 transition disabled:opacity-30 disabled:cursor-not-allowed flex items-center gap-1.5 text-[12px] font-medium"
+              className="h-9 px-3 rounded-md border border-stone-300 bg-white text-stone-800 hover:bg-stone-50 hover:border-stone-400 active:bg-stone-100 transition disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-white disabled:hover:border-stone-300 flex items-center gap-1.5 text-[12.5px] font-medium shadow-sm"
               data-history-tick={historyTick}
             >
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M3 7v6h6" />
                 <path d="M21 17a9 9 0 00-15-6.7L3 13" />
               </svg>
-              <span className="hidden sm:inline">復原</span>
+              <span>復原</span>
             </button>
             <button
               type="button"
@@ -576,13 +576,13 @@ export function EditorWorkspace({
               disabled={futureRef.current.length === 0}
               title="重做 (Cmd+Shift+Z)"
               aria-label="重做"
-              className="h-8 px-2 sm:px-2.5 rounded text-stone-700 hover:bg-stone-100 transition disabled:opacity-30 disabled:cursor-not-allowed flex items-center gap-1.5 text-[12px] font-medium"
+              className="h-9 px-3 rounded-md border border-stone-300 bg-white text-stone-800 hover:bg-stone-50 hover:border-stone-400 active:bg-stone-100 transition disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-white disabled:hover:border-stone-300 flex items-center gap-1.5 text-[12.5px] font-medium shadow-sm"
             >
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M21 7v6h-6" />
                 <path d="M3 17a9 9 0 0115-6.7L21 13" />
               </svg>
-              <span className="hidden sm:inline">重做</span>
+              <span>重做</span>
             </button>
           </div>
 
