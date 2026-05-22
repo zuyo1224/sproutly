@@ -187,12 +187,17 @@ export function EditorClickBridge() {
     }
 
     // Phase 5 MVP — drag handling for [data-edit-drag] elements
+    // Bug fix：原本 mousedown 立即進 drag mode，user 沒移動 mouseup 也 fire
+    // position-update，導致點 element 不拖也會改位置。改成只有移動 ≥ 5px
+    // 才算開始拖，純點擊不觸發 position-update。
+    const DRAG_THRESHOLD_PX = 5;
     let dragState: {
       el: HTMLElement;
       section: HTMLElement;
       startX: number;
       startY: number;
       element: string;
+      hasDragged: boolean; // 真的有移動超過 threshold
     } | null = null;
 
     function onMouseDown(e: MouseEvent) {
@@ -209,22 +214,36 @@ export function EditorClickBridge() {
       const section = dragEl.closest("[data-edit-target]") as HTMLElement | null;
       if (!section) return;
 
-      e.preventDefault();
-      e.stopPropagation();
-
+      // 先不 preventDefault — 等真正進入 drag 再擋
       dragState = {
         el: dragEl,
         section,
         startX: e.clientX,
         startY: e.clientY,
         element: dragEl.dataset.editDrag ?? "unknown",
+        hasDragged: false,
       };
-      dragEl.setAttribute("data-dragging", "true");
     }
 
     function onMouseMove(e: MouseEvent) {
       if (!dragState) return;
-      const { el, section } = dragState;
+      const { el, section, startX, startY } = dragState;
+      const dx = Math.abs(e.clientX - startX);
+      const dy = Math.abs(e.clientY - startY);
+
+      // 還沒超過 threshold — 不算 drag
+      if (!dragState.hasDragged) {
+        if (dx < DRAG_THRESHOLD_PX && dy < DRAG_THRESHOLD_PX) return;
+        // 超過 → 正式進入 drag mode
+        dragState.hasDragged = true;
+        el.setAttribute("data-dragging", "true");
+        // 通知 editor 開始 drag（避免 popover 跳出）
+        if (window.parent !== window) {
+          window.parent.postMessage({ type: "sproutly-edit-drag-start" }, "*");
+        }
+      }
+
+      e.preventDefault();
       const rect = section.getBoundingClientRect();
       const x = (e.clientX - rect.left) / rect.width;
       const y = (e.clientY - rect.top) / rect.height;
@@ -240,7 +259,15 @@ export function EditorClickBridge() {
 
     function onMouseUp(e: MouseEvent) {
       if (!dragState) return;
-      const { el, section, element } = dragState;
+      const { el, section, element, hasDragged } = dragState;
+      const ds = dragState;
+      dragState = null;
+
+      // 沒拖過 → 純點擊，不要 fire position-update（讓 onClick handler 正常處理）
+      if (!hasDragged) {
+        return;
+      }
+
       const rect = section.getBoundingClientRect();
       const x = (e.clientX - rect.left) / rect.width;
       const y = (e.clientY - rect.top) / rect.height;
@@ -248,7 +275,9 @@ export function EditorClickBridge() {
       const yClamped = Math.max(0, Math.min(1, y));
 
       el.removeAttribute("data-dragging");
-      dragState = null;
+
+      // 防 reference unused warning
+      void ds;
 
       if (window.parent !== window) {
         window.parent.postMessage(
