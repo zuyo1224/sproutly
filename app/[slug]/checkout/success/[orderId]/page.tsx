@@ -14,6 +14,16 @@ function formatPrice(cents: number, currency: string) {
   return `${currency} ${amount.toFixed(2)}`;
 }
 
+function formatDateTime(iso: string) {
+  return new Date(iso).toLocaleString("zh-TW", {
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+  });
+}
+
 export default async function OrderSuccessPage({
   params,
 }: {
@@ -51,209 +61,340 @@ export default async function OrderSuccessPage({
   const paymentLabel = order.payment_method
     ? (PAYMENT_LABELS[order.payment_method] ?? order.payment_method)
     : null;
-  const orderDate = new Date(order.created_at).toLocaleString("zh-TW", {
-    year: "numeric",
-    month: "2-digit",
-    day: "2-digit",
-    hour: "2-digit",
-    minute: "2-digit",
-  });
+
+  const orderItems = items ?? [];
 
   return (
-    <main className="max-w-2xl mx-auto px-6 py-16">
+    <main className="max-w-3xl mx-auto px-6 sm:px-10 py-20 sm:py-28">
       <Confetti count={70} />
-      <div className="text-center mb-10">
+
+      <div className="text-center mb-14 sm:mb-20">
         <p
-          className="text-xs tracking-widest uppercase mb-4"
-          style={{ color: theme.accent }}
+          className="font-medium uppercase mb-5"
+          style={{
+            color: theme.accent,
+            fontSize: "0.6875rem",
+            letterSpacing: "0.4em",
+          }}
         >
-          Order Received
+          Order Received · #{shortId}
         </p>
+        <div
+          className="h-px w-12 mx-auto mb-7"
+          style={{ background: theme.accent, opacity: 0.5 }}
+        />
         <h1
-          className="text-2xl sm:text-3xl font-semibold tracking-tight"
-          style={{ color: theme.text }}
+          className="font-medium tracking-tight mb-5"
+          style={{
+            color: theme.text,
+            fontFamily: "var(--store-font)",
+            fontSize: "clamp(1.875rem, 4vw, 2.25rem)",
+            lineHeight: 1.15,
+            letterSpacing: "-0.01em",
+          }}
         >
           訂單已送出
         </h1>
         <p
-          className="mt-3"
-          style={{ color: theme.textMuted }}
+          className="mx-auto"
+          style={{
+            color: theme.textMuted,
+            fontSize: "0.9375rem",
+            lineHeight: 1.7,
+            maxWidth: "32rem",
+          }}
         >
-          {store.name} 已收到你的訂單，會盡快聯絡你確認付款方式
+          {store.name} 已收到你的訂單，{formatDateTime(order.created_at)} 送出，會盡快聯絡你確認付款方式
         </p>
       </div>
 
-      <div
-        className="rounded-2xl p-6 shadow-sm space-y-5"
-        style={{ background: theme.surface }}
+      <section
+        className="rounded-2xl p-7 sm:p-8 mb-6"
+        style={{
+          background: "var(--store-surface)",
+          border: "1px solid var(--store-border)",
+          boxShadow: "var(--sproutly-elev-2)",
+        }}
       >
-        <div className="flex items-baseline justify-between">
-          <div>
-            <p
-              className="text-xs uppercase tracking-widest"
-              style={{ color: theme.accent }}
-            >
-              訂單編號
-            </p>
-            <p
-              className="mt-1 text-xl font-mono font-semibold"
-              style={{ color: theme.text }}
-            >
-              #{shortId}
-            </p>
-          </div>
-          <div className="text-right">
-            <p
-              className="text-xs uppercase tracking-widest"
-              style={{ color: theme.accent }}
-            >
-              下單時間
-            </p>
-            <p
-              className="mt-1 text-sm"
-              style={{ color: theme.text }}
-            >
-              {orderDate}
-            </p>
-          </div>
-        </div>
-
-        <hr style={{ borderColor: theme.border }} />
-
-        <div>
+        <div className="flex items-baseline gap-3 mb-6">
           <p
-            className="text-xs uppercase tracking-widest mb-3"
-            style={{ color: theme.accent }}
+            className="font-medium uppercase"
+            style={{
+              color: theme.accent,
+              fontSize: "0.6875rem",
+              letterSpacing: "0.4em",
+            }}
           >
-            商品
+            Items · 商品
           </p>
-          {items?.map((it) => (
-            <div
+          <div
+            className="h-px flex-1"
+            style={{ background: theme.border, opacity: 0.6 }}
+          />
+        </div>
+        <ul
+          className="space-y-3"
+          style={{
+            color: theme.text,
+            fontSize: "0.9375rem",
+            lineHeight: 1.85,
+          }}
+        >
+          {orderItems.map((it) => (
+            <li
               key={it.id}
-              className="flex justify-between items-baseline py-1"
+              className="flex justify-between gap-4 items-baseline"
             >
-              <span style={{ color: theme.text }}>
-                {it.name_snapshot} × {it.quantity}
-              </span>
-              <span
-                className="font-medium"
-                style={{ color: theme.text }}
-              >
+              <div className="min-w-0">
+                <span className="block truncate">{it.name_snapshot}</span>
+                <span
+                  className="text-xs"
+                  style={{ color: theme.textMuted }}
+                >
+                  {formatPrice(it.price_cents_snapshot, order.currency)} ×{" "}
+                  {it.quantity}
+                </span>
+              </div>
+              <span className="tabular-nums whitespace-nowrap">
                 {formatPrice(
                   it.price_cents_snapshot * it.quantity,
                   order.currency
                 )}
               </span>
-            </div>
+            </li>
           ))}
-        </div>
+        </ul>
 
-        <hr style={{ borderColor: theme.border }} />
-
-        <div className="flex justify-between items-end">
-          <span style={{ color: theme.textMuted }}>合計</span>
+        <div
+          className="mt-7 pt-6 border-t flex items-baseline justify-between"
+          style={{ borderColor: theme.border }}
+        >
           <span
-            className="text-2xl font-bold"
-            style={{ color: theme.accent }}
+            className="font-medium uppercase"
+            style={{
+              color: theme.textMuted,
+              fontSize: "0.6875rem",
+              letterSpacing: "0.4em",
+            }}
+          >
+            Total · 合計
+          </span>
+          <span
+            className="tabular-nums"
+            style={{
+              color: theme.accent,
+              fontFamily: "var(--store-font)",
+              fontSize: "clamp(1.75rem, 3.5vw, 2.25rem)",
+              fontWeight: 500,
+              letterSpacing: "-0.02em",
+              lineHeight: 1,
+            }}
           >
             {formatPrice(order.total_cents, order.currency)}
           </span>
         </div>
+      </section>
 
-        <hr style={{ borderColor: theme.border }} />
-
-        <div>
+      <section
+        className="rounded-2xl p-7 sm:p-8 mb-6"
+        style={{
+          background: "var(--store-surface)",
+          border: "1px solid var(--store-border)",
+          boxShadow: "var(--sproutly-elev-2)",
+        }}
+      >
+        <div className="flex items-baseline gap-3 mb-6">
           <p
-            className="text-xs uppercase tracking-widest mb-2"
-            style={{ color: theme.accent }}
+            className="font-medium uppercase"
+            style={{
+              color: theme.accent,
+              fontSize: "0.6875rem",
+              letterSpacing: "0.4em",
+            }}
           >
-            收件資訊
+            Recipient · 收件資訊
           </p>
           <div
-            className="text-sm space-y-1"
-            style={{ color: theme.text }}
-          >
-            <p>{order.customer_name}</p>
-            <p>{order.customer_phone}</p>
-            {order.customer_email && <p>{order.customer_email}</p>}
-            {order.shipping_address && (
-              <p style={{ color: theme.textMuted }}>
-                {order.shipping_address}
-              </p>
-            )}
-            {decodedNote.userNote && (
-              <p
-                className="pt-2 italic"
+            className="h-px flex-1"
+            style={{ background: theme.border, opacity: 0.6 }}
+          />
+        </div>
+        <dl
+          className="space-y-2"
+          style={{
+            color: theme.text,
+            fontSize: "0.9375rem",
+            lineHeight: 1.9,
+          }}
+        >
+          <div className="flex gap-4">
+            <dt
+              className="w-20 flex-shrink-0"
+              style={{ color: theme.textMuted }}
+            >
+              姓名
+            </dt>
+            <dd>{order.customer_name}</dd>
+          </div>
+          <div className="flex gap-4">
+            <dt
+              className="w-20 flex-shrink-0"
+              style={{ color: theme.textMuted }}
+            >
+              電話
+            </dt>
+            <dd>{order.customer_phone}</dd>
+          </div>
+          {order.customer_email && (
+            <div className="flex gap-4">
+              <dt
+                className="w-20 flex-shrink-0"
                 style={{ color: theme.textMuted }}
               >
-                備註：{decodedNote.userNote}
-              </p>
-            )}
-          </div>
-        </div>
-
-        {(decodedNote.shippingLabel || paymentLabel) && (
-          <>
-            <hr style={{ borderColor: theme.border }} />
-            <div>
-              <p
-                className="text-xs uppercase tracking-widest mb-2"
-                style={{ color: theme.accent }}
-              >
-                配送與付款
-              </p>
-              <div
-                className="text-sm space-y-1"
-                style={{ color: theme.text }}
-              >
-                {decodedNote.shippingLabel && (
-                  <p>配送方式：{decodedNote.shippingLabel}</p>
-                )}
-                {decodedNote.storeName && (
-                  <p>取貨門市：{decodedNote.storeName}</p>
-                )}
-                {paymentLabel && <p>付款方式：{paymentLabel}</p>}
-              </div>
+                Email
+              </dt>
+              <dd className="min-w-0 truncate">{order.customer_email}</dd>
             </div>
-          </>
-        )}
-      </div>
+          )}
+          {order.shipping_address && (
+            <div className="flex gap-4">
+              <dt
+                className="w-20 flex-shrink-0"
+                style={{ color: theme.textMuted }}
+              >
+                地址
+              </dt>
+              <dd>{order.shipping_address}</dd>
+            </div>
+          )}
+          {decodedNote.userNote && (
+            <div
+              className="flex gap-4 pt-3 mt-3 border-t"
+              style={{ borderColor: theme.border }}
+            >
+              <dt
+                className="w-20 flex-shrink-0"
+                style={{ color: theme.textMuted }}
+              >
+                備註
+              </dt>
+              <dd className="italic" style={{ color: theme.textMuted }}>
+                {decodedNote.userNote}
+              </dd>
+            </div>
+          )}
+        </dl>
+      </section>
 
-      <div className="mt-8 flex flex-col sm:flex-row gap-3 justify-center">
+      {(decodedNote.shippingLabel || paymentLabel) && (
+        <section
+          className="rounded-2xl p-7 sm:p-8 mb-12"
+          style={{
+            background: "var(--store-surface)",
+            border: "1px solid var(--store-border)",
+            boxShadow: "var(--sproutly-elev-2)",
+          }}
+        >
+          <div className="flex items-baseline gap-3 mb-6">
+            <p
+              className="font-medium uppercase"
+              style={{
+                color: theme.accent,
+                fontSize: "0.6875rem",
+                letterSpacing: "0.4em",
+              }}
+            >
+              Logistics · 配送與付款
+            </p>
+            <div
+              className="h-px flex-1"
+              style={{ background: theme.border, opacity: 0.6 }}
+            />
+          </div>
+          <dl
+            className="space-y-2"
+            style={{
+              color: theme.text,
+              fontSize: "0.9375rem",
+              lineHeight: 1.9,
+            }}
+          >
+            {decodedNote.shippingLabel && (
+              <div className="flex gap-4">
+                <dt
+                  className="w-20 flex-shrink-0"
+                  style={{ color: theme.textMuted }}
+                >
+                  配送方式
+                </dt>
+                <dd>{decodedNote.shippingLabel}</dd>
+              </div>
+            )}
+            {decodedNote.storeName && (
+              <div className="flex gap-4">
+                <dt
+                  className="w-20 flex-shrink-0"
+                  style={{ color: theme.textMuted }}
+                >
+                  取貨門市
+                </dt>
+                <dd>{decodedNote.storeName}</dd>
+              </div>
+            )}
+            {paymentLabel && (
+              <div className="flex gap-4">
+                <dt
+                  className="w-20 flex-shrink-0"
+                  style={{ color: theme.textMuted }}
+                >
+                  付款方式
+                </dt>
+                <dd>{paymentLabel}</dd>
+              </div>
+            )}
+          </dl>
+        </section>
+      )}
+
+      <div className="flex flex-col sm:flex-row gap-3 justify-center mb-10">
         <Link
           href={`/${slug}/shop`}
-          className="text-center rounded-full px-6 py-3 font-medium transition hover:opacity-80"
-          style={{
-            background: theme.primary,
-            color: theme.surface,
-          }}
+          className="sproutly-btn sproutly-btn-primary sproutly-btn-lg"
         >
           繼續逛
         </Link>
         <Link
           href={`/${slug}`}
-          className="text-center rounded-full px-6 py-3 font-medium border-2 transition hover:opacity-80"
-          style={{
-            borderColor: theme.border,
-            color: theme.text,
-          }}
+          className="sproutly-btn sproutly-btn-secondary sproutly-btn-lg"
         >
           回首頁
         </Link>
       </div>
 
       <p
-        className="text-xs text-center mt-8"
-        style={{ color: theme.textMuted, opacity: 0.6 }}
+        className="text-center"
+        style={{
+          color: theme.textMuted,
+          fontSize: "0.8125rem",
+          lineHeight: 1.85,
+          opacity: 0.85,
+        }}
       >
-        請記下訂單編號 <strong className="font-mono">#{shortId}</strong>，跟店家確認付款時、或之後
+        請記下訂單編號{" "}
+        <strong
+          className="font-mono"
+          style={{ color: theme.text, letterSpacing: "0.05em" }}
+        >
+          #{shortId}
+        </strong>
+        ，跟店家確認付款、或之後{" "}
         <Link
           href={`/${slug}/track`}
-          className="underline ml-1 hover:opacity-80"
+          className="sproutly-link"
           style={{ color: theme.accent }}
         >
           追蹤訂單
-        </Link>
+        </Link>{" "}
         時都會用到
       </p>
     </main>
