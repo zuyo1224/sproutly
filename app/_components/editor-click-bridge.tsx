@@ -326,10 +326,9 @@ export function EditorClickBridge() {
       }
 
       // freePositions 套到 [data-edit-drag]
-      // 注意：hero-tagline 在新 layout 已經不再是 absolute-positionable 元件，
-      // 過去 DB 留存的 hero-tagline freePosition 不應該套，否則會把 tagline 段
-      // 變 absolute 導致 collection / featured 區段重疊上來。
-      const SKIP_FREE_POSITION_KEYS = new Set(["hero-tagline"]);
+      // hero-tagline 已重新打開 drag — 但只綁在 h1 上，scope 內 cream block，
+      // 不會跑出 hero section 外影響其他 section。
+      const SKIP_FREE_POSITION_KEYS = new Set<string>();
       const layout = (theme as { layout?: { freePositions?: Record<string, { x: number; y: number }> } }).layout;
       if (layout?.freePositions && typeof layout.freePositions === "object") {
         document

@@ -168,31 +168,51 @@ export default async function StoreHomePage({
                     剛好框住內容本體的比例，不論手機 / 平板 / 桌機都用同一套：
                     圖以自身比例顯示，不再 h-screen 強制 overlay、不再 transform scale 放大圖片。 */}
                 <HeroAdaptiveBanner url={theme.heroUrl} alt={store.name} />
-                {/* 外層 cream 區塊「不」掛 data-edit-drag —
-                    避免 h1 與 看商品 link 被同一個 drag wrapper 綁在一起、
-                    導致 cursor:move + outline 整塊抓住，user 反而點不到單獨的 h1。 */}
+                {(() => {
+                  // 主標拖動：data-edit-drag 只綁在 h1，不綁外層整塊。
+                  // 拖動座標範圍 = cream block（position:relative wrapper）。
+                  const taglinePos = theme.layout.freePositions["hero-tagline"] ?? null;
+                  return (
                 <div
-                  className="px-6 sm:px-12 py-14 sm:py-20"
-                  style={{ backgroundColor: theme.bg }}
+                  className="relative px-6 sm:px-12 py-14 sm:py-20"
+                  style={{ backgroundColor: theme.bg, minHeight: taglinePos ? "300px" : undefined }}
+                  data-edit-target="hero-text-area"
                 >
                   <div
-                    className="max-w-4xl mx-auto"
+                    className={taglinePos ? "" : "max-w-4xl mx-auto"}
                     style={{ textAlign: taglineAlign }}
                   >
                     <h1
                       className={`leading-[1.6] ${fade1}`}
-                      style={{
-                        color: taglineColor,
-                        fontFamily: "var(--store-font)",
-                        fontWeight: 400,
-                        letterSpacing: "0.02em",
-                        wordBreak: "keep-all",
-                        overflowWrap: "break-word",
-                        // 主標基礎大小 × user scale
-                        fontSize: `clamp(${1.5 * taglineFontScale}rem, ${3 * taglineFontScale}vw, ${3 * taglineFontScale}rem)`,
-                      }}
+                      style={
+                        taglinePos
+                          ? {
+                              position: "absolute",
+                              left: `${taglinePos.x * 100}%`,
+                              top: `${taglinePos.y * 100}%`,
+                              transform: "translate(-50%, -50%)",
+                              maxWidth: "min(800px, 90%)",
+                              color: taglineColor,
+                              fontFamily: "var(--store-font)",
+                              fontWeight: 400,
+                              letterSpacing: "0.02em",
+                              wordBreak: "keep-all",
+                              overflowWrap: "break-word",
+                              fontSize: `clamp(${1.5 * taglineFontScale}rem, ${3 * taglineFontScale}vw, ${3 * taglineFontScale}rem)`,
+                            }
+                          : {
+                              color: taglineColor,
+                              fontFamily: "var(--store-font)",
+                              fontWeight: 400,
+                              letterSpacing: "0.02em",
+                              wordBreak: "keep-all",
+                              overflowWrap: "break-word",
+                              fontSize: `clamp(${1.5 * taglineFontScale}rem, ${3 * taglineFontScale}vw, ${3 * taglineFontScale}rem)`,
+                            }
+                      }
                       data-edit-text
                       data-edit-field="tagline"
+                      data-edit-drag="hero-tagline"
                     >
                       {taglineLines.map((line, i) => (
                         <span key={i} className="block">
@@ -200,19 +220,23 @@ export default async function StoreHomePage({
                         </span>
                       ))}
                     </h1>
-                    <Link
-                      href={`/${slug}/shop`}
-                      className={`sproutly-link mt-8 inline-block text-sm tracking-wider ${fade2}`}
-                      data-default-line="true"
-                      style={{
-                        color: theme.text,
-                        fontFamily: "var(--store-font)",
-                      }}
-                    >
-                      看商品
-                    </Link>
+                    {!taglinePos && (
+                      <Link
+                        href={`/${slug}/shop`}
+                        className={`sproutly-link mt-8 inline-block text-sm tracking-wider ${fade2}`}
+                        data-default-line="true"
+                        style={{
+                          color: theme.text,
+                          fontFamily: "var(--store-font)",
+                        }}
+                      >
+                        看商品
+                      </Link>
+                    )}
                   </div>
                 </div>
+                  );
+                })()}
               </section>
             );
           }
