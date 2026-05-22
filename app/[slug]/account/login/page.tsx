@@ -34,65 +34,88 @@ export default async function CustomerLoginPage({
   const theme = resolveTheme(store.theme);
 
   return (
-    <main className="max-w-md mx-auto px-6 py-24 sm:py-32">
-      <div className="text-center mb-12">
+    <main className="max-w-md mx-auto px-6 sm:px-10 py-20 sm:py-28">
+      <header className="text-center mb-14 sm:mb-16">
         <p
-          className="text-[10px] tracking-[0.4em] uppercase mb-5"
-          style={{ color: theme.accent }}
+          className="text-[0.6875rem] uppercase font-medium"
+          style={{
+            color: "var(--store-accent, currentColor)",
+            letterSpacing: "0.4em",
+          }}
         >
           Account
         </p>
         <h1
-          className="text-3xl sm:text-4xl"
+          className="mt-4 text-3xl sm:text-4xl font-medium"
           style={{
             color: theme.text,
             fontFamily: "var(--store-font)",
-            fontWeight: 400,
             letterSpacing: "-0.01em",
-            lineHeight: 1.2,
+            lineHeight: 1.15,
           }}
         >
           會員登入
         </h1>
+        <div
+          className="mt-5 mx-auto h-px w-12"
+          style={{
+            background: "var(--store-accent, currentColor)",
+            opacity: 0.5,
+          }}
+        />
         <p
-          className="mt-5 text-sm leading-[1.85]"
-          style={{ color: theme.textMuted }}
+          className="mt-5 text-[0.9375rem]"
+          style={{
+            color: theme.textMuted,
+            lineHeight: 1.7,
+          }}
         >
           輸入 email，我們會寄一封登入連結信給你。
           <br />
           不需要密碼。
         </p>
-      </div>
+      </header>
 
       {sent ? (
         <div
-          className="rounded-2xl p-8 text-center"
+          className="rounded-2xl p-7 sm:p-8 text-center"
           style={{
             background: theme.surface,
             border: `1px solid ${theme.border}`,
+            boxShadow: "var(--sproutly-elev-2)",
           }}
         >
           <p
-            className="text-[10px] tracking-[0.4em] uppercase mb-4"
-            style={{ color: theme.accent }}
+            className="text-[0.6875rem] uppercase font-medium"
+            style={{
+              color: "var(--store-accent, currentColor)",
+              letterSpacing: "0.4em",
+            }}
           >
             Sent
           </p>
+          <div
+            className="mt-4 mx-auto h-px w-10"
+            style={{
+              background: "var(--store-accent, currentColor)",
+              opacity: 0.5,
+            }}
+          />
           <p
-            className="text-base leading-[1.9]"
-            style={{ color: theme.text }}
+            className="mt-5 text-[0.9375rem]"
+            style={{ color: theme.text, lineHeight: 1.7 }}
           >
             登入信已寄到
           </p>
           <p
             className="mt-2 text-sm font-medium"
-            style={{ color: theme.text }}
+            style={{ color: theme.text, letterSpacing: "-0.01em" }}
           >
             {email}
           </p>
           <p
-            className="mt-6 text-sm leading-[1.85]"
-            style={{ color: theme.textMuted }}
+            className="mt-6 text-[0.9375rem]"
+            style={{ color: theme.textMuted, lineHeight: 1.7 }}
           >
             點信裡的連結即可登入，連結 1 小時內有效。
             <br />
@@ -100,7 +123,7 @@ export default async function CustomerLoginPage({
           </p>
           <Link
             href={`/${slug}/account/login`}
-            className="sproutly-link inline-block mt-8 text-xs tracking-[0.3em] uppercase"
+            className="sproutly-link inline-block mt-8 text-[0.6875rem] tracking-[0.3em] uppercase font-medium"
             style={{ color: theme.text }}
             data-default-line="true"
           >
@@ -111,14 +134,28 @@ export default async function CustomerLoginPage({
         <>
           {error && (
             <div
-              className="mb-6 rounded-xl px-4 py-3 text-sm"
+              className="mb-6 rounded-2xl p-5"
               style={{
                 background: theme.surface,
-                color: theme.text,
                 border: `1px solid ${theme.accent}`,
+                boxShadow: "var(--sproutly-elev-2)",
               }}
             >
-              {error}
+              <p
+                className="text-[0.6875rem] uppercase font-medium"
+                style={{
+                  color: theme.accent,
+                  letterSpacing: "0.4em",
+                }}
+              >
+                Notice
+              </p>
+              <p
+                className="mt-3 text-sm"
+                style={{ color: theme.text, lineHeight: 1.7 }}
+              >
+                {error}
+              </p>
             </div>
           )}
 
@@ -127,8 +164,11 @@ export default async function CustomerLoginPage({
             {next && <input type="hidden" name="next" value={next} />}
             <div>
               <label
-                className="block text-[10px] tracking-[0.4em] uppercase mb-3"
-                style={{ color: theme.textMuted }}
+                className="block text-[0.6875rem] uppercase font-medium mb-3"
+                style={{
+                  color: theme.textMuted,
+                  letterSpacing: "0.4em",
+                }}
               >
                 Email
               </label>
@@ -150,8 +190,8 @@ export default async function CustomerLoginPage({
           </form>
 
           <p
-            className="mt-10 text-center text-xs leading-[1.85]"
-            style={{ color: theme.textMuted }}
+            className="mt-10 text-center text-[0.8125rem]"
+            style={{ color: theme.textMuted, lineHeight: 1.85 }}
           >
             這是這家店的客人會員，
             <br />
