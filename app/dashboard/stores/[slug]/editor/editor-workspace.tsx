@@ -83,6 +83,10 @@ type EditorTheme = {
     featuredCount: number;
     featuredColumns: 2 | 3 | 4;
     collectionsColumns: 2 | 3 | 4;
+    sectionStyles: Record<string, {
+      headingAlign?: "left" | "center" | "right";
+      bgColor?: string | null;
+    }>;
   };
   homepage: {
     promise: string;
@@ -519,6 +523,7 @@ export function EditorWorkspace({
           featuredCount: t.layout.featuredCount,
           featuredColumns: t.layout.featuredColumns,
           collectionsColumns: t.layout.collectionsColumns,
+          sectionStyles: t.layout.sectionStyles,
         },
         homepage: t.homepage,
         sections: t.sections,
@@ -1750,6 +1755,74 @@ export function EditorWorkspace({
             </p>
           </PanelSection>
         )}
+
+        {/* === 共用「區段樣式」block — 出現在每個 section panel 底部 ===
+            北極星：超越 Wix 的元素級控制覆蓋率。每個 section 都該有對齊 + 背景色覆寫。 */}
+        {activeTab === "section" && selectedSection && selectedSection !== "hero" && (() => {
+          const cur = theme.layout.sectionStyles[selectedSection] ?? {};
+          const align = cur.headingAlign ?? "center";
+          const bg = cur.bgColor ?? null;
+          function patch(p: { headingAlign?: "left" | "center" | "right"; bgColor?: string | null }) {
+            updateLayout({
+              sectionStyles: {
+                ...theme.layout.sectionStyles,
+                [selectedSection!]: { ...cur, ...p },
+              },
+            });
+          }
+          return (
+            <PanelSection title="區段樣式">
+              <Field label="標題對齊">
+                <div className="grid grid-cols-3 gap-1.5">
+                  {([
+                    { v: "left", label: "左" },
+                    { v: "center", label: "置中" },
+                    { v: "right", label: "右" },
+                  ] as const).map((opt) => (
+                    <button
+                      key={opt.v}
+                      type="button"
+                      onClick={() => patch({ headingAlign: opt.v })}
+                      className={`rounded-lg border py-2 text-xs transition ${
+                        align === opt.v
+                          ? "border-emerald-500 bg-emerald-50 text-emerald-900"
+                          : "border-stone-200 text-stone-600 hover:border-stone-400"
+                      }`}
+                    >
+                      {opt.label}
+                    </button>
+                  ))}
+                </div>
+              </Field>
+              <Field label="背景色">
+                <div className="flex items-center gap-2">
+                  <input
+                    type="color"
+                    value={bg ?? "#F7F4ED"}
+                    onChange={(e) => patch({ bgColor: e.target.value })}
+                    className="h-8 w-12 rounded border border-stone-200"
+                  />
+                  <input
+                    type="text"
+                    value={bg ?? ""}
+                    onChange={(e) => patch({ bgColor: e.target.value || null })}
+                    placeholder="預設用全站背景"
+                    className="flex-1 rounded-lg border border-stone-200 px-3 py-2 text-sm font-mono"
+                  />
+                  {bg && (
+                    <button
+                      type="button"
+                      onClick={() => patch({ bgColor: null })}
+                      className="text-xs text-stone-500 hover:text-stone-800 underline"
+                    >
+                      清除
+                    </button>
+                  )}
+                </div>
+              </Field>
+            </PanelSection>
+          );
+        })()}
 
         {activeTab === "design" && (
           <PanelSection title="視覺風格">

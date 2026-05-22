@@ -38,6 +38,10 @@ type EditorPayload = {
     featuredCount?: number;
     featuredColumns?: number;
     collectionsColumns?: number;
+    sectionStyles?: Record<string, {
+      headingAlign?: string;
+      bgColor?: string | null;
+    }>;
   };
   homepage?: {
     promise?: string;
@@ -248,6 +252,29 @@ export async function saveEditorState(slug: string, payload: EditorPayload) {
     if (payload.layout.collectionsColumns !== undefined) {
       const v = payload.layout.collectionsColumns;
       if (v === 2 || v === 3 || v === 4) layoutPatch.collectionsColumns = v;
+    }
+    if (payload.layout.sectionStyles !== undefined) {
+      const raw = payload.layout.sectionStyles;
+      const sanitized: Record<string, { headingAlign?: string; bgColor?: string | null }> = {};
+      if (raw && typeof raw === "object") {
+        for (const [k, v] of Object.entries(raw)) {
+          if (!k || typeof k !== "string" || k.length > 60) continue;
+          if (!v || typeof v !== "object") continue;
+          const entry: { headingAlign?: string; bgColor?: string | null } = {};
+          if (v.headingAlign === "left" || v.headingAlign === "center" || v.headingAlign === "right") {
+            entry.headingAlign = v.headingAlign;
+          }
+          if (typeof v.bgColor === "string" && /^#[0-9a-fA-F]{6}$/.test(v.bgColor.trim())) {
+            entry.bgColor = v.bgColor.trim();
+          } else if (v.bgColor === null) {
+            entry.bgColor = null;
+          }
+          if (entry.headingAlign !== undefined || entry.bgColor !== undefined) {
+            sanitized[k] = entry;
+          }
+        }
+      }
+      layoutPatch.sectionStyles = sanitized;
     }
     if (payload.layout.freePositions !== undefined) {
       const fp = payload.layout.freePositions;

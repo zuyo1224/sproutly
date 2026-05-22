@@ -178,6 +178,11 @@ export interface StoreTheme {
     featuredCount: number;             // 顯示幾個商品 3-12（預設 6）
     featuredColumns: 2 | 3 | 4;        // 排成幾欄（預設 3）
     collectionsColumns: 2 | 3 | 4;     // 選物提案排成幾欄（預設 3）
+    // 每個 section 的元素級樣式覆寫（北極星：超越 Wix 的元素級控制覆蓋率）
+    sectionStyles: Record<string, {
+      headingAlign?: "left" | "center" | "right";
+      bgColor?: string | null;          // null = 用 theme.bg；hex = 覆寫
+    }>;
   };
 }
 
@@ -527,6 +532,29 @@ function resolveLayout(raw: unknown): StoreTheme["layout"] {
       const v = l.collectionsColumns;
       if (v === 2 || v === 3 || v === 4) return v;
       return 3 as const;
+    })(),
+    sectionStyles: (() => {
+      const raw = l.sectionStyles;
+      const result: Record<string, { headingAlign?: "left" | "center" | "right"; bgColor?: string | null }> = {};
+      if (raw && typeof raw === "object" && !Array.isArray(raw)) {
+        for (const [k, v] of Object.entries(raw as Record<string, unknown>)) {
+          if (!v || typeof v !== "object" || typeof k !== "string") continue;
+          const obj = v as Record<string, unknown>;
+          const entry: { headingAlign?: "left" | "center" | "right"; bgColor?: string | null } = {};
+          if (obj.headingAlign === "left" || obj.headingAlign === "center" || obj.headingAlign === "right") {
+            entry.headingAlign = obj.headingAlign;
+          }
+          if (typeof obj.bgColor === "string" && /^#[0-9a-fA-F]{6}$/.test(obj.bgColor.trim())) {
+            entry.bgColor = obj.bgColor.trim();
+          } else if (obj.bgColor === null) {
+            entry.bgColor = null;
+          }
+          if (entry.headingAlign !== undefined || entry.bgColor !== undefined) {
+            result[k] = entry;
+          }
+        }
+      }
+      return result;
     })(),
     freePositions: (() => {
       // 1. unified freePositions Record (preferred new path)

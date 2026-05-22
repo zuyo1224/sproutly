@@ -77,6 +77,15 @@ export default async function StoreHomePage({
 
   const animClass = theme.homepage.enableAnimation ? "sproutly-subtle-fade" : "";
 
+  // 各 section 樣式 helper：背景色 + 標題對齊（北極星：超越 Wix 元素級控制覆蓋率）
+  const sectionStyleFor = (key: string) => {
+    const s = theme.layout.sectionStyles[key];
+    return {
+      bg: s?.bgColor ?? undefined,
+      align: s?.headingAlign ?? "center",
+    } as { bg: string | undefined; align: "left" | "center" | "right" };
+  };
+
   const BASE_URL =
     process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/$/, "") ??
     "https://sproutly-drab.vercel.app";
@@ -480,19 +489,21 @@ export default async function StoreHomePage({
           // visit-card / testimonials-title 各種跑掉 absolute 重疊。等正式
           // free-positioning feature 重做再開回來。
           const introFree = false; void introPos;
+          const collStyle = sectionStyleFor("collections");
           return (
           <section
             className={`relative py-40 sm:py-56 ${animClass} ${introFree ? "min-h-[60vh]" : ""}`}
             data-edit-target="collections"
             data-edit-label="選物提案"
+            style={collStyle.bg ? { backgroundColor: collStyle.bg } : undefined}
           >
-            <div className="max-w-5xl mx-auto px-8 sm:px-12">
+            <div className="max-w-5xl mx-auto px-8 sm:px-12" style={{ textAlign: collStyle.align }}>
               {introFree ? (
                 <h2
                   data-edit-text
                   data-edit-field="collectionsIntro"
                   data-edit-drag="collection-intro"
-                  className="absolute text-xl sm:text-2xl text-center leading-[1.9]"
+                  className="absolute text-xl sm:text-2xl leading-[1.9]"
                   style={{
                     left: `${introPos!.x * 100}%`,
                     top: `${introPos!.y * 100}%`,
@@ -517,7 +528,7 @@ export default async function StoreHomePage({
                   data-edit-text
                   data-edit-field="collectionsIntro"
                   data-edit-drag="collection-intro"
-                  className="text-xl sm:text-2xl text-center max-w-xl mx-auto mb-32 leading-[1.9]"
+                  className={`text-xl sm:text-2xl max-w-xl ${collStyle.align === "center" ? "mx-auto" : collStyle.align === "right" ? "ml-auto" : ""} mb-32 leading-[1.9]`}
                   style={{
                     color: theme.text,
                     fontFamily: "var(--store-font)",
