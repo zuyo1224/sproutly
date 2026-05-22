@@ -168,10 +168,12 @@ export default async function StoreHomePage({
                     剛好框住內容本體的比例，不論手機 / 平板 / 桌機都用同一套：
                     圖以自身比例顯示，不再 h-screen 強制 overlay、不再 transform scale 放大圖片。 */}
                 <HeroAdaptiveBanner url={theme.heroUrl} alt={store.name} />
+                {/* 外層 cream 區塊「不」掛 data-edit-drag —
+                    避免 h1 與 看商品 link 被同一個 drag wrapper 綁在一起、
+                    導致 cursor:move + outline 整塊抓住，user 反而點不到單獨的 h1。 */}
                 <div
                   className="px-6 sm:px-12 py-14 sm:py-20"
                   style={{ backgroundColor: theme.bg }}
-                  data-edit-drag="hero-tagline"
                 >
                   <div
                     className="max-w-4xl mx-auto"
