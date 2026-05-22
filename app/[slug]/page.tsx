@@ -215,16 +215,18 @@ export default async function StoreHomePage({
 
                 {/* === 平板 + 桌機（≥ 640px）：full-bleed overlay layout ===
                     放棄 transform scale 那套（用同一個 cover 邏輯加數字治標）。
-                    bg div 上下延伸 30%，cover 自動把 file 的米色 padding 推出
+                    bg div 上下延伸 50% 把 file 自帶的 ~22% 米色 padding 推出
                     h-screen viewport — 不論平板（接近 square）或桌機 landscape
-                    一律生效，因為 cover 填的是「延伸後的 div」不是 viewport 本身。 */}
+                    一律生效，因為 cover 填的是「延伸後的 div」不是 viewport 本身。
+                    （pixel sample 顯示 plantae 圖 y=0-22% 純米色、78-100% 純米色，
+                     30% 延伸只夠裁 12-13% 米色，不夠。）  */}
                 <section
                   className="hidden sm:block relative h-screen overflow-hidden"
                   data-edit-target="hero"
                   data-edit-label="Hero 區段"
                 >
                 <div
-                  className="absolute -top-[30%] -bottom-[30%] left-0 right-0"
+                  className="absolute -top-[50%] -bottom-[50%] left-0 right-0"
                   role="img"
                   aria-label={store.name}
                   style={{
