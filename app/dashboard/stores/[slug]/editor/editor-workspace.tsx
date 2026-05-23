@@ -89,6 +89,7 @@ type EditorTheme = {
       textColor?: string | null;
       paddingScale?: "compact" | "default" | "spacious";
       divider?: "none" | "top" | "bottom" | "both";
+      headingScale?: "small" | "default" | "large";
     }>;
   };
   homepage: {
@@ -1788,8 +1789,9 @@ export function EditorWorkspace({
           const textCol = cur.textColor ?? null;
           const pad = cur.paddingScale ?? null;
           const divider = cur.divider ?? "none";
-          function patch(p: { headingAlign?: "left" | "center" | "right"; bgColor?: string | null; textColor?: string | null; paddingScale?: "compact" | "default" | "spacious" | null; divider?: "none" | "top" | "bottom" | "both" }) {
-            const next: { headingAlign?: "left" | "center" | "right"; bgColor?: string | null; textColor?: string | null; paddingScale?: "compact" | "default" | "spacious"; divider?: "none" | "top" | "bottom" | "both" } = { ...cur };
+          const headingScale = cur.headingScale ?? null;
+          function patch(p: { headingAlign?: "left" | "center" | "right"; bgColor?: string | null; textColor?: string | null; paddingScale?: "compact" | "default" | "spacious" | null; divider?: "none" | "top" | "bottom" | "both"; headingScale?: "small" | "default" | "large" | null }) {
+            const next: { headingAlign?: "left" | "center" | "right"; bgColor?: string | null; textColor?: string | null; paddingScale?: "compact" | "default" | "spacious"; divider?: "none" | "top" | "bottom" | "both"; headingScale?: "small" | "default" | "large" } = { ...cur };
             if (p.headingAlign !== undefined) next.headingAlign = p.headingAlign;
             if (p.bgColor !== undefined) next.bgColor = p.bgColor;
             if (p.textColor !== undefined) next.textColor = p.textColor;
@@ -1799,6 +1801,8 @@ export function EditorWorkspace({
               if (p.divider === "none") delete next.divider;
               else next.divider = p.divider;
             }
+            if (p.headingScale === null) delete next.headingScale;
+            else if (p.headingScale !== undefined) next.headingScale = p.headingScale;
             updateLayout({
               sectionStyles: {
                 ...theme.layout.sectionStyles,
@@ -1944,6 +1948,40 @@ export function EditorWorkspace({
                 <p className="mt-1.5 text-[11px] text-stone-500">
                   在這段加細線分隔（顏色跟著全網站邊框色）
                 </p>
+              </Field>
+              <Field label="標題大小">
+                <div className="grid grid-cols-3 gap-1.5">
+                  {([
+                    { v: "small", label: "小" },
+                    { v: "default", label: "預設" },
+                    { v: "large", label: "大" },
+                  ] as const).map((opt) => (
+                    <button
+                      key={opt.v}
+                      type="button"
+                      onClick={() => patch({ headingScale: opt.v })}
+                      className={`rounded-lg border py-2 text-xs transition ${
+                        headingScale === opt.v
+                          ? "border-emerald-500 bg-emerald-50 text-emerald-900"
+                          : "border-stone-200 text-stone-600 hover:border-stone-400"
+                      }`}
+                    >
+                      {opt.label}
+                    </button>
+                  ))}
+                </div>
+                <div className="mt-1.5 flex items-center justify-between text-[11px] text-stone-500">
+                  <span>小 0.85x · 預設 1x · 大 1.25x</span>
+                  {headingScale && (
+                    <button
+                      type="button"
+                      onClick={() => patch({ headingScale: null })}
+                      className="text-stone-500 hover:text-stone-800 underline"
+                    >
+                      清除
+                    </button>
+                  )}
+                </div>
               </Field>
             </PanelSection>
           );

@@ -638,6 +638,14 @@ export default async function PublicStoreLayout({
             padding-bottom: calc(11rem * var(--store-section-pad, 1));
           }
         }
+
+        /* 區段標題字級：editor 各 section panel「標題大小」三按鈕（小 0.85 / 預設 1 / 大 1.25）
+           透過 inline --store-heading-scale CSS variable 套到該 section 的 h2 上。
+           用 em 倍率（相對於 Tailwind 已套的 text-3xl 等 base），不寫 inline class 才能保留各 section
+           原本的字級層級。排除 hero — hero 主標另有 heroTaglineFontScale 控制（避免雙重縮放）。 */
+        section[data-edit-target]:not([data-edit-target="hero"]) h2 {
+          font-size: calc(1em * var(--store-heading-scale, 1));
+        }
       `}</style>
 
       {/* iframe edit mode bridge（只在 ?edit=1 啟動） */}

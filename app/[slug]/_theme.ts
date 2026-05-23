@@ -185,6 +185,7 @@ export interface StoreTheme {
       textColor?: string | null;        // null = 用 theme.text；hex = 覆寫（深底配淺字常用）
       paddingScale?: "compact" | "default" | "spacious"; // 該 section 獨立上下空白（覆寫全網站值）
       divider?: "none" | "top" | "bottom" | "both"; // 分隔線（上 / 下 / 上下都有 / 沒有）
+      headingScale?: "small" | "default" | "large"; // 該 section 標題字級（small 0.85x / default 1x / large 1.25x）
     }>;
   };
 }
@@ -538,12 +539,12 @@ function resolveLayout(raw: unknown): StoreTheme["layout"] {
     })(),
     sectionStyles: (() => {
       const raw = l.sectionStyles;
-      const result: Record<string, { headingAlign?: "left" | "center" | "right"; bgColor?: string | null; textColor?: string | null; paddingScale?: "compact" | "default" | "spacious"; divider?: "none" | "top" | "bottom" | "both" }> = {};
+      const result: Record<string, { headingAlign?: "left" | "center" | "right"; bgColor?: string | null; textColor?: string | null; paddingScale?: "compact" | "default" | "spacious"; divider?: "none" | "top" | "bottom" | "both"; headingScale?: "small" | "default" | "large" }> = {};
       if (raw && typeof raw === "object" && !Array.isArray(raw)) {
         for (const [k, v] of Object.entries(raw as Record<string, unknown>)) {
           if (!v || typeof v !== "object" || typeof k !== "string") continue;
           const obj = v as Record<string, unknown>;
-          const entry: { headingAlign?: "left" | "center" | "right"; bgColor?: string | null; textColor?: string | null; paddingScale?: "compact" | "default" | "spacious"; divider?: "none" | "top" | "bottom" | "both" } = {};
+          const entry: { headingAlign?: "left" | "center" | "right"; bgColor?: string | null; textColor?: string | null; paddingScale?: "compact" | "default" | "spacious"; divider?: "none" | "top" | "bottom" | "both"; headingScale?: "small" | "default" | "large" } = {};
           if (obj.headingAlign === "left" || obj.headingAlign === "center" || obj.headingAlign === "right") {
             entry.headingAlign = obj.headingAlign;
           }
@@ -563,7 +564,10 @@ function resolveLayout(raw: unknown): StoreTheme["layout"] {
           if (obj.divider === "none" || obj.divider === "top" || obj.divider === "bottom" || obj.divider === "both") {
             entry.divider = obj.divider;
           }
-          if (entry.headingAlign !== undefined || entry.bgColor !== undefined || entry.textColor !== undefined || entry.paddingScale !== undefined || entry.divider !== undefined) {
+          if (obj.headingScale === "small" || obj.headingScale === "default" || obj.headingScale === "large") {
+            entry.headingScale = obj.headingScale;
+          }
+          if (entry.headingAlign !== undefined || entry.bgColor !== undefined || entry.textColor !== undefined || entry.paddingScale !== undefined || entry.divider !== undefined || entry.headingScale !== undefined) {
             result[k] = entry;
           }
         }

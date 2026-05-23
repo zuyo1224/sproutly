@@ -82,24 +82,29 @@ export default async function StoreHomePage({
   // 沒設定 = 跟著全網站 sectionPaddingScale（透過 layout.tsx 的 attribute selector 套用）
   const padScaleToVar = (s: "compact" | "default" | "spacious" | undefined) =>
     s === "compact" ? 0.6 : s === "spacious" ? 1.4 : s === "default" ? 1 : undefined;
+  const headingScaleToVar = (s: "small" | "default" | "large" | undefined) =>
+    s === "small" ? 0.85 : s === "large" ? 1.25 : s === "default" ? 1 : undefined;
   const sectionStyleFor = (key: string) => {
     const s = theme.layout.sectionStyles[key];
     const padVar = padScaleToVar(s?.paddingScale);
+    const headingVar = headingScaleToVar(s?.headingScale);
     return {
       bg: s?.bgColor ?? undefined,
       text: s?.textColor ?? undefined,
       align: s?.headingAlign ?? "center",
       padOverride: padVar,
       divider: s?.divider ?? "none",
-    } as { bg: string | undefined; text: string | undefined; align: "left" | "center" | "right"; padOverride: number | undefined; divider: "none" | "top" | "bottom" | "both" };
+      headingOverride: headingVar,
+    } as { bg: string | undefined; text: string | undefined; align: "left" | "center" | "right"; padOverride: number | undefined; divider: "none" | "top" | "bottom" | "both"; headingOverride: number | undefined };
   };
 
-  // 把背景色 + 文字色 + padOverride + 分隔線合併成 section 用的 inline style
+  // 把背景色 + 文字色 + padOverride + 分隔線 + 標題字級合併成 section 用的 inline style
   // 自訂 CSS variable 在 TS CSSProperties 預設沒有，所以走 Record<string, unknown> cast
   // 文字色用 color + 覆寫 --store-text / --store-text-muted CSS var
   // 讓 muted 文字（副題 / eyebrow）也跟著走，避免淺底深字 section 突然有深底白字時 muted 還是深的看不見
+  // 標題字級 --store-heading-scale 由 layout.tsx 的 attribute selector 套到 h2 上（em 相對倍率）
   const mergeSectionStyle = (
-    s: { bg: string | undefined; text: string | undefined; padOverride: number | undefined; divider: "none" | "top" | "bottom" | "both" },
+    s: { bg: string | undefined; text: string | undefined; padOverride: number | undefined; divider: "none" | "top" | "bottom" | "both"; headingOverride: number | undefined },
     fallbackBg?: string
   ): React.CSSProperties | undefined => {
     const out: Record<string, unknown> = {};
@@ -111,6 +116,7 @@ export default async function StoreHomePage({
       out["--store-text-muted"] = s.text + "B3"; // 加 ~70% alpha 給 muted 用
     }
     if (s.padOverride !== undefined) out["--store-section-pad"] = String(s.padOverride);
+    if (s.headingOverride !== undefined) out["--store-heading-scale"] = String(s.headingOverride);
     if (s.divider === "top" || s.divider === "both") {
       out.borderTop = `1px solid ${theme.border}`;
     }
