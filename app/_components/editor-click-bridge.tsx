@@ -79,7 +79,9 @@ export function EditorClickBridge() {
       .sproutly-hero-parallax,
       .sproutly-nav-shrink,
       .sproutly-stagger > *,
-      .sproutly-subtle-fade {
+      .sproutly-subtle-fade,
+      section[data-edit-target][data-anim="fade"],
+      section[data-edit-target][data-anim="slide-up"] {
         animation: none !important;
         animation-name: none !important;
         animation-timeline: none !important;

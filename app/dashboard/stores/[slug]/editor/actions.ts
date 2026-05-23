@@ -49,6 +49,7 @@ type EditorPayload = {
       outline?: string;
       shadow?: string;
       borderRadius?: string;
+      entrance?: string;
     }>;
   };
   homepage?: {
@@ -263,12 +264,12 @@ export async function saveEditorState(slug: string, payload: EditorPayload) {
     }
     if (payload.layout.sectionStyles !== undefined) {
       const raw = payload.layout.sectionStyles;
-      const sanitized: Record<string, { headingAlign?: string; bgColor?: string | null; textColor?: string | null; paddingScale?: string; divider?: string; headingScale?: string; minHeight?: string; outline?: string; shadow?: string; borderRadius?: string }> = {};
+      const sanitized: Record<string, { headingAlign?: string; bgColor?: string | null; textColor?: string | null; paddingScale?: string; divider?: string; headingScale?: string; minHeight?: string; outline?: string; shadow?: string; borderRadius?: string; entrance?: string }> = {};
       if (raw && typeof raw === "object") {
         for (const [k, v] of Object.entries(raw)) {
           if (!k || typeof k !== "string" || k.length > 60) continue;
           if (!v || typeof v !== "object") continue;
-          const entry: { headingAlign?: string; bgColor?: string | null; textColor?: string | null; paddingScale?: string; divider?: string; headingScale?: string; minHeight?: string; outline?: string; shadow?: string; borderRadius?: string } = {};
+          const entry: { headingAlign?: string; bgColor?: string | null; textColor?: string | null; paddingScale?: string; divider?: string; headingScale?: string; minHeight?: string; outline?: string; shadow?: string; borderRadius?: string; entrance?: string } = {};
           if (v.headingAlign === "left" || v.headingAlign === "center" || v.headingAlign === "right") {
             entry.headingAlign = v.headingAlign;
           }
@@ -303,7 +304,10 @@ export async function saveEditorState(slug: string, payload: EditorPayload) {
           if (v.borderRadius === "none" || v.borderRadius === "soft" || v.borderRadius === "strong") {
             entry.borderRadius = v.borderRadius;
           }
-          if (entry.headingAlign !== undefined || entry.bgColor !== undefined || entry.textColor !== undefined || entry.paddingScale !== undefined || entry.divider !== undefined || entry.headingScale !== undefined || entry.minHeight !== undefined || entry.outline !== undefined || entry.shadow !== undefined || entry.borderRadius !== undefined) {
+          if (v.entrance === "none" || v.entrance === "fade" || v.entrance === "slide-up") {
+            entry.entrance = v.entrance;
+          }
+          if (entry.headingAlign !== undefined || entry.bgColor !== undefined || entry.textColor !== undefined || entry.paddingScale !== undefined || entry.divider !== undefined || entry.headingScale !== undefined || entry.minHeight !== undefined || entry.outline !== undefined || entry.shadow !== undefined || entry.borderRadius !== undefined || entry.entrance !== undefined) {
             sanitized[k] = entry;
           }
         }

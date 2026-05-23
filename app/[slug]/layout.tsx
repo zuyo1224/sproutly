@@ -646,6 +646,39 @@ export default async function PublicStoreLayout({
         section[data-edit-target]:not([data-edit-target="hero"]) h2 {
           font-size: calc(1em * var(--store-heading-scale, 1));
         }
+
+        /* 區段進場動畫：editor 各 section panel「進場動畫」三按鈕（無 / 淡入 / 上滑）
+           靠 data-anim attribute + CSS scroll-driven animation（animation-timeline: view()）觸發。
+           沒設定 = 無 attr = 不動畫；fade = opacity 0→1；slide-up = opacity + translateY 上滑。
+           edit mode（iframe ?edit=1）內由 editor-click-bridge.tsx 強制 disable 避免操作時看不到 section。
+           Safari 18+ / Chrome 115+ 支援 scroll-driven，舊瀏覽器 graceful degrade（看不到動畫沒事）。
+           prefers-reduced-motion 也 disable。 */
+        section[data-edit-target][data-anim="fade"] {
+          animation: sproutly-section-anim-fade 1.2s cubic-bezier(0.22, 1, 0.36, 1) both;
+          animation-timeline: view();
+          animation-range: entry 0% entry 35%;
+        }
+        section[data-edit-target][data-anim="slide-up"] {
+          animation: sproutly-section-anim-slide 1.2s cubic-bezier(0.22, 1, 0.36, 1) both;
+          animation-timeline: view();
+          animation-range: entry 0% entry 35%;
+        }
+        @keyframes sproutly-section-anim-fade {
+          from { opacity: 0; }
+          to { opacity: 1; }
+        }
+        @keyframes sproutly-section-anim-slide {
+          from { opacity: 0; transform: translateY(40px); }
+          to { opacity: 1; transform: translateY(0); }
+        }
+        @media (prefers-reduced-motion: reduce) {
+          section[data-edit-target][data-anim="fade"],
+          section[data-edit-target][data-anim="slide-up"] {
+            animation: none !important;
+            opacity: 1 !important;
+            transform: none !important;
+          }
+        }
       `}</style>
 
       {/* iframe edit mode bridge（只在 ?edit=1 啟動） */}

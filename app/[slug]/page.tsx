@@ -113,6 +113,10 @@ export default async function StoreHomePage({
     const outline = outlineToVal(s?.outline);
     const shadow = shadowToVal(s?.shadow);
     const radius = radiusToVal(s?.borderRadius);
+    // 進場動畫：只回 "fade" / "slide-up" 給 wrapper 設 data-anim attr；
+    // 實際 CSS keyframes + scroll-timeline 在 layout.tsx 注入；edit mode 內 disable
+    const entranceVal: "fade" | "slide-up" | undefined =
+      s?.entrance === "fade" || s?.entrance === "slide-up" ? s.entrance : undefined;
     return {
       bg: s?.bgColor ?? undefined,
       text: s?.textColor ?? undefined,
@@ -124,7 +128,8 @@ export default async function StoreHomePage({
       outlineOverride: outline,
       shadowOverride: shadow,
       borderRadiusOverride: radius,
-    } as { bg: string | undefined; text: string | undefined; align: "left" | "center" | "right"; padOverride: number | undefined; divider: "none" | "top" | "bottom" | "both"; headingOverride: number | undefined; minHeightOverride: string | undefined; outlineOverride: { outline: string; outlineOffset: string } | undefined; shadowOverride: string | undefined; borderRadiusOverride: string | undefined };
+      entranceVal,
+    } as { bg: string | undefined; text: string | undefined; align: "left" | "center" | "right"; padOverride: number | undefined; divider: "none" | "top" | "bottom" | "both"; headingOverride: number | undefined; minHeightOverride: string | undefined; outlineOverride: { outline: string; outlineOffset: string } | undefined; shadowOverride: string | undefined; borderRadiusOverride: string | undefined; entranceVal: "fade" | "slide-up" | undefined };
   };
 
   // 把背景色 + 文字色 + padOverride + 分隔線 + 標題字級合併成 section 用的 inline style
@@ -575,6 +580,7 @@ export default async function StoreHomePage({
             className={`relative py-40 sm:py-56 ${animClass} ${introFree ? "min-h-[60vh]" : ""}`}
             data-edit-target="collections"
             data-edit-label="選物提案"
+            data-anim={collStyle.entranceVal}
             style={mergeSectionStyle(collStyle)}
           >
             <div className="max-w-5xl mx-auto px-8 sm:px-12" style={{ textAlign: collStyle.align }}>
@@ -690,6 +696,7 @@ export default async function StoreHomePage({
             style={mergeSectionStyle(featuredStyle, theme.surface)}
             data-edit-target="featured"
             data-edit-label="本月選物"
+            data-anim={featuredStyle.entranceVal}
           >
             <div className="max-w-5xl mx-auto px-8 sm:px-12" style={{ textAlign: featuredStyle.align }}>
               {featuredFree ? (
@@ -805,6 +812,7 @@ export default async function StoreHomePage({
             style={mergeSectionStyle(journalStyle)}
             data-edit-target="journal"
             data-edit-label="Journal 區段"
+            data-anim={journalStyle.entranceVal}
           >
           <div className="max-w-5xl mx-auto px-8 sm:px-12" style={{ textAlign: journalStyle.align }}>
             {journalFree ? (
@@ -976,6 +984,7 @@ export default async function StoreHomePage({
             style={mergeSectionStyle(promiseStyle)}
             data-edit-target="promise"
             data-edit-label="Promise 區段"
+            data-anim={promiseStyle.entranceVal}
           >
             <div
               className={
@@ -1102,6 +1111,7 @@ export default async function StoreHomePage({
               style={mergeSectionStyle(testimonialsStyle, theme.surface)}
               data-edit-target="testimonials"
               data-edit-label="顧客評語"
+              data-anim={testimonialsStyle.entranceVal}
             >
               <div
                 className="max-w-5xl mx-auto px-8 sm:px-12"
@@ -1260,6 +1270,7 @@ export default async function StoreHomePage({
               style={mergeSectionStyle(faqStyle)}
               data-edit-target="faq"
               data-edit-label="常見問題"
+              data-anim={faqStyle.entranceVal}
             >
               <div
                 className="max-w-2xl mx-auto px-6 sm:px-12"
@@ -1354,6 +1365,7 @@ export default async function StoreHomePage({
               style={mergeSectionStyle(statsStyle, theme.surface)}
               data-edit-target="stats"
               data-edit-label="數字 / 成就"
+              data-anim={statsStyle.entranceVal}
             >
               <div
                 className="max-w-5xl mx-auto px-8 sm:px-12"
@@ -1413,6 +1425,7 @@ export default async function StoreHomePage({
               style={mergeSectionStyle(partnersStyle)}
               data-edit-target="partners"
               data-edit-label="合作夥伴"
+              data-anim={partnersStyle.entranceVal}
             >
               <div
                 className="max-w-5xl mx-auto px-8 sm:px-12"
@@ -1475,6 +1488,7 @@ export default async function StoreHomePage({
               style={mergeSectionStyle(galleryStyle)}
               data-edit-target="gallery"
               data-edit-label="圖片相簿"
+              data-anim={galleryStyle.entranceVal}
             >
               <div
                 className="max-w-6xl mx-auto px-6 sm:px-10"
@@ -1565,6 +1579,7 @@ export default async function StoreHomePage({
             style={mergeSectionStyle(visitStyle, theme.surface)}
             data-edit-target="visit"
             data-edit-label="來訪資訊"
+            data-anim={visitStyle.entranceVal}
           >
             <div
               data-edit-drag="visit-card"
