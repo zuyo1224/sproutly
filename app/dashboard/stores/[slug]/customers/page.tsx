@@ -170,58 +170,95 @@ export default async function StoreCustomersPage({
   const avgSpend = totalCustomers > 0 ? Math.round(grandTotal / totalCustomers) : 0;
   const topCustomer = [...rows].sort((a, b) => b.totalCents - a.totalCents)[0];
 
+  const headerCaption = q
+    ? `符合「${q}」${filtered.length} 位 · 全部 ${totalCustomers} 位`
+    : totalCustomers > 0
+      ? `${totalCustomers} 位客人 · ${repeatCount > 0 ? `${repeatCount} 位回購過` : "點任一位看細節"}`
+      : "客人在店面下單後會出現在這裡";
+
   return (
-    <main className="max-w-6xl mx-auto px-8 py-10">
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold text-emerald-950">客人</h1>
-        <p className="mt-1.5 text-sm text-emerald-900/60">
-          看誰下過單、誰回購過、誰是 VIP
+    <div>
+      <div className="mb-10">
+        <p
+          className="uppercase text-emerald-700/70"
+          style={{
+            fontSize: "0.6875rem",
+            fontWeight: 500,
+            letterSpacing: "0.4em",
+          }}
+        >
+          Customers · 客人
+        </p>
+        <h2
+          className="mt-3 text-3xl sm:text-4xl text-emerald-950 font-medium tracking-tight"
+          style={{ letterSpacing: "-0.01em", lineHeight: 1.15 }}
+        >
+          認識每一位客人
+        </h2>
+        <span aria-hidden className="mt-4 block h-px w-12 bg-emerald-600/60" />
+        <p
+          className="mt-4 text-emerald-900/65"
+          style={{ fontSize: "0.9375rem", lineHeight: 1.7 }}
+        >
+          {headerCaption}
         </p>
       </div>
 
       {/* Stats tiles */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-8">
-        <div className="rounded-2xl bg-white border border-emerald-50 p-5 shadow-sm shadow-emerald-700/5">
-          <p className="text-xs uppercase tracking-wider text-emerald-900/50 mb-2">
-            客人總數
+        <div className="rounded-2xl bg-white border border-emerald-50 p-5 shadow-lg shadow-emerald-700/5">
+          <p className="text-[10px] tracking-[0.28em] uppercase text-emerald-700/70 mb-3">
+            Total · 客人總數
           </p>
-          <p className="text-2xl font-bold text-emerald-950 tabular-nums">
+          <p
+            className="text-3xl sm:text-4xl text-emerald-950 font-medium tabular-nums"
+            style={{ letterSpacing: "-0.02em", lineHeight: 1.1 }}
+          >
             {totalCustomers}
           </p>
-          <p className="mt-1 text-xs text-emerald-900/50">
+          <p className="mt-2 text-xs text-emerald-900/50">
             其中 {accountCount} 位有註冊會員
           </p>
         </div>
-        <div className="rounded-2xl bg-white border border-emerald-50 p-5 shadow-sm shadow-emerald-700/5">
-          <p className="text-xs uppercase tracking-wider text-emerald-900/50 mb-2">
-            回購客人
+        <div className="rounded-2xl bg-white border border-emerald-50 p-5 shadow-lg shadow-emerald-700/5">
+          <p className="text-[10px] tracking-[0.28em] uppercase text-emerald-700/70 mb-3">
+            Repeat · 回購客人
           </p>
-          <p className="text-2xl font-bold text-emerald-950 tabular-nums">
+          <p
+            className="text-3xl sm:text-4xl text-emerald-950 font-medium tabular-nums"
+            style={{ letterSpacing: "-0.02em", lineHeight: 1.1 }}
+          >
             {repeatCount}
           </p>
-          <p className="mt-1 text-xs text-emerald-900/50">
+          <p className="mt-2 text-xs text-emerald-900/50">
             {totalCustomers > 0
               ? `回購率 ${Math.round((repeatCount / totalCustomers) * 100)}%`
               : "—"}
           </p>
         </div>
-        <div className="rounded-2xl bg-white border border-emerald-50 p-5 shadow-sm shadow-emerald-700/5">
-          <p className="text-xs uppercase tracking-wider text-emerald-900/50 mb-2">
-            平均消費
+        <div className="rounded-2xl bg-white border border-emerald-50 p-5 shadow-lg shadow-emerald-700/5">
+          <p className="text-[10px] tracking-[0.28em] uppercase text-emerald-700/70 mb-3">
+            Avg Spend · 平均消費
           </p>
-          <p className="text-2xl font-bold text-emerald-950 tabular-nums">
+          <p
+            className="text-3xl sm:text-4xl text-emerald-950 font-medium tabular-nums"
+            style={{ letterSpacing: "-0.02em", lineHeight: 1.1 }}
+          >
             {formatPrice(avgSpend)}
           </p>
-          <p className="mt-1 text-xs text-emerald-900/50">每位客人</p>
+          <p className="mt-2 text-xs text-emerald-900/50">每位客人</p>
         </div>
         <div className="rounded-2xl bg-gradient-to-br from-emerald-700 to-emerald-800 p-5 text-white">
-          <p className="text-xs uppercase tracking-wider text-emerald-100/70 mb-2">
-            最高消費客人
+          <p className="text-[10px] tracking-[0.28em] uppercase text-emerald-100/70 mb-3">
+            Top · 最高消費
           </p>
-          <p className="text-lg font-semibold truncate">
+          <p className="text-lg font-medium truncate" style={{ letterSpacing: "-0.01em" }}>
             {topCustomer?.name ?? "—"}
           </p>
-          <p className="mt-1 text-xs text-emerald-100 tabular-nums">
+          <p
+            className="mt-2 text-emerald-100 tabular-nums"
+            style={{ fontSize: "0.8125rem", letterSpacing: "-0.01em" }}
+          >
             {topCustomer ? formatPrice(topCustomer.totalCents) : ""}
           </p>
         </div>
@@ -259,17 +296,51 @@ export default async function StoreCustomersPage({
 
       {/* Customer list */}
       {filtered.length === 0 ? (
-        <div className="rounded-2xl bg-white border border-emerald-50 p-10 text-center">
-          <p className="text-emerald-900/60">
-            {q ? `找不到符合「${q}」的客人` : "還沒有訂單"}
+        <div className="bg-white rounded-3xl p-12 sm:p-16 text-center shadow-xl shadow-emerald-700/5">
+          <p
+            className="uppercase text-emerald-700/70"
+            style={{
+              fontSize: "0.6875rem",
+              fontWeight: 500,
+              letterSpacing: "0.4em",
+            }}
+          >
+            {q ? "No Match · 沒有符合" : "Empty · 還沒有客人"}
+          </p>
+          <span aria-hidden className="mt-4 block h-px w-10 bg-emerald-600/60 mx-auto" />
+          <h3
+            className="mt-6 text-2xl sm:text-3xl text-emerald-950 font-medium tracking-tight"
+            style={{ letterSpacing: "-0.01em", lineHeight: 1.2 }}
+          >
+            {q ? (
+              <>
+                找不到符合
+                <br />
+                「{q}」的客人
+              </>
+            ) : (
+              <>
+                還沒有
+                <br />
+                客人下單
+              </>
+            )}
+          </h3>
+          <p
+            className="mt-5 text-emerald-900/65 max-w-md mx-auto"
+            style={{ fontSize: "0.9375rem", lineHeight: 1.7 }}
+          >
+            {q
+              ? "換個關鍵字試試，或清除搜尋看全部"
+              : "客人在店面下單後，會被分群整理在這裡"}
           </p>
         </div>
       ) : (
-        <div className="rounded-2xl bg-white border border-emerald-50 overflow-hidden shadow-sm shadow-emerald-700/5">
+        <div className="rounded-2xl bg-white border border-emerald-50 overflow-hidden shadow-lg shadow-emerald-700/5">
           {/* Desktop table */}
           <table className="hidden sm:table w-full text-sm">
-            <thead className="bg-emerald-50/50 text-emerald-900/70 text-xs uppercase tracking-wider">
-              <tr>
+            <thead className="bg-emerald-50/50 text-emerald-700/70">
+              <tr style={{ fontSize: "0.6875rem", letterSpacing: "0.3em" }} className="uppercase">
                 <th className="text-left px-5 py-3.5 font-medium">客人</th>
                 <th className="text-left px-3 py-3.5 font-medium">聯絡</th>
                 <th className="text-right px-3 py-3.5 font-medium">訂單</th>
@@ -295,18 +366,27 @@ export default async function StoreCustomersPage({
                           {r.name}
                         </span>
                         {r.identityType === "account" && (
-                          <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-emerald-100 text-emerald-800 tracking-wider uppercase">
-                            會員
+                          <span
+                            className="text-[10px] px-1.5 py-0.5 rounded-full bg-emerald-100 text-emerald-800 uppercase"
+                            style={{ letterSpacing: "0.3em" }}
+                          >
+                            Member
                           </span>
                         )}
                         {isVip && (
-                          <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-amber-100 text-amber-800 tracking-wider uppercase">
+                          <span
+                            className="text-[10px] px-1.5 py-0.5 rounded-full bg-amber-100 text-amber-800 uppercase"
+                            style={{ letterSpacing: "0.3em" }}
+                          >
                             VIP
                           </span>
                         )}
                         {isReturning && !isVip && (
-                          <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-blue-100 text-blue-800 tracking-wider uppercase">
-                            回購
+                          <span
+                            className="text-[10px] px-1.5 py-0.5 rounded-full bg-blue-100 text-blue-800 uppercase"
+                            style={{ letterSpacing: "0.3em" }}
+                          >
+                            Repeat
                           </span>
                         )}
                       </div>
@@ -328,7 +408,10 @@ export default async function StoreCustomersPage({
                       </a>
                     </td>
                     <td className="px-3 py-3.5 text-right">
-                      <p className="font-medium text-emerald-950 tabular-nums">
+                      <p
+                        className="text-emerald-950 tabular-nums font-medium"
+                        style={{ letterSpacing: "-0.01em" }}
+                      >
                         {r.orderCount}
                       </p>
                       <p className="text-[10px] text-emerald-900/50">
@@ -336,7 +419,10 @@ export default async function StoreCustomersPage({
                       </p>
                     </td>
                     <td className="px-3 py-3.5 text-right">
-                      <p className="font-medium text-emerald-950 tabular-nums">
+                      <p
+                        className="text-emerald-950 tabular-nums font-medium"
+                        style={{ letterSpacing: "-0.01em" }}
+                      >
                         {formatPrice(r.totalCents)}
                       </p>
                     </td>
@@ -383,24 +469,36 @@ export default async function StoreCustomersPage({
                       </p>
                       <div className="flex items-center gap-1.5 mt-1 flex-wrap">
                         {r.identityType === "account" && (
-                          <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-emerald-100 text-emerald-800 tracking-wider uppercase">
-                            會員
+                          <span
+                            className="text-[10px] px-1.5 py-0.5 rounded-full bg-emerald-100 text-emerald-800 uppercase"
+                            style={{ letterSpacing: "0.3em" }}
+                          >
+                            Member
                           </span>
                         )}
                         {isVip && (
-                          <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-amber-100 text-amber-800 tracking-wider uppercase">
+                          <span
+                            className="text-[10px] px-1.5 py-0.5 rounded-full bg-amber-100 text-amber-800 uppercase"
+                            style={{ letterSpacing: "0.3em" }}
+                          >
                             VIP
                           </span>
                         )}
                         {isReturning && !isVip && (
-                          <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-blue-100 text-blue-800 tracking-wider uppercase">
-                            回購
+                          <span
+                            className="text-[10px] px-1.5 py-0.5 rounded-full bg-blue-100 text-blue-800 uppercase"
+                            style={{ letterSpacing: "0.3em" }}
+                          >
+                            Repeat
                           </span>
                         )}
                       </div>
                     </div>
                     <div className="text-right">
-                      <p className="font-semibold text-emerald-950 tabular-nums">
+                      <p
+                        className="text-emerald-950 tabular-nums font-medium"
+                        style={{ letterSpacing: "-0.02em", fontSize: "1.0625rem" }}
+                      >
                         {formatPrice(r.totalCents)}
                       </p>
                       <p className="text-[10px] text-emerald-900/50">
@@ -427,18 +525,36 @@ export default async function StoreCustomersPage({
         </div>
       )}
 
-      <p className="mt-6 text-xs text-emerald-900/50 leading-relaxed">
-        說明：以電話為主分群（同一支電話的多次匿名下單算一位客人）；如果客人有會員帳號則
-        會用會員 ID 分群更準確。VIP = 累計消費 NT$ 2,000+；回購 = 下過 2 次以上。
-      </p>
-      <p className="mt-2 text-xs text-emerald-900/50">
+      <div className="mt-10 pt-6 border-t border-emerald-50">
+        <p
+          className="uppercase text-emerald-700/70 mb-3"
+          style={{
+            fontSize: "0.6875rem",
+            fontWeight: 500,
+            letterSpacing: "0.4em",
+          }}
+        >
+          Note · 分群說明
+        </p>
+        <p
+          className="text-emerald-900/65"
+          style={{ fontSize: "0.8125rem", lineHeight: 1.85, maxWidth: "44rem" }}
+        >
+          以電話為主分群（同一支電話的多次匿名下單算一位客人）；客人若有會員帳號，
+          會用會員 ID 分群更準確。VIP = 累計消費 NT$ 2,000+；回購 = 下過 2 次以上。
+        </p>
         <Link
           href={`/dashboard/stores/${slug}/orders`}
-          className="text-emerald-700 hover:underline"
+          className="mt-4 inline-block text-emerald-700 hover:underline uppercase"
+          style={{
+            fontSize: "0.6875rem",
+            fontWeight: 500,
+            letterSpacing: "0.3em",
+          }}
         >
-          → 看所有訂單
+          → All Orders · 看所有訂單
         </Link>
-      </p>
-    </main>
+      </div>
+    </div>
   );
 }
