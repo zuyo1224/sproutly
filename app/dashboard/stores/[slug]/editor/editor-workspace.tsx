@@ -96,6 +96,7 @@ type EditorTheme = {
       borderRadius?: "none" | "soft" | "strong";
       entrance?: "none" | "fade" | "slide-up";
       fontFamily?: "default" | "serif" | "sans";
+      letterSpacing?: "tight" | "normal" | "wide";
     }>;
   };
   homepage: {
@@ -1802,8 +1803,9 @@ export function EditorWorkspace({
           const borderRadius = cur.borderRadius ?? null;
           const entrance = cur.entrance ?? null;
           const fontFamily = cur.fontFamily ?? null;
-          function patch(p: { headingAlign?: "left" | "center" | "right"; bgColor?: string | null; textColor?: string | null; paddingScale?: "compact" | "default" | "spacious" | null; divider?: "none" | "top" | "bottom" | "both"; headingScale?: "small" | "default" | "large" | null; minHeight?: "auto" | "tall" | "fullscreen" | null; outline?: "none" | "subtle" | "strong" | null; shadow?: "none" | "soft" | "deep" | null; borderRadius?: "none" | "soft" | "strong" | null; entrance?: "none" | "fade" | "slide-up" | null; fontFamily?: "default" | "serif" | "sans" | null }) {
-            const next: { headingAlign?: "left" | "center" | "right"; bgColor?: string | null; textColor?: string | null; paddingScale?: "compact" | "default" | "spacious"; divider?: "none" | "top" | "bottom" | "both"; headingScale?: "small" | "default" | "large"; minHeight?: "auto" | "tall" | "fullscreen"; outline?: "none" | "subtle" | "strong"; shadow?: "none" | "soft" | "deep"; borderRadius?: "none" | "soft" | "strong"; entrance?: "none" | "fade" | "slide-up"; fontFamily?: "default" | "serif" | "sans" } = { ...cur };
+          const letterSpacing = cur.letterSpacing ?? null;
+          function patch(p: { headingAlign?: "left" | "center" | "right"; bgColor?: string | null; textColor?: string | null; paddingScale?: "compact" | "default" | "spacious" | null; divider?: "none" | "top" | "bottom" | "both"; headingScale?: "small" | "default" | "large" | null; minHeight?: "auto" | "tall" | "fullscreen" | null; outline?: "none" | "subtle" | "strong" | null; shadow?: "none" | "soft" | "deep" | null; borderRadius?: "none" | "soft" | "strong" | null; entrance?: "none" | "fade" | "slide-up" | null; fontFamily?: "default" | "serif" | "sans" | null; letterSpacing?: "tight" | "normal" | "wide" | null }) {
+            const next: { headingAlign?: "left" | "center" | "right"; bgColor?: string | null; textColor?: string | null; paddingScale?: "compact" | "default" | "spacious"; divider?: "none" | "top" | "bottom" | "both"; headingScale?: "small" | "default" | "large"; minHeight?: "auto" | "tall" | "fullscreen"; outline?: "none" | "subtle" | "strong"; shadow?: "none" | "soft" | "deep"; borderRadius?: "none" | "soft" | "strong"; entrance?: "none" | "fade" | "slide-up"; fontFamily?: "default" | "serif" | "sans"; letterSpacing?: "tight" | "normal" | "wide" } = { ...cur };
             if (p.headingAlign !== undefined) next.headingAlign = p.headingAlign;
             if (p.bgColor !== undefined) next.bgColor = p.bgColor;
             if (p.textColor !== undefined) next.textColor = p.textColor;
@@ -1836,6 +1838,10 @@ export function EditorWorkspace({
             if (p.fontFamily !== undefined) {
               if (p.fontFamily === null || p.fontFamily === "default") delete next.fontFamily;
               else next.fontFamily = p.fontFamily;
+            }
+            if (p.letterSpacing !== undefined) {
+              if (p.letterSpacing === null || p.letterSpacing === "normal") delete next.letterSpacing;
+              else next.letterSpacing = p.letterSpacing;
             }
             updateLayout({
               sectionStyles: {
@@ -2214,6 +2220,40 @@ export function EditorWorkspace({
                     <button
                       type="button"
                       onClick={() => patch({ fontFamily: null })}
+                      className="text-stone-500 hover:text-stone-800 underline"
+                    >
+                      清除
+                    </button>
+                  )}
+                </div>
+              </Field>
+              <Field label="字距">
+                <div className="grid grid-cols-3 gap-1.5">
+                  {([
+                    { v: "tight", label: "緊" },
+                    { v: "normal", label: "預設" },
+                    { v: "wide", label: "寬" },
+                  ] as const).map((opt) => (
+                    <button
+                      key={opt.v}
+                      type="button"
+                      onClick={() => patch({ letterSpacing: opt.v })}
+                      className={`rounded-lg border py-2 text-xs transition ${
+                        (letterSpacing ?? "normal") === opt.v
+                          ? "border-emerald-500 bg-emerald-50 text-emerald-900"
+                          : "border-stone-200 text-stone-600 hover:border-stone-400"
+                      }`}
+                    >
+                      {opt.label}
+                    </button>
+                  ))}
+                </div>
+                <div className="mt-1.5 flex items-center justify-between text-[11px] text-stone-500">
+                  <span>「寬」適合雜誌大標 / 全大寫字</span>
+                  {letterSpacing && (
+                    <button
+                      type="button"
+                      onClick={() => patch({ letterSpacing: null })}
                       className="text-stone-500 hover:text-stone-800 underline"
                     >
                       清除
