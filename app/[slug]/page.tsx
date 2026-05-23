@@ -93,12 +93,19 @@ export default async function StoreHomePage({
     if (s === "strong") return { outline: `2px solid ${theme.border}`, outlineOffset: "-2px" };
     return undefined;
   };
+  // 陰影：soft 淺浮起 / deep 深浮起，雙層 box-shadow 模擬 elev 系統
+  const shadowToVal = (s: "none" | "soft" | "deep" | undefined) => {
+    if (s === "soft") return "0 1px 2px rgba(0,0,0,0.04), 0 4px 12px rgba(0,0,0,0.06)";
+    if (s === "deep") return "0 2px 4px rgba(0,0,0,0.06), 0 12px 32px rgba(0,0,0,0.1)";
+    return undefined;
+  };
   const sectionStyleFor = (key: string) => {
     const s = theme.layout.sectionStyles[key];
     const padVar = padScaleToVar(s?.paddingScale);
     const headingVar = headingScaleToVar(s?.headingScale);
     const minH = minHeightToVal(s?.minHeight);
     const outline = outlineToVal(s?.outline);
+    const shadow = shadowToVal(s?.shadow);
     return {
       bg: s?.bgColor ?? undefined,
       text: s?.textColor ?? undefined,
@@ -108,7 +115,8 @@ export default async function StoreHomePage({
       headingOverride: headingVar,
       minHeightOverride: minH,
       outlineOverride: outline,
-    } as { bg: string | undefined; text: string | undefined; align: "left" | "center" | "right"; padOverride: number | undefined; divider: "none" | "top" | "bottom" | "both"; headingOverride: number | undefined; minHeightOverride: string | undefined; outlineOverride: { outline: string; outlineOffset: string } | undefined };
+      shadowOverride: shadow,
+    } as { bg: string | undefined; text: string | undefined; align: "left" | "center" | "right"; padOverride: number | undefined; divider: "none" | "top" | "bottom" | "both"; headingOverride: number | undefined; minHeightOverride: string | undefined; outlineOverride: { outline: string; outlineOffset: string } | undefined; shadowOverride: string | undefined };
   };
 
   // 把背景色 + 文字色 + padOverride + 分隔線 + 標題字級合併成 section 用的 inline style
@@ -117,7 +125,7 @@ export default async function StoreHomePage({
   // 讓 muted 文字（副題 / eyebrow）也跟著走，避免淺底深字 section 突然有深底白字時 muted 還是深的看不見
   // 標題字級 --store-heading-scale 由 layout.tsx 的 attribute selector 套到 h2 上（em 相對倍率）
   const mergeSectionStyle = (
-    s: { bg: string | undefined; text: string | undefined; padOverride: number | undefined; divider: "none" | "top" | "bottom" | "both"; headingOverride: number | undefined; minHeightOverride: string | undefined; outlineOverride: { outline: string; outlineOffset: string } | undefined },
+    s: { bg: string | undefined; text: string | undefined; padOverride: number | undefined; divider: "none" | "top" | "bottom" | "both"; headingOverride: number | undefined; minHeightOverride: string | undefined; outlineOverride: { outline: string; outlineOffset: string } | undefined; shadowOverride: string | undefined },
     fallbackBg?: string
   ): React.CSSProperties | undefined => {
     const out: Record<string, unknown> = {};
@@ -140,6 +148,9 @@ export default async function StoreHomePage({
     if (s.outlineOverride) {
       out.outline = s.outlineOverride.outline;
       out.outlineOffset = s.outlineOverride.outlineOffset;
+    }
+    if (s.shadowOverride) {
+      out.boxShadow = s.shadowOverride;
     }
     return Object.keys(out).length > 0 ? (out as React.CSSProperties) : undefined;
   };

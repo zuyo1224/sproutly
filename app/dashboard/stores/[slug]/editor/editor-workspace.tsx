@@ -92,6 +92,7 @@ type EditorTheme = {
       headingScale?: "small" | "default" | "large";
       minHeight?: "auto" | "tall" | "fullscreen";
       outline?: "none" | "subtle" | "strong";
+      shadow?: "none" | "soft" | "deep";
     }>;
   };
   homepage: {
@@ -1794,8 +1795,9 @@ export function EditorWorkspace({
           const headingScale = cur.headingScale ?? null;
           const minHeight = cur.minHeight ?? null;
           const outline = cur.outline ?? null;
-          function patch(p: { headingAlign?: "left" | "center" | "right"; bgColor?: string | null; textColor?: string | null; paddingScale?: "compact" | "default" | "spacious" | null; divider?: "none" | "top" | "bottom" | "both"; headingScale?: "small" | "default" | "large" | null; minHeight?: "auto" | "tall" | "fullscreen" | null; outline?: "none" | "subtle" | "strong" | null }) {
-            const next: { headingAlign?: "left" | "center" | "right"; bgColor?: string | null; textColor?: string | null; paddingScale?: "compact" | "default" | "spacious"; divider?: "none" | "top" | "bottom" | "both"; headingScale?: "small" | "default" | "large"; minHeight?: "auto" | "tall" | "fullscreen"; outline?: "none" | "subtle" | "strong" } = { ...cur };
+          const shadow = cur.shadow ?? null;
+          function patch(p: { headingAlign?: "left" | "center" | "right"; bgColor?: string | null; textColor?: string | null; paddingScale?: "compact" | "default" | "spacious" | null; divider?: "none" | "top" | "bottom" | "both"; headingScale?: "small" | "default" | "large" | null; minHeight?: "auto" | "tall" | "fullscreen" | null; outline?: "none" | "subtle" | "strong" | null; shadow?: "none" | "soft" | "deep" | null }) {
+            const next: { headingAlign?: "left" | "center" | "right"; bgColor?: string | null; textColor?: string | null; paddingScale?: "compact" | "default" | "spacious"; divider?: "none" | "top" | "bottom" | "both"; headingScale?: "small" | "default" | "large"; minHeight?: "auto" | "tall" | "fullscreen"; outline?: "none" | "subtle" | "strong"; shadow?: "none" | "soft" | "deep" } = { ...cur };
             if (p.headingAlign !== undefined) next.headingAlign = p.headingAlign;
             if (p.bgColor !== undefined) next.bgColor = p.bgColor;
             if (p.textColor !== undefined) next.textColor = p.textColor;
@@ -1812,6 +1814,10 @@ export function EditorWorkspace({
             if (p.outline !== undefined) {
               if (p.outline === null || p.outline === "none") delete next.outline;
               else next.outline = p.outline;
+            }
+            if (p.shadow !== undefined) {
+              if (p.shadow === null || p.shadow === "none") delete next.shadow;
+              else next.shadow = p.shadow;
             }
             updateLayout({
               sectionStyles: {
@@ -2054,6 +2060,40 @@ export function EditorWorkspace({
                     <button
                       type="button"
                       onClick={() => patch({ outline: null })}
+                      className="text-stone-500 hover:text-stone-800 underline"
+                    >
+                      清除
+                    </button>
+                  )}
+                </div>
+              </Field>
+              <Field label="陰影">
+                <div className="grid grid-cols-3 gap-1.5">
+                  {([
+                    { v: "none", label: "無" },
+                    { v: "soft", label: "淺" },
+                    { v: "deep", label: "深" },
+                  ] as const).map((opt) => (
+                    <button
+                      key={opt.v}
+                      type="button"
+                      onClick={() => patch({ shadow: opt.v })}
+                      className={`rounded-lg border py-2 text-xs transition ${
+                        (shadow ?? "none") === opt.v
+                          ? "border-emerald-500 bg-emerald-50 text-emerald-900"
+                          : "border-stone-200 text-stone-600 hover:border-stone-400"
+                      }`}
+                    >
+                      {opt.label}
+                    </button>
+                  ))}
+                </div>
+                <div className="mt-1.5 flex items-center justify-between text-[11px] text-stone-500">
+                  <span>有設背景色的 section 加陰影像卡片浮起來</span>
+                  {shadow && (
+                    <button
+                      type="button"
+                      onClick={() => patch({ shadow: null })}
                       className="text-stone-500 hover:text-stone-800 underline"
                     >
                       清除

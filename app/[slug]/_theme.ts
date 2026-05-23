@@ -188,6 +188,7 @@ export interface StoreTheme {
       headingScale?: "small" | "default" | "large"; // 該 section 標題字級（small 0.85x / default 1x / large 1.25x）
       minHeight?: "auto" | "tall" | "fullscreen"; // 該 section 最低高度（auto 不限制 / tall 80vh / fullscreen 100vh）
       outline?: "none" | "subtle" | "strong"; // 該 section 外框（subtle 1px / strong 2px，用 outline 避免跟 divider borderTop/Bottom 打架）
+      shadow?: "none" | "soft" | "deep"; // 該 section 陰影（soft 淺 / deep 深），讓有 bgColor 的 section 像卡片浮起
     }>;
   };
 }
@@ -541,12 +542,12 @@ function resolveLayout(raw: unknown): StoreTheme["layout"] {
     })(),
     sectionStyles: (() => {
       const raw = l.sectionStyles;
-      const result: Record<string, { headingAlign?: "left" | "center" | "right"; bgColor?: string | null; textColor?: string | null; paddingScale?: "compact" | "default" | "spacious"; divider?: "none" | "top" | "bottom" | "both"; headingScale?: "small" | "default" | "large"; minHeight?: "auto" | "tall" | "fullscreen"; outline?: "none" | "subtle" | "strong" }> = {};
+      const result: Record<string, { headingAlign?: "left" | "center" | "right"; bgColor?: string | null; textColor?: string | null; paddingScale?: "compact" | "default" | "spacious"; divider?: "none" | "top" | "bottom" | "both"; headingScale?: "small" | "default" | "large"; minHeight?: "auto" | "tall" | "fullscreen"; outline?: "none" | "subtle" | "strong"; shadow?: "none" | "soft" | "deep" }> = {};
       if (raw && typeof raw === "object" && !Array.isArray(raw)) {
         for (const [k, v] of Object.entries(raw as Record<string, unknown>)) {
           if (!v || typeof v !== "object" || typeof k !== "string") continue;
           const obj = v as Record<string, unknown>;
-          const entry: { headingAlign?: "left" | "center" | "right"; bgColor?: string | null; textColor?: string | null; paddingScale?: "compact" | "default" | "spacious"; divider?: "none" | "top" | "bottom" | "both"; headingScale?: "small" | "default" | "large"; minHeight?: "auto" | "tall" | "fullscreen"; outline?: "none" | "subtle" | "strong" } = {};
+          const entry: { headingAlign?: "left" | "center" | "right"; bgColor?: string | null; textColor?: string | null; paddingScale?: "compact" | "default" | "spacious"; divider?: "none" | "top" | "bottom" | "both"; headingScale?: "small" | "default" | "large"; minHeight?: "auto" | "tall" | "fullscreen"; outline?: "none" | "subtle" | "strong"; shadow?: "none" | "soft" | "deep" } = {};
           if (obj.headingAlign === "left" || obj.headingAlign === "center" || obj.headingAlign === "right") {
             entry.headingAlign = obj.headingAlign;
           }
@@ -575,7 +576,10 @@ function resolveLayout(raw: unknown): StoreTheme["layout"] {
           if (obj.outline === "none" || obj.outline === "subtle" || obj.outline === "strong") {
             entry.outline = obj.outline;
           }
-          if (entry.headingAlign !== undefined || entry.bgColor !== undefined || entry.textColor !== undefined || entry.paddingScale !== undefined || entry.divider !== undefined || entry.headingScale !== undefined || entry.minHeight !== undefined || entry.outline !== undefined) {
+          if (obj.shadow === "none" || obj.shadow === "soft" || obj.shadow === "deep") {
+            entry.shadow = obj.shadow;
+          }
+          if (entry.headingAlign !== undefined || entry.bgColor !== undefined || entry.textColor !== undefined || entry.paddingScale !== undefined || entry.divider !== undefined || entry.headingScale !== undefined || entry.minHeight !== undefined || entry.outline !== undefined || entry.shadow !== undefined) {
             result[k] = entry;
           }
         }

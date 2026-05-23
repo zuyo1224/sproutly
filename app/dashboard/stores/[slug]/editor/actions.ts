@@ -47,6 +47,7 @@ type EditorPayload = {
       headingScale?: string;
       minHeight?: string;
       outline?: string;
+      shadow?: string;
     }>;
   };
   homepage?: {
@@ -261,12 +262,12 @@ export async function saveEditorState(slug: string, payload: EditorPayload) {
     }
     if (payload.layout.sectionStyles !== undefined) {
       const raw = payload.layout.sectionStyles;
-      const sanitized: Record<string, { headingAlign?: string; bgColor?: string | null; textColor?: string | null; paddingScale?: string; divider?: string; headingScale?: string; minHeight?: string; outline?: string }> = {};
+      const sanitized: Record<string, { headingAlign?: string; bgColor?: string | null; textColor?: string | null; paddingScale?: string; divider?: string; headingScale?: string; minHeight?: string; outline?: string; shadow?: string }> = {};
       if (raw && typeof raw === "object") {
         for (const [k, v] of Object.entries(raw)) {
           if (!k || typeof k !== "string" || k.length > 60) continue;
           if (!v || typeof v !== "object") continue;
-          const entry: { headingAlign?: string; bgColor?: string | null; textColor?: string | null; paddingScale?: string; divider?: string; headingScale?: string; minHeight?: string; outline?: string } = {};
+          const entry: { headingAlign?: string; bgColor?: string | null; textColor?: string | null; paddingScale?: string; divider?: string; headingScale?: string; minHeight?: string; outline?: string; shadow?: string } = {};
           if (v.headingAlign === "left" || v.headingAlign === "center" || v.headingAlign === "right") {
             entry.headingAlign = v.headingAlign;
           }
@@ -295,7 +296,10 @@ export async function saveEditorState(slug: string, payload: EditorPayload) {
           if (v.outline === "none" || v.outline === "subtle" || v.outline === "strong") {
             entry.outline = v.outline;
           }
-          if (entry.headingAlign !== undefined || entry.bgColor !== undefined || entry.textColor !== undefined || entry.paddingScale !== undefined || entry.divider !== undefined || entry.headingScale !== undefined || entry.minHeight !== undefined || entry.outline !== undefined) {
+          if (v.shadow === "none" || v.shadow === "soft" || v.shadow === "deep") {
+            entry.shadow = v.shadow;
+          }
+          if (entry.headingAlign !== undefined || entry.bgColor !== undefined || entry.textColor !== undefined || entry.paddingScale !== undefined || entry.divider !== undefined || entry.headingScale !== undefined || entry.minHeight !== undefined || entry.outline !== undefined || entry.shadow !== undefined) {
             sanitized[k] = entry;
           }
         }
