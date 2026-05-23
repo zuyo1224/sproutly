@@ -189,6 +189,7 @@ export interface StoreTheme {
       minHeight?: "auto" | "tall" | "fullscreen"; // 該 section 最低高度（auto 不限制 / tall 80vh / fullscreen 100vh）
       outline?: "none" | "subtle" | "strong"; // 該 section 外框（subtle 1px / strong 2px，用 outline 避免跟 divider borderTop/Bottom 打架）
       shadow?: "none" | "soft" | "deep"; // 該 section 陰影（soft 淺 / deep 深），讓有 bgColor 的 section 像卡片浮起
+      borderRadius?: "none" | "soft" | "strong"; // 該 section 圓角（soft 16px / strong 32px），跟 bgColor + outline + shadow 三件套組成卡片風
     }>;
   };
 }
@@ -542,12 +543,12 @@ function resolveLayout(raw: unknown): StoreTheme["layout"] {
     })(),
     sectionStyles: (() => {
       const raw = l.sectionStyles;
-      const result: Record<string, { headingAlign?: "left" | "center" | "right"; bgColor?: string | null; textColor?: string | null; paddingScale?: "compact" | "default" | "spacious"; divider?: "none" | "top" | "bottom" | "both"; headingScale?: "small" | "default" | "large"; minHeight?: "auto" | "tall" | "fullscreen"; outline?: "none" | "subtle" | "strong"; shadow?: "none" | "soft" | "deep" }> = {};
+      const result: Record<string, { headingAlign?: "left" | "center" | "right"; bgColor?: string | null; textColor?: string | null; paddingScale?: "compact" | "default" | "spacious"; divider?: "none" | "top" | "bottom" | "both"; headingScale?: "small" | "default" | "large"; minHeight?: "auto" | "tall" | "fullscreen"; outline?: "none" | "subtle" | "strong"; shadow?: "none" | "soft" | "deep"; borderRadius?: "none" | "soft" | "strong" }> = {};
       if (raw && typeof raw === "object" && !Array.isArray(raw)) {
         for (const [k, v] of Object.entries(raw as Record<string, unknown>)) {
           if (!v || typeof v !== "object" || typeof k !== "string") continue;
           const obj = v as Record<string, unknown>;
-          const entry: { headingAlign?: "left" | "center" | "right"; bgColor?: string | null; textColor?: string | null; paddingScale?: "compact" | "default" | "spacious"; divider?: "none" | "top" | "bottom" | "both"; headingScale?: "small" | "default" | "large"; minHeight?: "auto" | "tall" | "fullscreen"; outline?: "none" | "subtle" | "strong"; shadow?: "none" | "soft" | "deep" } = {};
+          const entry: { headingAlign?: "left" | "center" | "right"; bgColor?: string | null; textColor?: string | null; paddingScale?: "compact" | "default" | "spacious"; divider?: "none" | "top" | "bottom" | "both"; headingScale?: "small" | "default" | "large"; minHeight?: "auto" | "tall" | "fullscreen"; outline?: "none" | "subtle" | "strong"; shadow?: "none" | "soft" | "deep"; borderRadius?: "none" | "soft" | "strong" } = {};
           if (obj.headingAlign === "left" || obj.headingAlign === "center" || obj.headingAlign === "right") {
             entry.headingAlign = obj.headingAlign;
           }
@@ -579,7 +580,10 @@ function resolveLayout(raw: unknown): StoreTheme["layout"] {
           if (obj.shadow === "none" || obj.shadow === "soft" || obj.shadow === "deep") {
             entry.shadow = obj.shadow;
           }
-          if (entry.headingAlign !== undefined || entry.bgColor !== undefined || entry.textColor !== undefined || entry.paddingScale !== undefined || entry.divider !== undefined || entry.headingScale !== undefined || entry.minHeight !== undefined || entry.outline !== undefined || entry.shadow !== undefined) {
+          if (obj.borderRadius === "none" || obj.borderRadius === "soft" || obj.borderRadius === "strong") {
+            entry.borderRadius = obj.borderRadius;
+          }
+          if (entry.headingAlign !== undefined || entry.bgColor !== undefined || entry.textColor !== undefined || entry.paddingScale !== undefined || entry.divider !== undefined || entry.headingScale !== undefined || entry.minHeight !== undefined || entry.outline !== undefined || entry.shadow !== undefined || entry.borderRadius !== undefined) {
             result[k] = entry;
           }
         }

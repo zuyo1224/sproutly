@@ -93,6 +93,7 @@ type EditorTheme = {
       minHeight?: "auto" | "tall" | "fullscreen";
       outline?: "none" | "subtle" | "strong";
       shadow?: "none" | "soft" | "deep";
+      borderRadius?: "none" | "soft" | "strong";
     }>;
   };
   homepage: {
@@ -1796,8 +1797,9 @@ export function EditorWorkspace({
           const minHeight = cur.minHeight ?? null;
           const outline = cur.outline ?? null;
           const shadow = cur.shadow ?? null;
-          function patch(p: { headingAlign?: "left" | "center" | "right"; bgColor?: string | null; textColor?: string | null; paddingScale?: "compact" | "default" | "spacious" | null; divider?: "none" | "top" | "bottom" | "both"; headingScale?: "small" | "default" | "large" | null; minHeight?: "auto" | "tall" | "fullscreen" | null; outline?: "none" | "subtle" | "strong" | null; shadow?: "none" | "soft" | "deep" | null }) {
-            const next: { headingAlign?: "left" | "center" | "right"; bgColor?: string | null; textColor?: string | null; paddingScale?: "compact" | "default" | "spacious"; divider?: "none" | "top" | "bottom" | "both"; headingScale?: "small" | "default" | "large"; minHeight?: "auto" | "tall" | "fullscreen"; outline?: "none" | "subtle" | "strong"; shadow?: "none" | "soft" | "deep" } = { ...cur };
+          const borderRadius = cur.borderRadius ?? null;
+          function patch(p: { headingAlign?: "left" | "center" | "right"; bgColor?: string | null; textColor?: string | null; paddingScale?: "compact" | "default" | "spacious" | null; divider?: "none" | "top" | "bottom" | "both"; headingScale?: "small" | "default" | "large" | null; minHeight?: "auto" | "tall" | "fullscreen" | null; outline?: "none" | "subtle" | "strong" | null; shadow?: "none" | "soft" | "deep" | null; borderRadius?: "none" | "soft" | "strong" | null }) {
+            const next: { headingAlign?: "left" | "center" | "right"; bgColor?: string | null; textColor?: string | null; paddingScale?: "compact" | "default" | "spacious"; divider?: "none" | "top" | "bottom" | "both"; headingScale?: "small" | "default" | "large"; minHeight?: "auto" | "tall" | "fullscreen"; outline?: "none" | "subtle" | "strong"; shadow?: "none" | "soft" | "deep"; borderRadius?: "none" | "soft" | "strong" } = { ...cur };
             if (p.headingAlign !== undefined) next.headingAlign = p.headingAlign;
             if (p.bgColor !== undefined) next.bgColor = p.bgColor;
             if (p.textColor !== undefined) next.textColor = p.textColor;
@@ -1818,6 +1820,10 @@ export function EditorWorkspace({
             if (p.shadow !== undefined) {
               if (p.shadow === null || p.shadow === "none") delete next.shadow;
               else next.shadow = p.shadow;
+            }
+            if (p.borderRadius !== undefined) {
+              if (p.borderRadius === null || p.borderRadius === "none") delete next.borderRadius;
+              else next.borderRadius = p.borderRadius;
             }
             updateLayout({
               sectionStyles: {
@@ -2094,6 +2100,40 @@ export function EditorWorkspace({
                     <button
                       type="button"
                       onClick={() => patch({ shadow: null })}
+                      className="text-stone-500 hover:text-stone-800 underline"
+                    >
+                      清除
+                    </button>
+                  )}
+                </div>
+              </Field>
+              <Field label="圓角">
+                <div className="grid grid-cols-3 gap-1.5">
+                  {([
+                    { v: "none", label: "無" },
+                    { v: "soft", label: "微圓" },
+                    { v: "strong", label: "大圓" },
+                  ] as const).map((opt) => (
+                    <button
+                      key={opt.v}
+                      type="button"
+                      onClick={() => patch({ borderRadius: opt.v })}
+                      className={`rounded-lg border py-2 text-xs transition ${
+                        (borderRadius ?? "none") === opt.v
+                          ? "border-emerald-500 bg-emerald-50 text-emerald-900"
+                          : "border-stone-200 text-stone-600 hover:border-stone-400"
+                      }`}
+                    >
+                      {opt.label}
+                    </button>
+                  ))}
+                </div>
+                <div className="mt-1.5 flex items-center justify-between text-[11px] text-stone-500">
+                  <span>微圓 16px · 大圓 32px（搭配背景色 / 陰影像卡片）</span>
+                  {borderRadius && (
+                    <button
+                      type="button"
+                      onClick={() => patch({ borderRadius: null })}
                       className="text-stone-500 hover:text-stone-800 underline"
                     >
                       清除
