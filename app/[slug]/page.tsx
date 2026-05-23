@@ -105,6 +105,12 @@ export default async function StoreHomePage({
     if (s === "strong") return "32px";
     return undefined;
   };
+  // 字體：serif 思源宋體（雜誌風）/ sans 思源黑體（現代），對齊 _theme.ts FONT_LABELS 的 noto-serif / noto
+  const fontFamilyToVal = (s: "default" | "serif" | "sans" | undefined) => {
+    if (s === "serif") return "var(--font-noto-serif), 'Times New Roman', serif";
+    if (s === "sans") return "var(--font-noto), system-ui, sans-serif";
+    return undefined;
+  };
   const sectionStyleFor = (key: string) => {
     const s = theme.layout.sectionStyles[key];
     const padVar = padScaleToVar(s?.paddingScale);
@@ -113,6 +119,7 @@ export default async function StoreHomePage({
     const outline = outlineToVal(s?.outline);
     const shadow = shadowToVal(s?.shadow);
     const radius = radiusToVal(s?.borderRadius);
+    const font = fontFamilyToVal(s?.fontFamily);
     // 進場動畫：只回 "fade" / "slide-up" 給 wrapper 設 data-anim attr；
     // 實際 CSS keyframes + scroll-timeline 在 layout.tsx 注入；edit mode 內 disable
     const entranceVal: "fade" | "slide-up" | undefined =
@@ -128,8 +135,9 @@ export default async function StoreHomePage({
       outlineOverride: outline,
       shadowOverride: shadow,
       borderRadiusOverride: radius,
+      fontFamilyOverride: font,
       entranceVal,
-    } as { bg: string | undefined; text: string | undefined; align: "left" | "center" | "right"; padOverride: number | undefined; divider: "none" | "top" | "bottom" | "both"; headingOverride: number | undefined; minHeightOverride: string | undefined; outlineOverride: { outline: string; outlineOffset: string } | undefined; shadowOverride: string | undefined; borderRadiusOverride: string | undefined; entranceVal: "fade" | "slide-up" | undefined };
+    } as { bg: string | undefined; text: string | undefined; align: "left" | "center" | "right"; padOverride: number | undefined; divider: "none" | "top" | "bottom" | "both"; headingOverride: number | undefined; minHeightOverride: string | undefined; outlineOverride: { outline: string; outlineOffset: string } | undefined; shadowOverride: string | undefined; borderRadiusOverride: string | undefined; fontFamilyOverride: string | undefined; entranceVal: "fade" | "slide-up" | undefined };
   };
 
   // 把背景色 + 文字色 + padOverride + 分隔線 + 標題字級合併成 section 用的 inline style
@@ -138,7 +146,7 @@ export default async function StoreHomePage({
   // 讓 muted 文字（副題 / eyebrow）也跟著走，避免淺底深字 section 突然有深底白字時 muted 還是深的看不見
   // 標題字級 --store-heading-scale 由 layout.tsx 的 attribute selector 套到 h2 上（em 相對倍率）
   const mergeSectionStyle = (
-    s: { bg: string | undefined; text: string | undefined; padOverride: number | undefined; divider: "none" | "top" | "bottom" | "both"; headingOverride: number | undefined; minHeightOverride: string | undefined; outlineOverride: { outline: string; outlineOffset: string } | undefined; shadowOverride: string | undefined; borderRadiusOverride: string | undefined },
+    s: { bg: string | undefined; text: string | undefined; padOverride: number | undefined; divider: "none" | "top" | "bottom" | "both"; headingOverride: number | undefined; minHeightOverride: string | undefined; outlineOverride: { outline: string; outlineOffset: string } | undefined; shadowOverride: string | undefined; borderRadiusOverride: string | undefined; fontFamilyOverride: string | undefined },
     fallbackBg?: string
   ): React.CSSProperties | undefined => {
     const out: Record<string, unknown> = {};
@@ -167,6 +175,9 @@ export default async function StoreHomePage({
     }
     if (s.borderRadiusOverride) {
       out.borderRadius = s.borderRadiusOverride;
+    }
+    if (s.fontFamilyOverride) {
+      out.fontFamily = s.fontFamilyOverride;
     }
     return Object.keys(out).length > 0 ? (out as React.CSSProperties) : undefined;
   };

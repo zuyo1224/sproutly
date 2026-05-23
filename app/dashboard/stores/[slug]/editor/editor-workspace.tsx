@@ -95,6 +95,7 @@ type EditorTheme = {
       shadow?: "none" | "soft" | "deep";
       borderRadius?: "none" | "soft" | "strong";
       entrance?: "none" | "fade" | "slide-up";
+      fontFamily?: "default" | "serif" | "sans";
     }>;
   };
   homepage: {
@@ -1800,8 +1801,9 @@ export function EditorWorkspace({
           const shadow = cur.shadow ?? null;
           const borderRadius = cur.borderRadius ?? null;
           const entrance = cur.entrance ?? null;
-          function patch(p: { headingAlign?: "left" | "center" | "right"; bgColor?: string | null; textColor?: string | null; paddingScale?: "compact" | "default" | "spacious" | null; divider?: "none" | "top" | "bottom" | "both"; headingScale?: "small" | "default" | "large" | null; minHeight?: "auto" | "tall" | "fullscreen" | null; outline?: "none" | "subtle" | "strong" | null; shadow?: "none" | "soft" | "deep" | null; borderRadius?: "none" | "soft" | "strong" | null; entrance?: "none" | "fade" | "slide-up" | null }) {
-            const next: { headingAlign?: "left" | "center" | "right"; bgColor?: string | null; textColor?: string | null; paddingScale?: "compact" | "default" | "spacious"; divider?: "none" | "top" | "bottom" | "both"; headingScale?: "small" | "default" | "large"; minHeight?: "auto" | "tall" | "fullscreen"; outline?: "none" | "subtle" | "strong"; shadow?: "none" | "soft" | "deep"; borderRadius?: "none" | "soft" | "strong"; entrance?: "none" | "fade" | "slide-up" } = { ...cur };
+          const fontFamily = cur.fontFamily ?? null;
+          function patch(p: { headingAlign?: "left" | "center" | "right"; bgColor?: string | null; textColor?: string | null; paddingScale?: "compact" | "default" | "spacious" | null; divider?: "none" | "top" | "bottom" | "both"; headingScale?: "small" | "default" | "large" | null; minHeight?: "auto" | "tall" | "fullscreen" | null; outline?: "none" | "subtle" | "strong" | null; shadow?: "none" | "soft" | "deep" | null; borderRadius?: "none" | "soft" | "strong" | null; entrance?: "none" | "fade" | "slide-up" | null; fontFamily?: "default" | "serif" | "sans" | null }) {
+            const next: { headingAlign?: "left" | "center" | "right"; bgColor?: string | null; textColor?: string | null; paddingScale?: "compact" | "default" | "spacious"; divider?: "none" | "top" | "bottom" | "both"; headingScale?: "small" | "default" | "large"; minHeight?: "auto" | "tall" | "fullscreen"; outline?: "none" | "subtle" | "strong"; shadow?: "none" | "soft" | "deep"; borderRadius?: "none" | "soft" | "strong"; entrance?: "none" | "fade" | "slide-up"; fontFamily?: "default" | "serif" | "sans" } = { ...cur };
             if (p.headingAlign !== undefined) next.headingAlign = p.headingAlign;
             if (p.bgColor !== undefined) next.bgColor = p.bgColor;
             if (p.textColor !== undefined) next.textColor = p.textColor;
@@ -1830,6 +1832,10 @@ export function EditorWorkspace({
             if (p.entrance !== undefined) {
               if (p.entrance === null || p.entrance === "none") delete next.entrance;
               else next.entrance = p.entrance;
+            }
+            if (p.fontFamily !== undefined) {
+              if (p.fontFamily === null || p.fontFamily === "default") delete next.fontFamily;
+              else next.fontFamily = p.fontFamily;
             }
             updateLayout({
               sectionStyles: {
@@ -2174,6 +2180,40 @@ export function EditorWorkspace({
                     <button
                       type="button"
                       onClick={() => patch({ entrance: null })}
+                      className="text-stone-500 hover:text-stone-800 underline"
+                    >
+                      清除
+                    </button>
+                  )}
+                </div>
+              </Field>
+              <Field label="字體">
+                <div className="grid grid-cols-3 gap-1.5">
+                  {([
+                    { v: "default", label: "預設" },
+                    { v: "serif", label: "宋體" },
+                    { v: "sans", label: "黑體" },
+                  ] as const).map((opt) => (
+                    <button
+                      key={opt.v}
+                      type="button"
+                      onClick={() => patch({ fontFamily: opt.v })}
+                      className={`rounded-lg border py-2 text-xs transition ${
+                        (fontFamily ?? "default") === opt.v
+                          ? "border-emerald-500 bg-emerald-50 text-emerald-900"
+                          : "border-stone-200 text-stone-600 hover:border-stone-400"
+                      }`}
+                    >
+                      {opt.label}
+                    </button>
+                  ))}
+                </div>
+                <div className="mt-1.5 flex items-center justify-between text-[11px] text-stone-500">
+                  <span>沒選 = 跟著全站字體</span>
+                  {fontFamily && (
+                    <button
+                      type="button"
+                      onClick={() => patch({ fontFamily: null })}
                       className="text-stone-500 hover:text-stone-800 underline"
                     >
                       清除
