@@ -187,6 +187,7 @@ export interface StoreTheme {
       divider?: "none" | "top" | "bottom" | "both"; // 分隔線（上 / 下 / 上下都有 / 沒有）
       headingScale?: "small" | "default" | "large"; // 該 section 標題字級（small 0.85x / default 1x / large 1.25x）
       minHeight?: "auto" | "tall" | "fullscreen"; // 該 section 最低高度（auto 不限制 / tall 80vh / fullscreen 100vh）
+      outline?: "none" | "subtle" | "strong"; // 該 section 外框（subtle 1px / strong 2px，用 outline 避免跟 divider borderTop/Bottom 打架）
     }>;
   };
 }
@@ -540,12 +541,12 @@ function resolveLayout(raw: unknown): StoreTheme["layout"] {
     })(),
     sectionStyles: (() => {
       const raw = l.sectionStyles;
-      const result: Record<string, { headingAlign?: "left" | "center" | "right"; bgColor?: string | null; textColor?: string | null; paddingScale?: "compact" | "default" | "spacious"; divider?: "none" | "top" | "bottom" | "both"; headingScale?: "small" | "default" | "large"; minHeight?: "auto" | "tall" | "fullscreen" }> = {};
+      const result: Record<string, { headingAlign?: "left" | "center" | "right"; bgColor?: string | null; textColor?: string | null; paddingScale?: "compact" | "default" | "spacious"; divider?: "none" | "top" | "bottom" | "both"; headingScale?: "small" | "default" | "large"; minHeight?: "auto" | "tall" | "fullscreen"; outline?: "none" | "subtle" | "strong" }> = {};
       if (raw && typeof raw === "object" && !Array.isArray(raw)) {
         for (const [k, v] of Object.entries(raw as Record<string, unknown>)) {
           if (!v || typeof v !== "object" || typeof k !== "string") continue;
           const obj = v as Record<string, unknown>;
-          const entry: { headingAlign?: "left" | "center" | "right"; bgColor?: string | null; textColor?: string | null; paddingScale?: "compact" | "default" | "spacious"; divider?: "none" | "top" | "bottom" | "both"; headingScale?: "small" | "default" | "large"; minHeight?: "auto" | "tall" | "fullscreen" } = {};
+          const entry: { headingAlign?: "left" | "center" | "right"; bgColor?: string | null; textColor?: string | null; paddingScale?: "compact" | "default" | "spacious"; divider?: "none" | "top" | "bottom" | "both"; headingScale?: "small" | "default" | "large"; minHeight?: "auto" | "tall" | "fullscreen"; outline?: "none" | "subtle" | "strong" } = {};
           if (obj.headingAlign === "left" || obj.headingAlign === "center" || obj.headingAlign === "right") {
             entry.headingAlign = obj.headingAlign;
           }
@@ -571,7 +572,10 @@ function resolveLayout(raw: unknown): StoreTheme["layout"] {
           if (obj.minHeight === "auto" || obj.minHeight === "tall" || obj.minHeight === "fullscreen") {
             entry.minHeight = obj.minHeight;
           }
-          if (entry.headingAlign !== undefined || entry.bgColor !== undefined || entry.textColor !== undefined || entry.paddingScale !== undefined || entry.divider !== undefined || entry.headingScale !== undefined || entry.minHeight !== undefined) {
+          if (obj.outline === "none" || obj.outline === "subtle" || obj.outline === "strong") {
+            entry.outline = obj.outline;
+          }
+          if (entry.headingAlign !== undefined || entry.bgColor !== undefined || entry.textColor !== undefined || entry.paddingScale !== undefined || entry.divider !== undefined || entry.headingScale !== undefined || entry.minHeight !== undefined || entry.outline !== undefined) {
             result[k] = entry;
           }
         }

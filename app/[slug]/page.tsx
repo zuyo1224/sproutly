@@ -87,11 +87,18 @@ export default async function StoreHomePage({
   // 最小高度：auto 不設定 / tall 80vh / fullscreen 100vh
   const minHeightToVal = (s: "auto" | "tall" | "fullscreen" | undefined) =>
     s === "tall" ? "80vh" : s === "fullscreen" ? "100vh" : undefined;
+  // 外框：用 outline 不用 border 避免跟 divider borderTop/Bottom 衝突；outline-offset 設 negative 內凹
+  const outlineToVal = (s: "none" | "subtle" | "strong" | undefined) => {
+    if (s === "subtle") return { outline: `1px solid ${theme.border}`, outlineOffset: "-1px" };
+    if (s === "strong") return { outline: `2px solid ${theme.border}`, outlineOffset: "-2px" };
+    return undefined;
+  };
   const sectionStyleFor = (key: string) => {
     const s = theme.layout.sectionStyles[key];
     const padVar = padScaleToVar(s?.paddingScale);
     const headingVar = headingScaleToVar(s?.headingScale);
     const minH = minHeightToVal(s?.minHeight);
+    const outline = outlineToVal(s?.outline);
     return {
       bg: s?.bgColor ?? undefined,
       text: s?.textColor ?? undefined,
@@ -100,7 +107,8 @@ export default async function StoreHomePage({
       divider: s?.divider ?? "none",
       headingOverride: headingVar,
       minHeightOverride: minH,
-    } as { bg: string | undefined; text: string | undefined; align: "left" | "center" | "right"; padOverride: number | undefined; divider: "none" | "top" | "bottom" | "both"; headingOverride: number | undefined; minHeightOverride: string | undefined };
+      outlineOverride: outline,
+    } as { bg: string | undefined; text: string | undefined; align: "left" | "center" | "right"; padOverride: number | undefined; divider: "none" | "top" | "bottom" | "both"; headingOverride: number | undefined; minHeightOverride: string | undefined; outlineOverride: { outline: string; outlineOffset: string } | undefined };
   };
 
   // 把背景色 + 文字色 + padOverride + 分隔線 + 標題字級合併成 section 用的 inline style
@@ -109,7 +117,7 @@ export default async function StoreHomePage({
   // 讓 muted 文字（副題 / eyebrow）也跟著走，避免淺底深字 section 突然有深底白字時 muted 還是深的看不見
   // 標題字級 --store-heading-scale 由 layout.tsx 的 attribute selector 套到 h2 上（em 相對倍率）
   const mergeSectionStyle = (
-    s: { bg: string | undefined; text: string | undefined; padOverride: number | undefined; divider: "none" | "top" | "bottom" | "both"; headingOverride: number | undefined; minHeightOverride: string | undefined },
+    s: { bg: string | undefined; text: string | undefined; padOverride: number | undefined; divider: "none" | "top" | "bottom" | "both"; headingOverride: number | undefined; minHeightOverride: string | undefined; outlineOverride: { outline: string; outlineOffset: string } | undefined },
     fallbackBg?: string
   ): React.CSSProperties | undefined => {
     const out: Record<string, unknown> = {};
@@ -128,6 +136,10 @@ export default async function StoreHomePage({
     }
     if (s.divider === "bottom" || s.divider === "both") {
       out.borderBottom = `1px solid ${theme.border}`;
+    }
+    if (s.outlineOverride) {
+      out.outline = s.outlineOverride.outline;
+      out.outlineOffset = s.outlineOverride.outlineOffset;
     }
     return Object.keys(out).length > 0 ? (out as React.CSSProperties) : undefined;
   };
