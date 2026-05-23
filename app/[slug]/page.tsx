@@ -125,6 +125,14 @@ export default async function StoreHomePage({
     if (s === "relaxed") return 2.0;
     return undefined;
   };
+  // 淡化：muted 0.85 / faint 0.7 / default 不套
+  // 純 inline opacity，整段 section 都變淡（含 children）
+  // 適合 partners / stats / faq 這種次要 section 變灰階感，襯托 hero / featured 跳出
+  const opacityToVal = (s: "default" | "muted" | "faint" | undefined) => {
+    if (s === "muted") return 0.85;
+    if (s === "faint") return 0.7;
+    return undefined;
+  };
   const sectionStyleFor = (key: string) => {
     const s = theme.layout.sectionStyles[key];
     const padVar = padScaleToVar(s?.paddingScale);
@@ -136,6 +144,7 @@ export default async function StoreHomePage({
     const font = fontFamilyToVal(s?.fontFamily);
     const letterSpacing = letterSpacingToVal(s?.letterSpacing);
     const lineHeight = lineHeightToVal(s?.lineHeight);
+    const opacity = opacityToVal(s?.opacity);
     // 進場動畫：只回 "fade" / "slide-up" 給 wrapper 設 data-anim attr；
     // 實際 CSS keyframes + scroll-timeline 在 layout.tsx 注入；edit mode 內 disable
     const entranceVal: "fade" | "slide-up" | undefined =
@@ -154,8 +163,9 @@ export default async function StoreHomePage({
       fontFamilyOverride: font,
       letterSpacingOverride: letterSpacing,
       lineHeightOverride: lineHeight,
+      opacityOverride: opacity,
       entranceVal,
-    } as { bg: string | undefined; text: string | undefined; align: "left" | "center" | "right"; padOverride: number | undefined; divider: "none" | "top" | "bottom" | "both"; headingOverride: number | undefined; minHeightOverride: string | undefined; outlineOverride: { outline: string; outlineOffset: string } | undefined; shadowOverride: string | undefined; borderRadiusOverride: string | undefined; fontFamilyOverride: string | undefined; letterSpacingOverride: string | undefined; lineHeightOverride: number | undefined; entranceVal: "fade" | "slide-up" | undefined };
+    } as { bg: string | undefined; text: string | undefined; align: "left" | "center" | "right"; padOverride: number | undefined; divider: "none" | "top" | "bottom" | "both"; headingOverride: number | undefined; minHeightOverride: string | undefined; outlineOverride: { outline: string; outlineOffset: string } | undefined; shadowOverride: string | undefined; borderRadiusOverride: string | undefined; fontFamilyOverride: string | undefined; letterSpacingOverride: string | undefined; lineHeightOverride: number | undefined; opacityOverride: number | undefined; entranceVal: "fade" | "slide-up" | undefined };
   };
 
   // 把背景色 + 文字色 + padOverride + 分隔線 + 標題字級合併成 section 用的 inline style
@@ -164,7 +174,7 @@ export default async function StoreHomePage({
   // 讓 muted 文字（副題 / eyebrow）也跟著走，避免淺底深字 section 突然有深底白字時 muted 還是深的看不見
   // 標題字級 --store-heading-scale 由 layout.tsx 的 attribute selector 套到 h2 上（em 相對倍率）
   const mergeSectionStyle = (
-    s: { bg: string | undefined; text: string | undefined; padOverride: number | undefined; divider: "none" | "top" | "bottom" | "both"; headingOverride: number | undefined; minHeightOverride: string | undefined; outlineOverride: { outline: string; outlineOffset: string } | undefined; shadowOverride: string | undefined; borderRadiusOverride: string | undefined; fontFamilyOverride: string | undefined; letterSpacingOverride: string | undefined; lineHeightOverride: number | undefined },
+    s: { bg: string | undefined; text: string | undefined; padOverride: number | undefined; divider: "none" | "top" | "bottom" | "both"; headingOverride: number | undefined; minHeightOverride: string | undefined; outlineOverride: { outline: string; outlineOffset: string } | undefined; shadowOverride: string | undefined; borderRadiusOverride: string | undefined; fontFamilyOverride: string | undefined; letterSpacingOverride: string | undefined; lineHeightOverride: number | undefined; opacityOverride: number | undefined },
     fallbackBg?: string
   ): React.CSSProperties | undefined => {
     const out: Record<string, unknown> = {};
@@ -202,6 +212,9 @@ export default async function StoreHomePage({
     }
     if (s.lineHeightOverride !== undefined) {
       out.lineHeight = s.lineHeightOverride;
+    }
+    if (s.opacityOverride !== undefined) {
+      out.opacity = s.opacityOverride;
     }
     return Object.keys(out).length > 0 ? (out as React.CSSProperties) : undefined;
   };

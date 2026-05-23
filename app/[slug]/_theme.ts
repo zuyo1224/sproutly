@@ -194,6 +194,7 @@ export interface StoreTheme {
       fontFamily?: "default" | "serif" | "sans"; // 該 section 字體（default 跟全網站 / serif 思源宋體 / sans 思源黑體），讓某段獨立切字體做雜誌 / 現代風對比
       letterSpacing?: "tight" | "normal" | "wide"; // 該 section 字距（tight -0.02em / normal 預設 / wide 0.1em），雜誌大標常見 wide
       lineHeight?: "tight" | "normal" | "relaxed"; // 該 section 行高（tight 1.4 緊湊 / normal 預設不套 / relaxed 2.0 舒展），給內文段落獨立調整呼吸感
+      opacity?: "default" | "muted" | "faint"; // 該 section 淡化（default 不套 / muted 0.85 / faint 0.7），讓 partners / stats / faq 次要 section 變淡，襯托 hero / featured 跳出
     }>;
   };
 }
@@ -547,12 +548,12 @@ function resolveLayout(raw: unknown): StoreTheme["layout"] {
     })(),
     sectionStyles: (() => {
       const raw = l.sectionStyles;
-      const result: Record<string, { headingAlign?: "left" | "center" | "right"; bgColor?: string | null; textColor?: string | null; paddingScale?: "compact" | "default" | "spacious"; divider?: "none" | "top" | "bottom" | "both"; headingScale?: "small" | "default" | "large"; minHeight?: "auto" | "tall" | "fullscreen"; outline?: "none" | "subtle" | "strong"; shadow?: "none" | "soft" | "deep"; borderRadius?: "none" | "soft" | "strong"; entrance?: "none" | "fade" | "slide-up"; fontFamily?: "default" | "serif" | "sans"; letterSpacing?: "tight" | "normal" | "wide"; lineHeight?: "tight" | "normal" | "relaxed" }> = {};
+      const result: Record<string, { headingAlign?: "left" | "center" | "right"; bgColor?: string | null; textColor?: string | null; paddingScale?: "compact" | "default" | "spacious"; divider?: "none" | "top" | "bottom" | "both"; headingScale?: "small" | "default" | "large"; minHeight?: "auto" | "tall" | "fullscreen"; outline?: "none" | "subtle" | "strong"; shadow?: "none" | "soft" | "deep"; borderRadius?: "none" | "soft" | "strong"; entrance?: "none" | "fade" | "slide-up"; fontFamily?: "default" | "serif" | "sans"; letterSpacing?: "tight" | "normal" | "wide"; lineHeight?: "tight" | "normal" | "relaxed"; opacity?: "default" | "muted" | "faint" }> = {};
       if (raw && typeof raw === "object" && !Array.isArray(raw)) {
         for (const [k, v] of Object.entries(raw as Record<string, unknown>)) {
           if (!v || typeof v !== "object" || typeof k !== "string") continue;
           const obj = v as Record<string, unknown>;
-          const entry: { headingAlign?: "left" | "center" | "right"; bgColor?: string | null; textColor?: string | null; paddingScale?: "compact" | "default" | "spacious"; divider?: "none" | "top" | "bottom" | "both"; headingScale?: "small" | "default" | "large"; minHeight?: "auto" | "tall" | "fullscreen"; outline?: "none" | "subtle" | "strong"; shadow?: "none" | "soft" | "deep"; borderRadius?: "none" | "soft" | "strong"; entrance?: "none" | "fade" | "slide-up"; fontFamily?: "default" | "serif" | "sans"; letterSpacing?: "tight" | "normal" | "wide"; lineHeight?: "tight" | "normal" | "relaxed" } = {};
+          const entry: { headingAlign?: "left" | "center" | "right"; bgColor?: string | null; textColor?: string | null; paddingScale?: "compact" | "default" | "spacious"; divider?: "none" | "top" | "bottom" | "both"; headingScale?: "small" | "default" | "large"; minHeight?: "auto" | "tall" | "fullscreen"; outline?: "none" | "subtle" | "strong"; shadow?: "none" | "soft" | "deep"; borderRadius?: "none" | "soft" | "strong"; entrance?: "none" | "fade" | "slide-up"; fontFamily?: "default" | "serif" | "sans"; letterSpacing?: "tight" | "normal" | "wide"; lineHeight?: "tight" | "normal" | "relaxed"; opacity?: "default" | "muted" | "faint" } = {};
           if (obj.headingAlign === "left" || obj.headingAlign === "center" || obj.headingAlign === "right") {
             entry.headingAlign = obj.headingAlign;
           }
@@ -599,7 +600,10 @@ function resolveLayout(raw: unknown): StoreTheme["layout"] {
           if (obj.lineHeight === "tight" || obj.lineHeight === "normal" || obj.lineHeight === "relaxed") {
             entry.lineHeight = obj.lineHeight;
           }
-          if (entry.headingAlign !== undefined || entry.bgColor !== undefined || entry.textColor !== undefined || entry.paddingScale !== undefined || entry.divider !== undefined || entry.headingScale !== undefined || entry.minHeight !== undefined || entry.outline !== undefined || entry.shadow !== undefined || entry.borderRadius !== undefined || entry.entrance !== undefined || entry.fontFamily !== undefined || entry.letterSpacing !== undefined || entry.lineHeight !== undefined) {
+          if (obj.opacity === "default" || obj.opacity === "muted" || obj.opacity === "faint") {
+            entry.opacity = obj.opacity;
+          }
+          if (entry.headingAlign !== undefined || entry.bgColor !== undefined || entry.textColor !== undefined || entry.paddingScale !== undefined || entry.divider !== undefined || entry.headingScale !== undefined || entry.minHeight !== undefined || entry.outline !== undefined || entry.shadow !== undefined || entry.borderRadius !== undefined || entry.entrance !== undefined || entry.fontFamily !== undefined || entry.letterSpacing !== undefined || entry.lineHeight !== undefined || entry.opacity !== undefined) {
             result[k] = entry;
           }
         }
