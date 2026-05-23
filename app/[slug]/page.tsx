@@ -84,10 +84,14 @@ export default async function StoreHomePage({
     s === "compact" ? 0.6 : s === "spacious" ? 1.4 : s === "default" ? 1 : undefined;
   const headingScaleToVar = (s: "small" | "default" | "large" | undefined) =>
     s === "small" ? 0.85 : s === "large" ? 1.25 : s === "default" ? 1 : undefined;
+  // 最小高度：auto 不設定 / tall 80vh / fullscreen 100vh
+  const minHeightToVal = (s: "auto" | "tall" | "fullscreen" | undefined) =>
+    s === "tall" ? "80vh" : s === "fullscreen" ? "100vh" : undefined;
   const sectionStyleFor = (key: string) => {
     const s = theme.layout.sectionStyles[key];
     const padVar = padScaleToVar(s?.paddingScale);
     const headingVar = headingScaleToVar(s?.headingScale);
+    const minH = minHeightToVal(s?.minHeight);
     return {
       bg: s?.bgColor ?? undefined,
       text: s?.textColor ?? undefined,
@@ -95,7 +99,8 @@ export default async function StoreHomePage({
       padOverride: padVar,
       divider: s?.divider ?? "none",
       headingOverride: headingVar,
-    } as { bg: string | undefined; text: string | undefined; align: "left" | "center" | "right"; padOverride: number | undefined; divider: "none" | "top" | "bottom" | "both"; headingOverride: number | undefined };
+      minHeightOverride: minH,
+    } as { bg: string | undefined; text: string | undefined; align: "left" | "center" | "right"; padOverride: number | undefined; divider: "none" | "top" | "bottom" | "both"; headingOverride: number | undefined; minHeightOverride: string | undefined };
   };
 
   // 把背景色 + 文字色 + padOverride + 分隔線 + 標題字級合併成 section 用的 inline style
@@ -104,7 +109,7 @@ export default async function StoreHomePage({
   // 讓 muted 文字（副題 / eyebrow）也跟著走，避免淺底深字 section 突然有深底白字時 muted 還是深的看不見
   // 標題字級 --store-heading-scale 由 layout.tsx 的 attribute selector 套到 h2 上（em 相對倍率）
   const mergeSectionStyle = (
-    s: { bg: string | undefined; text: string | undefined; padOverride: number | undefined; divider: "none" | "top" | "bottom" | "both"; headingOverride: number | undefined },
+    s: { bg: string | undefined; text: string | undefined; padOverride: number | undefined; divider: "none" | "top" | "bottom" | "both"; headingOverride: number | undefined; minHeightOverride: string | undefined },
     fallbackBg?: string
   ): React.CSSProperties | undefined => {
     const out: Record<string, unknown> = {};
@@ -117,6 +122,7 @@ export default async function StoreHomePage({
     }
     if (s.padOverride !== undefined) out["--store-section-pad"] = String(s.padOverride);
     if (s.headingOverride !== undefined) out["--store-heading-scale"] = String(s.headingOverride);
+    if (s.minHeightOverride !== undefined) out.minHeight = s.minHeightOverride;
     if (s.divider === "top" || s.divider === "both") {
       out.borderTop = `1px solid ${theme.border}`;
     }

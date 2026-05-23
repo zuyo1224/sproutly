@@ -90,6 +90,7 @@ type EditorTheme = {
       paddingScale?: "compact" | "default" | "spacious";
       divider?: "none" | "top" | "bottom" | "both";
       headingScale?: "small" | "default" | "large";
+      minHeight?: "auto" | "tall" | "fullscreen";
     }>;
   };
   homepage: {
@@ -1790,8 +1791,9 @@ export function EditorWorkspace({
           const pad = cur.paddingScale ?? null;
           const divider = cur.divider ?? "none";
           const headingScale = cur.headingScale ?? null;
-          function patch(p: { headingAlign?: "left" | "center" | "right"; bgColor?: string | null; textColor?: string | null; paddingScale?: "compact" | "default" | "spacious" | null; divider?: "none" | "top" | "bottom" | "both"; headingScale?: "small" | "default" | "large" | null }) {
-            const next: { headingAlign?: "left" | "center" | "right"; bgColor?: string | null; textColor?: string | null; paddingScale?: "compact" | "default" | "spacious"; divider?: "none" | "top" | "bottom" | "both"; headingScale?: "small" | "default" | "large" } = { ...cur };
+          const minHeight = cur.minHeight ?? null;
+          function patch(p: { headingAlign?: "left" | "center" | "right"; bgColor?: string | null; textColor?: string | null; paddingScale?: "compact" | "default" | "spacious" | null; divider?: "none" | "top" | "bottom" | "both"; headingScale?: "small" | "default" | "large" | null; minHeight?: "auto" | "tall" | "fullscreen" | null }) {
+            const next: { headingAlign?: "left" | "center" | "right"; bgColor?: string | null; textColor?: string | null; paddingScale?: "compact" | "default" | "spacious"; divider?: "none" | "top" | "bottom" | "both"; headingScale?: "small" | "default" | "large"; minHeight?: "auto" | "tall" | "fullscreen" } = { ...cur };
             if (p.headingAlign !== undefined) next.headingAlign = p.headingAlign;
             if (p.bgColor !== undefined) next.bgColor = p.bgColor;
             if (p.textColor !== undefined) next.textColor = p.textColor;
@@ -1803,6 +1805,8 @@ export function EditorWorkspace({
             }
             if (p.headingScale === null) delete next.headingScale;
             else if (p.headingScale !== undefined) next.headingScale = p.headingScale;
+            if (p.minHeight === null) delete next.minHeight;
+            else if (p.minHeight !== undefined) next.minHeight = p.minHeight;
             updateLayout({
               sectionStyles: {
                 ...theme.layout.sectionStyles,
@@ -1976,6 +1980,40 @@ export function EditorWorkspace({
                     <button
                       type="button"
                       onClick={() => patch({ headingScale: null })}
+                      className="text-stone-500 hover:text-stone-800 underline"
+                    >
+                      清除
+                    </button>
+                  )}
+                </div>
+              </Field>
+              <Field label="最小高度">
+                <div className="grid grid-cols-3 gap-1.5">
+                  {([
+                    { v: "auto", label: "普通" },
+                    { v: "tall", label: "高" },
+                    { v: "fullscreen", label: "滿屏" },
+                  ] as const).map((opt) => (
+                    <button
+                      key={opt.v}
+                      type="button"
+                      onClick={() => patch({ minHeight: opt.v })}
+                      className={`rounded-lg border py-2 text-xs transition ${
+                        minHeight === opt.v
+                          ? "border-emerald-500 bg-emerald-50 text-emerald-900"
+                          : "border-stone-200 text-stone-600 hover:border-stone-400"
+                      }`}
+                    >
+                      {opt.label}
+                    </button>
+                  ))}
+                </div>
+                <div className="mt-1.5 flex items-center justify-between text-[11px] text-stone-500">
+                  <span>普通 跟著內容 · 高 80vh · 滿屏 100vh</span>
+                  {minHeight && (
+                    <button
+                      type="button"
+                      onClick={() => patch({ minHeight: null })}
                       className="text-stone-500 hover:text-stone-800 underline"
                     >
                       清除
