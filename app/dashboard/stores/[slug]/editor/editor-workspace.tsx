@@ -1868,8 +1868,29 @@ export function EditorWorkspace({
               },
             });
           }
+          const hasCustom = Object.keys(cur).length > 0;
+          function resetAll() {
+            const nextStyles = { ...theme.layout.sectionStyles };
+            delete nextStyles[selectedSection!];
+            updateLayout({ sectionStyles: nextStyles });
+          }
           return (
             <PanelSection title="區段樣式">
+              {hasCustom && (
+                <div className="-mt-2 flex items-center justify-between gap-2 rounded-lg border border-stone-200 bg-stone-50 px-3 py-2">
+                  <span className="text-[11px] text-stone-600 leading-relaxed">
+                    這段已自訂 {Object.keys(cur).length} 項樣式
+                  </span>
+                  <button
+                    type="button"
+                    onClick={resetAll}
+                    className="shrink-0 text-[11px] font-medium text-stone-700 underline-offset-2 hover:underline hover:text-stone-900 transition"
+                    title="把這段所有樣式清回預設（可用 ⌘Z 復原）"
+                  >
+                    全部重置
+                  </button>
+                </div>
+              )}
               <Field label="標題對齊">
                 <div className="grid grid-cols-3 gap-1.5">
                   {([
