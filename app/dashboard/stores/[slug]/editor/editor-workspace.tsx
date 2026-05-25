@@ -166,6 +166,12 @@ export function EditorWorkspace({
   const [popover, setPopover] = useState<SelectedTab | null>(null);
   // 鍵盤快捷鍵說明浮層（按 ? 切換、Esc 關）
   const [showShortcuts, setShowShortcuts] = useState(false);
+  // 區段樣式 clipboard（session 內 user 從某段複製、貼到別段）
+  // 不持久化（reload 後清空）— 是工具不是狀態
+  const [styleClipboard, setStyleClipboard] = useState<{
+    source: SectionKey;
+    fields: EditorTheme["layout"]["sectionStyles"][string];
+  } | null>(null);
   // 修 dnd-kit hydration error：useSortable 用 counter 生 ID，SSR / client 不一致
   // → 只在 client mount 後才 render DndContext / SortableContext
   const [mounted, setMounted] = useState(false);
@@ -1936,6 +1942,24 @@ export function EditorWorkspace({
               },
             });
           }
+          function copyStyle() {
+            setStyleClipboard({ source: selectedSection!, fields: { ...cur } });
+          }
+          function pasteStyle() {
+            if (!styleClipboard) return;
+            const fields: typeof cur = { ...styleClipboard.fields };
+            (Object.keys(fields) as Array<keyof typeof fields>).forEach((k) => {
+              if (fields[k] === undefined) delete fields[k];
+            });
+            updateLayout({
+              sectionStyles: {
+                ...theme.layout.sectionStyles,
+                [selectedSection!]: fields,
+              },
+            });
+          }
+          const canPaste = styleClipboard !== null && styleClipboard.source !== selectedSection;
+          const clipboardCount = styleClipboard ? Object.keys(styleClipboard.fields).length : 0;
           return (
             <PanelSection title="區段樣式">
               {hasCustom && (
@@ -1953,6 +1977,54 @@ export function EditorWorkspace({
                   </button>
                 </div>
               )}
+              <Field label="樣式複製">
+                <p className="-mt-1 mb-1.5 text-[11px] text-stone-500 leading-snug">
+                  這段調好之後，可貼到別段一鍵套同樣樣式
+                </p>
+                <div className="grid grid-cols-2 gap-1.5">
+                  <button
+                    type="button"
+                    onClick={copyStyle}
+                    disabled={!hasCustom}
+                    className={`rounded-lg border px-2 py-2 text-xs transition text-left leading-tight ${
+                      hasCustom
+                        ? "border-stone-200 text-stone-700 hover:border-emerald-500 hover:bg-emerald-50 hover:text-emerald-900"
+                        : "border-stone-100 text-stone-300 cursor-not-allowed"
+                    }`}
+                    title={
+                      hasCustom
+                        ? "複製這段所有樣式（含背景 / 字距 / 邊框等）"
+                        : "這段沒有自訂樣式，沒東西可複製"
+                    }
+                  >
+                    複製這段
+                  </button>
+                  <button
+                    type="button"
+                    onClick={pasteStyle}
+                    disabled={!canPaste}
+                    className={`rounded-lg border px-2 py-2 text-xs transition text-left leading-tight ${
+                      canPaste
+                        ? "border-stone-200 text-stone-700 hover:border-emerald-500 hover:bg-emerald-50 hover:text-emerald-900"
+                        : "border-stone-100 text-stone-300 cursor-not-allowed"
+                    }`}
+                    title={
+                      !styleClipboard
+                        ? "還沒複製樣式 — 先複製一段才能貼"
+                        : styleClipboard.source === selectedSection
+                        ? "你正在這段，要切到別段才能貼"
+                        : `把 ${sectionLabels[styleClipboard.source]} 的 ${clipboardCount} 項樣式貼過來（可⌘Z 復原）`
+                    }
+                  >
+                    貼上樣式
+                  </button>
+                </div>
+                {styleClipboard && (
+                  <p className="mt-1.5 text-[11px] text-stone-500 leading-snug">
+                    已複製：{sectionLabels[styleClipboard.source]} 的 {clipboardCount} 項樣式
+                  </p>
+                )}
+              </Field>
               <Field label="快速風格">
                 <p className="-mt-1 mb-1.5 text-[11px] text-stone-500 leading-snug">
                   一鍵套樣式組合，套完還能微調個別控制
