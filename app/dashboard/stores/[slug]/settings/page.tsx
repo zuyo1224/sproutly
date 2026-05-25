@@ -72,45 +72,111 @@ export default async function StoreSettingsPage({
   return (
     <div className="grid grid-cols-1 lg:grid-cols-[1fr_360px] gap-6">
       <div>
-      <h2 className="text-xl font-bold text-emerald-950 mb-6">店面設定</h2>
+      <div className="mb-8">
+        <p
+          className="text-emerald-700/70"
+          style={{
+            fontSize: "0.6875rem",
+            fontWeight: 500,
+            textTransform: "uppercase",
+            letterSpacing: "0.4em",
+          }}
+        >
+          Settings · 店面設定
+        </p>
+        <span className="block mt-3 h-px w-12 bg-emerald-600/60" />
+        <h2
+          className="mt-4 text-3xl sm:text-4xl font-medium text-emerald-950 tracking-tight"
+          style={{ lineHeight: 1.15 }}
+        >
+          店面設定
+        </h2>
+        <p
+          className="mt-3 text-emerald-900/65"
+          style={{ fontSize: "0.9375rem", lineHeight: 1.7 }}
+        >
+          基本資訊、聯絡、視覺風格、首頁文案都在這裡。改完按最下面的儲存
+        </p>
+      </div>
 
       {error && (
-        <div className="mb-6 rounded-xl bg-red-50 border border-red-100 p-3 text-sm text-red-700">
-          {error}
+        <div
+          className="mb-6 rounded-2xl bg-red-50/80 p-5 border border-red-200/70"
+          style={{ boxShadow: "0 1px 2px rgba(127,29,29,0.04)" }}
+        >
+          <p
+            className="text-red-700"
+            style={{
+              fontSize: "0.6875rem",
+              fontWeight: 500,
+              textTransform: "uppercase",
+              letterSpacing: "0.4em",
+            }}
+          >
+            Notice · 提醒
+          </p>
+          <p className="mt-2 text-sm text-red-800" style={{ lineHeight: 1.7 }}>
+            {error}
+          </p>
         </div>
       )}
       {saved && (
-        <div className="mb-6 rounded-2xl bg-emerald-100 border-2 border-emerald-300 p-5 flex items-center gap-3 shadow-lg shadow-emerald-700/10 animate-in fade-in slide-in-from-top-2">
-          <div className="w-10 h-10 rounded-full bg-emerald-600 flex items-center justify-center flex-shrink-0">
-            <span className="text-white text-lg">✓</span>
-          </div>
-          <div className="flex-1">
-            <p className="font-semibold text-emerald-900">設定已儲存</p>
-            <p className="text-sm text-emerald-800/80 mt-0.5">
-              你的店面資訊已更新
-              {store.is_published && (
-                <>
-                  。客人現在能在{" "}
-                  <Link
-                    href={`/${store.slug}`}
-                    target="_blank"
-                    className="underline hover:text-emerald-900"
-                  >
-                    sproutly.app/{store.slug}
-                  </Link>{" "}
-                  看到
-                </>
-              )}
-            </p>
-          </div>
+        <div
+          className="mb-6 rounded-2xl bg-emerald-50/80 p-5 border border-emerald-200/70 animate-in fade-in slide-in-from-top-2"
+          style={{
+            boxShadow:
+              "0 1px 2px rgba(6,78,59,0.04), 0 8px 24px rgba(6,78,59,0.06)",
+          }}
+        >
+          <p
+            className="text-emerald-700/80"
+            style={{
+              fontSize: "0.6875rem",
+              fontWeight: 500,
+              textTransform: "uppercase",
+              letterSpacing: "0.4em",
+            }}
+          >
+            Saved · 已儲存
+          </p>
+          <p
+            className="mt-2 text-emerald-900/75"
+            style={{ fontSize: "0.9375rem", lineHeight: 1.7 }}
+          >
+            你的店面資訊已更新
+            {store.is_published && (
+              <>
+                。客人現在能在{" "}
+                <Link
+                  href={`/${store.slug}`}
+                  target="_blank"
+                  className="underline hover:text-emerald-900"
+                >
+                  sproutly.app/{store.slug}
+                </Link>{" "}
+                看到
+              </>
+            )}
+          </p>
         </div>
       )}
 
       <form id="store-settings-form" action={updateBound} className="space-y-6">
-        <section className="bg-white rounded-2xl p-6 shadow-lg shadow-emerald-700/5">
-          <h3 className="text-sm font-semibold text-emerald-900 mb-4">
-            發布狀態
-          </h3>
+        <section className="bg-white rounded-2xl p-6 sm:p-7 shadow-lg shadow-emerald-700/5">
+          <div className="mb-5">
+            <p
+              className="text-emerald-700/70"
+              style={{
+                fontSize: "0.6875rem",
+                fontWeight: 500,
+                textTransform: "uppercase",
+                letterSpacing: "0.4em",
+              }}
+            >
+              Status · 發布狀態
+            </p>
+            <span className="block mt-3 h-px w-10 bg-emerald-600/60" />
+          </div>
           <label className="flex items-start gap-3 cursor-pointer">
             <input
               type="checkbox"
@@ -129,8 +195,21 @@ export default async function StoreSettingsPage({
           </label>
         </section>
 
-        <section className="bg-white rounded-2xl p-6 shadow-lg shadow-emerald-700/5 space-y-5">
-          <h3 className="text-sm font-semibold text-emerald-900">基本資訊</h3>
+        <section className="bg-white rounded-2xl p-6 sm:p-7 shadow-lg shadow-emerald-700/5 space-y-5">
+          <div>
+            <p
+              className="text-emerald-700/70"
+              style={{
+                fontSize: "0.6875rem",
+                fontWeight: 500,
+                textTransform: "uppercase",
+                letterSpacing: "0.4em",
+              }}
+            >
+              About · 基本資訊
+            </p>
+            <span className="block mt-3 h-px w-10 bg-emerald-600/60" />
+          </div>
 
           <div>
             <label className="block text-sm font-medium text-emerald-900 mb-1.5">
@@ -158,8 +237,21 @@ export default async function StoreSettingsPage({
           </div>
         </section>
 
-        <section className="bg-white rounded-2xl p-6 shadow-lg shadow-emerald-700/5 space-y-5">
-          <h3 className="text-sm font-semibold text-emerald-900">聯絡資訊</h3>
+        <section className="bg-white rounded-2xl p-6 sm:p-7 shadow-lg shadow-emerald-700/5 space-y-5">
+          <div>
+            <p
+              className="text-emerald-700/70"
+              style={{
+                fontSize: "0.6875rem",
+                fontWeight: 500,
+                textTransform: "uppercase",
+                letterSpacing: "0.4em",
+              }}
+            >
+              Contact · 聯絡資訊
+            </p>
+            <span className="block mt-3 h-px w-10 bg-emerald-600/60" />
+          </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
             <div>
@@ -202,8 +294,21 @@ export default async function StoreSettingsPage({
           </div>
         </section>
 
-        <section className="bg-white rounded-2xl p-6 shadow-lg shadow-emerald-700/5 space-y-5">
-          <h3 className="text-sm font-semibold text-emerald-900">營業資訊</h3>
+        <section className="bg-white rounded-2xl p-6 sm:p-7 shadow-lg shadow-emerald-700/5 space-y-5">
+          <div>
+            <p
+              className="text-emerald-700/70"
+              style={{
+                fontSize: "0.6875rem",
+                fontWeight: 500,
+                textTransform: "uppercase",
+                letterSpacing: "0.4em",
+              }}
+            >
+              Hours · 營業資訊
+            </p>
+            <span className="block mt-3 h-px w-10 bg-emerald-600/60" />
+          </div>
 
           <div>
             <label className="block text-sm font-medium text-emerald-900 mb-1.5">
@@ -251,10 +356,21 @@ A: 可以，地點為台北車站。`}</pre>
           </div>
         </section>
 
-        <section className="bg-white rounded-2xl p-6 shadow-lg shadow-emerald-700/5 space-y-6">
+        <section className="bg-white rounded-2xl p-6 sm:p-7 shadow-lg shadow-emerald-700/5 space-y-6">
           <div>
-            <h3 className="text-sm font-semibold text-emerald-900">視覺風格</h3>
-            <p className="text-xs text-emerald-900/50 mt-1">
+            <p
+              className="text-emerald-700/70"
+              style={{
+                fontSize: "0.6875rem",
+                fontWeight: 500,
+                textTransform: "uppercase",
+                letterSpacing: "0.4em",
+              }}
+            >
+              Style · 視覺風格
+            </p>
+            <span className="block mt-3 h-px w-10 bg-emerald-600/60" />
+            <p className="text-xs text-emerald-900/50 mt-3" style={{ lineHeight: 1.7 }}>
               改完按最下面的「儲存設定」，公開店面立刻變樣
             </p>
           </div>
@@ -499,12 +615,21 @@ A: 可以，地點為台北車站。`}</pre>
           </div>
         </section>
 
-        <section className="bg-white rounded-2xl p-6 shadow-lg shadow-emerald-700/5 space-y-6">
+        <section className="bg-white rounded-2xl p-6 sm:p-7 shadow-lg shadow-emerald-700/5 space-y-6">
           <div>
-            <h3 className="text-sm font-semibold text-emerald-900">
-              首頁文案
-            </h3>
-            <p className="text-xs text-emerald-900/50 mt-1">
+            <p
+              className="text-emerald-700/70"
+              style={{
+                fontSize: "0.6875rem",
+                fontWeight: 500,
+                textTransform: "uppercase",
+                letterSpacing: "0.4em",
+              }}
+            >
+              Homepage · 首頁文案
+            </p>
+            <span className="block mt-3 h-px w-10 bg-emerald-600/60" />
+            <p className="text-xs text-emerald-900/50 mt-3" style={{ lineHeight: 1.7 }}>
               選物提案標題、Promise 承諾、來店標題、動畫開關。留空就用預設文字
             </p>
           </div>
@@ -614,12 +739,21 @@ A: 可以，地點為台北車站。`}</pre>
         </section>
 
         {/* ===== 版面設計（hero variant + section order）===== */}
-        <section className="bg-white rounded-2xl p-6 shadow-lg shadow-emerald-700/5 space-y-6">
+        <section className="bg-white rounded-2xl p-6 sm:p-7 shadow-lg shadow-emerald-700/5 space-y-6">
           <div>
-            <h2 className="text-lg font-semibold text-emerald-950 mb-1">
-              版面設計
-            </h2>
-            <p className="text-sm text-emerald-900/55">
+            <p
+              className="text-emerald-700/70"
+              style={{
+                fontSize: "0.6875rem",
+                fontWeight: 500,
+                textTransform: "uppercase",
+                letterSpacing: "0.4em",
+              }}
+            >
+              Layout · 版面設計
+            </p>
+            <span className="block mt-3 h-px w-10 bg-emerald-600/60" />
+            <p className="text-xs text-emerald-900/50 mt-3" style={{ lineHeight: 1.7 }}>
               4 種首屏 layout 變體 + 拖曳調整首頁 section 順序
             </p>
           </div>
@@ -734,16 +868,16 @@ A: 可以，地點為台北車站。`}</pre>
           </div>
         </section>
 
-        <div className="flex gap-3">
+        <div className="pt-2 flex gap-3">
           <SubmitButton
             pendingText="儲存中..."
-            className="flex-1 rounded-full bg-emerald-700 px-8 py-3.5 text-white font-medium hover:bg-emerald-800 shadow-lg shadow-emerald-700/20"
+            className="flex-1 rounded-full bg-emerald-700 px-8 py-3.5 text-white font-medium hover:bg-emerald-800 shadow-lg shadow-emerald-700/20 tracking-tight"
           >
             儲存設定
           </SubmitButton>
           <Link
             href={`/dashboard/stores/${slug}`}
-            className="rounded-full border-2 border-emerald-100 bg-white px-6 py-3.5 text-emerald-900/70 font-medium hover:bg-emerald-50 transition"
+            className="rounded-full border border-emerald-200 bg-white px-6 py-3.5 text-emerald-800 font-medium hover:bg-emerald-50 transition tracking-tight"
           >
             取消
           </Link>
