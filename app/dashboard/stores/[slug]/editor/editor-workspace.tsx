@@ -1874,6 +1874,68 @@ export function EditorWorkspace({
             delete nextStyles[selectedSection!];
             updateLayout({ sectionStyles: nextStyles });
           }
+          const presets: { key: string; label: string; hint: string; fields: typeof cur }[] = [
+            {
+              key: "editorial",
+              label: "雜誌風",
+              hint: "宋體 + 大標 + 寬呼吸（適合 promise / journal）",
+              fields: {
+                fontFamily: "serif",
+                headingScale: "large",
+                paddingScale: "spacious",
+                letterSpacing: "wide",
+                lineHeight: "relaxed",
+                divider: "top",
+              },
+            },
+            {
+              key: "modern",
+              label: "現代簡潔",
+              hint: "黑體 + 緊字距 + 微圓角（Stripe / Linear 風）",
+              fields: {
+                fontFamily: "sans",
+                paddingScale: "default",
+                letterSpacing: "tight",
+                borderRadius: "soft",
+              },
+            },
+            {
+              key: "dramatic",
+              label: "戲劇感",
+              hint: "滿屏 + 大標 + 深陰影 + 上滑進場",
+              fields: {
+                minHeight: "fullscreen",
+                headingScale: "large",
+                paddingScale: "spacious",
+                shadow: "deep",
+                entrance: "slide-up",
+              },
+            },
+            {
+              key: "floating",
+              label: "卡片浮起",
+              hint: "淺底 + 邊框 + 圓角 + 陰影（適合 testimonial）",
+              fields: {
+                bgColor: "#fafaf9",
+                shadow: "soft",
+                borderRadius: "soft",
+                outline: "subtle",
+                paddingScale: "default",
+              },
+            },
+          ];
+          function applyPreset(fields: typeof cur) {
+            const merged: typeof cur = { ...cur, ...fields };
+            (Object.keys(merged) as Array<keyof typeof merged>).forEach((k) => {
+              if (merged[k] === undefined) delete merged[k];
+            });
+            updateLayout({
+              sectionStyles: {
+                ...theme.layout.sectionStyles,
+                [selectedSection!]: merged,
+              },
+            });
+          }
           return (
             <PanelSection title="區段樣式">
               {hasCustom && (
@@ -1891,6 +1953,24 @@ export function EditorWorkspace({
                   </button>
                 </div>
               )}
+              <Field label="快速風格">
+                <p className="-mt-1 mb-1.5 text-[11px] text-stone-500 leading-snug">
+                  一鍵套樣式組合，套完還能微調個別控制
+                </p>
+                <div className="grid grid-cols-2 gap-1.5">
+                  {presets.map((p) => (
+                    <button
+                      key={p.key}
+                      type="button"
+                      onClick={() => applyPreset(p.fields)}
+                      title={p.hint}
+                      className="rounded-lg border border-stone-200 px-2 py-2 text-xs text-stone-700 hover:border-emerald-500 hover:bg-emerald-50 hover:text-emerald-900 transition text-left leading-tight"
+                    >
+                      {p.label}
+                    </button>
+                  ))}
+                </div>
+              </Field>
               <Field label="標題對齊">
                 <div className="grid grid-cols-3 gap-1.5">
                   {([
