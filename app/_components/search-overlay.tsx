@@ -92,14 +92,23 @@ export function SearchOverlay({ slug }: { slug: string }) {
         type="button"
         onClick={() => setOpen(true)}
         aria-label="搜尋"
-        className="inline-flex items-center gap-2 text-sm transition hover:opacity-70"
+        className="inline-flex items-center gap-2 transition hover:opacity-70"
         style={{ color: "inherit" }}
       >
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6">
           <circle cx="11" cy="11" r="7" />
           <path strokeLinecap="round" d="M21 21l-4.35-4.35" />
         </svg>
-        <span className="hidden sm:inline text-xs tracking-wider opacity-70">⌘ K</span>
+        <span
+          className="hidden sm:inline font-medium uppercase"
+          style={{
+            fontSize: "0.6875rem",
+            letterSpacing: "0.3em",
+            opacity: 0.7,
+          }}
+        >
+          ⌘ K
+        </span>
       </button>
 
       {open && (
@@ -109,12 +118,33 @@ export function SearchOverlay({ slug }: { slug: string }) {
           onClick={() => setOpen(false)}
         >
           <div
-            className="w-full max-w-xl bg-white rounded-2xl shadow-2xl overflow-hidden"
+            className="w-full max-w-xl rounded-2xl overflow-hidden"
             onClick={(e) => e.stopPropagation()}
-            style={{ animation: "sproutly-search-pop 0.3s cubic-bezier(0.22, 1, 0.36, 1) both" }}
+            style={{
+              animation:
+                "sproutly-search-pop 0.3s cubic-bezier(0.22, 1, 0.36, 1) both",
+              background: "var(--store-bg, #ffffff)",
+              color: "var(--store-text, #1a1a1a)",
+              border: "1px solid var(--store-border, rgba(0,0,0,0.08))",
+              boxShadow: "var(--sproutly-elev-4)",
+            }}
           >
-            <div className="flex items-center gap-3 px-5 py-4 border-b border-stone-100">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-stone-400 flex-shrink-0">
+            <div
+              className="flex items-center gap-3 px-5 py-4"
+              style={{
+                borderBottom: "1px solid var(--store-border, rgba(0,0,0,0.08))",
+              }}
+            >
+              <svg
+                width="18"
+                height="18"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="1.6"
+                className="flex-shrink-0"
+                style={{ opacity: 0.55 }}
+              >
                 <circle cx="11" cy="11" r="7" />
                 <path strokeLinecap="round" d="M21 21l-4.35-4.35" />
               </svg>
@@ -123,44 +153,136 @@ export function SearchOverlay({ slug }: { slug: string }) {
                 type="text"
                 value={q}
                 onChange={(e) => setQ(e.target.value)}
-                placeholder="搜尋植物..."
-                className="flex-1 text-base outline-none bg-transparent"
+                placeholder="搜尋商品⋯"
+                aria-label="搜尋商品名稱"
+                className="flex-1 outline-none bg-transparent"
+                style={{
+                  fontSize: "1rem",
+                  color: "var(--store-text, #1a1a1a)",
+                  caretColor: "var(--store-accent, currentColor)",
+                }}
               />
               <button
                 type="button"
                 onClick={() => setOpen(false)}
-                className="text-xs text-stone-400 tracking-widest uppercase hover:text-stone-700 transition"
+                className="font-medium uppercase transition hover:opacity-100"
+                style={{
+                  fontSize: "0.6875rem",
+                  letterSpacing: "0.3em",
+                  color: "var(--store-text-muted, rgba(0,0,0,0.55))",
+                  opacity: 0.75,
+                }}
+                aria-label="關閉搜尋"
               >
                 Esc
               </button>
             </div>
             <div className="max-h-[60vh] overflow-y-auto">
               {loading && (
-                <p className="px-5 py-8 text-sm text-stone-400 text-center">
-                  搜尋中...
-                </p>
+                <div className="px-5 py-10 text-center">
+                  <p
+                    className="font-medium uppercase"
+                    style={{
+                      fontSize: "0.6875rem",
+                      letterSpacing: "0.4em",
+                      color: "var(--store-text-muted, rgba(0,0,0,0.55))",
+                    }}
+                  >
+                    Searching · 搜尋中
+                  </p>
+                  <div
+                    className="mx-auto mt-3 h-px w-10"
+                    style={{
+                      background: "var(--store-accent, currentColor)",
+                      opacity: 0.6,
+                    }}
+                  />
+                </div>
               )}
               {!loading && q && results.length === 0 && (
-                <p className="px-5 py-8 text-sm text-stone-400 text-center">
-                  找不到相關植物
-                </p>
+                <div className="px-5 py-10 text-center">
+                  <p
+                    className="font-medium uppercase"
+                    style={{
+                      fontSize: "0.6875rem",
+                      letterSpacing: "0.4em",
+                      color: "var(--store-text-muted, rgba(0,0,0,0.55))",
+                    }}
+                  >
+                    No Match · 沒有結果
+                  </p>
+                  <div
+                    className="mx-auto mt-3 h-px w-10"
+                    style={{
+                      background: "var(--store-accent, currentColor)",
+                      opacity: 0.6,
+                    }}
+                  />
+                  <p
+                    className="mt-4"
+                    style={{
+                      fontSize: "0.9375rem",
+                      lineHeight: 1.7,
+                      color: "var(--store-text-muted, rgba(0,0,0,0.6))",
+                    }}
+                  >
+                    換個字試試，或回首頁逛逛
+                  </p>
+                </div>
               )}
               {!loading && !q && (
-                <p className="px-5 py-8 text-xs tracking-wider uppercase text-stone-400 text-center">
-                  輸入名字搜尋 · ↑↓ 選擇 · Enter 開啟
-                </p>
+                <div className="px-5 py-10 text-center">
+                  <p
+                    className="font-medium uppercase"
+                    style={{
+                      fontSize: "0.6875rem",
+                      letterSpacing: "0.4em",
+                      color: "var(--store-text-muted, rgba(0,0,0,0.55))",
+                    }}
+                  >
+                    Search · 商品名或關鍵字
+                  </p>
+                  <div
+                    className="mx-auto mt-3 h-px w-10"
+                    style={{
+                      background: "var(--store-accent, currentColor)",
+                      opacity: 0.6,
+                    }}
+                  />
+                  <p
+                    className="mt-4 font-medium uppercase"
+                    style={{
+                      fontSize: "0.6875rem",
+                      letterSpacing: "0.3em",
+                      color: "var(--store-text-muted, rgba(0,0,0,0.5))",
+                    }}
+                  >
+                    ↑↓ 選擇 · ↵ 開啟
+                  </p>
+                </div>
               )}
               {results.map((p, i) => (
                 <Link
                   key={p.id}
                   href={`/${slug}/products/${p.id}`}
                   onClick={() => setOpen(false)}
-                  className={`flex items-center gap-4 px-5 py-3 transition ${
-                    i === selectedIdx ? "bg-stone-100" : "hover:bg-stone-50"
-                  }`}
+                  className="flex items-center gap-4 px-5 py-3 transition"
+                  style={{
+                    background:
+                      i === selectedIdx
+                        ? "var(--store-surface, rgba(0,0,0,0.04))"
+                        : "transparent",
+                  }}
                   onMouseEnter={() => setSelectedIdx(i)}
                 >
-                  <div className="w-12 h-12 rounded-lg overflow-hidden bg-stone-100 flex-shrink-0">
+                  <div
+                    className="w-14 h-14 rounded-xl overflow-hidden flex-shrink-0"
+                    style={{
+                      background: "var(--store-surface, rgba(0,0,0,0.04))",
+                      border:
+                        "1px solid var(--store-border, rgba(0,0,0,0.06))",
+                    }}
+                  >
                     {p.image_urls?.[0] && (
                       // eslint-disable-next-line @next/next/no-img-element
                       <img
@@ -171,13 +293,36 @@ export function SearchOverlay({ slug }: { slug: string }) {
                     )}
                   </div>
                   <div className="flex-1 min-w-0">
-                    <p className="text-stone-900 truncate">{p.name}</p>
-                    <p className="text-sm text-stone-500">
+                    <p
+                      className="truncate"
+                      style={{
+                        color: "var(--store-text, #1a1a1a)",
+                        letterSpacing: "-0.005em",
+                      }}
+                    >
+                      {p.name}
+                    </p>
+                    <p
+                      className="mt-0.5 tabular-nums"
+                      style={{
+                        fontSize: "0.8125rem",
+                        color: "var(--store-text-muted, rgba(0,0,0,0.55))",
+                        letterSpacing: "-0.01em",
+                      }}
+                    >
                       {formatPrice(p.price_cents, p.currency)}
                     </p>
                   </div>
                   {i === selectedIdx && (
-                    <span className="text-xs text-stone-400 tracking-widest uppercase">
+                    <span
+                      className="font-medium uppercase"
+                      style={{
+                        fontSize: "0.6875rem",
+                        letterSpacing: "0.3em",
+                        color: "var(--store-accent, currentColor)",
+                        opacity: 0.85,
+                      }}
+                    >
                       ↵
                     </span>
                   )}
