@@ -95,14 +95,20 @@ export default async function TrackPage({
     }
   }
 
+  const headerCaption = order
+    ? `${store.name} · 訂單 #${order.id.split("-")[0].toUpperCase()}`
+    : searched
+      ? `${store.name} · 沒找到符合的訂單`
+      : `${store.name} · 輸入編號 + 電話即可查詢`;
+
   return (
-    <main className="max-w-2xl mx-auto px-6 py-16 sm:py-20">
+    <main className="max-w-2xl mx-auto px-6 sm:px-10 py-20 sm:py-28">
       <div className="mb-12 sm:mb-14">
         <p
           className="text-[0.6875rem] uppercase font-medium"
           style={{ color: theme.accent, letterSpacing: "0.4em" }}
         >
-          Order Tracking
+          Order Tracking · 訂單追蹤
         </p>
         <h1
           className="mt-4 text-3xl sm:text-4xl font-medium"
@@ -112,7 +118,7 @@ export default async function TrackPage({
             lineHeight: 1.15,
           }}
         >
-          訂單追蹤
+          查當前狀態
         </h1>
         <div
           className="mt-5 h-px w-12"
@@ -122,7 +128,7 @@ export default async function TrackPage({
           className="mt-5 text-[0.9375rem]"
           style={{ color: theme.textMuted, lineHeight: 1.7 }}
         >
-          輸入下單時拿到的訂單編號 + 聯絡電話，就能查當前狀態
+          {headerCaption}
         </p>
       </div>
 
@@ -141,7 +147,7 @@ export default async function TrackPage({
             className="block text-[0.6875rem] uppercase mb-2.5 font-medium"
             style={{ color: theme.textMuted, letterSpacing: "0.3em" }}
           >
-            訂單編號
+            Order ID · 訂單編號
           </label>
           <input
             id="track-id"
@@ -159,7 +165,7 @@ export default async function TrackPage({
             className="block text-[0.6875rem] uppercase mb-2.5 font-medium"
             style={{ color: theme.textMuted, letterSpacing: "0.3em" }}
           >
-            聯絡電話
+            Phone · 聯絡電話
           </label>
           <input
             id="track-phone"
@@ -185,27 +191,27 @@ export default async function TrackPage({
           style={{
             background: theme.surface,
             border: `1px solid ${theme.border}`,
-            boxShadow: "var(--sproutly-elev-1)",
+            boxShadow: "var(--sproutly-elev-2)",
           }}
         >
           <p
             className="text-[0.6875rem] uppercase mb-4 font-medium"
             style={{ color: theme.textMuted, letterSpacing: "0.4em" }}
           >
-            Not Found
+            Not Found · 沒找到
           </p>
+          <div
+            className="mx-auto h-px w-10"
+            style={{ background: theme.border }}
+          />
           <p
-            className="text-xl font-medium"
+            className="mt-5 text-xl font-medium"
             style={{ color: theme.text, letterSpacing: "-0.005em" }}
           >
             找不到對應的訂單
           </p>
-          <div
-            className="my-5 h-px w-10 mx-auto"
-            style={{ background: theme.border }}
-          />
           <p
-            className="text-sm"
+            className="mt-3 text-[0.9375rem]"
             style={{ color: theme.textMuted, lineHeight: 1.7 }}
           >
             請確認訂單編號跟電話都正確
@@ -232,10 +238,14 @@ export default async function TrackPage({
                   className="text-[0.6875rem] uppercase font-medium"
                   style={{ color: theme.textMuted, letterSpacing: "0.4em" }}
                 >
-                  Cancelled
+                  Cancelled · 已取消
                 </p>
+                <div
+                  className="my-4 h-px w-10 mx-auto"
+                  style={{ background: theme.border }}
+                />
                 <p
-                  className="mt-4 text-xl font-medium"
+                  className="text-xl font-medium"
                   style={{ color: theme.text, letterSpacing: "-0.005em" }}
                 >
                   訂單已取消
@@ -243,6 +253,12 @@ export default async function TrackPage({
               </div>
             ) : (
               <>
+                <p
+                  className="text-[0.6875rem] uppercase mb-6 font-medium"
+                  style={{ color: theme.accent, letterSpacing: "0.4em" }}
+                >
+                  Status · 進度
+                </p>
                 <div className="flex justify-between items-start mb-6">
                   {STATUS_STEPS.map((step, i) => {
                     const currentIdx = STATUS_STEPS.findIndex(
@@ -291,8 +307,8 @@ export default async function TrackPage({
                   })}
                 </div>
                 <p
-                  className="text-center text-sm"
-                  style={{ color: theme.textMuted }}
+                  className="text-center text-[0.9375rem]"
+                  style={{ color: theme.textMuted, lineHeight: 1.7 }}
                 >
                   {order.status === "pending" && "店家收到你的訂單了，請等待確認"}
                   {order.status === "confirmed" &&
@@ -318,7 +334,7 @@ export default async function TrackPage({
                 className="text-[0.6875rem] uppercase font-medium"
                 style={{ color: theme.accent, letterSpacing: "0.4em" }}
               >
-                訂單編號
+                Order ID · 訂單編號
               </p>
               <p
                 className="font-mono text-[0.9375rem] font-semibold"
@@ -335,7 +351,7 @@ export default async function TrackPage({
                 className="text-[0.6875rem] uppercase mb-4 font-medium"
                 style={{ color: theme.accent, letterSpacing: "0.4em" }}
               >
-                商品
+                Items · 商品
               </p>
               <div className="space-y-2">
                 {items.map((it, i) => (
@@ -365,10 +381,10 @@ export default async function TrackPage({
                 className="text-[0.6875rem] uppercase font-medium"
                 style={{ color: theme.textMuted, letterSpacing: "0.4em" }}
               >
-                合計
+                Total · 合計
               </span>
               <span
-                className="text-2xl font-medium"
+                className="text-3xl sm:text-4xl font-medium"
                 style={{
                   color: theme.accent,
                   letterSpacing: "-0.02em",
@@ -388,45 +404,53 @@ export default async function TrackPage({
               return (
                 <>
                   <hr style={{ borderColor: theme.border }} />
-                  <dl className="text-[0.9375rem] space-y-2">
-                    {decoded.shippingLabel && (
-                      <div className="flex gap-3">
-                        <dt
-                          className="w-20 shrink-0"
-                          style={{ color: theme.textMuted }}
-                        >
-                          配送方式
-                        </dt>
-                        <dd style={{ color: theme.text }}>
-                          {decoded.shippingLabel}
-                        </dd>
-                      </div>
-                    )}
-                    {decoded.storeName && (
-                      <div className="flex gap-3">
-                        <dt
-                          className="w-20 shrink-0"
-                          style={{ color: theme.textMuted }}
-                        >
-                          取貨門市
-                        </dt>
-                        <dd style={{ color: theme.text }}>
-                          {decoded.storeName}
-                        </dd>
-                      </div>
-                    )}
-                    {paymentLabel && (
-                      <div className="flex gap-3">
-                        <dt
-                          className="w-20 shrink-0"
-                          style={{ color: theme.textMuted }}
-                        >
-                          付款方式
-                        </dt>
-                        <dd style={{ color: theme.text }}>{paymentLabel}</dd>
-                      </div>
-                    )}
-                  </dl>
+                  <div>
+                    <p
+                      className="text-[0.6875rem] uppercase mb-4 font-medium"
+                      style={{ color: theme.accent, letterSpacing: "0.4em" }}
+                    >
+                      Logistics · 物流付款
+                    </p>
+                    <dl className="text-[0.9375rem] space-y-2">
+                      {decoded.shippingLabel && (
+                        <div className="flex gap-3">
+                          <dt
+                            className="w-20 shrink-0"
+                            style={{ color: theme.textMuted }}
+                          >
+                            配送方式
+                          </dt>
+                          <dd style={{ color: theme.text }}>
+                            {decoded.shippingLabel}
+                          </dd>
+                        </div>
+                      )}
+                      {decoded.storeName && (
+                        <div className="flex gap-3">
+                          <dt
+                            className="w-20 shrink-0"
+                            style={{ color: theme.textMuted }}
+                          >
+                            取貨門市
+                          </dt>
+                          <dd style={{ color: theme.text }}>
+                            {decoded.storeName}
+                          </dd>
+                        </div>
+                      )}
+                      {paymentLabel && (
+                        <div className="flex gap-3">
+                          <dt
+                            className="w-20 shrink-0"
+                            style={{ color: theme.textMuted }}
+                          >
+                            付款方式
+                          </dt>
+                          <dd style={{ color: theme.text }}>{paymentLabel}</dd>
+                        </div>
+                      )}
+                    </dl>
+                  </div>
                 </>
               );
             })()}
@@ -440,7 +464,7 @@ export default async function TrackPage({
           className="sproutly-link text-[0.6875rem] uppercase font-medium transition"
           style={{ color: theme.textMuted, letterSpacing: "0.3em" }}
         >
-          ← 回 {store.name}
+          ← Back · {store.name}
         </Link>
       </div>
     </main>
