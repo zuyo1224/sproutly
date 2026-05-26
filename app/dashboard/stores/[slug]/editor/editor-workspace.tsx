@@ -391,11 +391,27 @@ export function EditorWorkspace({
       if (e.key === "?" && !inField) {
         e.preventDefault();
         setShowShortcuts((v) => !v);
+        return;
+      }
+      // [ / ] 跳上一段 / 下一段（對齊 right panel 既有 button）
+      // 只有 activeTab === "section" 時才生效，避免在 design / pages 等 tab 誤觸
+      if ((e.key === "[" || e.key === "]") && !inField && activeTab === "section") {
+        e.preventDefault();
+        const navOrder: SectionKey[] = [
+          "hero",
+          ...theme.layout.sectionOrder.filter((k) => k !== "hero"),
+        ];
+        const idx = navOrder.indexOf(selectedSection);
+        if (e.key === "[" && idx > 0) {
+          setSelectedSection(navOrder[idx - 1]);
+        } else if (e.key === "]" && idx >= 0 && idx < navOrder.length - 1) {
+          setSelectedSection(navOrder[idx + 1]);
+        }
       }
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, [popover, showShortcuts]);
+  }, [popover, showShortcuts, activeTab, selectedSection, theme.layout.sectionOrder]);
 
   // Cmd/Ctrl+Z / Cmd/Ctrl+Shift+Z keyboard shortcut
   useEffect(() => {
@@ -1093,7 +1109,7 @@ export function EditorWorkspace({
                     ? "border-stone-200 text-stone-700 hover:border-emerald-500 hover:bg-emerald-50 hover:text-emerald-900"
                     : "border-stone-100 text-stone-300 cursor-not-allowed"
                 }`}
-                title={prev ? `上一段：${sectionLabels[prev]}` : "已經是第一段"}
+                title={prev ? `上一段：${sectionLabels[prev]}（按 [）` : "已經是第一段"}
                 aria-label={prev ? `上一段：${sectionLabels[prev]}` : "已經是第一段"}
               >
                 <span aria-hidden>←</span>
@@ -1116,7 +1132,7 @@ export function EditorWorkspace({
                     ? "border-stone-200 text-stone-700 hover:border-emerald-500 hover:bg-emerald-50 hover:text-emerald-900"
                     : "border-stone-100 text-stone-300 cursor-not-allowed"
                 }`}
-                title={next ? `下一段：${sectionLabels[next]}` : "已經是最後一段"}
+                title={next ? `下一段：${sectionLabels[next]}（按 ]）` : "已經是最後一段"}
                 aria-label={next ? `下一段：${sectionLabels[next]}` : "已經是最後一段"}
               >
                 <span className="hidden sm:inline">下一段</span>
@@ -2880,6 +2896,8 @@ export function EditorWorkspace({
                 [
                   { keys: ["⌘", "Z"], desc: "復原上一步" },
                   { keys: ["⌘", "⇧", "Z"], desc: "重做（也可用 ⌘ + Y）" },
+                  { keys: ["["], desc: "跳到上一段（編輯區段時）" },
+                  { keys: ["]"], desc: "跳到下一段（編輯區段時）" },
                   { keys: ["?"], desc: "開／關這個說明" },
                   { keys: ["Esc"], desc: "關掉浮層、編輯面板" },
                   { keys: ["雙擊", "標題"], desc: "直接改文字（不用回左邊欄）" },
