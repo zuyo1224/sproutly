@@ -1072,6 +1072,59 @@ export function EditorWorkspace({
         >
           ×
         </button>
+        {/* 上一段 / 下一段 nav — iframe 不用回點，panel 直接穿梭 sections
+            完整順序：hero 為首 + sectionOrder（body sections）；可跨「visible / hidden」段（user 可能想跳去 hidden 改回開）*/}
+        {activeTab === "section" && selectedSection && (() => {
+          const navOrder: SectionKey[] = [
+            "hero",
+            ...theme.layout.sectionOrder.filter((k) => k !== "hero"),
+          ];
+          const idx = navOrder.indexOf(selectedSection);
+          const prev = idx > 0 ? navOrder[idx - 1] : null;
+          const next = idx >= 0 && idx < navOrder.length - 1 ? navOrder[idx + 1] : null;
+          return (
+            <div className="flex items-center justify-between gap-2 px-3 pt-12 pb-3 border-b border-stone-100">
+              <button
+                type="button"
+                onClick={() => prev && setSelectedSection(prev)}
+                disabled={!prev}
+                className={`flex items-center gap-1 rounded-lg border px-2.5 py-1.5 text-[11px] font-medium transition ${
+                  prev
+                    ? "border-stone-200 text-stone-700 hover:border-emerald-500 hover:bg-emerald-50 hover:text-emerald-900"
+                    : "border-stone-100 text-stone-300 cursor-not-allowed"
+                }`}
+                title={prev ? `上一段：${sectionLabels[prev]}` : "已經是第一段"}
+                aria-label={prev ? `上一段：${sectionLabels[prev]}` : "已經是第一段"}
+              >
+                <span aria-hidden>←</span>
+                <span className="hidden sm:inline">上一段</span>
+              </button>
+              <div className="flex-1 text-center min-w-0">
+                <p className="text-[10px] font-medium tracking-[0.3em] uppercase text-stone-400">
+                  Section {idx + 1} / {navOrder.length}
+                </p>
+                <p className="mt-0.5 text-sm font-medium text-stone-800 truncate">
+                  {sectionLabels[selectedSection]}
+                </p>
+              </div>
+              <button
+                type="button"
+                onClick={() => next && setSelectedSection(next)}
+                disabled={!next}
+                className={`flex items-center gap-1 rounded-lg border px-2.5 py-1.5 text-[11px] font-medium transition ${
+                  next
+                    ? "border-stone-200 text-stone-700 hover:border-emerald-500 hover:bg-emerald-50 hover:text-emerald-900"
+                    : "border-stone-100 text-stone-300 cursor-not-allowed"
+                }`}
+                title={next ? `下一段：${sectionLabels[next]}` : "已經是最後一段"}
+                aria-label={next ? `下一段：${sectionLabels[next]}` : "已經是最後一段"}
+              >
+                <span className="hidden sm:inline">下一段</span>
+                <span aria-hidden>→</span>
+              </button>
+            </div>
+          );
+        })()}
         {activeTab === "section" && selectedSection === "hero" && (
           <PanelSection title="Hero 區段">
             <Field label="樣式">
