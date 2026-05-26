@@ -137,7 +137,7 @@ export default async function PublicProductPage({
   };
 
   return (
-    <main className="max-w-6xl mx-auto px-6 py-12">
+    <main className="max-w-6xl mx-auto px-6 sm:px-10 py-20 sm:py-28">
       <script
         type="application/ld+json"
         // eslint-disable-next-line react/no-danger
@@ -145,13 +145,13 @@ export default async function PublicProductPage({
       />
       <Link
         href={`/${slug}/shop`}
-        className="sproutly-link inline-block mb-10 text-[11px] tracking-[0.3em] uppercase"
-        style={{ color: theme.textMuted }}
+        className="sproutly-link inline-block mb-14 text-[0.6875rem] uppercase font-medium"
+        style={{ letterSpacing: "0.3em" }}
       >
-        所有商品
+        ← Back · 所有商品
       </Link>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-14">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-10 lg:gap-16">
         <div>
           {images.length > 0 ? (
             <ImageCarousel
@@ -165,8 +165,12 @@ export default async function PublicProductPage({
               style={{ background: theme.bg }}
             >
               <span
-                className="text-xs tracking-widest uppercase"
-                style={{ color: theme.textMuted, opacity: 0.4 }}
+                className="text-[0.6875rem] uppercase font-medium"
+                style={{
+                  color: theme.textMuted,
+                  opacity: 0.5,
+                  letterSpacing: "0.3em",
+                }}
               >
                 No Image
               </span>
@@ -174,21 +178,24 @@ export default async function PublicProductPage({
           )}
         </div>
 
-        <div className="md:pt-6">
+        <div className="md:pt-4">
           <p
-            className="text-[10px] tracking-[0.4em] uppercase mb-5"
-            style={{ color: theme.textMuted, opacity: 0.7 }}
+            className="text-[0.6875rem] uppercase font-medium"
+            style={{
+              color: "var(--store-accent, currentColor)",
+              letterSpacing: "0.4em",
+            }}
           >
-            {store.name}
+            Product · {store.name}
           </p>
-          <div className="flex items-start justify-between gap-4">
+          <div className="mt-5 flex items-start justify-between gap-4">
             <h1
-              className="text-4xl md:text-5xl lg:text-[3rem]"
+              className="text-3xl sm:text-4xl lg:text-[2.875rem]"
               style={{
                 color: theme.text,
                 fontFamily: "var(--store-font)",
-                fontWeight: 400,
-                letterSpacing: "-0.01em",
+                fontWeight: 500,
+                letterSpacing: "-0.015em",
                 lineHeight: 1.15,
                 wordBreak: "keep-all",
                 overflowWrap: "break-word",
@@ -199,25 +206,35 @@ export default async function PublicProductPage({
             <FavoriteButton
               productId={product.id}
               size="lg"
-              className="flex-shrink-0 mt-2 hover:scale-110"
+              className="flex-shrink-0 mt-1 hover:scale-110"
             />
           </div>
+          <div
+            className="mt-5 h-px w-12"
+            style={{
+              background: "var(--store-accent, currentColor)",
+              opacity: 0.5,
+            }}
+          />
 
           {product.description && (
             <div className="mt-10">
               <p
-                className="text-[10px] tracking-[0.35em] uppercase mb-4"
-                style={{ color: theme.accent }}
+                className="text-[0.6875rem] uppercase font-medium"
+                style={{
+                  color: "var(--store-accent, currentColor)",
+                  letterSpacing: "0.4em",
+                }}
               >
-                關於這株
+                About · 關於這株
               </p>
               <div
-                className="whitespace-pre-line text-[15px]"
+                className="mt-5 whitespace-pre-line text-[0.9375rem]"
                 style={{
                   color: theme.text,
                   opacity: 0.85,
                   lineHeight: 1.9,
-                  letterSpacing: "0.015em",
+                  letterSpacing: "0.01em",
                   wordBreak: "keep-all",
                   overflowWrap: "break-word",
                 }}
@@ -228,25 +245,27 @@ export default async function PublicProductPage({
           )}
 
           <div
-            className="mt-12 pt-8 border-t flex items-baseline justify-between gap-4"
+            className="mt-12 pt-8 border-t flex items-end justify-between gap-4 flex-wrap"
             style={{ borderColor: theme.border }}
           >
             <div>
               <p
-                className="text-[10px] tracking-[0.4em] uppercase mb-2"
-                style={{ color: theme.textMuted }}
+                className="text-[0.6875rem] uppercase font-medium"
+                style={{
+                  color: "var(--store-accent, currentColor)",
+                  letterSpacing: "0.4em",
+                }}
               >
-                售價
+                Price · 售價
               </p>
               <p
-                className="text-3xl md:text-[2.25rem]"
+                className="mt-3 text-3xl sm:text-4xl tabular-nums"
                 style={{
-                  color: theme.text,
+                  color: "var(--store-accent, currentColor)",
                   fontFamily: "var(--store-font)",
-                  fontWeight: 400,
+                  fontWeight: 500,
                   letterSpacing: "-0.02em",
                   lineHeight: 1,
-                  fontVariantNumeric: "tabular-nums",
                 }}
               >
                 {formatPrice(product.price_cents, product.currency)}
@@ -254,33 +273,42 @@ export default async function PublicProductPage({
             </div>
 
             {product.stock !== null && (
-              <div className="flex items-center gap-2">
+              <div
+                className="inline-flex items-center gap-2 rounded-full px-3 py-1.5"
+                style={{
+                  background: !inStock
+                    ? "rgba(0,0,0,0.04)"
+                    : product.stock <= 3
+                      ? "rgba(217,119,6,0.08)"
+                      : `${theme.accent}14`,
+                }}
+              >
                 <span
                   className="inline-block w-1.5 h-1.5 rounded-full"
                   style={{
-                    background:
-                      !inStock
-                        ? "#9CA3AF"
-                        : product.stock <= 3
-                          ? "#D97706"
-                          : theme.accent,
+                    background: !inStock
+                      ? "#9CA3AF"
+                      : product.stock <= 3
+                        ? "#D97706"
+                        : theme.accent,
                   }}
                 />
                 <p
-                  className="text-[11px] tracking-wide"
+                  className="text-[0.6875rem] uppercase font-medium"
                   style={{
                     color: !inStock
                       ? theme.textMuted
                       : product.stock <= 3
                         ? "#92400E"
-                        : theme.textMuted,
+                        : theme.text,
+                    letterSpacing: "0.3em",
                   }}
                 >
                   {!inStock
-                    ? "目前已無庫存"
+                    ? "Sold Out"
                     : product.stock <= 3
-                      ? `僅剩 ${product.stock} 株`
-                      : `尚有 ${product.stock} 株`}
+                      ? `Low Stock · 剩 ${product.stock}`
+                      : `In Stock · ${product.stock}`}
                 </p>
               </div>
             )}
@@ -296,20 +324,21 @@ export default async function PublicProductPage({
             {inStock && (
               <div className="flex items-center gap-3 mb-6">
                 <label
-                  className="text-xs tracking-widest uppercase"
-                  style={{ color: theme.textMuted }}
+                  htmlFor="qty"
+                  className="text-[0.6875rem] uppercase font-medium"
+                  style={{
+                    color: theme.textMuted,
+                    letterSpacing: "0.4em",
+                  }}
                 >
-                  數量
+                  Qty · 數量
                 </label>
                 <select
+                  id="qty"
                   name="qty"
                   defaultValue={1}
-                  className="rounded-md px-3 py-2 outline-none transition text-sm"
-                  style={{
-                    background: theme.surface,
-                    color: theme.text,
-                    border: `1px solid ${theme.border}`,
-                  }}
+                  className="sproutly-input text-sm"
+                  style={{ width: "auto", padding: "0.5rem 0.75rem" }}
                 >
                   {Array.from(
                     { length: maxQty },
@@ -326,14 +355,7 @@ export default async function PublicProductPage({
             <button
               type="submit"
               disabled={!inStock}
-              className="w-full rounded-full px-8 py-4 transition hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed"
-              style={{
-                background: theme.primary,
-                color: theme.surface,
-                fontFamily: "var(--store-font)",
-                fontWeight: 400,
-                letterSpacing: "0.05em",
-              }}
+              className="sproutly-btn sproutly-btn-primary sproutly-btn-lg w-full"
             >
               {inStock ? "我想要這一株" : "已售完"}
             </button>
@@ -343,14 +365,7 @@ export default async function PublicProductPage({
                 slug={slug}
                 productId={product.id}
                 qty={1}
-                className="w-full rounded-full px-8 py-4 transition hover:opacity-80"
-                style={{
-                  border: `1px solid ${theme.border}`,
-                  background: theme.surface,
-                  color: theme.text,
-                  fontFamily: "var(--store-font)",
-                  letterSpacing: "0.05em",
-                }}
+                className="sproutly-btn sproutly-btn-secondary sproutly-btn-lg w-full"
               >
                 加入購物車
               </AddToCartButton>
@@ -359,15 +374,7 @@ export default async function PublicProductPage({
             {store.contact_phone && (
               <a
                 href={`tel:${store.contact_phone}`}
-                className="block w-full rounded-full px-8 py-4 text-center transition hover:opacity-80"
-                style={{
-                  border: `1px solid ${theme.border}`,
-                  background: theme.surface,
-                  color: theme.text,
-                  fontFamily: "var(--store-font)",
-                  fontWeight: 400,
-                  letterSpacing: "0.05em",
-                }}
+                className="sproutly-btn sproutly-btn-secondary sproutly-btn-lg w-full"
               >
                 來店看實品
               </a>
@@ -375,12 +382,7 @@ export default async function PublicProductPage({
             {store.contact_email && (
               <a
                 href={`mailto:${store.contact_email}?subject=${encodeURIComponent("詢問商品：" + product.name)}`}
-                className="block w-full rounded-full px-8 py-4 text-center font-medium border-2 transition hover:opacity-80"
-                style={{
-                  borderColor: theme.border,
-                  background: theme.surface,
-                  color: theme.text,
-                }}
+                className="sproutly-btn sproutly-btn-secondary sproutly-btn-lg w-full"
               >
                 Email 詢問
               </a>
@@ -439,34 +441,46 @@ export default async function PublicProductPage({
 
       {relatedProducts && relatedProducts.length > 0 && (
         <section className="mt-32">
-          <div className="flex items-end justify-between mb-12 flex-wrap gap-4">
+          <div className="flex items-end justify-between mb-14 flex-wrap gap-4">
             <div>
               <p
-                className="text-xs tracking-[0.4em] uppercase"
-                style={{ color: theme.textMuted }}
+                className="text-[0.6875rem] uppercase font-medium"
+                style={{
+                  color: "var(--store-accent, currentColor)",
+                  letterSpacing: "0.4em",
+                }}
               >
-                Also in store
+                Also in Store
               </p>
               <h2
                 className="mt-4 text-2xl sm:text-3xl"
                 style={{
                   color: theme.text,
                   fontFamily: "var(--store-font)",
-                  fontWeight: 400,
+                  fontWeight: 500,
+                  letterSpacing: "-0.01em",
+                  lineHeight: 1.2,
                 }}
               >
                 這些也在店裡
               </h2>
+              <div
+                className="mt-4 h-px w-10"
+                style={{
+                  background: "var(--store-accent, currentColor)",
+                  opacity: 0.4,
+                }}
+              />
             </div>
             <Link
               href={`/${slug}/shop`}
-              className="text-sm transition hover:opacity-70 underline-offset-4 hover:underline"
-              style={{ color: theme.textMuted }}
+              className="sproutly-link text-[0.6875rem] uppercase font-medium"
+              style={{ letterSpacing: "0.3em" }}
             >
-              看所有的植物
+              看所有的植物 →
             </Link>
           </div>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-5">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
             {relatedProducts.map((p) => (
               <Link
                 key={p.id}
@@ -474,8 +488,11 @@ export default async function PublicProductPage({
                 className="group block"
               >
                 <div
-                  className="aspect-square rounded-2xl overflow-hidden shadow-sm transition group-hover:shadow-md"
-                  style={{ background: theme.surface }}
+                  className="aspect-square rounded-2xl overflow-hidden transition"
+                  style={{
+                    background: theme.surface,
+                    boxShadow: "var(--sproutly-elev-2)",
+                  }}
                 >
                   {p.image_urls?.[0] ? (
                     // eslint-disable-next-line @next/next/no-img-element
@@ -490,23 +507,36 @@ export default async function PublicProductPage({
                       style={{ background: theme.bg }}
                     >
                       <span
-                        className="text-[10px] tracking-wider"
-                        style={{ color: theme.textMuted, opacity: 0.4 }}
+                        className="text-[0.625rem] uppercase font-medium"
+                        style={{
+                          color: theme.textMuted,
+                          opacity: 0.45,
+                          letterSpacing: "0.3em",
+                        }}
                       >
-                        —
+                        No Image
                       </span>
                     </div>
                   )}
                 </div>
                 <h3
-                  className="mt-3 font-medium line-clamp-1 group-hover:opacity-70 transition"
-                  style={{ color: theme.text }}
+                  className="mt-4 line-clamp-1 group-hover:opacity-70 transition"
+                  style={{
+                    color: theme.text,
+                    fontFamily: "var(--store-font)",
+                    fontWeight: 500,
+                    letterSpacing: "-0.005em",
+                  }}
                 >
                   {p.name}
                 </h3>
                 <p
-                  className="text-sm mt-1"
-                  style={{ color: theme.accent }}
+                  className="mt-1.5 text-[0.9375rem] tabular-nums"
+                  style={{
+                    color: theme.accent,
+                    fontFamily: "var(--store-font)",
+                    letterSpacing: "-0.01em",
+                  }}
                 >
                   {formatPrice(p.price_cents, p.currency)}
                 </p>
