@@ -715,7 +715,7 @@ export default async function PublicStoreLayout({
               />
             ) : null}
             <span
-              className="font-semibold text-lg tracking-tight truncate group-hover:opacity-70 transition"
+              className="font-medium text-lg tracking-tight truncate group-hover:opacity-70 transition"
               style={{ color: theme.text }}
             >
               {store.name}
@@ -787,68 +787,138 @@ export default async function PublicStoreLayout({
           backgroundColor: theme.surface,
         }}
       >
-        <div className="max-w-6xl mx-auto px-6 py-10 text-center space-y-4">
+        <div className="max-w-6xl mx-auto px-6 sm:px-10 py-16 sm:py-20 text-center space-y-8">
           {theme.tagline && (
-            <p
-              className="text-sm italic"
-              style={{ color: theme.accent, fontFamily: "var(--store-font)" }}
-            >
-              {theme.tagline}
-            </p>
-          )}
-
-          <Link
-            href={`/${slug}/track`}
-            className="text-xs hover:opacity-100 transition inline-block underline-offset-4 hover:underline"
-            style={{ color: theme.textMuted }}
-          >
-            訂單追蹤
-          </Link>
-
-          {showSocial && (
-            <div className="flex justify-center gap-4">
-              {theme.social.instagram && (
-                <a
-                  href={theme.social.instagram}
-                  target="_blank"
-                  rel="noopener"
-                  className="text-sm hover:opacity-100 transition"
-                  style={{ color: theme.textMuted }}
-                >
-                  Instagram
-                </a>
-              )}
-              {theme.social.facebook && (
-                <a
-                  href={theme.social.facebook}
-                  target="_blank"
-                  rel="noopener"
-                  className="text-sm hover:opacity-100 transition"
-                  style={{ color: theme.textMuted }}
-                >
-                  Facebook
-                </a>
-              )}
-              {theme.social.line && (
-                <a
-                  href={theme.social.line}
-                  target="_blank"
-                  rel="noopener"
-                  className="text-sm hover:opacity-100 transition"
-                  style={{ color: theme.textMuted }}
-                >
-                  LINE
-                </a>
-              )}
+            <div className="space-y-3">
+              <p
+                className="font-medium uppercase"
+                style={{
+                  color: theme.textMuted,
+                  fontSize: "0.6875rem",
+                  letterSpacing: "0.4em",
+                }}
+              >
+                Words
+              </p>
+              <p
+                className="italic"
+                style={{
+                  color: theme.accent,
+                  fontFamily: "var(--store-font)",
+                  fontSize: "0.9375rem",
+                  lineHeight: 1.7,
+                  letterSpacing: "0.02em",
+                }}
+              >
+                {theme.tagline}
+              </p>
             </div>
           )}
 
-          <p className="text-xs" style={{ color: theme.textMuted, opacity: 0.7 }}>
+          {showSocial && (
+            <div className="space-y-4">
+              <div className="flex items-center justify-center gap-3">
+                <span
+                  className="font-medium uppercase"
+                  style={{
+                    color: theme.textMuted,
+                    fontSize: "0.6875rem",
+                    letterSpacing: "0.4em",
+                  }}
+                >
+                  Follow
+                </span>
+                <span
+                  className="h-px w-10"
+                  style={{ background: theme.accent, opacity: 0.6 }}
+                />
+              </div>
+              <div className="flex justify-center gap-6">
+                {theme.social.instagram && (
+                  <a
+                    href={theme.social.instagram}
+                    target="_blank"
+                    rel="noopener"
+                    className="sproutly-link uppercase"
+                    style={{
+                      color: theme.textMuted,
+                      fontSize: "0.75rem",
+                      letterSpacing: "0.3em",
+                    }}
+                  >
+                    Instagram
+                  </a>
+                )}
+                {theme.social.facebook && (
+                  <a
+                    href={theme.social.facebook}
+                    target="_blank"
+                    rel="noopener"
+                    className="sproutly-link uppercase"
+                    style={{
+                      color: theme.textMuted,
+                      fontSize: "0.75rem",
+                      letterSpacing: "0.3em",
+                    }}
+                  >
+                    Facebook
+                  </a>
+                )}
+                {theme.social.line && (
+                  <a
+                    href={theme.social.line}
+                    target="_blank"
+                    rel="noopener"
+                    className="sproutly-link uppercase"
+                    style={{
+                      color: theme.textMuted,
+                      fontSize: "0.75rem",
+                      letterSpacing: "0.3em",
+                    }}
+                  >
+                    LINE
+                  </a>
+                )}
+              </div>
+            </div>
+          )}
+
+          <div className="flex items-center justify-center gap-3">
+            <span
+              className="h-px w-8"
+              style={{ background: theme.border }}
+            />
+            <Link
+              href={`/${slug}/track`}
+              className="sproutly-link uppercase"
+              style={{
+                color: theme.textMuted,
+                fontSize: "0.75rem",
+                letterSpacing: "0.3em",
+              }}
+            >
+              Track · 訂單追蹤
+            </Link>
+            <span
+              className="h-px w-8"
+              style={{ background: theme.border }}
+            />
+          </div>
+
+          <p
+            className="uppercase"
+            style={{
+              color: theme.textMuted,
+              opacity: 0.7,
+              fontSize: "0.6875rem",
+              letterSpacing: "0.32em",
+            }}
+          >
             © {new Date().getFullYear()} {store.name} · Powered by{" "}
             <Link
               href="/"
-              className="hover:opacity-100 transition font-medium"
-              style={{ color: theme.textMuted }}
+              className="sproutly-link font-medium"
+              style={{ color: theme.textMuted, letterSpacing: "0.32em" }}
             >
               Sproutly
             </Link>
