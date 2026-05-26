@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useTransition, useEffect, useRef } from "react";
+import { useState, useTransition, useEffect, useRef, useMemo } from "react";
 import Link from "next/link";
 import {
   DndContext,
@@ -166,12 +166,56 @@ export function EditorWorkspace({
   const [popover, setPopover] = useState<SelectedTab | null>(null);
   // 鍵盤快捷鍵說明浮層（按 ? 切換、Esc 關）
   const [showShortcuts, setShowShortcuts] = useState(false);
-  // 區段樣式 clipboard（session 內 user 從某段複製、貼到別段）
-  // 不持久化（reload 後清空）— 是工具不是狀態
+  // 區段樣式 clipboard — localStorage 持久化，跨 reload / 跨 store / 跨 session 還能貼
+  // 一開始 SSR 初值 null，mount 後從 localStorage 讀回；變動時寫回 localStorage
   const [styleClipboard, setStyleClipboard] = useState<{
     source: SectionKey;
     fields: EditorTheme["layout"]["sectionStyles"][string];
   } | null>(null);
+  // 合法 SectionKey 白名單，過濾 localStorage 殘留的舊 key（schema 變化後保護）
+  const SECTION_KEYS_SET = useMemo(
+    () => new Set<SectionKey>([
+      "hero", "collections", "featured", "journal", "promise",
+      "testimonials", "faq", "stats", "partners", "gallery", "visit",
+    ]),
+    [],
+  );
+  const STYLE_CLIPBOARD_KEY = "sproutly:editor:style-clipboard:v1";
+  // mount 時從 localStorage 讀回 clipboard
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    try {
+      const raw = window.localStorage.getItem(STYLE_CLIPBOARD_KEY);
+      if (!raw) return;
+      const parsed = JSON.parse(raw);
+      if (
+        parsed &&
+        typeof parsed === "object" &&
+        typeof parsed.source === "string" &&
+        SECTION_KEYS_SET.has(parsed.source as SectionKey) &&
+        parsed.fields &&
+        typeof parsed.fields === "object"
+      ) {
+        setStyleClipboard({ source: parsed.source, fields: parsed.fields });
+      }
+    } catch {
+      // localStorage / JSON parse 壞了忽略，clipboard 維持 null
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+  // 變動時寫回 localStorage（null 清空 key）
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    try {
+      if (styleClipboard) {
+        window.localStorage.setItem(STYLE_CLIPBOARD_KEY, JSON.stringify(styleClipboard));
+      } else {
+        window.localStorage.removeItem(STYLE_CLIPBOARD_KEY);
+      }
+    } catch {
+      // quota / private mode 寫不進去就算了，session 內 React state 仍可用
+    }
+  }, [styleClipboard]);
   // 修 dnd-kit hydration error：useSortable 用 counter 生 ID，SSR / client 不一致
   // → 只在 client mount 後才 render DndContext / SortableContext
   const [mounted, setMounted] = useState(false);
