@@ -2087,6 +2087,11 @@ export function EditorWorkspace({
                   ))}
                 </div>
               </Field>
+              <div className="mt-3 pt-3 border-t border-stone-200">
+                <p className="text-[10px] font-medium tracking-[0.3em] uppercase text-stone-500">
+                  常用
+                </p>
+              </div>
               <Field label="標題對齊">
                 <div className="grid grid-cols-3 gap-1.5">
                   {([
@@ -2164,6 +2169,11 @@ export function EditorWorkspace({
                   改深色背景時搭淺字、淺色背景搭深字
                 </p>
               </Field>
+              <div className="mt-3 pt-3 border-t border-stone-200">
+                <p className="text-[10px] font-medium tracking-[0.3em] uppercase text-stone-500">
+                  結構
+                </p>
+              </div>
               <Field label="這段的上下空白">
                 <div className="grid grid-cols-3 gap-1.5">
                   {([
@@ -2224,6 +2234,11 @@ export function EditorWorkspace({
                   在這段加細線分隔（顏色跟著全網站邊框色）
                 </p>
               </Field>
+              <div className="mt-3 pt-3 border-t border-stone-200">
+                <p className="text-[10px] font-medium tracking-[0.3em] uppercase text-stone-500">
+                  進階
+                </p>
+              </div>
               <Field label="標題大小">
                 <div className="grid grid-cols-3 gap-1.5">
                   {([
@@ -2394,6 +2409,11 @@ export function EditorWorkspace({
                   )}
                 </div>
               </Field>
+              <div className="mt-3 pt-3 border-t border-stone-200">
+                <p className="text-[10px] font-medium tracking-[0.3em] uppercase text-stone-500">
+                  字體 / 動效
+                </p>
+              </div>
               <Field label="進場動畫">
                 <div className="grid grid-cols-3 gap-1.5">
                   {([
@@ -2530,6 +2550,11 @@ export function EditorWorkspace({
                   )}
                 </div>
               </Field>
+              <div className="mt-3 pt-3 border-t border-stone-200">
+                <p className="text-[10px] font-medium tracking-[0.3em] uppercase text-stone-500">
+                  氣氛
+                </p>
+              </div>
               <Field label="淡化">
                 <div className="grid grid-cols-3 gap-1.5">
                   {([
