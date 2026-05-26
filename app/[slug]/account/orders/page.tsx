@@ -90,60 +90,96 @@ export default async function CustomerOrdersPage({
     items = (it as OrderItem[] | null) ?? [];
   }
 
+  const totalCount = orderList.length;
+
   return (
-    <main className="max-w-3xl mx-auto px-6 py-24 sm:py-32">
-      <div className="mb-14 sm:mb-20">
+    <main className="max-w-3xl mx-auto px-6 sm:px-10 py-20 sm:py-28">
+      <header className="mb-14 sm:mb-20">
         <p
-          className="text-[10px] tracking-[0.4em] uppercase mb-5"
-          style={{ color: theme.accent }}
+          className="text-[0.6875rem] uppercase font-medium"
+          style={{
+            color: "var(--store-accent, currentColor)",
+            letterSpacing: "0.4em",
+          }}
         >
-          Orders
+          Orders · 訂單歷史
         </p>
         <h1
-          className="text-3xl sm:text-4xl lg:text-[2.5rem]"
+          className="mt-4 text-3xl sm:text-4xl font-medium"
           style={{
             color: theme.text,
             fontFamily: "var(--store-font)",
-            fontWeight: 400,
             letterSpacing: "-0.01em",
-            lineHeight: 1.2,
+            lineHeight: 1.15,
           }}
         >
-          訂單歷史
+          {totalCount === 0 ? "還沒下過訂單" : `${totalCount} 筆訂單在追蹤`}
         </h1>
+        <div
+          className="mt-5 h-px w-12"
+          style={{
+            background: "var(--store-accent, currentColor)",
+            opacity: 0.5,
+          }}
+        />
+        <p
+          className="mt-5 text-[0.9375rem]"
+          style={{ color: theme.textMuted, lineHeight: 1.7 }}
+        >
+          {totalCount === 0
+            ? "下單後可以在這裡追蹤狀態跟付款進度。"
+            : "點任一筆查看明細、配送資訊與聯絡店家。"}
+        </p>
         <Link
           href={`/${slug}/account`}
-          className="sproutly-link inline-block mt-6 text-xs tracking-[0.3em] uppercase"
+          className="sproutly-link inline-block mt-8 text-[0.6875rem] tracking-[0.3em] uppercase font-medium"
           style={{ color: theme.text }}
           data-default-line="true"
         >
-          ← 回會員中心
+          ← Back · 會員中心
         </Link>
-      </div>
+      </header>
 
       {orderList.length === 0 ? (
         <div
-          className="rounded-2xl p-10 text-center"
+          className="rounded-2xl p-10 sm:p-12 text-center"
           style={{
             background: theme.surface,
             border: `1px solid ${theme.border}`,
+            boxShadow: "var(--sproutly-elev-2)",
           }}
         >
           <p
-            className="text-base leading-[1.9]"
+            className="text-[0.6875rem] uppercase font-medium"
+            style={{
+              color: "var(--store-accent, currentColor)",
+              letterSpacing: "0.4em",
+            }}
+          >
+            Empty
+          </p>
+          <div
+            className="mt-4 mx-auto h-px w-10"
+            style={{
+              background: "var(--store-accent, currentColor)",
+              opacity: 0.5,
+            }}
+          />
+          <p
+            className="mt-5 text-[0.9375rem] leading-[1.9]"
             style={{ color: theme.textMuted }}
           >
-            還沒有訂單。
+            這裡空空的。
             <br />
-            去看看店裡有什麼？
+            去店裡逛一圈？
           </p>
           <Link
             href={`/${slug}/shop`}
-            className="sproutly-link inline-block mt-6 text-sm tracking-wider"
+            className="sproutly-link inline-block mt-8 text-[0.6875rem] tracking-[0.3em] uppercase font-medium"
             style={{ color: theme.text }}
             data-default-line="true"
           >
-            看商品
+            看商品 →
           </Link>
         </div>
       ) : (
@@ -155,30 +191,34 @@ export default async function CustomerOrdersPage({
               <li key={order.id}>
                 <Link
                   href={`/${slug}/account/orders/${order.id}`}
-                  className="block rounded-2xl p-7 transition hover:opacity-90"
+                  className="block rounded-2xl p-7 sm:p-8 transition hover:opacity-95"
                   style={{
                     background: theme.surface,
                     border: `1px solid ${theme.border}`,
+                    boxShadow: "var(--sproutly-elev-2)",
                   }}
                 >
                   <div className="flex items-start justify-between gap-4 mb-5">
                     <div className="min-w-0">
                       <p
-                        className="text-[10px] tracking-[0.4em] uppercase mb-2"
-                        style={{ color: theme.accent }}
+                        className="text-[0.6875rem] uppercase font-medium"
+                        style={{
+                          color: "var(--store-accent, currentColor)",
+                          letterSpacing: "0.4em",
+                        }}
                       >
-                        #{shortId}
+                        Order · #{shortId}
                       </p>
                       <p
-                        className="text-sm"
-                        style={{ color: theme.textMuted }}
+                        className="mt-3 text-sm"
+                        style={{ color: theme.textMuted, lineHeight: 1.7 }}
                       >
                         {formatDate(order.created_at)}
                       </p>
                     </div>
                     <div className="text-right">
                       <span
-                        className="inline-block text-[10px] tracking-[0.3em] uppercase px-3 py-1 rounded-full"
+                        className="inline-block text-[0.6875rem] tracking-[0.3em] uppercase font-medium px-3 py-1.5 rounded-full"
                         style={{
                           background: theme.bg,
                           color: theme.text,
@@ -191,7 +231,7 @@ export default async function CustomerOrdersPage({
                   </div>
 
                   <ul
-                    className="space-y-2.5 pb-5 mb-5 border-b text-sm leading-[1.8]"
+                    className="space-y-3 pb-6 mb-6 border-b text-[0.9375rem] leading-[1.85]"
                     style={{
                       borderColor: theme.border,
                       color: theme.text,
@@ -202,14 +242,14 @@ export default async function CustomerOrdersPage({
                         <span className="min-w-0 truncate">
                           {item.name_snapshot}
                           <span
-                            className="ml-2"
+                            className="ml-2 text-sm"
                             style={{ color: theme.textMuted }}
                           >
                             × {item.quantity}
                           </span>
                         </span>
                         <span
-                          className="tabular-nums whitespace-nowrap"
+                          className="tabular-nums whitespace-nowrap text-sm"
                           style={{ color: theme.textMuted }}
                         >
                           {formatPrice(
@@ -222,15 +262,18 @@ export default async function CustomerOrdersPage({
                   </ul>
 
                   <div className="flex items-end justify-between gap-4">
-                    <div className="text-xs space-y-1" style={{ color: theme.textMuted }}>
+                    <div
+                      className="text-[0.8125rem] space-y-1.5"
+                      style={{ color: theme.textMuted, lineHeight: 1.7 }}
+                    >
                       {order.payment_method && (
                         <p>
-                          付款方式：
+                          付款方式 ·{" "}
                           {PAYMENT_LABELS[order.payment_method] ?? order.payment_method}
                         </p>
                       )}
                       <p>
-                        付款狀態：
+                        付款狀態 ·{" "}
                         {order.payment_status === "paid"
                           ? "已付款"
                           : order.payment_status === "refunded"
@@ -239,12 +282,13 @@ export default async function CustomerOrdersPage({
                       </p>
                     </div>
                     <p
-                      className="text-xl sm:text-2xl tabular-nums"
+                      className="text-2xl sm:text-3xl tabular-nums"
                       style={{
                         color: theme.text,
                         fontFamily: "var(--store-font)",
-                        fontWeight: 400,
-                        letterSpacing: "-0.01em",
+                        fontWeight: 500,
+                        letterSpacing: "-0.02em",
+                        lineHeight: 1.1,
                       }}
                     >
                       {formatPrice(order.total_cents, order.currency)}
@@ -252,10 +296,10 @@ export default async function CustomerOrdersPage({
                   </div>
 
                   <p
-                    className="mt-5 pt-5 border-t text-[10px] tracking-[0.3em] uppercase text-right"
+                    className="mt-6 pt-5 border-t text-[0.6875rem] tracking-[0.3em] uppercase font-medium text-right"
                     style={{
                       borderColor: theme.border,
-                      color: theme.accent,
+                      color: "var(--store-accent, currentColor)",
                     }}
                   >
                     查看訂單 →
