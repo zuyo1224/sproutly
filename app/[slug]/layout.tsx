@@ -16,6 +16,7 @@ import { CartIcon } from "@/app/_components/cart-icon";
 import { SearchOverlay } from "@/app/_components/search-overlay";
 import { EditorClickBridge } from "@/app/_components/editor-click-bridge";
 import { StoreNavLink } from "@/app/_components/store-nav-link";
+import { BackToTop } from "@/app/_components/back-to-top";
 
 const RESERVED = new Set([
   "api",
@@ -925,6 +926,8 @@ export default async function PublicStoreLayout({
           </p>
         </div>
       </footer>
+
+      <BackToTop />
     </div>
   );
 }
