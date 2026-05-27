@@ -124,74 +124,156 @@ export default async function DashboardPage() {
       </header>
 
       <main className="max-w-5xl mx-auto px-8 pb-16">
-        <div className="mb-12">
-          <p className="text-[11px] tracking-[0.32em] uppercase text-emerald-700/70">
+        <div className="mb-16">
+          <p
+            className="uppercase text-emerald-700/70"
+            style={{
+              fontSize: "0.6875rem",
+              fontWeight: 500,
+              letterSpacing: "0.4em",
+            }}
+          >
             Dashboard
           </p>
-          <h1 className="mt-3 text-4xl md:text-5xl font-medium text-emerald-950 tracking-tight leading-[1.1]">
+          <h1
+            className="mt-4 text-4xl md:text-5xl font-medium text-emerald-950 tracking-tight"
+            style={{ lineHeight: 1.1, letterSpacing: "-0.01em" }}
+          >
             Hi {name}
           </h1>
-          <p className="mt-3 text-sm text-emerald-900/55">{user.email}</p>
+          <div
+            className="mt-5 bg-emerald-700/40"
+            style={{ width: "48px", height: "1px" }}
+          />
+          <p
+            className="mt-5 text-emerald-900/55"
+            style={{ fontSize: "0.9375rem", lineHeight: 1.7 }}
+          >
+            {user.email}
+            {stores && stores.length > 0
+              ? ` · ${stores.length} 間店在你手上`
+              : " · 還沒開店，從零開始吧"}
+          </p>
         </div>
 
         {/* 多店業績概覽 */}
         {stores && stores.length > 0 && (
-          <section className="mb-12">
+          <section className="mb-16">
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-              <div className="bg-white rounded-2xl p-5 shadow-lg shadow-emerald-700/5">
-                <p className="text-[10px] text-emerald-700/70 uppercase tracking-[0.28em]">
+              <div
+                className="bg-white rounded-2xl p-6"
+                style={{ boxShadow: "var(--sproutly-elev-2)" }}
+              >
+                <p
+                  className="uppercase text-emerald-700/70"
+                  style={{
+                    fontSize: "0.6875rem",
+                    fontWeight: 500,
+                    letterSpacing: "0.4em",
+                  }}
+                >
                   總營收
                 </p>
-                <p className="mt-3 text-2xl font-medium text-emerald-950 tracking-tight">
+                <p
+                  className="mt-4 text-emerald-950 font-medium"
+                  style={{
+                    fontSize: "1.875rem",
+                    letterSpacing: "-0.02em",
+                    fontVariantNumeric: "tabular-nums",
+                  }}
+                >
                   {formatPrice(totalRevenue)}
                 </p>
-                <p className="mt-1.5 text-xs text-emerald-900/50">
+                <p className="mt-2 text-xs text-emerald-900/50">
                   {stores.length} 間店合計
                 </p>
               </div>
-              <div className="bg-white rounded-2xl p-5 shadow-lg shadow-emerald-700/5">
-                <p className="text-[10px] text-emerald-700/70 uppercase tracking-[0.28em]">
-                  本月營收
-                </p>
-                <p className="mt-3 text-2xl font-medium text-emerald-950 tracking-tight">
-                  {formatPrice(totalMonthRevenue)}
-                </p>
-                <p className="mt-1.5 text-xs text-emerald-900/50">已付款</p>
-              </div>
-              <div className="bg-white rounded-2xl p-5 shadow-lg shadow-emerald-700/5">
-                <p className="text-[10px] text-emerald-700/70 uppercase tracking-[0.28em]">
-                  訂單數
-                </p>
-                <p className="mt-3 text-2xl font-medium text-emerald-950 tracking-tight">
-                  {totalOrders}
-                </p>
-                <p className="mt-1.5 text-xs text-emerald-900/50">累計</p>
-              </div>
               <div
-                className={`rounded-2xl p-5 shadow-lg ${
-                  totalPending > 0
-                    ? "bg-amber-50 shadow-amber-200/30"
-                    : "bg-white shadow-emerald-700/5"
-                }`}
+                className="bg-white rounded-2xl p-6"
+                style={{ boxShadow: "var(--sproutly-elev-2)" }}
               >
                 <p
-                  className={`text-[10px] uppercase tracking-[0.28em] ${
+                  className="uppercase text-emerald-700/70"
+                  style={{
+                    fontSize: "0.6875rem",
+                    fontWeight: 500,
+                    letterSpacing: "0.4em",
+                  }}
+                >
+                  本月營收
+                </p>
+                <p
+                  className="mt-4 text-emerald-950 font-medium"
+                  style={{
+                    fontSize: "1.875rem",
+                    letterSpacing: "-0.02em",
+                    fontVariantNumeric: "tabular-nums",
+                  }}
+                >
+                  {formatPrice(totalMonthRevenue)}
+                </p>
+                <p className="mt-2 text-xs text-emerald-900/50">已付款</p>
+              </div>
+              <div
+                className="bg-white rounded-2xl p-6"
+                style={{ boxShadow: "var(--sproutly-elev-2)" }}
+              >
+                <p
+                  className="uppercase text-emerald-700/70"
+                  style={{
+                    fontSize: "0.6875rem",
+                    fontWeight: 500,
+                    letterSpacing: "0.4em",
+                  }}
+                >
+                  訂單數
+                </p>
+                <p
+                  className="mt-4 text-emerald-950 font-medium"
+                  style={{
+                    fontSize: "1.875rem",
+                    letterSpacing: "-0.02em",
+                    fontVariantNumeric: "tabular-nums",
+                  }}
+                >
+                  {totalOrders}
+                </p>
+                <p className="mt-2 text-xs text-emerald-900/50">累計</p>
+              </div>
+              <div
+                className={`rounded-2xl p-6 ${
+                  totalPending > 0 ? "bg-amber-50" : "bg-white"
+                }`}
+                style={{ boxShadow: "var(--sproutly-elev-2)" }}
+              >
+                <p
+                  className={`uppercase ${
                     totalPending > 0
                       ? "text-amber-700"
                       : "text-emerald-700/70"
                   }`}
+                  style={{
+                    fontSize: "0.6875rem",
+                    fontWeight: 500,
+                    letterSpacing: "0.4em",
+                  }}
                 >
                   待處理訂單
                 </p>
                 <p
-                  className={`mt-3 text-2xl font-medium tracking-tight ${
+                  className={`mt-4 font-medium ${
                     totalPending > 0 ? "text-amber-700" : "text-emerald-950"
                   }`}
+                  style={{
+                    fontSize: "1.875rem",
+                    letterSpacing: "-0.02em",
+                    fontVariantNumeric: "tabular-nums",
+                  }}
                 >
                   {totalPending}
                 </p>
                 <p
-                  className={`mt-1.5 text-xs ${
+                  className={`mt-2 text-xs ${
                     totalPending > 0
                       ? "text-amber-700/70"
                       : "text-emerald-900/50"
@@ -205,24 +287,42 @@ export default async function DashboardPage() {
         )}
 
         <section>
-          <div className="flex items-center justify-between mb-8">
+          <div className="flex items-end justify-between mb-10 gap-4">
             <div>
-              <p className="text-[11px] tracking-[0.32em] uppercase text-emerald-700/70">
+              <p
+                className="uppercase text-emerald-700/70"
+                style={{
+                  fontSize: "0.6875rem",
+                  fontWeight: 500,
+                  letterSpacing: "0.4em",
+                }}
+              >
                 Storefronts
               </p>
-              <h2 className="mt-2 text-2xl md:text-3xl font-medium text-emerald-950 tracking-tight">
+              <h2
+                className="mt-4 text-2xl md:text-3xl font-medium text-emerald-950 tracking-tight"
+                style={{ lineHeight: 1.15, letterSpacing: "-0.01em" }}
+              >
                 我的店
               </h2>
-              <p className="text-sm text-emerald-900/55 mt-1.5">
+              <div
+                className="mt-4 bg-emerald-700/40"
+                style={{ width: "48px", height: "1px" }}
+              />
+              <p
+                className="mt-4 text-emerald-900/55"
+                style={{ fontSize: "0.9375rem", lineHeight: 1.7 }}
+              >
                 {stores && stores.length > 0
-                  ? `共 ${stores.length} 間`
-                  : "還沒有店面"}
+                  ? `共 ${stores.length} 間 · 點進去管理或開新店`
+                  : "還沒有店面 · 建一間試試"}
               </p>
             </div>
             {stores && stores.length > 0 && (
               <Link
                 href="/dashboard/new-store"
-                className="rounded-full bg-emerald-700 px-5 py-2.5 text-white text-sm font-medium hover:bg-emerald-800 transition shadow-lg shadow-emerald-700/20"
+                className="rounded-full bg-emerald-700 px-5 py-2.5 text-white text-sm font-medium hover:bg-emerald-800 transition flex-shrink-0"
+                style={{ boxShadow: "var(--sproutly-elev-2)" }}
               >
                 ＋ 開新店
               </Link>
@@ -239,67 +339,131 @@ export default async function DashboardPage() {
                 return (
                   <div
                     key={store.id}
-                    className="bg-white rounded-2xl p-6 shadow-lg shadow-emerald-700/5 hover:shadow-xl hover:shadow-emerald-700/10 transition"
+                    className="bg-white rounded-2xl p-7 sm:p-8 hover:translate-y-[-1px] transition"
+                    style={{ boxShadow: "var(--sproutly-elev-2)" }}
                   >
-                    <div className="flex items-start justify-between mb-3 gap-2">
-                      <h3 className="text-xl font-medium text-emerald-950 min-w-0 truncate tracking-tight">
+                    <div className="flex items-start justify-between mb-3 gap-3">
+                      <h3
+                        className="text-xl font-medium text-emerald-950 min-w-0 truncate"
+                        style={{ letterSpacing: "-0.01em" }}
+                      >
                         {store.name}
                       </h3>
                       <span
-                        className={`text-[10px] uppercase tracking-[0.18em] px-2.5 py-1 rounded-full flex-shrink-0 ${
+                        className={`uppercase px-2.5 py-1 rounded-full flex-shrink-0 ${
                           store.is_published
                             ? "bg-emerald-100 text-emerald-800"
                             : "bg-amber-100 text-amber-800"
                         }`}
+                        style={{
+                          fontSize: "0.6875rem",
+                          fontWeight: 500,
+                          letterSpacing: "0.3em",
+                        }}
                       >
-                        {store.is_published ? "已發布" : "草稿"}
+                        {store.is_published ? "Live" : "Draft"}
                       </span>
                     </div>
-                    <p className="text-xs text-emerald-900/45 mb-3 font-mono break-all tracking-tight">
+                    <p
+                      className="text-emerald-900/45 mb-4 font-mono break-all"
+                      style={{
+                        fontSize: "0.75rem",
+                        letterSpacing: "-0.01em",
+                      }}
+                    >
                       sproutly.app/{store.slug}
                     </p>
                     {store.description && (
-                      <p className="text-sm text-emerald-900/65 line-clamp-2 mb-4 leading-relaxed">
+                      <p
+                        className="text-emerald-900/65 line-clamp-2 mb-5"
+                        style={{
+                          fontSize: "0.875rem",
+                          lineHeight: 1.7,
+                        }}
+                      >
                         {store.description}
                       </p>
                     )}
 
                     {/* mini stats */}
-                    <div className="grid grid-cols-3 gap-2 mb-4 text-center">
-                      <div className="rounded-lg bg-emerald-50/60 px-2 py-2.5">
-                        <p className="text-[9px] text-emerald-700/70 uppercase tracking-[0.22em]">
+                    <div className="grid grid-cols-3 gap-2 mb-5 text-center">
+                      <div className="rounded-lg bg-emerald-50/60 px-2 py-3">
+                        <p
+                          className="uppercase text-emerald-700/70"
+                          style={{
+                            fontSize: "0.625rem",
+                            fontWeight: 500,
+                            letterSpacing: "0.3em",
+                          }}
+                        >
                           商品
                         </p>
-                        <p className="text-sm font-medium text-emerald-950 mt-1 tracking-tight">
+                        <p
+                          className="text-emerald-950 mt-1.5 font-medium"
+                          style={{
+                            fontSize: "0.9375rem",
+                            letterSpacing: "-0.01em",
+                            fontVariantNumeric: "tabular-nums",
+                          }}
+                        >
                           {productCount}
                         </p>
                       </div>
-                      <div className="rounded-lg bg-emerald-50/60 px-2 py-2.5">
-                        <p className="text-[9px] text-emerald-700/70 uppercase tracking-[0.22em]">
+                      <div className="rounded-lg bg-emerald-50/60 px-2 py-3">
+                        <p
+                          className="uppercase text-emerald-700/70"
+                          style={{
+                            fontSize: "0.625rem",
+                            fontWeight: 500,
+                            letterSpacing: "0.3em",
+                          }}
+                        >
                           訂單
                         </p>
-                        <p className="text-sm font-medium text-emerald-950 mt-1 tracking-tight">
+                        <p
+                          className="text-emerald-950 mt-1.5 font-medium"
+                          style={{
+                            fontSize: "0.9375rem",
+                            letterSpacing: "-0.01em",
+                            fontVariantNumeric: "tabular-nums",
+                          }}
+                        >
                           {orderCount}
                           {pending > 0 && (
-                            <span className="ml-1 text-[10px] text-amber-700 font-medium">
-                              ({pending} 待處理)
+                            <span
+                              className="ml-1 text-amber-700 font-medium"
+                              style={{ fontSize: "0.6875rem" }}
+                            >
+                              ({pending} 待)
                             </span>
                           )}
                         </p>
                       </div>
-                      <div className="rounded-lg bg-emerald-50/60 px-2 py-2.5">
-                        <p className="text-[9px] text-emerald-700/70 uppercase tracking-[0.22em]">
+                      <div className="rounded-lg bg-emerald-50/60 px-2 py-3">
+                        <p
+                          className="uppercase text-emerald-700/70"
+                          style={{
+                            fontSize: "0.625rem",
+                            fontWeight: 500,
+                            letterSpacing: "0.3em",
+                          }}
+                        >
                           本月
                         </p>
-                        <p className="text-sm font-medium text-emerald-950 mt-1 tracking-tight">
-                          {monthRev > 0
-                            ? formatPrice(monthRev)
-                            : "—"}
+                        <p
+                          className="text-emerald-950 mt-1.5 font-medium"
+                          style={{
+                            fontSize: "0.9375rem",
+                            letterSpacing: "-0.01em",
+                            fontVariantNumeric: "tabular-nums",
+                          }}
+                        >
+                          {monthRev > 0 ? formatPrice(monthRev) : "—"}
                         </p>
                       </div>
                     </div>
 
-                    <div className="flex gap-2 pt-3 border-t border-emerald-50">
+                    <div className="flex gap-2 pt-4 border-t border-emerald-50">
                       <Link
                         href={`/dashboard/stores/${store.slug}`}
                         className="flex-1 text-center text-sm rounded-full bg-emerald-700 text-white px-4 py-2 hover:bg-emerald-800 transition font-medium"
@@ -328,19 +492,40 @@ export default async function DashboardPage() {
               })}
             </div>
           ) : (
-            <div className="bg-white rounded-3xl p-14 text-center shadow-xl shadow-emerald-700/5">
-              <p className="text-[11px] tracking-[0.32em] uppercase text-emerald-700/70 mb-4">
+            <div
+              className="bg-white rounded-3xl p-14 text-center"
+              style={{ boxShadow: "var(--sproutly-elev-2)" }}
+            >
+              <p
+                className="uppercase text-emerald-700/70"
+                style={{
+                  fontSize: "0.6875rem",
+                  fontWeight: 500,
+                  letterSpacing: "0.4em",
+                }}
+              >
                 Welcome
               </p>
-              <h3 className="text-2xl md:text-3xl font-medium text-emerald-950 tracking-tight">
+              <div
+                className="mt-4 mx-auto bg-emerald-700/40"
+                style={{ width: "40px", height: "1px" }}
+              />
+              <h3
+                className="mt-6 text-2xl md:text-3xl font-medium text-emerald-950"
+                style={{ lineHeight: 1.15, letterSpacing: "-0.01em" }}
+              >
                 還沒有店面
               </h3>
-              <p className="mt-3 text-emerald-900/55 max-w-md mx-auto leading-relaxed">
+              <p
+                className="mt-4 text-emerald-900/55 max-w-md mx-auto"
+                style={{ fontSize: "0.9375rem", lineHeight: 1.7 }}
+              >
                 建立你的第一間店，開始你的線上小生意
               </p>
               <Link
                 href="/dashboard/new-store"
-                className="mt-8 inline-block rounded-full bg-emerald-700 px-8 py-3.5 text-white font-medium hover:bg-emerald-800 transition shadow-lg shadow-emerald-700/20"
+                className="mt-10 inline-block rounded-full bg-emerald-700 px-8 py-3.5 text-white font-medium hover:bg-emerald-800 transition"
+                style={{ boxShadow: "var(--sproutly-elev-2)" }}
               >
                 ＋ 開第一間店
               </Link>

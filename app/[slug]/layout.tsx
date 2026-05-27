@@ -366,24 +366,7 @@ export default async function PublicStoreLayout({
           opacity: 1;
         }
 
-        /* Layered elevation tokens（給卡片 / hero / button 共用） */
-        :root {
-          --sproutly-elev-1:
-            0 1px 2px rgba(0, 0, 0, 0.04),
-            0 2px 8px -2px rgba(0, 0, 0, 0.04);
-          --sproutly-elev-2:
-            0 1px 2px rgba(0, 0, 0, 0.04),
-            0 4px 14px -4px rgba(0, 0, 0, 0.06),
-            0 16px 32px -16px rgba(0, 0, 0, 0.06);
-          --sproutly-elev-3:
-            0 2px 4px rgba(0, 0, 0, 0.05),
-            0 12px 28px -8px rgba(0, 0, 0, 0.08),
-            0 32px 56px -24px rgba(0, 0, 0, 0.12);
-          --sproutly-elev-4:
-            0 4px 8px rgba(0, 0, 0, 0.06),
-            0 24px 40px -12px rgba(0, 0, 0, 0.12),
-            0 48px 80px -32px rgba(0, 0, 0, 0.18);
-        }
+        /* Layered elevation tokens — 已提升到 globals.css :root，全站共用 */
 
         /* 商品 card：layered shadow + hover lift + 圖 zoom + 暗化 + 文字字距開 */
         .sproutly-card { display: block; }
