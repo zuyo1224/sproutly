@@ -4,7 +4,7 @@ import { createClient } from "@/lib/supabase/server";
 import { resolveTheme } from "../_theme";
 
 type Params = Promise<{ slug: string }>;
-type SearchParams = Promise<{ q?: string; sort?: string }>;
+type SearchParams = Promise<{ q?: string; sort?: string; stock?: string }>;
 
 const SORT_OPTIONS: { value: string; label: string }[] = [
   { value: "newest", label: "最新上架" },
@@ -27,11 +27,12 @@ export default async function ShopPage({
   searchParams: SearchParams;
 }) {
   const { slug } = await params;
-  const { q: rawQ, sort: rawSort } = await searchParams;
+  const { q: rawQ, sort: rawSort, stock: rawStock } = await searchParams;
   const q = (rawQ ?? "").trim();
   const sort = SORT_OPTIONS.some((o) => o.value === rawSort)
     ? rawSort!
     : "newest";
+  const inStock = rawStock === "1";
 
   const supabase = await createClient();
   const { data: store } = await supabase
@@ -55,6 +56,10 @@ export default async function ShopPage({
     query = query.ilike("name", `%${escaped}%`);
   }
 
+  if (inStock) {
+    query = query.or("stock.is.null,stock.gt.0");
+  }
+
   switch (sort) {
     case "price-asc":
       query = query.order("price_cents", { ascending: true });
@@ -73,7 +78,7 @@ export default async function ShopPage({
 
   const { data: products } = await query;
   const totalCount = products?.length ?? 0;
-  const hasFilter = q || sort !== "newest";
+  const hasFilter = q || sort !== "newest" || inStock;
 
   return (
     <main className="max-w-6xl mx-auto px-6 sm:px-10 py-20 sm:py-28">
@@ -104,10 +109,14 @@ export default async function ShopPage({
           style={{ color: theme.textMuted, lineHeight: 1.7 }}
         >
           {q
-            ? `搜尋「${q}」· 找到 ${totalCount} 件商品`
+            ? `搜尋「${q}」· 找到 ${totalCount} 件${inStock ? "有貨" : ""}商品`
             : totalCount === 0
-              ? "還沒有商品上架"
-              : `${totalCount} 件商品在等你慢慢挑`}
+              ? inStock
+                ? "目前沒有有貨的商品"
+                : "還沒有商品上架"
+              : inStock
+                ? `${totalCount} 件有貨商品 · 立刻可以下單`
+                : `${totalCount} 件商品在等你慢慢挑`}
         </p>
       </header>
 
@@ -137,6 +146,31 @@ export default async function ShopPage({
             <path strokeLinecap="round" d="M21 21l-4.35-4.35" />
           </svg>
         </div>
+        <label
+          className="flex items-center gap-2.5 px-4 sm:px-5 rounded-full cursor-pointer select-none"
+          style={{
+            border: `1px solid ${theme.border}`,
+            background: "var(--store-surface, transparent)",
+            color: theme.text,
+            minHeight: "2.75rem",
+          }}
+        >
+          <input
+            type="checkbox"
+            name="stock"
+            value="1"
+            defaultChecked={inStock}
+            className="w-4 h-4 cursor-pointer"
+            style={{ accentColor: theme.accent }}
+            aria-label="只看有庫存"
+          />
+          <span
+            className="text-[0.6875rem] uppercase font-medium whitespace-nowrap"
+            style={{ letterSpacing: "0.3em" }}
+          >
+            In Stock · 只看有貨
+          </span>
+        </label>
         <select
           name="sort"
           defaultValue={sort}
@@ -242,7 +276,7 @@ export default async function ShopPage({
             className="text-[0.6875rem] uppercase font-medium"
             style={{ color: theme.accent, letterSpacing: "0.4em" }}
           >
-            {q ? "Not Found" : "Empty"}
+            {hasFilter ? "Not Found" : "Empty"}
           </p>
           <div
             className="mt-5 h-px w-10"
@@ -263,6 +297,12 @@ export default async function ShopPage({
                 <br />
                 符合「{q}」
               </>
+            ) : inStock ? (
+              <>
+                目前所有商品
+                <br />
+                都暫時缺貨
+              </>
             ) : (
               <>
                 這間店
@@ -277,9 +317,11 @@ export default async function ShopPage({
           >
             {q
               ? "換個關鍵字、或先看看全部商品。"
-              : "店主還沒上架商品，過幾天再回來看看吧。"}
+              : inStock
+                ? "取消「只看有貨」可以瀏覽預購商品。"
+                : "店主還沒上架商品，過幾天再回來看看吧。"}
           </p>
-          {q && (
+          {hasFilter && (
             <Link
               href={`/${slug}/shop`}
               className="sproutly-link mt-10 inline-block text-[0.75rem] uppercase font-medium"
