@@ -59,6 +59,7 @@ type EditorPayload = {
   };
   homepage?: {
     promise?: string;
+    promiseEyebrow?: string;
     collectionsIntro?: string;
     visitTitle?: string;
   };
@@ -371,6 +372,10 @@ export async function saveEditorState(slug: string, payload: EditorPayload) {
     const hpPatch: Record<string, unknown> = { ...existingHomepage };
     if (payload.homepage.promise !== undefined) {
       hpPatch.promise = String(payload.homepage.promise).slice(0, 2000);
+    }
+    if (payload.homepage.promiseEyebrow !== undefined) {
+      const v = String(payload.homepage.promiseEyebrow).trim().slice(0, 60);
+      hpPatch.promiseEyebrow = v || null;
     }
     if (payload.homepage.collectionsIntro !== undefined) {
       hpPatch.collectionsIntro = String(payload.homepage.collectionsIntro).slice(

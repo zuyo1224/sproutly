@@ -49,6 +49,8 @@ export default async function StoreHomePage({
   const collectionsIntro =
     theme.homepage.collectionsIntro || HOMEPAGE_DEFAULTS.collectionsIntro;
   const promiseText = theme.homepage.promise || HOMEPAGE_DEFAULTS.promise;
+  const promiseEyebrow =
+    theme.homepage.promiseEyebrow || HOMEPAGE_DEFAULTS.promiseEyebrow;
   const visitTitle =
     theme.homepage.visitTitle || HOMEPAGE_DEFAULTS.visitTitle;
   const collectionsConfig =
@@ -1114,7 +1116,7 @@ export default async function StoreHomePage({
                   className="text-[10px] tracking-[0.4em] uppercase mb-8 relative z-10"
                   style={{ color: theme.accent }}
                 >
-                  Our Promise
+                  {promiseEyebrow}
                 </p>
 
                 <blockquote

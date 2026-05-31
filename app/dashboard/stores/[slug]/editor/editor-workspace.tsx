@@ -104,6 +104,7 @@ type EditorTheme = {
   };
   homepage: {
     promise: string;
+    promiseEyebrow: string;
     collectionsIntro: string;
     visitTitle: string;
   };
@@ -1456,6 +1457,21 @@ export function EditorWorkspace({
 
         {activeTab === "section" && selectedSection === "promise" && (
           <PanelSection title="Promise 區段">
+            <Field label="Eyebrow（小標）">
+              <input
+                type="text"
+                value={theme.homepage.promiseEyebrow}
+                onChange={(e) =>
+                  updateHomepage({ promiseEyebrow: e.target.value })
+                }
+                placeholder="Our Promise"
+                maxLength={60}
+                className="w-full rounded-lg border border-stone-200 px-3 py-2 text-sm"
+              />
+              <p className="mt-1 text-[11px] text-stone-500 leading-relaxed">
+                Promise 卡片上方那行小字，預設「Our Promise」。
+              </p>
+            </Field>
             <Field label="Promise 文字">
               <textarea
                 value={theme.homepage.promise}

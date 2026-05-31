@@ -114,11 +114,20 @@ export async function updateStore(slug: string, formData: FormData) {
 
   const existingCollections = (existingTheme.collections as Record<string, string>) ?? {};
 
+  // 保留 editor 才有改的欄位（避免 settings 頁送出時被清掉）
+  const existingHomepage =
+    (existingTheme.homepage as Record<string, unknown>) ?? {};
+  const existingPromiseEyebrow =
+    typeof existingHomepage.promiseEyebrow === "string"
+      ? existingHomepage.promiseEyebrow
+      : null;
+
   const homepage = {
     collectionsIntro:
       String(formData.get("hp_collections_intro") ?? "").trim() || null,
     collectionItems,
     promise: String(formData.get("hp_promise") ?? "").trim() || null,
+    promiseEyebrow: existingPromiseEyebrow,
     visitTitle: String(formData.get("hp_visit_title") ?? "").trim() || null,
     enableAnimation: formData.get("hp_enable_animation") === "on",
   };
