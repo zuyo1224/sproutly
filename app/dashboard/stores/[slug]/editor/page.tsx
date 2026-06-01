@@ -43,6 +43,7 @@ export default async function EditorPage({
     homepage: {
       promise: theme.homepage.promise ?? "",
       promiseEyebrow: theme.homepage.promiseEyebrow ?? "",
+      featuredTitle: theme.homepage.featuredTitle ?? "",
       collectionsIntro: theme.homepage.collectionsIntro ?? "",
       visitTitle: theme.homepage.visitTitle ?? "",
     },

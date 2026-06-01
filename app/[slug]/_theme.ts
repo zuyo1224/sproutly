@@ -144,6 +144,7 @@ export interface StoreTheme {
     collectionItems: Array<{ key: string; title: string; subtitle: string }>;
     promise: string | null;
     promiseEyebrow: string | null;
+    featuredTitle: string | null;
     visitTitle: string | null;
     enableAnimation: boolean;
   };
@@ -216,6 +217,7 @@ export const HOMEPAGE_DEFAULTS = {
   promise:
     "帶回家以後，我們不會消失。\n植物有狀況，傳訊息給我們。\n九十天內沒養活，原價換新一次。",
   promiseEyebrow: "Our Promise",
+  featuredTitle: "本月選物",
   visitTitle: "來店裡走走",
 };
 
@@ -676,6 +678,10 @@ function resolveHomepage(raw: unknown): StoreTheme["homepage"] {
     promiseEyebrow:
       typeof h.promiseEyebrow === "string" && h.promiseEyebrow.trim()
         ? h.promiseEyebrow.trim()
+        : null,
+    featuredTitle:
+      typeof h.featuredTitle === "string" && h.featuredTitle.trim()
+        ? h.featuredTitle.trim()
         : null,
     visitTitle:
       typeof h.visitTitle === "string" && h.visitTitle.trim()

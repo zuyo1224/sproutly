@@ -51,6 +51,8 @@ export default async function StoreHomePage({
   const promiseText = theme.homepage.promise || HOMEPAGE_DEFAULTS.promise;
   const promiseEyebrow =
     theme.homepage.promiseEyebrow || HOMEPAGE_DEFAULTS.promiseEyebrow;
+  const featuredTitle =
+    theme.homepage.featuredTitle || HOMEPAGE_DEFAULTS.featuredTitle;
   const visitTitle =
     theme.homepage.visitTitle || HOMEPAGE_DEFAULTS.visitTitle;
   const collectionsConfig =
@@ -776,7 +778,7 @@ export default async function StoreHomePage({
                     whiteSpace: "nowrap",
                   }}
                 >
-                  本月選物
+                  {featuredTitle}
                 </h2>
               ) : (
                 <h2
@@ -788,7 +790,7 @@ export default async function StoreHomePage({
                     fontWeight: 400,
                   }}
                 >
-                  本月選物
+                  {featuredTitle}
                 </h2>
               )}
               <div className={`sproutly-stagger grid grid-cols-2 gap-x-6 sm:gap-x-10 gap-y-16 ${

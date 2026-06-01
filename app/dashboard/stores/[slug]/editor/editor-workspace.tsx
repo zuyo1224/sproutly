@@ -105,6 +105,7 @@ type EditorTheme = {
   homepage: {
     promise: string;
     promiseEyebrow: string;
+    featuredTitle: string;
     collectionsIntro: string;
     visitTitle: string;
   };
@@ -1874,6 +1875,21 @@ export function EditorWorkspace({
         {activeTab === "section" &&
           selectedSection === "featured" && (
             <PanelSection title={sectionLabels.featured}>
+              <Field label="標題">
+                <input
+                  type="text"
+                  value={theme.homepage.featuredTitle}
+                  onChange={(e) =>
+                    updateHomepage({ featuredTitle: e.target.value })
+                  }
+                  placeholder="本月選物"
+                  maxLength={60}
+                  className="w-full rounded-lg border border-stone-200 px-3 py-2 text-sm"
+                />
+                <p className="mt-1 text-[11px] text-stone-500 leading-relaxed">
+                  Featured 區段上方那行大字，預設「本月選物」。
+                </p>
+              </Field>
               <Field label={`顯示幾個商品（${theme.layout.featuredCount}）`}>
                 <input
                   type="range"
