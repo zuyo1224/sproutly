@@ -63,6 +63,9 @@ type EditorPayload = {
     featuredTitle?: string;
     collectionsIntro?: string;
     visitTitle?: string;
+    journalEyebrow?: string;
+    journalTitle?: string;
+    journalSubtitle?: string;
   };
   sections?: {
     about?: boolean;
@@ -390,6 +393,18 @@ export async function saveEditorState(slug: string, payload: EditorPayload) {
     }
     if (payload.homepage.visitTitle !== undefined) {
       hpPatch.visitTitle = String(payload.homepage.visitTitle).slice(0, 100);
+    }
+    if (payload.homepage.journalEyebrow !== undefined) {
+      const v = String(payload.homepage.journalEyebrow).trim().slice(0, 60);
+      hpPatch.journalEyebrow = v || null;
+    }
+    if (payload.homepage.journalTitle !== undefined) {
+      const v = String(payload.homepage.journalTitle).trim().slice(0, 60);
+      hpPatch.journalTitle = v || null;
+    }
+    if (payload.homepage.journalSubtitle !== undefined) {
+      const v = String(payload.homepage.journalSubtitle).trim().slice(0, 160);
+      hpPatch.journalSubtitle = v || null;
     }
     merged.homepage = hpPatch;
   }

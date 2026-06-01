@@ -146,6 +146,9 @@ export interface StoreTheme {
     promiseEyebrow: string | null;
     featuredTitle: string | null;
     visitTitle: string | null;
+    journalEyebrow: string | null;
+    journalTitle: string | null;
+    journalSubtitle: string | null;
     enableAnimation: boolean;
   };
   layout: {
@@ -219,6 +222,9 @@ export const HOMEPAGE_DEFAULTS = {
   promiseEyebrow: "Our Promise",
   featuredTitle: "本月選物",
   visitTitle: "來店裡走走",
+  journalEyebrow: "Journal",
+  journalTitle: "慢讀",
+  journalSubtitle: "關於植物、空間，與這間店的日常筆記。",
 };
 
 export const PRESETS: Record<PresetKey, Omit<StoreTheme, "preset" | "logoUrl" | "heroUrl" | "sections" | "social" | "tagline" | "collections" | "homepage" | "layout">> = {
@@ -686,6 +692,18 @@ function resolveHomepage(raw: unknown): StoreTheme["homepage"] {
     visitTitle:
       typeof h.visitTitle === "string" && h.visitTitle.trim()
         ? h.visitTitle
+        : null,
+    journalEyebrow:
+      typeof h.journalEyebrow === "string" && h.journalEyebrow.trim()
+        ? h.journalEyebrow.trim()
+        : null,
+    journalTitle:
+      typeof h.journalTitle === "string" && h.journalTitle.trim()
+        ? h.journalTitle.trim()
+        : null,
+    journalSubtitle:
+      typeof h.journalSubtitle === "string" && h.journalSubtitle.trim()
+        ? h.journalSubtitle.trim()
         : null,
     enableAnimation: h.enableAnimation === false ? false : true, // default true
   };

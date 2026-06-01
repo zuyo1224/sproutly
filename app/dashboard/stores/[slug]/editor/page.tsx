@@ -46,6 +46,9 @@ export default async function EditorPage({
       featuredTitle: theme.homepage.featuredTitle ?? "",
       collectionsIntro: theme.homepage.collectionsIntro ?? "",
       visitTitle: theme.homepage.visitTitle ?? "",
+      journalEyebrow: theme.homepage.journalEyebrow ?? "",
+      journalTitle: theme.homepage.journalTitle ?? "",
+      journalSubtitle: theme.homepage.journalSubtitle ?? "",
     },
     sections: theme.sections,
   };

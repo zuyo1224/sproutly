@@ -125,6 +125,18 @@ export async function updateStore(slug: string, formData: FormData) {
     typeof existingHomepage.featuredTitle === "string"
       ? existingHomepage.featuredTitle
       : null;
+  const existingJournalEyebrow =
+    typeof existingHomepage.journalEyebrow === "string"
+      ? existingHomepage.journalEyebrow
+      : null;
+  const existingJournalTitle =
+    typeof existingHomepage.journalTitle === "string"
+      ? existingHomepage.journalTitle
+      : null;
+  const existingJournalSubtitle =
+    typeof existingHomepage.journalSubtitle === "string"
+      ? existingHomepage.journalSubtitle
+      : null;
 
   const homepage = {
     collectionsIntro:
@@ -134,6 +146,9 @@ export async function updateStore(slug: string, formData: FormData) {
     promiseEyebrow: existingPromiseEyebrow,
     featuredTitle: existingFeaturedTitle,
     visitTitle: String(formData.get("hp_visit_title") ?? "").trim() || null,
+    journalEyebrow: existingJournalEyebrow,
+    journalTitle: existingJournalTitle,
+    journalSubtitle: existingJournalSubtitle,
     enableAnimation: formData.get("hp_enable_animation") === "on",
   };
 

@@ -871,6 +871,12 @@ export default async function StoreHomePage({
           const journalPos = theme.layout.freePositions["__disabled__"] ?? null;
           const journalFree = false; void journalPos;
           const journalStyle = sectionStyleFor("journal");
+          const journalEyebrow =
+            theme.homepage.journalEyebrow || HOMEPAGE_DEFAULTS.journalEyebrow;
+          const journalTitle =
+            theme.homepage.journalTitle || HOMEPAGE_DEFAULTS.journalTitle;
+          const journalSubtitle =
+            theme.homepage.journalSubtitle || HOMEPAGE_DEFAULTS.journalSubtitle;
           return (
           <section
             className={`relative py-40 sm:py-56 ${animClass} ${journalFree ? "min-h-[60vh]" : ""}`}
@@ -896,7 +902,7 @@ export default async function StoreHomePage({
                   className="text-[10px] tracking-[0.4em] uppercase mb-5"
                   style={{ color: theme.accent }}
                 >
-                  Journal
+                  {journalEyebrow}
                 </p>
                 <h2
                   className="text-3xl sm:text-4xl lg:text-[2.5rem]"
@@ -908,13 +914,13 @@ export default async function StoreHomePage({
                     lineHeight: 1.2,
                   }}
                 >
-                  慢讀
+                  {journalTitle}
                 </h2>
                 <p
                   className="mt-6 text-sm sm:text-base leading-[1.9]"
                   style={{ color: theme.textMuted }}
                 >
-                  關於植物、空間，與這間店的日常筆記。
+                  {journalSubtitle}
                 </p>
               </div>
             ) : (
@@ -923,7 +929,7 @@ export default async function StoreHomePage({
                   className="text-[10px] tracking-[0.4em] uppercase mb-5"
                   style={{ color: theme.accent }}
                 >
-                  Journal
+                  {journalEyebrow}
                 </p>
                 <h2
                   className="text-3xl sm:text-4xl lg:text-[2.5rem]"
@@ -935,13 +941,13 @@ export default async function StoreHomePage({
                     lineHeight: 1.2,
                   }}
                 >
-                  慢讀
+                  {journalTitle}
                 </h2>
                 <p
                   className="mt-6 text-sm sm:text-base max-w-xl leading-[1.9]"
                   style={{ color: theme.textMuted }}
                 >
-                  關於植物、空間，與這間店的日常筆記。
+                  {journalSubtitle}
                 </p>
               </div>
             )}

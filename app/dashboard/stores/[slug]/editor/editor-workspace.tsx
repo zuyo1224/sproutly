@@ -108,6 +108,9 @@ type EditorTheme = {
     featuredTitle: string;
     collectionsIntro: string;
     visitTitle: string;
+    journalEyebrow: string;
+    journalTitle: string;
+    journalSubtitle: string;
   };
   sections: {
     about: boolean;
@@ -1931,12 +1934,53 @@ export function EditorWorkspace({
 
         {activeTab === "section" && selectedSection === "journal" && (
           <PanelSection title={sectionLabels.journal}>
-            <p className="text-sm text-stone-600 leading-relaxed">
-              慢讀 / Journal 區段，目前用預設 placeholder。
-            </p>
-            <p className="mt-3 text-xs text-stone-500">
-              你可以用左側「版面結構」拖曳排序這個 section 的位置，
-              或在「色彩」改 accent 色換它的調性。
+            <Field label="Eyebrow（小標）">
+              <input
+                type="text"
+                value={theme.homepage.journalEyebrow}
+                onChange={(e) =>
+                  updateHomepage({ journalEyebrow: e.target.value })
+                }
+                placeholder="Journal"
+                maxLength={60}
+                className="w-full rounded-lg border border-stone-200 px-3 py-2 text-sm"
+              />
+              <p className="mt-1 text-[11px] text-stone-500 leading-relaxed">
+                Journal 區段上方那行小字，預設「Journal」。
+              </p>
+            </Field>
+            <Field label="標題">
+              <input
+                type="text"
+                value={theme.homepage.journalTitle}
+                onChange={(e) =>
+                  updateHomepage({ journalTitle: e.target.value })
+                }
+                placeholder="慢讀"
+                maxLength={60}
+                className="w-full rounded-lg border border-stone-200 px-3 py-2 text-sm"
+              />
+              <p className="mt-1 text-[11px] text-stone-500 leading-relaxed">
+                Journal 區段大字，預設「慢讀」。
+              </p>
+            </Field>
+            <Field label="副題">
+              <textarea
+                value={theme.homepage.journalSubtitle}
+                onChange={(e) =>
+                  updateHomepage({ journalSubtitle: e.target.value })
+                }
+                rows={3}
+                placeholder="關於植物、空間，與這間店的日常筆記。"
+                maxLength={160}
+                className="w-full rounded-lg border border-stone-200 px-3 py-2 text-sm resize-none"
+              />
+              <p className="mt-1 text-[11px] text-stone-500 leading-relaxed">
+                標題下方那段短說明。
+              </p>
+            </Field>
+            <p className="text-xs text-stone-500 leading-relaxed">
+              下方三張 Care / Space / Story placeholder 卡片目前還沒接實際文章。
             </p>
           </PanelSection>
         )}
