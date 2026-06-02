@@ -66,6 +66,8 @@ type EditorPayload = {
     journalEyebrow?: string;
     journalTitle?: string;
     journalSubtitle?: string;
+    testimonialsEyebrow?: string;
+    testimonialsTitle?: string;
   };
   sections?: {
     about?: boolean;
@@ -405,6 +407,14 @@ export async function saveEditorState(slug: string, payload: EditorPayload) {
     if (payload.homepage.journalSubtitle !== undefined) {
       const v = String(payload.homepage.journalSubtitle).trim().slice(0, 160);
       hpPatch.journalSubtitle = v || null;
+    }
+    if (payload.homepage.testimonialsEyebrow !== undefined) {
+      const v = String(payload.homepage.testimonialsEyebrow).trim().slice(0, 60);
+      hpPatch.testimonialsEyebrow = v || null;
+    }
+    if (payload.homepage.testimonialsTitle !== undefined) {
+      const v = String(payload.homepage.testimonialsTitle).trim().slice(0, 60);
+      hpPatch.testimonialsTitle = v || null;
     }
     merged.homepage = hpPatch;
   }

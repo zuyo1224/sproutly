@@ -1170,6 +1170,12 @@ export default async function StoreHomePage({
             const testimonialsPos = theme.layout.freePositions["__disabled__"] ?? null;
             const testimonialsFree = false;
             const testimonialsStyle = sectionStyleFor("testimonials");
+            const testimonialsEyebrow =
+              theme.homepage.testimonialsEyebrow ||
+              HOMEPAGE_DEFAULTS.testimonialsEyebrow;
+            const testimonialsTitle =
+              theme.homepage.testimonialsTitle ||
+              HOMEPAGE_DEFAULTS.testimonialsTitle;
             const testimonialsDivider =
               testimonialsStyle.align === "right"
                 ? "ml-auto"
@@ -1204,7 +1210,7 @@ export default async function StoreHomePage({
                       className="text-[10px] tracking-[0.4em] uppercase mb-5"
                       style={{ color: theme.accent }}
                     >
-                      Testimonials
+                      {testimonialsEyebrow}
                     </p>
                     <h2
                       className="text-2xl sm:text-3xl md:text-4xl"
@@ -1216,7 +1222,7 @@ export default async function StoreHomePage({
                         lineHeight: 1.2,
                       }}
                     >
-                      顧客的話
+                      {testimonialsTitle}
                     </h2>
                     <div
                       className="mt-6"
@@ -1237,7 +1243,7 @@ export default async function StoreHomePage({
                       className="text-[10px] tracking-[0.4em] uppercase mb-5"
                       style={{ color: theme.accent }}
                     >
-                      Testimonials
+                      {testimonialsEyebrow}
                     </p>
                     <h2
                       className="text-2xl sm:text-3xl md:text-4xl"
@@ -1249,7 +1255,7 @@ export default async function StoreHomePage({
                         lineHeight: 1.2,
                       }}
                     >
-                      顧客的話
+                      {testimonialsTitle}
                     </h2>
                     <div
                       className={`${testimonialsDivider} mt-6`}

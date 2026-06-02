@@ -49,6 +49,8 @@ export default async function EditorPage({
       journalEyebrow: theme.homepage.journalEyebrow ?? "",
       journalTitle: theme.homepage.journalTitle ?? "",
       journalSubtitle: theme.homepage.journalSubtitle ?? "",
+      testimonialsEyebrow: theme.homepage.testimonialsEyebrow ?? "",
+      testimonialsTitle: theme.homepage.testimonialsTitle ?? "",
     },
     sections: theme.sections,
   };

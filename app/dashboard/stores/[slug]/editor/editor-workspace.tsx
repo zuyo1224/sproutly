@@ -111,6 +111,8 @@ type EditorTheme = {
     journalEyebrow: string;
     journalTitle: string;
     journalSubtitle: string;
+    testimonialsEyebrow: string;
+    testimonialsTitle: string;
   };
   sections: {
     about: boolean;
@@ -1805,6 +1807,36 @@ export function EditorWorkspace({
 
         {activeTab === "section" && selectedSection === "testimonials" && (
           <PanelSection title="顧客評語區段">
+            <Field label="Eyebrow（小標）">
+              <input
+                type="text"
+                value={theme.homepage.testimonialsEyebrow}
+                onChange={(e) =>
+                  updateHomepage({ testimonialsEyebrow: e.target.value })
+                }
+                placeholder="Testimonials"
+                maxLength={60}
+                className="w-full rounded-lg border border-stone-200 px-3 py-2 text-sm"
+              />
+              <p className="mt-1 text-[11px] text-stone-500 leading-relaxed">
+                顧客評語區段上方那行小字，預設「Testimonials」。
+              </p>
+            </Field>
+            <Field label="標題">
+              <input
+                type="text"
+                value={theme.homepage.testimonialsTitle}
+                onChange={(e) =>
+                  updateHomepage({ testimonialsTitle: e.target.value })
+                }
+                placeholder="顧客的話"
+                maxLength={60}
+                className="w-full rounded-lg border border-stone-200 px-3 py-2 text-sm"
+              />
+              <p className="mt-1 text-[11px] text-stone-500 leading-relaxed">
+                顧客評語區段大字，預設「顧客的話」。
+              </p>
+            </Field>
             {theme.layout.testimonials.length === 0 ? (
               <p className="text-sm text-stone-600 leading-relaxed">
                 還沒有評語，先加一筆。
