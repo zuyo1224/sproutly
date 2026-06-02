@@ -51,6 +51,8 @@ export default async function EditorPage({
       journalSubtitle: theme.homepage.journalSubtitle ?? "",
       testimonialsEyebrow: theme.homepage.testimonialsEyebrow ?? "",
       testimonialsTitle: theme.homepage.testimonialsTitle ?? "",
+      faqEyebrow: theme.homepage.faqEyebrow ?? "",
+      faqTitle: theme.homepage.faqTitle ?? "",
     },
     sections: theme.sections,
   };

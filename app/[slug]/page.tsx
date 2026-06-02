@@ -1341,6 +1341,10 @@ export default async function StoreHomePage({
                 : faqStyle.align === "left"
                 ? ""
                 : "mx-auto";
+            const faqEyebrow =
+              theme.homepage.faqEyebrow ?? HOMEPAGE_DEFAULTS.faqEyebrow;
+            const faqTitle =
+              theme.homepage.faqTitle ?? HOMEPAGE_DEFAULTS.faqTitle;
             return (
             <section
               className={`py-40 sm:py-56 ${animClass}`}
@@ -1355,12 +1359,16 @@ export default async function StoreHomePage({
               >
                 <div className="mb-16">
                   <p
+                    data-edit-text
+                    data-edit-field="faqEyebrow"
                     className="text-[10px] tracking-[0.4em] uppercase mb-5"
                     style={{ color: theme.accent }}
                   >
-                    FAQ
+                    {faqEyebrow}
                   </p>
                   <h2
+                    data-edit-text
+                    data-edit-field="faqTitle"
                     className="text-2xl sm:text-3xl md:text-4xl"
                     style={{
                       color: theme.text,
@@ -1370,7 +1378,7 @@ export default async function StoreHomePage({
                       lineHeight: 1.2,
                     }}
                   >
-                    常見問題
+                    {faqTitle}
                   </h2>
                   <div
                     className={`${faqDivider} mt-6`}

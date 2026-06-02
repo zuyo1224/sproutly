@@ -145,6 +145,14 @@ export async function updateStore(slug: string, formData: FormData) {
     typeof existingHomepage.testimonialsTitle === "string"
       ? existingHomepage.testimonialsTitle
       : null;
+  const existingFaqEyebrow =
+    typeof existingHomepage.faqEyebrow === "string"
+      ? existingHomepage.faqEyebrow
+      : null;
+  const existingFaqTitle =
+    typeof existingHomepage.faqTitle === "string"
+      ? existingHomepage.faqTitle
+      : null;
 
   const homepage = {
     collectionsIntro:
@@ -159,6 +167,8 @@ export async function updateStore(slug: string, formData: FormData) {
     journalSubtitle: existingJournalSubtitle,
     testimonialsEyebrow: existingTestimonialsEyebrow,
     testimonialsTitle: existingTestimonialsTitle,
+    faqEyebrow: existingFaqEyebrow,
+    faqTitle: existingFaqTitle,
     enableAnimation: formData.get("hp_enable_animation") === "on",
   };
 

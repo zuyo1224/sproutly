@@ -113,6 +113,8 @@ type EditorTheme = {
     journalSubtitle: string;
     testimonialsEyebrow: string;
     testimonialsTitle: string;
+    faqEyebrow: string;
+    faqTitle: string;
   };
   sections: {
     about: boolean;
@@ -1746,6 +1748,36 @@ export function EditorWorkspace({
 
         {activeTab === "section" && selectedSection === "faq" && (
           <PanelSection title="常見問題（FAQ）區段">
+            <Field label="Eyebrow（小標）">
+              <input
+                type="text"
+                value={theme.homepage.faqEyebrow}
+                onChange={(e) =>
+                  updateHomepage({ faqEyebrow: e.target.value })
+                }
+                placeholder="FAQ"
+                maxLength={60}
+                className="w-full rounded-lg border border-stone-200 px-3 py-2 text-sm"
+              />
+              <p className="mt-1 text-[11px] text-stone-500 leading-relaxed">
+                FAQ 區段上方那行小字，預設「FAQ」。
+              </p>
+            </Field>
+            <Field label="標題">
+              <input
+                type="text"
+                value={theme.homepage.faqTitle}
+                onChange={(e) =>
+                  updateHomepage({ faqTitle: e.target.value })
+                }
+                placeholder="常見問題"
+                maxLength={60}
+                className="w-full rounded-lg border border-stone-200 px-3 py-2 text-sm"
+              />
+              <p className="mt-1 text-[11px] text-stone-500 leading-relaxed">
+                FAQ 區段大字，預設「常見問題」。
+              </p>
+            </Field>
             {theme.layout.faqItems.length === 0 ? (
               <p className="text-sm text-stone-600 leading-relaxed">
                 還沒有 FAQ，先加一筆。
