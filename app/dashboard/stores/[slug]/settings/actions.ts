@@ -177,6 +177,10 @@ export async function updateStore(slug: string, formData: FormData) {
     typeof existingHomepage.partnersEyebrow === "string"
       ? existingHomepage.partnersEyebrow
       : null;
+  const existingHeroCta =
+    typeof existingHomepage.heroCta === "string"
+      ? existingHomepage.heroCta
+      : null;
 
   const homepage = {
     collectionsIntro:
@@ -199,6 +203,7 @@ export async function updateStore(slug: string, formData: FormData) {
     galleryEyebrow: existingGalleryEyebrow,
     galleryTitle: existingGalleryTitle,
     partnersEyebrow: existingPartnersEyebrow,
+    heroCta: existingHeroCta,
     enableAnimation: formData.get("hp_enable_animation") === "on",
   };
 

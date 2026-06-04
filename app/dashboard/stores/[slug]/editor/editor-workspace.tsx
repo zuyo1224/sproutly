@@ -121,6 +121,7 @@ type EditorTheme = {
     galleryEyebrow: string;
     galleryTitle: string;
     partnersEyebrow: string;
+    heroCta: string;
   };
   sections: {
     about: boolean;
@@ -385,6 +386,8 @@ export function EditorWorkspace({
           updateHomepage({ galleryTitle: value });
         } else if (msg.field === "partnersEyebrow") {
           updateHomepage({ partnersEyebrow: value });
+        } else if (msg.field === "heroCta") {
+          updateHomepage({ heroCta: value });
         }
       }
     }
@@ -1255,6 +1258,21 @@ export function EditorWorkspace({
                 placeholder="給 Split / Magazine / Minimal 用"
                 className="w-full rounded-lg border border-stone-200 px-3 py-2 text-sm resize-none"
               />
+            </Field>
+            <Field label="按鈕文字">
+              <input
+                type="text"
+                value={theme.homepage.heroCta}
+                onChange={(e) =>
+                  updateHomepage({ heroCta: e.target.value })
+                }
+                placeholder="看商品"
+                maxLength={60}
+                className="w-full rounded-lg border border-stone-200 px-3 py-2 text-sm"
+              />
+              <p className="text-[10px] text-stone-500 mt-1">
+                Hero 區段大按鈕的文字，預設「看商品」
+              </p>
             </Field>
             <Field label={`主標字體大小（${theme.layout.heroTaglineFontScale.toFixed(2)}x）`}>
               <input

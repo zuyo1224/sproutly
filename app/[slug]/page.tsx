@@ -307,6 +307,8 @@ export default async function StoreHomePage({
           const fade1 = theme.homepage.enableAnimation ? "sproutly-hero-fade-1" : "";
           const fade2 = theme.homepage.enableAnimation ? "sproutly-hero-fade-2" : "";
           const fade3 = theme.homepage.enableAnimation ? "sproutly-hero-fade-3" : "";
+          const heroCta =
+            theme.homepage.heroCta ?? HOMEPAGE_DEFAULTS.heroCta;
 
           // Variant 1: full-image — 自適應 banner（圖 + 文字段），手機 / 桌機 同一套
           if (heroStyle === "full-image" && theme.heroUrl) {
@@ -395,7 +397,7 @@ export default async function StoreHomePage({
                           fontFamily: "var(--store-font)",
                         }}
                       >
-                        看商品
+                        {heroCta}
                       </Link>
                     )}
                   </div>
@@ -476,7 +478,7 @@ export default async function StoreHomePage({
                       href={`/${slug}/shop`}
                       className="sproutly-btn sproutly-btn-primary sproutly-btn-lg"
                     >
-                      看商品
+                      {heroCta}
                     </Link>
                     {theme.sections.about && (
                       <Link
@@ -566,7 +568,7 @@ export default async function StoreHomePage({
                       data-default-line="true"
                       style={{ color: theme.text }}
                     >
-                      看商品 →
+                      {heroCta} →
                     </Link>
                   </div>
                 </div>
@@ -630,7 +632,7 @@ export default async function StoreHomePage({
                 href={`/${slug}/shop`}
                 className={`sproutly-btn sproutly-btn-primary sproutly-btn-lg mt-12 ${fade3}`}
               >
-                看商品
+                {heroCta}
               </Link>
             </section>
           );

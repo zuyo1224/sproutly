@@ -76,6 +76,7 @@ type EditorPayload = {
     galleryEyebrow?: string;
     galleryTitle?: string;
     partnersEyebrow?: string;
+    heroCta?: string;
   };
   sections?: {
     about?: boolean;
@@ -455,6 +456,10 @@ export async function saveEditorState(slug: string, payload: EditorPayload) {
     if (payload.homepage.partnersEyebrow !== undefined) {
       const v = String(payload.homepage.partnersEyebrow).trim().slice(0, 60);
       hpPatch.partnersEyebrow = v || null;
+    }
+    if (payload.homepage.heroCta !== undefined) {
+      const v = String(payload.homepage.heroCta).trim().slice(0, 60);
+      hpPatch.heroCta = v || null;
     }
     merged.homepage = hpPatch;
   }
