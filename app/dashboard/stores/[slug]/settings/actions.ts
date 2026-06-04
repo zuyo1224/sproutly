@@ -177,6 +177,14 @@ export async function updateStore(slug: string, formData: FormData) {
     typeof existingHomepage.partnersEyebrow === "string"
       ? existingHomepage.partnersEyebrow
       : null;
+  const existingStatsEyebrow =
+    typeof existingHomepage.statsEyebrow === "string"
+      ? existingHomepage.statsEyebrow
+      : null;
+  const existingStatsTitle =
+    typeof existingHomepage.statsTitle === "string"
+      ? existingHomepage.statsTitle
+      : null;
   const existingHeroCta =
     typeof existingHomepage.heroCta === "string"
       ? existingHomepage.heroCta
@@ -203,6 +211,8 @@ export async function updateStore(slug: string, formData: FormData) {
     galleryEyebrow: existingGalleryEyebrow,
     galleryTitle: existingGalleryTitle,
     partnersEyebrow: existingPartnersEyebrow,
+    statsEyebrow: existingStatsEyebrow,
+    statsTitle: existingStatsTitle,
     heroCta: existingHeroCta,
     enableAnimation: formData.get("hp_enable_animation") === "on",
   };

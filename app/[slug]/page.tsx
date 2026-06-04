@@ -1473,6 +1473,17 @@ export default async function StoreHomePage({
         {theme.layout.sectionOrder.includes("stats") &&
           theme.layout.stats.length > 0 && (() => {
             const statsStyle = sectionStyleFor("stats");
+            const statsEyebrow =
+              theme.homepage.statsEyebrow ?? HOMEPAGE_DEFAULTS.statsEyebrow;
+            const statsTitle =
+              theme.homepage.statsTitle ?? HOMEPAGE_DEFAULTS.statsTitle;
+            const statsHasHeading = !!(statsEyebrow || statsTitle);
+            const statsDivider =
+              statsStyle.align === "right"
+                ? "ml-auto"
+                : statsStyle.align === "left"
+                ? ""
+                : "mx-auto";
             return (
             <section
               className={`py-32 sm:py-44 ${animClass}`}
@@ -1485,6 +1496,45 @@ export default async function StoreHomePage({
                 className="max-w-5xl mx-auto px-8 sm:px-12"
                 style={{ textAlign: statsStyle.align }}
               >
+                {statsHasHeading && (
+                  <div className="mb-16 sm:mb-20">
+                    {statsEyebrow && (
+                      <p
+                        data-edit-text
+                        data-edit-field="statsEyebrow"
+                        className="text-[0.6875rem] tracking-[0.4em] uppercase mb-5"
+                        style={{ color: theme.accent }}
+                      >
+                        {statsEyebrow}
+                      </p>
+                    )}
+                    {statsTitle && (
+                      <h2
+                        data-edit-text
+                        data-edit-field="statsTitle"
+                        className="text-2xl sm:text-3xl md:text-4xl"
+                        style={{
+                          color: theme.text,
+                          fontFamily: "var(--store-font)",
+                          fontWeight: 500,
+                          letterSpacing: "-0.01em",
+                          lineHeight: 1.2,
+                        }}
+                      >
+                        {statsTitle}
+                      </h2>
+                    )}
+                    <div
+                      className={`${statsDivider} mt-6`}
+                      style={{
+                        width: "32px",
+                        height: "1px",
+                        background: theme.accent,
+                        opacity: 0.6,
+                      }}
+                    />
+                  </div>
+                )}
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-y-12 gap-x-8">
                   {theme.layout.stats.slice(0, 6).map((s, i) => (
                     <div key={i} className="space-y-3">

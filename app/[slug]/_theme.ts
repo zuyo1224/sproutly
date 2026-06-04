@@ -159,6 +159,8 @@ export interface StoreTheme {
     galleryEyebrow: string | null;
     galleryTitle: string | null;
     partnersEyebrow: string | null;
+    statsEyebrow: string | null;
+    statsTitle: string | null;
     heroCta: string | null;
     enableAnimation: boolean;
   };
@@ -246,6 +248,8 @@ export const HOMEPAGE_DEFAULTS = {
   galleryEyebrow: "Gallery",
   galleryTitle: "相片紀錄",
   partnersEyebrow: "As featured in",
+  statsEyebrow: null,
+  statsTitle: null,
   heroCta: "看商品",
 };
 
@@ -766,6 +770,14 @@ function resolveHomepage(raw: unknown): StoreTheme["homepage"] {
     partnersEyebrow:
       typeof h.partnersEyebrow === "string" && h.partnersEyebrow.trim()
         ? h.partnersEyebrow.trim()
+        : null,
+    statsEyebrow:
+      typeof h.statsEyebrow === "string" && h.statsEyebrow.trim()
+        ? h.statsEyebrow.trim()
+        : null,
+    statsTitle:
+      typeof h.statsTitle === "string" && h.statsTitle.trim()
+        ? h.statsTitle.trim()
         : null,
     heroCta:
       typeof h.heroCta === "string" && h.heroCta.trim()

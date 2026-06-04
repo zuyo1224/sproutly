@@ -121,6 +121,8 @@ type EditorTheme = {
     galleryEyebrow: string;
     galleryTitle: string;
     partnersEyebrow: string;
+    statsEyebrow: string;
+    statsTitle: string;
     heroCta: string;
   };
   sections: {
@@ -386,6 +388,10 @@ export function EditorWorkspace({
           updateHomepage({ galleryTitle: value });
         } else if (msg.field === "partnersEyebrow") {
           updateHomepage({ partnersEyebrow: value });
+        } else if (msg.field === "statsEyebrow") {
+          updateHomepage({ statsEyebrow: value });
+        } else if (msg.field === "statsTitle") {
+          updateHomepage({ statsTitle: value });
         } else if (msg.field === "heroCta") {
           updateHomepage({ heroCta: value });
         }
@@ -1585,6 +1591,36 @@ export function EditorWorkspace({
 
         {activeTab === "section" && selectedSection === "stats" && (
           <PanelSection title="數字 / 成就">
+            <Field label="Eyebrow（小標）">
+              <input
+                type="text"
+                value={theme.homepage.statsEyebrow}
+                onChange={(e) =>
+                  updateHomepage({ statsEyebrow: e.target.value })
+                }
+                placeholder="例如：By the Numbers"
+                maxLength={60}
+                className="w-full rounded-lg border border-stone-200 px-3 py-2 text-sm"
+              />
+              <p className="mt-1 text-[11px] text-stone-500 leading-relaxed">
+                Stats 區段上方那行小字，預設不顯示。填了才會出現。
+              </p>
+            </Field>
+            <Field label="標題">
+              <input
+                type="text"
+                value={theme.homepage.statsTitle}
+                onChange={(e) =>
+                  updateHomepage({ statsTitle: e.target.value })
+                }
+                placeholder="例如：這間店的小成就"
+                maxLength={60}
+                className="w-full rounded-lg border border-stone-200 px-3 py-2 text-sm"
+              />
+              <p className="mt-1 text-[11px] text-stone-500 leading-relaxed">
+                Stats 區段上方那行大字，預設不顯示。填了才會出現。
+              </p>
+            </Field>
             {theme.layout.stats.length === 0 ? (
               <p className="text-sm text-stone-600">還沒填，先加一筆數字。</p>
             ) : (
