@@ -146,6 +146,7 @@ export interface StoreTheme {
     promiseEyebrow: string | null;
     featuredTitle: string | null;
     visitTitle: string | null;
+    visitEyebrow: string | null;
     journalEyebrow: string | null;
     journalTitle: string | null;
     journalSubtitle: string | null;
@@ -226,6 +227,7 @@ export const HOMEPAGE_DEFAULTS = {
   promiseEyebrow: "Our Promise",
   featuredTitle: "本月選物",
   visitTitle: "來店裡走走",
+  visitEyebrow: "Visit",
   journalEyebrow: "Journal",
   journalTitle: "慢讀",
   journalSubtitle: "關於植物、空間，與這間店的日常筆記。",
@@ -700,6 +702,10 @@ function resolveHomepage(raw: unknown): StoreTheme["homepage"] {
     visitTitle:
       typeof h.visitTitle === "string" && h.visitTitle.trim()
         ? h.visitTitle
+        : null,
+    visitEyebrow:
+      typeof h.visitEyebrow === "string" && h.visitEyebrow.trim()
+        ? h.visitEyebrow.trim()
         : null,
     journalEyebrow:
       typeof h.journalEyebrow === "string" && h.journalEyebrow.trim()

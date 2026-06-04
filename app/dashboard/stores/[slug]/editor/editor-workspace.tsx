@@ -108,6 +108,7 @@ type EditorTheme = {
     featuredTitle: string;
     collectionsIntro: string;
     visitTitle: string;
+    visitEyebrow: string;
     journalEyebrow: string;
     journalTitle: string;
     journalSubtitle: string;
@@ -359,6 +360,8 @@ export function EditorWorkspace({
           updateHomepage({ promise: value });
         } else if (msg.field === "visitTitle") {
           updateHomepage({ visitTitle: value });
+        } else if (msg.field === "visitEyebrow") {
+          updateHomepage({ visitEyebrow: value });
         } else if (msg.field === "collectionsIntro") {
           updateHomepage({ collectionsIntro: value });
         } else if (msg.field === "heroEyebrow") {
@@ -1497,6 +1500,21 @@ export function EditorWorkspace({
 
         {activeTab === "section" && selectedSection === "visit" && (
           <PanelSection title="Visit 區段">
+            <Field label="Eyebrow（小標）">
+              <input
+                type="text"
+                value={theme.homepage.visitEyebrow}
+                onChange={(e) =>
+                  updateHomepage({ visitEyebrow: e.target.value })
+                }
+                placeholder="Visit"
+                maxLength={60}
+                className="w-full rounded-lg border border-stone-200 px-3 py-2 text-sm"
+              />
+              <p className="mt-1 text-[11px] text-stone-500 leading-relaxed">
+                Visit 區段標題上方那行小字，預設「Visit」。
+              </p>
+            </Field>
             <Field label="標題">
               <input
                 type="text"

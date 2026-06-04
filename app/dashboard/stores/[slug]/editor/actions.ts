@@ -63,6 +63,7 @@ type EditorPayload = {
     featuredTitle?: string;
     collectionsIntro?: string;
     visitTitle?: string;
+    visitEyebrow?: string;
     journalEyebrow?: string;
     journalTitle?: string;
     journalSubtitle?: string;
@@ -397,6 +398,10 @@ export async function saveEditorState(slug: string, payload: EditorPayload) {
     }
     if (payload.homepage.visitTitle !== undefined) {
       hpPatch.visitTitle = String(payload.homepage.visitTitle).slice(0, 100);
+    }
+    if (payload.homepage.visitEyebrow !== undefined) {
+      const v = String(payload.homepage.visitEyebrow).trim().slice(0, 60);
+      hpPatch.visitEyebrow = v || null;
     }
     if (payload.homepage.journalEyebrow !== undefined) {
       const v = String(payload.homepage.journalEyebrow).trim().slice(0, 60);

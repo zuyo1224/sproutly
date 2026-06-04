@@ -55,6 +55,8 @@ export default async function StoreHomePage({
     theme.homepage.featuredTitle || HOMEPAGE_DEFAULTS.featuredTitle;
   const visitTitle =
     theme.homepage.visitTitle || HOMEPAGE_DEFAULTS.visitTitle;
+  const visitEyebrow =
+    theme.homepage.visitEyebrow ?? HOMEPAGE_DEFAULTS.visitEyebrow;
   const collectionsConfig =
     theme.homepage.collectionItems.length > 0
       ? theme.homepage.collectionItems
@@ -1688,10 +1690,12 @@ export default async function StoreHomePage({
               }
             >
               <p
+                data-edit-text
+                data-edit-field="visitEyebrow"
                 className="text-[10px] tracking-[0.4em] uppercase mb-5"
                 style={{ color: theme.accent }}
               >
-                Visit
+                {visitEyebrow}
               </p>
               <h2
                 data-edit-text
