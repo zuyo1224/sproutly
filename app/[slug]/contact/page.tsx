@@ -1,6 +1,6 @@
 import { notFound } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
-import { resolveTheme } from "../_theme";
+import { resolveTheme, HOMEPAGE_DEFAULTS } from "../_theme";
 
 type Params = Promise<{ slug: string }>;
 
@@ -46,17 +46,26 @@ export default async function ContactPage({ params }: { params: Params }) {
         ? "一個聯絡方式 · 隨時找到我們"
         : `${blocks.length} 個聯絡方式 · 隨時找到我們`;
 
+  const contactEyebrow =
+    theme.homepage.contactEyebrow ?? HOMEPAGE_DEFAULTS.contactEyebrow;
+  const contactTitle =
+    theme.homepage.contactTitle ?? HOMEPAGE_DEFAULTS.contactTitle;
+
   return (
     <main className="max-w-3xl mx-auto px-6 sm:px-10 py-20 sm:py-28">
       <header className="mb-16 sm:mb-20">
         <p
           className="text-[0.6875rem] uppercase font-medium"
+          data-edit-text
+          data-edit-field="contactEyebrow"
           style={{ color: theme.accent, letterSpacing: "0.4em" }}
         >
-          Contact
+          {contactEyebrow}
         </p>
         <h1
           className="mt-4 text-3xl sm:text-4xl font-medium"
+          data-edit-text
+          data-edit-field="contactTitle"
           style={{
             color: theme.text,
             fontFamily: "var(--store-font)",
@@ -64,7 +73,7 @@ export default async function ContactPage({ params }: { params: Params }) {
             lineHeight: 1.15,
           }}
         >
-          聯絡我們
+          {contactTitle}
         </h1>
         <div
           className="mt-5 h-px w-12"

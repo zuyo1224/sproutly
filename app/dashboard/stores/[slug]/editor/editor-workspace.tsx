@@ -127,6 +127,10 @@ type EditorTheme = {
     heroSecondaryCta: string;
     heroMagazineByline: string;
     collectionsCardCta: string;
+    aboutEyebrow: string;
+    aboutTitle: string;
+    contactEyebrow: string;
+    contactTitle: string;
   };
   sections: {
     about: boolean;
@@ -403,6 +407,14 @@ export function EditorWorkspace({
           updateHomepage({ heroMagazineByline: value });
         } else if (msg.field === "collectionsCardCta") {
           updateHomepage({ collectionsCardCta: value });
+        } else if (msg.field === "aboutEyebrow") {
+          updateHomepage({ aboutEyebrow: value });
+        } else if (msg.field === "aboutTitle") {
+          updateHomepage({ aboutTitle: value });
+        } else if (msg.field === "contactEyebrow") {
+          updateHomepage({ contactEyebrow: value });
+        } else if (msg.field === "contactTitle") {
+          updateHomepage({ contactTitle: value });
         }
       }
     }
@@ -3212,6 +3224,62 @@ export function EditorWorkspace({
                 </label>
               ))}
             </div>
+          </PanelSection>
+        )}
+
+        {activeTab === "content" && (
+          <PanelSection title="子頁標題">
+            <p className="text-[11px] text-stone-500 leading-relaxed -mt-2">
+              關於頁 / 聯絡頁的 eyebrow + 大字標題。空白會用預設值。
+            </p>
+            <Field label="關於頁 eyebrow">
+              <input
+                type="text"
+                value={theme.homepage.aboutEyebrow}
+                onChange={(e) =>
+                  updateHomepage({ aboutEyebrow: e.target.value })
+                }
+                maxLength={60}
+                placeholder="About"
+                className="w-full rounded-lg border border-stone-200 px-3 py-2 text-sm"
+              />
+            </Field>
+            <Field label="關於頁標題">
+              <input
+                type="text"
+                value={theme.homepage.aboutTitle}
+                onChange={(e) =>
+                  updateHomepage({ aboutTitle: e.target.value })
+                }
+                maxLength={60}
+                placeholder="關於我們"
+                className="w-full rounded-lg border border-stone-200 px-3 py-2 text-sm"
+              />
+            </Field>
+            <Field label="聯絡頁 eyebrow">
+              <input
+                type="text"
+                value={theme.homepage.contactEyebrow}
+                onChange={(e) =>
+                  updateHomepage({ contactEyebrow: e.target.value })
+                }
+                maxLength={60}
+                placeholder="Contact"
+                className="w-full rounded-lg border border-stone-200 px-3 py-2 text-sm"
+              />
+            </Field>
+            <Field label="聯絡頁標題">
+              <input
+                type="text"
+                value={theme.homepage.contactTitle}
+                onChange={(e) =>
+                  updateHomepage({ contactTitle: e.target.value })
+                }
+                maxLength={60}
+                placeholder="聯絡我們"
+                className="w-full rounded-lg border border-stone-200 px-3 py-2 text-sm"
+              />
+            </Field>
           </PanelSection>
         )}
       </aside>

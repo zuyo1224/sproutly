@@ -82,6 +82,10 @@ type EditorPayload = {
     heroSecondaryCta?: string;
     heroMagazineByline?: string;
     collectionsCardCta?: string;
+    aboutEyebrow?: string;
+    aboutTitle?: string;
+    contactEyebrow?: string;
+    contactTitle?: string;
   };
   sections?: {
     about?: boolean;
@@ -485,6 +489,22 @@ export async function saveEditorState(slug: string, payload: EditorPayload) {
     if (payload.homepage.collectionsCardCta !== undefined) {
       const v = String(payload.homepage.collectionsCardCta).trim().slice(0, 60);
       hpPatch.collectionsCardCta = v || null;
+    }
+    if (payload.homepage.aboutEyebrow !== undefined) {
+      const v = String(payload.homepage.aboutEyebrow).trim().slice(0, 60);
+      hpPatch.aboutEyebrow = v || null;
+    }
+    if (payload.homepage.aboutTitle !== undefined) {
+      const v = String(payload.homepage.aboutTitle).trim().slice(0, 60);
+      hpPatch.aboutTitle = v || null;
+    }
+    if (payload.homepage.contactEyebrow !== undefined) {
+      const v = String(payload.homepage.contactEyebrow).trim().slice(0, 60);
+      hpPatch.contactEyebrow = v || null;
+    }
+    if (payload.homepage.contactTitle !== undefined) {
+      const v = String(payload.homepage.contactTitle).trim().slice(0, 60);
+      hpPatch.contactTitle = v || null;
     }
     merged.homepage = hpPatch;
   }

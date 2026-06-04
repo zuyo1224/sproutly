@@ -1,6 +1,6 @@
 import { notFound } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
-import { resolveTheme } from "../_theme";
+import { resolveTheme, HOMEPAGE_DEFAULTS } from "../_theme";
 
 type Params = Promise<{ slug: string }>;
 
@@ -58,6 +58,11 @@ export default async function AboutPage({ params }: { params: Params }) {
     ? "關於這間店 · 慢慢讀"
     : "店家還沒留下介紹";
 
+  const aboutEyebrow =
+    theme.homepage.aboutEyebrow ?? HOMEPAGE_DEFAULTS.aboutEyebrow;
+  const aboutTitle =
+    theme.homepage.aboutTitle ?? HOMEPAGE_DEFAULTS.aboutTitle;
+
   return (
     <main className="max-w-3xl mx-auto px-6 sm:px-10 py-20 sm:py-28">
       {theme.sections.about && (
@@ -65,12 +70,16 @@ export default async function AboutPage({ params }: { params: Params }) {
           <header className="mb-16 sm:mb-20">
             <p
               className="text-[0.6875rem] uppercase font-medium"
+              data-edit-text
+              data-edit-field="aboutEyebrow"
               style={{ color: theme.accent, letterSpacing: "0.4em" }}
             >
-              About
+              {aboutEyebrow}
             </p>
             <h1
               className="mt-4 text-3xl sm:text-4xl font-medium"
+              data-edit-text
+              data-edit-field="aboutTitle"
               style={{
                 color: theme.text,
                 fontFamily: "var(--store-font)",
@@ -78,7 +87,7 @@ export default async function AboutPage({ params }: { params: Params }) {
                 lineHeight: 1.15,
               }}
             >
-              關於我們
+              {aboutTitle}
             </h1>
             <div
               className="mt-5 h-px w-12"

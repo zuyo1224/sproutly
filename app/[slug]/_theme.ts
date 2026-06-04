@@ -165,6 +165,10 @@ export interface StoreTheme {
     heroSecondaryCta: string | null;
     heroMagazineByline: string | null;
     collectionsCardCta: string | null;
+    aboutEyebrow: string | null;
+    aboutTitle: string | null;
+    contactEyebrow: string | null;
+    contactTitle: string | null;
     enableAnimation: boolean;
   };
   layout: {
@@ -257,6 +261,10 @@ export const HOMEPAGE_DEFAULTS = {
   heroSecondaryCta: "關於我們",
   heroMagazineByline: null,
   collectionsCardCta: "看這個 →",
+  aboutEyebrow: "About",
+  aboutTitle: "關於我們",
+  contactEyebrow: "Contact",
+  contactTitle: "聯絡我們",
 };
 
 export const PRESETS: Record<PresetKey, Omit<StoreTheme, "preset" | "logoUrl" | "heroUrl" | "sections" | "social" | "tagline" | "collections" | "homepage" | "layout">> = {
@@ -800,6 +808,22 @@ function resolveHomepage(raw: unknown): StoreTheme["homepage"] {
     collectionsCardCta:
       typeof h.collectionsCardCta === "string" && h.collectionsCardCta.trim()
         ? h.collectionsCardCta.trim()
+        : null,
+    aboutEyebrow:
+      typeof h.aboutEyebrow === "string" && h.aboutEyebrow.trim()
+        ? h.aboutEyebrow.trim()
+        : null,
+    aboutTitle:
+      typeof h.aboutTitle === "string" && h.aboutTitle.trim()
+        ? h.aboutTitle.trim()
+        : null,
+    contactEyebrow:
+      typeof h.contactEyebrow === "string" && h.contactEyebrow.trim()
+        ? h.contactEyebrow.trim()
+        : null,
+    contactTitle:
+      typeof h.contactTitle === "string" && h.contactTitle.trim()
+        ? h.contactTitle.trim()
         : null,
     enableAnimation: h.enableAnimation === false ? false : true, // default true
   };

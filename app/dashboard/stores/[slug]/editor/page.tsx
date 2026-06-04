@@ -65,6 +65,10 @@ export default async function EditorPage({
       heroSecondaryCta: theme.homepage.heroSecondaryCta ?? "",
       heroMagazineByline: theme.homepage.heroMagazineByline ?? "",
       collectionsCardCta: theme.homepage.collectionsCardCta ?? "",
+      aboutEyebrow: theme.homepage.aboutEyebrow ?? "",
+      aboutTitle: theme.homepage.aboutTitle ?? "",
+      contactEyebrow: theme.homepage.contactEyebrow ?? "",
+      contactTitle: theme.homepage.contactTitle ?? "",
     },
     sections: theme.sections,
   };

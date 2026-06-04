@@ -201,6 +201,22 @@ export async function updateStore(slug: string, formData: FormData) {
     typeof existingHomepage.collectionsCardCta === "string"
       ? existingHomepage.collectionsCardCta
       : null;
+  const existingAboutEyebrow =
+    typeof existingHomepage.aboutEyebrow === "string"
+      ? existingHomepage.aboutEyebrow
+      : null;
+  const existingAboutTitle =
+    typeof existingHomepage.aboutTitle === "string"
+      ? existingHomepage.aboutTitle
+      : null;
+  const existingContactEyebrow =
+    typeof existingHomepage.contactEyebrow === "string"
+      ? existingHomepage.contactEyebrow
+      : null;
+  const existingContactTitle =
+    typeof existingHomepage.contactTitle === "string"
+      ? existingHomepage.contactTitle
+      : null;
 
   const homepage = {
     collectionsIntro:
@@ -229,6 +245,10 @@ export async function updateStore(slug: string, formData: FormData) {
     heroSecondaryCta: existingHeroSecondaryCta,
     heroMagazineByline: existingHeroMagazineByline,
     collectionsCardCta: existingCollectionsCardCta,
+    aboutEyebrow: existingAboutEyebrow,
+    aboutTitle: existingAboutTitle,
+    contactEyebrow: existingContactEyebrow,
+    contactTitle: existingContactTitle,
     enableAnimation: formData.get("hp_enable_animation") === "on",
   };
 
