@@ -125,6 +125,7 @@ type EditorTheme = {
     statsTitle: string;
     heroCta: string;
     heroSecondaryCta: string;
+    heroMagazineByline: string;
     collectionsCardCta: string;
   };
   sections: {
@@ -398,6 +399,8 @@ export function EditorWorkspace({
           updateHomepage({ heroCta: value });
         } else if (msg.field === "heroSecondaryCta") {
           updateHomepage({ heroSecondaryCta: value });
+        } else if (msg.field === "heroMagazineByline") {
+          updateHomepage({ heroMagazineByline: value });
         } else if (msg.field === "collectionsCardCta") {
           updateHomepage({ collectionsCardCta: value });
         }
@@ -1299,6 +1302,21 @@ export function EditorWorkspace({
               />
               <p className="text-[10px] text-stone-500 mt-1">
                 Split 版型 Hero 區段的次要按鈕（連到關於頁），預設「關於我們」
+              </p>
+            </Field>
+            <Field label="雜誌版型下方 byline">
+              <input
+                type="text"
+                value={theme.homepage.heroMagazineByline}
+                onChange={(e) =>
+                  updateHomepage({ heroMagazineByline: e.target.value })
+                }
+                placeholder={`Curated by 店名`}
+                maxLength={60}
+                className="w-full rounded-lg border border-stone-200 px-3 py-2 text-sm"
+              />
+              <p className="text-[10px] text-stone-500 mt-1">
+                Magazine 版型 Hero 底部那行小字，預設「Curated by 店名」
               </p>
             </Field>
             <Field label={`主標字體大小（${theme.layout.heroTaglineFontScale.toFixed(2)}x）`}>

@@ -311,6 +311,8 @@ export default async function StoreHomePage({
             theme.homepage.heroCta ?? HOMEPAGE_DEFAULTS.heroCta;
           const heroSecondaryCta =
             theme.homepage.heroSecondaryCta ?? HOMEPAGE_DEFAULTS.heroSecondaryCta;
+          const heroMagazineByline =
+            theme.homepage.heroMagazineByline ?? `Curated by ${store.name}`;
 
           // Variant 1: full-image — 自適應 banner（圖 + 文字段），手機 / 桌機 同一套
           if (heroStyle === "full-image" && theme.heroUrl) {
@@ -561,8 +563,11 @@ export default async function StoreHomePage({
                     className={`flex justify-between items-center text-[10px] tracking-[0.32em] uppercase ${fade3}`}
                     style={{ color: theme.textMuted }}
                   >
-                    <span>
-                      Curated by {store.name}
+                    <span
+                      data-edit-text
+                      data-edit-field="heroMagazineByline"
+                    >
+                      {heroMagazineByline}
                     </span>
                     <Link
                       href={`/${slug}/shop`}
