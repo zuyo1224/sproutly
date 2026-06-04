@@ -162,6 +162,7 @@ export interface StoreTheme {
     statsEyebrow: string | null;
     statsTitle: string | null;
     heroCta: string | null;
+    heroSecondaryCta: string | null;
     enableAnimation: boolean;
   };
   layout: {
@@ -251,6 +252,7 @@ export const HOMEPAGE_DEFAULTS = {
   statsEyebrow: null,
   statsTitle: null,
   heroCta: "看商品",
+  heroSecondaryCta: "關於我們",
 };
 
 export const PRESETS: Record<PresetKey, Omit<StoreTheme, "preset" | "logoUrl" | "heroUrl" | "sections" | "social" | "tagline" | "collections" | "homepage" | "layout">> = {
@@ -782,6 +784,10 @@ function resolveHomepage(raw: unknown): StoreTheme["homepage"] {
     heroCta:
       typeof h.heroCta === "string" && h.heroCta.trim()
         ? h.heroCta.trim()
+        : null,
+    heroSecondaryCta:
+      typeof h.heroSecondaryCta === "string" && h.heroSecondaryCta.trim()
+        ? h.heroSecondaryCta.trim()
         : null,
     enableAnimation: h.enableAnimation === false ? false : true, // default true
   };

@@ -62,6 +62,7 @@ export default async function EditorPage({
       statsEyebrow: theme.homepage.statsEyebrow ?? "",
       statsTitle: theme.homepage.statsTitle ?? "",
       heroCta: theme.homepage.heroCta ?? "",
+      heroSecondaryCta: theme.homepage.heroSecondaryCta ?? "",
     },
     sections: theme.sections,
   };

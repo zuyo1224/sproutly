@@ -79,6 +79,7 @@ type EditorPayload = {
     statsEyebrow?: string;
     statsTitle?: string;
     heroCta?: string;
+    heroSecondaryCta?: string;
   };
   sections?: {
     about?: boolean;
@@ -470,6 +471,10 @@ export async function saveEditorState(slug: string, payload: EditorPayload) {
     if (payload.homepage.heroCta !== undefined) {
       const v = String(payload.homepage.heroCta).trim().slice(0, 60);
       hpPatch.heroCta = v || null;
+    }
+    if (payload.homepage.heroSecondaryCta !== undefined) {
+      const v = String(payload.homepage.heroSecondaryCta).trim().slice(0, 60);
+      hpPatch.heroSecondaryCta = v || null;
     }
     merged.homepage = hpPatch;
   }

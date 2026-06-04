@@ -309,6 +309,8 @@ export default async function StoreHomePage({
           const fade3 = theme.homepage.enableAnimation ? "sproutly-hero-fade-3" : "";
           const heroCta =
             theme.homepage.heroCta ?? HOMEPAGE_DEFAULTS.heroCta;
+          const heroSecondaryCta =
+            theme.homepage.heroSecondaryCta ?? HOMEPAGE_DEFAULTS.heroSecondaryCta;
 
           // Variant 1: full-image — 自適應 banner（圖 + 文字段），手機 / 桌機 同一套
           if (heroStyle === "full-image" && theme.heroUrl) {
@@ -485,7 +487,7 @@ export default async function StoreHomePage({
                         href={`/${slug}/about`}
                         className="sproutly-btn sproutly-btn-secondary sproutly-btn-lg"
                       >
-                        關於我們
+                        {heroSecondaryCta}
                       </Link>
                     )}
                   </div>

@@ -124,6 +124,7 @@ type EditorTheme = {
     statsEyebrow: string;
     statsTitle: string;
     heroCta: string;
+    heroSecondaryCta: string;
   };
   sections: {
     about: boolean;
@@ -394,6 +395,8 @@ export function EditorWorkspace({
           updateHomepage({ statsTitle: value });
         } else if (msg.field === "heroCta") {
           updateHomepage({ heroCta: value });
+        } else if (msg.field === "heroSecondaryCta") {
+          updateHomepage({ heroSecondaryCta: value });
         }
       }
     }
@@ -1278,6 +1281,21 @@ export function EditorWorkspace({
               />
               <p className="text-[10px] text-stone-500 mt-1">
                 Hero 區段大按鈕的文字，預設「看商品」
+              </p>
+            </Field>
+            <Field label="次要按鈕文字">
+              <input
+                type="text"
+                value={theme.homepage.heroSecondaryCta}
+                onChange={(e) =>
+                  updateHomepage({ heroSecondaryCta: e.target.value })
+                }
+                placeholder="關於我們"
+                maxLength={60}
+                className="w-full rounded-lg border border-stone-200 px-3 py-2 text-sm"
+              />
+              <p className="text-[10px] text-stone-500 mt-1">
+                Split 版型 Hero 區段的次要按鈕（連到關於頁），預設「關於我們」
               </p>
             </Field>
             <Field label={`主標字體大小（${theme.layout.heroTaglineFontScale.toFixed(2)}x）`}>
