@@ -120,6 +120,7 @@ type EditorTheme = {
     faqTitle: string;
     galleryEyebrow: string;
     galleryTitle: string;
+    partnersEyebrow: string;
   };
   sections: {
     about: boolean;
@@ -382,6 +383,8 @@ export function EditorWorkspace({
           updateHomepage({ galleryEyebrow: value });
         } else if (msg.field === "galleryTitle") {
           updateHomepage({ galleryTitle: value });
+        } else if (msg.field === "partnersEyebrow") {
+          updateHomepage({ partnersEyebrow: value });
         }
       }
     }
@@ -1623,6 +1626,21 @@ export function EditorWorkspace({
 
         {activeTab === "section" && selectedSection === "partners" && (
           <PanelSection title="合作夥伴 / 媒體 logos">
+            <Field label="Eyebrow（小標）">
+              <input
+                type="text"
+                value={theme.homepage.partnersEyebrow}
+                onChange={(e) =>
+                  updateHomepage({ partnersEyebrow: e.target.value })
+                }
+                placeholder="As featured in"
+                maxLength={60}
+                className="w-full rounded-lg border border-stone-200 px-3 py-2 text-sm"
+              />
+              <p className="mt-1 text-[11px] text-stone-500 leading-relaxed">
+                Partners 區段上方那行小字，預設「As featured in」。
+              </p>
+            </Field>
             {theme.layout.partners.length === 0 ? (
               <p className="text-sm text-stone-600">
                 還沒加 partner，先加一個 logo。Logo URL 用任何公開 HTTPS 圖片。

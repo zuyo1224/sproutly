@@ -58,6 +58,7 @@ export default async function EditorPage({
       faqTitle: theme.homepage.faqTitle ?? "",
       galleryEyebrow: theme.homepage.galleryEyebrow ?? "",
       galleryTitle: theme.homepage.galleryTitle ?? "",
+      partnersEyebrow: theme.homepage.partnersEyebrow ?? "",
     },
     sections: theme.sections,
   };

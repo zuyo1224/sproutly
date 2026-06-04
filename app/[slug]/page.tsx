@@ -1531,6 +1531,8 @@ export default async function StoreHomePage({
                 : partnersStyle.align === "right"
                 ? "justify-end"
                 : "justify-center";
+            const partnersEyebrow =
+              theme.homepage.partnersEyebrow ?? HOMEPAGE_DEFAULTS.partnersEyebrow;
             return (
             <section
               className={`py-32 sm:py-44 ${animClass}`}
@@ -1544,10 +1546,12 @@ export default async function StoreHomePage({
                 style={{ textAlign: partnersStyle.align }}
               >
                 <p
+                  data-edit-text
+                  data-edit-field="partnersEyebrow"
                   className="text-[10px] tracking-[0.4em] uppercase mb-12"
                   style={{ color: theme.textMuted }}
                 >
-                  As featured in
+                  {partnersEyebrow}
                 </p>
                 <div className={`flex flex-wrap items-center ${partnersJustify} gap-8 sm:gap-12 md:gap-16`}>
                   {theme.layout.partners.slice(0, 12).map((p, i) => {
