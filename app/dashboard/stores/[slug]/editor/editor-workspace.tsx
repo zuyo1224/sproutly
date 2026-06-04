@@ -118,6 +118,8 @@ type EditorTheme = {
     testimonialsTitle: string;
     faqEyebrow: string;
     faqTitle: string;
+    galleryEyebrow: string;
+    galleryTitle: string;
   };
   sections: {
     about: boolean;
@@ -376,6 +378,10 @@ export function EditorWorkspace({
           updateLayout({ heroEyebrow: value || null });
         } else if (msg.field === "heroSubtitle") {
           updateLayout({ heroSubtitle: value || null });
+        } else if (msg.field === "galleryEyebrow") {
+          updateHomepage({ galleryEyebrow: value });
+        } else if (msg.field === "galleryTitle") {
+          updateHomepage({ galleryTitle: value });
         }
       }
     }
@@ -1701,6 +1707,36 @@ export function EditorWorkspace({
 
         {activeTab === "section" && selectedSection === "gallery" && (
           <PanelSection title="圖片相簿">
+            <Field label="Eyebrow（小標）">
+              <input
+                type="text"
+                value={theme.homepage.galleryEyebrow}
+                onChange={(e) =>
+                  updateHomepage({ galleryEyebrow: e.target.value })
+                }
+                placeholder="Gallery"
+                maxLength={60}
+                className="w-full rounded-lg border border-stone-200 px-3 py-2 text-sm"
+              />
+              <p className="mt-1 text-[11px] text-stone-500 leading-relaxed">
+                Gallery 區段上方那行小字，預設「Gallery」。
+              </p>
+            </Field>
+            <Field label="標題">
+              <input
+                type="text"
+                value={theme.homepage.galleryTitle}
+                onChange={(e) =>
+                  updateHomepage({ galleryTitle: e.target.value })
+                }
+                placeholder="相片紀錄"
+                maxLength={60}
+                className="w-full rounded-lg border border-stone-200 px-3 py-2 text-sm"
+              />
+              <p className="mt-1 text-[11px] text-stone-500 leading-relaxed">
+                Gallery 區段大字，預設「相片紀錄」。
+              </p>
+            </Field>
             {theme.layout.gallery.length === 0 ? (
               <p className="text-sm text-stone-600">
                 還沒加圖，先加一張。URL 用任何公開 HTTPS 圖片。

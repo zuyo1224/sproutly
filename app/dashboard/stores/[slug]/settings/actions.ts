@@ -165,6 +165,14 @@ export async function updateStore(slug: string, formData: FormData) {
     typeof existingHomepage.visitEyebrow === "string"
       ? existingHomepage.visitEyebrow
       : null;
+  const existingGalleryEyebrow =
+    typeof existingHomepage.galleryEyebrow === "string"
+      ? existingHomepage.galleryEyebrow
+      : null;
+  const existingGalleryTitle =
+    typeof existingHomepage.galleryTitle === "string"
+      ? existingHomepage.galleryTitle
+      : null;
 
   const homepage = {
     collectionsIntro:
@@ -184,6 +192,8 @@ export async function updateStore(slug: string, formData: FormData) {
     testimonialsTitle: existingTestimonialsTitle,
     faqEyebrow: existingFaqEyebrow,
     faqTitle: existingFaqTitle,
+    galleryEyebrow: existingGalleryEyebrow,
+    galleryTitle: existingGalleryTitle,
     enableAnimation: formData.get("hp_enable_animation") === "on",
   };
 

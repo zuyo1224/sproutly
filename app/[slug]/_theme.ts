@@ -156,6 +156,8 @@ export interface StoreTheme {
     testimonialsTitle: string | null;
     faqEyebrow: string | null;
     faqTitle: string | null;
+    galleryEyebrow: string | null;
+    galleryTitle: string | null;
     enableAnimation: boolean;
   };
   layout: {
@@ -239,6 +241,8 @@ export const HOMEPAGE_DEFAULTS = {
   testimonialsTitle: "顧客的話",
   faqEyebrow: "FAQ",
   faqTitle: "常見問題",
+  galleryEyebrow: "Gallery",
+  galleryTitle: "相片紀錄",
 };
 
 export const PRESETS: Record<PresetKey, Omit<StoreTheme, "preset" | "logoUrl" | "heroUrl" | "sections" | "social" | "tagline" | "collections" | "homepage" | "layout">> = {
@@ -746,6 +750,14 @@ function resolveHomepage(raw: unknown): StoreTheme["homepage"] {
     faqTitle:
       typeof h.faqTitle === "string" && h.faqTitle.trim()
         ? h.faqTitle.trim()
+        : null,
+    galleryEyebrow:
+      typeof h.galleryEyebrow === "string" && h.galleryEyebrow.trim()
+        ? h.galleryEyebrow.trim()
+        : null,
+    galleryTitle:
+      typeof h.galleryTitle === "string" && h.galleryTitle.trim()
+        ? h.galleryTitle.trim()
         : null,
     enableAnimation: h.enableAnimation === false ? false : true, // default true
   };

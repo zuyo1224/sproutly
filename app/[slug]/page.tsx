@@ -1594,6 +1594,10 @@ export default async function StoreHomePage({
                 : galleryStyle.align === "left"
                 ? ""
                 : "mx-auto";
+            const galleryEyebrow =
+              theme.homepage.galleryEyebrow ?? HOMEPAGE_DEFAULTS.galleryEyebrow;
+            const galleryTitle =
+              theme.homepage.galleryTitle ?? HOMEPAGE_DEFAULTS.galleryTitle;
             return (
             <section
               className={`py-40 sm:py-56 ${animClass}`}
@@ -1608,12 +1612,16 @@ export default async function StoreHomePage({
               >
                 <div className="mb-16 sm:mb-20">
                   <p
+                    data-edit-text
+                    data-edit-field="galleryEyebrow"
                     className="text-[10px] tracking-[0.4em] uppercase mb-5"
                     style={{ color: theme.accent }}
                   >
-                    Gallery
+                    {galleryEyebrow}
                   </p>
                   <h2
+                    data-edit-text
+                    data-edit-field="galleryTitle"
                     className="text-2xl sm:text-3xl md:text-4xl"
                     style={{
                       color: theme.text,
@@ -1623,7 +1631,7 @@ export default async function StoreHomePage({
                       lineHeight: 1.2,
                     }}
                   >
-                    相片紀錄
+                    {galleryTitle}
                   </h2>
                   <div
                     className={`${galleryDivider} mt-6`}

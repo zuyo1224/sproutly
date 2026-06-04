@@ -73,6 +73,8 @@ type EditorPayload = {
     testimonialsTitle?: string;
     faqEyebrow?: string;
     faqTitle?: string;
+    galleryEyebrow?: string;
+    galleryTitle?: string;
   };
   sections?: {
     about?: boolean;
@@ -440,6 +442,14 @@ export async function saveEditorState(slug: string, payload: EditorPayload) {
     if (payload.homepage.faqTitle !== undefined) {
       const v = String(payload.homepage.faqTitle).trim().slice(0, 60);
       hpPatch.faqTitle = v || null;
+    }
+    if (payload.homepage.galleryEyebrow !== undefined) {
+      const v = String(payload.homepage.galleryEyebrow).trim().slice(0, 60);
+      hpPatch.galleryEyebrow = v || null;
+    }
+    if (payload.homepage.galleryTitle !== undefined) {
+      const v = String(payload.homepage.galleryTitle).trim().slice(0, 60);
+      hpPatch.galleryTitle = v || null;
     }
     merged.homepage = hpPatch;
   }
