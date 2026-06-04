@@ -163,6 +163,7 @@ export interface StoreTheme {
     statsTitle: string | null;
     heroCta: string | null;
     heroSecondaryCta: string | null;
+    collectionsCardCta: string | null;
     enableAnimation: boolean;
   };
   layout: {
@@ -253,6 +254,7 @@ export const HOMEPAGE_DEFAULTS = {
   statsTitle: null,
   heroCta: "看商品",
   heroSecondaryCta: "關於我們",
+  collectionsCardCta: "看這個 →",
 };
 
 export const PRESETS: Record<PresetKey, Omit<StoreTheme, "preset" | "logoUrl" | "heroUrl" | "sections" | "social" | "tagline" | "collections" | "homepage" | "layout">> = {
@@ -788,6 +790,10 @@ function resolveHomepage(raw: unknown): StoreTheme["homepage"] {
     heroSecondaryCta:
       typeof h.heroSecondaryCta === "string" && h.heroSecondaryCta.trim()
         ? h.heroSecondaryCta.trim()
+        : null,
+    collectionsCardCta:
+      typeof h.collectionsCardCta === "string" && h.collectionsCardCta.trim()
+        ? h.collectionsCardCta.trim()
         : null,
     enableAnimation: h.enableAnimation === false ? false : true, // default true
   };

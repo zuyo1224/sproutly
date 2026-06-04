@@ -650,6 +650,8 @@ export default async function StoreHomePage({
           // free-positioning feature 重做再開回來。
           const introFree = false; void introPos;
           const collStyle = sectionStyleFor("collections");
+          const collectionsCardCta =
+            theme.homepage.collectionsCardCta ?? HOMEPAGE_DEFAULTS.collectionsCardCta;
           return (
           <section
             className={`relative py-40 sm:py-56 ${animClass} ${introFree ? "min-h-[60vh]" : ""}`}
@@ -750,7 +752,7 @@ export default async function StoreHomePage({
                       className="sproutly-card-action inline-block text-xs tracking-widest uppercase"
                       style={{ color: theme.accent }}
                     >
-                      看這個 →
+                      {collectionsCardCta}
                     </span>
                   </Link>
                 ))}

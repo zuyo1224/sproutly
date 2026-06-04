@@ -80,6 +80,7 @@ type EditorPayload = {
     statsTitle?: string;
     heroCta?: string;
     heroSecondaryCta?: string;
+    collectionsCardCta?: string;
   };
   sections?: {
     about?: boolean;
@@ -475,6 +476,10 @@ export async function saveEditorState(slug: string, payload: EditorPayload) {
     if (payload.homepage.heroSecondaryCta !== undefined) {
       const v = String(payload.homepage.heroSecondaryCta).trim().slice(0, 60);
       hpPatch.heroSecondaryCta = v || null;
+    }
+    if (payload.homepage.collectionsCardCta !== undefined) {
+      const v = String(payload.homepage.collectionsCardCta).trim().slice(0, 60);
+      hpPatch.collectionsCardCta = v || null;
     }
     merged.homepage = hpPatch;
   }

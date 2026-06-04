@@ -125,6 +125,7 @@ type EditorTheme = {
     statsTitle: string;
     heroCta: string;
     heroSecondaryCta: string;
+    collectionsCardCta: string;
   };
   sections: {
     about: boolean;
@@ -397,6 +398,8 @@ export function EditorWorkspace({
           updateHomepage({ heroCta: value });
         } else if (msg.field === "heroSecondaryCta") {
           updateHomepage({ heroSecondaryCta: value });
+        } else if (msg.field === "collectionsCardCta") {
+          updateHomepage({ collectionsCardCta: value });
         }
       }
     }
@@ -1518,6 +1521,21 @@ export function EditorWorkspace({
                   </button>
                 ))}
               </div>
+            </Field>
+            <Field label="卡片按鈕文字">
+              <input
+                type="text"
+                value={theme.homepage.collectionsCardCta}
+                onChange={(e) =>
+                  updateHomepage({ collectionsCardCta: e.target.value })
+                }
+                placeholder="看這個 →"
+                maxLength={60}
+                className="w-full rounded-lg border border-stone-200 px-3 py-2 text-sm"
+              />
+              <p className="text-[10px] text-stone-500 mt-1">
+                每張選物提案卡片底部的小字行動按鈕，預設「看這個 →」
+              </p>
             </Field>
             <p className="text-xs text-stone-500 leading-relaxed">
               個別選物提案的標題、副標、情境照在「傳統設定頁」編輯。

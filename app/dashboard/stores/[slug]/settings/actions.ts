@@ -193,6 +193,10 @@ export async function updateStore(slug: string, formData: FormData) {
     typeof existingHomepage.heroSecondaryCta === "string"
       ? existingHomepage.heroSecondaryCta
       : null;
+  const existingCollectionsCardCta =
+    typeof existingHomepage.collectionsCardCta === "string"
+      ? existingHomepage.collectionsCardCta
+      : null;
 
   const homepage = {
     collectionsIntro:
@@ -219,6 +223,7 @@ export async function updateStore(slug: string, formData: FormData) {
     statsTitle: existingStatsTitle,
     heroCta: existingHeroCta,
     heroSecondaryCta: existingHeroSecondaryCta,
+    collectionsCardCta: existingCollectionsCardCta,
     enableAnimation: formData.get("hp_enable_animation") === "on",
   };
 
