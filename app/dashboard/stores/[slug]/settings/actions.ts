@@ -125,6 +125,14 @@ export async function updateStore(slug: string, formData: FormData) {
     typeof existingHomepage.featuredTitle === "string"
       ? existingHomepage.featuredTitle
       : null;
+  const existingFeaturedEyebrow =
+    typeof existingHomepage.featuredEyebrow === "string"
+      ? existingHomepage.featuredEyebrow
+      : null;
+  const existingFeaturedCta =
+    typeof existingHomepage.featuredCta === "string"
+      ? existingHomepage.featuredCta
+      : null;
   const existingJournalEyebrow =
     typeof existingHomepage.journalEyebrow === "string"
       ? existingHomepage.journalEyebrow
@@ -165,6 +173,8 @@ export async function updateStore(slug: string, formData: FormData) {
     promise: String(formData.get("hp_promise") ?? "").trim() || null,
     promiseEyebrow: existingPromiseEyebrow,
     featuredTitle: existingFeaturedTitle,
+    featuredEyebrow: existingFeaturedEyebrow,
+    featuredCta: existingFeaturedCta,
     visitTitle: String(formData.get("hp_visit_title") ?? "").trim() || null,
     visitEyebrow: existingVisitEyebrow,
     journalEyebrow: existingJournalEyebrow,

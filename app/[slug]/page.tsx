@@ -53,6 +53,10 @@ export default async function StoreHomePage({
     theme.homepage.promiseEyebrow || HOMEPAGE_DEFAULTS.promiseEyebrow;
   const featuredTitle =
     theme.homepage.featuredTitle || HOMEPAGE_DEFAULTS.featuredTitle;
+  const featuredEyebrow =
+    theme.homepage.featuredEyebrow ?? HOMEPAGE_DEFAULTS.featuredEyebrow;
+  const featuredCta =
+    theme.homepage.featuredCta || HOMEPAGE_DEFAULTS.featuredCta;
   const visitTitle =
     theme.homepage.visitTitle || HOMEPAGE_DEFAULTS.visitTitle;
   const visitEyebrow =
@@ -783,17 +787,36 @@ export default async function StoreHomePage({
                   {featuredTitle}
                 </h2>
               ) : (
-                <h2
-                  data-edit-drag="featured-title"
-                  className="text-xl sm:text-2xl mb-20 sm:mb-28"
-                  style={{
-                    color: theme.text,
-                    fontFamily: "var(--store-font)",
-                    fontWeight: 400,
-                  }}
-                >
-                  {featuredTitle}
-                </h2>
+                <>
+                  {featuredEyebrow && (
+                    <p
+                      data-edit-text
+                      data-edit-field="featuredEyebrow"
+                      className="text-[0.6875rem] uppercase mb-4"
+                      style={{
+                        color: theme.accent,
+                        fontFamily: "var(--store-font)",
+                        fontWeight: 500,
+                        letterSpacing: "0.4em",
+                      }}
+                    >
+                      {featuredEyebrow}
+                    </p>
+                  )}
+                  <h2
+                    data-edit-drag="featured-title"
+                    data-edit-text
+                    data-edit-field="featuredTitle"
+                    className="text-xl sm:text-2xl mb-20 sm:mb-28"
+                    style={{
+                      color: theme.text,
+                      fontFamily: "var(--store-font)",
+                      fontWeight: 400,
+                    }}
+                  >
+                    {featuredTitle}
+                  </h2>
+                </>
               )}
               <div className={`sproutly-stagger grid grid-cols-2 gap-x-6 sm:gap-x-10 gap-y-16 ${
                 theme.layout.featuredColumns === 2 ? "md:grid-cols-2"
@@ -858,9 +881,11 @@ export default async function StoreHomePage({
                   href={`/${slug}/shop`}
                   className="sproutly-link text-sm tracking-wider"
                   data-default-line="true"
+                  data-edit-text
+                  data-edit-field="featuredCta"
                   style={{ color: theme.text }}
                 >
-                  看所有的植物
+                  {featuredCta}
                 </Link>
               </div>
             </div>

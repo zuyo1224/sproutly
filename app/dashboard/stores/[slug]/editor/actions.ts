@@ -61,6 +61,8 @@ type EditorPayload = {
     promise?: string;
     promiseEyebrow?: string;
     featuredTitle?: string;
+    featuredEyebrow?: string;
+    featuredCta?: string;
     collectionsIntro?: string;
     visitTitle?: string;
     visitEyebrow?: string;
@@ -389,6 +391,14 @@ export async function saveEditorState(slug: string, payload: EditorPayload) {
     if (payload.homepage.featuredTitle !== undefined) {
       const v = String(payload.homepage.featuredTitle).trim().slice(0, 60);
       hpPatch.featuredTitle = v || null;
+    }
+    if (payload.homepage.featuredEyebrow !== undefined) {
+      const v = String(payload.homepage.featuredEyebrow).trim().slice(0, 60);
+      hpPatch.featuredEyebrow = v || null;
+    }
+    if (payload.homepage.featuredCta !== undefined) {
+      const v = String(payload.homepage.featuredCta).trim().slice(0, 60);
+      hpPatch.featuredCta = v || null;
     }
     if (payload.homepage.collectionsIntro !== undefined) {
       hpPatch.collectionsIntro = String(payload.homepage.collectionsIntro).slice(

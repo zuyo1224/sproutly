@@ -106,6 +106,8 @@ type EditorTheme = {
     promise: string;
     promiseEyebrow: string;
     featuredTitle: string;
+    featuredEyebrow: string;
+    featuredCta: string;
     collectionsIntro: string;
     visitTitle: string;
     visitEyebrow: string;
@@ -362,6 +364,12 @@ export function EditorWorkspace({
           updateHomepage({ visitTitle: value });
         } else if (msg.field === "visitEyebrow") {
           updateHomepage({ visitEyebrow: value });
+        } else if (msg.field === "featuredTitle") {
+          updateHomepage({ featuredTitle: value });
+        } else if (msg.field === "featuredEyebrow") {
+          updateHomepage({ featuredEyebrow: value });
+        } else if (msg.field === "featuredCta") {
+          updateHomepage({ featuredCta: value });
         } else if (msg.field === "collectionsIntro") {
           updateHomepage({ collectionsIntro: value });
         } else if (msg.field === "heroEyebrow") {
@@ -1960,6 +1968,22 @@ export function EditorWorkspace({
         {activeTab === "section" &&
           selectedSection === "featured" && (
             <PanelSection title={sectionLabels.featured}>
+              <Field label="Eyebrow">
+                <input
+                  type="text"
+                  value={theme.homepage.featuredEyebrow}
+                  onChange={(e) =>
+                    updateHomepage({ featuredEyebrow: e.target.value })
+                  }
+                  placeholder="留空 = 不顯示"
+                  maxLength={60}
+                  className="w-full rounded-lg border border-stone-200 px-3 py-2 text-sm"
+                />
+                <p className="mt-1 text-[11px] text-stone-500 leading-relaxed">
+                  標題上方那行小字，例如「Featured」或「本月精選」。
+                  留空 = 不顯示。
+                </p>
+              </Field>
               <Field label="標題">
                 <input
                   type="text"
@@ -1973,6 +1997,22 @@ export function EditorWorkspace({
                 />
                 <p className="mt-1 text-[11px] text-stone-500 leading-relaxed">
                   Featured 區段上方那行大字，預設「本月選物」。
+                </p>
+              </Field>
+              <Field label="看更多按鈕文字">
+                <input
+                  type="text"
+                  value={theme.homepage.featuredCta}
+                  onChange={(e) =>
+                    updateHomepage({ featuredCta: e.target.value })
+                  }
+                  placeholder="看所有的植物"
+                  maxLength={60}
+                  className="w-full rounded-lg border border-stone-200 px-3 py-2 text-sm"
+                />
+                <p className="mt-1 text-[11px] text-stone-500 leading-relaxed">
+                  區段底部跳到 /shop 的連結文字。預設「看所有的植物」，
+                  非盆栽店家可改成「看所有商品 / 逛全部 / 看更多選品」。
                 </p>
               </Field>
               <Field label={`顯示幾個商品（${theme.layout.featuredCount}）`}>
