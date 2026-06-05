@@ -62,6 +62,10 @@ export default async function AboutPage({ params }: { params: Params }) {
     theme.homepage.aboutEyebrow ?? HOMEPAGE_DEFAULTS.aboutEyebrow;
   const aboutTitle =
     theme.homepage.aboutTitle ?? HOMEPAGE_DEFAULTS.aboutTitle;
+  const faqEyebrow =
+    theme.homepage.faqEyebrow ?? HOMEPAGE_DEFAULTS.faqEyebrow;
+  const faqTitle =
+    theme.homepage.faqTitle ?? HOMEPAGE_DEFAULTS.faqTitle;
 
   return (
     <main className="max-w-3xl mx-auto px-6 sm:px-10 py-20 sm:py-28">
@@ -161,12 +165,16 @@ export default async function AboutPage({ params }: { params: Params }) {
           <div className="mb-12 sm:mb-14">
             <p
               className="text-[0.6875rem] uppercase font-medium"
+              data-edit-text
+              data-edit-field="faqEyebrow"
               style={{ color: theme.accent, letterSpacing: "0.4em" }}
             >
-              FAQ
+              {faqEyebrow}
             </p>
             <h2
               className="mt-4 text-2xl sm:text-3xl font-medium"
+              data-edit-text
+              data-edit-field="faqTitle"
               style={{
                 color: theme.text,
                 fontFamily: "var(--store-font)",
@@ -174,7 +182,7 @@ export default async function AboutPage({ params }: { params: Params }) {
                 lineHeight: 1.2,
               }}
             >
-              常見問題
+              {faqTitle}
             </h2>
             <div
               className="mt-5 h-px w-10"
