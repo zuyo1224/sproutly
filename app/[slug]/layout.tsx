@@ -10,7 +10,7 @@ import {
   Lora,
 } from "next/font/google";
 import { createClient } from "@/lib/supabase/server";
-import { resolveTheme, themeToCssVars } from "./_theme";
+import { resolveTheme, themeToCssVars, HOMEPAGE_DEFAULTS } from "./_theme";
 import { FavoritesCounter } from "@/app/_components/favorite-button";
 import { CartIcon } from "@/app/_components/cart-icon";
 import { SearchOverlay } from "@/app/_components/search-overlay";
@@ -782,7 +782,7 @@ export default async function PublicStoreLayout({
                   letterSpacing: "0.4em",
                 }}
               >
-                Words
+                {theme.homepage.footerWordsLabel || HOMEPAGE_DEFAULTS.footerWordsLabel}
               </p>
               <p
                 className="italic"
@@ -810,7 +810,7 @@ export default async function PublicStoreLayout({
                     letterSpacing: "0.4em",
                   }}
                 >
-                  Follow
+                  {theme.homepage.footerFollowLabel || HOMEPAGE_DEFAULTS.footerFollowLabel}
                 </span>
                 <span
                   className="h-px w-10"

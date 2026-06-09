@@ -134,6 +134,8 @@ type EditorTheme = {
     contactTitle: string;
     shopEyebrow: string;
     shopTitle: string;
+    footerWordsLabel: string;
+    footerFollowLabel: string;
     journalCardLabel: string;
     journalCards: Array<{ eyebrow: string; title: string; excerpt: string }>;
   };
@@ -3404,6 +3406,38 @@ export function EditorWorkspace({
                 }
                 maxLength={60}
                 placeholder="所有商品"
+                className="w-full rounded-lg border border-stone-200 px-3 py-2 text-sm"
+              />
+            </Field>
+          </PanelSection>
+        )}
+
+        {activeTab === "content" && (
+          <PanelSection title="頁尾（Footer）">
+            <p className="text-[11px] text-stone-500 leading-relaxed -mt-2">
+              頁尾 tagline 與社群連結上方的小標。空白會用預設值。
+            </p>
+            <Field label="tagline 上方小標">
+              <input
+                type="text"
+                value={theme.homepage.footerWordsLabel}
+                onChange={(e) =>
+                  updateHomepage({ footerWordsLabel: e.target.value })
+                }
+                maxLength={60}
+                placeholder="Words"
+                className="w-full rounded-lg border border-stone-200 px-3 py-2 text-sm"
+              />
+            </Field>
+            <Field label="社群區小標">
+              <input
+                type="text"
+                value={theme.homepage.footerFollowLabel}
+                onChange={(e) =>
+                  updateHomepage({ footerFollowLabel: e.target.value })
+                }
+                maxLength={60}
+                placeholder="Follow"
                 className="w-full rounded-lg border border-stone-200 px-3 py-2 text-sm"
               />
             </Field>

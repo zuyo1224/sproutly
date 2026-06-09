@@ -174,6 +174,8 @@ export interface StoreTheme {
     contactTitle: string | null;
     shopEyebrow: string | null;
     shopTitle: string | null;
+    footerWordsLabel: string | null;   // 頁尾 tagline 上方小標（預設 Words）
+    footerFollowLabel: string | null;  // 頁尾社群區小標（預設 Follow）
     enableAnimation: boolean;
   };
   layout: {
@@ -293,6 +295,8 @@ export const HOMEPAGE_DEFAULTS = {
   contactTitle: "聯絡我們",
   shopEyebrow: "Shop",
   shopTitle: "所有商品",
+  footerWordsLabel: "Words",
+  footerFollowLabel: "Follow",
 };
 
 export const PRESETS: Record<PresetKey, Omit<StoreTheme, "preset" | "logoUrl" | "heroUrl" | "sections" | "social" | "tagline" | "collections" | "homepage" | "layout">> = {
@@ -881,6 +885,14 @@ function resolveHomepage(raw: unknown): StoreTheme["homepage"] {
     shopTitle:
       typeof h.shopTitle === "string" && h.shopTitle.trim()
         ? h.shopTitle.trim()
+        : null,
+    footerWordsLabel:
+      typeof h.footerWordsLabel === "string" && h.footerWordsLabel.trim()
+        ? h.footerWordsLabel.trim()
+        : null,
+    footerFollowLabel:
+      typeof h.footerFollowLabel === "string" && h.footerFollowLabel.trim()
+        ? h.footerFollowLabel.trim()
         : null,
     enableAnimation: h.enableAnimation === false ? false : true, // default true
   };
