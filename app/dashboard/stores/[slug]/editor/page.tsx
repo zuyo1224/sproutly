@@ -69,6 +69,7 @@ export default async function EditorPage({
       aboutTitle: theme.homepage.aboutTitle ?? "",
       contactEyebrow: theme.homepage.contactEyebrow ?? "",
       contactTitle: theme.homepage.contactTitle ?? "",
+      journalCardLabel: theme.homepage.journalCardLabel ?? "",
     },
     sections: theme.sections,
   };

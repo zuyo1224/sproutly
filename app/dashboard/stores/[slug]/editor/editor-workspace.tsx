@@ -131,6 +131,7 @@ type EditorTheme = {
     aboutTitle: string;
     contactEyebrow: string;
     contactTitle: string;
+    journalCardLabel: string;
   };
   sections: {
     about: boolean;
@@ -415,6 +416,8 @@ export function EditorWorkspace({
           updateHomepage({ contactEyebrow: value });
         } else if (msg.field === "contactTitle") {
           updateHomepage({ contactTitle: value });
+        } else if (msg.field === "journalCardLabel") {
+          updateHomepage({ journalCardLabel: value });
         }
       }
     }
@@ -2273,6 +2276,21 @@ export function EditorWorkspace({
               />
               <p className="mt-1 text-[11px] text-stone-500 leading-relaxed">
                 標題下方那段短說明。
+              </p>
+            </Field>
+            <Field label="卡片底部標籤">
+              <input
+                type="text"
+                value={theme.homepage.journalCardLabel}
+                onChange={(e) =>
+                  updateHomepage({ journalCardLabel: e.target.value })
+                }
+                placeholder="Coming soon"
+                maxLength={60}
+                className="w-full rounded-lg border border-stone-200 px-3 py-2 text-sm"
+              />
+              <p className="mt-1 text-[11px] text-stone-500 leading-relaxed">
+                每張 Journal 卡片底部那行小字，預設「Coming soon」。
               </p>
             </Field>
             <p className="text-xs text-stone-500 leading-relaxed">

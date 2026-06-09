@@ -217,6 +217,10 @@ export async function updateStore(slug: string, formData: FormData) {
     typeof existingHomepage.contactTitle === "string"
       ? existingHomepage.contactTitle
       : null;
+  const existingJournalCardLabel =
+    typeof existingHomepage.journalCardLabel === "string"
+      ? existingHomepage.journalCardLabel
+      : null;
 
   const homepage = {
     collectionsIntro:
@@ -249,6 +253,7 @@ export async function updateStore(slug: string, formData: FormData) {
     aboutTitle: existingAboutTitle,
     contactEyebrow: existingContactEyebrow,
     contactTitle: existingContactTitle,
+    journalCardLabel: existingJournalCardLabel,
     enableAnimation: formData.get("hp_enable_animation") === "on",
   };
 

@@ -915,6 +915,8 @@ export default async function StoreHomePage({
             theme.homepage.journalTitle || HOMEPAGE_DEFAULTS.journalTitle;
           const journalSubtitle =
             theme.homepage.journalSubtitle || HOMEPAGE_DEFAULTS.journalSubtitle;
+          const journalCardLabel =
+            theme.homepage.journalCardLabel ?? HOMEPAGE_DEFAULTS.journalCardLabel;
           return (
           <section
             className={`relative py-40 sm:py-56 ${animClass} ${journalFree ? "min-h-[60vh]" : ""}`}
@@ -1065,7 +1067,7 @@ export default async function StoreHomePage({
                       className="mt-5 text-[10px] tracking-[0.3em] uppercase"
                       style={{ color: theme.textMuted, opacity: 0.65 }}
                     >
-                      Coming soon
+                      {journalCardLabel}
                     </p>
                   </article>
                 );

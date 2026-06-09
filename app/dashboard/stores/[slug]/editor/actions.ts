@@ -86,6 +86,7 @@ type EditorPayload = {
     aboutTitle?: string;
     contactEyebrow?: string;
     contactTitle?: string;
+    journalCardLabel?: string;
   };
   sections?: {
     about?: boolean;
@@ -505,6 +506,10 @@ export async function saveEditorState(slug: string, payload: EditorPayload) {
     if (payload.homepage.contactTitle !== undefined) {
       const v = String(payload.homepage.contactTitle).trim().slice(0, 60);
       hpPatch.contactTitle = v || null;
+    }
+    if (payload.homepage.journalCardLabel !== undefined) {
+      const v = String(payload.homepage.journalCardLabel).trim().slice(0, 60);
+      hpPatch.journalCardLabel = v || null;
     }
     merged.homepage = hpPatch;
   }
