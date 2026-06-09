@@ -131,6 +131,8 @@ type EditorTheme = {
     aboutTitle: string;
     contactEyebrow: string;
     contactTitle: string;
+    shopEyebrow: string;
+    shopTitle: string;
     journalCardLabel: string;
   };
   sections: {
@@ -416,6 +418,10 @@ export function EditorWorkspace({
           updateHomepage({ contactEyebrow: value });
         } else if (msg.field === "contactTitle") {
           updateHomepage({ contactTitle: value });
+        } else if (msg.field === "shopEyebrow") {
+          updateHomepage({ shopEyebrow: value });
+        } else if (msg.field === "shopTitle") {
+          updateHomepage({ shopTitle: value });
         } else if (msg.field === "journalCardLabel") {
           updateHomepage({ journalCardLabel: value });
         }
@@ -3248,7 +3254,7 @@ export function EditorWorkspace({
         {activeTab === "content" && (
           <PanelSection title="子頁標題">
             <p className="text-[11px] text-stone-500 leading-relaxed -mt-2">
-              關於頁 / 聯絡頁的 eyebrow + 大字標題。空白會用預設值。
+              關於頁 / 聯絡頁 / 商品頁的 eyebrow + 大字標題。空白會用預設值。
             </p>
             <Field label="關於頁 eyebrow">
               <input
@@ -3295,6 +3301,30 @@ export function EditorWorkspace({
                 }
                 maxLength={60}
                 placeholder="聯絡我們"
+                className="w-full rounded-lg border border-stone-200 px-3 py-2 text-sm"
+              />
+            </Field>
+            <Field label="商品頁 eyebrow">
+              <input
+                type="text"
+                value={theme.homepage.shopEyebrow}
+                onChange={(e) =>
+                  updateHomepage({ shopEyebrow: e.target.value })
+                }
+                maxLength={60}
+                placeholder="Shop"
+                className="w-full rounded-lg border border-stone-200 px-3 py-2 text-sm"
+              />
+            </Field>
+            <Field label="商品頁標題">
+              <input
+                type="text"
+                value={theme.homepage.shopTitle}
+                onChange={(e) =>
+                  updateHomepage({ shopTitle: e.target.value })
+                }
+                maxLength={60}
+                placeholder="所有商品"
                 className="w-full rounded-lg border border-stone-200 px-3 py-2 text-sm"
               />
             </Field>

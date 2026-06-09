@@ -170,6 +170,8 @@ export interface StoreTheme {
     aboutTitle: string | null;
     contactEyebrow: string | null;
     contactTitle: string | null;
+    shopEyebrow: string | null;
+    shopTitle: string | null;
     enableAnimation: boolean;
   };
   layout: {
@@ -267,6 +269,8 @@ export const HOMEPAGE_DEFAULTS = {
   aboutTitle: "關於我們",
   contactEyebrow: "Contact",
   contactTitle: "聯絡我們",
+  shopEyebrow: "Shop",
+  shopTitle: "所有商品",
 };
 
 export const PRESETS: Record<PresetKey, Omit<StoreTheme, "preset" | "logoUrl" | "heroUrl" | "sections" | "social" | "tagline" | "collections" | "homepage" | "layout">> = {
@@ -830,6 +834,14 @@ function resolveHomepage(raw: unknown): StoreTheme["homepage"] {
     contactTitle:
       typeof h.contactTitle === "string" && h.contactTitle.trim()
         ? h.contactTitle.trim()
+        : null,
+    shopEyebrow:
+      typeof h.shopEyebrow === "string" && h.shopEyebrow.trim()
+        ? h.shopEyebrow.trim()
+        : null,
+    shopTitle:
+      typeof h.shopTitle === "string" && h.shopTitle.trim()
+        ? h.shopTitle.trim()
         : null,
     enableAnimation: h.enableAnimation === false ? false : true, // default true
   };

@@ -217,6 +217,14 @@ export async function updateStore(slug: string, formData: FormData) {
     typeof existingHomepage.contactTitle === "string"
       ? existingHomepage.contactTitle
       : null;
+  const existingShopEyebrow =
+    typeof existingHomepage.shopEyebrow === "string"
+      ? existingHomepage.shopEyebrow
+      : null;
+  const existingShopTitle =
+    typeof existingHomepage.shopTitle === "string"
+      ? existingHomepage.shopTitle
+      : null;
   const existingJournalCardLabel =
     typeof existingHomepage.journalCardLabel === "string"
       ? existingHomepage.journalCardLabel
@@ -253,6 +261,8 @@ export async function updateStore(slug: string, formData: FormData) {
     aboutTitle: existingAboutTitle,
     contactEyebrow: existingContactEyebrow,
     contactTitle: existingContactTitle,
+    shopEyebrow: existingShopEyebrow,
+    shopTitle: existingShopTitle,
     journalCardLabel: existingJournalCardLabel,
     enableAnimation: formData.get("hp_enable_animation") === "on",
   };

@@ -69,6 +69,8 @@ export default async function EditorPage({
       aboutTitle: theme.homepage.aboutTitle ?? "",
       contactEyebrow: theme.homepage.contactEyebrow ?? "",
       contactTitle: theme.homepage.contactTitle ?? "",
+      shopEyebrow: theme.homepage.shopEyebrow ?? "",
+      shopTitle: theme.homepage.shopTitle ?? "",
       journalCardLabel: theme.homepage.journalCardLabel ?? "",
     },
     sections: theme.sections,

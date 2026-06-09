@@ -1,7 +1,7 @@
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
-import { resolveTheme } from "../_theme";
+import { resolveTheme, HOMEPAGE_DEFAULTS } from "../_theme";
 
 type Params = Promise<{ slug: string }>;
 type SearchParams = Promise<{ q?: string; sort?: string; stock?: string }>;
@@ -80,16 +80,23 @@ export default async function ShopPage({
   const totalCount = products?.length ?? 0;
   const hasFilter = q || sort !== "newest" || inStock;
 
+  const shopEyebrow = theme.homepage.shopEyebrow ?? HOMEPAGE_DEFAULTS.shopEyebrow;
+  const shopTitle = theme.homepage.shopTitle ?? HOMEPAGE_DEFAULTS.shopTitle;
+
   return (
     <main className="max-w-6xl mx-auto px-6 sm:px-10 py-20 sm:py-28">
       <header className="mb-16 sm:mb-20">
         <p
+          data-edit-text="true"
+          data-edit-field="shopEyebrow"
           className="text-[0.6875rem] uppercase font-medium"
           style={{ color: theme.accent, letterSpacing: "0.4em" }}
         >
-          Shop
+          {shopEyebrow}
         </p>
         <h1
+          data-edit-text="true"
+          data-edit-field="shopTitle"
           className="mt-4 text-3xl sm:text-4xl font-medium"
           style={{
             color: theme.text,
@@ -98,7 +105,7 @@ export default async function ShopPage({
             lineHeight: 1.15,
           }}
         >
-          所有商品
+          {shopTitle}
         </h1>
         <div
           className="mt-5 h-px w-12"
