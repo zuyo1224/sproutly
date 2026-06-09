@@ -153,6 +153,7 @@ export interface StoreTheme {
     journalTitle: string | null;
     journalSubtitle: string | null;
     journalCardLabel: string | null;
+    journalCards: Array<{ eyebrow: string; title: string; excerpt: string }>;
     testimonialsEyebrow: string | null;
     testimonialsTitle: string | null;
     faqEyebrow: string | null;
@@ -237,6 +238,25 @@ export const HOMEPAGE_DEFAULT_COLLECTIONS: { key: string; title: string; subtitl
     { key: "nordic", title: "給北歐風的", subtitle: "搭淺木色家具" },
     { key: "japanese", title: "給日式空間的", subtitle: "配榻榻米和障子" },
   ];
+
+// Journal 區段下方三張卡片的預設內容（商家沒填就顯示這組 placeholder）
+export const JOURNAL_CARD_DEFAULTS: { eyebrow: string; title: string; excerpt: string }[] = [
+  {
+    eyebrow: "Care",
+    title: "新手綠手指的第一步",
+    excerpt: "光線、澆水頻率、換盆時機 — 把基本功講清楚，少走幾年彎路。",
+  },
+  {
+    eyebrow: "Space",
+    title: "把植物放進小空間",
+    excerpt: "套房、租屋、窗台一隅，不同光線條件下的擺放提案。",
+  },
+  {
+    eyebrow: "Story",
+    title: "我們挑植物的方式",
+    excerpt: "從花市到溫室，這些植物是怎麼被選進這間店的。",
+  },
+];
 
 export const HOMEPAGE_DEFAULTS = {
   collectionsIntro: "告訴我們你的空間，我們幫你選對的那一株。",
@@ -719,6 +739,18 @@ function resolveHomepage(raw: unknown): StoreTheme["homepage"] {
       };
     })
     .filter((c) => c.key && c.title);
+  const journalCardsRaw = Array.isArray(h.journalCards) ? h.journalCards : [];
+  const journalCards = journalCardsRaw
+    .filter((c) => c && typeof c === "object")
+    .map((c) => {
+      const obj = c as Record<string, unknown>;
+      return {
+        eyebrow: typeof obj.eyebrow === "string" ? obj.eyebrow.trim() : "",
+        title: typeof obj.title === "string" ? obj.title.trim() : "",
+        excerpt: typeof obj.excerpt === "string" ? obj.excerpt.trim() : "",
+      };
+    })
+    .filter((c) => c.title || c.excerpt || c.eyebrow);
   return {
     collectionsIntro:
       typeof h.collectionsIntro === "string" && h.collectionsIntro.trim()
@@ -767,6 +799,7 @@ function resolveHomepage(raw: unknown): StoreTheme["homepage"] {
       typeof h.journalCardLabel === "string" && h.journalCardLabel.trim()
         ? h.journalCardLabel.trim()
         : null,
+    journalCards,
     testimonialsEyebrow:
       typeof h.testimonialsEyebrow === "string" && h.testimonialsEyebrow.trim()
         ? h.testimonialsEyebrow.trim()

@@ -89,6 +89,7 @@ type EditorPayload = {
     shopEyebrow?: string;
     shopTitle?: string;
     journalCardLabel?: string;
+    journalCards?: Array<{ eyebrow?: string; title?: string; excerpt?: string }>;
   };
   sections?: {
     about?: boolean;
@@ -520,6 +521,20 @@ export async function saveEditorState(slug: string, payload: EditorPayload) {
     if (payload.homepage.journalCardLabel !== undefined) {
       const v = String(payload.homepage.journalCardLabel).trim().slice(0, 60);
       hpPatch.journalCardLabel = v || null;
+    }
+    if (payload.homepage.journalCards !== undefined) {
+      const arr = Array.isArray(payload.homepage.journalCards)
+        ? payload.homepage.journalCards
+        : [];
+      hpPatch.journalCards = arr
+        .filter((c) => c && typeof c === "object")
+        .map((c) => ({
+          eyebrow: String(c.eyebrow ?? "").trim().slice(0, 40),
+          title: String(c.title ?? "").trim().slice(0, 80),
+          excerpt: String(c.excerpt ?? "").trim().slice(0, 200),
+        }))
+        .filter((c) => c.eyebrow || c.title || c.excerpt)
+        .slice(0, 3);
     }
     merged.homepage = hpPatch;
   }

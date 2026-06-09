@@ -72,6 +72,7 @@ export default async function EditorPage({
       shopEyebrow: theme.homepage.shopEyebrow ?? "",
       shopTitle: theme.homepage.shopTitle ?? "",
       journalCardLabel: theme.homepage.journalCardLabel ?? "",
+      journalCards: theme.homepage.journalCards,
     },
     sections: theme.sections,
   };

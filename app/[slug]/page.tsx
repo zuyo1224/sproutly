@@ -2,7 +2,7 @@ import { notFound } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
 import { createClient } from "@/lib/supabase/server";
-import { resolveTheme, HOMEPAGE_DEFAULTS, HOMEPAGE_DEFAULT_COLLECTIONS } from "./_theme";
+import { resolveTheme, HOMEPAGE_DEFAULTS, HOMEPAGE_DEFAULT_COLLECTIONS, JOURNAL_CARD_DEFAULTS } from "./_theme";
 import HeroAdaptiveBanner from "./HeroAdaptiveBanner";
 
 type Params = Promise<{ slug: string }>;
@@ -993,29 +993,13 @@ export default async function StoreHomePage({
             )}
 
             <div className="sproutly-stagger grid grid-cols-1 sm:grid-cols-3 gap-x-8 sm:gap-x-10 gap-y-16">
-              {[
-                {
-                  key: "care",
-                  eyebrow: "Care",
-                  title: "新手綠手指的第一步",
-                  excerpt: "光線、澆水頻率、換盆時機 — 把基本功講清楚，少走幾年彎路。",
-                },
-                {
-                  key: "space",
-                  eyebrow: "Space",
-                  title: "把植物放進小空間",
-                  excerpt: "套房、租屋、窗台一隅，不同光線條件下的擺放提案。",
-                },
-                {
-                  key: "story",
-                  eyebrow: "Story",
-                  title: "我們挑植物的方式",
-                  excerpt: "從花市到溫室，這些植物是怎麼被選進這間店的。",
-                },
-              ].map((entry, i) => {
+              {(theme.homepage.journalCards.length > 0
+                ? theme.homepage.journalCards
+                : JOURNAL_CARD_DEFAULTS
+              ).map((entry, i) => {
                 const fallbackImage = visibleCollections[i]?.image;
                 return (
-                  <article key={entry.key} className="sproutly-card">
+                  <article key={i} className="sproutly-card">
                     <div
                       className="sproutly-card-image aspect-[5/3] overflow-hidden relative"
                       style={{ background: theme.surface }}

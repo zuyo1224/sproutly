@@ -134,6 +134,7 @@ type EditorTheme = {
     shopEyebrow: string;
     shopTitle: string;
     journalCardLabel: string;
+    journalCards: Array<{ eyebrow: string; title: string; excerpt: string }>;
   };
   sections: {
     about: boolean;
@@ -145,6 +146,13 @@ type EditorTheme = {
 };
 
 type SelectedTab = "section" | "design" | "content" | "ai";
+
+// Journal 三張卡片預設內容（跟 _theme.ts 的 JOURNAL_CARD_DEFAULTS 對齊）
+const JOURNAL_CARD_DEFAULTS: { eyebrow: string; title: string; excerpt: string }[] = [
+  { eyebrow: "Care", title: "新手綠手指的第一步", excerpt: "光線、澆水頻率、換盆時機 — 把基本功講清楚，少走幾年彎路。" },
+  { eyebrow: "Space", title: "把植物放進小空間", excerpt: "套房、租屋、窗台一隅，不同光線條件下的擺放提案。" },
+  { eyebrow: "Story", title: "我們挑植物的方式", excerpt: "從花市到溫室，這些植物是怎麼被選進這間店的。" },
+];
 
 const HERO_STYLE_LABELS: Record<HeroStyle, string> = {
   "full-image": "全屏沉浸",
@@ -2299,9 +2307,61 @@ export function EditorWorkspace({
                 每張 Journal 卡片底部那行小字，預設「Coming soon」。
               </p>
             </Field>
-            <p className="text-xs text-stone-500 leading-relaxed">
-              下方三張 Care / Space / Story placeholder 卡片目前還沒接實際文章。
-            </p>
+            <div className="pt-2 mt-2 border-t border-stone-100">
+              <p className="text-xs font-medium text-stone-600 mb-1">下方三張卡片</p>
+              <p className="text-[11px] text-stone-500 leading-relaxed mb-3">
+                改成你自己的內容。留白就會顯示預設的 Care / Space / Story 範例。
+              </p>
+              {(() => {
+                const cards = theme.homepage.journalCards.length > 0
+                  ? theme.homepage.journalCards
+                  : JOURNAL_CARD_DEFAULTS;
+                function patchCard(i: number, key: "eyebrow" | "title" | "excerpt", value: string) {
+                  const base = theme.homepage.journalCards.length > 0
+                    ? theme.homepage.journalCards
+                    : JOURNAL_CARD_DEFAULTS;
+                  const next = [0, 1, 2].map((j) => ({
+                    eyebrow: base[j]?.eyebrow ?? "",
+                    title: base[j]?.title ?? "",
+                    excerpt: base[j]?.excerpt ?? "",
+                  }));
+                  next[i] = { ...next[i], [key]: value };
+                  updateHomepage({ journalCards: next });
+                }
+                return [0, 1, 2].map((i) => (
+                  <div
+                    key={i}
+                    className="mb-3 rounded-lg border border-stone-200 p-3 space-y-2"
+                  >
+                    <p className="text-[11px] font-medium text-stone-500">第 {i + 1} 張</p>
+                    <input
+                      type="text"
+                      value={cards[i]?.eyebrow ?? ""}
+                      onChange={(e) => patchCard(i, "eyebrow", e.target.value)}
+                      placeholder="小標（如 Care）"
+                      maxLength={40}
+                      className="w-full rounded-lg border border-stone-200 px-3 py-2 text-sm"
+                    />
+                    <input
+                      type="text"
+                      value={cards[i]?.title ?? ""}
+                      onChange={(e) => patchCard(i, "title", e.target.value)}
+                      placeholder="標題"
+                      maxLength={80}
+                      className="w-full rounded-lg border border-stone-200 px-3 py-2 text-sm"
+                    />
+                    <textarea
+                      value={cards[i]?.excerpt ?? ""}
+                      onChange={(e) => patchCard(i, "excerpt", e.target.value)}
+                      rows={2}
+                      placeholder="一兩句說明"
+                      maxLength={200}
+                      className="w-full rounded-lg border border-stone-200 px-3 py-2 text-sm resize-none"
+                    />
+                  </div>
+                ));
+              })()}
+            </div>
           </PanelSection>
         )}
 
