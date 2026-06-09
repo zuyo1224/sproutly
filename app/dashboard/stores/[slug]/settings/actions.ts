@@ -114,6 +114,14 @@ export async function updateStore(slug: string, formData: FormData) {
 
   const existingCollections = (existingTheme.collections as Record<string, string>) ?? {};
 
+  // 保留 editor 才有改的 layout 子欄位（settings 表單只管 hero variant / 副標 / eyebrow /
+  // 圖片側 / 區段排序這 5 個，其餘 sectionStyles / freePositions / heroZoom 三裝置 /
+  // heroTagline / featured 設定 / testimonials / faq / stats / partners / gallery 全是
+  // 視覺編輯器寫的。沒先 spread 既有 layout 就送出，會把這些全部清成預設 — 商家在編輯器
+  // 排好版後一進舊的店面設定頁按儲存，整站樣式歸零）。resolveLayout 讀取時會再 sanitize 一次。
+  const existingLayout =
+    (existingTheme.layout as Record<string, unknown>) ?? {};
+
   // 保留 editor 才有改的欄位（避免 settings 頁送出時被清掉）
   const existingHomepage =
     (existingTheme.homepage as Record<string, unknown>) ?? {};
@@ -310,6 +318,7 @@ export async function updateStore(slug: string, formData: FormData) {
   }
 
   const layout = {
+    ...existingLayout,
     heroStyle,
     heroSubtitle:
       String(formData.get("layout_hero_subtitle") ?? "").trim() || null,
