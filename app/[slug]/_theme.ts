@@ -141,6 +141,7 @@ export interface StoreTheme {
   collections: Record<string, string>;
   homepage: {
     collectionsIntro: string | null;
+    collectionsEyebrow: string | null;
     collectionItems: Array<{ key: string; title: string; subtitle: string }>;
     promise: string | null;
     promiseEyebrow: string | null;
@@ -260,6 +261,7 @@ export const JOURNAL_CARD_DEFAULTS: { eyebrow: string; title: string; excerpt: s
 
 export const HOMEPAGE_DEFAULTS = {
   collectionsIntro: "告訴我們你的空間，我們幫你選對的那一株。",
+  collectionsEyebrow: null as string | null,
   promise:
     "帶回家以後，我們不會消失。\n植物有狀況，傳訊息給我們。\n九十天內沒養活，原價換新一次。",
   promiseEyebrow: "Our Promise",
@@ -755,6 +757,10 @@ function resolveHomepage(raw: unknown): StoreTheme["homepage"] {
     collectionsIntro:
       typeof h.collectionsIntro === "string" && h.collectionsIntro.trim()
         ? h.collectionsIntro
+        : null,
+    collectionsEyebrow:
+      typeof h.collectionsEyebrow === "string" && h.collectionsEyebrow.trim()
+        ? h.collectionsEyebrow.trim()
         : null,
     collectionItems: items,
     promise:

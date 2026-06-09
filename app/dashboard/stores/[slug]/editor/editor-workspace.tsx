@@ -109,6 +109,7 @@ type EditorTheme = {
     featuredEyebrow: string;
     featuredCta: string;
     collectionsIntro: string;
+    collectionsEyebrow: string;
     visitTitle: string;
     visitEyebrow: string;
     journalEyebrow: string;
@@ -396,6 +397,8 @@ export function EditorWorkspace({
           updateHomepage({ featuredCta: value });
         } else if (msg.field === "collectionsIntro") {
           updateHomepage({ collectionsIntro: value });
+        } else if (msg.field === "collectionsEyebrow") {
+          updateHomepage({ collectionsEyebrow: value });
         } else if (msg.field === "heroEyebrow") {
           updateLayout({ heroEyebrow: value || null });
         } else if (msg.field === "heroSubtitle") {
@@ -1540,6 +1543,22 @@ export function EditorWorkspace({
 
         {activeTab === "section" && selectedSection === "collections" && (
           <PanelSection title="選物提案區段">
+            <Field label="Eyebrow">
+              <input
+                type="text"
+                value={theme.homepage.collectionsEyebrow}
+                onChange={(e) =>
+                  updateHomepage({ collectionsEyebrow: e.target.value })
+                }
+                placeholder="留空 = 不顯示"
+                maxLength={60}
+                className="w-full rounded-lg border border-stone-200 px-3 py-2 text-sm"
+              />
+              <p className="mt-1 text-[11px] text-stone-500 leading-relaxed">
+                Intro 文案上方那行小字，例如「Collections」或「選物提案」。
+                留空 = 不顯示。
+              </p>
+            </Field>
             <Field label="Intro 文案">
               <textarea
                 value={theme.homepage.collectionsIntro}

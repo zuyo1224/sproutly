@@ -47,6 +47,7 @@ export default async function EditorPage({
       featuredEyebrow: theme.homepage.featuredEyebrow ?? "",
       featuredCta: theme.homepage.featuredCta ?? "",
       collectionsIntro: theme.homepage.collectionsIntro ?? "",
+      collectionsEyebrow: theme.homepage.collectionsEyebrow ?? "",
       visitTitle: theme.homepage.visitTitle ?? "",
       visitEyebrow: theme.homepage.visitEyebrow ?? "",
       journalEyebrow: theme.homepage.journalEyebrow ?? "",

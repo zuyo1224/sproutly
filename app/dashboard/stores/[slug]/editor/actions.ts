@@ -64,6 +64,7 @@ type EditorPayload = {
     featuredEyebrow?: string;
     featuredCta?: string;
     collectionsIntro?: string;
+    collectionsEyebrow?: string;
     visitTitle?: string;
     visitEyebrow?: string;
     journalEyebrow?: string;
@@ -422,6 +423,10 @@ export async function saveEditorState(slug: string, payload: EditorPayload) {
         0,
         500
       );
+    }
+    if (payload.homepage.collectionsEyebrow !== undefined) {
+      const v = String(payload.homepage.collectionsEyebrow).trim().slice(0, 60);
+      hpPatch.collectionsEyebrow = v || null;
     }
     if (payload.homepage.visitTitle !== undefined) {
       hpPatch.visitTitle = String(payload.homepage.visitTitle).slice(0, 100);

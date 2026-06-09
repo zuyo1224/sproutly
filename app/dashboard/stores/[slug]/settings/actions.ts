@@ -121,6 +121,10 @@ export async function updateStore(slug: string, formData: FormData) {
     typeof existingHomepage.promiseEyebrow === "string"
       ? existingHomepage.promiseEyebrow
       : null;
+  const existingCollectionsEyebrow =
+    typeof existingHomepage.collectionsEyebrow === "string"
+      ? existingHomepage.collectionsEyebrow
+      : null;
   const existingFeaturedTitle =
     typeof existingHomepage.featuredTitle === "string"
       ? existingHomepage.featuredTitle
@@ -236,6 +240,7 @@ export async function updateStore(slug: string, formData: FormData) {
   const homepage = {
     collectionsIntro:
       String(formData.get("hp_collections_intro") ?? "").trim() || null,
+    collectionsEyebrow: existingCollectionsEyebrow,
     collectionItems,
     promise: String(formData.get("hp_promise") ?? "").trim() || null,
     promiseEyebrow: existingPromiseEyebrow,

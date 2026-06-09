@@ -48,6 +48,8 @@ export default async function StoreHomePage({
     theme.tagline || "為你的角落，找一株剛剛好的植物。";
   const collectionsIntro =
     theme.homepage.collectionsIntro || HOMEPAGE_DEFAULTS.collectionsIntro;
+  const collectionsEyebrow =
+    theme.homepage.collectionsEyebrow ?? HOMEPAGE_DEFAULTS.collectionsEyebrow;
   const promiseText = theme.homepage.promise || HOMEPAGE_DEFAULTS.promise;
   const promiseEyebrow =
     theme.homepage.promiseEyebrow || HOMEPAGE_DEFAULTS.promiseEyebrow;
@@ -692,6 +694,22 @@ export default async function StoreHomePage({
                   ))}
                 </h2>
               ) : (
+                <>
+                  {collectionsEyebrow && (
+                    <p
+                      data-edit-text
+                      data-edit-field="collectionsEyebrow"
+                      className="text-[0.6875rem] uppercase mb-4"
+                      style={{
+                        color: theme.accent,
+                        fontFamily: "var(--store-font)",
+                        fontWeight: 500,
+                        letterSpacing: "0.4em",
+                      }}
+                    >
+                      {collectionsEyebrow}
+                    </p>
+                  )}
                 <h2
                   data-edit-text
                   data-edit-field="collectionsIntro"
@@ -711,6 +729,7 @@ export default async function StoreHomePage({
                     </span>
                   ))}
                 </h2>
+                </>
               )}
 
               <div className={`sproutly-stagger grid grid-cols-2 gap-x-6 sm:gap-x-12 gap-y-20 sm:gap-y-24 ${
