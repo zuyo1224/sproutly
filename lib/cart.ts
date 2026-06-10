@@ -14,9 +14,15 @@ export function getCart(slug: string): CartItem[] {
     if (!raw) return [];
     const arr = JSON.parse(raw);
     if (!Array.isArray(arr)) return [];
-    return arr.filter(
-      (x) => x && typeof x.productId === "string" && typeof x.qty === "number"
-    );
+    // qty 必須是 1-99 的整數。typeof "number" 擋不掉 NaN / 負數 / 小數，
+    // 漏掉的話 getCartCount 會算出 NaN，購物車徽章直接顯示「NaN」。
+    return arr
+      .filter((x) => x && typeof x.productId === "string")
+      .map((x) => ({
+        productId: x.productId as string,
+        qty: Math.min(Math.max(Math.floor(Number(x.qty)), 1), 99),
+      }))
+      .filter((x) => Number.isFinite(x.qty));
   } catch {
     return [];
   }
