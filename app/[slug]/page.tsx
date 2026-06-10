@@ -298,6 +298,25 @@ export default async function StoreHomePage({
   }
   if (businessHoursText) storeJsonLd.openingHours = businessHoursText;
 
+  // FAQPage 結構化資料 — 跟頁面上 FAQ 區段同條件才放（區段有開且真的有問答），
+  // 讓 Google 搜尋結果能直接展開常見問題，省客人點進來才看到答案的一步。
+  const faqJsonLd =
+    theme.layout.sectionOrder.includes("faq") &&
+    theme.layout.faqItems.length > 0
+      ? {
+          "@context": "https://schema.org",
+          "@type": "FAQPage",
+          mainEntity: theme.layout.faqItems.map((item) => ({
+            "@type": "Question",
+            name: item.question,
+            acceptedAnswer: {
+              "@type": "Answer",
+              text: item.answer,
+            },
+          })),
+        }
+      : null;
+
   return (
     <>
       <script
@@ -305,6 +324,13 @@ export default async function StoreHomePage({
         // eslint-disable-next-line react/no-danger
         dangerouslySetInnerHTML={{ __html: JSON.stringify(storeJsonLd) }}
       />
+      {faqJsonLd && (
+        <script
+          type="application/ld+json"
+          // eslint-disable-next-line react/no-danger
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }}
+        />
+      )}
       <style>{`
         @keyframes sproutly-subtle-fade {
           from { opacity: 0; transform: translateY(24px); }
