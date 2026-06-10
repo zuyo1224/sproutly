@@ -1,8 +1,14 @@
+import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { resolveTheme, HOMEPAGE_DEFAULTS } from "../_theme";
 
 type Params = Promise<{ slug: string }>;
+
+export const metadata: Metadata = {
+  title: "聯絡與營業時間",
+  description: "店家地址、營業時間與聯絡方式都在這裡。",
+};
 
 export default async function ContactPage({ params }: { params: Params }) {
   const { slug } = await params;

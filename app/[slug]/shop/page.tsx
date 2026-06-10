@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
@@ -5,6 +6,11 @@ import { resolveTheme, HOMEPAGE_DEFAULTS } from "../_theme";
 
 type Params = Promise<{ slug: string }>;
 type SearchParams = Promise<{ q?: string; sort?: string; stock?: string }>;
+
+export const metadata: Metadata = {
+  title: "全部商品",
+  description: "瀏覽完整商品與庫存，看上眼直接線上下單。",
+};
 
 const SORT_OPTIONS: { value: string; label: string }[] = [
   { value: "newest", label: "最新上架" },

@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
@@ -7,6 +8,13 @@ import { PAYMENT_LABELS, decodeShippingFromNote } from "@/lib/order-labels";
 
 type Params = Promise<{ slug: string }>;
 type SearchParams = Promise<{ id?: string; phone?: string }>;
+
+// 訂單查詢頁帶個人資訊，不讓搜尋引擎收錄
+export const metadata: Metadata = {
+  title: "查訂單",
+  description: "輸入訂單編號與電話，查詢出貨進度。",
+  robots: { index: false, follow: false },
+};
 
 const STATUS_STEPS: { key: string; label: string; num: string }[] = [
   { key: "pending", label: "待店家確認", num: "1" },
