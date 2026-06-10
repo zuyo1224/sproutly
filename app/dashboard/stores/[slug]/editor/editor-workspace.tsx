@@ -2598,6 +2598,28 @@ export function EditorWorkspace({
                 paddingScale: "default",
               },
             },
+            {
+              key: "recede",
+              label: "低調襯底",
+              hint: "淡化 + 緊湊 + 小標（次要區段退到後面，襯托 hero / 選物。適合 partners / stats / faq）",
+              fields: {
+                opacity: "muted",
+                paddingScale: "compact",
+                headingScale: "small",
+                letterSpacing: "wide",
+              },
+            },
+            {
+              key: "mono",
+              label: "黑白雜誌",
+              hint: "黑白濾鏡 + 宋體 + 寬字距 + 寬呼吸（攝影感雜誌調，適合 gallery / partners）",
+              fields: {
+                filter: "grayscale",
+                fontFamily: "serif",
+                letterSpacing: "wide",
+                paddingScale: "spacious",
+              },
+            },
           ];
           function applyPreset(fields: typeof cur) {
             const merged: typeof cur = { ...cur, ...fields };
