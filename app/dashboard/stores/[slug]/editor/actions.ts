@@ -59,6 +59,7 @@ type EditorPayload = {
       opacity?: string;
       filter?: string;
       sectionWidth?: string;
+      sectionGap?: string;
     }>;
   };
   homepage?: {
@@ -326,12 +327,12 @@ export async function saveEditorState(slug: string, payload: EditorPayload) {
     }
     if (payload.layout.sectionStyles !== undefined) {
       const raw = payload.layout.sectionStyles;
-      const sanitized: Record<string, { headingAlign?: string; bgColor?: string | null; textColor?: string | null; paddingScale?: string; divider?: string; headingScale?: string; minHeight?: string; outline?: string; shadow?: string; borderRadius?: string; entrance?: string; fontFamily?: string; letterSpacing?: string; lineHeight?: string; opacity?: string; filter?: string; sectionWidth?: string }> = {};
+      const sanitized: Record<string, { headingAlign?: string; bgColor?: string | null; textColor?: string | null; paddingScale?: string; divider?: string; headingScale?: string; minHeight?: string; outline?: string; shadow?: string; borderRadius?: string; entrance?: string; fontFamily?: string; letterSpacing?: string; lineHeight?: string; opacity?: string; filter?: string; sectionWidth?: string; sectionGap?: string }> = {};
       if (raw && typeof raw === "object") {
         for (const [k, v] of Object.entries(raw)) {
           if (!k || typeof k !== "string" || k.length > 60) continue;
           if (!v || typeof v !== "object") continue;
-          const entry: { headingAlign?: string; bgColor?: string | null; textColor?: string | null; paddingScale?: string; divider?: string; headingScale?: string; minHeight?: string; outline?: string; shadow?: string; borderRadius?: string; entrance?: string; fontFamily?: string; letterSpacing?: string; lineHeight?: string; opacity?: string; filter?: string; sectionWidth?: string } = {};
+          const entry: { headingAlign?: string; bgColor?: string | null; textColor?: string | null; paddingScale?: string; divider?: string; headingScale?: string; minHeight?: string; outline?: string; shadow?: string; borderRadius?: string; entrance?: string; fontFamily?: string; letterSpacing?: string; lineHeight?: string; opacity?: string; filter?: string; sectionWidth?: string; sectionGap?: string } = {};
           if (v.headingAlign === "left" || v.headingAlign === "center" || v.headingAlign === "right") {
             entry.headingAlign = v.headingAlign;
           }
@@ -387,7 +388,10 @@ export async function saveEditorState(slug: string, payload: EditorPayload) {
           if (v.sectionWidth === "full" || v.sectionWidth === "boxed" || v.sectionWidth === "narrow") {
             entry.sectionWidth = v.sectionWidth;
           }
-          if (entry.headingAlign !== undefined || entry.bgColor !== undefined || entry.textColor !== undefined || entry.paddingScale !== undefined || entry.divider !== undefined || entry.headingScale !== undefined || entry.minHeight !== undefined || entry.outline !== undefined || entry.shadow !== undefined || entry.borderRadius !== undefined || entry.entrance !== undefined || entry.fontFamily !== undefined || entry.letterSpacing !== undefined || entry.lineHeight !== undefined || entry.opacity !== undefined || entry.filter !== undefined || entry.sectionWidth !== undefined) {
+          if (v.sectionGap === "none" || v.sectionGap === "normal" || v.sectionGap === "large") {
+            entry.sectionGap = v.sectionGap;
+          }
+          if (entry.headingAlign !== undefined || entry.bgColor !== undefined || entry.textColor !== undefined || entry.paddingScale !== undefined || entry.divider !== undefined || entry.headingScale !== undefined || entry.minHeight !== undefined || entry.outline !== undefined || entry.shadow !== undefined || entry.borderRadius !== undefined || entry.entrance !== undefined || entry.fontFamily !== undefined || entry.letterSpacing !== undefined || entry.lineHeight !== undefined || entry.opacity !== undefined || entry.filter !== undefined || entry.sectionWidth !== undefined || entry.sectionGap !== undefined) {
             sanitized[k] = entry;
           }
         }

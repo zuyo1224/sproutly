@@ -104,6 +104,7 @@ type EditorTheme = {
       opacity?: "default" | "muted" | "faint";
       filter?: "none" | "grayscale" | "sepia";
       sectionWidth?: "full" | "boxed" | "narrow";
+      sectionGap?: "none" | "normal" | "large";
     }>;
   };
   homepage: {
@@ -2508,6 +2509,7 @@ export function EditorWorkspace({
           const opacity = cur.opacity ?? null;
           const filter = cur.filter ?? null;
           const sectionWidth = cur.sectionWidth ?? null;
+          const sectionGap = cur.sectionGap ?? null;
           // 色票快選：全站主色 + 中性白/奶油/淺灰/近黑，省得每次自己對色碼
           const bgSwatches = [
             { c: "#FFFFFF", label: "白" },
@@ -2524,8 +2526,8 @@ export function EditorWorkspace({
             { c: theme.primary, label: "主色" },
             { c: theme.accent, label: "Accent" },
           ];
-          function patch(p: { headingAlign?: "left" | "center" | "right"; bgColor?: string | null; textColor?: string | null; paddingScale?: "compact" | "default" | "spacious" | null; divider?: "none" | "top" | "bottom" | "both"; headingScale?: "small" | "default" | "large" | null; minHeight?: "auto" | "tall" | "fullscreen" | null; outline?: "none" | "subtle" | "strong" | null; shadow?: "none" | "soft" | "deep" | null; borderRadius?: "none" | "soft" | "strong" | null; entrance?: "none" | "fade" | "slide-up" | null; fontFamily?: "default" | "serif" | "sans" | null; letterSpacing?: "tight" | "normal" | "wide" | null; lineHeight?: "tight" | "normal" | "relaxed" | null; opacity?: "default" | "muted" | "faint" | null; filter?: "none" | "grayscale" | "sepia" | null; sectionWidth?: "full" | "boxed" | "narrow" | null }) {
-            const next: { headingAlign?: "left" | "center" | "right"; bgColor?: string | null; textColor?: string | null; paddingScale?: "compact" | "default" | "spacious"; divider?: "none" | "top" | "bottom" | "both"; headingScale?: "small" | "default" | "large"; minHeight?: "auto" | "tall" | "fullscreen"; outline?: "none" | "subtle" | "strong"; shadow?: "none" | "soft" | "deep"; borderRadius?: "none" | "soft" | "strong"; entrance?: "none" | "fade" | "slide-up"; fontFamily?: "default" | "serif" | "sans"; letterSpacing?: "tight" | "normal" | "wide"; lineHeight?: "tight" | "normal" | "relaxed"; opacity?: "default" | "muted" | "faint"; filter?: "none" | "grayscale" | "sepia"; sectionWidth?: "full" | "boxed" | "narrow" } = { ...cur };
+          function patch(p: { headingAlign?: "left" | "center" | "right"; bgColor?: string | null; textColor?: string | null; paddingScale?: "compact" | "default" | "spacious" | null; divider?: "none" | "top" | "bottom" | "both"; headingScale?: "small" | "default" | "large" | null; minHeight?: "auto" | "tall" | "fullscreen" | null; outline?: "none" | "subtle" | "strong" | null; shadow?: "none" | "soft" | "deep" | null; borderRadius?: "none" | "soft" | "strong" | null; entrance?: "none" | "fade" | "slide-up" | null; fontFamily?: "default" | "serif" | "sans" | null; letterSpacing?: "tight" | "normal" | "wide" | null; lineHeight?: "tight" | "normal" | "relaxed" | null; opacity?: "default" | "muted" | "faint" | null; filter?: "none" | "grayscale" | "sepia" | null; sectionWidth?: "full" | "boxed" | "narrow" | null; sectionGap?: "none" | "normal" | "large" | null }) {
+            const next: { headingAlign?: "left" | "center" | "right"; bgColor?: string | null; textColor?: string | null; paddingScale?: "compact" | "default" | "spacious"; divider?: "none" | "top" | "bottom" | "both"; headingScale?: "small" | "default" | "large"; minHeight?: "auto" | "tall" | "fullscreen"; outline?: "none" | "subtle" | "strong"; shadow?: "none" | "soft" | "deep"; borderRadius?: "none" | "soft" | "strong"; entrance?: "none" | "fade" | "slide-up"; fontFamily?: "default" | "serif" | "sans"; letterSpacing?: "tight" | "normal" | "wide"; lineHeight?: "tight" | "normal" | "relaxed"; opacity?: "default" | "muted" | "faint"; filter?: "none" | "grayscale" | "sepia"; sectionWidth?: "full" | "boxed" | "narrow"; sectionGap?: "none" | "normal" | "large" } = { ...cur };
             if (p.headingAlign !== undefined) next.headingAlign = p.headingAlign;
             if (p.bgColor !== undefined) next.bgColor = p.bgColor;
             if (p.textColor !== undefined) next.textColor = p.textColor;
@@ -2578,6 +2580,10 @@ export function EditorWorkspace({
             if (p.sectionWidth !== undefined) {
               if (p.sectionWidth === null || p.sectionWidth === "full") delete next.sectionWidth;
               else next.sectionWidth = p.sectionWidth;
+            }
+            if (p.sectionGap !== undefined) {
+              if (p.sectionGap === null || p.sectionGap === "none") delete next.sectionGap;
+              else next.sectionGap = p.sectionGap;
             }
             updateLayout({
               sectionStyles: {
@@ -3094,6 +3100,31 @@ export function EditorWorkspace({
                 </div>
                 <p className="mt-1.5 text-[11px] text-stone-500 leading-snug">
                   滿版 寬度撐滿 · 置中 1100px · 窄欄 760px。配背景色 + 陰影 + 圓角就成置中的卡片式區段
+                </p>
+              </Field>
+              <Field label="區段外距">
+                <div className="grid grid-cols-3 gap-1.5">
+                  {([
+                    { v: "none", label: "貼緊" },
+                    { v: "normal", label: "適中" },
+                    { v: "large", label: "寬鬆" },
+                  ] as const).map((opt) => (
+                    <button
+                      key={opt.v}
+                      type="button"
+                      onClick={() => patch({ sectionGap: opt.v })}
+                      className={`rounded-lg border py-2 text-xs transition ${
+                        (sectionGap ?? "none") === opt.v
+                          ? "border-emerald-500 bg-emerald-50 text-emerald-900"
+                          : "border-stone-200 text-stone-600 hover:border-stone-400"
+                      }`}
+                    >
+                      {opt.label}
+                    </button>
+                  ))}
+                </div>
+                <p className="mt-1.5 text-[11px] text-stone-500 leading-snug">
+                  貼緊 跟上下區段相連 · 適中 64px · 寬鬆 112px。做置中卡片式區段時，留外距才能讓卡片從上下拉開、浮出來
                 </p>
               </Field>
               <Field label="外框">

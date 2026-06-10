@@ -233,6 +233,7 @@ export interface StoreTheme {
       opacity?: "default" | "muted" | "faint"; // 該 section 淡化（default 不套 / muted 0.85 / faint 0.7），讓 partners / stats / faq 次要 section 變淡，襯托 hero / featured 跳出
       filter?: "none" | "grayscale" | "sepia"; // 該 section 濾鏡（grayscale 黑白 / sepia 復古褐），用 CSS filter 套整段含 children，partners / gallery / hero 套黑白做雜誌感
       sectionWidth?: "full" | "boxed" | "narrow"; // 該 section 寬度（full 滿版預設 / boxed 置中 1100px / narrow 窄欄 760px），配 bgColor + 陰影 + 圓角做置中卡片式區段，滿版時不套任何樣式維持原狀
+      sectionGap?: "none" | "normal" | "large"; // 該 section 上下外距（none 不套貼緊相鄰 / normal 64px / large 112px），配 sectionWidth 置中卡片時讓卡片從上下區段拉開、真正浮出來
     }>;
   };
 }
@@ -652,12 +653,12 @@ function resolveLayout(raw: unknown): StoreTheme["layout"] {
     })(),
     sectionStyles: (() => {
       const raw = l.sectionStyles;
-      const result: Record<string, { headingAlign?: "left" | "center" | "right"; bgColor?: string | null; textColor?: string | null; paddingScale?: "compact" | "default" | "spacious"; divider?: "none" | "top" | "bottom" | "both"; headingScale?: "small" | "default" | "large"; minHeight?: "auto" | "tall" | "fullscreen"; outline?: "none" | "subtle" | "strong"; shadow?: "none" | "soft" | "deep"; borderRadius?: "none" | "soft" | "strong"; entrance?: "none" | "fade" | "slide-up"; fontFamily?: "default" | "serif" | "sans"; letterSpacing?: "tight" | "normal" | "wide"; lineHeight?: "tight" | "normal" | "relaxed"; opacity?: "default" | "muted" | "faint"; filter?: "none" | "grayscale" | "sepia"; sectionWidth?: "full" | "boxed" | "narrow" }> = {};
+      const result: Record<string, { headingAlign?: "left" | "center" | "right"; bgColor?: string | null; textColor?: string | null; paddingScale?: "compact" | "default" | "spacious"; divider?: "none" | "top" | "bottom" | "both"; headingScale?: "small" | "default" | "large"; minHeight?: "auto" | "tall" | "fullscreen"; outline?: "none" | "subtle" | "strong"; shadow?: "none" | "soft" | "deep"; borderRadius?: "none" | "soft" | "strong"; entrance?: "none" | "fade" | "slide-up"; fontFamily?: "default" | "serif" | "sans"; letterSpacing?: "tight" | "normal" | "wide"; lineHeight?: "tight" | "normal" | "relaxed"; opacity?: "default" | "muted" | "faint"; filter?: "none" | "grayscale" | "sepia"; sectionWidth?: "full" | "boxed" | "narrow"; sectionGap?: "none" | "normal" | "large" }> = {};
       if (raw && typeof raw === "object" && !Array.isArray(raw)) {
         for (const [k, v] of Object.entries(raw as Record<string, unknown>)) {
           if (!v || typeof v !== "object" || typeof k !== "string") continue;
           const obj = v as Record<string, unknown>;
-          const entry: { headingAlign?: "left" | "center" | "right"; bgColor?: string | null; textColor?: string | null; paddingScale?: "compact" | "default" | "spacious"; divider?: "none" | "top" | "bottom" | "both"; headingScale?: "small" | "default" | "large"; minHeight?: "auto" | "tall" | "fullscreen"; outline?: "none" | "subtle" | "strong"; shadow?: "none" | "soft" | "deep"; borderRadius?: "none" | "soft" | "strong"; entrance?: "none" | "fade" | "slide-up"; fontFamily?: "default" | "serif" | "sans"; letterSpacing?: "tight" | "normal" | "wide"; lineHeight?: "tight" | "normal" | "relaxed"; opacity?: "default" | "muted" | "faint"; filter?: "none" | "grayscale" | "sepia"; sectionWidth?: "full" | "boxed" | "narrow" } = {};
+          const entry: { headingAlign?: "left" | "center" | "right"; bgColor?: string | null; textColor?: string | null; paddingScale?: "compact" | "default" | "spacious"; divider?: "none" | "top" | "bottom" | "both"; headingScale?: "small" | "default" | "large"; minHeight?: "auto" | "tall" | "fullscreen"; outline?: "none" | "subtle" | "strong"; shadow?: "none" | "soft" | "deep"; borderRadius?: "none" | "soft" | "strong"; entrance?: "none" | "fade" | "slide-up"; fontFamily?: "default" | "serif" | "sans"; letterSpacing?: "tight" | "normal" | "wide"; lineHeight?: "tight" | "normal" | "relaxed"; opacity?: "default" | "muted" | "faint"; filter?: "none" | "grayscale" | "sepia"; sectionWidth?: "full" | "boxed" | "narrow"; sectionGap?: "none" | "normal" | "large" } = {};
           if (obj.headingAlign === "left" || obj.headingAlign === "center" || obj.headingAlign === "right") {
             entry.headingAlign = obj.headingAlign;
           }
@@ -713,7 +714,10 @@ function resolveLayout(raw: unknown): StoreTheme["layout"] {
           if (obj.sectionWidth === "full" || obj.sectionWidth === "boxed" || obj.sectionWidth === "narrow") {
             entry.sectionWidth = obj.sectionWidth;
           }
-          if (entry.headingAlign !== undefined || entry.bgColor !== undefined || entry.textColor !== undefined || entry.paddingScale !== undefined || entry.divider !== undefined || entry.headingScale !== undefined || entry.minHeight !== undefined || entry.outline !== undefined || entry.shadow !== undefined || entry.borderRadius !== undefined || entry.entrance !== undefined || entry.fontFamily !== undefined || entry.letterSpacing !== undefined || entry.lineHeight !== undefined || entry.opacity !== undefined || entry.filter !== undefined || entry.sectionWidth !== undefined) {
+          if (obj.sectionGap === "none" || obj.sectionGap === "normal" || obj.sectionGap === "large") {
+            entry.sectionGap = obj.sectionGap;
+          }
+          if (entry.headingAlign !== undefined || entry.bgColor !== undefined || entry.textColor !== undefined || entry.paddingScale !== undefined || entry.divider !== undefined || entry.headingScale !== undefined || entry.minHeight !== undefined || entry.outline !== undefined || entry.shadow !== undefined || entry.borderRadius !== undefined || entry.entrance !== undefined || entry.fontFamily !== undefined || entry.letterSpacing !== undefined || entry.lineHeight !== undefined || entry.opacity !== undefined || entry.filter !== undefined || entry.sectionWidth !== undefined || entry.sectionGap !== undefined) {
             result[k] = entry;
           }
         }
