@@ -31,6 +31,18 @@ export function ImageCarousel({ images, alt, surfaceBg }: Props) {
         if (e.key === "ArrowRight") next();
         return;
       }
+      // 燈箱沒開時方向鍵是全域監聽——別搶走正在打字 / 聚焦表單欄位
+      // （例如 Cmd+K 搜尋框）的方向鍵，否則背後商品照會被默默翻頁
+      const el = document.activeElement as HTMLElement | null;
+      if (
+        el &&
+        (el.tagName === "INPUT" ||
+          el.tagName === "TEXTAREA" ||
+          el.tagName === "SELECT" ||
+          el.isContentEditable)
+      ) {
+        return;
+      }
       if (e.key === "ArrowLeft") prev();
       if (e.key === "ArrowRight") next();
     };
@@ -75,6 +87,20 @@ export function ImageCarousel({ images, alt, surfaceBg }: Props) {
             src={url}
             alt={`${alt} ${i + 1}`}
             onClick={() => setLightboxOpen(true)}
+            onKeyDown={
+              i === idx
+                ? (e) => {
+                    if (e.key === "Enter" || e.key === " ") {
+                      e.preventDefault();
+                      setLightboxOpen(true);
+                    }
+                  }
+                : undefined
+            }
+            role="button"
+            tabIndex={i === idx ? 0 : -1}
+            aria-label={`放大檢視：${alt} ${i + 1}`}
+            aria-hidden={i === idx ? undefined : true}
             className="absolute inset-0 w-full h-full object-cover cursor-zoom-in"
             style={{
               opacity: i === idx ? 1 : 0,
@@ -132,6 +158,9 @@ export function ImageCarousel({ images, alt, surfaceBg }: Props) {
 
       {lightboxOpen && (
         <div
+          role="dialog"
+          aria-modal="true"
+          aria-label={`${alt} 放大檢視`}
           className="fixed inset-0 z-50 bg-black/90 flex items-center justify-center p-4 sm:p-8 backdrop-blur-sm cursor-zoom-out"
           style={{ animation: "sproutly-lb-fade 0.4s ease-out both" }}
           onClick={() => setLightboxOpen(false)}
