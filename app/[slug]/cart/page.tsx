@@ -201,7 +201,13 @@ export default function CartPage() {
       ) : (
         <>
           <div className="space-y-8">
-            {itemRows.map(({ product: p, qty }) => (
+            {itemRows.map(({ product: p, qty }) => {
+              // 庫存上限：null 視為不限（沿用 99 軟上限），否則卡在庫存量。
+              // 跟結帳 API 同一條紅線，只是搬到購物車先擋，讓客人不用排到
+              // 結帳才被退回。
+              const maxQty = p.stock == null ? 99 : Math.min(p.stock, 99);
+              const atStockLimit = p.stock != null && qty >= p.stock;
+              return (
               <div
                 key={p.id}
                 className="flex gap-5 pb-8"
@@ -272,8 +278,11 @@ export default function CartPage() {
                       </span>
                       <button
                         type="button"
-                        onClick={() => updateQty(slug, p.id, qty + 1)}
-                        className="w-8 h-8 transition"
+                        onClick={() =>
+                          updateQty(slug, p.id, Math.min(qty + 1, maxQty))
+                        }
+                        disabled={qty >= maxQty}
+                        className="w-8 h-8 transition disabled:opacity-30 disabled:cursor-not-allowed"
                         style={{
                           color:
                             "var(--store-text-muted, rgba(0,0,0,0.6))",
@@ -297,6 +306,21 @@ export default function CartPage() {
                       Remove
                     </button>
                   </div>
+                  {atStockLimit && (
+                    <p
+                      className="mt-3 text-[0.6875rem]"
+                      style={{
+                        color: "var(--store-text-muted, rgba(0,0,0,0.55))",
+                        letterSpacing: "0.04em",
+                      }}
+                    >
+                      {p.stock === 0
+                        ? "目前缺貨，結帳前請先移除"
+                        : qty > (p.stock ?? 0)
+                        ? `庫存只剩 ${p.stock} 件，結帳前請調整數量`
+                        : `已達庫存上限（剩 ${p.stock} 件）`}
+                    </p>
+                  )}
                 </div>
                 <div className="text-right flex-shrink-0">
                   <p
@@ -310,7 +334,8 @@ export default function CartPage() {
                   </p>
                 </div>
               </div>
-            ))}
+              );
+            })}
           </div>
 
           <div className="mt-14 flex items-end justify-between gap-6 flex-wrap">
