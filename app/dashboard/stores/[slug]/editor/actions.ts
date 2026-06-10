@@ -91,6 +91,7 @@ type EditorPayload = {
     shopTitle?: string;
     footerWordsLabel?: string;
     footerFollowLabel?: string;
+    footerTrackLabel?: string;
     journalCardLabel?: string;
     journalCards?: Array<{ eyebrow?: string; title?: string; excerpt?: string }>;
   };
@@ -532,6 +533,10 @@ export async function saveEditorState(slug: string, payload: EditorPayload) {
     if (payload.homepage.footerFollowLabel !== undefined) {
       const v = String(payload.homepage.footerFollowLabel).trim().slice(0, 60);
       hpPatch.footerFollowLabel = v || null;
+    }
+    if (payload.homepage.footerTrackLabel !== undefined) {
+      const v = String(payload.homepage.footerTrackLabel).trim().slice(0, 60);
+      hpPatch.footerTrackLabel = v || null;
     }
     if (payload.homepage.journalCardLabel !== undefined) {
       const v = String(payload.homepage.journalCardLabel).trim().slice(0, 60);

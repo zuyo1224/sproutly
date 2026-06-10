@@ -881,7 +881,7 @@ export default async function PublicStoreLayout({
                 letterSpacing: "0.3em",
               }}
             >
-              Track · 訂單追蹤
+              {theme.homepage.footerTrackLabel || HOMEPAGE_DEFAULTS.footerTrackLabel}
             </Link>
             <span
               className="h-px w-8"

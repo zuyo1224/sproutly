@@ -176,6 +176,7 @@ export interface StoreTheme {
     shopTitle: string | null;
     footerWordsLabel: string | null;   // 頁尾 tagline 上方小標（預設 Words）
     footerFollowLabel: string | null;  // 頁尾社群區小標（預設 Follow）
+    footerTrackLabel: string | null;   // 頁尾訂單追蹤連結文字（預設 Track · 訂單追蹤）
     enableAnimation: boolean;
   };
   layout: {
@@ -297,6 +298,7 @@ export const HOMEPAGE_DEFAULTS = {
   shopTitle: "所有商品",
   footerWordsLabel: "Words",
   footerFollowLabel: "Follow",
+  footerTrackLabel: "Track · 訂單追蹤",
 };
 
 export const PRESETS: Record<PresetKey, Omit<StoreTheme, "preset" | "logoUrl" | "heroUrl" | "sections" | "social" | "tagline" | "collections" | "homepage" | "layout">> = {
@@ -893,6 +895,10 @@ function resolveHomepage(raw: unknown): StoreTheme["homepage"] {
     footerFollowLabel:
       typeof h.footerFollowLabel === "string" && h.footerFollowLabel.trim()
         ? h.footerFollowLabel.trim()
+        : null,
+    footerTrackLabel:
+      typeof h.footerTrackLabel === "string" && h.footerTrackLabel.trim()
+        ? h.footerTrackLabel.trim()
         : null,
     enableAnimation: h.enableAnimation === false ? false : true, // default true
   };

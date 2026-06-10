@@ -245,6 +245,10 @@ export async function updateStore(slug: string, formData: FormData) {
     typeof existingHomepage.footerFollowLabel === "string"
       ? existingHomepage.footerFollowLabel
       : null;
+  const existingFooterTrackLabel =
+    typeof existingHomepage.footerTrackLabel === "string"
+      ? existingHomepage.footerTrackLabel
+      : null;
   const existingJournalCardLabel =
     typeof existingHomepage.journalCardLabel === "string"
       ? existingHomepage.journalCardLabel
@@ -289,6 +293,7 @@ export async function updateStore(slug: string, formData: FormData) {
     shopTitle: existingShopTitle,
     footerWordsLabel: existingFooterWordsLabel,
     footerFollowLabel: existingFooterFollowLabel,
+    footerTrackLabel: existingFooterTrackLabel,
     journalCardLabel: existingJournalCardLabel,
     journalCards: existingJournalCards,
     enableAnimation: formData.get("hp_enable_animation") === "on",

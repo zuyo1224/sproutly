@@ -74,6 +74,7 @@ export default async function EditorPage({
       shopTitle: theme.homepage.shopTitle ?? "",
       footerWordsLabel: theme.homepage.footerWordsLabel ?? "",
       footerFollowLabel: theme.homepage.footerFollowLabel ?? "",
+      footerTrackLabel: theme.homepage.footerTrackLabel ?? "",
       journalCardLabel: theme.homepage.journalCardLabel ?? "",
       journalCards: theme.homepage.journalCards,
     },

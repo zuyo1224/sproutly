@@ -136,6 +136,7 @@ type EditorTheme = {
     shopTitle: string;
     footerWordsLabel: string;
     footerFollowLabel: string;
+    footerTrackLabel: string;
     journalCardLabel: string;
     journalCards: Array<{ eyebrow: string; title: string; excerpt: string }>;
   };
@@ -3415,7 +3416,7 @@ export function EditorWorkspace({
         {activeTab === "content" && (
           <PanelSection title="頁尾（Footer）">
             <p className="text-[11px] text-stone-500 leading-relaxed -mt-2">
-              頁尾 tagline 與社群連結上方的小標。空白會用預設值。
+              頁尾 tagline、社群連結上方的小標，與訂單追蹤連結文字。空白會用預設值。
             </p>
             <Field label="tagline 上方小標">
               <input
@@ -3438,6 +3439,18 @@ export function EditorWorkspace({
                 }
                 maxLength={60}
                 placeholder="Follow"
+                className="w-full rounded-lg border border-stone-200 px-3 py-2 text-sm"
+              />
+            </Field>
+            <Field label="訂單追蹤連結文字">
+              <input
+                type="text"
+                value={theme.homepage.footerTrackLabel}
+                onChange={(e) =>
+                  updateHomepage({ footerTrackLabel: e.target.value })
+                }
+                maxLength={60}
+                placeholder="Track · 訂單追蹤"
                 className="w-full rounded-lg border border-stone-200 px-3 py-2 text-sm"
               />
             </Field>
