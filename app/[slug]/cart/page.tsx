@@ -66,6 +66,13 @@ export default function CartPage() {
     0
   );
   const itemCount = itemRows.reduce((s, r) => s + r.qty, 0);
+  // 結帳前先擋：任何一項數量超過庫存（含已缺貨）就不讓按「去結帳」，
+  // 跟結帳 API 同一條紅線。否則客人會帶著超量的車排到結帳才被退回。
+  const checkoutBlocked = itemRows.some(
+    (r) => r.product.stock != null && r.qty > r.product.stock
+  );
+  // Total 幣別跟著商品走，別硬寫 TWD（同店商品幣別一致，取第一項即可）。
+  const totalCurrency = itemRows[0]?.product.currency ?? "TWD";
 
   return (
     <main className="max-w-4xl mx-auto px-6 sm:px-10 py-20 sm:py-28">
@@ -365,15 +372,40 @@ export default function CartPage() {
                   color: "var(--store-accent, currentColor)",
                 }}
               >
-                {formatPrice(total, "TWD")}
+                {formatPrice(total, totalCurrency)}
               </p>
             </div>
-            <Link
-              href={`/${slug}/cart/checkout`}
-              className="sproutly-btn sproutly-btn-primary sproutly-btn-lg"
-            >
-              去結帳
-            </Link>
+            <div className="flex flex-col items-end gap-3">
+              {checkoutBlocked && (
+                <p
+                  className="text-[0.6875rem] text-right max-w-[16rem]"
+                  style={{
+                    color: "var(--store-text-muted, rgba(0,0,0,0.6))",
+                    letterSpacing: "0.04em",
+                    lineHeight: 1.6,
+                  }}
+                >
+                  有商品超過庫存，調整數量後再結帳
+                </p>
+              )}
+              {checkoutBlocked ? (
+                <button
+                  type="button"
+                  disabled
+                  className="sproutly-btn sproutly-btn-primary sproutly-btn-lg"
+                  style={{ opacity: 0.4, cursor: "not-allowed" }}
+                >
+                  去結帳
+                </button>
+              ) : (
+                <Link
+                  href={`/${slug}/cart/checkout`}
+                  className="sproutly-btn sproutly-btn-primary sproutly-btn-lg"
+                >
+                  去結帳
+                </Link>
+              )}
+            </div>
           </div>
         </>
       )}
