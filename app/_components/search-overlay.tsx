@@ -24,6 +24,7 @@ export function SearchOverlay({ slug }: { slug: string }) {
   const [loading, setLoading] = useState(false);
   const [selectedIdx, setSelectedIdx] = useState(0);
   const inputRef = useRef<HTMLInputElement>(null);
+  const listRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
@@ -57,6 +58,15 @@ export function SearchOverlay({ slug }: { slug: string }) {
       setSelectedIdx(0);
     }
   }, [open]);
+
+  // 鍵盤上下移動時，把目前選到的結果捲進可視範圍（結果多到超出清單高度時才不會選到看不見的項目）
+  useEffect(() => {
+    if (!open) return;
+    const el = listRef.current?.querySelector(
+      `[data-result-idx="${selectedIdx}"]`
+    );
+    el?.scrollIntoView({ block: "nearest" });
+  }, [selectedIdx, open]);
 
   useEffect(() => {
     if (!open || !q.trim()) {
@@ -119,6 +129,9 @@ export function SearchOverlay({ slug }: { slug: string }) {
         >
           <div
             className="w-full max-w-xl rounded-2xl overflow-hidden"
+            role="dialog"
+            aria-modal="true"
+            aria-label="搜尋商品"
             onClick={(e) => e.stopPropagation()}
             style={{
               animation:
@@ -177,7 +190,7 @@ export function SearchOverlay({ slug }: { slug: string }) {
                 Esc
               </button>
             </div>
-            <div className="max-h-[60vh] overflow-y-auto">
+            <div ref={listRef} className="max-h-[60vh] overflow-y-auto">
               {loading && (
                 <div className="px-5 py-10 text-center">
                   <p
@@ -264,6 +277,7 @@ export function SearchOverlay({ slug }: { slug: string }) {
               {results.map((p, i) => (
                 <Link
                   key={p.id}
+                  data-result-idx={i}
                   href={`/${slug}/products/${p.id}`}
                   onClick={() => setOpen(false)}
                   className="flex items-center gap-4 px-5 py-3 transition"
