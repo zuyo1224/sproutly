@@ -2506,6 +2506,22 @@ export function EditorWorkspace({
           const lineHeight = cur.lineHeight ?? null;
           const opacity = cur.opacity ?? null;
           const filter = cur.filter ?? null;
+          // 色票快選：全站主色 + 中性白/奶油/淺灰/近黑，省得每次自己對色碼
+          const bgSwatches = [
+            { c: "#FFFFFF", label: "白" },
+            { c: "#F7F4ED", label: "奶油" },
+            { c: "#FAFAF9", label: "淺灰" },
+            { c: theme.primary, label: "主色" },
+            { c: theme.accent, label: "Accent" },
+            { c: "#1A1A1A", label: "近黑" },
+          ];
+          const textSwatches = [
+            { c: "#1A1A1A", label: "近黑" },
+            { c: "#FFFFFF", label: "白" },
+            { c: "#6B6B6B", label: "灰" },
+            { c: theme.primary, label: "主色" },
+            { c: theme.accent, label: "Accent" },
+          ];
           function patch(p: { headingAlign?: "left" | "center" | "right"; bgColor?: string | null; textColor?: string | null; paddingScale?: "compact" | "default" | "spacious" | null; divider?: "none" | "top" | "bottom" | "both"; headingScale?: "small" | "default" | "large" | null; minHeight?: "auto" | "tall" | "fullscreen" | null; outline?: "none" | "subtle" | "strong" | null; shadow?: "none" | "soft" | "deep" | null; borderRadius?: "none" | "soft" | "strong" | null; entrance?: "none" | "fade" | "slide-up" | null; fontFamily?: "default" | "serif" | "sans" | null; letterSpacing?: "tight" | "normal" | "wide" | null; lineHeight?: "tight" | "normal" | "relaxed" | null; opacity?: "default" | "muted" | "faint" | null; filter?: "none" | "grayscale" | "sepia" | null }) {
             const next: { headingAlign?: "left" | "center" | "right"; bgColor?: string | null; textColor?: string | null; paddingScale?: "compact" | "default" | "spacious"; divider?: "none" | "top" | "bottom" | "both"; headingScale?: "small" | "default" | "large"; minHeight?: "auto" | "tall" | "fullscreen"; outline?: "none" | "subtle" | "strong"; shadow?: "none" | "soft" | "deep"; borderRadius?: "none" | "soft" | "strong"; entrance?: "none" | "fade" | "slide-up"; fontFamily?: "default" | "serif" | "sans"; letterSpacing?: "tight" | "normal" | "wide"; lineHeight?: "tight" | "normal" | "relaxed"; opacity?: "default" | "muted" | "faint"; filter?: "none" | "grayscale" | "sepia" } = { ...cur };
             if (p.headingAlign !== undefined) next.headingAlign = p.headingAlign;
@@ -2807,6 +2823,25 @@ export function EditorWorkspace({
                     </button>
                   )}
                 </div>
+                <div className="mt-2 flex flex-wrap gap-1.5">
+                  {bgSwatches.map((sw) => {
+                    const active = (bg ?? "").toUpperCase() === sw.c.toUpperCase();
+                    return (
+                      <button
+                        key={sw.label}
+                        type="button"
+                        title={sw.label}
+                        onClick={() => patch({ bgColor: sw.c })}
+                        className={`h-6 w-6 rounded-full border transition ${
+                          active
+                            ? "border-emerald-500 ring-2 ring-emerald-300"
+                            : "border-stone-300 hover:border-stone-500"
+                        }`}
+                        style={{ backgroundColor: sw.c }}
+                      />
+                    );
+                  })}
+                </div>
               </Field>
               <Field label="文字顏色">
                 <div className="flex items-center gap-2">
@@ -2832,6 +2867,25 @@ export function EditorWorkspace({
                       清除
                     </button>
                   )}
+                </div>
+                <div className="mt-2 flex flex-wrap gap-1.5">
+                  {textSwatches.map((sw) => {
+                    const active = (textCol ?? "").toUpperCase() === sw.c.toUpperCase();
+                    return (
+                      <button
+                        key={sw.label}
+                        type="button"
+                        title={sw.label}
+                        onClick={() => patch({ textColor: sw.c })}
+                        className={`h-6 w-6 rounded-full border transition ${
+                          active
+                            ? "border-emerald-500 ring-2 ring-emerald-300"
+                            : "border-stone-300 hover:border-stone-500"
+                        }`}
+                        style={{ backgroundColor: sw.c }}
+                      />
+                    );
+                  })}
                 </div>
                 <p className="mt-1.5 text-[11px] text-stone-500">
                   改深色背景時搭淺字、淺色背景搭深字
