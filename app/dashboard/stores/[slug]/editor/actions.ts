@@ -32,6 +32,8 @@ type EditorPayload = {
     heroTaglineFontScale?: number;
     heroTaglineColor?: string | null;
     heroTaglineAlign?: string;
+    heroSubtitleFontScale?: number;
+    heroSubtitleColor?: string | null;
     heroHeight?: string;
     fontScale?: number;
     sectionPaddingScale?: string;
@@ -272,6 +274,20 @@ export async function saveEditorState(slug: string, payload: EditorPayload) {
       const v = payload.layout.heroTaglineAlign;
       if (v === "left" || v === "center" || v === "right") {
         layoutPatch.heroTaglineAlign = v;
+      }
+    }
+    if (payload.layout.heroSubtitleFontScale !== undefined) {
+      const v = payload.layout.heroSubtitleFontScale;
+      if (typeof v === "number" && Number.isFinite(v)) {
+        layoutPatch.heroSubtitleFontScale = Math.max(0.6, Math.min(1.8, v));
+      }
+    }
+    if (payload.layout.heroSubtitleColor !== undefined) {
+      const v = payload.layout.heroSubtitleColor;
+      if (v === null || v === "") {
+        layoutPatch.heroSubtitleColor = null;
+      } else if (typeof v === "string" && /^#[0-9a-fA-F]{6}$/.test(v.trim())) {
+        layoutPatch.heroSubtitleColor = v.trim();
       }
     }
     if (payload.layout.fontScale !== undefined) {

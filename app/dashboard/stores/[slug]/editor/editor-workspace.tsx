@@ -77,6 +77,8 @@ type EditorTheme = {
     heroTaglineFontScale: number;
     heroTaglineColor: string | null;
     heroTaglineAlign: "left" | "center" | "right";
+    heroSubtitleFontScale: number;
+    heroSubtitleColor: string | null;
     heroHeight: "auto" | "short" | "tall" | "full";
     fontScale: number;
     sectionPaddingScale: "compact" | "default" | "spacious";
@@ -1309,6 +1311,52 @@ export function EditorWorkspace({
                 className="w-full rounded-lg border border-stone-200 px-3 py-2 text-sm resize-none"
               />
             </Field>
+            {theme.layout.heroStyle !== "full-image" && (
+              <>
+                <Field label={`副標字體大小（${theme.layout.heroSubtitleFontScale.toFixed(2)}x）`}>
+                  <input
+                    type="range"
+                    min="0.6"
+                    max="1.8"
+                    step="0.05"
+                    value={theme.layout.heroSubtitleFontScale}
+                    onChange={(e) => updateLayout({ heroSubtitleFontScale: parseFloat(e.target.value) })}
+                    className="w-full"
+                  />
+                  <div className="flex justify-between text-[10px] text-stone-500">
+                    <span>小</span>
+                    <span>標準 1.0x</span>
+                    <span>大</span>
+                  </div>
+                </Field>
+                <Field label="副標顏色">
+                  <div className="flex items-center gap-2">
+                    <input
+                      type="color"
+                      value={theme.layout.heroSubtitleColor ?? "#6B6B6B"}
+                      onChange={(e) => updateLayout({ heroSubtitleColor: e.target.value })}
+                      className="h-8 w-12 rounded border border-stone-200"
+                    />
+                    <input
+                      type="text"
+                      value={theme.layout.heroSubtitleColor ?? ""}
+                      onChange={(e) => updateLayout({ heroSubtitleColor: e.target.value || null })}
+                      placeholder="預設用淡文字色"
+                      className="flex-1 rounded-lg border border-stone-200 px-3 py-2 text-sm font-mono"
+                    />
+                    {theme.layout.heroSubtitleColor && (
+                      <button
+                        type="button"
+                        onClick={() => updateLayout({ heroSubtitleColor: null })}
+                        className="text-xs text-stone-500 hover:text-stone-800 underline"
+                      >
+                        清除
+                      </button>
+                    )}
+                  </div>
+                </Field>
+              </>
+            )}
             <Field label="按鈕文字">
               <input
                 type="text"

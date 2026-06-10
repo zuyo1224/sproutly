@@ -315,6 +315,16 @@ export default async function StoreHomePage({
             theme.homepage.heroSecondaryCta ?? HOMEPAGE_DEFAULTS.heroSecondaryCta;
           const heroMagazineByline =
             theme.homepage.heroMagazineByline ?? `Curated by ${store.name}`;
+          // 副標自訂顏色 / 字級（split / magazine / minimal 共用）
+          const subtitleColor =
+            theme.layout.heroSubtitleColor ?? theme.textMuted;
+          const subtitleScale = theme.layout.heroSubtitleFontScale;
+          const subtitleSizeStyle =
+            subtitleScale !== 1
+              ? {
+                  fontSize: `clamp(${0.95 * subtitleScale}rem, ${1.6 * subtitleScale}vw, ${1.125 * subtitleScale}rem)`,
+                }
+              : {};
 
           // Variant 1: full-image — 自適應 banner（圖 + 文字段），手機 / 桌機 同一套
           if (heroStyle === "full-image" && theme.heroUrl) {
@@ -474,7 +484,7 @@ export default async function StoreHomePage({
                       data-edit-text
                       data-edit-field="heroSubtitle"
                       className={`mt-6 text-base sm:text-lg leading-[1.9] max-w-md ${fade2}`}
-                      style={{ color: theme.textMuted }}
+                      style={{ color: subtitleColor, ...subtitleSizeStyle }}
                     >
                       {theme.layout.heroSubtitle}
                     </p>
@@ -548,7 +558,7 @@ export default async function StoreHomePage({
                   {theme.layout.heroSubtitle && (
                     <p
                       className={`mt-8 text-base sm:text-lg italic max-w-xl mx-auto leading-[1.9] ${fade2}`}
-                      style={{ color: theme.textMuted }}
+                      style={{ color: subtitleColor, ...subtitleSizeStyle }}
                     >
                       {theme.layout.heroSubtitle}
                     </p>
@@ -623,7 +633,7 @@ export default async function StoreHomePage({
               {theme.layout.heroSubtitle && (
                 <p
                   className={`mt-8 text-base sm:text-lg max-w-xl mx-auto leading-[1.9] ${fade2}`}
-                  style={{ color: theme.textMuted }}
+                  style={{ color: subtitleColor, ...subtitleSizeStyle }}
                 >
                   {theme.layout.heroSubtitle}
                 </p>

@@ -203,6 +203,8 @@ export interface StoreTheme {
     heroTaglineFontScale: number;      // 主標字體 multiplier，0.6-1.8（預設 1.0）
     heroTaglineColor: string | null;   // 主標顏色，hex；null = 用 theme.text
     heroTaglineAlign: "left" | "center" | "right"; // 主標對齊（預設 left）
+    heroSubtitleFontScale: number;     // 副標字體 multiplier，0.6-1.8（預設 1.0）
+    heroSubtitleColor: string | null;  // 副標顏色，hex；null = 用 theme.textMuted
     heroHeight: "auto" | "short" | "tall" | "full"; // 預設 auto（adaptive 比例）
     // 全網站
     fontScale: number;                 // 全網站字體 multiplier 0.8-1.3（預設 1.0）
@@ -600,6 +602,16 @@ function resolveLayout(raw: unknown): StoreTheme["layout"] {
       const v = l.heroTaglineAlign;
       if (v === "left" || v === "center" || v === "right") return v;
       return "left" as const;
+    })(),
+    heroSubtitleFontScale: (() => {
+      const v = l.heroSubtitleFontScale;
+      if (typeof v !== "number" || !Number.isFinite(v)) return 1.0;
+      return Math.max(0.6, Math.min(1.8, v));
+    })(),
+    heroSubtitleColor: (() => {
+      const v = l.heroSubtitleColor;
+      if (typeof v !== "string") return null;
+      return /^#[0-9a-fA-F]{6}$/.test(v.trim()) ? v.trim() : null;
     })(),
     heroHeight: (() => {
       const v = l.heroHeight;
