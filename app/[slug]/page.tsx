@@ -153,6 +153,13 @@ export default async function StoreHomePage({
     if (s === "sepia") return "sepia(0.6) brightness(1.02)";
     return undefined;
   };
+  // 區段寬度：boxed 置中 1100px / narrow 窄欄 760px / full 滿版（預設不套，section 維持滿版原狀）
+  // 套在 section wrapper 上（maxWidth + margin auto），配 bgColor + 陰影 + 圓角就成「置中卡片式區段」
+  const widthToVal = (s: "full" | "boxed" | "narrow" | undefined) => {
+    if (s === "boxed") return "1100px";
+    if (s === "narrow") return "760px";
+    return undefined;
+  };
   const sectionStyleFor = (key: string) => {
     const s = theme.layout.sectionStyles[key];
     const padVar = padScaleToVar(s?.paddingScale);
@@ -166,6 +173,7 @@ export default async function StoreHomePage({
     const lineHeight = lineHeightToVal(s?.lineHeight);
     const opacity = opacityToVal(s?.opacity);
     const filter = filterToVal(s?.filter);
+    const width = widthToVal(s?.sectionWidth);
     // 進場動畫：只回 "fade" / "slide-up" 給 wrapper 設 data-anim attr；
     // 實際 CSS keyframes + scroll-timeline 在 layout.tsx 注入；edit mode 內 disable
     const entranceVal: "fade" | "slide-up" | undefined =
@@ -186,8 +194,9 @@ export default async function StoreHomePage({
       lineHeightOverride: lineHeight,
       opacityOverride: opacity,
       filterOverride: filter,
+      widthOverride: width,
       entranceVal,
-    } as { bg: string | undefined; text: string | undefined; align: "left" | "center" | "right"; padOverride: number | undefined; divider: "none" | "top" | "bottom" | "both"; headingOverride: number | undefined; minHeightOverride: string | undefined; outlineOverride: { outline: string; outlineOffset: string } | undefined; shadowOverride: string | undefined; borderRadiusOverride: string | undefined; fontFamilyOverride: string | undefined; letterSpacingOverride: string | undefined; lineHeightOverride: number | undefined; opacityOverride: number | undefined; filterOverride: string | undefined; entranceVal: "fade" | "slide-up" | undefined };
+    } as { bg: string | undefined; text: string | undefined; align: "left" | "center" | "right"; padOverride: number | undefined; divider: "none" | "top" | "bottom" | "both"; headingOverride: number | undefined; minHeightOverride: string | undefined; outlineOverride: { outline: string; outlineOffset: string } | undefined; shadowOverride: string | undefined; borderRadiusOverride: string | undefined; fontFamilyOverride: string | undefined; letterSpacingOverride: string | undefined; lineHeightOverride: number | undefined; opacityOverride: number | undefined; filterOverride: string | undefined; widthOverride: string | undefined; entranceVal: "fade" | "slide-up" | undefined };
   };
 
   // 把背景色 + 文字色 + padOverride + 分隔線 + 標題字級合併成 section 用的 inline style
@@ -196,7 +205,7 @@ export default async function StoreHomePage({
   // 讓 muted 文字（副題 / eyebrow）也跟著走，避免淺底深字 section 突然有深底白字時 muted 還是深的看不見
   // 標題字級 --store-heading-scale 由 layout.tsx 的 attribute selector 套到 h2 上（em 相對倍率）
   const mergeSectionStyle = (
-    s: { bg: string | undefined; text: string | undefined; padOverride: number | undefined; divider: "none" | "top" | "bottom" | "both"; headingOverride: number | undefined; minHeightOverride: string | undefined; outlineOverride: { outline: string; outlineOffset: string } | undefined; shadowOverride: string | undefined; borderRadiusOverride: string | undefined; fontFamilyOverride: string | undefined; letterSpacingOverride: string | undefined; lineHeightOverride: number | undefined; opacityOverride: number | undefined; filterOverride: string | undefined },
+    s: { bg: string | undefined; text: string | undefined; padOverride: number | undefined; divider: "none" | "top" | "bottom" | "both"; headingOverride: number | undefined; minHeightOverride: string | undefined; outlineOverride: { outline: string; outlineOffset: string } | undefined; shadowOverride: string | undefined; borderRadiusOverride: string | undefined; fontFamilyOverride: string | undefined; letterSpacingOverride: string | undefined; lineHeightOverride: number | undefined; opacityOverride: number | undefined; filterOverride: string | undefined; widthOverride: string | undefined },
     fallbackBg?: string
   ): React.CSSProperties | undefined => {
     const out: Record<string, unknown> = {};
@@ -240,6 +249,12 @@ export default async function StoreHomePage({
     }
     if (s.filterOverride) {
       out.filter = s.filterOverride;
+    }
+    // 區段寬度：限制 maxWidth 並置中，讓 section 變成置中的窄band / 卡片
+    if (s.widthOverride) {
+      out.maxWidth = s.widthOverride;
+      out.marginLeft = "auto";
+      out.marginRight = "auto";
     }
     return Object.keys(out).length > 0 ? (out as React.CSSProperties) : undefined;
   };
