@@ -122,180 +122,22 @@ export async function updateStore(slug: string, formData: FormData) {
   const existingLayout =
     (existingTheme.layout as Record<string, unknown>) ?? {};
 
-  // 保留 editor 才有改的欄位（避免 settings 頁送出時被清掉）
+  // 保留 editor 才有改的 homepage 子欄位。settings 表單只管 collectionsIntro /
+  // collectionItems / promise / visitTitle / enableAnimation 這幾個，其餘各 eyebrow /
+  // section 標題 / hero CTA / footer label / journalCards 全是視覺編輯器寫的。先 spread
+  // 既有 homepage 再覆寫 settings 管的那幾欄，未來 editor 新增欄位也不會被這頁清掉（跟
+  // 上面 layout 同款根因修法，取代以前一個個列 existing* 的脆弱 allowlist —— 漏列一個
+  // 新欄位就會被清空）。resolveHomepage 讀取時會再 sanitize，spread raw 既有值安全。
   const existingHomepage =
     (existingTheme.homepage as Record<string, unknown>) ?? {};
-  const existingPromiseEyebrow =
-    typeof existingHomepage.promiseEyebrow === "string"
-      ? existingHomepage.promiseEyebrow
-      : null;
-  const existingCollectionsEyebrow =
-    typeof existingHomepage.collectionsEyebrow === "string"
-      ? existingHomepage.collectionsEyebrow
-      : null;
-  const existingFeaturedTitle =
-    typeof existingHomepage.featuredTitle === "string"
-      ? existingHomepage.featuredTitle
-      : null;
-  const existingFeaturedEyebrow =
-    typeof existingHomepage.featuredEyebrow === "string"
-      ? existingHomepage.featuredEyebrow
-      : null;
-  const existingFeaturedCta =
-    typeof existingHomepage.featuredCta === "string"
-      ? existingHomepage.featuredCta
-      : null;
-  const existingJournalEyebrow =
-    typeof existingHomepage.journalEyebrow === "string"
-      ? existingHomepage.journalEyebrow
-      : null;
-  const existingJournalTitle =
-    typeof existingHomepage.journalTitle === "string"
-      ? existingHomepage.journalTitle
-      : null;
-  const existingJournalSubtitle =
-    typeof existingHomepage.journalSubtitle === "string"
-      ? existingHomepage.journalSubtitle
-      : null;
-  const existingTestimonialsEyebrow =
-    typeof existingHomepage.testimonialsEyebrow === "string"
-      ? existingHomepage.testimonialsEyebrow
-      : null;
-  const existingTestimonialsTitle =
-    typeof existingHomepage.testimonialsTitle === "string"
-      ? existingHomepage.testimonialsTitle
-      : null;
-  const existingFaqEyebrow =
-    typeof existingHomepage.faqEyebrow === "string"
-      ? existingHomepage.faqEyebrow
-      : null;
-  const existingFaqTitle =
-    typeof existingHomepage.faqTitle === "string"
-      ? existingHomepage.faqTitle
-      : null;
-  const existingVisitEyebrow =
-    typeof existingHomepage.visitEyebrow === "string"
-      ? existingHomepage.visitEyebrow
-      : null;
-  const existingGalleryEyebrow =
-    typeof existingHomepage.galleryEyebrow === "string"
-      ? existingHomepage.galleryEyebrow
-      : null;
-  const existingGalleryTitle =
-    typeof existingHomepage.galleryTitle === "string"
-      ? existingHomepage.galleryTitle
-      : null;
-  const existingPartnersEyebrow =
-    typeof existingHomepage.partnersEyebrow === "string"
-      ? existingHomepage.partnersEyebrow
-      : null;
-  const existingStatsEyebrow =
-    typeof existingHomepage.statsEyebrow === "string"
-      ? existingHomepage.statsEyebrow
-      : null;
-  const existingStatsTitle =
-    typeof existingHomepage.statsTitle === "string"
-      ? existingHomepage.statsTitle
-      : null;
-  const existingHeroCta =
-    typeof existingHomepage.heroCta === "string"
-      ? existingHomepage.heroCta
-      : null;
-  const existingHeroSecondaryCta =
-    typeof existingHomepage.heroSecondaryCta === "string"
-      ? existingHomepage.heroSecondaryCta
-      : null;
-  const existingHeroMagazineByline =
-    typeof existingHomepage.heroMagazineByline === "string"
-      ? existingHomepage.heroMagazineByline
-      : null;
-  const existingCollectionsCardCta =
-    typeof existingHomepage.collectionsCardCta === "string"
-      ? existingHomepage.collectionsCardCta
-      : null;
-  const existingAboutEyebrow =
-    typeof existingHomepage.aboutEyebrow === "string"
-      ? existingHomepage.aboutEyebrow
-      : null;
-  const existingAboutTitle =
-    typeof existingHomepage.aboutTitle === "string"
-      ? existingHomepage.aboutTitle
-      : null;
-  const existingContactEyebrow =
-    typeof existingHomepage.contactEyebrow === "string"
-      ? existingHomepage.contactEyebrow
-      : null;
-  const existingContactTitle =
-    typeof existingHomepage.contactTitle === "string"
-      ? existingHomepage.contactTitle
-      : null;
-  const existingShopEyebrow =
-    typeof existingHomepage.shopEyebrow === "string"
-      ? existingHomepage.shopEyebrow
-      : null;
-  const existingShopTitle =
-    typeof existingHomepage.shopTitle === "string"
-      ? existingHomepage.shopTitle
-      : null;
-  const existingFooterWordsLabel =
-    typeof existingHomepage.footerWordsLabel === "string"
-      ? existingHomepage.footerWordsLabel
-      : null;
-  const existingFooterFollowLabel =
-    typeof existingHomepage.footerFollowLabel === "string"
-      ? existingHomepage.footerFollowLabel
-      : null;
-  const existingFooterTrackLabel =
-    typeof existingHomepage.footerTrackLabel === "string"
-      ? existingHomepage.footerTrackLabel
-      : null;
-  const existingJournalCardLabel =
-    typeof existingHomepage.journalCardLabel === "string"
-      ? existingHomepage.journalCardLabel
-      : null;
-  const existingJournalCards = Array.isArray(existingHomepage.journalCards)
-    ? existingHomepage.journalCards
-    : [];
 
   const homepage = {
+    ...existingHomepage,
     collectionsIntro:
       String(formData.get("hp_collections_intro") ?? "").trim() || null,
-    collectionsEyebrow: existingCollectionsEyebrow,
     collectionItems,
     promise: String(formData.get("hp_promise") ?? "").trim() || null,
-    promiseEyebrow: existingPromiseEyebrow,
-    featuredTitle: existingFeaturedTitle,
-    featuredEyebrow: existingFeaturedEyebrow,
-    featuredCta: existingFeaturedCta,
     visitTitle: String(formData.get("hp_visit_title") ?? "").trim() || null,
-    visitEyebrow: existingVisitEyebrow,
-    journalEyebrow: existingJournalEyebrow,
-    journalTitle: existingJournalTitle,
-    journalSubtitle: existingJournalSubtitle,
-    testimonialsEyebrow: existingTestimonialsEyebrow,
-    testimonialsTitle: existingTestimonialsTitle,
-    faqEyebrow: existingFaqEyebrow,
-    faqTitle: existingFaqTitle,
-    galleryEyebrow: existingGalleryEyebrow,
-    galleryTitle: existingGalleryTitle,
-    partnersEyebrow: existingPartnersEyebrow,
-    statsEyebrow: existingStatsEyebrow,
-    statsTitle: existingStatsTitle,
-    heroCta: existingHeroCta,
-    heroSecondaryCta: existingHeroSecondaryCta,
-    heroMagazineByline: existingHeroMagazineByline,
-    collectionsCardCta: existingCollectionsCardCta,
-    aboutEyebrow: existingAboutEyebrow,
-    aboutTitle: existingAboutTitle,
-    contactEyebrow: existingContactEyebrow,
-    contactTitle: existingContactTitle,
-    shopEyebrow: existingShopEyebrow,
-    shopTitle: existingShopTitle,
-    footerWordsLabel: existingFooterWordsLabel,
-    footerFollowLabel: existingFooterFollowLabel,
-    footerTrackLabel: existingFooterTrackLabel,
-    journalCardLabel: existingJournalCardLabel,
-    journalCards: existingJournalCards,
     enableAnimation: formData.get("hp_enable_animation") === "on",
   };
 
