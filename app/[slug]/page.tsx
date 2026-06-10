@@ -325,6 +325,12 @@ export default async function StoreHomePage({
                   fontSize: `clamp(${0.95 * subtitleScale}rem, ${1.6 * subtitleScale}vw, ${1.125 * subtitleScale}rem)`,
                 }
               : {};
+          // 副標對齊：inherit = 不覆寫（跟版型預設走），其餘 textAlign 強制
+          const subtitleAlign = theme.layout.heroSubtitleAlign;
+          const subtitleAlignStyle =
+            subtitleAlign !== "inherit"
+              ? { textAlign: subtitleAlign as "left" | "center" | "right" }
+              : {};
 
           // Variant 1: full-image — 自適應 banner（圖 + 文字段），手機 / 桌機 同一套
           if (heroStyle === "full-image" && theme.heroUrl) {
@@ -484,7 +490,7 @@ export default async function StoreHomePage({
                       data-edit-text
                       data-edit-field="heroSubtitle"
                       className={`mt-6 text-base sm:text-lg leading-[1.9] max-w-md ${fade2}`}
-                      style={{ color: subtitleColor, ...subtitleSizeStyle }}
+                      style={{ color: subtitleColor, ...subtitleSizeStyle, ...subtitleAlignStyle }}
                     >
                       {theme.layout.heroSubtitle}
                     </p>
@@ -558,7 +564,7 @@ export default async function StoreHomePage({
                   {theme.layout.heroSubtitle && (
                     <p
                       className={`mt-8 text-base sm:text-lg italic max-w-xl mx-auto leading-[1.9] ${fade2}`}
-                      style={{ color: subtitleColor, ...subtitleSizeStyle }}
+                      style={{ color: subtitleColor, ...subtitleSizeStyle, ...subtitleAlignStyle }}
                     >
                       {theme.layout.heroSubtitle}
                     </p>
@@ -633,7 +639,7 @@ export default async function StoreHomePage({
               {theme.layout.heroSubtitle && (
                 <p
                   className={`mt-8 text-base sm:text-lg max-w-xl mx-auto leading-[1.9] ${fade2}`}
-                  style={{ color: subtitleColor, ...subtitleSizeStyle }}
+                  style={{ color: subtitleColor, ...subtitleSizeStyle, ...subtitleAlignStyle }}
                 >
                   {theme.layout.heroSubtitle}
                 </p>

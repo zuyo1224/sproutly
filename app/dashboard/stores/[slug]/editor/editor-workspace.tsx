@@ -79,6 +79,7 @@ type EditorTheme = {
     heroTaglineAlign: "left" | "center" | "right";
     heroSubtitleFontScale: number;
     heroSubtitleColor: string | null;
+    heroSubtitleAlign: "inherit" | "left" | "center" | "right";
     heroHeight: "auto" | "short" | "tall" | "full";
     fontScale: number;
     sectionPaddingScale: "compact" | "default" | "spacious";
@@ -692,6 +693,9 @@ export function EditorWorkspace({
           heroTaglineFontScale: t.layout.heroTaglineFontScale,
           heroTaglineColor: t.layout.heroTaglineColor,
           heroTaglineAlign: t.layout.heroTaglineAlign,
+          heroSubtitleFontScale: t.layout.heroSubtitleFontScale,
+          heroSubtitleColor: t.layout.heroSubtitleColor,
+          heroSubtitleAlign: t.layout.heroSubtitleAlign,
           heroHeight: t.layout.heroHeight,
           fontScale: t.layout.fontScale,
           sectionPaddingScale: t.layout.sectionPaddingScale,
@@ -1354,6 +1358,32 @@ export function EditorWorkspace({
                       </button>
                     )}
                   </div>
+                </Field>
+                <Field label="副標對齊">
+                  <div className="grid grid-cols-4 gap-1.5">
+                    {([
+                      { v: "inherit", label: "預設" },
+                      { v: "left", label: "左" },
+                      { v: "center", label: "置中" },
+                      { v: "right", label: "右" },
+                    ] as const).map((opt) => (
+                      <button
+                        key={opt.v}
+                        type="button"
+                        onClick={() => updateLayout({ heroSubtitleAlign: opt.v })}
+                        className={`rounded-lg border py-2 text-xs transition ${
+                          theme.layout.heroSubtitleAlign === opt.v
+                            ? "border-emerald-500 bg-emerald-50 text-emerald-900"
+                            : "border-stone-200 text-stone-600 hover:border-stone-400"
+                        }`}
+                      >
+                        {opt.label}
+                      </button>
+                    ))}
+                  </div>
+                  <p className="text-[10px] text-stone-500 mt-1">
+                    預設跟版型走（Split 靠左 / Magazine / Minimal 置中）
+                  </p>
                 </Field>
               </>
             )}

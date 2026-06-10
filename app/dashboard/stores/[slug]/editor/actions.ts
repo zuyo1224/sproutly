@@ -34,6 +34,7 @@ type EditorPayload = {
     heroTaglineAlign?: string;
     heroSubtitleFontScale?: number;
     heroSubtitleColor?: string | null;
+    heroSubtitleAlign?: string;
     heroHeight?: string;
     fontScale?: number;
     sectionPaddingScale?: string;
@@ -288,6 +289,12 @@ export async function saveEditorState(slug: string, payload: EditorPayload) {
         layoutPatch.heroSubtitleColor = null;
       } else if (typeof v === "string" && /^#[0-9a-fA-F]{6}$/.test(v.trim())) {
         layoutPatch.heroSubtitleColor = v.trim();
+      }
+    }
+    if (payload.layout.heroSubtitleAlign !== undefined) {
+      const v = payload.layout.heroSubtitleAlign;
+      if (v === "inherit" || v === "left" || v === "center" || v === "right") {
+        layoutPatch.heroSubtitleAlign = v;
       }
     }
     if (payload.layout.fontScale !== undefined) {
