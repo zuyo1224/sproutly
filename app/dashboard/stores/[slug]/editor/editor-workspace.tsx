@@ -168,6 +168,27 @@ const HERO_STYLE_LABELS: Record<HeroStyle, string> = {
   magazine: "雜誌封面",
 };
 
+// 算顏色亮度（WCAG relative luminance），給「背景色 / 文字色」對比防呆用
+function hexLuminance(hex: string): number | null {
+  const m = /^#?([0-9a-fA-F]{6})$/.exec(hex.trim());
+  if (!m) return null;
+  const int = parseInt(m[1], 16);
+  const toLin = (c: number) => {
+    const s = c / 255;
+    return s <= 0.03928 ? s / 12.92 : Math.pow((s + 0.055) / 1.055, 2.4);
+  };
+  const r = toLin((int >> 16) & 255);
+  const g = toLin((int >> 8) & 255);
+  const b = toLin(int & 255);
+  return 0.2126 * r + 0.7152 * g + 0.0722 * b;
+}
+
+function contrastRatio(l1: number, l2: number): number {
+  const hi = Math.max(l1, l2);
+  const lo = Math.min(l1, l2);
+  return (hi + 0.05) / (lo + 0.05);
+}
+
 export function EditorWorkspace({
   slug,
   storeName,
@@ -2816,6 +2837,42 @@ export function EditorWorkspace({
                   改深色背景時搭淺字、淺色背景搭深字
                 </p>
               </Field>
+              {(() => {
+                // 防呆：背景色改深、文字色卻沒跟上 → 文字會跟全站深色文字糊在一起看不見。
+                // 編輯器只拿得到 primary / accent，拿不到 preset 底色，所以只在「有設背景色」時判斷。
+                const bgLum = bg ? hexLuminance(bg) : null;
+                const textLum = textCol ? hexLuminance(textCol) : null;
+                let warn: { msg: string; fix: string } | null = null;
+                if (bgLum !== null && textLum !== null) {
+                  const ratio = contrastRatio(bgLum, textLum);
+                  if (ratio < 3) {
+                    warn = {
+                      msg: `背景跟文字色太接近（對比約 ${ratio.toFixed(1)} 比 1），文字會看不清`,
+                      fix: bgLum < 0.4 ? "#FFFFFF" : "#1A1A1A",
+                    };
+                  }
+                } else if (bgLum !== null && textLum === null && bgLum < 0.18) {
+                  warn = {
+                    msg: "背景偏深、文字色還沒設 — 文字會用全站的深色，跟背景糊在一起會看不見",
+                    fix: "#FFFFFF",
+                  };
+                }
+                if (!warn) return null;
+                return (
+                  <div className="-mt-1 rounded-lg border border-amber-300 bg-amber-50 px-3 py-2.5">
+                    <p className="text-[11px] text-amber-800 leading-relaxed">
+                      {warn.msg}
+                    </p>
+                    <button
+                      type="button"
+                      onClick={() => patch({ textColor: warn!.fix })}
+                      className="mt-1.5 rounded-md border border-amber-400 bg-white px-2.5 py-1 text-[11px] font-medium text-amber-900 hover:bg-amber-100 transition"
+                    >
+                      {warn.fix === "#FFFFFF" ? "文字改成白色" : "文字改成深色"}
+                    </button>
+                  </div>
+                );
+              })()}
               <div className="mt-3 pt-3 border-t border-stone-200">
                 <p className="text-[10px] font-medium tracking-[0.3em] uppercase text-stone-500">
                   結構
