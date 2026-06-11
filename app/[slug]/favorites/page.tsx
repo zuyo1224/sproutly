@@ -18,6 +18,20 @@ function formatPrice(cents: number, currency: string) {
   return `${currency} ${amount.toFixed(2)}`;
 }
 
+const FAVORITES_KEY = "sproutly_favorites";
+
+function readFavoriteIds(): string[] {
+  try {
+    const raw = localStorage.getItem(FAVORITES_KEY);
+    if (!raw) return [];
+    const arr = JSON.parse(raw);
+    if (Array.isArray(arr)) return arr.filter((x) => typeof x === "string");
+  } catch {
+    /* ignore */
+  }
+  return [];
+}
+
 export default function FavoritesPage() {
   const params = useParams();
   const slug = params.slug as string;
@@ -26,16 +40,7 @@ export default function FavoritesPage() {
   useEffect(() => {
     let cancelled = false;
     async function load() {
-      let ids: string[] = [];
-      try {
-        const raw = localStorage.getItem("sproutly_favorites");
-        if (raw) {
-          const arr = JSON.parse(raw);
-          if (Array.isArray(arr)) ids = arr.filter((x) => typeof x === "string");
-        }
-      } catch {
-        /* ignore */
-      }
+      const ids = readFavoriteIds();
       if (ids.length === 0) {
         if (!cancelled) setProducts([]);
         return;
@@ -52,6 +57,31 @@ export default function FavoritesPage() {
       cancelled = true;
     };
   }, [slug]);
+
+  // 別處（商品頁愛心、其他分頁）取消收藏時，這頁即時跟著移除，不用重整
+  useEffect(() => {
+    const sync = () => {
+      const favs = new Set(readFavoriteIds());
+      setProducts((prev) => (prev ? prev.filter((p) => favs.has(p.id)) : prev));
+    };
+    window.addEventListener("sproutly-favorites-changed", sync);
+    window.addEventListener("storage", sync);
+    return () => {
+      window.removeEventListener("sproutly-favorites-changed", sync);
+      window.removeEventListener("storage", sync);
+    };
+  }, []);
+
+  function removeFavorite(id: string) {
+    try {
+      const next = readFavoriteIds().filter((x) => x !== id);
+      localStorage.setItem(FAVORITES_KEY, JSON.stringify(next));
+      // 通知 nav 收藏數與其他分頁；本頁的 sync effect 也會接到並移除卡片
+      window.dispatchEvent(new Event("sproutly-favorites-changed"));
+    } catch {
+      /* ignore */
+    }
+  }
 
   const count = products?.length ?? 0;
 
@@ -186,7 +216,32 @@ export default function FavoritesPage() {
               href={`/${slug}/products/${p.id}`}
               className="sproutly-card"
             >
-              <div className="sproutly-card-image aspect-square">
+              <div className="sproutly-card-image aspect-square relative">
+                <button
+                  type="button"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    removeFavorite(p.id);
+                  }}
+                  aria-label={`從收藏移除 ${p.name}`}
+                  title="從收藏移除"
+                  className="absolute top-3 right-3 z-10 inline-flex h-9 w-9 items-center justify-center rounded-full bg-white/85 text-stone-700 shadow-sm backdrop-blur transition hover:bg-white hover:text-stone-900 active:scale-90"
+                >
+                  <svg
+                    width="16"
+                    height="16"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  >
+                    <path d="M18 6 6 18" />
+                    <path d="m6 6 12 12" />
+                  </svg>
+                </button>
                 {p.image_urls?.[0] ? (
                   // eslint-disable-next-line @next/next/no-img-element
                   <img
