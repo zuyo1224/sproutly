@@ -425,7 +425,7 @@ export default async function PublicProductPage({
               <AddToCartButton
                 slug={slug}
                 productId={product.id}
-                qty={1}
+                qtyInputId="qty"
                 className="sproutly-btn sproutly-btn-secondary sproutly-btn-lg w-full"
               >
                 加入購物車
