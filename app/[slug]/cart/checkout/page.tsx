@@ -27,6 +27,9 @@ export default function CartCheckoutPage() {
   const [products, setProducts] = useState<Product[] | null>(null);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [shippingMethod, setShippingMethod] = useState("");
+  const [storeName, setStoreName] = useState("");
+  const [address, setAddress] = useState("");
   const cartRef = useRef(typeof window !== "undefined" ? getCart(slug) : []);
 
   useEffect(() => {
@@ -109,6 +112,12 @@ export default function CartCheckoutPage() {
     0
   );
   const itemCount = itemRows.reduce((s, r) => s + r.qty, 0);
+
+  const selectedShipping =
+    SHIPPING_OPTIONS.find((o) => o.value === shippingMethod) ?? null;
+  const needsStore = selectedShipping?.needsStore ?? false;
+  const needsAddress = shippingMethod === "home_delivery";
+  const isPickup = shippingMethod === "pickup";
 
   async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -330,6 +339,8 @@ export default function CartCheckoutPage() {
                     name="shipping_method"
                     value={o.value}
                     required
+                    checked={shippingMethod === o.value}
+                    onChange={() => setShippingMethod(o.value)}
                     className="peer sr-only"
                   />
                   <div
@@ -347,35 +358,63 @@ export default function CartCheckoutPage() {
               ))}
             </div>
 
-            <div className="pt-2">
-              <label
-                className="block text-xs mb-1.5"
-                style={{ color: "var(--store-text-muted, rgba(0,0,0,0.6))" }}
-              >
-                超商門市名稱（超商取貨必填）
-              </label>
-              <input
-                name="shipping_store_name"
-                type="text"
-                placeholder="例：7-11 信義門市"
-                className="sproutly-input w-full text-sm"
-              />
-            </div>
+            {needsStore && (
+              <div className="pt-2">
+                <label
+                  className="block text-xs mb-1.5"
+                  style={{ color: "var(--store-text-muted, rgba(0,0,0,0.6))" }}
+                >
+                  超商門市名稱{" "}
+                  <span style={{ color: "var(--store-accent, currentColor)" }}>
+                    *
+                  </span>
+                </label>
+                <input
+                  name="shipping_store_name"
+                  type="text"
+                  required
+                  value={storeName}
+                  onChange={(e) => setStoreName(e.target.value)}
+                  placeholder="例：7-11 信義門市"
+                  className="sproutly-input w-full text-sm"
+                />
+              </div>
+            )}
 
-            <div className="pt-2">
-              <label
-                className="block text-xs mb-1.5"
-                style={{ color: "var(--store-text-muted, rgba(0,0,0,0.6))" }}
+            {needsAddress && (
+              <div className="pt-2">
+                <label
+                  className="block text-xs mb-1.5"
+                  style={{ color: "var(--store-text-muted, rgba(0,0,0,0.6))" }}
+                >
+                  收件地址{" "}
+                  <span style={{ color: "var(--store-accent, currentColor)" }}>
+                    *
+                  </span>
+                </label>
+                <input
+                  name="shipping_address"
+                  type="text"
+                  required
+                  value={address}
+                  onChange={(e) => setAddress(e.target.value)}
+                  placeholder="台北市 ..."
+                  className="sproutly-input w-full text-sm"
+                />
+              </div>
+            )}
+
+            {isPickup && (
+              <p
+                className="pt-2 text-xs"
+                style={{
+                  color: "var(--store-text-muted, rgba(0,0,0,0.6))",
+                  lineHeight: 1.6,
+                }}
               >
-                收件地址（宅配必填）
-              </label>
-              <input
-                name="shipping_address"
-                type="text"
-                placeholder="台北市 ..."
-                className="sproutly-input w-full text-sm"
-              />
-            </div>
+                到店面取貨，不需填地址，店家會在備好後通知你。
+              </p>
+            )}
           </section>
 
           {/* 付款方式 */}
