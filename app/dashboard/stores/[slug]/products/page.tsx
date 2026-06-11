@@ -137,14 +137,30 @@ export default async function ProductsListPage({
                 >
                   {formatPrice(p.price_cents, p.currency)}
                 </p>
-                {p.stock !== null && (
+                {/* 售完／快沒貨改用色塊標出來，商家掃列表時一眼看到該補哪幾件——
+                    門檻（< 5）與用字跟後台首頁的「快沒貨」清單一致，兩邊不會各說各話 */}
+                {p.stock === 0 ? (
+                  <span
+                    className="mt-1.5 inline-block rounded-full bg-red-50 px-2 py-0.5 text-red-700 font-medium"
+                    style={{ fontSize: "0.625rem", letterSpacing: "0.15em" }}
+                  >
+                    已售完
+                  </span>
+                ) : p.stock !== null && p.stock < 5 ? (
+                  <span
+                    className="mt-1.5 inline-block rounded-full bg-amber-50 px-2 py-0.5 text-amber-700 font-medium"
+                    style={{ fontSize: "0.625rem", letterSpacing: "0.15em" }}
+                  >
+                    剩 {p.stock} 件
+                  </span>
+                ) : p.stock !== null ? (
                   <p
                     className="mt-1 uppercase text-emerald-900/50"
                     style={{ fontSize: "0.625rem", letterSpacing: "0.3em" }}
                   >
                     Stock {p.stock}
                   </p>
-                )}
+                ) : null}
               </div>
             </Link>
           ))}
