@@ -31,15 +31,21 @@ export function SearchOverlay({ slug }: { slug: string }) {
       if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "k") {
         e.preventDefault();
         setOpen((o) => !o);
-      } else if (e.key === "Escape" && open) {
+        return;
+      }
+      if (!open) return;
+      // 用注音／拼音等輸入法選字時，Enter 是拿來確認候選字、上下鍵是換候選字的，
+      // 不能被當成「開啟商品 / 移動選取」——否則台灣客人一打中文就被導去第一個結果。
+      if (e.isComposing || e.keyCode === 229) return;
+      if (e.key === "Escape") {
         setOpen(false);
-      } else if (open && e.key === "ArrowDown") {
+      } else if (e.key === "ArrowDown") {
         e.preventDefault();
         setSelectedIdx((i) => Math.min(i + 1, results.length - 1));
-      } else if (open && e.key === "ArrowUp") {
+      } else if (e.key === "ArrowUp") {
         e.preventDefault();
         setSelectedIdx((i) => Math.max(i - 1, 0));
-      } else if (open && e.key === "Enter" && results[selectedIdx]) {
+      } else if (e.key === "Enter" && results[selectedIdx]) {
         window.location.href = `/${slug}/products/${results[selectedIdx].id}`;
       }
     };
