@@ -23,6 +23,22 @@ const PAYMENT_OPTIONS = [
   { value: "refunded", label: "已退款" },
 ];
 
+// 跟訂單列表頁同一組色票（pending=amber 上色那組），讓商家從列表點進詳情時
+// 第一眼就確認「這筆現在是什麼狀態」，不必去右側下拉選單裡找。
+const STATUS_BADGE: Record<string, { label: string; color: string }> = {
+  pending: { label: "待確認", color: "bg-amber-100 text-amber-800" },
+  confirmed: { label: "已確認", color: "bg-blue-100 text-blue-800" },
+  shipped: { label: "已出貨", color: "bg-purple-100 text-purple-800" },
+  completed: { label: "已完成", color: "bg-emerald-100 text-emerald-800" },
+  cancelled: { label: "已取消", color: "bg-zinc-100 text-zinc-600" },
+};
+
+const PAYMENT_STATUS_BADGE: Record<string, { label: string; color: string }> = {
+  unpaid: { label: "未付款", color: "bg-amber-100 text-amber-800" },
+  paid: { label: "已付款", color: "bg-emerald-100 text-emerald-800" },
+  refunded: { label: "已退款", color: "bg-zinc-100 text-zinc-600" },
+};
+
 function formatPrice(cents: number, currency: string) {
   const amount = cents / 100;
   if (currency === "TWD") return `NT$ ${amount.toLocaleString("zh-TW")}`;
@@ -72,6 +88,9 @@ export default async function OrderDetailPage({
   const paymentLabel = order.payment_method
     ? (PAYMENT_LABELS[order.payment_method] ?? order.payment_method)
     : null;
+  const statusBadge = STATUS_BADGE[order.status] ?? STATUS_BADGE.pending;
+  const paymentBadge =
+    PAYMENT_STATUS_BADGE[order.payment_status] ?? PAYMENT_STATUS_BADGE.unpaid;
 
   return (
     <div id="order-print-area">
@@ -125,6 +144,18 @@ export default async function OrderDetailPage({
           >
             單筆訂單詳情
           </h2>
+          <div className="mt-4 flex items-center gap-2 flex-wrap">
+            <span
+              className={`inline-block text-xs px-2.5 py-1 rounded-full ${statusBadge.color}`}
+            >
+              {statusBadge.label}
+            </span>
+            <span
+              className={`inline-block text-xs px-2.5 py-1 rounded-full ${paymentBadge.color}`}
+            >
+              {paymentBadge.label}
+            </span>
+          </div>
           <span
             aria-hidden
             className="mt-4 block h-px w-12 bg-emerald-600/60"
