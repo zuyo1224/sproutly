@@ -24,20 +24,28 @@ export default function CartPage() {
   const params = useParams();
   const slug = params.slug as string;
   const [products, setProducts] = useState<Product[] | null>(null);
-  const [cartVersion, setCartVersion] = useState(0);
+  // 純粹當重新渲染的觸發器：購物車變動時 +1 強制重算 cart / idsKey / 各列數量。
+  const [, bumpCart] = useState(0);
 
   const cart = typeof window !== "undefined" ? getCart(slug) : [];
+  // 只在「購物車裡的商品集合」改變時才重抓商品資料。先前用 cartVersion 當依賴，
+  // 但它每次加減數量都會 +1，害每點一下 +/− 就白抓一次整份清單（價格/庫存/圖片
+  // 跟數量無關，抓了也沒新資料）。改成只看 id 集合：調數量 → 集合不變 → 不重抓；
+  // 移除商品 → 集合變 → 重抓。排序後 join 讓集合相同時字串穩定。
+  const idsKey = cart
+    .map((c) => c.productId)
+    .sort()
+    .join(",");
 
   useEffect(() => {
     let cancelled = false;
     async function load() {
-      const ids = cart.map((c) => c.productId);
-      if (ids.length === 0) {
+      if (idsKey === "") {
         if (!cancelled) setProducts([]);
         return;
       }
       const res = await fetch(
-        `/${slug}/favorites/api?ids=${encodeURIComponent(ids.join(","))}`,
+        `/${slug}/favorites/api?ids=${encodeURIComponent(idsKey)}`,
         { cache: "no-store" }
       );
       const data: Product[] = await res.json();
@@ -47,20 +55,23 @@ export default function CartPage() {
     return () => {
       cancelled = true;
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [cartVersion, slug]);
+  }, [idsKey, slug]);
 
   useEffect(() => {
-    const onChange = () => setCartVersion((v) => v + 1);
+    const onChange = () => bumpCart((v) => v + 1);
     window.addEventListener("sproutly-cart-changed", onChange);
     return () =>
       window.removeEventListener("sproutly-cart-changed", onChange);
   }, []);
 
-  const itemRows = (products ?? []).map((p) => ({
-    product: p,
-    qty: cart.find((c) => c.productId === p.id)?.qty ?? 0,
-  }));
+  const itemRows = (products ?? [])
+    .map((p) => ({
+      product: p,
+      qty: cart.find((c) => c.productId === p.id)?.qty ?? 0,
+    }))
+    // 移除商品後到重抓完成之間，products 可能還留著已移除的那筆（qty 0），
+    // 濾掉避免短暫渲染出一列數量 0 的商品。
+    .filter((r) => r.qty > 0);
   const total = itemRows.reduce(
     (s, r) => s + r.product.price_cents * r.qty,
     0
