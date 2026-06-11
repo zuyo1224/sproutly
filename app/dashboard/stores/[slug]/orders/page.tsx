@@ -306,14 +306,26 @@ export default async function OrdersListPage({
                 const s = STATUS_LABEL[o.status] ?? STATUS_LABEL.pending;
                 const p =
                   PAYMENT_LABEL[o.payment_status] ?? PAYMENT_LABEL.unpaid;
+                // 待確認 = 商家還沒處理的單，給整列上色 + 左側色條，掃一眼就抓得到哪幾筆要回
+                const needsAction = o.status === "pending";
                 return (
                   <tr
                     key={o.id}
                     className={
-                      i % 2 === 0 ? "bg-white" : "bg-emerald-50/20"
+                      needsAction
+                        ? "bg-amber-50/50"
+                        : i % 2 === 0
+                          ? "bg-white"
+                          : "bg-emerald-50/20"
                     }
                   >
-                    <td className="px-5 py-4 font-mono text-emerald-900">
+                    <td
+                      className={`px-5 py-4 font-mono text-emerald-900 border-l-[3px] ${
+                        needsAction
+                          ? "border-amber-400"
+                          : "border-transparent"
+                      }`}
+                    >
                       #{o.id.split("-")[0].toUpperCase()}
                     </td>
                     <td className="px-5 py-4">
