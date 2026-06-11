@@ -1,9 +1,9 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { useParams } from "next/navigation";
-import { getCart, updateQty, removeFromCart } from "@/lib/cart";
+import { getCart, updateQty, removeFromCart, addToCart } from "@/lib/cart";
 
 type Product = {
   id: string;
@@ -26,6 +26,36 @@ export default function CartPage() {
   const [products, setProducts] = useState<Product[] | null>(null);
   // 純粹當重新渲染的觸發器：購物車變動時 +1 強制重算 cart / idsKey / 各列數量。
   const [, bumpCart] = useState(0);
+  // 剛移除的商品先暫存，讓客人有機會「復原」——按 Remove 是一鍵就清掉，
+  // 手滑或反悔卻沒退路，正是 user 長期在意的「不小心弄掉東西、沒復原」。
+  const [undo, setUndo] = useState<{
+    id: string;
+    qty: number;
+    name: string;
+  } | null>(null);
+  const undoTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  function handleRemove(p: Product, qty: number) {
+    removeFromCart(slug, p.id);
+    // 記住剛移除那筆（含數量），復原時原封不動加回去。
+    setUndo({ id: p.id, qty, name: p.name });
+    if (undoTimer.current) clearTimeout(undoTimer.current);
+    undoTimer.current = setTimeout(() => setUndo(null), 6000);
+  }
+
+  function handleUndo() {
+    if (!undo) return;
+    addToCart(slug, undo.id, undo.qty);
+    if (undoTimer.current) clearTimeout(undoTimer.current);
+    setUndo(null);
+  }
+
+  // 元件卸載時清掉還沒燒完的計時器，避免對已卸載元件 setState。
+  useEffect(() => {
+    return () => {
+      if (undoTimer.current) clearTimeout(undoTimer.current);
+    };
+  }, []);
 
   const cart = typeof window !== "undefined" ? getCart(slug) : [];
   // 只在「購物車裡的商品集合」改變時才重抓商品資料。先前用 cartVersion 當依賴，
@@ -313,7 +343,7 @@ export default function CartPage() {
                     </div>
                     <button
                       type="button"
-                      onClick={() => removeFromCart(slug, p.id)}
+                      onClick={() => handleRemove(p, qty)}
                       className="text-[0.6875rem] uppercase transition hover:opacity-100"
                       style={{
                         letterSpacing: "0.3em",
@@ -420,6 +450,38 @@ export default function CartPage() {
             </div>
           </div>
         </>
+      )}
+
+      {undo && (
+        <div
+          role="status"
+          aria-live="polite"
+          className="fixed inset-x-0 bottom-6 z-50 flex justify-center px-6 pointer-events-none"
+        >
+          <div
+            className="pointer-events-auto flex items-center gap-4 rounded-full pl-5 pr-2 py-2 shadow-lg max-w-[calc(100vw-3rem)]"
+            style={{
+              background: "var(--store-text, #1a1a1a)",
+              color: "var(--store-bg, #fff)",
+            }}
+          >
+            <span className="text-sm truncate">
+              已移除「{undo.name}」
+            </span>
+            <button
+              type="button"
+              onClick={handleUndo}
+              className="flex-shrink-0 rounded-full px-4 py-1.5 text-[0.6875rem] uppercase font-medium transition hover:opacity-80"
+              style={{
+                letterSpacing: "0.2em",
+                background: "var(--store-accent, currentColor)",
+                color: "var(--store-bg, #fff)",
+              }}
+            >
+              復原
+            </button>
+          </div>
+        </div>
       )}
     </main>
   );
