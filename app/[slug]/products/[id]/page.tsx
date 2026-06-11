@@ -136,12 +136,44 @@ export default async function PublicProductPage({
     },
   };
 
+  // 麵包屑結構化資料 — 讓 Google 在搜尋結果用「店名 › 所有商品 › 商品」
+  // 取代生硬的網址，客人一眼看出這頁在店裡的位置。
+  const breadcrumbJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      {
+        "@type": "ListItem",
+        position: 1,
+        name: store.name,
+        item: `${BASE_URL}/${slug}`,
+      },
+      {
+        "@type": "ListItem",
+        position: 2,
+        name: "所有商品",
+        item: `${BASE_URL}/${slug}/shop`,
+      },
+      {
+        "@type": "ListItem",
+        position: 3,
+        name: product.name,
+        item: `${BASE_URL}/${slug}/products/${product.id}`,
+      },
+    ],
+  };
+
   return (
     <main className="max-w-6xl mx-auto px-6 sm:px-10 py-20 sm:py-28">
       <script
         type="application/ld+json"
         // eslint-disable-next-line react/no-danger
         dangerouslySetInnerHTML={{ __html: JSON.stringify(productJsonLd) }}
+      />
+      <script
+        type="application/ld+json"
+        // eslint-disable-next-line react/no-danger
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
       />
       <Link
         href={`/${slug}/shop`}
