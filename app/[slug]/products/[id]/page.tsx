@@ -176,13 +176,41 @@ export default async function PublicProductPage({
         // eslint-disable-next-line react/no-danger
         dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
       />
-      <Link
-        href={`/${slug}/shop`}
-        className="sproutly-link inline-block mb-14 text-[0.6875rem] uppercase font-medium"
-        style={{ letterSpacing: "0.3em" }}
+      {/* 可見的麵包屑導覽 — 跟上面 BreadcrumbList 結構化資料一致，
+          讓客人一眼看到自己在店裡的位置，也能往回逛店或回所有商品。 */}
+      <nav
+        aria-label="麵包屑"
+        className="mb-14 flex flex-wrap items-center gap-x-2 gap-y-1 text-[0.6875rem] font-medium"
+        style={{ letterSpacing: "0.1em" }}
       >
-        ← Back · 所有商品
-      </Link>
+        <Link
+          href={`/${slug}`}
+          className="sproutly-link"
+          style={{ color: theme.textMuted }}
+        >
+          {store.name}
+        </Link>
+        <span aria-hidden="true" style={{ color: theme.textMuted, opacity: 0.45 }}>
+          ›
+        </span>
+        <Link
+          href={`/${slug}/shop`}
+          className="sproutly-link"
+          style={{ color: theme.textMuted }}
+        >
+          所有商品
+        </Link>
+        <span aria-hidden="true" style={{ color: theme.textMuted, opacity: 0.45 }}>
+          ›
+        </span>
+        <span
+          aria-current="page"
+          className="truncate max-w-[14rem]"
+          style={{ color: theme.text, opacity: 0.75 }}
+        >
+          {product.name}
+        </span>
+      </nav>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-10 lg:gap-16">
         <div>
