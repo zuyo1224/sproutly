@@ -12,6 +12,8 @@ export function ImageCarousel({ images, alt, surfaceBg }: Props) {
   const [idx, setIdx] = useState(0);
   const [lightboxOpen, setLightboxOpen] = useState(false);
   const touchStartX = useRef<number | null>(null);
+  const dialogRef = useRef<HTMLDivElement | null>(null);
+  const lastFocusedRef = useRef<HTMLElement | null>(null);
 
   const total = images.length;
   const next = useCallback(
@@ -55,6 +57,45 @@ export function ImageCarousel({ images, alt, surfaceBg }: Props) {
     document.body.style.overflow = "hidden";
     return () => {
       document.body.style.overflow = "";
+    };
+  }, [lightboxOpen]);
+
+  // 燈箱是 modal（role="dialog" aria-modal）——aria-modal 本身不會把鍵盤焦點關進來，
+  // 要自己處理：開啟時把焦點移進燈箱、Tab 在燈箱內循環不溜到背後的翻頁鈕、關閉後把
+  // 焦點還給原本點開的那張照片，鍵盤使用者才不會迷失在被 aria-hidden 的背景裡
+  useEffect(() => {
+    if (!lightboxOpen) return;
+    lastFocusedRef.current = document.activeElement as HTMLElement | null;
+    const dialog = dialogRef.current;
+    const focusables = () =>
+      dialog
+        ? Array.from(
+            dialog.querySelectorAll<HTMLElement>(
+              'button, [href], [tabindex]:not([tabindex="-1"])'
+            )
+          )
+        : [];
+    focusables()[0]?.focus();
+
+    const onTab = (e: KeyboardEvent) => {
+      if (e.key !== "Tab") return;
+      const items = focusables();
+      if (items.length === 0) return;
+      const first = items[0];
+      const last = items[items.length - 1];
+      const active = document.activeElement;
+      if (e.shiftKey && (active === first || !dialog?.contains(active))) {
+        e.preventDefault();
+        last.focus();
+      } else if (!e.shiftKey && active === last) {
+        e.preventDefault();
+        first.focus();
+      }
+    };
+    window.addEventListener("keydown", onTab);
+    return () => {
+      window.removeEventListener("keydown", onTab);
+      lastFocusedRef.current?.focus?.();
     };
   }, [lightboxOpen]);
 
@@ -158,6 +199,7 @@ export function ImageCarousel({ images, alt, surfaceBg }: Props) {
 
       {lightboxOpen && (
         <div
+          ref={dialogRef}
           role="dialog"
           aria-modal="true"
           aria-label={`${alt} 放大檢視`}
