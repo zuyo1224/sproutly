@@ -37,7 +37,7 @@ export default async function ContactPage({ params }: { params: Params }) {
       ? ((store.business_hours as { text?: string }).text ?? "")
       : "";
 
-  const blocks: { kind: "phone" | "email" | "address" | "hours"; label: string; latin: string; value: string; href?: string }[] = [];
+  const blocks: { kind: "phone" | "email" | "address" | "hours"; label: string; latin: string; value: string; href?: string; external?: boolean }[] = [];
   if (theme.sections.contact) {
     if (store.contact_phone) {
       blocks.push({ kind: "phone", label: "電話", latin: "Phone", value: store.contact_phone, href: `tel:${store.contact_phone}` });
@@ -46,7 +46,15 @@ export default async function ContactPage({ params }: { params: Params }) {
       blocks.push({ kind: "email", label: "Email", latin: "Email", value: store.contact_email, href: `mailto:${store.contact_email}` });
     }
     if (store.address) {
-      blocks.push({ kind: "address", label: "地址", latin: "Address", value: store.address });
+      // 地址直接連去 Google Maps，手機上會開地圖 App 帶起導航，客人不用自己複製貼上。
+      blocks.push({
+        kind: "address",
+        label: "地址",
+        latin: "Address",
+        value: store.address,
+        href: `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(store.address)}`,
+        external: true,
+      });
     }
   }
   if (theme.sections.hours && businessHoursText) {
@@ -154,6 +162,14 @@ export default async function ContactPage({ params }: { params: Params }) {
                 >
                   {block.value}
                 </div>
+                {block.kind === "address" && (
+                  <p
+                    className="mt-4 text-[0.6875rem] uppercase font-medium"
+                    style={{ color: theme.accent, letterSpacing: "0.3em" }}
+                  >
+                    開啟地圖導航 →
+                  </p>
+                )}
               </>
             );
             const blockStyle = {
@@ -166,6 +182,9 @@ export default async function ContactPage({ params }: { params: Params }) {
                 <a
                   key={idx}
                   href={block.href}
+                  {...(block.external
+                    ? { target: "_blank", rel: "noopener noreferrer" }
+                    : {})}
                   className="block rounded-2xl p-7 sm:p-8 transition hover:opacity-90"
                   style={blockStyle}
                 >
