@@ -78,28 +78,36 @@ export default async function TrackPage({
   }[] = [];
   let searched = false;
 
+  // 給客人看的訂單短碼是 UUID 第一段、固定 8 碼（success 頁、會員訂單、信裡都是這 8 碼）。
+  // 比對用 startsWith，所以若不設下限，帶 ?id=a&phone= 進來就會用「電話 + 1 碼」撈到
+  // 開頭剛好是 a 的最近一筆訂單，把雙因子查詢弱化成電話幾乎就能查到別人的姓名/地址/品項。
+  // 低於 8 碼一律不查，當作查無訂單處理。
+  const SHORT_ID_MIN = 8;
+
   if (shortId && phone) {
     searched = true;
-    const admin = createAdminClient();
-    const { data: orders } = await admin
-      .from("sproutly_orders")
-      .select(
-        "id, status, payment_status, paid_at, shipped_at, created_at, customer_name, customer_phone, customer_email, shipping_address, note, total_cents, currency, payment_method"
-      )
-      .eq("merchant_id", store.id)
-      .eq("customer_phone", phone)
-      .order("created_at", { ascending: false });
-    order =
-      (orders as Order[] | null)?.find((o) =>
-        o.id.toLowerCase().startsWith(shortId)
-      ) ?? null;
+    if (shortId.length >= SHORT_ID_MIN) {
+      const admin = createAdminClient();
+      const { data: orders } = await admin
+        .from("sproutly_orders")
+        .select(
+          "id, status, payment_status, paid_at, shipped_at, created_at, customer_name, customer_phone, customer_email, shipping_address, note, total_cents, currency, payment_method"
+        )
+        .eq("merchant_id", store.id)
+        .eq("customer_phone", phone)
+        .order("created_at", { ascending: false });
+      order =
+        (orders as Order[] | null)?.find((o) =>
+          o.id.toLowerCase().startsWith(shortId)
+        ) ?? null;
 
-    if (order) {
-      const { data: it } = await admin
-        .from("sproutly_order_items")
-        .select("name_snapshot, quantity, price_cents_snapshot")
-        .eq("order_id", order.id);
-      items = it ?? [];
+      if (order) {
+        const { data: it } = await admin
+          .from("sproutly_order_items")
+          .select("name_snapshot, quantity, price_cents_snapshot")
+          .eq("order_id", order.id);
+        items = it ?? [];
+      }
     }
   }
 
