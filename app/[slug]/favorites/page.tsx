@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { useParams } from "next/navigation";
 
@@ -36,6 +36,12 @@ export default function FavoritesPage() {
   const params = useParams();
   const slug = params.slug as string;
   const [products, setProducts] = useState<Product[] | null>(null);
+  // 按 × 移除收藏原本一鍵就消失、沒退路，跟購物車一樣是 user 在意的「手滑弄掉沒復原」。
+  // 暫存剛移除那株（含原本在清單裡的位置），復原時原封不動放回原處。
+  const [undo, setUndo] = useState<{ product: Product; index: number } | null>(
+    null
+  );
+  const undoTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
     let cancelled = false;
@@ -72,16 +78,48 @@ export default function FavoritesPage() {
     };
   }, []);
 
-  function removeFavorite(id: string) {
+  function removeFavorite(product: Product, index: number) {
     try {
-      const next = readFavoriteIds().filter((x) => x !== id);
+      const next = readFavoriteIds().filter((x) => x !== product.id);
       localStorage.setItem(FAVORITES_KEY, JSON.stringify(next));
       // 通知 nav 收藏數與其他分頁；本頁的 sync effect 也會接到並移除卡片
       window.dispatchEvent(new Event("sproutly-favorites-changed"));
     } catch {
       /* ignore */
     }
+    // 記住剛移除那株與原位置，6 秒內可一鍵放回
+    setUndo({ product, index });
+    if (undoTimer.current) clearTimeout(undoTimer.current);
+    undoTimer.current = setTimeout(() => setUndo(null), 6000);
   }
+
+  function handleUndo() {
+    if (!undo) return;
+    try {
+      // 把 id 放回原本在清單裡的位置，再復原卡片，最後通知 nav 收藏數回升
+      const ids = readFavoriteIds().filter((x) => x !== undo.product.id);
+      ids.splice(undo.index, 0, undo.product.id);
+      localStorage.setItem(FAVORITES_KEY, JSON.stringify(ids));
+      setProducts((prev) => {
+        if (!prev) return prev;
+        if (prev.some((p) => p.id === undo.product.id)) return prev;
+        const next = [...prev];
+        next.splice(Math.min(undo.index, next.length), 0, undo.product);
+        return next;
+      });
+      window.dispatchEvent(new Event("sproutly-favorites-changed"));
+    } catch {
+      /* ignore */
+    }
+    if (undoTimer.current) clearTimeout(undoTimer.current);
+    setUndo(null);
+  }
+
+  useEffect(() => {
+    return () => {
+      if (undoTimer.current) clearTimeout(undoTimer.current);
+    };
+  }, []);
 
   const count = products?.length ?? 0;
 
@@ -210,7 +248,7 @@ export default function FavoritesPage() {
         </div>
       ) : (
         <div className="grid grid-cols-2 md:grid-cols-3 gap-x-6 sm:gap-x-10 gap-y-16">
-          {products.map((p) => (
+          {products.map((p, i) => (
             <Link
               key={p.id}
               href={`/${slug}/products/${p.id}`}
@@ -222,7 +260,7 @@ export default function FavoritesPage() {
                   onClick={(e) => {
                     e.preventDefault();
                     e.stopPropagation();
-                    removeFavorite(p.id);
+                    removeFavorite(p, i);
                   }}
                   aria-label={`從收藏移除 ${p.name}`}
                   title="從收藏移除"
@@ -282,6 +320,38 @@ export default function FavoritesPage() {
               </p>
             </Link>
           ))}
+        </div>
+      )}
+
+      {undo && (
+        <div
+          role="status"
+          aria-live="polite"
+          className="fixed inset-x-0 bottom-6 z-50 flex justify-center px-6 pointer-events-none"
+        >
+          <div
+            className="pointer-events-auto flex items-center gap-4 rounded-full pl-5 pr-2 py-2 shadow-lg max-w-[calc(100vw-3rem)]"
+            style={{
+              background: "var(--store-text, #1a1a1a)",
+              color: "var(--store-bg, #fff)",
+            }}
+          >
+            <span className="text-sm truncate">
+              已移除「{undo.product.name}」
+            </span>
+            <button
+              type="button"
+              onClick={handleUndo}
+              className="flex-shrink-0 rounded-full px-4 py-1.5 text-[0.6875rem] uppercase font-medium transition hover:opacity-80"
+              style={{
+                letterSpacing: "0.2em",
+                background: "var(--store-accent, currentColor)",
+                color: "var(--store-bg, #fff)",
+              }}
+            >
+              復原
+            </button>
+          </div>
         </div>
       )}
     </main>
