@@ -1,7 +1,8 @@
 "use client";
 
-import { useState } from "react";
-import { addToCart } from "@/lib/cart";
+import { useEffect, useState } from "react";
+import Link from "next/link";
+import { addToCart, getCartCount } from "@/lib/cart";
 
 type Props = {
   slug: string;
@@ -28,6 +29,20 @@ export function AddToCartButton({
   children,
 }: Props) {
   const [added, setAdded] = useState(false);
+  // 購物車裡目前共幾件。原本按下「加入」只閃 1.5 秒「✓ 已加入」就消失，
+  // 客人加完不知道車在哪、也沒去向（nav 徽章在頁頂很小，視線正盯著底部按鈕），
+  // 等於加了卻不知下一步。車裡只要有東西就在按鈕下持續給一條「去購物車」連結。
+  const [count, setCount] = useState(0);
+
+  // 掛載先讀一次（可能先前頁面已加過），並跟著購物車變動同步——
+  // addToCart / updateQty / remove 都會 dispatch 這個事件，數字才不會過時。
+  useEffect(() => {
+    const sync = () => setCount(getCartCount(slug));
+    sync();
+    window.addEventListener("sproutly-cart-changed", sync);
+    return () =>
+      window.removeEventListener("sproutly-cart-changed", sync);
+  }, [slug]);
 
   function resolveQty() {
     if (!qtyInputId) return qty;
@@ -47,13 +62,27 @@ export function AddToCartButton({
   }
 
   return (
-    <button
-      type="button"
-      onClick={handleClick}
-      className={className}
-      style={style}
-    >
-      {added ? "✓ 已加入" : children ?? "加入購物車"}
-    </button>
+    <>
+      <button
+        type="button"
+        onClick={handleClick}
+        className={className}
+        style={style}
+      >
+        {added ? "✓ 已加入" : children ?? "加入購物車"}
+      </button>
+      {count > 0 && (
+        <Link
+          href={`/${slug}/cart`}
+          className="block text-center text-[0.8125rem] transition hover:opacity-70"
+          style={{
+            color: "var(--store-accent, currentColor)",
+            letterSpacing: "0.04em",
+          }}
+        >
+          去購物車（{count} 件）→
+        </Link>
+      )}
+    </>
   );
 }
