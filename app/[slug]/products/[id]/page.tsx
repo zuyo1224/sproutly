@@ -6,6 +6,7 @@ import { resolveTheme } from "../../_theme";
 import { ImageCarousel } from "@/app/_components/image-carousel";
 import { FavoriteButton } from "@/app/_components/favorite-button";
 import { AddToCartButton } from "@/app/_components/add-to-cart-button";
+import { ShareButton } from "@/app/_components/share-button";
 
 type Params = Promise<{ slug: string; id: string }>;
 
@@ -448,6 +449,13 @@ export default async function PublicProductPage({
                 Email 詢問
               </a>
             )}
+
+            <ShareButton
+              productName={product.name}
+              className="sproutly-btn sproutly-btn-secondary sproutly-btn-lg w-full"
+            >
+              分享給朋友
+            </ShareButton>
           </form>
         </div>
       </div>
