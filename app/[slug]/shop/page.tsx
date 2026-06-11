@@ -7,10 +7,20 @@ import { resolveTheme, HOMEPAGE_DEFAULTS } from "../_theme";
 type Params = Promise<{ slug: string }>;
 type SearchParams = Promise<{ q?: string; sort?: string; stock?: string }>;
 
-export const metadata: Metadata = {
-  title: "全部商品",
-  description: "瀏覽完整商品與庫存，看上眼直接線上下單。",
-};
+// canonical 指回不帶查詢字串的商品頁網址——搜尋／排序／篩庫存會生出 ?q= ?sort= ?stock=
+// 一堆變體網址，全部當成同一頁，排名才不會被切散。
+export async function generateMetadata({
+  params,
+}: {
+  params: Params;
+}): Promise<Metadata> {
+  const { slug } = await params;
+  return {
+    title: "全部商品",
+    description: "瀏覽完整商品與庫存，看上眼直接線上下單。",
+    alternates: { canonical: `/${slug}/shop` },
+  };
+}
 
 const SORT_OPTIONS: { value: string; label: string }[] = [
   { value: "newest", label: "最新上架" },

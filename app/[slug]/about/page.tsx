@@ -5,10 +5,18 @@ import { resolveTheme, HOMEPAGE_DEFAULTS } from "../_theme";
 
 type Params = Promise<{ slug: string }>;
 
-export const metadata: Metadata = {
-  title: "關於我們",
-  description: "認識這家店的故事、理念與常見問題。",
-};
+export async function generateMetadata({
+  params,
+}: {
+  params: Params;
+}): Promise<Metadata> {
+  const { slug } = await params;
+  return {
+    title: "關於我們",
+    description: "認識這家店的故事、理念與常見問題。",
+    alternates: { canonical: `/${slug}/about` },
+  };
+}
 
 export default async function AboutPage({ params }: { params: Params }) {
   const { slug } = await params;

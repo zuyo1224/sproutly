@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
@@ -6,6 +7,18 @@ import { resolveTheme, HOMEPAGE_DEFAULTS, HOMEPAGE_DEFAULT_COLLECTIONS, JOURNAL_
 import HeroAdaptiveBanner from "./HeroAdaptiveBanner";
 
 type Params = Promise<{ slug: string }>;
+
+// 首頁標準網址：店面同時掛在短網址（sproutly-drab）與 Vercel 部署長網址底下，
+// 不指定正規網址的話 Google 會當成兩個重複頁面，搜尋排名被一頁分成兩半。
+// 標題/描述/分享圖沿用 layout 的 generateMetadata，這裡只補 canonical。
+export async function generateMetadata({
+  params,
+}: {
+  params: Params;
+}): Promise<Metadata> {
+  const { slug } = await params;
+  return { alternates: { canonical: `/${slug}` } };
+}
 
 function formatPrice(cents: number, currency: string) {
   const amount = cents / 100;
