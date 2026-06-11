@@ -282,7 +282,8 @@ export default function CartPage() {
                       <button
                         type="button"
                         onClick={() => updateQty(slug, p.id, qty - 1)}
-                        className="w-8 h-8 transition"
+                        disabled={qty <= 1}
+                        className="w-8 h-8 transition disabled:opacity-30 disabled:cursor-not-allowed"
                         style={{
                           color:
                             "var(--store-text-muted, rgba(0,0,0,0.6))",
