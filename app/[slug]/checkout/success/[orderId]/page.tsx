@@ -5,6 +5,7 @@ import { createAdminClient } from "@/lib/supabase/admin";
 import { resolveTheme } from "../../../_theme";
 import { PAYMENT_LABELS, decodeShippingFromNote } from "@/lib/order-labels";
 import { Confetti } from "@/app/_components/confetti";
+import { CopyOrderId } from "@/app/_components/copy-order-id";
 
 type Params = Promise<{ slug: string; orderId: string }>;
 
@@ -381,12 +382,7 @@ export default async function OrderSuccessPage({
         }}
       >
         請記下訂單編號{" "}
-        <strong
-          className="font-mono"
-          style={{ color: theme.text, letterSpacing: "0.05em" }}
-        >
-          #{shortId}
-        </strong>
+        <CopyOrderId shortId={shortId} />
         ，跟店家確認付款、或之後{" "}
         <Link
           href={`/${slug}/track`}
