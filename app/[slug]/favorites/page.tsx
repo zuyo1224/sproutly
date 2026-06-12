@@ -56,7 +56,16 @@ export default function FavoritesPage() {
         { cache: "no-store" }
       );
       const data: Product[] = await res.json();
-      if (!cancelled) setProducts(data);
+      // API 用 .in("id", ids) 查，回來的順序是資料庫隨機序、不照 ids 走，
+      // 害收藏卡片每次載入排序都不一樣，也跟客人實際收藏的先後對不上。
+      // 更要緊的是：移除的「復原」記的是卡片在畫面上的 index、卻 splice 回
+      // localStorage 陣列那個位置——畫面序 ≠ 儲存序時就會放回錯的地方。
+      // 這裡先照 ids（= localStorage 收藏順序）把結果排回去，兩邊對齊。
+      const order = new Map(ids.map((id, i) => [id, i]));
+      const ordered = [...data].sort(
+        (a, b) => (order.get(a.id) ?? Infinity) - (order.get(b.id) ?? Infinity)
+      );
+      if (!cancelled) setProducts(ordered);
     }
     load();
     return () => {
