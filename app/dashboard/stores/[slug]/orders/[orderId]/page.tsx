@@ -45,6 +45,10 @@ function formatPrice(cents: number, currency: string) {
   return `${currency} ${amount.toFixed(2)}`;
 }
 
+function formatDateTime(iso: string) {
+  return new Date(iso).toLocaleString("zh-TW", { timeZone: "Asia/Taipei" });
+}
+
 export default async function OrderDetailPage({
   params,
   searchParams,
@@ -164,7 +168,7 @@ export default async function OrderDetailPage({
             className="mt-4 text-emerald-900/65"
             style={{ fontSize: "0.9375rem", lineHeight: 1.7 }}
           >
-            {new Date(order.created_at).toLocaleString("zh-TW")} 下單 · 在右側更新狀態
+            {formatDateTime(order.created_at)} 下單 · 在右側更新狀態
           </p>
         </div>
         <div className="no-print">
@@ -517,7 +521,7 @@ export default async function OrderDetailPage({
                   Placed
                 </dt>
                 <dd className="text-emerald-950 tabular-nums">
-                  {new Date(order.created_at).toLocaleString("zh-TW")}
+                  {formatDateTime(order.created_at)}
                 </dd>
               </div>
               {order.paid_at && (
@@ -529,7 +533,7 @@ export default async function OrderDetailPage({
                     Paid
                   </dt>
                   <dd className="text-emerald-950 tabular-nums">
-                    {new Date(order.paid_at).toLocaleString("zh-TW")}
+                    {formatDateTime(order.paid_at)}
                   </dd>
                 </div>
               )}
@@ -542,7 +546,7 @@ export default async function OrderDetailPage({
                     Shipped
                   </dt>
                   <dd className="text-emerald-950 tabular-nums">
-                    {new Date(order.shipped_at).toLocaleString("zh-TW")}
+                    {formatDateTime(order.shipped_at)}
                   </dd>
                 </div>
               )}

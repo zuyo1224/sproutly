@@ -603,6 +603,7 @@ export default async function StoreInsightsPage({
                     </span>
                     <span className="text-xs text-emerald-900/40 hidden md:inline w-20 text-right flex-shrink-0">
                       {new Date(o.created_at).toLocaleString("zh-TW", {
+                        timeZone: "Asia/Taipei",
                         month: "2-digit",
                         day: "2-digit",
                         hour: "2-digit",

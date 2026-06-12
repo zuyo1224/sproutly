@@ -11,6 +11,7 @@ function formatPrice(cents: number) {
 
 function formatDate(iso: string) {
   return new Date(iso).toLocaleDateString("zh-TW", {
+    timeZone: "Asia/Taipei",
     year: "numeric",
     month: "2-digit",
     day: "2-digit",

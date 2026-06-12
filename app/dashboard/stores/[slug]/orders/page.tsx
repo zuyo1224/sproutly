@@ -352,6 +352,7 @@ export default async function OrdersListPage({
                     </td>
                     <td className="px-5 py-4 text-xs text-emerald-900/60">
                       {new Date(o.created_at).toLocaleString("zh-TW", {
+                        timeZone: "Asia/Taipei",
                         month: "2-digit",
                         day: "2-digit",
                         hour: "2-digit",

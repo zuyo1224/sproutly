@@ -121,6 +121,7 @@ export async function GET(
     const row = [
       "#" + o.id.split("-")[0].toUpperCase(),
       new Date(o.created_at).toLocaleString("zh-TW", {
+        timeZone: "Asia/Taipei",
         year: "numeric",
         month: "2-digit",
         day: "2-digit",
