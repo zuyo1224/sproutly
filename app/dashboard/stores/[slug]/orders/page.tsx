@@ -16,25 +16,26 @@ const DATE_RANGES: { key: string; label: string }[] = [
   { key: "month", label: "本月" },
 ];
 
-function computeDateRange(key: string): { since: Date | null; until: Date | null } {
-  const now = new Date();
+// 跟後台首頁同一套：日界線一律用台灣時間切，伺服器在 UTC 跑也不會把凌晨的單漏掉
+function taipeiDateKey(d: Date) {
+  return d.toLocaleDateString("en-CA", { timeZone: "Asia/Taipei" });
+}
+
+function computeDateRange(key: string): { since: Date | null } {
+  const todayKey = taipeiDateKey(new Date()); // YYYY-MM-DD（台灣的今天）
+  const midnight = new Date(`${todayKey}T00:00:00+08:00`);
   if (key === "today") {
-    const start = new Date(now);
-    start.setHours(0, 0, 0, 0);
-    return { since: start, until: null };
+    return { since: midnight };
   }
   if (key === "week") {
-    const start = new Date(now);
-    const day = start.getDay() === 0 ? 7 : start.getDay(); // 週日視為第 7 天
-    start.setDate(start.getDate() - (day - 1)); // 回到本週一
-    start.setHours(0, 0, 0, 0);
-    return { since: start, until: null };
+    const day = new Date(`${todayKey}T00:00:00Z`).getUTCDay(); // 台灣今天星期幾，0 = 週日
+    const back = day === 0 ? 6 : day - 1; // 回到本週一
+    return { since: new Date(midnight.getTime() - back * 86_400_000) };
   }
   if (key === "month") {
-    const start = new Date(now.getFullYear(), now.getMonth(), 1);
-    return { since: start, until: null };
+    return { since: new Date(`${todayKey.slice(0, 8)}01T00:00:00+08:00`) };
   }
-  return { since: null, until: null };
+  return { since: null };
 }
 
 const STATUS_FILTERS: { key: string; label: string }[] = [
@@ -276,7 +277,7 @@ export default async function OrdersListPage({
           >
             搜尋
           </button>
-          {(q || status !== "all") && (
+          {filterActive && (
             <Link
               href={`/dashboard/stores/${slug}/orders`}
               className="rounded-full border border-emerald-100 px-4 py-2 text-sm text-emerald-900/70 hover:bg-emerald-50 transition"
