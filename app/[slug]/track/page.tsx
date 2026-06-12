@@ -29,6 +29,15 @@ function formatPrice(cents: number, currency: string) {
   return `${currency} ${amount.toFixed(2)}`;
 }
 
+function formatDateTime(iso: string) {
+  return new Date(iso).toLocaleString("zh-TW", {
+    month: "long",
+    day: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+  });
+}
+
 export default async function TrackPage({
   params,
   searchParams,
@@ -332,6 +341,41 @@ export default async function TrackPage({
                   {order.status === "shipped" && "商品已寄出，請耐心等待"}
                   {order.status === "completed" && "訂單完成，謝謝你的支持"}
                 </p>
+
+                {/* 每一步是哪天發生的——進度條只給「走到第幾步」，這裡補上確切時間，
+                    客人才知道「我是 6/10 下單、6/12 出貨」而不用自己回想 */}
+                {(() => {
+                  const stamps: { label: string; iso: string }[] = [
+                    { label: "下單時間", iso: order.created_at },
+                  ];
+                  if (order.paid_at)
+                    stamps.push({ label: "付款時間", iso: order.paid_at });
+                  if (order.shipped_at)
+                    stamps.push({ label: "出貨時間", iso: order.shipped_at });
+                  return (
+                    <dl
+                      className="mt-6 pt-6 flex flex-col gap-2 text-[0.9375rem]"
+                      style={{ borderTop: `1px solid ${theme.border}` }}
+                    >
+                      {stamps.map((s) => (
+                        <div
+                          key={s.label}
+                          className="flex justify-between gap-3"
+                        >
+                          <dt style={{ color: theme.textMuted }}>{s.label}</dt>
+                          <dd
+                            style={{
+                              color: theme.text,
+                              fontVariantNumeric: "tabular-nums",
+                            }}
+                          >
+                            {formatDateTime(s.iso)}
+                          </dd>
+                        </div>
+                      ))}
+                    </dl>
+                  );
+                })()}
               </>
             )}
           </section>
