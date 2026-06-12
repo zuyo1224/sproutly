@@ -22,6 +22,12 @@ function daysAgo(iso: string) {
   return Math.floor(diff / (1000 * 60 * 60 * 24));
 }
 
+// 點客人 → 帶他的電話（沒有就 email / 姓名）去訂單列表用既有的 ?q= 篩出他的所有單
+function customerOrdersHref(slug: string, r: CustomerRow) {
+  const needle = (r.phone && r.phone !== "unknown" ? r.phone : "") || r.email || r.name;
+  return `/dashboard/stores/${slug}/orders?q=${encodeURIComponent(needle)}`;
+}
+
 type CustomerRow = {
   key: string;
   identityType: "account" | "guest";
@@ -347,6 +353,7 @@ export default async function StoreCustomersPage({
                 <th className="text-right px-3 py-3.5 font-medium">總消費</th>
                 <th className="text-left px-3 py-3.5 font-medium">最近下單</th>
                 <th className="text-left px-5 py-3.5 font-medium">成為客人</th>
+                <th className="text-right px-5 py-3.5 font-medium"></th>
               </tr>
             </thead>
             <tbody>
@@ -448,6 +455,14 @@ export default async function StoreCustomersPage({
                           : `已認識 ${lifetimeDays} 天`}
                       </p>
                     </td>
+                    <td className="px-5 py-3.5 text-right whitespace-nowrap">
+                      <Link
+                        href={customerOrdersHref(slug, r)}
+                        className="text-emerald-700 hover:text-emerald-900 text-sm font-medium"
+                      >
+                        看訂單 →
+                      </Link>
+                    </td>
                   </tr>
                 );
               })}
@@ -461,7 +476,11 @@ export default async function StoreCustomersPage({
               const isVip = r.totalCents >= 200000;
               const isReturning = r.orderCount >= 2;
               return (
-                <li key={r.key} className="p-4">
+                <li key={r.key}>
+                  <Link
+                    href={customerOrdersHref(slug, r)}
+                    className="block p-4 hover:bg-emerald-50/40 transition"
+                  >
                   <div className="flex items-start justify-between gap-3 mb-2">
                     <div className="min-w-0">
                       <p className="font-medium text-emerald-950 truncate">
@@ -518,6 +537,10 @@ export default async function StoreCustomersPage({
                         : `${recencyDays} 天前`}{" "}
                     · 認識 {daysAgo(r.firstOrderAt)} 天
                   </p>
+                  <p className="text-[11px] text-emerald-700 mt-2 font-medium">
+                    看訂單 →
+                  </p>
+                  </Link>
                 </li>
               );
             })}
@@ -542,6 +565,7 @@ export default async function StoreCustomersPage({
         >
           以電話為主分群（同一支電話的多次匿名下單算一位客人）；客人若有會員帳號，
           會用會員 ID 分群更準確。VIP = 累計消費 NT$ 2,000+；回購 = 下過 2 次以上。
+          點任一位客人的「看訂單」，會帶他的電話到訂單列表，篩出他的每一筆單。
         </p>
         <Link
           href={`/dashboard/stores/${slug}/orders`}
