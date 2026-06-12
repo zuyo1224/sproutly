@@ -16,6 +16,7 @@ import { CartIcon } from "@/app/_components/cart-icon";
 import { SearchOverlay } from "@/app/_components/search-overlay";
 import { EditorClickBridge } from "@/app/_components/editor-click-bridge";
 import { StoreNavLink } from "@/app/_components/store-nav-link";
+import { StoreMobileNav } from "@/app/_components/store-mobile-nav";
 import { BackToTop } from "@/app/_components/back-to-top";
 
 const RESERVED = new Set([
@@ -705,17 +706,20 @@ export default async function PublicStoreLayout({
               {store.name}
             </span>
           </Link>
-          <nav aria-label="店面主導覽" className="flex items-center gap-1 overflow-x-auto">
-            {navItems.map((item) => (
-              <StoreNavLink
-                key={item.href}
-                href={item.href}
-                label={item.label}
-                isHome={item.href === `/${slug}`}
-                colorMuted={theme.textMuted}
-                colorActive={theme.text}
-              />
-            ))}
+          <nav aria-label="店面主導覽" className="flex items-center gap-1">
+            {/* 桌機：文字連結一字排開；手機收進右側漢堡選單 */}
+            <div className="hidden sm:flex items-center gap-1">
+              {navItems.map((item) => (
+                <StoreNavLink
+                  key={item.href}
+                  href={item.href}
+                  label={item.label}
+                  isHome={item.href === `/${slug}`}
+                  colorMuted={theme.textMuted}
+                  colorActive={theme.text}
+                />
+              ))}
+            </div>
             <Link
               href={accountHref}
               className="ml-2 px-2 py-2 transition hover:opacity-70"
@@ -757,6 +761,18 @@ export default async function PublicStoreLayout({
             >
               <CartIcon slug={slug} />
             </div>
+            <StoreMobileNav
+              className="sm:hidden ml-1"
+              slug={slug}
+              items={navItems.map((item) => ({
+                href: item.href,
+                label: item.label,
+              }))}
+              colorMuted={theme.textMuted}
+              colorActive={theme.text}
+              surface={theme.surface}
+              border={theme.border}
+            />
           </nav>
         </div>
       </header>
