@@ -231,19 +231,37 @@ export default async function ShopPage({
 
       {products && products.length > 0 ? (
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-x-6 sm:gap-x-10 gap-y-16">
-          {products.map((p) => (
+          {products.map((p) => {
+            const soldOut = p.stock !== null && p.stock === 0;
+            return (
             <Link
               key={p.id}
               href={`/${slug}/products/${p.id}`}
               className="sproutly-card"
             >
-              <div className="sproutly-card-image aspect-square">
+              <div className="sproutly-card-image aspect-square relative">
+                {/* 售完的圖片去彩、壓暗，再蓋一枚角落標記。逛列表時一眼就看得出
+                    哪幾株沒了，不必先讀卡片下方的小字才知道。 */}
+                {soldOut && (
+                  <span
+                    className="absolute left-3 top-3 z-10 px-2.5 py-1 rounded-full text-[0.625rem] uppercase font-medium backdrop-blur-sm"
+                    style={{
+                      background: "rgba(0,0,0,0.55)",
+                      color: "#fff",
+                      letterSpacing: "0.2em",
+                    }}
+                  >
+                    售完
+                  </span>
+                )}
                 {p.image_urls?.[0] ? (
                   // eslint-disable-next-line @next/next/no-img-element
                   <img
                     src={p.image_urls[0]}
                     alt={p.name}
-                    className="w-full h-full object-cover"
+                    className={`w-full h-full object-cover transition ${
+                      soldOut ? "opacity-55 grayscale" : ""
+                    }`}
                     loading="lazy"
                   />
                 ) : (
@@ -279,19 +297,9 @@ export default async function ShopPage({
               >
                 {formatPrice(p.price_cents, p.currency)}
               </p>
-              {/* 庫存提示跟商品詳情頁同一套語言：售完灰字、剩 3 件內琥珀色，
-                  讓客人逛列表就分得出哪幾株快沒了，不必點進去才知道。 */}
-              {p.stock !== null && p.stock === 0 ? (
-                <p
-                  className="mt-1 text-[0.6875rem] uppercase font-medium"
-                  style={{
-                    color: theme.textMuted,
-                    letterSpacing: "0.3em",
-                  }}
-                >
-                  Sold Out · 售完
-                </p>
-              ) : p.stock !== null && p.stock <= 3 ? (
+              {/* 售完已由圖片上的角落標記表達，這裡只留「剩 N」的琥珀色提示，
+                  跟商品詳情頁同一套語言，讓客人逛列表就分得出哪幾株快沒了。 */}
+              {!soldOut && p.stock !== null && p.stock <= 3 ? (
                 <p
                   className="mt-1 text-[0.6875rem] uppercase font-medium"
                   style={{
@@ -303,7 +311,8 @@ export default async function ShopPage({
                 </p>
               ) : null}
             </Link>
-          ))}
+            );
+          })}
         </div>
       ) : (
         <div className="py-16 max-w-md">
