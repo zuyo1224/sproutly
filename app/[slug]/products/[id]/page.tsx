@@ -427,6 +427,7 @@ export default async function PublicProductPage({
                 slug={slug}
                 productId={product.id}
                 qtyInputId="qty"
+                stock={product.stock}
                 className="sproutly-btn sproutly-btn-secondary sproutly-btn-lg w-full"
               >
                 加入購物車

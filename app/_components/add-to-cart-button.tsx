@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { addToCart, getCartCount } from "@/lib/cart";
+import { addToCart, getCart, getCartCount } from "@/lib/cart";
 
 type Props = {
   slug: string;
@@ -14,6 +14,13 @@ type Props = {
    * 客人選 5 件按加入只會進 1 件，靠這個把選的數量帶進購物車。
    */
   qtyInputId?: string;
+  /**
+   * 商品庫存（null 視為不限）。詳情頁的數量下拉只 cap 在庫存，
+   * 但「加入購物車」是累加：車裡已有 2 件、又選 3 件加進來會變 5 件，
+   * 超過只剩 3 件的庫存。客人當下不會發現，要等排到購物車才看到紅字。
+   * 帶進來後就能在加入當下把「已在車裡 + 想加」一起 cap 住、並說明原因。
+   */
+  stock?: number | null;
   className?: string;
   style?: React.CSSProperties;
   children?: React.ReactNode;
@@ -24,11 +31,14 @@ export function AddToCartButton({
   productId,
   qty = 1,
   qtyInputId,
+  stock = null,
   className,
   style,
   children,
 }: Props) {
   const [added, setAdded] = useState(false);
+  // 加入時若因庫存被攔（只加到上限、或車裡已有全部庫存）給客人一句說明。
+  const [notice, setNotice] = useState<string | null>(null);
   // 購物車裡目前共幾件。原本按下「加入」只閃 1.5 秒「✓ 已加入」就消失，
   // 客人加完不知道車在哪、也沒去向（nav 徽章在頁頂很小，視線正盯著底部按鈕），
   // 等於加了卻不知下一步。車裡只要有東西就在按鈕下持續給一條「去購物車」連結。
@@ -56,7 +66,30 @@ export function AddToCartButton({
   }
 
   function handleClick() {
-    addToCart(slug, productId, resolveQty());
+    const wanted = resolveQty();
+    // 庫存不限就照常加。有上限時看車裡已有多少，只補到上限為止。
+    if (stock != null) {
+      const already =
+        getCart(slug).find((i) => i.productId === productId)?.qty ?? 0;
+      const canAdd = Math.max(0, stock - already);
+      if (canAdd <= 0) {
+        setNotice(`購物車已有全部 ${stock} 件庫存`);
+        setTimeout(() => setNotice(null), 4000);
+        return;
+      }
+      const toAdd = Math.min(wanted, canAdd);
+      addToCart(slug, productId, toAdd);
+      setAdded(true);
+      setTimeout(() => setAdded(false), 1500);
+      if (toAdd < wanted) {
+        setNotice(`庫存只剩 ${stock} 件，已幫你加到上限`);
+        setTimeout(() => setNotice(null), 4000);
+      } else {
+        setNotice(null);
+      }
+      return;
+    }
+    addToCart(slug, productId, wanted);
     setAdded(true);
     setTimeout(() => setAdded(false), 1500);
   }
@@ -71,6 +104,20 @@ export function AddToCartButton({
       >
         {added ? "✓ 已加入" : children ?? "加入購物車"}
       </button>
+      {notice && (
+        <p
+          role="status"
+          aria-live="polite"
+          className="text-center text-[0.75rem]"
+          style={{
+            color: "var(--store-text-muted, rgba(0,0,0,0.6))",
+            letterSpacing: "0.04em",
+            lineHeight: 1.5,
+          }}
+        >
+          {notice}
+        </p>
+      )}
       {count > 0 && (
         <Link
           href={`/${slug}/cart`}
