@@ -5,6 +5,7 @@ import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import { getCart, clearCart } from "@/lib/cart";
 import { PAYMENT_OPTIONS, SHIPPING_OPTIONS } from "@/lib/order-labels";
+import { CVS_STORES, formatStoreLabel, CVS_LOOKUP_URLS } from "@/lib/cvs-stores";
 
 type Product = {
   id: string;
@@ -141,6 +142,7 @@ export default function CartCheckoutPage() {
       if (!res.ok || data.error) {
         setError(data.error || "送出失敗");
         setSubmitting(false);
+        window.scrollTo({ top: 0, behavior: "smooth" });
         return;
       }
       clearCart(slug);
@@ -148,6 +150,7 @@ export default function CartCheckoutPage() {
     } catch (err) {
       setError(err instanceof Error ? err.message : "送出失敗");
       setSubmitting(false);
+      window.scrollTo({ top: 0, behavior: "smooth" });
     }
   }
 
@@ -375,9 +378,50 @@ export default function CartCheckoutPage() {
                   required
                   value={storeName}
                   onChange={(e) => setStoreName(e.target.value)}
-                  placeholder="例：7-11 信義門市"
+                  list="cvs-stores-list"
+                  autoComplete="off"
+                  placeholder="開始打字搜尋⋯例如「信義」「板橋」「7-11」"
                   className="sproutly-input w-full text-sm"
                 />
+                <datalist id="cvs-stores-list">
+                  {CVS_STORES.map((s) => (
+                    <option
+                      key={`${s.cvs}-${s.code}`}
+                      value={formatStoreLabel(s)}
+                    />
+                  ))}
+                </datalist>
+                <div className="mt-3 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs">
+                  <span
+                    style={{
+                      color: "var(--store-text-muted, rgba(0,0,0,0.6))",
+                      opacity: 0.7,
+                    }}
+                  >
+                    找不到？打開官方查詢：
+                  </span>
+                  {(["7-11", "全家", "萊爾富"] as const).map((cvs) => (
+                    <a
+                      key={cvs}
+                      href={CVS_LOOKUP_URLS[cvs]}
+                      target="_blank"
+                      rel="noopener"
+                      className="sproutly-link"
+                      style={{ color: "var(--store-accent, currentColor)" }}
+                    >
+                      {cvs} ↗
+                    </a>
+                  ))}
+                </div>
+                <p
+                  className="mt-2 text-xs"
+                  style={{
+                    color: "var(--store-text-muted, rgba(0,0,0,0.6))",
+                    opacity: 0.5,
+                  }}
+                >
+                  目前提供台北 / 新北 / 桃園熱門門市搜尋。接綠界 API 後會升級成全台 16,000+ 門市的地圖選店
+                </p>
               </div>
             )}
 
