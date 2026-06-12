@@ -14,6 +14,32 @@ const STATUS_LABELS: Record<string, string> = {
   cancelled: "取消",
 };
 
+// 列表一次列出多筆單，狀態 pill 若全長一樣，客人分不出哪些還在追蹤、哪些已結案。
+// 沿用詳情頁進度條那套語言：還在跑的單（pending/confirmed/shipped）用店家 accent 點亮、
+// 抓住客人的眼；completed 已結案維持中性退場；cancelled 用 muted 沉到背景。
+// 不引入後台那套 amber/red 硬色票——客人頁吃店家自訂 theme，得跟著 accent 走才不衝突。
+function statusPillStyle(status: string, theme: ReturnType<typeof resolveTheme>) {
+  if (status === "cancelled") {
+    return {
+      background: theme.bg,
+      color: theme.textMuted,
+      border: `1px solid ${theme.border}`,
+    };
+  }
+  if (status === "completed") {
+    return {
+      background: theme.bg,
+      color: theme.text,
+      border: `1px solid ${theme.border}`,
+    };
+  }
+  return {
+    background: `${theme.accent}14`,
+    color: theme.accent,
+    border: `1px solid ${theme.accent}33`,
+  };
+}
+
 function formatPrice(cents: number, currency: string) {
   const amount = cents / 100;
   if (currency === "TWD") return `NT$ ${amount.toLocaleString("zh-TW")}`;
@@ -219,11 +245,7 @@ export default async function CustomerOrdersPage({
                     <div className="text-right">
                       <span
                         className="inline-block text-[0.6875rem] tracking-[0.3em] uppercase font-medium px-3 py-1.5 rounded-full"
-                        style={{
-                          background: theme.bg,
-                          color: theme.text,
-                          border: `1px solid ${theme.border}`,
-                        }}
+                        style={statusPillStyle(order.status, theme)}
                       >
                         {STATUS_LABELS[order.status] ?? order.status}
                       </span>
