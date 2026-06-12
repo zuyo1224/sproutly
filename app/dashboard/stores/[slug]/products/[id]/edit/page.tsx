@@ -3,6 +3,7 @@ import { redirect, notFound } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { updateProduct, deleteProduct } from "../../actions";
 import { SubmitButton } from "@/app/_components/submit-button";
+import { ImageFilePicker } from "@/app/_components/image-file-picker";
 
 type Params = Promise<{ slug: string; id: string }>;
 type SearchParams = Promise<{ error?: string }>;
@@ -239,18 +240,14 @@ export default async function EditProductPage({
             >
               加新圖片（可選多張）
             </p>
-            <input
-              name="image_files"
-              type="file"
-              multiple
-              accept="image/jpeg,image/png,image/webp,image/gif"
+            <ImageFilePicker
               className="block w-full text-sm text-emerald-900/80 file:mr-4 file:py-2.5 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-medium file:bg-emerald-50 file:text-emerald-800 hover:file:bg-emerald-100 file:transition"
             />
             <p
               className="mt-2 text-emerald-900/55"
               style={{ fontSize: "0.8125rem", lineHeight: 1.7 }}
             >
-              jpg / png / webp / gif，每張最大 10MB
+              jpg / png / webp / gif，每張最大 10MB。新加的會接在現有圖片後面
             </p>
           </div>
 

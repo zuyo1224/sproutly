@@ -3,6 +3,7 @@ import { redirect, notFound } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { createProduct } from "../actions";
 import { SubmitButton } from "@/app/_components/submit-button";
+import { ImageFilePicker } from "@/app/_components/image-file-picker";
 
 type Params = Promise<{ slug: string }>;
 type SearchParams = Promise<{ error?: string }>;
@@ -167,11 +168,8 @@ export default async function NewProductPage({
             <label className="block text-emerald-700/70 mb-2" style={LABEL_STYLE}>
               Photos · 商品照片（選填，可選多張）
             </label>
-            <input
-              name="image_files"
-              type="file"
-              multiple
-              accept="image/jpeg,image/png,image/webp,image/gif"
+            <ImageFilePicker
+              showCoverBadge
               className="block w-full text-sm text-emerald-900/80 file:mr-4 file:py-2.5 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-medium file:bg-emerald-50 file:text-emerald-800 hover:file:bg-emerald-100 file:transition"
             />
             <p
