@@ -485,6 +485,18 @@ export function EditorWorkspace({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [theme, dirty, autoSaveEnabled]);
 
+  // 還有改動沒存好時，關分頁/重整/跳外站前先跳瀏覽器原生「確定要離開？」
+  // auto-save 有 2 秒空窗、自動儲存也可以手動關掉，沒這層防護改動會無聲消失
+  useEffect(() => {
+    if (!dirty) return;
+    const onBeforeUnload = (e: BeforeUnloadEvent) => {
+      e.preventDefault();
+      e.returnValue = ""; // Chrome 要設 returnValue 才會跳提示
+    };
+    window.addEventListener("beforeunload", onBeforeUnload);
+    return () => window.removeEventListener("beforeunload", onBeforeUnload);
+  }, [dirty]);
+
   // Esc 關 floating popover
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
@@ -750,6 +762,12 @@ export function EditorWorkspace({
         <div className="flex items-center gap-3 min-w-0">
           <Link
             href={`/dashboard/stores/${slug}`}
+            onClick={(e) => {
+              // client-side 導覽不會觸發 beforeunload，這裡自己擋
+              if (dirty && !window.confirm("還有改動沒存好，現在離開會不見。確定要離開嗎？")) {
+                e.preventDefault();
+              }
+            }}
             className="text-stone-500 hover:text-emerald-900 transition text-sm flex items-center gap-1"
             title="回到店面總覽"
           >
