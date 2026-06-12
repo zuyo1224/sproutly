@@ -279,7 +279,9 @@ export default async function ShopPage({
               >
                 {formatPrice(p.price_cents, p.currency)}
               </p>
-              {p.stock !== null && p.stock === 0 && (
+              {/* 庫存提示跟商品詳情頁同一套語言：售完灰字、剩 3 件內琥珀色，
+                  讓客人逛列表就分得出哪幾株快沒了，不必點進去才知道。 */}
+              {p.stock !== null && p.stock === 0 ? (
                 <p
                   className="mt-1 text-[0.6875rem] uppercase font-medium"
                   style={{
@@ -289,7 +291,17 @@ export default async function ShopPage({
                 >
                   Sold Out · 售完
                 </p>
-              )}
+              ) : p.stock !== null && p.stock <= 3 ? (
+                <p
+                  className="mt-1 text-[0.6875rem] uppercase font-medium"
+                  style={{
+                    color: "#92400E",
+                    letterSpacing: "0.3em",
+                  }}
+                >
+                  Low Stock · 剩 {p.stock}
+                </p>
+              ) : null}
             </Link>
           ))}
         </div>
