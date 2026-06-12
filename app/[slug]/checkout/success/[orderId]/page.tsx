@@ -6,6 +6,7 @@ import { resolveTheme } from "../../../_theme";
 import { PAYMENT_LABELS, decodeShippingFromNote } from "@/lib/order-labels";
 import { Confetti } from "@/app/_components/confetti";
 import { CopyOrderId } from "@/app/_components/copy-order-id";
+import { RememberOrder } from "@/app/_components/remember-order";
 
 type Params = Promise<{ slug: string; orderId: string }>;
 
@@ -68,6 +69,16 @@ export default async function OrderSuccessPage({
   return (
     <main className="max-w-3xl mx-auto px-6 sm:px-10 py-20 sm:py-28">
       <Confetti count={70} />
+      {/* 把這筆訂單記進這台裝置的小抄：成功頁是訪客唯一一次看到編號的地方，
+          沒抄下來之後想查單就斷了。記下來後查訂單頁可以一鍵帶入。 */}
+      <RememberOrder
+        slug={slug}
+        shortId={shortId}
+        phone={order.customer_phone}
+        totalCents={order.total_cents}
+        currency={order.currency}
+        createdAt={order.created_at}
+      />
 
       <div className="text-center mb-14 sm:mb-20">
         <p
@@ -385,7 +396,7 @@ export default async function OrderSuccessPage({
         <CopyOrderId shortId={shortId} />
         ，跟店家確認付款、或之後{" "}
         <Link
-          href={`/${slug}/track`}
+          href={`/${slug}/track?id=${shortId}`}
           className="sproutly-link"
           style={{ color: theme.accent }}
         >

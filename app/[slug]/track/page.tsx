@@ -5,6 +5,8 @@ import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { resolveTheme } from "../_theme";
 import { PAYMENT_LABELS, decodeShippingFromNote } from "@/lib/order-labels";
+import { RememberOrder } from "@/app/_components/remember-order";
+import { RecentOrdersList } from "@/app/_components/recent-orders-list";
 
 type Params = Promise<{ slug: string }>;
 type SearchParams = Promise<{ id?: string; phone?: string }>;
@@ -210,6 +212,11 @@ export default async function TrackPage({
         </button>
       </form>
 
+      {/* 還沒查到訂單時，給「這台裝置下過的單」捷徑：
+          下單或查過的訂單記在客人自己的裝置上（localStorage），
+          點一筆就帶入編號＋電話查詢，不用記也不用重打。 */}
+      {!order && <RecentOrdersList slug={slug} />}
+
       {searched && !order && (
         <div
           className="rounded-2xl p-10 text-center"
@@ -248,6 +255,16 @@ export default async function TrackPage({
 
       {order && (
         <div className="space-y-6">
+          {/* 查到一次就記進這台裝置的小抄——在別台裝置下的單，
+              只要在這裡查過一次，之後也能一鍵帶入。 */}
+          <RememberOrder
+            slug={slug}
+            shortId={order.id.split("-")[0].toUpperCase()}
+            phone={order.customer_phone}
+            totalCents={order.total_cents}
+            currency={order.currency}
+            createdAt={order.created_at}
+          />
           {/* 狀態 step indicator */}
           <section
             className="rounded-2xl p-7 sm:p-8"
