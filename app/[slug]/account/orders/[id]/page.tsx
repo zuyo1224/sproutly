@@ -14,6 +14,15 @@ const STATUS_LABELS: Record<string, string> = {
   cancelled: "取消",
 };
 
+// 一張單正常會走的四個階段，給客人看「現在到哪一步、還剩幾步」。
+// cancelled 不在這條線上，會另外顯示已取消，不畫進度條。
+const STATUS_FLOW = [
+  { key: "pending", label: "待確認" },
+  { key: "confirmed", label: "已確認" },
+  { key: "shipped", label: "已出貨" },
+  { key: "completed", label: "完成" },
+];
+
 const PAYMENT_STATUS_LABELS: Record<string, string> = {
   unpaid: "未付款",
   paid: "已付款",
@@ -83,6 +92,11 @@ export default async function CustomerOrderDetailPage({
 
   const orderItems = items ?? [];
 
+  const isCancelled = order.status === "cancelled";
+  // 找出目前走到第幾階段；查不到（理論上不會）就當還在第一步。
+  const currentStep = STATUS_FLOW.findIndex((s) => s.key === order.status);
+  const stepIndex = currentStep === -1 ? 0 : currentStep;
+
   return (
     <main className="max-w-3xl mx-auto px-6 py-24 sm:py-32">
       <div className="mb-14 sm:mb-20">
@@ -119,6 +133,73 @@ export default async function CustomerOrderDetailPage({
           ← 訂單歷史
         </Link>
       </div>
+
+      <section
+        className="rounded-2xl p-7 sm:p-9 mb-6"
+        style={{
+          background: theme.surface,
+          border: `1px solid ${theme.border}`,
+        }}
+      >
+        <p
+          className="text-[10px] tracking-[0.4em] uppercase mb-7"
+          style={{ color: theme.accent }}
+        >
+          Progress · 訂單進度
+        </p>
+        {isCancelled ? (
+          <p
+            className="text-sm leading-[1.85]"
+            style={{ color: theme.textMuted }}
+          >
+            這筆訂單已取消。如有疑問，可從下方聯絡店家。
+          </p>
+        ) : (
+          <ol className="flex">
+            {STATUS_FLOW.map((step, i) => {
+              const done = i <= stepIndex;
+              const isCurrent = i === stepIndex;
+              const last = i === STATUS_FLOW.length - 1;
+              return (
+                <li
+                  key={step.key}
+                  className="relative flex flex-1 flex-col items-center"
+                >
+                  {!last && (
+                    <span
+                      aria-hidden
+                      className="absolute left-1/2 top-[7px] h-px w-full"
+                      style={{
+                        background: i < stepIndex ? theme.accent : theme.border,
+                      }}
+                    />
+                  )}
+                  <span
+                    aria-hidden
+                    className="relative z-10 h-3.5 w-3.5 rounded-full"
+                    style={{
+                      background: done ? theme.accent : theme.surface,
+                      border: `1px solid ${done ? theme.accent : theme.border}`,
+                      boxShadow: isCurrent
+                        ? `0 0 0 4px ${theme.accent}1f`
+                        : undefined,
+                    }}
+                  />
+                  <span
+                    className="mt-3 text-[11px] tracking-[0.08em]"
+                    style={{
+                      color: done ? theme.text : theme.textMuted,
+                      fontWeight: isCurrent ? 600 : 400,
+                    }}
+                  >
+                    {step.label}
+                  </span>
+                </li>
+              );
+            })}
+          </ol>
+        )}
+      </section>
 
       <section
         className="rounded-2xl p-7 sm:p-9 mb-6"
