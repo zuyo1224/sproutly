@@ -10,6 +10,12 @@ function formatPrice(cents: number) {
   return `NT$ ${Math.round(cents / 100).toLocaleString("zh-TW")}`;
 }
 
+// 回傳該時刻在台灣時區的日期字串（YYYY-MM-DD），分日統計一律用這個當 key，
+// 不能用 toISOString / created_at 直接切：那是 UTC 日界線，跟台灣差 8 小時
+function taipeiDateKey(d: Date) {
+  return d.toLocaleDateString("en-CA", { timeZone: "Asia/Taipei" });
+}
+
 const STATUS_LABEL: Record<string, { label: string; color: string }> = {
   pending: { label: "待確認", color: "bg-amber-100 text-amber-800" },
   confirmed: { label: "已確認", color: "bg-blue-100 text-blue-800" },
@@ -48,10 +54,11 @@ export default async function StoreInsightsPage({
 
   // 過去 30 天訂單 + 商品數 + 全部訂單摘要（用來算統計）
   const now = new Date();
-  const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
-  const since14 = new Date();
-  since14.setDate(since14.getDate() - 13);
-  since14.setHours(0, 0, 0, 0);
+  const todayKey = taipeiDateKey(now);
+  // 台灣的今天 00:00 與本月 1 號 00:00（伺服器在 Vercel 是 UTC，不能用本地 midnight）
+  const taipeiMidnight = new Date(`${todayKey}T00:00:00+08:00`);
+  const startOfMonth = new Date(`${todayKey.slice(0, 7)}-01T00:00:00+08:00`);
+  const since14 = new Date(taipeiMidnight.getTime() - 13 * 86_400_000);
 
   const [
     { count: productCount },
@@ -127,22 +134,25 @@ export default async function StoreInsightsPage({
         )
       : 0;
 
-  // 14 天訂單趨勢（按日 group）
+  // 14 天訂單趨勢（按台灣時區分日 group）
   const dayMap = new Map<
     string,
-    { date: Date; orders: number; revenue: number }
+    { label: string; orders: number; revenue: number }
   >();
   for (let i = 13; i >= 0; i--) {
-    const d = new Date();
-    d.setDate(d.getDate() - i);
-    d.setHours(0, 0, 0, 0);
-    const key = d.toISOString().split("T")[0];
-    dayMap.set(key, { date: d, orders: 0, revenue: 0 });
+    const key = taipeiDateKey(
+      new Date(taipeiMidnight.getTime() - i * 86_400_000)
+    );
+    dayMap.set(key, {
+      label: `${parseInt(key.slice(5, 7), 10)}/${parseInt(key.slice(8, 10), 10)}`,
+      orders: 0,
+      revenue: 0,
+    });
   }
   allOrders
     ?.filter((o) => new Date(o.created_at) >= since14)
     .forEach((o) => {
-      const key = o.created_at.split("T")[0];
+      const key = taipeiDateKey(new Date(o.created_at));
       const stats = dayMap.get(key);
       if (stats) {
         stats.orders++;
@@ -396,7 +406,7 @@ export default async function StoreInsightsPage({
               {trendData.map((d, i) => {
                 const heightPct = (d.orders / maxOrders) * 100;
                 const isToday = i === trendData.length - 1;
-                const dateStr = `${d.date.getMonth() + 1}/${d.date.getDate()}`;
+                const dateStr = d.label;
                 return (
                   <div
                     key={i}
