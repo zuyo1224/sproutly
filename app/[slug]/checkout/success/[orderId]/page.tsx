@@ -369,6 +369,61 @@ export default async function OrderSuccessPage({
         </section>
       )}
 
+      {/* 剛下單最容易發現「地址填錯了」「想先問付款」，這裡直接給聯絡店家的去處，
+          不用再跳去聯絡頁找電話。Email 主旨先帶上訂單編號，店家一看就知道是哪一筆——
+          跟查訂單頁、會員訂單詳情同一套。 */}
+      {(store.contact_phone || store.contact_email) && (
+        <section
+          className="rounded-2xl p-7 sm:p-8 mb-6"
+          style={{
+            background: "var(--store-surface)",
+            border: "1px solid var(--store-border)",
+            boxShadow: "var(--sproutly-elev-2)",
+          }}
+        >
+          <p
+            className="font-medium uppercase mb-2"
+            style={{
+              color: theme.accent,
+              fontSize: "0.6875rem",
+              letterSpacing: "0.4em",
+            }}
+          >
+            Need Help · 有問題
+          </p>
+          <p
+            className="mb-5"
+            style={{
+              color: theme.textMuted,
+              fontSize: "0.875rem",
+              lineHeight: 1.7,
+            }}
+          >
+            訂單資料填錯、想先問付款，都可以直接找店家
+          </p>
+          <div className="flex flex-col sm:flex-row gap-3">
+            {store.contact_phone && (
+              <a
+                href={`tel:${store.contact_phone}`}
+                className="sproutly-btn sproutly-btn-primary flex-1"
+              >
+                聯絡店家
+              </a>
+            )}
+            {store.contact_email && (
+              <a
+                href={`mailto:${store.contact_email}?subject=${encodeURIComponent(
+                  `關於訂單 #${shortId}`
+                )}`}
+                className="sproutly-btn sproutly-btn-secondary flex-1"
+              >
+                Email 詢問
+              </a>
+            )}
+          </div>
+        </section>
+      )}
+
       <div className="flex flex-col sm:flex-row gap-3 justify-center mb-10">
         <Link
           href={`/${slug}/shop`}
