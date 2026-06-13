@@ -397,7 +397,9 @@ export default async function OrderSuccessPage({
         <CopyOrderId shortId={shortId} />
         ，跟店家確認付款、或之後{" "}
         <Link
-          href={`/${slug}/track?id=${shortId}`}
+          href={`/${slug}/track?id=${shortId}&phone=${encodeURIComponent(
+            order.customer_phone
+          )}`}
           className="sproutly-link"
           style={{ color: theme.accent }}
         >
