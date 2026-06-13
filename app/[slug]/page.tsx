@@ -45,7 +45,7 @@ export default async function StoreHomePage({
 
   const { data: featuredProducts } = await supabase
     .from("sproutly_products")
-    .select("id, name, price_cents, currency, image_urls")
+    .select("id, name, price_cents, currency, image_urls, stock")
     .eq("merchant_id", store.id)
     .eq("is_active", true)
     .order("created_at", { ascending: false })
@@ -938,13 +938,29 @@ export default async function StoreHomePage({
                 : theme.layout.featuredColumns === 4 ? "md:grid-cols-4"
                 : "md:grid-cols-3"
               }`}>
-                {featuredProducts.map((p) => (
+                {featuredProducts.map((p) => {
+                  const soldOut = p.stock !== null && p.stock === 0;
+                  return (
                   <Link
                     key={p.id}
                     href={`/${slug}/products/${p.id}`}
                     className="sproutly-card"
                   >
                     <div className="sproutly-card-image aspect-square relative">
+                      {/* 售完的圖片去彩、壓暗，再蓋一枚角落標記——跟 shop 逛街頁
+                          同一套語言，客人在首頁就分得出哪幾株沒了，不必點進去才知道。 */}
+                      {soldOut && (
+                        <span
+                          className="absolute left-3 top-3 z-10 px-2.5 py-1 rounded-full text-[0.625rem] uppercase font-medium backdrop-blur-sm"
+                          style={{
+                            background: "rgba(0,0,0,0.55)",
+                            color: "#fff",
+                            letterSpacing: "0.2em",
+                          }}
+                        >
+                          售完
+                        </span>
+                      )}
                       {p.image_urls?.[0] ? (
                         <Image
                           src={p.image_urls[0]}
@@ -953,7 +969,9 @@ export default async function StoreHomePage({
                           sizes="(min-width: 768px) 350px, 50vw"
                           quality={80}
                           loading="lazy"
-                          className="object-cover"
+                          className={`object-cover transition ${
+                            soldOut ? "opacity-55 grayscale" : ""
+                          }`}
                         />
                       ) : (
                         <div
@@ -988,8 +1006,19 @@ export default async function StoreHomePage({
                     >
                       {formatPrice(p.price_cents, p.currency)}
                     </p>
+                    {/* 售完已由圖片角標表達，這裡只留「剩 N」琥珀色提示，
+                        跟 shop 頁與商品詳情頁同一套語言。 */}
+                    {!soldOut && p.stock !== null && p.stock <= 3 ? (
+                      <p
+                        className="mt-1 text-[0.6875rem] uppercase font-medium"
+                        style={{ color: "#92400E", letterSpacing: "0.3em" }}
+                      >
+                        Low Stock · 剩 {p.stock}
+                      </p>
+                    ) : null}
                   </Link>
-                ))}
+                  );
+                })}
               </div>
               <div className="mt-24 text-center">
                 <Link
