@@ -4,6 +4,7 @@ import { createClient } from "@/lib/supabase/server";
 import { updateOrderStatus } from "./actions";
 import { SubmitButton } from "@/app/_components/submit-button";
 import { PrintButton } from "@/app/_components/print-button";
+import { CopyButton } from "@/app/_components/copy-button";
 import { PAYMENT_LABELS, decodeShippingFromNote } from "@/lib/order-labels";
 
 type Params = Promise<{ slug: string; orderId: string }>;
@@ -95,6 +96,19 @@ export default async function OrderDetailPage({
   const statusBadge = STATUS_BADGE[order.status] ?? STATUS_BADGE.pending;
   const paymentBadge =
     PAYMENT_STATUS_BADGE[order.payment_status] ?? PAYMENT_STATUS_BADGE.unpaid;
+
+  // 出貨時要把收件資訊抄去 ibon / 全家機台 / 郵局寄件單或貼給物流，
+  // 之前只能對著畫面逐欄手抄。組成一段多行文字讓商家一鍵複製照貼。
+  const recipientText = [
+    `姓名：${order.customer_name}`,
+    `電話：${order.customer_phone}`,
+    order.customer_email ? `Email：${order.customer_email}` : null,
+    order.shipping_address ? `地址：${order.shipping_address}` : null,
+    decodedNote.shippingLabel ? `配送方式：${decodedNote.shippingLabel}` : null,
+    decodedNote.storeName ? `取貨門市：${decodedNote.storeName}` : null,
+  ]
+    .filter(Boolean)
+    .join("\n");
 
   return (
     <div id="order-print-area">
@@ -306,16 +320,25 @@ export default async function OrderDetailPage({
             className="bg-white rounded-2xl p-7 sm:p-8 border border-emerald-100/70"
             style={{ boxShadow: "var(--sproutly-elev-2)" }}
           >
-            <p
-              className="uppercase text-emerald-700/70 mb-1.5"
-              style={{
-                fontSize: "0.6875rem",
-                fontWeight: 500,
-                letterSpacing: "0.4em",
-              }}
-            >
-              Recipient · 顧客資訊
-            </p>
+            <div className="flex items-start justify-between gap-3 mb-1.5">
+              <p
+                className="uppercase text-emerald-700/70"
+                style={{
+                  fontSize: "0.6875rem",
+                  fontWeight: 500,
+                  letterSpacing: "0.4em",
+                }}
+              >
+                Recipient · 顧客資訊
+              </p>
+              <CopyButton
+                text={recipientText}
+                copiedLabel="已複製，直接貼上即可"
+                className="no-print shrink-0 rounded-full border border-emerald-200 bg-white px-3 py-1 text-xs text-emerald-800 hover:bg-emerald-50 transition"
+              >
+                複製收件資訊
+              </CopyButton>
+            </div>
             <span
               aria-hidden
               className="block h-px w-10 bg-emerald-600/50 mb-5"
