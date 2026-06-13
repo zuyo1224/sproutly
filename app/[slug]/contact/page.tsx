@@ -162,12 +162,18 @@ export default async function ContactPage({ params }: { params: Params }) {
                 >
                   {block.value}
                 </div>
-                {block.kind === "address" && (
+                {block.href && (
+                  // 電話 / Email / 地址都是可點連結，但沒有提示客人就只當成顯示文字。
+                  // 手機上點電話直接撥號、點 Email 開信件、點地址開地圖導航——各給一句明確的可點提示。
                   <p
                     className="mt-4 text-[0.6875rem] uppercase font-medium"
                     style={{ color: theme.accent, letterSpacing: "0.3em" }}
                   >
-                    開啟地圖導航 →
+                    {block.kind === "address"
+                      ? "開啟地圖導航 →"
+                      : block.kind === "phone"
+                        ? "點一下直接撥號 →"
+                        : "點一下寫信給我們 →"}
                   </p>
                 )}
               </>
