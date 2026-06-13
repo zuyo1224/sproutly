@@ -3,13 +3,50 @@ import { redirect, notFound } from "next/navigation";
 import Link from "next/link";
 
 type Params = Promise<{ slug: string }>;
+type SearchParams = Promise<{ q?: string; filter?: string }>;
+
+type ProductRow = {
+  id: string;
+  name: string;
+  description: string | null;
+  price_cents: number;
+  currency: string;
+  image_urls: string[] | null;
+  stock: number | null;
+  is_active: boolean;
+};
+
+// 快沒貨門檻跟卡片上的「剩 N 件」、後台首頁的快沒貨清單同一套（< 5），
+// 三個地方不會各說各話
+const STATUS_FILTERS: {
+  key: string;
+  label: string;
+  match: (p: ProductRow) => boolean;
+}[] = [
+  { key: "all", label: "全部", match: () => true },
+  { key: "active", label: "上架中", match: (p) => p.is_active },
+  { key: "inactive", label: "停售中", match: (p) => !p.is_active },
+  {
+    key: "low",
+    label: "快沒貨",
+    match: (p) => p.stock !== null && p.stock > 0 && p.stock < 5,
+  },
+  { key: "soldout", label: "已售完", match: (p) => p.stock === 0 },
+];
 
 export default async function ProductsListPage({
   params,
+  searchParams,
 }: {
   params: Params;
+  searchParams: SearchParams;
 }) {
   const { slug } = await params;
+  const { q: rawQuery, filter: rawFilter } = await searchParams;
+  const q = (rawQuery ?? "").trim();
+  const filter = STATUS_FILTERS.some((f) => f.key === rawFilter)
+    ? rawFilter!
+    : "all";
   const supabase = await createClient();
   const {
     data: { user },
@@ -37,9 +74,40 @@ export default async function ProductsListPage({
     return `${currency} ${amount.toFixed(2)}`;
   };
 
-  const count = products?.length ?? 0;
-  const caption =
-    count > 0 ? `${count} 件商品 · 點任一件編輯` : "新增第一件商品讓店面活起來";
+  // 商品數量不多（一間店頂多幾百件），一次撈回來在這裡篩，
+  // chips 的 count 也順便從同一份資料算，不用多打一次 DB
+  const allProducts: ProductRow[] = products ?? [];
+  const filterCounts: Record<string, number> = {};
+  for (const f of STATUS_FILTERS) {
+    filterCounts[f.key] = allProducts.filter(f.match).length;
+  }
+
+  const qLower = q.toLowerCase();
+  const activeFilter =
+    STATUS_FILTERS.find((f) => f.key === filter) ?? STATUS_FILTERS[0];
+  const visible = allProducts.filter(
+    (p) =>
+      activeFilter.match(p) &&
+      (!qLower ||
+        p.name.toLowerCase().includes(qLower) ||
+        (p.description ?? "").toLowerCase().includes(qLower))
+  );
+
+  function chipHref(key: string) {
+    const sp = new URLSearchParams();
+    if (key !== "all") sp.set("filter", key);
+    if (q) sp.set("q", q);
+    const qs = sp.toString();
+    return `/dashboard/stores/${slug}/products${qs ? `?${qs}` : ""}`;
+  }
+
+  const filterActive = q !== "" || filter !== "all";
+  const count = allProducts.length;
+  const caption = filterActive
+    ? `符合條件 ${visible.length} 件 · 全部 ${count} 件`
+    : count > 0
+      ? `${count} 件商品 · 點任一件編輯`
+      : "新增第一件商品讓店面活起來";
 
   return (
     <div>
@@ -82,9 +150,71 @@ export default async function ProductsListPage({
         )}
       </div>
 
-      {products && products.length > 0 ? (
+      {/* 狀態 chips + 搜尋 bar：跟訂單列表同一套操作語言，商品多了照樣一秒找到 */}
+      {count > 0 && (
+        <div className="bg-white rounded-2xl p-4 shadow-lg shadow-emerald-700/5 mb-4 space-y-3">
+          <div className="flex flex-wrap gap-2">
+            {STATUS_FILTERS.map((f) => {
+              const active = filter === f.key;
+              return (
+                <Link
+                  key={f.key}
+                  href={chipHref(f.key)}
+                  className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm transition ${
+                    active
+                      ? "bg-emerald-700 text-white shadow-md shadow-emerald-700/20"
+                      : "bg-emerald-50 text-emerald-900/80 hover:bg-emerald-100"
+                  }`}
+                >
+                  {f.label}
+                  <span
+                    className={`text-xs px-1.5 py-0.5 rounded-full ${
+                      active ? "bg-white/20" : "bg-white"
+                    }`}
+                  >
+                    {filterCounts[f.key]}
+                  </span>
+                </Link>
+              );
+            })}
+          </div>
+
+          <form
+            action={`/dashboard/stores/${slug}/products`}
+            method="GET"
+            className="flex gap-2"
+          >
+            {filter !== "all" && (
+              <input type="hidden" name="filter" value={filter} />
+            )}
+            <input
+              name="q"
+              type="search"
+              defaultValue={q}
+              placeholder="搜尋商品名稱 / 描述..."
+              className="flex-1 rounded-full border border-emerald-100 px-4 py-2 outline-none focus:border-emerald-400 focus:ring-2 focus:ring-emerald-100 transition text-sm"
+            />
+            <button
+              type="submit"
+              className="rounded-full bg-emerald-700 text-white px-5 py-2 text-sm font-medium hover:bg-emerald-800 transition"
+            >
+              搜尋
+            </button>
+            {filterActive && (
+              <Link
+                href={`/dashboard/stores/${slug}/products`}
+                className="rounded-full border border-emerald-100 px-4 py-2 text-sm text-emerald-900/70 hover:bg-emerald-50 transition"
+              >
+                清除
+              </Link>
+            )}
+          </form>
+        </div>
+      )}
+
+      {visible.length > 0 ? (
         <div className="space-y-3">
-          {products.map((p) => (
+          {visible.map((p) => (
             <Link
               key={p.id}
               href={`/dashboard/stores/${slug}/products/${p.id}/edit`}
@@ -175,7 +305,7 @@ export default async function ProductsListPage({
               letterSpacing: "0.4em",
             }}
           >
-            Empty · 還沒開張
+            {filterActive ? "No Match · 沒有符合" : "Empty · 還沒開張"}
           </p>
           <span
             aria-hidden
@@ -185,22 +315,36 @@ export default async function ProductsListPage({
             className="mt-6 text-2xl sm:text-3xl text-emerald-950 font-medium tracking-tight"
             style={{ letterSpacing: "-0.01em", lineHeight: 1.2 }}
           >
-            還沒有
-            <br />
-            上架的商品
+            {filterActive ? (
+              <>
+                沒有符合
+                <br />
+                條件的商品
+              </>
+            ) : (
+              <>
+                還沒有
+                <br />
+                上架的商品
+              </>
+            )}
           </h3>
           <p
             className="mt-5 text-emerald-900/65 max-w-md mx-auto"
             style={{ fontSize: "0.9375rem", lineHeight: 1.7 }}
           >
-            新增第一件，客人就能開始逛你的店
+            {filterActive
+              ? "換個篩選條件或清除搜尋試試"
+              : "新增第一件，客人就能開始逛你的店"}
           </p>
-          <Link
-            href={`/dashboard/stores/${slug}/products/new`}
-            className="mt-10 inline-block rounded-full bg-emerald-700 px-8 py-3.5 text-white font-medium hover:bg-emerald-800 transition shadow-lg shadow-emerald-700/20"
-          >
-            ＋ 新增第一件商品
-          </Link>
+          {!filterActive && (
+            <Link
+              href={`/dashboard/stores/${slug}/products/new`}
+              className="mt-10 inline-block rounded-full bg-emerald-700 px-8 py-3.5 text-white font-medium hover:bg-emerald-800 transition shadow-lg shadow-emerald-700/20"
+            >
+              ＋ 新增第一件商品
+            </Link>
+          )}
         </div>
       )}
     </div>
