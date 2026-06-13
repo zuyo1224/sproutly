@@ -1909,12 +1909,27 @@ export default async function StoreHomePage({
                 }}
               />
               {store.address && (
-                <p
-                  className="text-base leading-loose"
-                  style={{ color: theme.text }}
+                // 地址做成可點連結，手機點下去直接開地圖 App 帶導航，客人不用自己複製貼上。
+                // 跟聯絡頁的地址一致（contact/page.tsx），別讓兩頁一個能點一個不能點。
+                <a
+                  href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(store.address)}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="group inline-block hover:opacity-80 transition"
                 >
-                  {store.address}
-                </p>
+                  <span
+                    className="text-base leading-loose border-b border-current pb-0.5"
+                    style={{ color: theme.text }}
+                  >
+                    {store.address}
+                  </span>
+                  <span
+                    className="block mt-3 text-[10px] tracking-[0.3em] uppercase"
+                    style={{ color: theme.accent }}
+                  >
+                    開啟地圖導航 →
+                  </span>
+                </a>
               )}
               {businessHoursText && (
                 <div
