@@ -377,6 +377,7 @@ export default async function PublicProductPage({
           </div>
 
           <form
+            id="buy-form"
             action={`/${slug}/checkout`}
             method="GET"
             className="mt-10 space-y-3"
@@ -461,19 +462,21 @@ export default async function PublicProductPage({
         </div>
       </div>
 
-      {/* Mobile sticky buy bar */}
+      {/* Mobile sticky buy bar
+          這條底部購買鈕不再自帶 form 寫死 qty=1——客人在頁面中段把數量選成 5、
+          捲到底用這顆鈕結帳時，原本只會送出 1 件，選的數量被默默吞掉（跟先前
+          commit d8038d1「加入購物車吞數量」同源的孿生缺口，當時只修了加入購物車）。
+          改用 HTML 原生 form 屬性把這顆鈕關聯回上方主購買表單（id="buy-form"），
+          送出時自然帶上數量選單的當前值，零 JS。inStock 時主表單與其數量選單必定
+          render，關聯目標一定存在。 */}
       {inStock && (
-        <form
-          action={`/${slug}/checkout`}
-          method="GET"
+        <div
           className="md:hidden fixed bottom-0 left-0 right-0 z-40 flex items-stretch gap-3 px-4 py-3 shadow-[0_-4px_20px_rgba(0,0,0,0.08)]"
           style={{
             background: theme.surface,
             borderTop: `1px solid ${theme.border}`,
           }}
         >
-          <input type="hidden" name="product_id" value={product.id} />
-          <input type="hidden" name="qty" value="1" />
           <div
             className="flex flex-col justify-center flex-shrink-0"
             style={{ color: theme.text }}
@@ -492,6 +495,7 @@ export default async function PublicProductPage({
           </div>
           <button
             type="submit"
+            form="buy-form"
             className="flex-1 rounded-full text-sm transition active:opacity-80"
             style={{
               background: theme.primary,
@@ -503,7 +507,7 @@ export default async function PublicProductPage({
           >
             我想要這一株
           </button>
-        </form>
+        </div>
       )}
 
       {/* 避免 sticky bar 蓋住下方內容（只在 mobile） */}
