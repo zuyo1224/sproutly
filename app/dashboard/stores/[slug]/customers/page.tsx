@@ -39,6 +39,7 @@ type CustomerRow = {
   orderCount: number;
   paidCount: number;
   totalCents: number;
+  paidCents: number;
   firstOrderAt: string;
   lastOrderAt: string;
 };
@@ -118,7 +119,9 @@ export default async function StoreCustomersPage({
     const latest = sorted[sorted.length - 1];
     const earliest = sorted[0];
     const total = orders.reduce((sum, o) => sum + o.total_cents, 0);
-    const paidCount = orders.filter((o) => o.payment_status === "paid").length;
+    const paidOrders = orders.filter((o) => o.payment_status === "paid");
+    const paidCount = paidOrders.length;
+    const paidCents = paidOrders.reduce((sum, o) => sum + o.total_cents, 0);
     const identityType: CustomerRow["identityType"] = key.startsWith("account:")
       ? "account"
       : "guest";
@@ -132,6 +135,7 @@ export default async function StoreCustomersPage({
       orderCount: orders.length,
       paidCount,
       totalCents: total,
+      paidCents,
       firstOrderAt: earliest.created_at,
       lastOrderAt: latest.created_at,
     });
@@ -433,6 +437,13 @@ export default async function StoreCustomersPage({
                       >
                         {formatPrice(r.totalCents)}
                       </p>
+                      {r.paidCents < r.totalCents && (
+                        <p className="text-[10px] text-amber-700/80 tabular-nums">
+                          {r.paidCents === 0
+                            ? "尚未收款"
+                            : `已收 ${formatPrice(r.paidCents)}`}
+                        </p>
+                      )}
                     </td>
                     <td className="px-3 py-3.5">
                       <p className="text-emerald-950 tabular-nums">
@@ -524,6 +535,13 @@ export default async function StoreCustomersPage({
                       <p className="text-[10px] text-emerald-900/50">
                         {r.orderCount} 筆訂單
                       </p>
+                      {r.paidCents < r.totalCents && (
+                        <p className="text-[10px] text-amber-700/80 tabular-nums mt-0.5">
+                          {r.paidCents === 0
+                            ? "尚未收款"
+                            : `已收 ${formatPrice(r.paidCents)}`}
+                        </p>
+                      )}
                     </div>
                   </div>
                   <p className="text-xs text-emerald-900/70 tabular-nums truncate">
@@ -566,7 +584,9 @@ export default async function StoreCustomersPage({
         >
           以電話為主分群（同一支電話的多次匿名下單算一位客人）；客人若有會員帳號，
           會用會員 ID 分群更準確。VIP = 累計消費 NT$ 2,000+；回購 = 下過 2 次以上。
-          點任一位客人的「看訂單」，會帶他的電話到訂單列表，篩出他的每一筆單。
+          「總消費」是累計下單金額（含轉帳、貨到付款還沒收到的單）；款項還沒到齊的，
+          下方會標出實際已收多少。點任一位客人的「看訂單」，會帶他的電話到訂單列表，
+          篩出他的每一筆單。
         </p>
         <Link
           href={`/dashboard/stores/${slug}/orders`}
