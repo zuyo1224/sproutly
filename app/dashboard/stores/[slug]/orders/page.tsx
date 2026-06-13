@@ -157,6 +157,17 @@ export default async function OrdersListPage({
     ascending: false,
   });
 
+  // 這批篩出來的單裡錢的狀況：已取消的不算錢（沒成交）。
+  // 轉帳 / 貨到付款的店家最在意「未收」這個數字 — 篩到「已出貨 + 未付款」時，
+  // 這條就直接告訴他現在還有多少錢在外面沒進來，不用自己一筆筆加。
+  const moneyOrders = (orders ?? []).filter((o) => o.status !== "cancelled");
+  const summaryCurrency = orders?.[0]?.currency ?? "TWD";
+  const receivedCents = moneyOrders
+    .filter((o) => o.payment_status === "paid")
+    .reduce((sum, o) => sum + o.total_cents, 0);
+  const unpaidOrders = moneyOrders.filter((o) => o.payment_status === "unpaid");
+  const outstandingCents = unpaidOrders.reduce((sum, o) => sum + o.total_cents, 0);
+
   // 給 chip 用的 URL builder（每個只換自己那一維，其餘篩選原樣帶著走）
   function chipHref(s: string) {
     const params = new URLSearchParams();
@@ -346,6 +357,34 @@ export default async function OrdersListPage({
           )}
         </form>
       </div>
+
+      {orders && orders.length > 0 && (receivedCents > 0 || outstandingCents > 0) && (
+        <div className="flex flex-wrap items-center gap-x-6 gap-y-1.5 mb-4 px-5 py-3 bg-white rounded-2xl shadow-lg shadow-emerald-700/5">
+          <div className="flex items-baseline gap-2">
+            <span className="text-xs text-emerald-900/50">這些單已收</span>
+            <span
+              className="text-emerald-800 font-semibold tabular-nums"
+              style={{ letterSpacing: "-0.01em" }}
+            >
+              {formatPrice(receivedCents, summaryCurrency)}
+            </span>
+          </div>
+          {outstandingCents > 0 && (
+            <div className="flex items-baseline gap-2">
+              <span className="text-xs text-amber-700/70">未收</span>
+              <span
+                className="text-amber-700 font-semibold tabular-nums"
+                style={{ letterSpacing: "-0.01em" }}
+              >
+                {formatPrice(outstandingCents, summaryCurrency)}
+              </span>
+              <span className="text-xs text-amber-700/60">
+                · {unpaidOrders.length} 筆未付款
+              </span>
+            </div>
+          )}
+        </div>
+      )}
 
       {orders && orders.length > 0 ? (
         <>
