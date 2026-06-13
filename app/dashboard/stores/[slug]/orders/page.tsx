@@ -7,6 +7,7 @@ type SearchParams = Promise<{
   status?: string;
   q?: string;
   range?: string;
+  pay?: string;
 }>;
 
 const DATE_RANGES: { key: string; label: string }[] = [
@@ -47,6 +48,15 @@ const STATUS_FILTERS: { key: string; label: string }[] = [
   { key: "cancelled", label: "已取消" },
 ];
 
+// 做轉帳 / 貨到付款的店家常要找「出貨了還沒收到錢」的單，
+// 訂單狀態 chip 篩不出這件事，另外給一排付款狀態的篩選。
+const PAYMENT_FILTERS: { key: string; label: string }[] = [
+  { key: "all", label: "全部" },
+  { key: "unpaid", label: "未付款" },
+  { key: "paid", label: "已付款" },
+  { key: "refunded", label: "已退款" },
+];
+
 const STATUS_LABEL: Record<string, { label: string; color: string }> = {
   pending: { label: "待確認", color: "bg-amber-100 text-amber-800" },
   confirmed: { label: "已確認", color: "bg-blue-100 text-blue-800" },
@@ -79,10 +89,15 @@ export default async function OrdersListPage({
     status: statusFilter,
     q: searchQuery,
     range: rangeFilter,
+    pay: payFilter,
   } = await searchParams;
   const status =
     statusFilter && STATUS_FILTERS.some((f) => f.key === statusFilter)
       ? statusFilter
+      : "all";
+  const pay =
+    payFilter && PAYMENT_FILTERS.some((f) => f.key === payFilter)
+      ? payFilter
       : "all";
   const q = (searchQuery ?? "").trim();
   const range = DATE_RANGES.some((r) => r.key === rangeFilter)
@@ -107,11 +122,14 @@ export default async function OrdersListPage({
   // 算每個狀態的 count（不受目前 filter 影響）
   const { data: allOrders } = await supabase
     .from("sproutly_orders")
-    .select("status")
+    .select("status, payment_status")
     .eq("merchant_id", store.id);
   const statusCounts: Record<string, number> = { all: allOrders?.length ?? 0 };
+  const paymentCounts: Record<string, number> = { all: allOrders?.length ?? 0 };
   allOrders?.forEach((o) => {
     statusCounts[o.status] = (statusCounts[o.status] ?? 0) + 1;
+    paymentCounts[o.payment_status] =
+      (paymentCounts[o.payment_status] ?? 0) + 1;
   });
 
   // 套用 filter + search 查訂單
@@ -121,6 +139,9 @@ export default async function OrdersListPage({
     .eq("merchant_id", store.id);
   if (status !== "all") {
     query = query.eq("status", status);
+  }
+  if (pay !== "all") {
+    query = query.eq("payment_status", pay);
   }
   if (q) {
     // 用 or 搜尋姓名 / 電話 / email
@@ -136,12 +157,13 @@ export default async function OrdersListPage({
     ascending: false,
   });
 
-  // 給 chip 用的 URL builder
+  // 給 chip 用的 URL builder（每個只換自己那一維，其餘篩選原樣帶著走）
   function chipHref(s: string) {
     const params = new URLSearchParams();
     if (s !== "all") params.set("status", s);
     if (q) params.set("q", q);
     if (range !== "all") params.set("range", range);
+    if (pay !== "all") params.set("pay", pay);
     const qs = params.toString();
     return `/dashboard/stores/${slug}/orders${qs ? `?${qs}` : ""}`;
   }
@@ -151,11 +173,23 @@ export default async function OrdersListPage({
     if (status !== "all") params.set("status", status);
     if (q) params.set("q", q);
     if (r !== "all") params.set("range", r);
+    if (pay !== "all") params.set("pay", pay);
     const qs = params.toString();
     return `/dashboard/stores/${slug}/orders${qs ? `?${qs}` : ""}`;
   }
 
-  const filterActive = q !== "" || status !== "all" || range !== "all";
+  function payHref(p: string) {
+    const params = new URLSearchParams();
+    if (status !== "all") params.set("status", status);
+    if (q) params.set("q", q);
+    if (range !== "all") params.set("range", range);
+    if (p !== "all") params.set("pay", p);
+    const qs = params.toString();
+    return `/dashboard/stores/${slug}/orders${qs ? `?${qs}` : ""}`;
+  }
+
+  const filterActive =
+    q !== "" || status !== "all" || range !== "all" || pay !== "all";
   const matchCount = orders?.length ?? 0;
   const headerCaption = filterActive
     ? `符合條件 ${matchCount} 筆 · 全部 ${statusCounts.all} 筆`
@@ -253,6 +287,30 @@ export default async function OrdersListPage({
           })}
         </div>
 
+        <div className="flex flex-wrap gap-2 items-center">
+          <span className="text-xs text-emerald-900/50 mr-1">付款：</span>
+          {PAYMENT_FILTERS.map((f) => {
+            const active = pay === f.key;
+            const count = paymentCounts[f.key] ?? 0;
+            return (
+              <Link
+                key={f.key}
+                href={payHref(f.key)}
+                className={`inline-flex items-center gap-1.5 text-sm px-3 py-1 rounded-full transition ${
+                  active
+                    ? "bg-emerald-100 text-emerald-900 font-medium"
+                    : "text-emerald-900/60 hover:bg-emerald-50"
+                }`}
+              >
+                {f.label}
+                <span className="text-xs text-emerald-900/45 tabular-nums">
+                  {count}
+                </span>
+              </Link>
+            );
+          })}
+        </div>
+
         <form
           action={`/dashboard/stores/${slug}/orders`}
           method="GET"
@@ -264,6 +322,7 @@ export default async function OrdersListPage({
           {range !== "all" && (
             <input type="hidden" name="range" value={range} />
           )}
+          {pay !== "all" && <input type="hidden" name="pay" value={pay} />}
           <input
             name="q"
             type="search"
