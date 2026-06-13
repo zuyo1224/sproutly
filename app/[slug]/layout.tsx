@@ -247,6 +247,13 @@ export default async function PublicStoreLayout({
           outline-offset: 2px;
         }
 
+        /* FAQ accordion 的 <summary> 自己畫了一枚 + 號當開關指示，
+           要把瀏覽器預設的揭露三角形收掉。Tailwind 的 list-none 只關了
+           list-style，Safari／iOS 另外用 ::-webkit-details-marker 畫三角形，
+           沒一起關掉的話 iPhone 上三角形會跟自訂的 + 疊在一起。 */
+        summary { list-style: none; }
+        summary::-webkit-details-marker { display: none; }
+
         /* 全站平滑滾動 */
         html { scroll-behavior: smooth; }
 
