@@ -61,7 +61,7 @@ export default async function TrackPage({
   const supabase = await createClient();
   const { data: store } = await supabase
     .from("sproutly_merchants")
-    .select("id, name, slug, theme")
+    .select("id, name, slug, theme, contact_phone, contact_email")
     .eq("slug", slug)
     .eq("is_published", true)
     .maybeSingle();
@@ -546,6 +546,31 @@ export default async function TrackPage({
               );
             })()}
           </section>
+
+          {/* 查到單之後若還有問題，這裡直接給聯絡店家的去處，不用再跳去聯絡頁。
+              Email 主旨先帶上訂單編號，店家一看就知道是哪一筆——跟會員訂單詳情同一套。 */}
+          {(store.contact_phone || store.contact_email) && (
+            <div className="flex flex-col sm:flex-row gap-3">
+              {store.contact_phone && (
+                <a
+                  href={`tel:${store.contact_phone}`}
+                  className="sproutly-btn sproutly-btn-primary flex-1"
+                >
+                  聯絡店家
+                </a>
+              )}
+              {store.contact_email && (
+                <a
+                  href={`mailto:${store.contact_email}?subject=${encodeURIComponent(
+                    `關於訂單 #${order.id.split("-")[0].toUpperCase()}`
+                  )}`}
+                  className="sproutly-btn sproutly-btn-secondary flex-1"
+                >
+                  Email 詢問
+                </a>
+              )}
+            </div>
+          )}
         </div>
       )}
 
