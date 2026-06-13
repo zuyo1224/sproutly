@@ -2,7 +2,11 @@ import { notFound, redirect } from "next/navigation";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { resolveTheme } from "../../../_theme";
-import { PAYMENT_LABELS, decodeShippingFromNote } from "@/lib/order-labels";
+import {
+  PAYMENT_LABELS,
+  decodeShippingFromNote,
+  orderStatusMessage,
+} from "@/lib/order-labels";
 
 type Params = Promise<{ slug: string; id: string }>;
 
@@ -200,6 +204,25 @@ export default async function CustomerOrderDetailPage({
             })}
           </ol>
         )}
+        {/* 進度條只給「走到第幾步」，這句話補上「現在這步代表什麼、接下來怎樣」——
+            已出貨那步還會依取貨方式提醒（超商取貨記得帶證件去門市），跟查訂單頁同一套說法。 */}
+        {!isCancelled &&
+          (() => {
+            const msg = orderStatusMessage(
+              order.status,
+              decodedNote.shippingLabel,
+              decodedNote.storeName
+            );
+            if (!msg) return null;
+            return (
+              <p
+                className="mt-7 pt-6 border-t text-sm leading-[1.85]"
+                style={{ borderColor: theme.border, color: theme.textMuted }}
+              >
+                {msg}
+              </p>
+            );
+          })()}
       </section>
 
       <section

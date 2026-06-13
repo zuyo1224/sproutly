@@ -4,7 +4,11 @@ import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { resolveTheme } from "../_theme";
-import { PAYMENT_LABELS, decodeShippingFromNote } from "@/lib/order-labels";
+import {
+  PAYMENT_LABELS,
+  decodeShippingFromNote,
+  orderStatusMessage,
+} from "@/lib/order-labels";
 import { RememberOrder } from "@/app/_components/remember-order";
 import { RecentOrdersList } from "@/app/_components/recent-orders-list";
 
@@ -39,24 +43,6 @@ function formatDateTime(iso: string) {
     hour: "2-digit",
     minute: "2-digit",
   });
-}
-
-// 「已出貨」對不同取貨方式意思差很多：超商取貨要客人帶證件去門市拿、
-// 店面自取是可以來店裡了、宅配才是真的在路上。共用一句「請耐心等待」會誤導
-// 選超商／自取的客人乾等。shippingLabel 是已從 note 解出來的中文（例如「7-11 取貨」）。
-function shippedMessage(
-  shippingLabel: string | null,
-  storeName: string | null
-): string {
-  if (shippingLabel?.includes("宅配"))
-    return "商品已寄出，宅配會再送到府上，請留意收件";
-  if (shippingLabel?.includes("自取"))
-    return "商品備好了，歡迎到店面取貨";
-  if (shippingLabel?.includes("取貨"))
-    return storeName
-      ? `商品正寄往「${storeName}」，到店後會收到取貨通知，記得帶證件去取`
-      : "商品正寄往你選的門市，到店後會收到取貨通知，記得帶證件去取";
-  return "商品已寄出，請耐心等待";
 }
 
 export default async function TrackPage({
@@ -377,15 +363,14 @@ export default async function TrackPage({
                   className="text-center text-[0.9375rem]"
                   style={{ color: theme.textMuted, lineHeight: 1.7 }}
                 >
-                  {order.status === "pending" && "店家收到你的訂單了，請等待確認"}
-                  {order.status === "confirmed" &&
-                    "店家已確認訂單，正在備貨中"}
-                  {order.status === "shipped" &&
-                    (() => {
-                      const d = decodeShippingFromNote(order.note);
-                      return shippedMessage(d.shippingLabel, d.storeName);
-                    })()}
-                  {order.status === "completed" && "訂單完成，謝謝你的支持"}
+                  {(() => {
+                    const d = decodeShippingFromNote(order.note);
+                    return orderStatusMessage(
+                      order.status,
+                      d.shippingLabel,
+                      d.storeName
+                    );
+                  })()}
                 </p>
 
                 {/* 每一步是哪天發生的——進度條只給「走到第幾步」，這裡補上確切時間，

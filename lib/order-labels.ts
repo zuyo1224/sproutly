@@ -67,6 +67,44 @@ export function encodeShippingIntoNote(
   return `${prefix}\n\n${userPart}`;
 }
 
+// 「已出貨」對不同取貨方式意思差很多：超商取貨要客人帶證件去門市拿、
+// 店面自取是可以來店裡了、宅配才是真的在路上。共用一句「請耐心等待」會誤導
+// 選超商／自取的客人乾等。shippingLabel 是已從 note 解出來的中文（例如「7-11 取貨」）。
+export function shippedMessage(
+  shippingLabel: string | null,
+  storeName: string | null
+): string {
+  if (shippingLabel?.includes("宅配"))
+    return "商品已寄出，宅配會再送到府上，請留意收件";
+  if (shippingLabel?.includes("自取")) return "商品備好了，歡迎到店面取貨";
+  if (shippingLabel?.includes("取貨"))
+    return storeName
+      ? `商品正寄往「${storeName}」，到店後會收到取貨通知，記得帶證件去取`
+      : "商品正寄往你選的門市，到店後會收到取貨通知，記得帶證件去取";
+  return "商品已寄出，請耐心等待";
+}
+
+// 一句話告訴客人「現在這個狀態代表什麼、接下來會怎樣」。查訂單頁與會員訂單詳情
+// 共用同一套說法，已出貨那步再依取貨方式給對的提醒。cancelled 各頁自行處理。
+export function orderStatusMessage(
+  status: string,
+  shippingLabel: string | null,
+  storeName: string | null
+): string | null {
+  switch (status) {
+    case "pending":
+      return "店家收到你的訂單了，請等待確認";
+    case "confirmed":
+      return "店家已確認訂單，正在備貨中";
+    case "shipped":
+      return shippedMessage(shippingLabel, storeName);
+    case "completed":
+      return "訂單完成，謝謝你的支持";
+    default:
+      return null;
+  }
+}
+
 export function decodeShippingFromNote(note: string | null): {
   shippingLabel: string | null;
   storeName: string | null;
