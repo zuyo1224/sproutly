@@ -249,8 +249,14 @@ export default async function TrackPage({
           >
             請確認訂單編號跟電話都正確
             <br className="sm:hidden" />
-            。或直接聯絡店家詢問
+            。還是查不到的話，直接問店家最快
           </p>
+          <Link
+            href={`/${slug}/contact`}
+            className="sproutly-btn sproutly-btn-secondary sproutly-btn-sm mt-7"
+          >
+            聯絡店家
+          </Link>
         </div>
       )}
 
