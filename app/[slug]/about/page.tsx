@@ -81,8 +81,35 @@ export default async function AboutPage({ params }: { params: Params }) {
   const faqTitle =
     theme.homepage.faqTitle ?? HOMEPAGE_DEFAULTS.faqTitle;
 
+  // FAQPage 結構化資料 — 這頁的 FAQ 來自 store.faq 文字欄（跟首頁那組 block 不同來源），
+  // 之前完全沒有結構化標記，等於對 Google 隱形。補上後常見問題能在搜尋結果直接展開，
+  // 條件跟畫面上實際渲染的 FAQ 一致（區段有開且真的解析出問答）才放，不會標到空的。
+  const faqJsonLd =
+    faqItems.length > 0
+      ? {
+          "@context": "https://schema.org",
+          "@type": "FAQPage",
+          mainEntity: faqItems.map((item) => ({
+            "@type": "Question",
+            name: item.question,
+            acceptedAnswer: {
+              "@type": "Answer",
+              text: item.answer,
+            },
+          })),
+        }
+      : null;
+
   return (
-    <main className="max-w-3xl mx-auto px-6 sm:px-10 py-20 sm:py-28">
+    <>
+      {faqJsonLd && (
+        <script
+          type="application/ld+json"
+          // eslint-disable-next-line react/no-danger
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }}
+        />
+      )}
+      <main className="max-w-3xl mx-auto px-6 sm:px-10 py-20 sm:py-28">
       {theme.sections.about && (
         <>
           <header className="mb-16 sm:mb-20">
@@ -244,5 +271,6 @@ export default async function AboutPage({ params }: { params: Params }) {
         </section>
       )}
     </main>
+    </>
   );
 }
