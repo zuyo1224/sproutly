@@ -166,6 +166,10 @@ export default async function StoreInsightsPage({
     });
   const trendData = Array.from(dayMap.values());
   const maxOrders = Math.max(...trendData.map((d) => d.orders), 1);
+  // 這 14 天的總筆數與總進帳。revenue 本來每天都算好了卻只拿來畫筆數，
+  // 店家分不出「來了單」跟「真的收到錢」——把已算好的進帳一起顯示。
+  const total14Orders = trendData.reduce((s, d) => s + d.orders, 0);
+  const total14Revenue = trendData.reduce((s, d) => s + d.revenue, 0);
 
   // 熱銷商品 top 5
   const productMap = new Map<
@@ -393,8 +397,16 @@ export default async function StoreInsightsPage({
                 每天接到的訂單數
               </p>
             </div>
-            <p className="text-xs text-emerald-900/55">
-              共 {trendData.reduce((s, d) => s + d.orders, 0)} 筆
+            <p className="text-xs text-emerald-900/55 text-right">
+              共 {total14Orders} 筆
+              {total14Revenue > 0 && (
+                <>
+                  <br />
+                  <span className="text-emerald-900/45">
+                    進帳 {formatPrice(total14Revenue)}
+                  </span>
+                </>
+              )}
             </p>
           </div>
           {trendData.every((d) => d.orders === 0) ? (
@@ -410,10 +422,16 @@ export default async function StoreInsightsPage({
                 return (
                   <div
                     key={i}
-                    className="flex-1 flex flex-col items-center gap-1.5 group"
+                    className="relative flex-1 flex flex-col items-center gap-1.5 group"
                   >
-                    <div className="text-[10px] font-medium text-emerald-900 opacity-0 group-hover:opacity-100 transition">
-                      {d.orders}
+                    {/* 浮層用絕對定位，不撐高長條；hover 同時看到當天筆數與進帳，
+                        當天有單卻沒收到錢就明寫「未進帳」，一眼分得出空有訂單的日子。 */}
+                    <div className="pointer-events-none absolute -top-1 left-1/2 -translate-x-1/2 -translate-y-full z-10 px-2 py-1 rounded-md bg-emerald-900 text-white text-[10px] font-medium whitespace-nowrap opacity-0 group-hover:opacity-100 transition shadow-sm">
+                      {d.orders === 0
+                        ? "尚無訂單"
+                        : `${d.orders} 筆 · ${
+                            d.revenue > 0 ? formatPrice(d.revenue) : "未進帳"
+                          }`}
                     </div>
                     <div className="w-full flex-1 flex items-end">
                       <div
