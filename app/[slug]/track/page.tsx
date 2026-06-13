@@ -29,6 +29,12 @@ const STATUS_STEPS: { key: string; label: string; num: string }[] = [
   { key: "completed", label: "完成", num: "4" },
 ];
 
+const PAYMENT_STATUS_LABELS: Record<string, string> = {
+  unpaid: "未付款",
+  paid: "已付款",
+  refunded: "已退款",
+};
+
 function formatPrice(cents: number, currency: string) {
   const amount = cents / 100;
   if (currency === "TWD") return `NT$ ${amount.toLocaleString("zh-TW")}`;
@@ -303,6 +309,14 @@ export default async function TrackPage({
                 >
                   訂單已取消
                 </p>
+                {(store.contact_phone || store.contact_email) && (
+                  <p
+                    className="mt-3 text-[0.9375rem]"
+                    style={{ color: theme.textMuted, lineHeight: 1.7 }}
+                  >
+                    如有疑問，可從下方聯絡店家
+                  </p>
+                )}
               </div>
             ) : (
               <>
@@ -491,7 +505,11 @@ export default async function TrackPage({
               const paymentLabel = order.payment_method
                 ? (PAYMENT_LABELS[order.payment_method] ?? order.payment_method)
                 : null;
-              if (!decoded.shippingLabel && !paymentLabel) return null;
+              const paymentStatusLabel =
+                PAYMENT_STATUS_LABELS[order.payment_status] ??
+                order.payment_status;
+              if (!decoded.shippingLabel && !paymentLabel && !paymentStatusLabel)
+                return null;
               return (
                 <>
                   <hr style={{ borderColor: theme.border }} />
@@ -540,6 +558,19 @@ export default async function TrackPage({
                           <dd style={{ color: theme.text }}>{paymentLabel}</dd>
                         </div>
                       )}
+                      {/* 轉帳、貨到付款的客人最想知道店家收到錢沒——進度條只講出貨，
+                          這裡補上付款狀態，已退款的取消單也看得到錢退了。跟會員訂單詳情同一套。 */}
+                      <div className="flex gap-3">
+                        <dt
+                          className="w-20 shrink-0"
+                          style={{ color: theme.textMuted }}
+                        >
+                          付款狀態
+                        </dt>
+                        <dd style={{ color: theme.text }}>
+                          {paymentStatusLabel}
+                        </dd>
+                      </div>
                     </dl>
                   </div>
                 </>
