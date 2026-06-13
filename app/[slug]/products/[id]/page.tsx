@@ -95,7 +95,7 @@ export default async function PublicProductPage({
   // 同店其他商品（最多 4 個）
   const { data: relatedProducts } = await supabase
     .from("sproutly_products")
-    .select("id, name, price_cents, currency, image_urls")
+    .select("id, name, price_cents, currency, image_urls, stock")
     .eq("merchant_id", store.id)
     .eq("is_active", true)
     .neq("id", product.id)
@@ -555,25 +555,44 @@ export default async function PublicProductPage({
             </Link>
           </div>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-            {relatedProducts.map((p) => (
+            {relatedProducts.map((p) => {
+              // 客人逛到某株植物、往下看「這些也在店裡」，常會點進去才發現沒貨。
+              // 跟收藏頁、首頁精選、shop 逛街頁同一套語言：售完角標 + 圖片灰階壓暗、
+              // 剩 3 件以下琥珀色提示，讓人在點進去前就分得出哪幾株沒了。
+              const soldOut = p.stock !== null && p.stock === 0;
+              return (
               <Link
                 key={p.id}
                 href={`/${slug}/products/${p.id}`}
                 className="group block"
               >
                 <div
-                  className="aspect-square rounded-2xl overflow-hidden transition"
+                  className="aspect-square rounded-2xl overflow-hidden transition relative"
                   style={{
                     background: theme.surface,
                     boxShadow: "var(--sproutly-elev-2)",
                   }}
                 >
+                  {soldOut && (
+                    <span
+                      className="absolute left-3 top-3 z-10 px-2.5 py-1 rounded-full text-[0.625rem] uppercase font-medium backdrop-blur-sm"
+                      style={{
+                        background: "rgba(0,0,0,0.55)",
+                        color: "#fff",
+                        letterSpacing: "0.2em",
+                      }}
+                    >
+                      售完
+                    </span>
+                  )}
                   {p.image_urls?.[0] ? (
                     // eslint-disable-next-line @next/next/no-img-element
                     <img
                       src={p.image_urls[0]}
                       alt={p.name}
-                      className="w-full h-full object-cover group-hover:scale-105 transition duration-700"
+                      className={`w-full h-full object-cover group-hover:scale-105 transition duration-700 ${
+                        soldOut ? "opacity-55 grayscale" : ""
+                      }`}
                     />
                   ) : (
                     <div
@@ -614,8 +633,22 @@ export default async function PublicProductPage({
                 >
                   {formatPrice(p.price_cents, p.currency)}
                 </p>
+                {/* 售完已由圖上角標表達，這裡只留琥珀色「剩 N」提示快沒貨，
+                    跟收藏頁、shop 頁、商品詳情頁本體一致。 */}
+                {!soldOut && p.stock !== null && p.stock <= 3 ? (
+                  <p
+                    className="mt-1 text-[0.6875rem] uppercase font-medium"
+                    style={{
+                      color: "#92400E",
+                      letterSpacing: "0.3em",
+                    }}
+                  >
+                    Low Stock · 剩 {p.stock}
+                  </p>
+                ) : null}
               </Link>
-            ))}
+              );
+            })}
           </div>
         </section>
       )}
