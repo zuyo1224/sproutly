@@ -9,6 +9,7 @@ type Product = {
   name: string;
   price_cents: number;
   currency: string;
+  stock: number | null;
   image_urls: string[] | null;
 };
 
@@ -131,6 +132,10 @@ export default function FavoritesPage() {
   }, []);
 
   const count = products?.length ?? 0;
+  // 收藏是「想留下來慢慢看」，常擱一陣子才回來——這段時間裡有的可能已經被買走。
+  // 先在標題就點出有幾株沒了，客人不必一張張點進去才發現白收藏一場。
+  const soldOutCount =
+    products?.filter((p) => p.stock !== null && p.stock === 0).length ?? 0;
 
   return (
     <main className="max-w-5xl mx-auto px-6 sm:px-10 py-20 sm:py-28">
@@ -172,6 +177,8 @@ export default function FavoritesPage() {
             ? "整理中⋯"
             : count === 0
             ? "這裡會放你想留下來慢慢看的植物"
+            : soldOutCount > 0
+            ? `${count} 株植物在等你 · 其中 ${soldOutCount} 株已售完`
             : `${count} 株植物在等你`}
         </p>
       </header>
@@ -257,13 +264,29 @@ export default function FavoritesPage() {
         </div>
       ) : (
         <div className="grid grid-cols-2 md:grid-cols-3 gap-x-6 sm:gap-x-10 gap-y-16">
-          {products.map((p, i) => (
+          {products.map((p, i) => {
+            const soldOut = p.stock !== null && p.stock === 0;
+            return (
             <Link
               key={p.id}
               href={`/${slug}/products/${p.id}`}
               className="sproutly-card"
             >
               <div className="sproutly-card-image aspect-square relative">
+                {/* 售完的去彩壓暗 + 角落標記，跟 shop 頁同一套語言，
+                    收藏一打開就看得出哪幾株沒了，不必點進去才知道。 */}
+                {soldOut && (
+                  <span
+                    className="absolute left-3 top-3 z-10 px-2.5 py-1 rounded-full text-[0.625rem] uppercase font-medium backdrop-blur-sm"
+                    style={{
+                      background: "rgba(0,0,0,0.55)",
+                      color: "#fff",
+                      letterSpacing: "0.2em",
+                    }}
+                  >
+                    售完
+                  </span>
+                )}
                 <button
                   type="button"
                   onClick={(e) => {
@@ -294,7 +317,9 @@ export default function FavoritesPage() {
                   <img
                     src={p.image_urls[0]}
                     alt={p.name}
-                    className="w-full h-full object-cover"
+                    className={`w-full h-full object-cover transition ${
+                      soldOut ? "opacity-55 grayscale" : ""
+                    }`}
                   />
                 ) : (
                   <div
@@ -327,8 +352,22 @@ export default function FavoritesPage() {
               >
                 {formatPrice(p.price_cents, p.currency)}
               </p>
+              {/* 售完已由圖上角標表達，這裡只留琥珀色「剩 N」提示快沒貨，
+                  跟 shop 頁、商品詳情頁一致。 */}
+              {!soldOut && p.stock !== null && p.stock <= 3 ? (
+                <p
+                  className="mt-1 text-[0.6875rem] uppercase font-medium"
+                  style={{
+                    color: "#92400E",
+                    letterSpacing: "0.3em",
+                  }}
+                >
+                  Low Stock · 剩 {p.stock}
+                </p>
+              ) : null}
             </Link>
-          ))}
+            );
+          })}
         </div>
       )}
 
