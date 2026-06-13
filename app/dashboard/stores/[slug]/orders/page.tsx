@@ -289,7 +289,63 @@ export default async function OrdersListPage({
       </div>
 
       {orders && orders.length > 0 ? (
-        <div className="bg-white rounded-2xl shadow-lg shadow-emerald-700/5 overflow-hidden">
+        <>
+        {/* 手機卡片版：訂單列表在手機上常用（店家在外面隨手看單），
+            7 欄的表格擠在窄螢幕會糊成一團，所以小螢幕改一筆一張卡。 */}
+        <div className="sm:hidden space-y-3">
+          {orders.map((o) => {
+            const s = STATUS_LABEL[o.status] ?? STATUS_LABEL.pending;
+            const p = PAYMENT_LABEL[o.payment_status] ?? PAYMENT_LABEL.unpaid;
+            const needsAction = o.status === "pending";
+            return (
+              <Link
+                key={o.id}
+                href={`/dashboard/stores/${slug}/orders/${o.id}`}
+                className={`block bg-white rounded-2xl p-4 shadow-lg shadow-emerald-700/5 border-l-[3px] ${
+                  needsAction ? "border-amber-400" : "border-transparent"
+                }`}
+              >
+                <div className="flex items-start justify-between gap-3">
+                  <div className="min-w-0">
+                    <span className="font-mono text-sm text-emerald-900">
+                      #{o.id.split("-")[0].toUpperCase()}
+                    </span>
+                    <div className="text-emerald-950 font-medium mt-1 truncate">
+                      {o.customer_name}
+                    </div>
+                    <div className="text-xs text-emerald-900/50">
+                      {o.customer_phone}
+                    </div>
+                  </div>
+                  <div className="text-right flex-shrink-0">
+                    <div className="font-semibold text-emerald-950">
+                      {formatPrice(o.total_cents, o.currency)}
+                    </div>
+                    <div className="text-xs text-emerald-900/50 mt-1">
+                      {new Date(o.created_at).toLocaleString("zh-TW", {
+                        timeZone: "Asia/Taipei",
+                        month: "2-digit",
+                        day: "2-digit",
+                        hour: "2-digit",
+                        minute: "2-digit",
+                      })}
+                    </div>
+                  </div>
+                </div>
+                <div className="flex items-center gap-2 mt-3">
+                  <span
+                    className={`inline-block text-xs px-2 py-1 rounded-full ${s.color}`}
+                  >
+                    {s.label}
+                  </span>
+                  <span className={`text-xs ${p.color}`}>{p.label}</span>
+                </div>
+              </Link>
+            );
+          })}
+        </div>
+
+        <div className="hidden sm:block bg-white rounded-2xl shadow-lg shadow-emerald-700/5 overflow-hidden">
           <table className="w-full text-sm">
             <thead className="bg-emerald-50/50 text-xs uppercase tracking-wider text-emerald-900/60">
               <tr>
@@ -373,6 +429,7 @@ export default async function OrdersListPage({
             </tbody>
           </table>
         </div>
+        </>
       ) : (
         <div className="bg-white rounded-3xl p-12 sm:p-16 text-center shadow-xl shadow-emerald-700/5">
           <p
