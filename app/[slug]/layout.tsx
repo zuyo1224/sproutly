@@ -157,7 +157,9 @@ export default async function PublicStoreLayout({
   const supabase = await createClient();
   const { data: store } = await supabase
     .from("sproutly_merchants")
-    .select("name, slug, theme, is_published")
+    .select(
+      "name, slug, theme, is_published, contact_phone, address, business_hours"
+    )
     .eq("slug", slug)
     .eq("is_published", true)
     .maybeSingle();
@@ -165,6 +167,22 @@ export default async function PublicStoreLayout({
 
   const theme = resolveTheme(store.theme);
   const cssVars = themeToCssVars(theme);
+
+  // 客人最常重複問的就是地址 / 電話 / 營業時間，本來只埋在聯絡頁。
+  // 這幾欄商家後台早就有（聯絡頁、查訂單頁都在用），這裡直接撈來放進
+  // 全站頁尾，讓客人不論逛到哪一頁、捲到底都看得到，不用再特地點進聯絡頁。
+  // 顯示與否沿用聯絡頁同一組 section 開關（商家關掉 contact / hours 區段
+  // 就不該從頁尾外洩），只放有填的欄位。
+  const businessHoursText =
+    typeof store.business_hours === "object" && store.business_hours !== null
+      ? ((store.business_hours as { text?: string }).text ?? "").trim()
+      : "";
+  const footerAddress =
+    theme.sections.contact && store.address ? store.address : "";
+  const footerPhone =
+    theme.sections.contact && store.contact_phone ? store.contact_phone : "";
+  const footerHours = theme.sections.hours ? businessHoursText : "";
+  const showStoreInfo = !!(footerAddress || footerPhone || footerHours);
 
   // 客人是否登入（決定 nav 上「會員」連結指向哪）
   const { data: userData } = await supabase.auth.getUser();
@@ -819,6 +837,70 @@ export default async function PublicStoreLayout({
               >
                 {theme.tagline}
               </p>
+            </div>
+          )}
+
+          {showStoreInfo && (
+            <div className="space-y-4">
+              <div className="flex items-center justify-center gap-3">
+                <span
+                  className="h-px w-10"
+                  style={{ background: theme.accent, opacity: 0.6 }}
+                />
+                <span
+                  className="font-medium uppercase"
+                  style={{
+                    color: theme.textMuted,
+                    fontSize: "0.6875rem",
+                    letterSpacing: "0.4em",
+                  }}
+                >
+                  Visit · 店面資訊
+                </span>
+                <span
+                  className="h-px w-10"
+                  style={{ background: theme.accent, opacity: 0.6 }}
+                />
+              </div>
+              <div
+                className="space-y-2.5"
+                style={{ fontSize: "0.8125rem", lineHeight: 1.75 }}
+              >
+                {footerAddress && (
+                  <p>
+                    <a
+                      href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
+                        footerAddress
+                      )}`}
+                      target="_blank"
+                      rel="noopener"
+                      className="sproutly-link"
+                      style={{ color: theme.text, letterSpacing: "0.02em" }}
+                    >
+                      {footerAddress}
+                    </a>
+                  </p>
+                )}
+                {footerPhone && (
+                  <p>
+                    <a
+                      href={`tel:${footerPhone}`}
+                      className="sproutly-link"
+                      style={{ color: theme.text, letterSpacing: "0.04em" }}
+                    >
+                      {footerPhone}
+                    </a>
+                  </p>
+                )}
+                {footerHours && (
+                  <p
+                    className="whitespace-pre-line"
+                    style={{ color: theme.textMuted, letterSpacing: "0.02em" }}
+                  >
+                    {footerHours}
+                  </p>
+                )}
+              </div>
             </div>
           )}
 
