@@ -201,6 +201,18 @@ export default async function OrdersListPage({
 
   const filterActive =
     q !== "" || status !== "all" || range !== "all" || pay !== "all";
+
+  // 匯出 CSV 帶上當下的篩選，按下去拿到的就是眼前列表這批，不是全部訂單
+  function exportHref() {
+    const params = new URLSearchParams();
+    if (status !== "all") params.set("status", status);
+    if (q) params.set("q", q);
+    if (range !== "all") params.set("range", range);
+    if (pay !== "all") params.set("pay", pay);
+    const qs = params.toString();
+    return `/dashboard/stores/${slug}/orders/export${qs ? `?${qs}` : ""}`;
+  }
+
   const matchCount = orders?.length ?? 0;
   const headerCaption = filterActive
     ? `符合條件 ${matchCount} 筆 · 全部 ${statusCounts.all} 筆`
@@ -241,10 +253,10 @@ export default async function OrdersListPage({
         </div>
         {statusCounts.all > 0 && (
           <a
-            href={`/dashboard/stores/${slug}/orders/export`}
+            href={exportHref()}
             className="rounded-full bg-white border-2 border-emerald-200 px-4 py-2 text-sm font-medium text-emerald-900 hover:bg-emerald-50 transition"
           >
-            ⬇ 匯出 CSV
+            {filterActive ? "⬇ 匯出這批" : "⬇ 匯出 CSV"}
           </a>
         )}
       </div>

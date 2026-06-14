@@ -28,8 +28,32 @@ function csvEscape(v: unknown): string {
   return s;
 }
 
+// 時間界線跟訂單列表頁同一套：一律用台灣時間切，伺服器在 UTC 跑也不會漏掉凌晨的單
+function taipeiDateKey(d: Date) {
+  return d.toLocaleDateString("en-CA", { timeZone: "Asia/Taipei" });
+}
+
+function computeSince(key: string): Date | null {
+  const todayKey = taipeiDateKey(new Date());
+  const midnight = new Date(`${todayKey}T00:00:00+08:00`);
+  if (key === "today") return midnight;
+  if (key === "week") {
+    const day = new Date(`${todayKey}T00:00:00Z`).getUTCDay(); // 0 = 週日
+    const back = day === 0 ? 6 : day - 1;
+    return new Date(midnight.getTime() - back * 86_400_000);
+  }
+  if (key === "month") {
+    return new Date(`${todayKey.slice(0, 8)}01T00:00:00+08:00`);
+  }
+  return null;
+}
+
+const VALID_STATUS = ["pending", "confirmed", "shipped", "completed", "cancelled"];
+const VALID_PAY = ["unpaid", "paid", "refunded"];
+const VALID_RANGE = ["today", "week", "month"];
+
 export async function GET(
-  _request: Request,
+  request: Request,
   { params }: { params: Params }
 ) {
   const { slug } = await params;
@@ -38,7 +62,7 @@ export async function GET(
     data: { user },
   } = await supabase.auth.getUser();
   if (!user) {
-    return NextResponse.redirect(new URL("/login", _request.url));
+    return NextResponse.redirect(new URL("/login", request.url));
   }
 
   const { data: store } = await supabase
@@ -49,11 +73,37 @@ export async function GET(
     .maybeSingle();
   if (!store) return new NextResponse("Not found", { status: 404 });
 
-  const { data: orders } = await supabase
+  // 訂單列表頁帶著當下的篩選（狀態 / 付款 / 時間 / 搜尋）跳來這支匯出，
+  // 商家篩到「本月 · 已出貨 · 未付款」按匯出，期待拿到的就是那批 —— 原本不管篩選
+  // 一律匯出全部，跟畫面對不上。這裡用跟列表頁一模一樣的條件，匯出 = 眼前所見。
+  const sp = new URL(request.url).searchParams;
+  const status = VALID_STATUS.includes(sp.get("status") ?? "")
+    ? sp.get("status")!
+    : "all";
+  const pay = VALID_PAY.includes(sp.get("pay") ?? "") ? sp.get("pay")! : "all";
+  const range = VALID_RANGE.includes(sp.get("range") ?? "")
+    ? sp.get("range")!
+    : "all";
+  const q = (sp.get("q") ?? "").trim();
+  const since = computeSince(range);
+  const filterActive = status !== "all" || pay !== "all" || range !== "all" || q !== "";
+
+  let ordersQuery = supabase
     .from("sproutly_orders")
     .select("*")
-    .eq("merchant_id", store.id)
-    .order("created_at", { ascending: false });
+    .eq("merchant_id", store.id);
+  if (status !== "all") ordersQuery = ordersQuery.eq("status", status);
+  if (pay !== "all") ordersQuery = ordersQuery.eq("payment_status", pay);
+  if (q) {
+    const escaped = q.replace(/[%_]/g, (m) => `\\${m}`);
+    ordersQuery = ordersQuery.or(
+      `customer_name.ilike.%${escaped}%,customer_phone.ilike.%${escaped}%,customer_email.ilike.%${escaped}%`
+    );
+  }
+  if (since) ordersQuery = ordersQuery.gte("created_at", since.toISOString());
+  const { data: orders } = await ordersQuery.order("created_at", {
+    ascending: false,
+  });
 
   const { data: allItems } = await supabase
     .from("sproutly_order_items")
@@ -151,8 +201,9 @@ export async function GET(
 
   // UTF-8 BOM 讓 Excel 開中文不亂碼
   const csv = "﻿" + rows.join("\r\n");
-  const today = new Date().toISOString().split("T")[0];
-  const filename = `${store.name}-orders-${today}.csv`;
+  const today = taipeiDateKey(new Date());
+  // 篩選過的匯出檔名加註，避免商家把「只有未付款」那份誤當成全部訂單
+  const filename = `${store.name}-orders-${today}${filterActive ? "-篩選" : ""}.csv`;
 
   return new NextResponse(csv, {
     headers: {
