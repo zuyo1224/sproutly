@@ -187,32 +187,66 @@ export default async function StoreCustomersPage({
       ? `${totalCustomers} 位客人 · ${repeatCount > 0 ? `${repeatCount} 位回購過` : "點任一位看細節"}`
       : "客人在店面下單後會出現在這裡";
 
+  // 匯出連結帶上當下的搜尋／排序，按下去拿到的就是眼前這份名單（跟訂單匯出同一套）
+  function exportHref() {
+    const usp = new URLSearchParams();
+    if (q) usp.set("q", q);
+    if (sort !== "recent") usp.set("sort", sort);
+    const qs = usp.toString();
+    return `/dashboard/stores/${slug}/customers/export${qs ? `?${qs}` : ""}`;
+  }
+  const filterActive = q !== "" || sort !== "recent";
+
   return (
     <div>
-      <div className="mb-10">
-        <p
-          className="uppercase text-emerald-700/70"
-          style={{
-            fontSize: "0.6875rem",
-            fontWeight: 500,
-            letterSpacing: "0.4em",
-          }}
-        >
-          Customers · 客人
-        </p>
-        <h2
-          className="mt-3 text-3xl sm:text-4xl text-emerald-950 font-medium tracking-tight"
-          style={{ letterSpacing: "-0.01em", lineHeight: 1.15 }}
-        >
-          認識每一位客人
-        </h2>
-        <span aria-hidden className="mt-4 block h-px w-12 bg-emerald-600/60" />
-        <p
-          className="mt-4 text-emerald-900/65"
-          style={{ fontSize: "0.9375rem", lineHeight: 1.7 }}
-        >
-          {headerCaption}
-        </p>
+      <div className="mb-10 flex items-end justify-between gap-3 flex-wrap">
+        <div>
+          <p
+            className="uppercase text-emerald-700/70"
+            style={{
+              fontSize: "0.6875rem",
+              fontWeight: 500,
+              letterSpacing: "0.4em",
+            }}
+          >
+            Customers · 客人
+          </p>
+          <h2
+            className="mt-3 text-3xl sm:text-4xl text-emerald-950 font-medium tracking-tight"
+            style={{ letterSpacing: "-0.01em", lineHeight: 1.15 }}
+          >
+            認識每一位客人
+          </h2>
+          <span aria-hidden className="mt-4 block h-px w-12 bg-emerald-600/60" />
+          <p
+            className="mt-4 text-emerald-900/65"
+            style={{ fontSize: "0.9375rem", lineHeight: 1.7 }}
+          >
+            {headerCaption}
+          </p>
+        </div>
+        {totalCustomers > 0 && (
+          <a
+            href={exportHref()}
+            className="inline-flex items-center gap-2 rounded-full border border-emerald-200 px-4 py-2.5 text-sm font-medium text-emerald-800 hover:bg-emerald-50 transition whitespace-nowrap"
+          >
+            <svg
+              className="w-4 h-4"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              aria-hidden
+            >
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+              <polyline points="7 10 12 15 17 10" />
+              <line x1="12" y1="15" x2="12" y2="3" />
+            </svg>
+            {filterActive ? "匯出這批" : "匯出名單"}
+          </a>
+        )}
       </div>
 
       {/* Stats tiles */}
