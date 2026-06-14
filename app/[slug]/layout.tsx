@@ -246,6 +246,17 @@ export default async function PublicStoreLayout({
           outline-offset: 2px;
         }
 
+        /* 列印 / 存 PDF：藏掉導覽、頁尾、捲動進度與互動按鈕陰影，
+           只留乾淨內容（給結帳成功頁印收據留底用，其他頁面列印也順便乾淨） */
+        @media print {
+          html, body { background: #fff !important; }
+          .sproutly-skip,
+          .sproutly-scroll-progress,
+          header.sproutly-nav-shrink,
+          footer { display: none !important; }
+          .sproutly-btn { box-shadow: none !important; }
+        }
+
         /* 全站 focus-visible：鍵盤 tab 才出現，滑鼠點不出現（不擾視覺） */
         a:focus-visible,
         button:focus-visible,

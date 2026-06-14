@@ -7,6 +7,7 @@ import { PAYMENT_LABELS, decodeShippingFromNote } from "@/lib/order-labels";
 import { Confetti } from "@/app/_components/confetti";
 import { CopyOrderId } from "@/app/_components/copy-order-id";
 import { RememberOrder } from "@/app/_components/remember-order";
+import { PrintButton } from "@/app/_components/print-button";
 
 type Params = Promise<{ slug: string; orderId: string }>;
 
@@ -69,7 +70,9 @@ export default async function OrderSuccessPage({
 
   return (
     <main className="max-w-3xl mx-auto px-6 sm:px-10 py-20 sm:py-28">
-      <Confetti count={70} />
+      <div className="print:hidden">
+        <Confetti count={70} />
+      </div>
       {/* 把這筆訂單記進這台裝置的小抄：成功頁是訪客唯一一次看到編號的地方，
           沒抄下來之後想查單就斷了。記下來後查訂單頁可以一鍵帶入。 */}
       <RememberOrder
@@ -119,6 +122,13 @@ export default async function OrderSuccessPage({
         >
           {store.name} 已收到你的訂單，{formatDateTime(order.created_at)} 送出，會盡快聯絡你確認付款方式
         </p>
+        {/* 列印 / 存 PDF 收據：報帳或想要紙本留底的客人用得到。列印時自己藏起來，
+            版面靠 layout 的 @media print 把導覽/頁尾收乾淨。 */}
+        <div className="mt-7 print:hidden">
+          <PrintButton className="sproutly-btn sproutly-btn-secondary sproutly-btn-sm">
+            列印收據 · 存 PDF
+          </PrintButton>
+        </div>
       </div>
 
       <section
@@ -374,7 +384,7 @@ export default async function OrderSuccessPage({
           跟查訂單頁、會員訂單詳情同一套。 */}
       {(store.contact_phone || store.contact_email) && (
         <section
-          className="rounded-2xl p-7 sm:p-8 mb-6"
+          className="rounded-2xl p-7 sm:p-8 mb-6 print:hidden"
           style={{
             background: "var(--store-surface)",
             border: "1px solid var(--store-border)",
@@ -424,7 +434,7 @@ export default async function OrderSuccessPage({
         </section>
       )}
 
-      <div className="flex flex-col sm:flex-row gap-3 justify-center mb-10">
+      <div className="flex flex-col sm:flex-row gap-3 justify-center mb-10 print:hidden">
         <Link
           href={`/${slug}/shop`}
           className="sproutly-btn sproutly-btn-primary sproutly-btn-lg"
@@ -440,7 +450,7 @@ export default async function OrderSuccessPage({
       </div>
 
       <p
-        className="text-center"
+        className="text-center print:hidden"
         style={{
           color: theme.textMuted,
           fontSize: "0.8125rem",
@@ -462,6 +472,39 @@ export default async function OrderSuccessPage({
         </Link>{" "}
         時都會用到
       </p>
+
+      {/* 列印專屬頁尾：導覽（店名/Logo）列印時被藏起來，這裡把店名＋實際聯絡方式
+          補回紙本上，客人手上的收據才看得到要找誰。螢幕上不顯示。 */}
+      <div
+        className="hidden print:block mt-8 pt-6 border-t text-center"
+        style={{ borderColor: theme.border }}
+      >
+        <p style={{ color: theme.text, fontSize: "0.9375rem", fontWeight: 500 }}>
+          {store.name}
+        </p>
+        {(store.contact_phone || store.contact_email) && (
+          <p
+            style={{
+              color: theme.textMuted,
+              fontSize: "0.8125rem",
+              marginTop: "0.25rem",
+            }}
+          >
+            {[store.contact_phone, store.contact_email]
+              .filter(Boolean)
+              .join(" · ")}
+          </p>
+        )}
+        <p
+          style={{
+            color: theme.textMuted,
+            fontSize: "0.8125rem",
+            marginTop: "0.5rem",
+          }}
+        >
+          感謝您的訂購 · 訂單編號 #{shortId}
+        </p>
+      </div>
     </main>
   );
 }
