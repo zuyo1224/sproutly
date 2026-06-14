@@ -9,6 +9,7 @@ type Product = {
   price_cents: number;
   currency: string;
   image_urls: string[] | null;
+  stock: number | null;
 };
 
 function formatPrice(cents: number, currency: string) {
@@ -280,7 +281,13 @@ export function SearchOverlay({ slug }: { slug: string }) {
                   </p>
                 </div>
               )}
-              {results.map((p, i) => (
+              {results.map((p, i) => {
+                // 跟首頁、收藏、商品頁同一套庫存語言：搜尋是逛商品的入口之一，
+                // 客人搜到一株、點進去才發現沒了會白跑。售完整列去彩、縮圖蓋角標，
+                // 快沒貨補一行琥珀色「剩 N」。
+                const soldOut = p.stock !== null && p.stock === 0;
+                const lowStock = !soldOut && p.stock !== null && p.stock <= 3;
+                return (
                 <Link
                   key={p.id}
                   data-result-idx={i}
@@ -296,19 +303,33 @@ export function SearchOverlay({ slug }: { slug: string }) {
                   onMouseEnter={() => setSelectedIdx(i)}
                 >
                   <div
-                    className="w-14 h-14 rounded-xl overflow-hidden flex-shrink-0"
+                    className="w-14 h-14 rounded-xl overflow-hidden flex-shrink-0 relative"
                     style={{
                       background: "var(--store-surface, rgba(0,0,0,0.04))",
                       border:
                         "1px solid var(--store-border, rgba(0,0,0,0.06))",
                     }}
                   >
+                    {soldOut && (
+                      <span
+                        className="absolute inset-x-0 bottom-0 z-10 text-center py-0.5 text-[0.5rem] uppercase font-medium"
+                        style={{
+                          background: "rgba(0,0,0,0.6)",
+                          color: "#fff",
+                          letterSpacing: "0.15em",
+                        }}
+                      >
+                        售完
+                      </span>
+                    )}
                     {p.image_urls?.[0] && (
                       // eslint-disable-next-line @next/next/no-img-element
                       <img
                         src={p.image_urls[0]}
                         alt={p.name}
-                        className="w-full h-full object-cover"
+                        className={`w-full h-full object-cover ${
+                          soldOut ? "opacity-55 grayscale" : ""
+                        }`}
                       />
                     )}
                   </div>
@@ -318,6 +339,7 @@ export function SearchOverlay({ slug }: { slug: string }) {
                       style={{
                         color: "var(--store-text, #1a1a1a)",
                         letterSpacing: "-0.005em",
+                        opacity: soldOut ? 0.6 : 1,
                       }}
                     >
                       {p.name}
@@ -332,6 +354,17 @@ export function SearchOverlay({ slug }: { slug: string }) {
                     >
                       {formatPrice(p.price_cents, p.currency)}
                     </p>
+                    {lowStock && (
+                      <p
+                        className="mt-0.5 text-[0.625rem] uppercase font-medium"
+                        style={{
+                          color: "#92400E",
+                          letterSpacing: "0.25em",
+                        }}
+                      >
+                        Low Stock · 剩 {p.stock}
+                      </p>
+                    )}
                   </div>
                   {i === selectedIdx && (
                     <span
@@ -347,7 +380,8 @@ export function SearchOverlay({ slug }: { slug: string }) {
                     </span>
                   )}
                 </Link>
-              ))}
+                );
+              })}
             </div>
           </div>
           <style>{`

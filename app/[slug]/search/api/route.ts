@@ -24,7 +24,7 @@ export async function GET(
   const escaped = q.replace(/[%_]/g, (m) => `\\${m}`);
   const { data } = await supabase
     .from("sproutly_products")
-    .select("id, name, price_cents, currency, image_urls")
+    .select("id, name, price_cents, currency, image_urls, stock")
     .eq("merchant_id", store.id)
     .eq("is_active", true)
     .ilike("name", `%${escaped}%`)
