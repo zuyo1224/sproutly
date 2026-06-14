@@ -93,6 +93,16 @@ export default async function ShopPage({
   }
 
   const { data: products } = await query;
+  // 售完的商品一律沉到列表最底。選定的排序（最新／價格／名稱）原本把已售完
+  // 跟有貨的混在一起，逛街頁第一排常卡著幾株沒貨的，客人得略過才看到買得到的——
+  // 跟最近替每個商品卡片補上售完標示同一個出發點：別讓人花眼力在買不到的東西上。
+  // 在原排序之上再把 stock===0 的整批推到最後（JS sort 穩定，各自維持原順序），
+  // 跟「只看有貨」勾選互補：不勾也是先看到買得到的，售完的仍排在下方可瀏覽。
+  products?.sort((a, b) => {
+    const aSold = a.stock !== null && a.stock === 0 ? 1 : 0;
+    const bSold = b.stock !== null && b.stock === 0 ? 1 : 0;
+    return aSold - bSold;
+  });
   const totalCount = products?.length ?? 0;
   const hasFilter = q || sort !== "newest" || inStock;
 
