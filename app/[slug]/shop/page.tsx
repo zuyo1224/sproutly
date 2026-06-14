@@ -101,11 +101,10 @@ export default async function ShopPage({
     .eq("merchant_id", store.id)
     .eq("is_active", true);
 
-  if (q) {
-    const escaped = q.replace(/[%_]/g, (m) => `\\${m}`);
-    query = query.ilike("name", `%${escaped}%`);
-  }
-
+  // 關鍵字比對搬到 JS 做（見下方 fetched 之後）：原本只 ilike 商品名稱，
+  // 客人搜「耐陰」「適合新手」這種寫在描述裡、名稱沒有的字會一場空，
+  // 但商家後台商品列表早就連描述一起搜。逛街頁本來就把整批商品撈回來再排序，
+  // 多比一個欄位零額外查詢，也順手免掉 ilike 的 %/_ 跳脫。
   if (inStock) {
     query = query.or("stock.is.null,stock.gt.0");
   }
@@ -126,7 +125,19 @@ export default async function ShopPage({
         .order("created_at", { ascending: false });
   }
 
-  const { data: products } = await query;
+  const { data: fetched } = await query;
+  // 名稱或描述任一含關鍵字就算命中（跟後台商品列表、Cmd+K 搜尋同一套口徑）。
+  // 沒搜尋字就維持原樣，撈不到（null）也維持 null 讓下方空狀態照常判斷。
+  const ql = q.toLowerCase();
+  const products = !fetched
+    ? fetched
+    : q
+      ? fetched.filter(
+          (p) =>
+            p.name.toLowerCase().includes(ql) ||
+            (p.description ?? "").toLowerCase().includes(ql)
+        )
+      : fetched;
   // 售完的商品一律沉到列表最底。選定的排序（最新／價格／名稱）原本把已售完
   // 跟有貨的混在一起，逛街頁第一排常卡著幾株沒貨的，客人得略過才看到買得到的——
   // 跟最近替每個商品卡片補上售完標示同一個出發點：別讓人花眼力在買不到的東西上。
