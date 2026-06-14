@@ -2,6 +2,7 @@ import Link from "next/link";
 import { redirect, notFound } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { signOut } from "@/app/auth/actions";
+import { DashboardStoreTabs } from "@/app/_components/dashboard-store-tabs";
 
 type Params = Promise<{ slug: string }>;
 
@@ -42,17 +43,19 @@ export default async function StoreLayout({
     .eq("merchant_id", store.id)
     .eq("status", "pending");
 
+  // 總覽是店面根路徑、會是其他子頁的前綴，標 exact 才不會在每一頁都亮；其餘子頁 startsWith
   const tabs = [
-    { label: "總覽", href: `/dashboard/stores/${slug}`, badge: 0 },
-    { label: "編輯器", href: `/dashboard/stores/${slug}/editor`, badge: 0 },
-    { label: "商品", href: `/dashboard/stores/${slug}/products`, badge: 0 },
+    { label: "總覽", href: `/dashboard/stores/${slug}`, badge: 0, exact: true },
+    { label: "編輯器", href: `/dashboard/stores/${slug}/editor`, badge: 0, exact: false },
+    { label: "商品", href: `/dashboard/stores/${slug}/products`, badge: 0, exact: false },
     {
       label: "訂單",
       href: `/dashboard/stores/${slug}/orders`,
       badge: pendingOrderCount ?? 0,
+      exact: false,
     },
-    { label: "客人", href: `/dashboard/stores/${slug}/customers`, badge: 0 },
-    { label: "設定", href: `/dashboard/stores/${slug}/settings`, badge: 0 },
+    { label: "客人", href: `/dashboard/stores/${slug}/customers`, badge: 0, exact: false },
+    { label: "設定", href: `/dashboard/stores/${slug}/settings`, badge: 0, exact: false },
   ];
 
   return (
@@ -192,22 +195,7 @@ export default async function StoreLayout({
           </div>
         </div>
 
-        <nav className="flex gap-1 mb-6 border-b border-emerald-100 overflow-x-auto">
-          {tabs.map((tab) => (
-            <Link
-              key={tab.href}
-              href={tab.href}
-              className="px-4 py-3 text-xs tracking-[0.18em] uppercase text-emerald-900/60 hover:text-emerald-900 hover:bg-emerald-50 rounded-t-lg transition flex items-center gap-2 whitespace-nowrap"
-            >
-              <span>{tab.label}</span>
-              {tab.badge > 0 && (
-                <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-red-500 text-white font-bold tracking-normal">
-                  {tab.badge}
-                </span>
-              )}
-            </Link>
-          ))}
-        </nav>
+        <DashboardStoreTabs tabs={tabs} />
 
         {children}
       </div>
