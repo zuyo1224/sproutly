@@ -7,6 +7,7 @@ import {
   decodeShippingFromNote,
   orderStatusMessage,
 } from "@/lib/order-labels";
+import { PrintButton } from "@/app/_components/print-button";
 
 type Params = Promise<{ slug: string; id: string }>;
 
@@ -129,14 +130,22 @@ export default async function CustomerOrderDetailPage({
         >
           {formatDateTime(order.created_at)}
         </p>
-        <Link
-          href={`/${slug}/account/orders`}
-          className="sproutly-link inline-block mt-8 text-xs tracking-[0.3em] uppercase"
-          style={{ color: theme.text }}
-          data-default-line="true"
-        >
-          ← 訂單歷史
-        </Link>
+        <div className="mt-8 flex flex-wrap items-center gap-x-8 gap-y-4 print:hidden">
+          <Link
+            href={`/${slug}/account/orders`}
+            className="sproutly-link text-xs tracking-[0.3em] uppercase"
+            style={{ color: theme.text }}
+            data-default-line="true"
+          >
+            ← 訂單歷史
+          </Link>
+          {/* 列印 / 存 PDF 收據：要報帳或想留紙本底的客人用得到。結帳成功頁只看得到一次，
+              過去的單要留底就靠這裡。列印時靠 layout 的 @media print 把導覽/頁尾收乾淨，
+              這頁的按鈕自己 print:hidden、底部補一段紙本專屬店家資訊。 */}
+          <PrintButton className="sproutly-link text-xs tracking-[0.3em] uppercase">
+            列印收據 · 存 PDF
+          </PrintButton>
+        </div>
       </div>
 
       <section
@@ -480,7 +489,7 @@ export default async function CustomerOrderDetailPage({
       </section>
 
       {(store.contact_phone || store.contact_email) && (
-        <div className="flex flex-col sm:flex-row gap-3">
+        <div className="flex flex-col sm:flex-row gap-3 print:hidden">
           {store.contact_phone && (
             <a
               href={`tel:${store.contact_phone}`}
@@ -514,6 +523,40 @@ export default async function CustomerOrderDetailPage({
           )}
         </div>
       )}
+
+      {/* 列印專屬頁尾：導覽（店名/Logo）與全站頁尾列印時都被藏起來，這裡把店名＋實際
+          聯絡方式補回紙本上，客人手上的收據才看得到要找誰。螢幕上不顯示。
+          跟結帳成功頁同一套。 */}
+      <div
+        className="hidden print:block mt-8 pt-6 border-t text-center"
+        style={{ borderColor: theme.border }}
+      >
+        <p style={{ color: theme.text, fontSize: "0.9375rem", fontWeight: 500 }}>
+          {store.name}
+        </p>
+        {(store.contact_phone || store.contact_email) && (
+          <p
+            style={{
+              color: theme.textMuted,
+              fontSize: "0.8125rem",
+              marginTop: "0.25rem",
+            }}
+          >
+            {[store.contact_phone, store.contact_email]
+              .filter(Boolean)
+              .join(" · ")}
+          </p>
+        )}
+        <p
+          style={{
+            color: theme.textMuted,
+            fontSize: "0.8125rem",
+            marginTop: "0.5rem",
+          }}
+        >
+          感謝您的訂購 · 訂單編號 #{shortId}
+        </p>
+      </div>
     </main>
   );
 }
