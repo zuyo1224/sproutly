@@ -73,8 +73,46 @@ export default async function ContactPage({ params }: { params: Params }) {
   const contactTitle =
     theme.homepage.contactTitle ?? HOMEPAGE_DEFAULTS.contactTitle;
 
+  // 聯絡頁結構化資料 — 這頁專門講「怎麼找到店家」，把電話、Email、地址、營業時間
+  // 餵給 Google，客人搜「店名 電話」「店名 地址」「店名 營業時間」時，搜尋結果有機會
+  // 直接顯示這些資訊，少點一步進站。跟首頁那份用同一套欄位，只有真的有填才放。
+  const BASE_URL =
+    process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/$/, "") ??
+    "https://sproutly-drab.vercel.app";
+  const contactJsonLd: Record<string, unknown> = {
+    "@context": "https://schema.org",
+    "@type": "Store",
+    name: store.name,
+    url: `${BASE_URL}/${slug}`,
+  };
+  if (store.logo_url) contactJsonLd.logo = store.logo_url;
+  if (store.contact_phone) contactJsonLd.telephone = store.contact_phone;
+  if (store.contact_email) contactJsonLd.email = store.contact_email;
+  if (store.address) {
+    contactJsonLd.address = {
+      "@type": "PostalAddress",
+      streetAddress: store.address,
+      addressCountry: "TW",
+    };
+  }
+  if (businessHoursText) contactJsonLd.openingHours = businessHoursText;
+  // 只有真的有任何一項聯絡資訊才放結構化資料，空店面不丟空殼給 Google。
+  const hasContactData = Boolean(
+    store.contact_phone ||
+      store.contact_email ||
+      store.address ||
+      businessHoursText,
+  );
+
   return (
     <main className="max-w-3xl mx-auto px-6 sm:px-10 py-20 sm:py-28">
+      {hasContactData && (
+        <script
+          type="application/ld+json"
+          // eslint-disable-next-line react/no-danger
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(contactJsonLd) }}
+        />
+      )}
       <header className="mb-16 sm:mb-20">
         <p
           className="text-[0.6875rem] uppercase font-medium"
