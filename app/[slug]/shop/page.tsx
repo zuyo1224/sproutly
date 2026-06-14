@@ -15,10 +15,44 @@ export async function generateMetadata({
   params: Params;
 }): Promise<Metadata> {
   const { slug } = await params;
-  return {
-    title: "全部商品",
-    description: "瀏覽完整商品與庫存，看上眼直接線上下單。",
+  const title = "全部商品";
+  const description = "瀏覽完整商品與庫存，看上眼直接線上下單。";
+
+  // 店家常把這頁連結貼到 IG 限動 / LINE 群裡接客，分享卡片要顯示「全部商品 · 店名」
+  // 加上店面主視覺，而不是退回 layout 那層千篇一律的店名。沒撈到店面就只留純文字 meta。
+  const supabase = await createClient();
+  const { data: store } = await supabase
+    .from("sproutly_merchants")
+    .select("name, theme")
+    .eq("slug", slug)
+    .eq("is_published", true)
+    .maybeSingle();
+
+  const base: Metadata = {
+    title,
+    description,
     alternates: { canonical: `/${slug}/shop` },
+  };
+  if (!store) return base;
+
+  const theme = resolveTheme(store.theme);
+  const ogTitle = `${title} · ${store.name}`;
+  const ogImage = theme.heroUrl || theme.logoUrl || null;
+  return {
+    ...base,
+    openGraph: {
+      title: ogTitle,
+      description,
+      siteName: store.name,
+      type: "website",
+      images: ogImage ? [{ url: ogImage, alt: store.name }] : undefined,
+    },
+    twitter: {
+      card: ogImage ? "summary_large_image" : "summary",
+      title: ogTitle,
+      description,
+      images: ogImage ? [ogImage] : undefined,
+    },
   };
 }
 

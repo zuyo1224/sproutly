@@ -11,10 +11,44 @@ export async function generateMetadata({
   params: Params;
 }): Promise<Metadata> {
   const { slug } = await params;
-  return {
-    title: "聯絡與營業時間",
-    description: "店家地址、營業時間與聯絡方式都在這裡。",
+  const title = "聯絡與營業時間";
+  const description = "店家地址、營業時間與聯絡方式都在這裡。";
+
+  // 店家把聯絡頁連結貼到社群接客時，分享卡片要顯示「聯絡與營業時間 · 店名」+ 店面主視覺，
+  // 而不是退回 layout 那層只有店名的預設。沒撈到店面就只留純文字 meta。
+  const supabase = await createClient();
+  const { data: store } = await supabase
+    .from("sproutly_merchants")
+    .select("name, theme")
+    .eq("slug", slug)
+    .eq("is_published", true)
+    .maybeSingle();
+
+  const base: Metadata = {
+    title,
+    description,
     alternates: { canonical: `/${slug}/contact` },
+  };
+  if (!store) return base;
+
+  const theme = resolveTheme(store.theme);
+  const ogTitle = `${title} · ${store.name}`;
+  const ogImage = theme.heroUrl || theme.logoUrl || null;
+  return {
+    ...base,
+    openGraph: {
+      title: ogTitle,
+      description,
+      siteName: store.name,
+      type: "website",
+      images: ogImage ? [{ url: ogImage, alt: store.name }] : undefined,
+    },
+    twitter: {
+      card: ogImage ? "summary_large_image" : "summary",
+      title: ogTitle,
+      description,
+      images: ogImage ? [ogImage] : undefined,
+    },
   };
 }
 
