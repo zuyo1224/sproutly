@@ -7,6 +7,7 @@ import { ImageCarousel } from "@/app/_components/image-carousel";
 import { FavoriteButton } from "@/app/_components/favorite-button";
 import { AddToCartButton } from "@/app/_components/add-to-cart-button";
 import { ShareButton } from "@/app/_components/share-button";
+import { RecentlyViewed } from "@/app/_components/recently-viewed";
 
 type Params = Promise<{ slug: string; id: string }>;
 
@@ -652,6 +653,27 @@ export default async function PublicProductPage({
           </div>
         </section>
       )}
+
+      {/* 最近看過：記下這次看的這株、列出之前在這台裝置看過的其他幾株，
+          客人逛到第三株想回頭比較前兩株時一鍵跳回。純 client localStorage，
+          第一次逛店沒紀錄就整段不出現。 */}
+      <RecentlyViewed
+        slug={slug}
+        current={{
+          id: product.id,
+          name: product.name,
+          priceCents: product.price_cents,
+          currency: product.currency,
+          image: primaryImage,
+        }}
+        colors={{
+          text: theme.text,
+          textMuted: theme.textMuted,
+          accent: theme.accent,
+          surface: theme.surface,
+          bg: theme.bg,
+        }}
+      />
     </main>
   );
 }
