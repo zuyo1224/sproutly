@@ -114,6 +114,19 @@ export default async function StoreInsightsPage({
       .reduce((sum, o) => sum + o.total_cents, 0) ?? 0;
   const pendingOrders =
     allOrders?.filter((o) => o.status === "pending").length ?? 0;
+  // 「出貨了還沒收到錢」的應收。轉帳 / 貨到付款的店家最在意這個，
+  // 但首頁四張指標只有「已付款」營收，看不出還有多少錢在外面——
+  // 訂單列表（pay=unpaid 篩選）、客人列表、趨勢圖都已標出，唯獨第一眼的首頁漏了。
+  // 口徑跟訂單列表一致：未取消的單裡 payment_status 還是 unpaid 的（已退款不算）。
+  const unpaidOrders =
+    allOrders?.filter(
+      (o) => o.status !== "cancelled" && o.payment_status === "unpaid"
+    ) ?? [];
+  const outstandingCount = unpaidOrders.length;
+  const outstandingCents = unpaidOrders.reduce(
+    (sum, o) => sum + o.total_cents,
+    0
+  );
   const monthRevenue =
     monthOrders
       ?.filter(
@@ -381,6 +394,33 @@ export default async function StoreInsightsPage({
           </p>
         </div>
       </div>
+
+      {/* 應收（出貨了還沒收到錢）— 轉帳 / 貨到付款的店家一眼看到還有多少錢在外面，
+          直接點進訂單列表的「未付款」篩選去追。沒有未收款就不顯示，保持乾淨。 */}
+      {outstandingCount > 0 && (
+        <Link
+          href={`/dashboard/stores/${slug}/orders?pay=unpaid`}
+          className="flex items-center justify-between gap-4 bg-amber-50 rounded-2xl px-6 py-4 border border-amber-200 hover:bg-amber-100/60 transition group"
+        >
+          <div className="min-w-0">
+            <p className="text-[10px] tracking-[0.28em] uppercase text-amber-700/80">
+              Outstanding
+            </p>
+            <p className="mt-1 text-sm text-amber-900/90">
+              有 <span className="font-semibold">{outstandingCount}</span>{" "}
+              筆訂單還沒收到錢
+            </p>
+          </div>
+          <div className="text-right flex-shrink-0">
+            <p className="text-lg font-medium text-amber-800 tracking-tight">
+              {formatPrice(outstandingCents)}
+            </p>
+            <p className="text-[11px] text-amber-700/70 group-hover:text-amber-800 transition">
+              看未付款訂單 →
+            </p>
+          </div>
+        </Link>
+      )}
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* 14 天訂單趨勢 */}
