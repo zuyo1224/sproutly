@@ -11,6 +11,7 @@ import {
 } from "@/lib/order-labels";
 import { RememberOrder } from "@/app/_components/remember-order";
 import { RecentOrdersList } from "@/app/_components/recent-orders-list";
+import { PrintButton } from "@/app/_components/print-button";
 
 type Params = Promise<{ slug: string }>;
 type SearchParams = Promise<{ id?: string; phone?: string }>;
@@ -141,7 +142,7 @@ export default async function TrackPage({
 
   return (
     <main className="max-w-2xl mx-auto px-6 sm:px-10 py-20 sm:py-28">
-      <div className="mb-12 sm:mb-14">
+      <div className="mb-12 sm:mb-14 print:hidden">
         <p
           className="text-[0.6875rem] uppercase font-medium"
           style={{ color: theme.accent, letterSpacing: "0.4em" }}
@@ -172,7 +173,7 @@ export default async function TrackPage({
 
       <form
         method="GET"
-        className="rounded-2xl p-7 sm:p-8 mb-10 space-y-5"
+        className="rounded-2xl p-7 sm:p-8 mb-10 space-y-5 print:hidden"
         style={{
           background: theme.surface,
           border: `1px solid ${theme.border}`,
@@ -282,6 +283,33 @@ export default async function TrackPage({
             currency={order.currency}
             createdAt={order.created_at}
           />
+
+          {/* 列印 / 存 PDF 收據：轉帳要對帳、報帳或想留紙本底的客人用得到——
+              成功頁、會員訂單詳情都印得了，匿名查單這頭原本沒有。列印時自己藏起來，
+              導覽/頁尾靠 layout 的 @media print 收乾淨。 */}
+          <div className="print:hidden">
+            <PrintButton className="sproutly-btn sproutly-btn-secondary sproutly-btn-sm">
+              列印收據 · 存 PDF
+            </PrintButton>
+          </div>
+
+          {/* 列印專屬抬頭：螢幕上的頁首是「查當前狀態」搜尋標題，列印時被藏起來，
+              這裡補上店名當紙本收據的抬頭。螢幕不顯示。 */}
+          <div className="hidden print:block">
+            <p style={{ color: theme.text, fontSize: "1.125rem", fontWeight: 500 }}>
+              {store.name}
+            </p>
+            <p
+              style={{
+                color: theme.textMuted,
+                fontSize: "0.8125rem",
+                marginTop: "0.25rem",
+              }}
+            >
+              訂單收據 · #{order.id.split("-")[0].toUpperCase()}
+            </p>
+          </div>
+
           {/* 狀態 step indicator */}
           <section
             className="rounded-2xl p-7 sm:p-8"
@@ -581,7 +609,7 @@ export default async function TrackPage({
           {/* 查到單之後若還有問題，這裡直接給聯絡店家的去處，不用再跳去聯絡頁。
               Email 主旨先帶上訂單編號，店家一看就知道是哪一筆——跟會員訂單詳情同一套。 */}
           {(store.contact_phone || store.contact_email) && (
-            <div className="flex flex-col sm:flex-row gap-3">
+            <div className="flex flex-col sm:flex-row gap-3 print:hidden">
               {store.contact_phone && (
                 <a
                   href={`tel:${store.contact_phone}`}
@@ -602,10 +630,46 @@ export default async function TrackPage({
               )}
             </div>
           )}
+
+          {/* 列印專屬頁尾：導覽（店名/Logo）列印時被藏起來，這裡把店名＋實際聯絡方式
+              補回紙本上，客人手上的收據才看得到要找誰。螢幕上不顯示。跟成功頁同一套。 */}
+          <div
+            className="hidden print:block mt-8 pt-6 border-t text-center"
+            style={{ borderColor: theme.border }}
+          >
+            <p
+              style={{ color: theme.text, fontSize: "0.9375rem", fontWeight: 500 }}
+            >
+              {store.name}
+            </p>
+            {(store.contact_phone || store.contact_email) && (
+              <p
+                style={{
+                  color: theme.textMuted,
+                  fontSize: "0.8125rem",
+                  marginTop: "0.25rem",
+                }}
+              >
+                {[store.contact_phone, store.contact_email]
+                  .filter(Boolean)
+                  .join(" · ")}
+              </p>
+            )}
+            <p
+              style={{
+                color: theme.textMuted,
+                fontSize: "0.8125rem",
+                marginTop: "0.5rem",
+              }}
+            >
+              感謝您的訂購 · 訂單編號 #
+              {order.id.split("-")[0].toUpperCase()}
+            </p>
+          </div>
         </div>
       )}
 
-      <div className="mt-14 text-center">
+      <div className="mt-14 text-center print:hidden">
         <Link
           href={`/${slug}`}
           className="sproutly-link text-[0.6875rem] uppercase font-medium transition"
