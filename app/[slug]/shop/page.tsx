@@ -53,7 +53,7 @@ export default async function ShopPage({
   const supabase = await createClient();
   const { data: store } = await supabase
     .from("sproutly_merchants")
-    .select("id, theme")
+    .select("id, name, theme")
     .eq("slug", slug)
     .eq("is_published", true)
     .maybeSingle();
@@ -99,8 +99,79 @@ export default async function ShopPage({
   const shopEyebrow = theme.homepage.shopEyebrow ?? HOMEPAGE_DEFAULTS.shopEyebrow;
   const shopTitle = theme.homepage.shopTitle ?? HOMEPAGE_DEFAULTS.shopTitle;
 
+  const BASE_URL =
+    process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/$/, "") ??
+    "https://sproutly-drab.vercel.app";
+
+  // 麵包屑結構化資料 — 跟首頁的 Store、商品詳情頁的 Product/BreadcrumbList 一套，
+  // 讓 Google 搜尋結果用「店名 › 所有商品」標出這頁在店裡的位置。
+  const breadcrumbJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      {
+        "@type": "ListItem",
+        position: 1,
+        name: store.name,
+        item: `${BASE_URL}/${slug}`,
+      },
+      {
+        "@type": "ListItem",
+        position: 2,
+        name: "所有商品",
+        item: `${BASE_URL}/${slug}/shop`,
+      },
+    ],
+  };
+
+  // 商品列表結構化資料 — 首頁有 Store、商品詳情頁有 Product，唯獨這頁
+  // （客人逛街的主入口）沒有，Google 看不出這是一份商品清單。補上 ItemList
+  // 讓搜尋結果有機會直接列出商品縮圖＋價格。只在沒套用搜尋／篩選的正規網址
+  // （canonical 指向的乾淨頁）才放，避免結構化資料跟正規頁實際內容對不上；
+  // 數量設上限避免清單過長拖慢頁面。
+  const itemListJsonLd =
+    !hasFilter && products && products.length > 0
+      ? {
+          "@context": "https://schema.org",
+          "@type": "ItemList",
+          name: shopTitle,
+          numberOfItems: products.length,
+          itemListElement: products.slice(0, 30).map((p, i) => ({
+            "@type": "ListItem",
+            position: i + 1,
+            item: {
+              "@type": "Product",
+              name: p.name,
+              url: `${BASE_URL}/${slug}/products/${p.id}`,
+              image: p.image_urls?.[0] ?? undefined,
+              offers: {
+                "@type": "Offer",
+                priceCurrency: p.currency,
+                price: (p.price_cents / 100).toFixed(2),
+                availability:
+                  p.stock === null || p.stock > 0
+                    ? "https://schema.org/InStock"
+                    : "https://schema.org/OutOfStock",
+              },
+            },
+          })),
+        }
+      : null;
+
   return (
     <main className="max-w-6xl mx-auto px-6 sm:px-10 py-20 sm:py-28">
+      <script
+        type="application/ld+json"
+        // eslint-disable-next-line react/no-danger
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
+      />
+      {itemListJsonLd && (
+        <script
+          type="application/ld+json"
+          // eslint-disable-next-line react/no-danger
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(itemListJsonLd) }}
+        />
+      )}
       <header className="mb-16 sm:mb-20">
         <p
           data-edit-text="true"
