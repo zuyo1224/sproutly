@@ -344,6 +344,8 @@ export default function CartPage() {
                     <button
                       type="button"
                       onClick={() => handleRemove(p, qty)}
+                      aria-label={`從購物車移除 ${p.name}`}
+                      title="從購物車移除"
                       className="text-[0.6875rem] uppercase transition hover:opacity-100"
                       style={{
                         letterSpacing: "0.3em",
@@ -434,6 +436,7 @@ export default function CartPage() {
                 <button
                   type="button"
                   disabled
+                  aria-label="去結帳（有商品超過庫存，需先調整數量）"
                   className="sproutly-btn sproutly-btn-primary sproutly-btn-lg"
                   style={{ opacity: 0.4, cursor: "not-allowed" }}
                 >
