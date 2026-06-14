@@ -161,12 +161,14 @@ export default async function CheckoutPage({
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
                 <label
+                  htmlFor="co-name"
                   className="block text-sm font-medium mb-1.5"
                   style={{ color: theme.text }}
                 >
                   姓名 <span style={{ color: theme.accent }}>*</span>
                 </label>
                 <input
+                  id="co-name"
                   name="customer_name"
                   type="text"
                   required
@@ -176,12 +178,14 @@ export default async function CheckoutPage({
               </div>
               <div>
                 <label
+                  htmlFor="co-phone"
                   className="block text-sm font-medium mb-1.5"
                   style={{ color: theme.text }}
                 >
                   電話 <span style={{ color: theme.accent }}>*</span>
                 </label>
                 <input
+                  id="co-phone"
                   name="customer_phone"
                   type="tel"
                   required
@@ -193,12 +197,14 @@ export default async function CheckoutPage({
 
             <div>
               <label
+                htmlFor="co-email"
                 className="block text-sm font-medium mb-1.5"
                 style={{ color: theme.text }}
               >
                 Email（選填）
               </label>
               <input
+                id="co-email"
                 name="customer_email"
                 type="email"
                 placeholder="you@example.com"
@@ -211,6 +217,7 @@ export default async function CheckoutPage({
           <section className="space-y-4">
             <div>
               <p
+                id="co-shipping-label"
                 className="text-[0.6875rem] uppercase font-medium"
                 style={{
                   color: "var(--store-accent, currentColor)",
@@ -228,7 +235,12 @@ export default async function CheckoutPage({
               />
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+            <div
+              role="radiogroup"
+              aria-labelledby="co-shipping-label"
+              aria-required="true"
+              className="grid grid-cols-1 sm:grid-cols-2 gap-2"
+            >
               {SHIPPING_OPTIONS.map((opt) => (
                 <label
                   key={opt.value}
@@ -259,17 +271,20 @@ export default async function CheckoutPage({
             {/* 超商門市搜尋 */}
             <div className="pt-2">
               <label
+                htmlFor="co-store"
                 className="block text-xs mb-1.5"
                 style={{ color: theme.textMuted }}
               >
                 超商取貨門市（若選超商取貨必填）
               </label>
               <input
+                id="co-store"
                 name="shipping_store_name"
                 type="text"
                 list="cvs-stores-list"
                 placeholder="開始打字搜尋⋯例如「信義」「板橋」「7-11」"
                 autoComplete="off"
+                aria-describedby="co-store-help"
                 className="sproutly-input w-full text-sm"
               />
               <datalist id="cvs-stores-list">
@@ -310,6 +325,7 @@ export default async function CheckoutPage({
                 </a>
               </div>
               <p
+                id="co-store-help"
                 className="mt-2 text-xs"
                 style={{ color: theme.textMuted, opacity: 0.5 }}
               >
@@ -319,12 +335,14 @@ export default async function CheckoutPage({
 
             <div className="pt-2">
               <label
+                htmlFor="co-address"
                 className="block text-xs mb-1.5"
                 style={{ color: theme.textMuted }}
               >
                 收件地址（宅配必填）
               </label>
               <input
+                id="co-address"
                 name="shipping_address"
                 type="text"
                 placeholder="台北市 ..."
@@ -337,6 +355,7 @@ export default async function CheckoutPage({
           <section className="space-y-4">
             <div>
               <p
+                id="co-payment-label"
                 className="text-[0.6875rem] uppercase font-medium"
                 style={{
                   color: "var(--store-accent, currentColor)",
@@ -354,7 +373,12 @@ export default async function CheckoutPage({
               />
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+            <div
+              role="radiogroup"
+              aria-labelledby="co-payment-label"
+              aria-required="true"
+              className="grid grid-cols-1 sm:grid-cols-2 gap-2"
+            >
               {PAYMENT_OPTIONS.map((opt) => (
                 <label
                   key={opt.value}
@@ -394,12 +418,14 @@ export default async function CheckoutPage({
           {/* 備註 */}
           <section className="space-y-3">
             <label
+              htmlFor="co-note"
               className="block text-sm font-medium"
               style={{ color: theme.text }}
             >
               備註（選填）
             </label>
             <textarea
+              id="co-note"
               name="note"
               rows={3}
               placeholder="特殊需求、希望送達時間..."
