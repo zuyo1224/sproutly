@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import { getCart, updateQty, removeFromCart, addToCart } from "@/lib/cart";
+import { RecentlyViewed } from "@/app/_components/recently-viewed";
 
 type Product = {
   id: string;
@@ -199,6 +200,7 @@ export default function CartPage() {
           ))}
         </div>
       ) : itemRows.length === 0 ? (
+        <>
         <div className="py-16 max-w-md">
           <p
             className="text-[0.6875rem] uppercase font-medium"
@@ -246,6 +248,11 @@ export default function CartPage() {
             去逛逛 →
           </Link>
         </div>
+        {/* 空車不是死路：把這台裝置剛看過的幾株帶回來，客人想起「剛剛那株」
+            不用回頭一頁頁找。沒看過紀錄時整段不出現（元件自己判斷）。
+            放在 max-w-md 文字塊外，讓商品網格用整個容器寬度。 */}
+        <RecentlyViewed slug={slug} className="mt-4" />
+        </>
       ) : (
         <>
           <div className="space-y-8">
