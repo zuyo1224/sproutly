@@ -15,6 +15,7 @@ import {
   type FontKey,
 } from "@/app/[slug]/_theme";
 import { AIEditPanel } from "@/app/_components/ai-edit-panel";
+import { UnsavedChangesGuard } from "@/app/_components/unsaved-changes-guard";
 
 type Params = Promise<{ slug: string }>;
 type SearchParams = Promise<{ error?: string; saved?: string }>;
@@ -162,6 +163,9 @@ export default async function StoreSettingsPage({
       )}
 
       <form id="store-settings-form" action={updateBound} className="space-y-6">
+        {/* 店面設定一頁要填的東西多（基本資訊/聯絡/營業/FAQ/視覺/首頁文案/版面），
+            填到一半手滑關分頁或重整最痛——沿用商品表單同一套未存提醒先攔下 */}
+        <UnsavedChangesGuard />
         <section className="bg-white rounded-2xl p-6 sm:p-7 shadow-lg shadow-emerald-700/5">
           <div className="mb-5">
             <p
