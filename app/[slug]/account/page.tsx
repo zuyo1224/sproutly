@@ -41,6 +41,14 @@ export default async function CustomerAccountHome({
     .eq("merchant_id", store.id)
     .eq("customer_id", user.id);
 
+  // 「在追蹤」只算還在跑的單；已完成/已取消不該算進來（跟訂單歷史頁同一套口徑）
+  const { count: activeOrderCount } = await supabase
+    .from("sproutly_orders")
+    .select("*", { count: "exact", head: true })
+    .eq("merchant_id", store.id)
+    .eq("customer_id", user.id)
+    .in("status", ["pending", "confirmed", "shipped"]);
+
   const displayName =
     customer?.display_name ||
     customer?.email ||
@@ -48,10 +56,13 @@ export default async function CustomerAccountHome({
     "客人";
 
   const orders = orderCount ?? 0;
+  const activeOrders = activeOrderCount ?? 0;
   const caption =
     orders === 0
       ? `${displayName} · 還沒下過訂單`
-      : `${displayName} · ${orders} 筆訂單在追蹤`;
+      : activeOrders > 0
+        ? `${displayName} · ${activeOrders} 筆訂單進行中`
+        : `${displayName} · 共 ${orders} 筆訂單`;
 
   return (
     <main className="max-w-3xl mx-auto px-6 sm:px-10 py-20 sm:py-28">

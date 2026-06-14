@@ -118,6 +118,14 @@ export default async function CustomerOrdersPage({
   }
 
   const totalCount = orderList.length;
+  // 「在追蹤」只算真的還在跑的單。卡片 pill 已把進行中（accent）跟已結案（灰）分開，
+  // 標題若把已完成/已取消也算進「追蹤」，就跟下面的卡片講不同的話。
+  const activeCount = orderList.filter(
+    (o) =>
+      o.status === "pending" ||
+      o.status === "confirmed" ||
+      o.status === "shipped"
+  ).length;
 
   return (
     <main className="max-w-3xl mx-auto px-6 sm:px-10 py-20 sm:py-28">
@@ -140,7 +148,11 @@ export default async function CustomerOrdersPage({
             lineHeight: 1.15,
           }}
         >
-          {totalCount === 0 ? "還沒下過訂單" : `${totalCount} 筆訂單在追蹤`}
+          {totalCount === 0
+            ? "還沒下過訂單"
+            : activeCount > 0
+              ? `${activeCount} 筆訂單進行中`
+              : `共 ${totalCount} 筆訂單`}
         </h1>
         <div
           className="mt-5 h-px w-12"
@@ -155,7 +167,11 @@ export default async function CustomerOrdersPage({
         >
           {totalCount === 0
             ? "下單後可以在這裡追蹤狀態跟付款進度。"
-            : "點任一筆查看明細、配送資訊與聯絡店家。"}
+            : activeCount === 0
+              ? "這些單都結束了，點任一筆回顧明細或聯絡店家。"
+              : activeCount < totalCount
+                ? `${activeCount} 筆還在處理，其餘已結束。點任一筆查看明細、配送與聯絡店家。`
+                : "點任一筆查看明細、配送資訊與聯絡店家。"}
         </p>
         <Link
           href={`/${slug}/account`}
