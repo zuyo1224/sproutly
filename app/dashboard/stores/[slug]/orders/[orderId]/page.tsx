@@ -5,7 +5,11 @@ import { updateOrderStatus } from "./actions";
 import { SubmitButton } from "@/app/_components/submit-button";
 import { PrintButton } from "@/app/_components/print-button";
 import { CopyButton } from "@/app/_components/copy-button";
-import { PAYMENT_LABELS, decodeShippingFromNote } from "@/lib/order-labels";
+import {
+  PAYMENT_LABELS,
+  decodeShippingFromNote,
+  customerMessage,
+} from "@/lib/order-labels";
 
 type Params = Promise<{ slug: string; orderId: string }>;
 type SearchParams = Promise<{ error?: string; saved?: string }>;
@@ -109,6 +113,26 @@ export default async function OrderDetailPage({
   ]
     .filter(Boolean)
     .join("\n");
+
+  // 商家平常在 LINE / IG 接客，訂單進度變了要手打一段通知客人。依當下狀態
+  // 組好一段可直接貼給客人的訊息，按一下複製照貼就好，不用每次重打、不漏重點。
+  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://sproutly-drab.vercel.app";
+  const customerNote = customerMessage({
+    status: order.status,
+    customerName: order.customer_name,
+    storeName: store.name,
+    shortId,
+    items: (items ?? []).map((it) => ({
+      name: it.name_snapshot,
+      quantity: it.quantity,
+    })),
+    totalText: formatPrice(order.total_cents, order.currency),
+    shippingLabel: decodedNote.shippingLabel,
+    pickupStore: decodedNote.storeName,
+    paymentMethod: order.payment_method,
+    paymentStatus: order.payment_status,
+    trackUrl: `${baseUrl}/${slug}/track`,
+  });
 
   return (
     <div id="order-print-area">
@@ -514,6 +538,48 @@ export default async function OrderDetailPage({
               </SubmitButton>
             </section>
           </form>
+
+          {/* 給客人的訊息：依當下狀態組好一段通知，商家一鍵複製貼到 LINE / IG */}
+          <section
+            className="bg-white rounded-2xl p-7 sm:p-8 border border-emerald-100/70 space-y-4"
+            style={{ boxShadow: "var(--sproutly-elev-2)" }}
+          >
+            <div>
+              <div className="flex items-start justify-between gap-3 mb-1.5">
+                <p
+                  className="uppercase text-emerald-700/70"
+                  style={{
+                    fontSize: "0.6875rem",
+                    fontWeight: 500,
+                    letterSpacing: "0.4em",
+                  }}
+                >
+                  Message · 給客人的訊息
+                </p>
+                <CopyButton
+                  text={customerNote}
+                  copiedLabel="已複製，貼到 LINE 即可"
+                  className="shrink-0 rounded-full bg-emerald-700 px-3 py-1 text-xs font-medium text-white hover:bg-emerald-800 transition"
+                >
+                  複製訊息
+                </CopyButton>
+              </div>
+              <span aria-hidden className="block h-px w-10 bg-emerald-600/50" />
+            </div>
+            <p className="text-xs text-emerald-900/55" style={{ lineHeight: 1.7 }}>
+              依目前的「{statusBadge.label}」狀態自動寫好，改完上面的狀態再回來複製，內容會跟著更新。
+            </p>
+            <pre
+              className="rounded-xl bg-emerald-50/60 border border-emerald-100 p-4 text-emerald-900/85 whitespace-pre-wrap"
+              style={{
+                fontFamily: "inherit",
+                fontSize: "0.8125rem",
+                lineHeight: 1.75,
+              }}
+            >
+              {customerNote}
+            </pre>
+          </section>
 
           <section
             className="bg-white rounded-2xl p-7 sm:p-8 border border-emerald-100/70 space-y-3"

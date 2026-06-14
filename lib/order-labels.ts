@@ -105,6 +105,106 @@ export function orderStatusMessage(
   }
 }
 
+// 商家平常用 LINE / IG 跟客人接洽，每次訂單進度變了都要手打一段通知給客人。
+// 這裡依訂單當下狀態組一段「可直接貼給客人」的訊息，商家一鍵複製照貼即可，
+// 不用每次重打、也不會漏講重點（編號 / 品項 / 取貨方式 / 付款提醒）。
+// 用語跟查訂單頁、會員訂單頁的 orderStatusMessage / shippedMessage 同一套口徑。
+export function customerMessage(input: {
+  status: string;
+  customerName: string;
+  storeName: string;
+  shortId: string;
+  items: { name: string; quantity: number }[];
+  totalText: string;
+  shippingLabel: string | null;
+  pickupStore: string | null;
+  paymentMethod: string | null;
+  paymentStatus: string;
+  trackUrl: string | null;
+}): string {
+  const {
+    status,
+    customerName,
+    storeName,
+    shortId,
+    items,
+    totalText,
+    shippingLabel,
+    pickupStore,
+    paymentMethod,
+    paymentStatus,
+    trackUrl,
+  } = input;
+
+  const name = customerName?.trim() || "你好";
+  const lines: string[] = [];
+
+  // 開場依狀態給對的話（沿用各查訂單頁的說法，只是改成第二人稱、加上店名招呼）
+  switch (status) {
+    case "pending":
+      lines.push(
+        `${name} 你好，我是「${storeName}」，收到你的訂單了（編號 #${shortId}），我們確認後會再通知你，謝謝你的訂購！`
+      );
+      break;
+    case "confirmed":
+      lines.push(
+        `${name} 你好，我是「${storeName}」，你的訂單 #${shortId} 已經確認，正在幫你備貨，謝謝你的等待！`
+      );
+      break;
+    case "shipped":
+      lines.push(
+        `${name} 你好，我是「${storeName}」，你的訂單 #${shortId} ${shippedMessage(shippingLabel, pickupStore)}。`
+      );
+      break;
+    case "completed":
+      lines.push(
+        `${name} 你好，我是「${storeName}」，你的訂單 #${shortId} 已經完成，謝謝你的支持，有需要再來找我們！`
+      );
+      break;
+    case "cancelled":
+      lines.push(
+        `${name} 你好，我是「${storeName}」，你的訂單 #${shortId} 已取消，若有疑問歡迎直接回覆我們。`
+      );
+      break;
+    default:
+      lines.push(`${name} 你好，我是「${storeName}」，關於你的訂單 #${shortId}：`);
+  }
+
+  // 已取消就不再列品項與付款提醒，免得讓客人以為還要處理
+  if (status !== "cancelled") {
+    if (items.length > 0) {
+      lines.push("");
+      lines.push("訂購內容");
+      for (const it of items) lines.push(`・${it.name} × ${it.quantity}`);
+      lines.push(`合計 ${totalText}`);
+    }
+
+    if (shippingLabel) {
+      lines.push("");
+      lines.push(
+        pickupStore
+          ? `配送方式：${shippingLabel}（${pickupStore}）`
+          : `配送方式：${shippingLabel}`
+      );
+    }
+
+    // 付款提醒：只在還沒付、且是要客人主動處理的方式時才講，避免多嘴
+    if (paymentStatus !== "paid") {
+      if (paymentMethod === "transfer")
+        lines.push("（這筆是銀行轉帳，匯款後再跟我們說一聲就可以囉）");
+      else if (paymentMethod === "cod")
+        lines.push("（這筆是貨到付款，取貨時再付款即可）");
+    }
+  }
+
+  if (trackUrl) {
+    lines.push("");
+    lines.push(`隨時查訂單進度：${trackUrl}`);
+  }
+
+  return lines.join("\n");
+}
+
 export function decodeShippingFromNote(note: string | null): {
   shippingLabel: string | null;
   storeName: string | null;
