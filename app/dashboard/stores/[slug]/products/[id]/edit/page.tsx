@@ -4,6 +4,7 @@ import { createClient } from "@/lib/supabase/server";
 import { updateProduct, deleteProduct } from "../../actions";
 import { SubmitButton } from "@/app/_components/submit-button";
 import { ImageFilePicker } from "@/app/_components/image-file-picker";
+import { UnsavedChangesGuard } from "@/app/_components/unsaved-changes-guard";
 
 type Params = Promise<{ slug: string; id: string }>;
 type SearchParams = Promise<{ error?: string }>;
@@ -116,6 +117,7 @@ export default async function EditProductPage({
         )}
 
         <form action={updateBound} className="mt-10 space-y-6">
+          <UnsavedChangesGuard />
           <div>
             <label className="block text-emerald-700/70 mb-2" style={LABEL_STYLE}>
               Name · 商品名稱 <span className="text-red-500">*</span>
