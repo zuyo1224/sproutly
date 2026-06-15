@@ -279,9 +279,13 @@ export default async function ShopPage({
             name="q"
             type="search"
             defaultValue={q}
-            placeholder="搜尋商品名稱⋯"
+            // 這頁的搜尋早就連商品描述一起比對（commit 51d845b），客人可以搜
+            // 「耐陰」「適合新手」這種寫在描述、名稱沒有的字。但 placeholder 還寫
+            // 「商品名稱」等於把這能力藏起來——看到「名稱」的人不會想到去打特性。
+            // 跟頂部 Cmd+K 面板的「商品名或關鍵字」對齊口徑，讓人知道可以搜特性。
+            placeholder="搜尋商品名稱、特性⋯"
             className="sproutly-input pl-12"
-            aria-label="搜尋商品"
+            aria-label="搜尋商品名稱或特性"
           />
           <svg
             className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 pointer-events-none"
@@ -488,7 +492,7 @@ export default async function ShopPage({
             style={{ color: theme.textMuted, lineHeight: 1.7 }}
           >
             {q
-              ? "換個關鍵字、或先看看全部商品。"
+              ? "試試植物特性，像「耐陰」「適合新手」，或先看看全部商品。"
               : inStock
                 ? "取消「只看有貨」可以瀏覽預購商品。"
                 : "店主還沒上架商品，過幾天再回來看看吧。"}
