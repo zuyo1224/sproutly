@@ -246,8 +246,23 @@ export function SearchOverlay({ slug }: { slug: string }) {
                       color: "var(--store-text-muted, rgba(0,0,0,0.6))",
                     }}
                   >
-                    換個字試試，或回首頁逛逛
+                    換個字試試，或看看店裡其他商品
                   </p>
+                  {/* 這個快搜面板搜不到時原本只剩一句話、點不了任何東西，客人得自己
+                      關掉再找入口。給一條去全部商品頁的去路，跟其他頁面的空狀態一致。 */}
+                  <Link
+                    href={`/${slug}/shop`}
+                    onClick={() => setOpen(false)}
+                    className="sproutly-link mt-6 inline-block font-medium uppercase"
+                    data-default-line="true"
+                    style={{
+                      fontSize: "0.75rem",
+                      letterSpacing: "0.3em",
+                      color: "var(--store-accent, currentColor)",
+                    }}
+                  >
+                    看全部商品 →
+                  </Link>
                 </div>
               )}
               {!loading && !q && (
@@ -382,6 +397,35 @@ export function SearchOverlay({ slug }: { slug: string }) {
                 </Link>
                 );
               })}
+              {/* 這個快搜 API 只回前 10 筆（route.ts），搜到熱門關鍵字時後面的會被
+                  默默截掉、客人在面板裡看不到也搆不著。商品頁的 ?q= 是同一套搜尋、
+                  且能排序＋只看有貨——給一條過去的橋，把快搜接上能篩選的完整列表。 */}
+              {!loading && results.length > 0 && (
+                <Link
+                  href={`/${slug}/shop?q=${encodeURIComponent(q.trim())}`}
+                  onClick={() => setOpen(false)}
+                  className="flex items-center justify-between gap-3 px-5 py-3.5 transition hover:opacity-70"
+                  style={{
+                    borderTop:
+                      "1px solid var(--store-border, rgba(0,0,0,0.08))",
+                    color: "var(--store-accent, currentColor)",
+                  }}
+                >
+                  <span
+                    className="font-medium uppercase truncate"
+                    style={{ fontSize: "0.6875rem", letterSpacing: "0.25em" }}
+                  >
+                    在商品頁搜尋「{q.trim()}」· 可排序、篩庫存
+                  </span>
+                  <span
+                    aria-hidden
+                    className="flex-shrink-0"
+                    style={{ fontSize: "0.875rem" }}
+                  >
+                    →
+                  </span>
+                </Link>
+              )}
             </div>
           </div>
           <style>{`
