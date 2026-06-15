@@ -266,6 +266,7 @@ export default function CartCheckoutPage() {
                   name="customer_name"
                   type="text"
                   required
+                  autoComplete="name"
                   placeholder="王小明"
                   className="sproutly-input w-full"
                 />
@@ -284,6 +285,8 @@ export default function CartCheckoutPage() {
                   name="customer_phone"
                   type="tel"
                   required
+                  autoComplete="tel"
+                  inputMode="tel"
                   placeholder="0912-345-678"
                   className="sproutly-input w-full"
                 />
@@ -300,6 +303,8 @@ export default function CartCheckoutPage() {
               <input
                 name="customer_email"
                 type="email"
+                autoComplete="email"
+                inputMode="email"
                 placeholder="you@example.com"
                 className="sproutly-input w-full"
               />
@@ -442,6 +447,7 @@ export default function CartCheckoutPage() {
                   required
                   value={address}
                   onChange={(e) => setAddress(e.target.value)}
+                  autoComplete="street-address"
                   placeholder="台北市 ..."
                   className="sproutly-input w-full text-sm"
                 />
