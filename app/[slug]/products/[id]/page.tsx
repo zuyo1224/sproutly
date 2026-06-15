@@ -93,15 +93,24 @@ export default async function PublicProductPage({
     .maybeSingle();
   if (!product) notFound();
 
-  // 同店其他商品（最多 4 個）
-  const { data: relatedProducts } = await supabase
+  // 同店其他商品：先撈多一點，售完的沉到最後再取前 4。
+  // 跟 shop 逛街頁、首頁精選同一套「售完沉底」——別讓沒貨的株佔掉推薦名額，
+  // 客人往下滑「這些也在店裡」優先看到買得到的，不用點進去才發現缺貨。
+  const { data: relatedRaw } = await supabase
     .from("sproutly_products")
     .select("id, name, price_cents, currency, image_urls, stock")
     .eq("merchant_id", store.id)
     .eq("is_active", true)
     .neq("id", product.id)
     .order("created_at", { ascending: false })
-    .limit(4);
+    .limit(12);
+
+  const isSoldOut = (s: number | null) => (s !== null && s === 0 ? 1 : 0);
+  // Array.sort 穩定（ES2019+），有貨與售完兩群各自維持 created_at 倒序
+  const relatedProducts = (relatedRaw ?? [])
+    .slice()
+    .sort((a, b) => isSoldOut(a.stock) - isSoldOut(b.stock))
+    .slice(0, 4);
 
   const images: string[] = product.image_urls ?? [];
   const primaryImage = images[0] ?? null;
