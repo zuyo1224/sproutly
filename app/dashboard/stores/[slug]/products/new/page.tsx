@@ -128,6 +128,7 @@ export default async function NewProductPage({
               <input
                 name="price"
                 type="number"
+                inputMode="numeric"
                 min="0"
                 step="1"
                 required
@@ -145,6 +146,7 @@ export default async function NewProductPage({
               <input
                 name="stock"
                 type="number"
+                inputMode="numeric"
                 min="0"
                 step="1"
                 placeholder="留空 = 不追蹤庫存"

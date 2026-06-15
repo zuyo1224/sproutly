@@ -142,6 +142,7 @@ export default async function EditProductPage({
               <input
                 name="price"
                 type="number"
+                inputMode="numeric"
                 min="0"
                 step="1"
                 required
@@ -159,6 +160,7 @@ export default async function EditProductPage({
               <input
                 name="stock"
                 type="number"
+                inputMode="numeric"
                 min="0"
                 step="1"
                 defaultValue={product.stock ?? ""}
