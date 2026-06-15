@@ -42,17 +42,30 @@ export function SearchOverlay({ slug }: { slug: string }) {
         setOpen(false);
       } else if (e.key === "ArrowDown") {
         e.preventDefault();
-        setSelectedIdx((i) => Math.min(i + 1, results.length - 1));
+        // 結果清單底下那條「在商品頁搜尋」橋接也算最後一個可選項（索引 = results.length），
+        // 鍵盤往下能停在它身上，不必摸滑鼠才點得到。
+        const maxIdx = results.length > 0 ? results.length : 0;
+        setSelectedIdx((i) => Math.min(i + 1, maxIdx));
       } else if (e.key === "ArrowUp") {
         e.preventDefault();
         setSelectedIdx((i) => Math.max(i - 1, 0));
-      } else if (e.key === "Enter" && results[selectedIdx]) {
-        window.location.href = `/${slug}/products/${results[selectedIdx].id}`;
+      } else if (e.key === "Enter") {
+        // 反白在商品上就開商品；停在最後那條橋、或搜不到時的空狀態，都帶去 /shop
+        // 完整列表（有字帶 ?q= 可排序篩庫存，沒結果就純逛全部），鍵盤族不再卡在面板裡。
+        const query = q.trim();
+        if (selectedIdx < results.length && results[selectedIdx]) {
+          window.location.href = `/${slug}/products/${results[selectedIdx].id}`;
+        } else if (query) {
+          window.location.href =
+            results.length > 0
+              ? `/${slug}/shop?q=${encodeURIComponent(query)}`
+              : `/${slug}/shop`;
+        }
       }
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, [open, results, selectedIdx, slug]);
+  }, [open, results, selectedIdx, slug, q]);
 
   useEffect(() => {
     if (open) {
@@ -404,11 +417,19 @@ export function SearchOverlay({ slug }: { slug: string }) {
                 <Link
                   href={`/${slug}/shop?q=${encodeURIComponent(q.trim())}`}
                   onClick={() => setOpen(false)}
+                  // 索引接在所有商品之後（= results.length），鍵盤往下能停在它身上、
+                  // Enter 直接過去；滑鼠移上去也跟商品列一樣反白，兩種操作一致。
+                  data-result-idx={results.length}
+                  onMouseEnter={() => setSelectedIdx(results.length)}
                   className="flex items-center justify-between gap-3 px-5 py-3.5 transition hover:opacity-70"
                   style={{
                     borderTop:
                       "1px solid var(--store-border, rgba(0,0,0,0.08))",
                     color: "var(--store-accent, currentColor)",
+                    background:
+                      selectedIdx === results.length
+                        ? "var(--store-surface, rgba(0,0,0,0.04))"
+                        : "transparent",
                   }}
                 >
                   <span
