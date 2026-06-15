@@ -195,6 +195,9 @@ export default async function TrackPage({
             required
             defaultValue={rawId}
             placeholder="例如 #A1B2C3D4"
+            autoComplete="off"
+            autoCapitalize="characters"
+            spellCheck={false}
             className="sproutly-input font-mono"
           />
         </div>
@@ -210,6 +213,8 @@ export default async function TrackPage({
             id="track-phone"
             name="phone"
             type="tel"
+            inputMode="tel"
+            autoComplete="tel"
             required
             defaultValue={phone}
             placeholder="下單時填的電話"
