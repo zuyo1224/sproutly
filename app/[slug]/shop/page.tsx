@@ -4,6 +4,7 @@ import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { resolveTheme, HOMEPAGE_DEFAULTS } from "../_theme";
 import { RecentlyViewed } from "@/app/_components/recently-viewed";
+import { AutoSubmitOnChange } from "@/app/_components/auto-submit-on-change";
 
 type Params = Promise<{ slug: string }>;
 type SearchParams = Promise<{ q?: string; sort?: string; stock?: string }>;
@@ -274,6 +275,9 @@ export default async function ShopPage({
         method="GET"
         className="mb-12 flex flex-col sm:flex-row gap-3"
       >
+        {/* 排序下拉、「只看有貨」一變動就自動送出，免得客人改完還要去點「套用」。
+            沒 JavaScript 時不生效，「套用」按鈕照常運作。 */}
+        <AutoSubmitOnChange />
         <div className="flex-1 relative">
           <input
             name="q"
@@ -314,6 +318,7 @@ export default async function ShopPage({
             name="stock"
             value="1"
             defaultChecked={inStock}
+            data-autosubmit
             className="w-4 h-4 cursor-pointer"
             style={{ accentColor: theme.accent }}
             aria-label="只看有庫存"
@@ -328,6 +333,7 @@ export default async function ShopPage({
         <select
           name="sort"
           defaultValue={sort}
+          data-autosubmit
           aria-label="排序方式"
           className="sproutly-input appearance-none cursor-pointer pr-10 sm:w-48"
           style={{
