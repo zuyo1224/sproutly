@@ -100,8 +100,18 @@ export default function FavoritesPage() {
     }
     // 記住剛移除那株與原位置，6 秒內可一鍵放回
     setUndo({ product, index });
+    startUndoTimer();
+  }
+
+  // 6 秒自動收掉復原提示；但滑到 / 用鍵盤 focus 到提示上時先停錶（離開再重新計時），
+  // 免得客人正讀提示、或正用 Tab 往「復原」鈕移動時，倒數就把唯一的退路收走了。
+  function startUndoTimer() {
     if (undoTimer.current) clearTimeout(undoTimer.current);
     undoTimer.current = setTimeout(() => setUndo(null), 6000);
+  }
+
+  function pauseUndoTimer() {
+    if (undoTimer.current) clearTimeout(undoTimer.current);
   }
 
   function handleUndo() {
@@ -387,6 +397,10 @@ export default function FavoritesPage() {
           className="fixed inset-x-0 bottom-6 z-50 flex justify-center px-6 pointer-events-none"
         >
           <div
+            onMouseEnter={pauseUndoTimer}
+            onMouseLeave={startUndoTimer}
+            onFocus={pauseUndoTimer}
+            onBlur={startUndoTimer}
             className="pointer-events-auto flex items-center gap-4 rounded-full pl-5 pr-2 py-2 shadow-lg max-w-[calc(100vw-3rem)]"
             style={{
               background: "var(--store-text, #1a1a1a)",
