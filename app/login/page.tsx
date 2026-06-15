@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { signIn } from "@/app/auth/actions";
+import PasswordInput from "@/app/_components/password-input";
 
 type SearchParams = Promise<{ error?: string }>;
 
@@ -78,6 +79,7 @@ export default async function LoginPage({
                 name="email"
                 type="email"
                 required
+                autoComplete="email"
                 placeholder="you@example.com"
                 className="w-full rounded-xl border border-emerald-100 px-4 py-3 text-emerald-950 placeholder:text-emerald-900/30 outline-none focus:border-emerald-400 focus:ring-2 focus:ring-emerald-100 transition"
               />
@@ -89,12 +91,11 @@ export default async function LoginPage({
               >
                 Password · 密碼
               </label>
-              <input
+              <PasswordInput
                 name="password"
-                type="password"
                 required
+                autoComplete="current-password"
                 placeholder="密碼"
-                className="w-full rounded-xl border border-emerald-100 px-4 py-3 text-emerald-950 placeholder:text-emerald-900/30 outline-none focus:border-emerald-400 focus:ring-2 focus:ring-emerald-100 transition"
               />
             </div>
             <button

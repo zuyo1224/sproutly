@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { signUp } from "@/app/auth/actions";
+import PasswordInput from "@/app/_components/password-input";
 
 type SearchParams = Promise<{ error?: string; sent?: string }>;
 
@@ -141,6 +142,7 @@ export default async function SignupPage({
               <input
                 name="name"
                 type="text"
+                autoComplete="name"
                 placeholder="王小芽"
                 className="w-full rounded-xl border border-emerald-100 px-4 py-3 text-emerald-950 placeholder:text-emerald-900/30 outline-none focus:border-emerald-400 focus:ring-2 focus:ring-emerald-100 transition"
               />
@@ -156,6 +158,7 @@ export default async function SignupPage({
                 name="email"
                 type="email"
                 required
+                autoComplete="email"
                 placeholder="you@example.com"
                 className="w-full rounded-xl border border-emerald-100 px-4 py-3 text-emerald-950 placeholder:text-emerald-900/30 outline-none focus:border-emerald-400 focus:ring-2 focus:ring-emerald-100 transition"
               />
@@ -167,13 +170,12 @@ export default async function SignupPage({
               >
                 Password · 密碼
               </label>
-              <input
+              <PasswordInput
                 name="password"
-                type="password"
                 required
                 minLength={6}
+                autoComplete="new-password"
                 placeholder="至少 6 個字"
-                className="w-full rounded-xl border border-emerald-100 px-4 py-3 text-emerald-950 placeholder:text-emerald-900/30 outline-none focus:border-emerald-400 focus:ring-2 focus:ring-emerald-100 transition"
               />
             </div>
             <button
