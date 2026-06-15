@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { useParams } from "next/navigation";
+import { RecentlyViewed } from "@/app/_components/recently-viewed";
 
 type Product = {
   id: string;
@@ -215,6 +216,7 @@ export default function FavoritesPage() {
           ))}
         </div>
       ) : products.length === 0 ? (
+        <>
         <div className="py-16 max-w-md">
           <p
             className="text-[0.6875rem] uppercase font-medium"
@@ -262,6 +264,13 @@ export default function FavoritesPage() {
             去逛逛 →
           </Link>
         </div>
+        {/* 還沒收藏不是死路：把這台裝置剛看過的幾株帶回來，客人想起「剛剛那株」
+            可直接點回去再按愛心收藏。跟購物車空狀態、shop 搜不到時同一套用法
+            （讀取模式：不傳 current 純讀取不記錄、不傳 colors 吃店面 --store-* 變數）。
+            沒看過紀錄就整段不出現（元件自判），第一次逛店的人不受影響。
+            放在 max-w-md 文字塊外，讓商品網格用整個容器寬度。 */}
+        <RecentlyViewed slug={slug} className="mt-8" />
+        </>
       ) : (
         <div className="grid grid-cols-2 md:grid-cols-3 gap-x-6 sm:gap-x-10 gap-y-16">
           {products.map((p, i) => {
