@@ -103,6 +103,18 @@ export default async function CustomerAccountHome({
         >
           {caption}
         </p>
+        {/* 會員中心是唯一沒有「回去逛」出口的客人頁——尤其 0 筆訂單的新客落到這裡，
+            上面寫「還沒下過訂單」卻沒下一步可走。補一條跟購物車/收藏同款的逛店連結。 */}
+        <Link
+          href={`/${slug}/shop`}
+          className="mt-7 inline-flex items-center text-[0.6875rem] uppercase font-medium sproutly-link"
+          style={{
+            color: "var(--store-accent, currentColor)",
+            letterSpacing: "0.3em",
+          }}
+        >
+          {orders === 0 ? "去店裡逛逛 →" : "繼續逛 shop →"}
+        </Link>
       </header>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-5 sm:gap-6 mb-14">
