@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { notFound } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { resolveTheme, HOMEPAGE_DEFAULTS } from "../_theme";
@@ -304,6 +305,27 @@ export default async function AboutPage({ params }: { params: Params }) {
           </div>
         </section>
       )}
+
+      {/* 讀完故事 / 常見問題的客人正是最想逛逛的時候，但這頁本來到底就斷了，
+          只能捲回最上面的導覽找商品。補一條往商品頁的去路，沿用購物車 / 收藏 /
+          會員中心那幾頁「繼續逛」的同一套低調連結視覺，讓每頁都有下一步。 */}
+      <div className="mt-20 sm:mt-24 flex flex-col items-center gap-5 text-center">
+        <span
+          className="h-px w-10"
+          style={{ background: theme.accent, opacity: 0.4 }}
+        />
+        <Link
+          href={`/${slug}/shop`}
+          className="sproutly-link uppercase"
+          style={{
+            color: theme.accent,
+            fontSize: "0.75rem",
+            letterSpacing: "0.3em",
+          }}
+        >
+          看看店裡的商品 →
+        </Link>
+      </div>
     </main>
     </>
   );
