@@ -282,6 +282,29 @@ export default async function ContactPage({ params }: { params: Params }) {
           })}
         </div>
       )}
+
+      {/* 商家若在後台填了地圖嵌入網址，首頁的 Visit 區塊本來就會顯示地圖，
+          但客人專程到聯絡頁找店反而看不到位置。這裡補上同一張地圖（吃同一個
+          theme.layout.mapEmbedUrl，不需額外 API key），用聯絡區段的開關 gate
+          —— 商家把聯絡區段關掉就不從這裡外洩店面位置。 */}
+      {theme.sections.contact && theme.layout.mapEmbedUrl && (
+        <div
+          className="mt-10 rounded-2xl overflow-hidden"
+          style={{
+            border: "1px solid var(--store-border)",
+            boxShadow: "var(--sproutly-elev-2)",
+          }}
+        >
+          <iframe
+            src={theme.layout.mapEmbedUrl}
+            title={`${store.name} 店面地圖`}
+            loading="lazy"
+            referrerPolicy="no-referrer-when-downgrade"
+            className="w-full aspect-[16/10] block"
+            allowFullScreen
+          />
+        </div>
+      )}
     </main>
   );
 }
