@@ -459,6 +459,20 @@ export default function CartPage() {
               )}
             </div>
           </div>
+
+          {/* 車裡有東西時只剩「去結帳」一條去向，想再加一株得自己回 nav 找 shop。
+              補一條低調的「繼續逛」連結，讓客人加完這幾株能順手回去逛、再帶幾株——
+              空車狀態早有「去逛逛 →」，這裡沿用同一套 sproutly-link 視覺對齊。 */}
+          <div className="mt-10 text-center">
+            <Link
+              href={`/${slug}/shop`}
+              className="sproutly-link inline-block text-[0.75rem] uppercase font-medium"
+              style={{ letterSpacing: "0.3em" }}
+              data-default-line="true"
+            >
+              ← 繼續逛 shop
+            </Link>
+          </div>
         </>
       )}
 
