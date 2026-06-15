@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { resolveTheme, HOMEPAGE_DEFAULTS } from "../_theme";
+import { RecentlyViewed } from "@/app/_components/recently-viewed";
 
 type Params = Promise<{ slug: string }>;
 type SearchParams = Promise<{ q?: string; sort?: string; stock?: string }>;
@@ -441,6 +442,7 @@ export default async function ShopPage({
           })}
         </div>
       ) : (
+        <>
         <div className="py-16 max-w-md">
           <p
             className="text-[0.6875rem] uppercase font-medium"
@@ -502,6 +504,12 @@ export default async function ShopPage({
             </Link>
           )}
         </div>
+        {/* 搜尋／篩選一場空時別讓客人卡在死路——把他在這台裝置剛看過的幾株接回來，
+            跟購物車空狀態同一套處理。純 client localStorage、沒看過紀錄就整段不出現
+            （剛開店沒商品的店面客人本來也沒逛過，自然不會冒出來）。放在 max-w-md 文字塊
+            外面，讓 4 欄商品網格用整個容器寬度。 */}
+        <RecentlyViewed slug={slug} className="mt-8" />
+        </>
       )}
     </main>
   );
