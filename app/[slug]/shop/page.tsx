@@ -498,20 +498,37 @@ export default async function ShopPage({
             style={{ color: theme.textMuted, lineHeight: 1.7 }}
           >
             {q
-              ? "試試植物特性，像「耐陰」「適合新手」，或先看看全部商品。"
+              ? inStock
+                ? "也許有符合的商品暫時缺貨。保留搜尋、取消「只看有貨」再看一次，或換個關鍵字。"
+                : "試試植物特性，像「耐陰」「適合新手」，或先看看全部商品。"
               : inStock
                 ? "取消「只看有貨」可以瀏覽預購商品。"
                 : "店主還沒上架商品，過幾天再回來看看吧。"}
           </p>
           {hasFilter && (
-            <Link
-              href={`/${slug}/shop`}
-              className="sproutly-link mt-10 inline-block text-[0.75rem] uppercase font-medium"
-              style={{ letterSpacing: "0.3em" }}
-              data-default-line="true"
-            >
-              看全部商品 →
-            </Link>
+            <div className="mt-10 flex flex-wrap items-center gap-x-8 gap-y-3">
+              {/* 搜尋有字又勾了「只看有貨」卻一場空時，符合的商品可能只是暫時缺貨。
+                  先給一條「保留這次搜尋、把缺貨的也納進來」的捷徑（同 q、拿掉 stock），
+                  別讓客人為了看缺貨結果連搜尋字一起清掉、再從頭打一次。 */}
+              {q && inStock && (
+                <Link
+                  href={`/${slug}/shop?q=${encodeURIComponent(q)}`}
+                  className="sproutly-link inline-block text-[0.75rem] uppercase font-medium"
+                  style={{ letterSpacing: "0.3em" }}
+                  data-default-line="true"
+                >
+                  保留搜尋、含缺貨一起看 →
+                </Link>
+              )}
+              <Link
+                href={`/${slug}/shop`}
+                className="sproutly-link inline-block text-[0.75rem] uppercase font-medium"
+                style={{ letterSpacing: "0.3em" }}
+                data-default-line="true"
+              >
+                看全部商品 →
+              </Link>
+            </div>
           )}
         </div>
         {/* 搜尋／篩選一場空時別讓客人卡在死路——把他在這台裝置剛看過的幾株接回來，
