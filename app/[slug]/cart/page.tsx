@@ -325,6 +325,8 @@ export default function CartPage() {
                         border:
                           "1px solid var(--store-border, rgba(0,0,0,0.12))",
                       }}
+                      role="group"
+                      aria-label={`${p.name}，調整數量`}
                     >
                       <button
                         type="button"
@@ -335,11 +337,17 @@ export default function CartPage() {
                           color:
                             "var(--store-text-muted, rgba(0,0,0,0.6))",
                         }}
-                        aria-label="減少"
+                        aria-label={`減少 ${p.name} 數量`}
                       >
                         −
                       </button>
-                      <span className="w-10 text-center text-sm tabular-nums">
+                      {/* aria-live：客人按 +/− 時讀出新數量，不然數字默默變、看不見畫面的人
+                          只聽到「按鈕」沒有結果回饋。aria-atomic 確保整句一起讀。 */}
+                      <span
+                        className="w-10 text-center text-sm tabular-nums"
+                        aria-live="polite"
+                        aria-atomic="true"
+                      >
                         {qty}
                       </span>
                       <button
@@ -353,7 +361,7 @@ export default function CartPage() {
                           color:
                             "var(--store-text-muted, rgba(0,0,0,0.6))",
                         }}
-                        aria-label="增加"
+                        aria-label={`增加 ${p.name} 數量`}
                       >
                         +
                       </button>
