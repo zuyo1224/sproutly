@@ -179,7 +179,8 @@ export function ImageCarousel({ images, alt, surfaceBg }: Props) {
                   key={i}
                   type="button"
                   onClick={() => setIdx(i)}
-                  aria-label={`第 ${i + 1} 張`}
+                  aria-label={`第 ${i + 1} 張，共 ${total} 張`}
+                  aria-current={i === idx ? "true" : undefined}
                   className="transition"
                   style={{
                     width: i === idx ? 24 : 6,
@@ -247,10 +248,10 @@ export function ImageCarousel({ images, alt, surfaceBg }: Props) {
           <button
             type="button"
             onClick={() => setLightboxOpen(false)}
-            className="absolute top-4 right-4 sm:top-6 sm:right-6 text-white/80 hover:text-white text-sm tracking-widest uppercase"
-            aria-label="Close"
+            className="absolute top-4 right-4 sm:top-6 sm:right-6 text-white/80 hover:text-white text-sm tracking-widest"
+            aria-label="關閉"
           >
-            Close
+            關閉
           </button>
           <style>{`
             @keyframes sproutly-lb-fade {

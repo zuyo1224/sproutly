@@ -49,10 +49,10 @@ export function Lightbox({ src, alt, className }: Props) {
           <button
             type="button"
             onClick={() => setOpen(false)}
-            className="absolute top-4 right-4 sm:top-6 sm:right-6 text-white/80 hover:text-white text-sm tracking-widest uppercase"
-            aria-label="Close"
+            className="absolute top-4 right-4 sm:top-6 sm:right-6 text-white/80 hover:text-white text-sm tracking-widest"
+            aria-label="關閉"
           >
-            Close
+            關閉
           </button>
           <style>{`
             @keyframes sproutly-lightbox-fade {
