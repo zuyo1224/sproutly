@@ -11,10 +11,12 @@ type Preview = { url: string; name: string; size: number };
  * 純前端預覽，name="image_files" 維持原樣，server action 收到的 FormData 不變。
  */
 export function ImageFilePicker({
+  id,
   name = "image_files",
   className,
   showCoverBadge = false,
 }: {
+  id?: string;
   name?: string;
   className?: string;
   showCoverBadge?: boolean;
@@ -50,6 +52,7 @@ export function ImageFilePicker({
   return (
     <>
       <input
+        id={id}
         name={name}
         type="file"
         multiple

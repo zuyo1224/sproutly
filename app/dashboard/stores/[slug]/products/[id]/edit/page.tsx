@@ -119,10 +119,11 @@ export default async function EditProductPage({
         <form action={updateBound} className="mt-10 space-y-6">
           <UnsavedChangesGuard />
           <div>
-            <label className="block text-emerald-700/70 mb-2" style={LABEL_STYLE}>
+            <label htmlFor="name" className="block text-emerald-700/70 mb-2" style={LABEL_STYLE}>
               Name · 商品名稱 <span className="text-red-500">*</span>
             </label>
             <input
+              id="name"
               name="name"
               type="text"
               required
@@ -134,12 +135,14 @@ export default async function EditProductPage({
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
             <div>
               <label
+                htmlFor="price"
                 className="block text-emerald-700/70 mb-2"
                 style={LABEL_STYLE}
               >
                 Price · 價格 NT$ <span className="text-red-500">*</span>
               </label>
               <input
+                id="price"
                 name="price"
                 type="number"
                 inputMode="numeric"
@@ -152,12 +155,14 @@ export default async function EditProductPage({
             </div>
             <div>
               <label
+                htmlFor="stock"
                 className="block text-emerald-700/70 mb-2"
                 style={LABEL_STYLE}
               >
                 Stock · 庫存（選填）
               </label>
               <input
+                id="stock"
                 name="stock"
                 type="number"
                 inputMode="numeric"
@@ -171,10 +176,11 @@ export default async function EditProductPage({
           </div>
 
           <div>
-            <label className="block text-emerald-700/70 mb-2" style={LABEL_STYLE}>
+            <label htmlFor="description" className="block text-emerald-700/70 mb-2" style={LABEL_STYLE}>
               About · 商品描述（選填）
             </label>
             <textarea
+              id="description"
               name="description"
               rows={4}
               defaultValue={product.description ?? ""}
@@ -238,13 +244,15 @@ export default async function EditProductPage({
               </div>
             )}
 
-            <p
-              className="text-emerald-900/55 mb-2"
+            <label
+              htmlFor="image_files"
+              className="block text-emerald-900/55 mb-2"
               style={{ fontSize: "0.8125rem", lineHeight: 1.7 }}
             >
               加新圖片（可選多張）
-            </p>
+            </label>
             <ImageFilePicker
+              id="image_files"
               className="block w-full text-sm text-emerald-900/80 file:mr-4 file:py-2.5 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-medium file:bg-emerald-50 file:text-emerald-800 hover:file:bg-emerald-100 file:transition"
             />
             <p

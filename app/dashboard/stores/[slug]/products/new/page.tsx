@@ -105,10 +105,11 @@ export default async function NewProductPage({
         <form action={createWithSlug} className="mt-10 space-y-6">
           <UnsavedChangesGuard />
           <div>
-            <label className="block text-emerald-700/70 mb-2" style={LABEL_STYLE}>
+            <label htmlFor="name" className="block text-emerald-700/70 mb-2" style={LABEL_STYLE}>
               Name · 商品名稱 <span className="text-red-500">*</span>
             </label>
             <input
+              id="name"
               name="name"
               type="text"
               required
@@ -120,12 +121,14 @@ export default async function NewProductPage({
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
             <div>
               <label
+                htmlFor="price"
                 className="block text-emerald-700/70 mb-2"
                 style={LABEL_STYLE}
               >
                 Price · 價格 NT$ <span className="text-red-500">*</span>
               </label>
               <input
+                id="price"
                 name="price"
                 type="number"
                 inputMode="numeric"
@@ -138,12 +141,14 @@ export default async function NewProductPage({
             </div>
             <div>
               <label
+                htmlFor="stock"
                 className="block text-emerald-700/70 mb-2"
                 style={LABEL_STYLE}
               >
                 Stock · 庫存（選填）
               </label>
               <input
+                id="stock"
                 name="stock"
                 type="number"
                 inputMode="numeric"
@@ -156,10 +161,11 @@ export default async function NewProductPage({
           </div>
 
           <div>
-            <label className="block text-emerald-700/70 mb-2" style={LABEL_STYLE}>
+            <label htmlFor="description" className="block text-emerald-700/70 mb-2" style={LABEL_STYLE}>
               About · 商品描述（選填）
             </label>
             <textarea
+              id="description"
               name="description"
               rows={4}
               placeholder="尺寸、照顧方式、特色說明..."
@@ -169,10 +175,11 @@ export default async function NewProductPage({
           </div>
 
           <div>
-            <label className="block text-emerald-700/70 mb-2" style={LABEL_STYLE}>
+            <label htmlFor="image_files" className="block text-emerald-700/70 mb-2" style={LABEL_STYLE}>
               Photos · 商品照片（選填，可選多張）
             </label>
             <ImageFilePicker
+              id="image_files"
               showCoverBadge
               className="block w-full text-sm text-emerald-900/80 file:mr-4 file:py-2.5 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-medium file:bg-emerald-50 file:text-emerald-800 hover:file:bg-emerald-100 file:transition"
             />
@@ -192,6 +199,7 @@ export default async function NewProductPage({
               <input
                 name="image_url"
                 type="url"
+                aria-label="商品圖片網址"
                 placeholder="https://..."
                 className="mt-3 w-full rounded-xl border border-emerald-100 px-4 py-3 text-emerald-950 placeholder:text-emerald-900/30 outline-none focus:border-emerald-400 focus:ring-2 focus:ring-emerald-100 transition text-sm"
               />
