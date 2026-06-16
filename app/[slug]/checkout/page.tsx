@@ -55,7 +55,16 @@ export default async function CheckoutPage({
     .maybeSingle();
   if (!product) notFound();
 
-  const total = product.price_cents * quantity;
+  // 把顯示數量夾到實際庫存。商品詳情頁的數量選單雖已限在庫存內，但庫存可能
+  // 在客人從商品頁載入到結帳之間被別人買走，或客人帶著舊的分享／書籤網址
+  // （?qty=...）直接進來——沒夾的話結帳頁會照樣顯示一個結不掉的數量與總價，
+  // 整張表單填完按送出才被伺服器退回「庫存只剩 N 件」，等於白填一遍。
+  const stock: number | null = product.stock;
+  const soldOut = stock !== null && stock <= 0;
+  const effectiveQty =
+    stock !== null ? Math.min(quantity, Math.max(stock, 0)) : quantity;
+  const wasClamped = !soldOut && effectiveQty < quantity;
+  const total = product.price_cents * effectiveQty;
   const placeBound = placeOrder.bind(null, slug);
 
   return (
@@ -132,10 +141,59 @@ export default async function CheckoutPage({
         </div>
       )}
 
+      {soldOut && (
+        <div
+          className="mb-10 rounded-2xl p-5"
+          style={{
+            background: "rgba(220, 38, 38, 0.04)",
+            border: "1px solid rgba(220, 38, 38, 0.2)",
+            color: "#991B1B",
+          }}
+        >
+          <p
+            className="text-[0.6875rem] uppercase font-medium mb-2"
+            style={{ letterSpacing: "0.4em", opacity: 0.8 }}
+          >
+            Sold Out · 已售完
+          </p>
+          <p className="text-sm" style={{ lineHeight: 1.6 }}>
+            這株目前沒有庫存了，沒辦法下單。可以回去看看店裡其他的。
+          </p>
+          <Link
+            href={`/${slug}/shop`}
+            className="sproutly-link inline-block mt-3 text-sm"
+            style={{ color: theme.accent }}
+          >
+            看其他商品 →
+          </Link>
+        </div>
+      )}
+
+      {wasClamped && (
+        <div
+          className="mb-10 rounded-2xl p-5"
+          style={{
+            background: "rgba(217, 119, 6, 0.06)",
+            border: "1px solid rgba(217, 119, 6, 0.25)",
+            color: "#92400E",
+          }}
+        >
+          <p
+            className="text-[0.6875rem] uppercase font-medium mb-2"
+            style={{ letterSpacing: "0.4em", opacity: 0.8 }}
+          >
+            Notice · 庫存提醒
+          </p>
+          <p className="text-sm" style={{ lineHeight: 1.6 }}>
+            這株目前只剩 {stock} 件，數量已自動調整成 {effectiveQty} 件。
+          </p>
+        </div>
+      )}
+
       <div className="grid grid-cols-1 md:grid-cols-[1fr_320px] gap-10 md:gap-12">
         <form action={placeBound} className="space-y-12">
           <input type="hidden" name="product_id" value={product.id} />
-          <input type="hidden" name="quantity" value={quantity} />
+          <input type="hidden" name="quantity" value={effectiveQty} />
 
           {/* 收件資訊 */}
           <section className="space-y-5">
@@ -440,12 +498,21 @@ export default async function CheckoutPage({
           </section>
 
           <div className="pt-4">
-            <SubmitButton
-              pendingText="送出中…"
-              className="sproutly-btn sproutly-btn-primary sproutly-btn-lg w-full"
-            >
-              送出訂單
-            </SubmitButton>
+            {soldOut ? (
+              <Link
+                href={`/${slug}/shop`}
+                className="sproutly-btn sproutly-btn-secondary sproutly-btn-lg w-full"
+              >
+                看其他商品
+              </Link>
+            ) : (
+              <SubmitButton
+                pendingText="送出中…"
+                className="sproutly-btn sproutly-btn-primary sproutly-btn-lg w-full"
+              >
+                送出訂單
+              </SubmitButton>
+            )}
           </div>
           <style>{`
             form button[type="submit"].sproutly-btn-primary {
@@ -526,7 +593,7 @@ export default async function CheckoutPage({
                   className="text-xs mt-2 tabular-nums"
                   style={{ color: theme.textMuted }}
                 >
-                  × {quantity}
+                  {soldOut ? "已售完" : `× ${effectiveQty}`}
                 </p>
               </div>
             </div>
@@ -542,7 +609,7 @@ export default async function CheckoutPage({
                 style={{ color: theme.textMuted }}
               >
                 <span>小計</span>
-                <span>{formatPrice(total, product.currency)}</span>
+                <span>{soldOut ? "—" : formatPrice(total, product.currency)}</span>
               </div>
               <div
                 className="flex justify-between"
@@ -576,7 +643,7 @@ export default async function CheckoutPage({
                   lineHeight: 1,
                 }}
               >
-                {formatPrice(total, product.currency)}
+                {soldOut ? "—" : formatPrice(total, product.currency)}
               </span>
             </div>
           </div>
