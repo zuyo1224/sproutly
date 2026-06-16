@@ -350,6 +350,7 @@ export default async function OrdersListPage({
             name="q"
             type="search"
             defaultValue={q}
+            aria-label="搜尋訂單（顧客姓名、電話或 Email）"
             placeholder="搜尋顧客姓名 / 電話 / Email..."
             className="flex-1 rounded-full border border-emerald-100 px-4 py-2 outline-none focus:border-emerald-400 focus:ring-2 focus:ring-emerald-100 transition text-sm"
           />

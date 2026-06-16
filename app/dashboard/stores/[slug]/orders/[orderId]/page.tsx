@@ -484,6 +484,7 @@ export default async function OrderDetailPage({
 
               <div>
                 <label
+                  htmlFor="order-status"
                   className="block text-emerald-900/70 mb-2 uppercase"
                   style={{
                     fontSize: "0.6875rem",
@@ -494,6 +495,7 @@ export default async function OrderDetailPage({
                   Status · 訂單狀態
                 </label>
                 <select
+                  id="order-status"
                   name="status"
                   defaultValue={order.status}
                   className="w-full rounded-xl border border-emerald-100 px-3 py-2.5 outline-none focus:border-emerald-400 transition bg-white text-sm"
@@ -508,6 +510,7 @@ export default async function OrderDetailPage({
 
               <div>
                 <label
+                  htmlFor="order-payment-status"
                   className="block text-emerald-900/70 mb-2 uppercase"
                   style={{
                     fontSize: "0.6875rem",
@@ -518,6 +521,7 @@ export default async function OrderDetailPage({
                   Payment · 付款狀態
                 </label>
                 <select
+                  id="order-payment-status"
                   name="payment_status"
                   defaultValue={order.payment_status}
                   className="w-full rounded-xl border border-emerald-100 px-3 py-2.5 outline-none focus:border-emerald-400 transition bg-white text-sm"
