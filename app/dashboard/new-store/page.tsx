@@ -94,6 +94,7 @@ export default async function NewStorePage({
           <form action={createStore} className="mt-10 space-y-6">
             <div>
               <label
+                htmlFor="store-name"
                 className="block text-emerald-700/70 mb-2"
                 style={{
                   fontSize: "0.6875rem",
@@ -105,6 +106,7 @@ export default async function NewStorePage({
                 Name · 店名 <span className="text-red-500">*</span>
               </label>
               <input
+                id="store-name"
                 name="name"
                 type="text"
                 required
@@ -115,6 +117,7 @@ export default async function NewStorePage({
 
             <div>
               <label
+                htmlFor="store-slug"
                 className="block text-emerald-700/70 mb-2"
                 style={{
                   fontSize: "0.6875rem",
@@ -133,6 +136,7 @@ export default async function NewStorePage({
                   sproutly.app /
                 </span>
                 <input
+                  id="store-slug"
                   name="slug"
                   type="text"
                   required
@@ -153,6 +157,7 @@ export default async function NewStorePage({
 
             <div>
               <label
+                htmlFor="store-description"
                 className="block text-emerald-700/70 mb-2"
                 style={{
                   fontSize: "0.6875rem",
@@ -164,6 +169,7 @@ export default async function NewStorePage({
                 About · 店介紹（選填）
               </label>
               <textarea
+                id="store-description"
                 name="description"
                 rows={3}
                 placeholder="一兩句話介紹你的店，例如：來自台北的小型植物選物店，專注稀有觀葉與多肉。"
@@ -175,6 +181,7 @@ export default async function NewStorePage({
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
               <div>
                 <label
+                  htmlFor="store-phone"
                   className="block text-emerald-700/70 mb-2"
                   style={{
                     fontSize: "0.6875rem",
@@ -186,6 +193,7 @@ export default async function NewStorePage({
                   Phone · 聯絡電話
                 </label>
                 <input
+                  id="store-phone"
                   name="contact_phone"
                   type="tel"
                   placeholder="0912-345-678"
@@ -194,6 +202,7 @@ export default async function NewStorePage({
               </div>
               <div>
                 <label
+                  htmlFor="store-email"
                   className="block text-emerald-700/70 mb-2"
                   style={{
                     fontSize: "0.6875rem",
@@ -205,6 +214,7 @@ export default async function NewStorePage({
                   Email · 聯絡信箱
                 </label>
                 <input
+                  id="store-email"
                   name="contact_email"
                   type="email"
                   placeholder="hi@example.com"
@@ -215,6 +225,7 @@ export default async function NewStorePage({
 
             <div>
               <label
+                htmlFor="store-address"
                 className="block text-emerald-700/70 mb-2"
                 style={{
                   fontSize: "0.6875rem",
@@ -226,6 +237,7 @@ export default async function NewStorePage({
                 Address · 地址（選填）
               </label>
               <input
+                id="store-address"
                 name="address"
                 type="text"
                 placeholder="台北市大安區 ... "
