@@ -12,6 +12,7 @@ type Product = {
   name: string;
   price_cents: number;
   currency: string;
+  stock: number | null;
   image_urls: string[] | null;
 };
 
@@ -104,15 +105,27 @@ export default function CartCheckoutPage() {
     );
   }
 
-  const itemRows = products.map((p) => ({
-    product: p,
-    qty: cartRef.current.find((c) => c.productId === p.id)?.qty ?? 0,
-  }));
+  // 把每列的數量夾到實際庫存。購物車頁雖然已經擋掉「超量／缺貨就不讓去結帳」，
+  // 但客人可能帶著舊的書籤／分享網址直接進這頁，或庫存在他通過購物車頁到這頁
+  // 之間被別人買走（race）——沒夾的話這頁會照樣顯示一個結不掉的數量與總價，
+  // 整張表單填完按送出才被伺服器退回「庫存不足」，等於白填一遍。
+  const itemRows = products.map((p) => {
+    const qty = cartRef.current.find((c) => c.productId === p.id)?.qty ?? 0;
+    const soldOut = p.stock !== null && p.stock <= 0;
+    const effectiveQty =
+      p.stock !== null ? Math.min(qty, Math.max(p.stock, 0)) : qty;
+    const clamped = !soldOut && effectiveQty < qty;
+    return { product: p, qty, effectiveQty, soldOut, clamped };
+  });
+  // 摘要的小計／總計／件數一律吃夾過的數量，畫面上的數字才跟真正能下的單一致。
   const total = itemRows.reduce(
-    (s, r) => s + r.product.price_cents * r.qty,
+    (s, r) => s + r.product.price_cents * r.effectiveQty,
     0
   );
-  const itemCount = itemRows.reduce((s, r) => s + r.qty, 0);
+  const itemCount = itemRows.reduce((s, r) => s + r.effectiveQty, 0);
+  // 任何一列售完或被夾過，就先擋住送出、把客人帶回購物車調整，跟結帳 API 同一條
+  // 紅線。購物車頁本來就是調數量的地方，這頁只當最後一道防呆，不重做逐列加減。
+  const hasStockIssue = itemRows.some((r) => r.soldOut || r.clamped);
 
   const selectedShipping =
     SHIPPING_OPTIONS.find((o) => o.value === shippingMethod) ?? null;
@@ -122,6 +135,13 @@ export default function CartCheckoutPage() {
 
   async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
+    // 有庫存問題就不送出，請客人回購物車調整（按鈕此時也已換成回購物車連結，
+    // 這裡是雙保險，例如鍵盤直接 submit 表單）。
+    if (hasStockIssue) {
+      setError("購物車內有商品庫存不足或已售完，請回購物車調整後再結帳");
+      window.scrollTo({ top: 0, behavior: "smooth" });
+      return;
+    }
     setSubmitting(true);
     setError(null);
     const form = e.currentTarget;
@@ -129,7 +149,7 @@ export default function CartCheckoutPage() {
     fd.set(
       "cart_items",
       JSON.stringify(
-        itemRows.map((r) => ({ productId: r.product.id, qty: r.qty }))
+        itemRows.map((r) => ({ productId: r.product.id, qty: r.effectiveQty }))
       )
     );
 
@@ -225,6 +245,34 @@ export default function CartCheckoutPage() {
           <p className="text-sm" style={{ lineHeight: 1.6 }}>
             {error}
           </p>
+        </div>
+      )}
+
+      {hasStockIssue && (
+        <div
+          className="mb-10 rounded-2xl p-5"
+          style={{
+            background: "rgba(217, 119, 6, 0.06)",
+            border: "1px solid rgba(217, 119, 6, 0.25)",
+            color: "#92400E",
+          }}
+        >
+          <p
+            className="text-[0.6875rem] uppercase font-medium mb-2"
+            style={{ letterSpacing: "0.4em", opacity: 0.8 }}
+          >
+            Notice · 庫存提醒
+          </p>
+          <p className="text-sm" style={{ lineHeight: 1.6 }}>
+            購物車內有商品庫存不足或已售完，數量已先依目前庫存顯示。請回購物車調整後再結帳。
+          </p>
+          <Link
+            href={`/${slug}/cart`}
+            className="sproutly-link inline-block mt-3 text-sm"
+            style={{ color: "var(--store-accent, currentColor)" }}
+          >
+            回購物車調整 →
+          </Link>
         </div>
       )}
 
@@ -553,14 +601,23 @@ export default function CartCheckoutPage() {
           </section>
 
           <div className="pt-4">
-            <button
-              type="submit"
-              disabled={submitting}
-              className="sproutly-btn sproutly-btn-primary sproutly-btn-lg w-full"
-              aria-disabled={submitting}
-            >
-              {submitting ? "送出中…" : "送出訂單"}
-            </button>
+            {hasStockIssue ? (
+              <Link
+                href={`/${slug}/cart`}
+                className="sproutly-btn sproutly-btn-secondary sproutly-btn-lg w-full"
+              >
+                回購物車調整數量
+              </Link>
+            ) : (
+              <button
+                type="submit"
+                disabled={submitting}
+                className="sproutly-btn sproutly-btn-primary sproutly-btn-lg w-full"
+                aria-disabled={submitting}
+              >
+                {submitting ? "送出中…" : "送出訂單"}
+              </button>
+            )}
           </div>
         </form>
 
@@ -639,10 +696,12 @@ export default function CartCheckoutPage() {
                       <p
                         className="text-xs tabular-nums"
                         style={{
-                          color: "var(--store-text-muted, rgba(0,0,0,0.6))",
+                          color: r.soldOut
+                            ? "#991B1B"
+                            : "var(--store-text-muted, rgba(0,0,0,0.6))",
                         }}
                       >
-                        × {r.qty}
+                        {r.soldOut ? "已售完" : `× ${r.effectiveQty}`}
                       </p>
                       <p
                         className="text-xs tabular-nums"
@@ -650,12 +709,22 @@ export default function CartCheckoutPage() {
                           color: "var(--store-text-muted, rgba(0,0,0,0.6))",
                         }}
                       >
-                        {formatPrice(
-                          r.product.price_cents * r.qty,
-                          r.product.currency
-                        )}
+                        {r.soldOut
+                          ? "—"
+                          : formatPrice(
+                              r.product.price_cents * r.effectiveQty,
+                              r.product.currency
+                            )}
                       </p>
                     </div>
+                    {r.clamped && (
+                      <p
+                        className="mt-1 text-[0.6875rem]"
+                        style={{ color: "#92400E", lineHeight: 1.5 }}
+                      >
+                        只剩 {r.product.stock} 件，已調整
+                      </p>
+                    )}
                   </div>
                 </div>
               ))}
