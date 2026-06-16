@@ -426,11 +426,12 @@ A: 可以，地點為台北車站。`}</pre>
 
           <div className="grid grid-cols-2 gap-5">
             <div>
-              <label className="block text-sm font-medium text-emerald-900 mb-1.5">
+              <label htmlFor="theme_primary" className="block text-sm font-medium text-emerald-900 mb-1.5">
                 主色（按鈕、連結）
               </label>
               <div className="flex items-center gap-3">
                 <input
+                  id="theme_primary"
                   name="theme_primary"
                   type="color"
                   defaultValue={theme.primary}
@@ -442,11 +443,12 @@ A: 可以，地點為台北車站。`}</pre>
               </div>
             </div>
             <div>
-              <label className="block text-sm font-medium text-emerald-900 mb-1.5">
+              <label htmlFor="theme_accent" className="block text-sm font-medium text-emerald-900 mb-1.5">
                 強調色（標語、價格）
               </label>
               <div className="flex items-center gap-3">
                 <input
+                  id="theme_accent"
                   name="theme_accent"
                   type="color"
                   defaultValue={theme.accent}
@@ -573,8 +575,9 @@ A: 可以，地點為台北車站。`}</pre>
             </label>
             <div className="space-y-2">
               <div className="flex items-center gap-2">
-                <span className="text-xs text-emerald-900/60 w-20">Instagram</span>
+                <label htmlFor="social_instagram" className="text-xs text-emerald-900/60 w-20">Instagram</label>
                 <input
+                  id="social_instagram"
                   name="social_instagram"
                   type="url"
                   defaultValue={theme.social.instagram ?? ""}
@@ -583,8 +586,9 @@ A: 可以，地點為台北車站。`}</pre>
                 />
               </div>
               <div className="flex items-center gap-2">
-                <span className="text-xs text-emerald-900/60 w-20">Facebook</span>
+                <label htmlFor="social_facebook" className="text-xs text-emerald-900/60 w-20">Facebook</label>
                 <input
+                  id="social_facebook"
                   name="social_facebook"
                   type="url"
                   defaultValue={theme.social.facebook ?? ""}
@@ -593,8 +597,9 @@ A: 可以，地點為台北車站。`}</pre>
                 />
               </div>
               <div className="flex items-center gap-2">
-                <span className="text-xs text-emerald-900/60 w-20">LINE OA</span>
+                <label htmlFor="social_line" className="text-xs text-emerald-900/60 w-20">LINE OA</label>
                 <input
+                  id="social_line"
                   name="social_line"
                   type="url"
                   defaultValue={theme.social.line ?? ""}
