@@ -26,6 +26,10 @@ export function SearchOverlay({ slug }: { slug: string }) {
   const [selectedIdx, setSelectedIdx] = useState(0);
   const inputRef = useRef<HTMLInputElement>(null);
   const listRef = useRef<HTMLDivElement>(null);
+  const dialogRef = useRef<HTMLDivElement>(null);
+  // 開面板前焦點停在哪顆按鈕（通常是搜尋鈕），關掉時把焦點還回去，
+  // 鍵盤族不會關掉面板後焦點掉回頁首得重新一路 Tab 找回原處。
+  const prevFocusRef = useRef<HTMLElement | null>(null);
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
@@ -40,6 +44,29 @@ export function SearchOverlay({ slug }: { slug: string }) {
       if (e.isComposing || e.keyCode === 229) return;
       if (e.key === "Escape") {
         setOpen(false);
+      } else if (e.key === "Tab") {
+        // 面板開著時把 Tab 圈在面板內。不然鍵盤族按一下 Tab 焦點就溜到面板背後
+        // 那層還在的頁面（導覽列、頁面連結）上——焦點看不見、又得先摸到關閉鈕才回得來。
+        const dialog = dialogRef.current;
+        if (!dialog) return;
+        const focusables = dialog.querySelectorAll<HTMLElement>(
+          'a[href], button:not([disabled]), input, [tabindex]:not([tabindex="-1"])'
+        );
+        if (focusables.length === 0) return;
+        const first = focusables[0];
+        const last = focusables[focusables.length - 1];
+        const active = document.activeElement;
+        if (e.shiftKey) {
+          // 已在第一顆還往回 Tab，或焦點已經跑到面板外 → 收回到最後一顆
+          if (active === first || !dialog.contains(active)) {
+            e.preventDefault();
+            last.focus();
+          }
+        } else if (active === last || !dialog.contains(active)) {
+          // 已在最後一顆還往下 Tab，或焦點跑到面板外 → 收回到第一顆
+          e.preventDefault();
+          first.focus();
+        }
       } else if (e.key === "ArrowDown") {
         e.preventDefault();
         // 結果清單底下那條「在商品頁搜尋」橋接也算最後一個可選項（索引 = results.length），
@@ -69,6 +96,8 @@ export function SearchOverlay({ slug }: { slug: string }) {
 
   useEffect(() => {
     if (open) {
+      // 記下開面板前焦點停在哪（通常是搜尋鈕），關掉時好還回去。
+      prevFocusRef.current = document.activeElement as HTMLElement | null;
       document.body.style.overflow = "hidden";
       setTimeout(() => inputRef.current?.focus(), 50);
     } else {
@@ -76,6 +105,9 @@ export function SearchOverlay({ slug }: { slug: string }) {
       setQ("");
       setResults([]);
       setSelectedIdx(0);
+      // 把焦點還回開面板前那顆按鈕，鍵盤族不會關掉後焦點掉回頁首得重新 Tab 找回原處。
+      prevFocusRef.current?.focus?.();
+      prevFocusRef.current = null;
     }
   }, [open]);
 
@@ -166,6 +198,7 @@ export function SearchOverlay({ slug }: { slug: string }) {
           onClick={() => setOpen(false)}
         >
           <div
+            ref={dialogRef}
             className="w-full max-w-xl rounded-2xl overflow-hidden"
             role="dialog"
             aria-modal="true"
