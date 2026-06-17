@@ -116,6 +116,24 @@ export function SearchOverlay({ slug }: { slug: string }) {
     };
   }, [q, slug, open]);
 
+  // 鍵盤反白到哪一項，就把那項的 id 餵給輸入框的 aria-activedescendant，
+  // 報讀器才念得出「現在選的是這個商品」。最後那條去商品頁的橋也算一項。
+  const activeDescendantId =
+    selectedIdx < results.length
+      ? `sproutly-search-opt-${selectedIdx}`
+      : results.length > 0 && selectedIdx === results.length
+        ? "sproutly-search-opt-bridge"
+        : undefined;
+
+  // 念給報讀器聽的搜尋狀態（搜尋中／幾筆結果／沒結果），畫面上看不到。
+  const statusMessage = !q.trim()
+    ? ""
+    : loading
+      ? "搜尋中"
+      : results.length > 0
+        ? `找到 ${results.length} 個結果`
+        : "沒有符合的商品";
+
   return (
     <>
       <button
@@ -188,6 +206,12 @@ export function SearchOverlay({ slug }: { slug: string }) {
                 onChange={(e) => setQ(e.target.value)}
                 placeholder="搜尋商品⋯"
                 aria-label="搜尋商品名稱"
+                role="combobox"
+                aria-expanded={results.length > 0}
+                aria-controls="sproutly-search-results"
+                aria-autocomplete="list"
+                aria-activedescendant={activeDescendantId}
+                autoComplete="off"
                 className="flex-1 outline-none bg-transparent"
                 style={{
                   fontSize: "1rem",
@@ -210,7 +234,17 @@ export function SearchOverlay({ slug }: { slug: string }) {
                 Esc
               </button>
             </div>
-            <div ref={listRef} className="max-h-[60vh] overflow-y-auto">
+            {/* 搜尋狀態念給報讀器聽，畫面看不到（畫面用下方的 Searching／No Match 區塊呈現） */}
+            <p aria-live="polite" className="sr-only">
+              {statusMessage}
+            </p>
+            <div
+              ref={listRef}
+              id="sproutly-search-results"
+              role="listbox"
+              aria-label="搜尋結果"
+              className="max-h-[60vh] overflow-y-auto"
+            >
               {loading && (
                 <div className="px-5 py-10 text-center">
                   <p
@@ -318,6 +352,10 @@ export function SearchOverlay({ slug }: { slug: string }) {
                 return (
                 <Link
                   key={p.id}
+                  id={`sproutly-search-opt-${i}`}
+                  role="option"
+                  aria-selected={i === selectedIdx}
+                  aria-label={`${p.name}，${formatPrice(p.price_cents, p.currency)}${soldOut ? "，已售完" : lowStock ? `，剩 ${p.stock} 件` : ""}`}
                   data-result-idx={i}
                   href={`/${slug}/products/${p.id}`}
                   onClick={() => setOpen(false)}
@@ -417,6 +455,10 @@ export function SearchOverlay({ slug }: { slug: string }) {
                 <Link
                   href={`/${slug}/shop?q=${encodeURIComponent(q.trim())}`}
                   onClick={() => setOpen(false)}
+                  id="sproutly-search-opt-bridge"
+                  role="option"
+                  aria-selected={selectedIdx === results.length}
+                  aria-label={`在商品頁搜尋「${q.trim()}」，可排序、篩庫存`}
                   // 索引接在所有商品之後（= results.length），鍵盤往下能停在它身上、
                   // Enter 直接過去；滑鼠移上去也跟商品列一樣反白，兩種操作一致。
                   data-result-idx={results.length}
