@@ -51,13 +51,21 @@ export function ShareButton({
   }
 
   return (
-    <button
-      type="button"
-      onClick={share}
-      aria-label="分享這個商品"
-      className={className}
-    >
-      {copied ? "已複製連結" : children}
-    </button>
+    <>
+      <button
+        type="button"
+        onClick={share}
+        aria-label="分享這個商品"
+        className={className}
+      >
+        {copied ? "已複製連結" : children}
+      </button>
+      {/* 走複製連結那條路（桌機／舊瀏覽器沒有系統分享面板）時，按鈕的
+          aria-label 是固定的、可見文字變「已複製連結」報讀器讀不到，
+          靠這條 sr-only 的 live region 念出來，讓看不到畫面的客人也知道複製成功了。 */}
+      <span aria-live="polite" className="sr-only">
+        {copied ? "已複製連結" : ""}
+      </span>
+    </>
   );
 }
