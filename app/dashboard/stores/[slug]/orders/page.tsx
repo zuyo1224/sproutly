@@ -271,6 +271,7 @@ export default async function OrdersListPage({
               <Link
                 key={f.key}
                 href={chipHref(f.key)}
+                aria-current={active ? "true" : undefined}
                 className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm transition ${
                   active
                     ? "bg-emerald-700 text-white shadow-md shadow-emerald-700/20"
@@ -298,6 +299,7 @@ export default async function OrdersListPage({
               <Link
                 key={r.key}
                 href={dateRangeHref(r.key)}
+                aria-current={active ? "true" : undefined}
                 className={`text-sm px-3 py-1 rounded-full transition ${
                   active
                     ? "bg-emerald-100 text-emerald-900 font-medium"
@@ -319,6 +321,7 @@ export default async function OrdersListPage({
               <Link
                 key={f.key}
                 href={payHref(f.key)}
+                aria-current={active ? "true" : undefined}
                 className={`inline-flex items-center gap-1.5 text-sm px-3 py-1 rounded-full transition ${
                   active
                     ? "bg-emerald-100 text-emerald-900 font-medium"

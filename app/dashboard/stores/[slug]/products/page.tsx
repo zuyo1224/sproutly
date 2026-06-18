@@ -160,6 +160,7 @@ export default async function ProductsListPage({
                 <Link
                   key={f.key}
                   href={chipHref(f.key)}
+                  aria-current={active ? "true" : undefined}
                   className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm transition ${
                     active
                       ? "bg-emerald-700 text-white shadow-md shadow-emerald-700/20"
