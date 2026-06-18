@@ -115,6 +115,14 @@ export function ImageCarousel({ images, alt, surfaceBg }: Props) {
 
   return (
     <>
+      {/* 方向鍵翻照片時，畫面默默換圖（內嵌只有視覺計數器、燈箱連計數器都沒有），
+          報讀器使用者聽不出翻到第幾張——補一條 sr-only live 區域，idx 一變就念位置。
+          內嵌與燈箱共用同一個 idx，兩種狀態都覆蓋；單張時不會有翻頁故不念 */}
+      {total > 1 && (
+        <span className="sr-only" role="status" aria-live="polite">
+          {`第 ${idx + 1} 張，共 ${total} 張`}
+        </span>
+      )}
       <div
         className="relative aspect-square rounded-3xl overflow-hidden shadow-sm select-none"
         style={{ background: surfaceBg }}
