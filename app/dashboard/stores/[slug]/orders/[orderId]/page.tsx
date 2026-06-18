@@ -224,6 +224,7 @@ export default async function OrderDetailPage({
 
       {error && (
         <div
+          role="alert"
           className="mb-6 rounded-2xl bg-red-50/80 border border-red-200/60 p-5"
           style={{ boxShadow: "var(--sproutly-elev-2)" }}
         >
@@ -242,6 +243,8 @@ export default async function OrderDetailPage({
       )}
       {saved && (
         <div
+          role="status"
+          aria-live="polite"
           className="mb-6 rounded-2xl bg-emerald-50/80 border border-emerald-200/60 p-5"
           style={{ boxShadow: "var(--sproutly-elev-2)" }}
         >
