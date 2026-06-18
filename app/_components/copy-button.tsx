@@ -38,8 +38,16 @@ export function CopyButton({
   }
 
   return (
-    <button type="button" onClick={copy} className={className}>
-      {copied ? copiedLabel : children}
-    </button>
+    <>
+      <button type="button" onClick={copy} className={className}>
+        {copied ? copiedLabel : children}
+      </button>
+      {/* 按鈕文字換成「已複製」只有看得到畫面的人收得到。按鈕的名稱
+          就是這段文字，名稱變化報讀器不會主動念，補一條 sr-only 即時
+          區，複製成功瞬間念出來。 */}
+      <span className="sr-only" role="status" aria-live="polite">
+        {copied ? copiedLabel : ""}
+      </span>
+    </>
   );
 }

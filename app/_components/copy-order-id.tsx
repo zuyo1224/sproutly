@@ -29,26 +29,33 @@ export function CopyOrderId({ shortId }: { shortId: string }) {
   }
 
   return (
-    <button
-      type="button"
-      onClick={copy}
-      aria-label={copied ? "已複製訂單編號" : `複製訂單編號 ${shortId}`}
-      className="font-mono inline-flex items-center gap-1.5 align-baseline transition-opacity hover:opacity-70"
-      style={{ color: "var(--store-text)", letterSpacing: "0.05em" }}
-    >
-      <strong style={{ fontWeight: 600 }}>#{shortId}</strong>
-      <span
-        aria-hidden="true"
-        style={{
-          color: copied ? "var(--store-accent)" : "var(--store-text-muted)",
-          fontSize: "0.6875rem",
-          letterSpacing: "0.15em",
-          fontFamily: "var(--store-font)",
-          opacity: copied ? 1 : 0.75,
-        }}
+    <>
+      <button
+        type="button"
+        onClick={copy}
+        aria-label={copied ? "已複製訂單編號" : `複製訂單編號 ${shortId}`}
+        className="font-mono inline-flex items-center gap-1.5 align-baseline transition-opacity hover:opacity-70"
+        style={{ color: "var(--store-text)", letterSpacing: "0.05em" }}
       >
-        {copied ? "已複製" : "複製"}
+        <strong style={{ fontWeight: 600 }}>#{shortId}</strong>
+        <span
+          aria-hidden="true"
+          style={{
+            color: copied ? "var(--store-accent)" : "var(--store-text-muted)",
+            fontSize: "0.6875rem",
+            letterSpacing: "0.15em",
+            fontFamily: "var(--store-font)",
+            opacity: copied ? 1 : 0.75,
+          }}
+        >
+          {copied ? "已複製" : "複製"}
+        </span>
+      </button>
+      {/* 複製成功只把 aria-label 換掉，但焦點停在同一顆按鈕上，名稱變化
+          報讀器不會主動念。補一條 sr-only 即時區，按下複製成功才念。 */}
+      <span className="sr-only" role="status" aria-live="polite">
+        {copied ? "已複製訂單編號" : ""}
       </span>
-    </button>
+    </>
   );
 }
