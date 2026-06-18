@@ -102,6 +102,7 @@ export default async function StoreSettingsPage({
 
       {error && (
         <div
+          role="alert"
           className="mb-6 rounded-2xl bg-red-50/80 p-5 border border-red-200/70"
           style={{ boxShadow: "0 1px 2px rgba(127,29,29,0.04)" }}
         >
@@ -123,6 +124,8 @@ export default async function StoreSettingsPage({
       )}
       {saved && (
         <div
+          role="status"
+          aria-live="polite"
           className="mb-6 rounded-2xl bg-emerald-50/80 p-5 border border-emerald-200/70 animate-in fade-in slide-in-from-top-2"
           style={{
             boxShadow:
