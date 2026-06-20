@@ -33,6 +33,7 @@ export function StoreMobileNav({
   const [open, setOpen] = useState(false);
   const pathname = usePathname();
   const wrapRef = useRef<HTMLDivElement>(null);
+  const buttonRef = useRef<HTMLButtonElement>(null);
   const homeHref = `/${slug}`;
 
   // 換頁就收起（點了選單裡的連結之後不該還開著）
@@ -49,7 +50,13 @@ export function StoreMobileNav({
       }
     }
     function onKey(e: KeyboardEvent) {
-      if (e.key === "Escape") setOpen(false);
+      if (e.key === "Escape") {
+        setOpen(false);
+        // 鍵盤族若已 Tab 進選單某條連結，按 Esc 收合後那條連結被移除，
+        // 焦點會掉回頁面最上面得重新一路 Tab。把焦點還回漢堡按鈕，停在原處。
+        // （點外面是滑鼠操作，不在此路徑、不搶焦點。）
+        buttonRef.current?.focus();
+      }
     }
     document.addEventListener("pointerdown", onPointer);
     document.addEventListener("keydown", onKey);
@@ -62,6 +69,7 @@ export function StoreMobileNav({
   return (
     <div ref={wrapRef} className={`relative ${className ?? ""}`}>
       <button
+        ref={buttonRef}
         type="button"
         onClick={() => setOpen((v) => !v)}
         className="inline-flex items-center justify-center px-2 py-2 transition hover:opacity-70"
