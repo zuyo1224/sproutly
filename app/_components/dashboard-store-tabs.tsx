@@ -7,6 +7,8 @@ type Tab = {
   label: string;
   href: string;
   badge: number;
+  // 報讀器要念的 badge 語意（如「筆待處理」）。沒給就只念數字。
+  badgeLabel?: string;
   // 總覽分頁的 href 是店面根路徑，會是其他所有子頁的前綴，
   // 所以只能完全相等才算 active；其餘子頁用 startsWith。
   exact: boolean;
@@ -42,7 +44,12 @@ export function DashboardStoreTabs({ tabs }: { tabs: Tab[] }) {
             <span>{tab.label}</span>
             {tab.badge > 0 && (
               <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-red-500 text-white font-bold tracking-normal">
-                {tab.badge}
+                <span aria-hidden="true">{tab.badge}</span>
+                <span className="sr-only">
+                  {tab.badgeLabel
+                    ? `${tab.badge} ${tab.badgeLabel}`
+                    : tab.badge}
+                </span>
               </span>
             )}
           </Link>

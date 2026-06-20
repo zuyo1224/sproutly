@@ -52,6 +52,7 @@ export default async function StoreLayout({
       label: "訂單",
       href: `/dashboard/stores/${slug}/orders`,
       badge: pendingOrderCount ?? 0,
+      badgeLabel: "筆待處理",
       exact: false,
     },
     { label: "客人", href: `/dashboard/stores/${slug}/customers`, badge: 0, exact: false },
@@ -97,6 +98,7 @@ export default async function StoreLayout({
                   <Link
                     key={s.slug}
                     href={`/dashboard/stores/${s.slug}`}
+                    aria-current={s.slug === slug ? "true" : undefined}
                     className={`block px-4 py-2.5 hover:bg-emerald-50/60 transition ${
                       s.slug === slug ? "bg-emerald-50/40" : ""
                     }`}
@@ -122,7 +124,12 @@ export default async function StoreLayout({
                           {s.is_published ? "已發布" : "草稿"}
                         </span>
                         {s.slug === slug && (
-                          <span className="text-emerald-600 text-sm">✓</span>
+                          <span
+                            className="text-emerald-600 text-sm"
+                            aria-hidden="true"
+                          >
+                            ✓
+                          </span>
                         )}
                       </div>
                     </div>
