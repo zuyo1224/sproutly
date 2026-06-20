@@ -813,8 +813,16 @@ export default async function PublicStoreLayout({
         </div>
       </header>
 
-      {/* 各 page 內部會包自己的 <main>，這裡用 div 避免 nested main */}
-      <div id="main-content" className="flex-1">{children}</div>
+      {/* 各 page 內部會包自己的 <main>，這裡用 div 避免 nested main。
+          tabIndex=-1：讓 skip link 與「回到頂部」能把焦點程式化搬進來，
+          但不進一般 Tab 順序；focus 時不畫外框（容器不需視覺 focus ring）。 */}
+      <div
+        id="main-content"
+        className="flex-1 outline-none"
+        tabIndex={-1}
+      >
+        {children}
+      </div>
 
       <footer
         className="border-t mt-16"
