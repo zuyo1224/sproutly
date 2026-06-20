@@ -361,7 +361,14 @@ export default async function DashboardPage() {
                           letterSpacing: "0.3em",
                         }}
                       >
-                        {store.is_published ? "Live" : "Draft"}
+                        <span aria-hidden="true">
+                          {store.is_published ? "Live" : "Draft"}
+                        </span>
+                        <span className="sr-only">
+                          {store.is_published
+                            ? "狀態：已發布"
+                            : "狀態：草稿，尚未發布"}
+                        </span>
                       </span>
                     </div>
                     <p
@@ -434,7 +441,10 @@ export default async function DashboardPage() {
                               className="ml-1 text-amber-700 font-medium"
                               style={{ fontSize: "0.6875rem" }}
                             >
-                              ({pending} 待)
+                              <span aria-hidden="true">({pending} 待)</span>
+                              <span className="sr-only">
+                                ，其中 {pending} 筆待處理
+                              </span>
                             </span>
                           )}
                         </p>
@@ -481,9 +491,13 @@ export default async function DashboardPage() {
                       ) : (
                         <span
                           title="店面是草稿狀態，發布後才能看到"
+                          aria-disabled="true"
                           className="flex-1 text-center text-sm rounded-full border border-emerald-100 text-emerald-900/30 px-4 py-2 cursor-not-allowed font-medium"
                         >
-                          未發布
+                          <span aria-hidden="true">未發布</span>
+                          <span className="sr-only">
+                            店面尚未發布，發布後才能查看
+                          </span>
                         </span>
                       )}
                     </div>
