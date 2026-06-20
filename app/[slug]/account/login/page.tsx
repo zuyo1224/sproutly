@@ -78,6 +78,8 @@ export default async function CustomerLoginPage({
 
       {sent ? (
         <div
+          role="status"
+          aria-live="polite"
           className="rounded-2xl p-7 sm:p-8 text-center"
           style={{
             background: theme.surface,
@@ -134,6 +136,7 @@ export default async function CustomerLoginPage({
         <>
           {error && (
             <div
+              role="alert"
               className="mb-6 rounded-2xl p-5"
               style={{
                 background: theme.surface,

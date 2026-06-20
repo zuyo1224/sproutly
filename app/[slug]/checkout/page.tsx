@@ -122,6 +122,7 @@ export default async function CheckoutPage({
 
       {error && (
         <div
+          role="alert"
           className="mb-10 rounded-2xl p-5"
           style={{
             background: "rgba(220, 38, 38, 0.04)",
@@ -143,6 +144,7 @@ export default async function CheckoutPage({
 
       {soldOut && (
         <div
+          role="alert"
           className="mb-10 rounded-2xl p-5"
           style={{
             background: "rgba(220, 38, 38, 0.04)",
@@ -171,6 +173,8 @@ export default async function CheckoutPage({
 
       {wasClamped && (
         <div
+          role="status"
+          aria-live="polite"
           className="mb-10 rounded-2xl p-5"
           style={{
             background: "rgba(217, 119, 6, 0.06)",
