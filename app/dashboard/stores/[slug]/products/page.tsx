@@ -154,6 +154,7 @@ export default async function ProductsListPage({
       {count > 0 && (
         <div className="bg-white rounded-2xl p-4 shadow-lg shadow-emerald-700/5 mb-4 space-y-3">
           <div className="flex flex-wrap gap-2">
+            <span className="sr-only">依商品狀態篩選：</span>
             {STATUS_FILTERS.map((f) => {
               const active = filter === f.key;
               return (
@@ -174,6 +175,7 @@ export default async function ProductsListPage({
                     }`}
                   >
                     {filterCounts[f.key]}
+                    <span className="sr-only"> 件</span>
                   </span>
                 </Link>
               );
@@ -231,6 +233,7 @@ export default async function ProductsListPage({
                   />
                 ) : (
                   <span
+                    aria-hidden
                     className="uppercase text-emerald-900/40"
                     style={{ fontSize: "0.625rem", letterSpacing: "0.3em" }}
                   >
@@ -244,15 +247,19 @@ export default async function ProductsListPage({
                     {p.name}
                   </h3>
                   {!p.is_active && (
-                    <span
-                      className="uppercase px-2 py-0.5 rounded-full bg-zinc-100 text-zinc-600"
-                      style={{
-                        fontSize: "0.625rem",
-                        letterSpacing: "0.3em",
-                      }}
-                    >
-                      Inactive · 停售
-                    </span>
+                    <>
+                      <span
+                        aria-hidden
+                        className="uppercase px-2 py-0.5 rounded-full bg-zinc-100 text-zinc-600"
+                        style={{
+                          fontSize: "0.625rem",
+                          letterSpacing: "0.3em",
+                        }}
+                      >
+                        Inactive · 停售
+                      </span>
+                      <span className="sr-only">，狀態：停售中</span>
+                    </>
                   )}
                 </div>
                 {p.description && (
@@ -289,7 +296,8 @@ export default async function ProductsListPage({
                     className="mt-1 uppercase text-emerald-900/50"
                     style={{ fontSize: "0.625rem", letterSpacing: "0.3em" }}
                   >
-                    Stock {p.stock}
+                    <span aria-hidden>Stock {p.stock}</span>
+                    <span className="sr-only">庫存 {p.stock} 件</span>
                   </p>
                 ) : null}
               </div>
