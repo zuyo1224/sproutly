@@ -256,7 +256,8 @@ export default async function OrdersListPage({
             href={exportHref()}
             className="rounded-full bg-white border-2 border-emerald-200 px-4 py-2 text-sm font-medium text-emerald-900 hover:bg-emerald-50 transition"
           >
-            {filterActive ? "⬇ 匯出這批" : "⬇ 匯出 CSV"}
+            <span aria-hidden="true">⬇ </span>
+            {filterActive ? "匯出這批" : "匯出 CSV"}
           </a>
         )}
       </div>
@@ -264,6 +265,7 @@ export default async function OrdersListPage({
       {/* 狀態 chips + 日期 chips + 搜尋 bar */}
       <div className="bg-white rounded-2xl p-4 shadow-lg shadow-emerald-700/5 mb-4 space-y-3">
         <div className="flex flex-wrap gap-2">
+          <span className="sr-only">狀態：</span>
           {STATUS_FILTERS.map((f) => {
             const count = statusCounts[f.key] ?? 0;
             const active = status === f.key;
@@ -285,6 +287,7 @@ export default async function OrdersListPage({
                   }`}
                 >
                   {count}
+                  <span className="sr-only"> 筆</span>
                 </span>
               </Link>
             );
@@ -331,6 +334,7 @@ export default async function OrdersListPage({
                 {f.label}
                 <span className="text-xs text-emerald-900/45 tabular-nums">
                   {count}
+                  <span className="sr-only"> 筆</span>
                 </span>
               </Link>
             );
