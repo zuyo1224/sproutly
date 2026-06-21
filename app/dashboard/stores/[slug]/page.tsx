@@ -291,9 +291,15 @@ export default async function StoreInsightsPage({
               <li key={i}>
                 {s.done ? (
                   <div className="flex items-center gap-3 px-3 py-2.5 rounded-xl">
-                    <span className="w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold bg-emerald-600 text-white flex-shrink-0">
+                    <span
+                      aria-hidden="true"
+                      className="w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold bg-emerald-600 text-white flex-shrink-0"
+                    >
                       ✓
                     </span>
+                    {/* 報讀器只看到 line-through（純視覺）跟孤立的 ✓（念成核取記號），
+                        聽不出這步「已完成」；補一句 sr-only 把狀態講白。 */}
+                    <span className="sr-only">已完成：</span>
                     <span className="text-sm text-emerald-900/60 line-through">
                       {s.label}
                     </span>
@@ -303,13 +309,20 @@ export default async function StoreInsightsPage({
                     href={s.href}
                     className="flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-emerald-50/60 transition group"
                   >
-                    <span className="w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold bg-emerald-100 text-emerald-700 flex-shrink-0">
+                    <span
+                      aria-hidden="true"
+                      className="w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold bg-emerald-100 text-emerald-700 flex-shrink-0"
+                    >
                       {i + 1}
                     </span>
+                    <span className="sr-only">待完成：</span>
                     <span className="flex-1 text-sm font-medium text-emerald-950">
                       {s.label}
                     </span>
-                    <span className="text-xs text-emerald-700 opacity-0 group-hover:opacity-100 transition">
+                    <span
+                      aria-hidden="true"
+                      className="text-xs text-emerald-700 opacity-0 group-hover:opacity-100 transition"
+                    >
                       去做 →
                     </span>
                   </Link>
@@ -454,19 +467,41 @@ export default async function StoreInsightsPage({
               這 14 天還沒有訂單
             </div>
           ) : (
-            <div className="flex items-end gap-1.5 h-40">
+            /* 長條圖純靠高度與 hover 浮層傳資料，報讀器使用者觸發不了浮層、
+               念到的反而是 DOM 裡 opacity-0 的浮層字（每個空日子都念「尚無訂單」很吵）。
+               整排補 role=list、每根長條補一句完整 aria-label（日期＋筆數＋進帳），
+               內部浮層與日期字改 aria-hidden 退出報讀器，避免重複念。零視覺更動。 */
+            <div
+              className="flex items-end gap-1.5 h-40"
+              role="list"
+              aria-label="過去 14 天每日訂單數"
+            >
               {trendData.map((d, i) => {
                 const heightPct = (d.orders / maxOrders) * 100;
                 const isToday = i === trendData.length - 1;
                 const dateStr = d.label;
+                const srLabel = `${d.label}${isToday ? "（今天）" : ""}：${
+                  d.orders === 0
+                    ? "尚無訂單"
+                    : `${d.orders} 筆訂單${
+                        d.revenue > 0
+                          ? `，進帳 ${formatPrice(d.revenue)}`
+                          : "，未進帳"
+                      }`
+                }`;
                 return (
                   <div
                     key={i}
+                    role="listitem"
+                    aria-label={srLabel}
                     className="relative flex-1 flex flex-col items-center gap-1.5 group"
                   >
                     {/* 浮層用絕對定位，不撐高長條；hover 同時看到當天筆數與進帳，
                         當天有單卻沒收到錢就明寫「未進帳」，一眼分得出空有訂單的日子。 */}
-                    <div className="pointer-events-none absolute -top-1 left-1/2 -translate-x-1/2 -translate-y-full z-10 px-2 py-1 rounded-md bg-emerald-900 text-white text-[10px] font-medium whitespace-nowrap opacity-0 group-hover:opacity-100 transition shadow-sm">
+                    <div
+                      aria-hidden="true"
+                      className="pointer-events-none absolute -top-1 left-1/2 -translate-x-1/2 -translate-y-full z-10 px-2 py-1 rounded-md bg-emerald-900 text-white text-[10px] font-medium whitespace-nowrap opacity-0 group-hover:opacity-100 transition shadow-sm"
+                    >
                       {d.orders === 0
                         ? "尚無訂單"
                         : `${d.orders} 筆 · ${
@@ -485,6 +520,7 @@ export default async function StoreInsightsPage({
                       />
                     </div>
                     <span
+                      aria-hidden="true"
                       className={`text-[10px] ${
                         isToday
                           ? "text-emerald-900 font-medium"
@@ -684,7 +720,8 @@ export default async function StoreInsightsPage({
                         className="text-xs px-3 py-1.5 rounded-full bg-emerald-700 text-white hover:bg-emerald-800 transition font-medium shadow-sm"
                         title="一鍵確認訂單"
                       >
-                        確認 ✓
+                        確認{" "}
+                        <span aria-hidden="true">✓</span>
                       </button>
                     </form>
                   )}
