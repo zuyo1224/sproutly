@@ -190,11 +190,13 @@ export default async function OrderDetailPage({
             <span
               className={`inline-block text-xs px-2.5 py-1 rounded-full ${statusBadge.color}`}
             >
+              <span className="sr-only">訂單狀態：</span>
               {statusBadge.label}
             </span>
             <span
               className={`inline-block text-xs px-2.5 py-1 rounded-full ${paymentBadge.color}`}
             >
+              <span className="sr-only">付款狀態：</span>
               {paymentBadge.label}
             </span>
           </div>
@@ -614,7 +616,8 @@ export default async function OrderDetailPage({
                   className="text-emerald-700/60 uppercase w-16 shrink-0"
                   style={{ letterSpacing: "0.25em", fontWeight: 500 }}
                 >
-                  Placed
+                  <span aria-hidden="true">Placed</span>
+                  <span className="sr-only">下單時間</span>
                 </dt>
                 <dd className="text-emerald-950 tabular-nums">
                   {formatDateTime(order.created_at)}
@@ -626,7 +629,8 @@ export default async function OrderDetailPage({
                     className="text-emerald-700/60 uppercase w-16 shrink-0"
                     style={{ letterSpacing: "0.25em", fontWeight: 500 }}
                   >
-                    Paid
+                    <span aria-hidden="true">Paid</span>
+                    <span className="sr-only">付款時間</span>
                   </dt>
                   <dd className="text-emerald-950 tabular-nums">
                     {formatDateTime(order.paid_at)}
@@ -639,7 +643,8 @@ export default async function OrderDetailPage({
                     className="text-emerald-700/60 uppercase w-16 shrink-0"
                     style={{ letterSpacing: "0.25em", fontWeight: 500 }}
                   >
-                    Shipped
+                    <span aria-hidden="true">Shipped</span>
+                    <span className="sr-only">出貨時間</span>
                   </dt>
                   <dd className="text-emerald-950 tabular-nums">
                     {formatDateTime(order.shipped_at)}
