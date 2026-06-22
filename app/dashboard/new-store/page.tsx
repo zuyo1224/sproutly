@@ -104,13 +104,18 @@ export default async function NewStorePage({
                   letterSpacing: "0.4em",
                 }}
               >
-                Name · 店名 <span className="text-red-500">*</span>
+                Name · 店名{" "}
+                <span className="text-red-500" aria-hidden="true">
+                  *
+                </span>
+                <span className="sr-only">（必填）</span>
               </label>
               <input
                 id="store-name"
                 name="name"
                 type="text"
                 required
+                aria-required="true"
                 placeholder="例如：Plantae Market"
                 className="w-full rounded-xl border border-emerald-100 px-4 py-3 text-emerald-950 placeholder:text-emerald-900/30 outline-none focus:border-emerald-400 focus:ring-2 focus:ring-emerald-100 transition"
               />
@@ -127,7 +132,11 @@ export default async function NewStorePage({
                   letterSpacing: "0.4em",
                 }}
               >
-                Slug · 店面網址 <span className="text-red-500">*</span>
+                Slug · 店面網址{" "}
+                <span className="text-red-500" aria-hidden="true">
+                  *
+                </span>
+                <span className="sr-only">（必填）</span>
               </label>
               <div className="flex items-center rounded-xl border border-emerald-100 overflow-hidden focus-within:border-emerald-400 focus-within:ring-2 focus-within:ring-emerald-100 transition">
                 <span
@@ -141,6 +150,8 @@ export default async function NewStorePage({
                   name="slug"
                   type="text"
                   required
+                  aria-required="true"
+                  aria-describedby="store-slug-help"
                   pattern="[a-z0-9\-]+"
                   minLength={3}
                   maxLength={32}
@@ -149,6 +160,7 @@ export default async function NewStorePage({
                 />
               </div>
               <p
+                id="store-slug-help"
                 className="mt-2 text-emerald-900/55"
                 style={{ fontSize: "0.8125rem", lineHeight: 1.7 }}
               >
