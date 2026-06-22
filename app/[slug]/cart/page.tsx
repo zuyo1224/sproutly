@@ -25,6 +25,13 @@ export default function CartPage() {
   const params = useParams();
   const slug = params.slug as string;
   const [products, setProducts] = useState<Product[] | null>(null);
+  // 車裡的商品 id／數量都存在 localStorage，fetch 只是去補名稱/價格/庫存/圖。原本
+  // load() 對 fetch 零錯誤處理：網路一閃失或 API 回 500/非陣列，res.json() 一丟錯就
+  // 靜靜 reject，products 永遠停在 null → 整頁卡在「整理中⋯」骨架、到不了結帳，客人
+  // 以為購物車壞了，其實東西還在身上。用 failed 標記讀取失敗、改顯示「沒不見、重試
+  // 一下」的退路；reloadKey 讓重試鈕重跑 effect。
+  const [failed, setFailed] = useState(false);
+  const [reloadKey, setReloadKey] = useState(0);
   // 純粹當重新渲染的觸發器：購物車變動時 +1 強制重算 cart / idsKey / 各列數量。
   const [, bumpCart] = useState(0);
   // 剛移除的商品先暫存，讓客人有機會「復原」——按 Remove 是一鍵就清掉，
@@ -85,18 +92,28 @@ export default function CartPage() {
         if (!cancelled) setProducts([]);
         return;
       }
-      const res = await fetch(
-        `/${slug}/favorites/api?ids=${encodeURIComponent(idsKey)}`,
-        { cache: "no-store" }
-      );
-      const data: Product[] = await res.json();
-      if (!cancelled) setProducts(data);
+      try {
+        const res = await fetch(
+          `/${slug}/favorites/api?ids=${encodeURIComponent(idsKey)}`,
+          { cache: "no-store" }
+        );
+        if (!res.ok) throw new Error(`cart api ${res.status}`);
+        const data = await res.json();
+        // 非陣列（API 異常回了物件/錯誤）就當讀取失敗，別讓後面 (products ?? []).map 炸頁。
+        if (!Array.isArray(data)) throw new Error("cart api: not an array");
+        if (!cancelled) setProducts(data as Product[]);
+      } catch {
+        // 讀失敗就掛 failed、別讓 products 停在 null 整頁卡骨架；車裡的 id/數量
+        // 還在 localStorage，沒有不見，給重試退路即可。
+        if (!cancelled) setFailed(true);
+      }
     }
+    setFailed(false);
     load();
     return () => {
       cancelled = true;
     };
-  }, [idsKey, slug]);
+  }, [idsKey, slug, reloadKey]);
 
   useEffect(() => {
     const onChange = () => bumpCart((v) => v + 1);
@@ -162,7 +179,9 @@ export default function CartPage() {
             lineHeight: 1.7,
           }}
         >
-          {products === null
+          {failed
+            ? "暫時讀不到購物車"
+            : products === null
             ? "整理中⋯"
             : itemRows.length === 0
             ? "這裡會放你準備帶回家的植物"
@@ -170,7 +189,62 @@ export default function CartPage() {
         </p>
       </header>
 
-      {products === null ? (
+      {failed ? (
+        // 讀取失敗：車裡的 id/數量還在身上，沒不見，給一條「重試」退路而不是卡骨架。
+        <div className="py-16 max-w-md">
+          <p
+            className="text-[0.6875rem] uppercase font-medium"
+            style={{
+              color: "var(--store-accent, currentColor)",
+              letterSpacing: "0.4em",
+            }}
+          >
+            Offline · 讀取失敗
+          </p>
+          <div
+            className="mt-5 h-px w-10"
+            style={{
+              background: "var(--store-accent, currentColor)",
+              opacity: 0.4,
+            }}
+          />
+          <p
+            className="mt-6 text-2xl sm:text-3xl font-medium"
+            style={{
+              fontFamily: "var(--store-font)",
+              letterSpacing: "-0.01em",
+              lineHeight: 1.25,
+            }}
+          >
+            暫時
+            <br />
+            讀不到購物車
+          </p>
+          <p
+            className="mt-5 text-[0.9375rem]"
+            style={{
+              color: "var(--store-text-muted, rgba(0,0,0,0.6))",
+              lineHeight: 1.7,
+            }}
+          >
+            可能是網路不太穩。你車裡的東西沒有不見，
+            <br />
+            重新整理一下再試一次。
+          </p>
+          <button
+            type="button"
+            onClick={() => {
+              setProducts(null);
+              setReloadKey((k) => k + 1);
+            }}
+            className="sproutly-link mt-10 inline-block text-[0.75rem] uppercase font-medium"
+            style={{ letterSpacing: "0.3em" }}
+            data-default-line="true"
+          >
+            重新整理 →
+          </button>
+        </div>
+      ) : products === null ? (
         <div className="space-y-8" aria-hidden>
           {Array.from({ length: 3 }).map((_, i) => (
             <div
