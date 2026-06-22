@@ -38,6 +38,13 @@ export default function FavoritesPage() {
   const params = useParams();
   const slug = params.slug as string;
   const [products, setProducts] = useState<Product[] | null>(null);
+  // 收藏 id 存在 localStorage，fetch 只是去補商品的名稱/價格/圖。原本沒有任何
+  // 錯誤處理：網路一閃失 res.json() 一丟錯，load() 就靜靜 reject，products 永遠
+  // 停在 null → 整頁卡在「整理中⋯」骨架不動，客人以為收藏壞了，其實資料還在身上。
+  // 用 failed 標記讀取失敗、改顯示「沒不見、重試一下」的退路；reloadKey 讓重試鈕
+  // 重跑 effect。
+  const [failed, setFailed] = useState(false);
+  const [reloadKey, setReloadKey] = useState(0);
   // 按 × 移除收藏原本一鍵就消失、沒退路，跟購物車一樣是 user 在意的「手滑弄掉沒復原」。
   // 暫存剛移除那株（含原本在清單裡的位置），復原時原封不動放回原處。
   const [undo, setUndo] = useState<{ product: Product; index: number } | null>(
@@ -53,27 +60,35 @@ export default function FavoritesPage() {
         if (!cancelled) setProducts([]);
         return;
       }
-      const res = await fetch(
-        `/${slug}/favorites/api?ids=${encodeURIComponent(ids.join(","))}`,
-        { cache: "no-store" }
-      );
-      const data: Product[] = await res.json();
-      // API 用 .in("id", ids) 查，回來的順序是資料庫隨機序、不照 ids 走，
-      // 害收藏卡片每次載入排序都不一樣，也跟客人實際收藏的先後對不上。
-      // 更要緊的是：移除的「復原」記的是卡片在畫面上的 index、卻 splice 回
-      // localStorage 陣列那個位置——畫面序 ≠ 儲存序時就會放回錯的地方。
-      // 這裡先照 ids（= localStorage 收藏順序）把結果排回去，兩邊對齊。
-      const order = new Map(ids.map((id, i) => [id, i]));
-      const ordered = [...data].sort(
-        (a, b) => (order.get(a.id) ?? Infinity) - (order.get(b.id) ?? Infinity)
-      );
-      if (!cancelled) setProducts(ordered);
+      try {
+        const res = await fetch(
+          `/${slug}/favorites/api?ids=${encodeURIComponent(ids.join(","))}`,
+          { cache: "no-store" }
+        );
+        if (!res.ok) throw new Error(`favorites api ${res.status}`);
+        const data: Product[] = await res.json();
+        // API 用 .in("id", ids) 查，回來的順序是資料庫隨機序、不照 ids 走，
+        // 害收藏卡片每次載入排序都不一樣，也跟客人實際收藏的先後對不上。
+        // 更要緊的是：移除的「復原」記的是卡片在畫面上的 index、卻 splice 回
+        // localStorage 陣列那個位置——畫面序 ≠ 儲存序時就會放回錯的地方。
+        // 這裡先照 ids（= localStorage 收藏順序）把結果排回去，兩邊對齊。
+        const order = new Map(ids.map((id, i) => [id, i]));
+        const ordered = [...data].sort(
+          (a, b) => (order.get(a.id) ?? Infinity) - (order.get(b.id) ?? Infinity)
+        );
+        if (!cancelled) setProducts(ordered);
+      } catch {
+        // 讀失敗就掛 failed、別讓 products 停在 null 整頁卡骨架；
+        // 收藏 id 還在 localStorage，沒有不見，給重試退路即可。
+        if (!cancelled) setFailed(true);
+      }
     }
+    setFailed(false);
     load();
     return () => {
       cancelled = true;
     };
-  }, [slug]);
+  }, [slug, reloadKey]);
 
   // 別處（商品頁愛心、其他分頁）取消收藏時，這頁即時跟著移除，不用重整
   useEffect(() => {
@@ -184,7 +199,9 @@ export default function FavoritesPage() {
             lineHeight: 1.7,
           }}
         >
-          {products === null
+          {failed
+            ? "暫時讀不到你的收藏"
+            : products === null
             ? "整理中⋯"
             : count === 0
             ? "這裡會放你想留下來慢慢看的植物"
@@ -194,7 +211,62 @@ export default function FavoritesPage() {
         </p>
       </header>
 
-      {products === null ? (
+      {failed ? (
+        // 讀取失敗：收藏 id 還在身上，沒不見，給一條「重試」退路而不是卡骨架。
+        <div className="py-16 max-w-md">
+          <p
+            className="text-[0.6875rem] uppercase font-medium"
+            style={{
+              color: "var(--store-accent, currentColor)",
+              letterSpacing: "0.4em",
+            }}
+          >
+            Offline · 讀取失敗
+          </p>
+          <div
+            className="mt-5 h-px w-10"
+            style={{
+              background: "var(--store-accent, currentColor)",
+              opacity: 0.4,
+            }}
+          />
+          <p
+            className="mt-6 text-2xl sm:text-3xl font-medium"
+            style={{
+              fontFamily: "var(--store-font)",
+              letterSpacing: "-0.01em",
+              lineHeight: 1.25,
+            }}
+          >
+            暫時
+            <br />
+            讀不到收藏
+          </p>
+          <p
+            className="mt-5 text-[0.9375rem]"
+            style={{
+              color: "var(--store-text-muted, rgba(0,0,0,0.6))",
+              lineHeight: 1.7,
+            }}
+          >
+            可能是網路不太穩。你收藏的植物沒有不見，
+            <br />
+            重新整理一下再試一次。
+          </p>
+          <button
+            type="button"
+            onClick={() => {
+              setProducts(null);
+              setReloadKey((k) => k + 1);
+            }}
+            className="sproutly-link mt-10 inline-block text-[0.75rem] uppercase font-medium"
+            style={{ letterSpacing: "0.3em" }}
+            data-default-line="true"
+          >
+            重新整理 →
+          </button>
+        </div>
+      ) : products === null ? (
         <div
           className="grid grid-cols-2 md:grid-cols-3 gap-x-6 sm:gap-x-10 gap-y-16"
           aria-hidden
