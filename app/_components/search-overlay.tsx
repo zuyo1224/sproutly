@@ -23,6 +23,7 @@ export function SearchOverlay({ slug }: { slug: string }) {
   const [q, setQ] = useState("");
   const [results, setResults] = useState<Product[]>([]);
   const [loading, setLoading] = useState(false);
+  const [failed, setFailed] = useState(false);
   const [selectedIdx, setSelectedIdx] = useState(0);
   const inputRef = useRef<HTMLInputElement>(null);
   const listRef = useRef<HTMLDivElement>(null);
@@ -123,6 +124,7 @@ export function SearchOverlay({ slug }: { slug: string }) {
   useEffect(() => {
     if (!open || !q.trim()) {
       setResults([]);
+      setFailed(false);
       return;
     }
     let cancelled = false;
@@ -133,10 +135,20 @@ export function SearchOverlay({ slug }: { slug: string }) {
           `/${slug}/search/api?q=${encodeURIComponent(q.trim())}`,
           { cache: "no-store" }
         );
-        const data: Product[] = await res.json();
+        if (!res.ok) throw new Error(`search failed: ${res.status}`);
+        const data: unknown = await res.json();
         if (!cancelled) {
-          setResults(data);
+          setResults(Array.isArray(data) ? (data as Product[]) : []);
+          setFailed(false);
           setSelectedIdx(0);
+        }
+      } catch {
+        // 網路一閃失、或 API 回非 2xx／不是商品清單時，不能讓畫面靜靜停在
+        // 「沒有結果」——那會讓客人以為店裡根本沒這商品而放棄。清掉舊結果、
+        // 標記失敗，下面改顯示「暫時連不上」的退路。
+        if (!cancelled) {
+          setResults([]);
+          setFailed(true);
         }
       } finally {
         if (!cancelled) setLoading(false);
@@ -162,9 +174,11 @@ export function SearchOverlay({ slug }: { slug: string }) {
     ? ""
     : loading
       ? "搜尋中"
-      : results.length > 0
-        ? `找到 ${results.length} 個結果`
-        : "沒有符合的商品";
+      : failed
+        ? "暫時連不上，請稍後再試"
+        : results.length > 0
+          ? `找到 ${results.length} 個結果`
+          : "沒有符合的商品";
 
   return (
     <>
@@ -299,7 +313,53 @@ export function SearchOverlay({ slug }: { slug: string }) {
                   />
                 </div>
               )}
-              {!loading && q && results.length === 0 && (
+              {/* 搜尋失敗（網路一閃失／API 出錯）跟「真的沒這商品」要分開——
+                  停在「沒有結果」會誤導客人以為店裡沒賣，這裡改給連不上的退路。 */}
+              {!loading && q && failed && (
+                <div className="px-5 py-10 text-center">
+                  <p
+                    className="font-medium uppercase"
+                    style={{
+                      fontSize: "0.6875rem",
+                      letterSpacing: "0.4em",
+                      color: "var(--store-text-muted, rgba(0,0,0,0.55))",
+                    }}
+                  >
+                    Offline · 暫時連不上
+                  </p>
+                  <div
+                    className="mx-auto mt-3 h-px w-10"
+                    style={{
+                      background: "var(--store-accent, currentColor)",
+                      opacity: 0.6,
+                    }}
+                  />
+                  <p
+                    className="mt-4"
+                    style={{
+                      fontSize: "0.9375rem",
+                      lineHeight: 1.7,
+                      color: "var(--store-text-muted, rgba(0,0,0,0.6))",
+                    }}
+                  >
+                    網路一閃失、暫時搜不到。稍後再試，或直接看全部商品
+                  </p>
+                  <Link
+                    href={`/${slug}/shop`}
+                    onClick={() => setOpen(false)}
+                    className="sproutly-link mt-6 inline-block font-medium uppercase"
+                    data-default-line="true"
+                    style={{
+                      fontSize: "0.75rem",
+                      letterSpacing: "0.3em",
+                      color: "var(--store-accent, currentColor)",
+                    }}
+                  >
+                    看全部商品 →
+                  </Link>
+                </div>
+              )}
+              {!loading && q && !failed && results.length === 0 && (
                 <div className="px-5 py-10 text-center">
                   <p
                     className="font-medium uppercase"
