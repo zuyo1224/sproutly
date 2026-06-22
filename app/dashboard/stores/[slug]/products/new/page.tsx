@@ -107,13 +107,18 @@ export default async function NewProductPage({
           <UnsavedChangesGuard />
           <div>
             <label htmlFor="name" className="block text-emerald-700/70 mb-2" style={LABEL_STYLE}>
-              Name · 商品名稱 <span className="text-red-500">*</span>
+              Name · 商品名稱{" "}
+              <span className="text-red-500" aria-hidden="true">
+                *
+              </span>
+              <span className="sr-only">（必填）</span>
             </label>
             <input
               id="name"
               name="name"
               type="text"
               required
+              aria-required="true"
               placeholder="例如：龜背芋 6 吋盆"
               className="w-full rounded-xl border border-emerald-100 px-4 py-3 text-emerald-950 placeholder:text-emerald-900/30 outline-none focus:border-emerald-400 focus:ring-2 focus:ring-emerald-100 transition"
             />
@@ -126,7 +131,11 @@ export default async function NewProductPage({
                 className="block text-emerald-700/70 mb-2"
                 style={LABEL_STYLE}
               >
-                Price · 價格 NT$ <span className="text-red-500">*</span>
+                Price · 價格 NT${" "}
+                <span className="text-red-500" aria-hidden="true">
+                  *
+                </span>
+                <span className="sr-only">（必填）</span>
               </label>
               <input
                 id="price"
@@ -136,6 +145,7 @@ export default async function NewProductPage({
                 min="0"
                 step="1"
                 required
+                aria-required="true"
                 placeholder="850"
                 className="w-full rounded-xl border border-emerald-100 px-4 py-3 text-emerald-950 placeholder:text-emerald-900/30 outline-none focus:border-emerald-400 focus:ring-2 focus:ring-emerald-100 transition tabular-nums"
               />
