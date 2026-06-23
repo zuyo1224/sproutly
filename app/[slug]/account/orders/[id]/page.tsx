@@ -169,15 +169,24 @@ export default async function CustomerOrderDetailPage({
             這筆訂單已取消。如有疑問，可從下方聯絡店家。
           </p>
         ) : (
-          <ol className="flex">
+          <ol className="flex" aria-label="訂單進度">
             {STATUS_FLOW.map((step, i) => {
               const done = i <= stepIndex;
               const isCurrent = i === stepIndex;
               const last = i === STATUS_FLOW.length - 1;
+              // 圈圈與連接線都 aria-hidden，純色塊報讀器讀不出意思；
+              // 每步名稱後補一句 sr-only 狀態，目前那步再標 aria-current，
+              // 讓看不見進度條的客人也聽得出走到第幾步（跟查訂單頁同一套）
+              const stateText = isCurrent
+                ? "目前進度"
+                : done
+                  ? "已完成"
+                  : "尚未進行";
               return (
                 <li
                   key={step.key}
                   className="relative flex flex-1 flex-col items-center"
+                  aria-current={isCurrent ? "step" : undefined}
                 >
                   {!last && (
                     <span
@@ -207,6 +216,7 @@ export default async function CustomerOrderDetailPage({
                     }}
                   >
                     {step.label}
+                    <span className="sr-only">（{stateText}）</span>
                   </span>
                 </li>
               );
