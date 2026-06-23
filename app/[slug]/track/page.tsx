@@ -359,53 +359,74 @@ export default async function TrackPage({
                 >
                   Status · 進度
                 </p>
-                <div className="flex justify-between items-start mb-6">
-                  {STATUS_STEPS.map((step, i) => {
-                    const currentIdx = STATUS_STEPS.findIndex(
-                      (s) => s.key === order.status
-                    );
-                    const done = i <= currentIdx;
-                    const current = i === currentIdx;
-                    return (
-                      <div
-                        key={step.key}
-                        className="flex flex-col items-center flex-1 min-w-0 relative"
-                      >
-                        {i < STATUS_STEPS.length - 1 && (
-                          <div
-                            className="absolute top-5 left-1/2 w-full h-0.5"
-                            style={{
-                              background:
-                                i < currentIdx
-                                  ? theme.primary
-                                  : theme.border,
-                            }}
-                          />
-                        )}
-                        <div
-                          className="relative w-10 h-10 rounded-full flex items-center justify-center text-sm font-semibold transition"
-                          style={{
-                            background: done ? theme.primary : theme.bg,
-                            color: done ? theme.surface : theme.textMuted,
-                            border: `2px solid ${done ? theme.primary : theme.border}`,
-                            transform: current ? "scale(1.15)" : "scale(1)",
-                          }}
-                        >
-                          {step.num}
-                        </div>
-                        <p
-                          className="mt-2 text-xs text-center px-1"
-                          style={{
-                            color: done ? theme.text : theme.textMuted,
-                            fontWeight: current ? 600 : 400,
-                          }}
-                        >
-                          {step.label}
-                        </p>
-                      </div>
-                    );
-                  })}
-                </div>
+                {/* 進度做成有序清單給報讀器：原本圈圈裡的數字、圈跟圈之間的連接線
+                    都是純視覺，報讀器只念得到「1 待店家確認 2 店家已確認…」這串數字＋
+                    步驟名，聽不出「走到第幾步」。把數字圈與連接線退出報讀器（aria-hidden），
+                    每一步的名稱後補一句 sr-only 狀態（已完成／目前進度／尚未進行），
+                    目前所在的那步再標 aria-current="step"，讓報讀器使用者也聽得出進度。 */}
+                {(() => {
+                  const currentIdx = STATUS_STEPS.findIndex(
+                    (s) => s.key === order.status
+                  );
+                  return (
+                    <ol
+                      className="flex justify-between items-start mb-6"
+                      aria-label="訂單進度"
+                    >
+                      {STATUS_STEPS.map((step, i) => {
+                        const done = i <= currentIdx;
+                        const current = i === currentIdx;
+                        const stateText = current
+                          ? "目前進度"
+                          : done
+                            ? "已完成"
+                            : "尚未進行";
+                        return (
+                          <li
+                            key={step.key}
+                            className="flex flex-col items-center flex-1 min-w-0 relative"
+                            aria-current={current ? "step" : undefined}
+                          >
+                            {i < STATUS_STEPS.length - 1 && (
+                              <div
+                                aria-hidden="true"
+                                className="absolute top-5 left-1/2 w-full h-0.5"
+                                style={{
+                                  background:
+                                    i < currentIdx
+                                      ? theme.primary
+                                      : theme.border,
+                                }}
+                              />
+                            )}
+                            <div
+                              aria-hidden="true"
+                              className="relative w-10 h-10 rounded-full flex items-center justify-center text-sm font-semibold transition"
+                              style={{
+                                background: done ? theme.primary : theme.bg,
+                                color: done ? theme.surface : theme.textMuted,
+                                border: `2px solid ${done ? theme.primary : theme.border}`,
+                                transform: current ? "scale(1.15)" : "scale(1)",
+                              }}
+                            >
+                              {step.num}
+                            </div>
+                            <p
+                              className="mt-2 text-xs text-center px-1"
+                              style={{
+                                color: done ? theme.text : theme.textMuted,
+                                fontWeight: current ? 600 : 400,
+                              }}
+                            >
+                              {step.label}
+                              <span className="sr-only">（{stateText}）</span>
+                            </p>
+                          </li>
+                        );
+                      })}
+                    </ol>
+                  );
+                })()}
                 <p
                   className="text-center text-[0.9375rem]"
                   style={{ color: theme.textMuted, lineHeight: 1.7 }}
