@@ -220,12 +220,17 @@ export default async function StoreSettingsPage({
 
           <div>
             <label className="block text-sm font-medium text-emerald-900 mb-1.5">
-              店名 <span className="text-red-500">*</span>
+              店名{" "}
+              <span className="text-red-500" aria-hidden="true">
+                *
+              </span>
+              <span className="sr-only">（必填）</span>
             </label>
             <input
               name="name"
               type="text"
               required
+              aria-required="true"
               defaultValue={store.name}
               className="w-full rounded-xl border border-emerald-100 px-4 py-3 outline-none focus:border-emerald-400 focus:ring-2 focus:ring-emerald-100 transition"
             />
