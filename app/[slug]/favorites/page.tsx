@@ -77,6 +77,26 @@ export default function FavoritesPage() {
           (a, b) => (order.get(a.id) ?? Infinity) - (order.get(b.id) ?? Infinity)
         );
         if (!cancelled) setProducts(ordered);
+        // 收藏的某株被商家下架／刪除後，API 不再回它：這頁看不到（只 map 撈回來的），
+        // 但 id 還留在 localStorage，nav 那顆愛心徽章（FavoritesCounter 讀 localStorage
+        // 的 size）仍把這些看不到的幽靈算進去——徽章數字比實際顯示的多，客人一頭霧水卻
+        // 找不到地方清。抓回資料的當下順手把對不上的 id 清掉，讓徽章跟收藏內容一致，並
+        // 通知 nav 與其他分頁更新。安全前提同購物車：只有在「至少撈回一株」時才清——整批
+        // 回空可能是店家暫時整間下架或一時抓不到（API 對未發布店面也回空陣列），那種情況
+        // 寧可留著不動，免得把整批有效收藏清光。
+        if (!cancelled && data.length > 0) {
+          const returnedIds = new Set(data.map((p) => p.id));
+          const stored = readFavoriteIds();
+          const cleaned = stored.filter((id) => returnedIds.has(id));
+          if (cleaned.length !== stored.length) {
+            try {
+              localStorage.setItem(FAVORITES_KEY, JSON.stringify(cleaned));
+              window.dispatchEvent(new Event("sproutly-favorites-changed"));
+            } catch {
+              /* ignore */
+            }
+          }
+        }
       } catch {
         // 讀失敗就掛 failed、別讓 products 停在 null 整頁卡骨架；
         // 收藏 id 還在 localStorage，沒有不見，給重試退路即可。
