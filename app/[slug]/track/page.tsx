@@ -234,44 +234,46 @@ export default async function TrackPage({
           點一筆就帶入編號＋電話查詢，不用記也不用重打。 */}
       {!order && <RecentOrdersList slug={slug} />}
 
+      {/* 查無訂單的版面對齊客人端其餘空／邊界狀態（cart／favorites／shop／orders／contact
+          都是這套左對齊編輯風），不再是另一張置中卡片。上面的查詢表單卡與「這台裝置下過的單」
+          捷徑都還在，這裡只是把「沒找到」的回饋文字換成同一套視覺語言。 */}
       {searched && !order && (
-        <div
-          className="rounded-2xl p-10 text-center"
-          style={{
-            background: theme.surface,
-            border: `1px solid ${theme.border}`,
-            boxShadow: "var(--sproutly-elev-2)",
-          }}
-        >
+        <div className="py-16 max-w-md">
           <p
-            className="text-[0.6875rem] uppercase mb-4 font-medium"
-            style={{ color: theme.textMuted, letterSpacing: "0.4em" }}
+            className="text-[0.6875rem] uppercase font-medium"
+            style={{ color: theme.accent, letterSpacing: "0.4em" }}
           >
-            Not Found · 沒找到
+            Not Found
           </p>
           <div
-            className="mx-auto h-px w-10"
-            style={{ background: theme.border }}
+            className="mt-5 h-px w-10"
+            style={{ background: theme.accent, opacity: 0.4 }}
           />
           <p
-            className="mt-5 text-xl font-medium"
-            style={{ color: theme.text, letterSpacing: "-0.005em" }}
+            className="mt-6 text-2xl sm:text-3xl font-medium"
+            style={{
+              color: theme.text,
+              fontFamily: "var(--store-font)",
+              letterSpacing: "-0.01em",
+              lineHeight: 1.25,
+            }}
           >
-            找不到對應的訂單
+            找不到
+            <br />
+            對應的訂單
           </p>
           <p
-            className="mt-3 text-[0.9375rem]"
+            className="mt-5 text-[0.9375rem]"
             style={{ color: theme.textMuted, lineHeight: 1.7 }}
           >
-            請確認訂單編號跟電話都正確
-            <br className="sm:hidden" />
-            。還是查不到的話，直接問店家最快
+            請確認訂單編號跟電話都正確。還是查不到的話，直接問店家最快。
           </p>
           <Link
             href={`/${slug}/contact`}
-            className="sproutly-btn sproutly-btn-secondary sproutly-btn-sm mt-7"
+            className="sproutly-link mt-10 inline-block text-[0.75rem] uppercase font-medium"
+            style={{ color: theme.accent, letterSpacing: "0.3em" }}
           >
-            聯絡店家
+            聯絡店家 →
           </Link>
         </div>
       )}
