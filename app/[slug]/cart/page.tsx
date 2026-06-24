@@ -102,6 +102,19 @@ export default function CartPage() {
         // 非陣列（API 異常回了物件/錯誤）就當讀取失敗，別讓後面 (products ?? []).map 炸頁。
         if (!Array.isArray(data)) throw new Error("cart api: not an array");
         if (!cancelled) setProducts(data as Product[]);
+        // 車裡某項商品被商家下架／刪除後，API 不會再回它：購物車頁看不到（itemRows
+        // 濾掉沒撈到的），但 id／數量還留在 localStorage，nav 購物車徽章（cart-icon 讀
+        // getCartCount）仍把這些看不到的幽靈商品一起算進去——徽章件數比購物車實際顯示的
+        // 多，客人一頭霧水卻找不到地方清。抓回資料的當下順手把對不上的項目清掉，讓徽章跟
+        // 購物車內容一致。安全前提：只有在「至少有一項商品成功撈回」時才清——整批回空可能是
+        // 店家暫時整間下架或一時抓不到（API 對未發布店面也回空陣列），那種情況寧可留著不動，
+        // 免得把一車有效商品整個清光。
+        if (!cancelled && data.length > 0) {
+          const returnedIds = new Set((data as Product[]).map((p) => p.id));
+          for (const id of idsKey.split(",")) {
+            if (!returnedIds.has(id)) removeFromCart(slug, id);
+          }
+        }
       } catch {
         // 讀失敗就掛 failed、別讓 products 停在 null 整頁卡骨架；車裡的 id/數量
         // 還在 localStorage，沒有不見，給重試退路即可。
