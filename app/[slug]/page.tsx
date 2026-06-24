@@ -310,6 +310,18 @@ export default async function StoreHomePage({
       addressCountry: "TW",
     };
   }
+  // sameAs 給 Google：把店家填的 Instagram / Facebook / LINE 連回同一個店家實體，
+  // Google 用這條把社群帳號跟搜尋結果的店家對起來（知識面板、相關連結都靠它）。
+  // 頁尾這幾個欄位是直接當連結用的，但商家可能填成 @帳號 之類的非網址，
+  // sameAs 規格只吃絕對網址，所以只放真的以 http(s) 開頭的，其餘略過不放錯的。
+  const socialUrls = [
+    theme.social.instagram,
+    theme.social.facebook,
+    theme.social.line,
+  ].filter((u): u is string => !!u && /^https?:\/\//i.test(u.trim()));
+  if (socialUrls.length > 0) {
+    storeJsonLd.sameAs = socialUrls.map((u) => u.trim());
+  }
   // 營業時間給 Google：schema.org 的 openingHours 只吃結構化星期＋24 小時時間，
   // 商家打的是中文自由文字，直接塞會被判無效、連整段結構化資料一起忽略。
   // 先試著解析成合法的 openingHoursSpecification，判讀不出來就乾脆不放，
