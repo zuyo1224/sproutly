@@ -3,6 +3,7 @@ import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { resolveTheme } from "../../_theme";
 import { PAYMENT_LABELS } from "@/lib/order-labels";
+import { RecentlyViewed } from "@/app/_components/recently-viewed";
 
 type Params = Promise<{ slug: string }>;
 
@@ -184,6 +185,7 @@ export default async function CustomerOrdersPage({
       </header>
 
       {orderList.length === 0 ? (
+        <>
         <div
           className="rounded-2xl p-10 sm:p-12 text-center"
           style={{
@@ -225,6 +227,14 @@ export default async function CustomerOrdersPage({
             看商品 →
           </Link>
         </div>
+        {/* 登入會員一筆單都沒下過時，這張卡本身是死路（只能「看商品」一條出口）。
+            把這台裝置剛看過的幾株接回來，客人想起「剛剛那株」可直接點回去——
+            跟購物車、收藏、shop 搜不到時完全同一套救援列（純 client localStorage
+            讀取，不傳 current 故只讀不記錄、不傳 colors 吃店面 --store-* 變數）。
+            沒看過紀錄就整段不出現（元件自判），第一次逛店的人不受影響。
+            放在置中卡片外，讓商品網格用整個容器寬度。 */}
+        <RecentlyViewed slug={slug} className="mt-12" />
+        </>
       ) : (
         <ul className="space-y-6">
           {orderList.map((order) => {
