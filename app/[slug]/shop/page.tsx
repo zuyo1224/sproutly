@@ -186,14 +186,19 @@ export default async function ShopPage({
   // 讓搜尋結果有機會直接列出商品縮圖＋價格。只在沒套用搜尋／篩選的正規網址
   // （canonical 指向的乾淨頁）才放，避免結構化資料跟正規頁實際內容對不上；
   // 數量設上限避免清單過長拖慢頁面。
+  // numberOfItems 必須等於 itemListElement 真正列出的筆數——超過上限時拿全部
+  // 商品數去填，會讓 Google 判定宣稱的數量跟實際清單對不上，所以先把要列的
+  // 清單切好，數量直接吃這份的長度。
+  const listedProducts =
+    !hasFilter && products ? products.slice(0, 30) : [];
   const itemListJsonLd =
-    !hasFilter && products && products.length > 0
+    listedProducts.length > 0
       ? {
           "@context": "https://schema.org",
           "@type": "ItemList",
           name: shopTitle,
-          numberOfItems: products.length,
-          itemListElement: products.slice(0, 30).map((p, i) => ({
+          numberOfItems: listedProducts.length,
+          itemListElement: listedProducts.map((p, i) => ({
             "@type": "ListItem",
             position: i + 1,
             item: {
