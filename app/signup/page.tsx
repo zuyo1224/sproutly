@@ -1,6 +1,13 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { signUp } from "@/app/auth/actions";
 import PasswordInput from "@/app/_components/password-input";
+
+// 商家註冊頁，沒有給搜尋引擎收錄的價值。跟後台、登入一樣不只靠 robots.txt，
+// 用頁面層級 noindex 真正擋住。
+export const metadata: Metadata = {
+  robots: { index: false, follow: false },
+};
 
 type SearchParams = Promise<{ error?: string; sent?: string }>;
 
