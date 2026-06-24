@@ -58,6 +58,8 @@ export async function generateMetadata({
       template: `%s · ${store.name}`,
     },
     description,
+    // 各店自己的 web manifest：加到主畫面顯示店名＋店家 logo，不再是平台「Sproutly」
+    manifest: `/${slug}/site.webmanifest`,
     icons: iconUrl
       ? {
           icon: iconUrl,
