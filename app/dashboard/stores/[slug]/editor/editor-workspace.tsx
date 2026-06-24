@@ -303,30 +303,50 @@ export function EditorWorkspace({
   const futureRef = useRef<EditorTheme[]>([]);
   const [historyTick, setHistoryTick] = useState(0); // 觸發 re-render of undo/redo buttons
 
-  function pushHistory(prev: EditorTheme) {
+  // 連續編輯合併：同一個欄位在這段時間內的連續改動（打字、拉 slider）只算一步，
+  // 這樣按復原是一次退掉整段編輯，而不是一個字、一格一格退。
+  const COALESCE_MS = 700;
+  const coalesceRef = useRef<{ key: string; t: number } | null>(null);
+
+  // coalesceKey 有值時：若上一步也是改同一欄位且在 700ms 內，就不另存一個復原點
+  //（之前那個快照已經是「這段編輯開始前」的狀態，留著它就好）。
+  function pushHistory(prev: EditorTheme, coalesceKey?: string) {
+    // 任何新編輯都讓「重做」失效
+    futureRef.current = [];
+    if (coalesceKey) {
+      const last = coalesceRef.current;
+      const now = Date.now();
+      if (last && last.key === coalesceKey && now - last.t < COALESCE_MS) {
+        coalesceRef.current = { key: coalesceKey, t: now }; // 延長合併視窗
+        setHistoryTick((t) => t + 1);
+        return;
+      }
+      coalesceRef.current = { key: coalesceKey, t: now };
+    } else {
+      coalesceRef.current = null; // 非連續編輯（toggle、拖動等）中斷合併
+    }
     pastRef.current.push(prev);
     if (pastRef.current.length > 50) pastRef.current.shift();
-    futureRef.current = [];
     setHistoryTick((t) => t + 1);
   }
 
   function update<K extends keyof EditorTheme>(key: K, value: EditorTheme[K]) {
     setTheme((t) => {
-      pushHistory(t);
+      pushHistory(t, String(key));
       return { ...t, [key]: value };
     });
     setDirty(true);
   }
   function updateLayout(patch: Partial<EditorTheme["layout"]>) {
     setTheme((t) => {
-      pushHistory(t);
+      pushHistory(t, "layout:" + Object.keys(patch).sort().join(","));
       return { ...t, layout: { ...t.layout, ...patch } };
     });
     setDirty(true);
   }
   function updateHomepage(patch: Partial<EditorTheme["homepage"]>) {
     setTheme((t) => {
-      pushHistory(t);
+      pushHistory(t, "homepage:" + Object.keys(patch).sort().join(","));
       return { ...t, homepage: { ...t.homepage, ...patch } };
     });
     setDirty(true);
@@ -335,6 +355,7 @@ export function EditorWorkspace({
   function undo() {
     const last = pastRef.current.pop();
     if (!last) return;
+    coalesceRef.current = null; // 復原後是全新動作，別跟前一段編輯合併
     futureRef.current.push(theme);
     setTheme(last);
     setDirty(true);
@@ -347,6 +368,7 @@ export function EditorWorkspace({
   function redo() {
     const next = futureRef.current.pop();
     if (!next) return;
+    coalesceRef.current = null; // 重做後是全新動作，別跟前一段編輯合併
     pastRef.current.push(theme);
     setTheme(next);
     setDirty(true);
