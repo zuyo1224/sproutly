@@ -23,6 +23,8 @@ export default async function SignupPage({
           </Link>
 
           <div
+            role="status"
+            aria-live="polite"
             className="rounded-2xl bg-white p-8 sm:p-10 border border-emerald-100/60 text-center"
             style={{
               boxShadow:
@@ -116,6 +118,7 @@ export default async function SignupPage({
 
           {error && (
             <div
+              role="alert"
               className="mt-8 rounded-2xl bg-red-50/80 p-5 border border-red-200/70"
               style={{ boxShadow: "0 1px 2px rgba(127,29,29,0.04)" }}
             >
