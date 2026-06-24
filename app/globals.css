@@ -41,3 +41,21 @@ body {
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
 }
+
+/* 把動效全網關小 —— 客人在系統設定裡開了「減少動態效果」（前庭不適、暈眩、
+   注意力敏感的人會開），就該尊重。confetti / back-to-top / tilt 那幾個是用
+   JS 各自判斷，但搜尋疊層、燈箱、商品輪播放大、editor popover 這些是直接寫
+   inline @keyframes，誰都沒擋；卡片 hover 浮起、連結底線這類 transition 也全
+   都沒擋。這層是全站收尾的防護網。
+   不用 animation: none（那會讓「淡入到 opacity 1」的進場動畫永遠停在 0 變隱形），
+   改成把時間壓到近乎零 —— 動畫照樣跑完、瞬間落到終態，畫面正常顯示只是不動。 */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
