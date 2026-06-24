@@ -186,14 +186,11 @@ export default async function CustomerOrdersPage({
 
       {orderList.length === 0 ? (
         <>
-        <div
-          className="rounded-2xl p-10 sm:p-12 text-center"
-          style={{
-            background: theme.surface,
-            border: `1px solid ${theme.border}`,
-            boxShadow: "var(--sproutly-elev-2)",
-          }}
-        >
+        {/* 對齊購物車、收藏的編輯風空狀態（左對齊 eyebrow + 大標 + 說明 + 連結），
+            不再用置中卡片配「這裡空空的／去店裡逛一圈」那套較口語、排版也跟其餘頁
+            對不上的寫法。標題列已說「還沒下過訂單／下單後可在這裡追蹤」，所以這裡
+            的大標走邀請語氣、不重複那句；說明與「去逛逛 →」連結跟 cart／favorites 同款。 */}
+        <div className="py-16 max-w-md">
           <p
             className="text-[0.6875rem] uppercase font-medium"
             style={{
@@ -204,35 +201,48 @@ export default async function CustomerOrdersPage({
             Empty
           </p>
           <div
-            className="mt-4 mx-auto h-px w-10"
+            className="mt-5 h-px w-10"
             style={{
               background: "var(--store-accent, currentColor)",
-              opacity: 0.5,
+              opacity: 0.4,
             }}
           />
           <p
-            className="mt-5 text-[0.9375rem] leading-[1.9]"
-            style={{ color: theme.textMuted }}
+            className="mt-6 text-2xl sm:text-3xl font-medium"
+            style={{
+              color: theme.text,
+              fontFamily: "var(--store-font)",
+              letterSpacing: "-0.01em",
+              lineHeight: 1.25,
+            }}
           >
-            這裡空空的。
+            逛一圈，
             <br />
-            去店裡逛一圈？
+            帶第一株回家
+          </p>
+          <p
+            className="mt-5 text-[0.9375rem]"
+            style={{ color: theme.textMuted, lineHeight: 1.7 }}
+          >
+            遇到合眼緣的，加進購物車結帳，
+            <br />
+            這裡就會留下第一筆紀錄。
           </p>
           <Link
             href={`/${slug}/shop`}
-            className="sproutly-link inline-block mt-8 text-[0.6875rem] tracking-[0.3em] uppercase font-medium"
-            style={{ color: theme.text }}
+            className="sproutly-link mt-10 inline-block text-[0.75rem] uppercase font-medium"
+            style={{ color: theme.text, letterSpacing: "0.3em" }}
             data-default-line="true"
           >
-            看商品 →
+            去逛逛 →
           </Link>
         </div>
-        {/* 登入會員一筆單都沒下過時，這張卡本身是死路（只能「看商品」一條出口）。
+        {/* 登入會員一筆單都沒下過時，上面那塊本身只有「去逛逛」一條出口。
             把這台裝置剛看過的幾株接回來，客人想起「剛剛那株」可直接點回去——
             跟購物車、收藏、shop 搜不到時完全同一套救援列（純 client localStorage
             讀取，不傳 current 故只讀不記錄、不傳 colors 吃店面 --store-* 變數）。
             沒看過紀錄就整段不出現（元件自判），第一次逛店的人不受影響。
-            放在置中卡片外，讓商品網格用整個容器寬度。 */}
+            放在左對齊文字塊外，讓商品網格用整個容器寬度。 */}
         <RecentlyViewed slug={slug} className="mt-12" />
         </>
       ) : (
