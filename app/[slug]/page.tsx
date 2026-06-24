@@ -4,6 +4,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { createClient } from "@/lib/supabase/server";
 import { resolveTheme, HOMEPAGE_DEFAULTS, HOMEPAGE_DEFAULT_COLLECTIONS, JOURNAL_CARD_DEFAULTS } from "./_theme";
+import { parseBusinessHoursToSpec } from "@/lib/business-hours-schema";
 import HeroAdaptiveBanner from "./HeroAdaptiveBanner";
 
 type Params = Promise<{ slug: string }>;
@@ -309,7 +310,12 @@ export default async function StoreHomePage({
       addressCountry: "TW",
     };
   }
-  if (businessHoursText) storeJsonLd.openingHours = businessHoursText;
+  // 營業時間給 Google：schema.org 的 openingHours 只吃結構化星期＋24 小時時間，
+  // 商家打的是中文自由文字，直接塞會被判無效、連整段結構化資料一起忽略。
+  // 先試著解析成合法的 openingHoursSpecification，判讀不出來就乾脆不放，
+  // 不放錯誤的營業時間誤導搜尋結果（頁面上給客人看的原始文字照常顯示）。
+  const openingHoursSpec = parseBusinessHoursToSpec(businessHoursText);
+  if (openingHoursSpec) storeJsonLd.openingHoursSpecification = openingHoursSpec;
 
   // FAQPage 結構化資料 — 跟頁面上 FAQ 區段同條件才放（區段有開且真的有問答），
   // 讓 Google 搜尋結果能直接展開常見問題，省客人點進來才看到答案的一步。
