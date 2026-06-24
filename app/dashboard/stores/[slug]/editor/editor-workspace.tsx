@@ -1352,11 +1352,11 @@ export function EditorWorkspace({
                 value={theme.layout.heroSubtitle ?? ""}
                 onChange={(e) => updateLayout({ heroSubtitle: e.target.value })}
                 rows={2}
-                placeholder="給 Split / Magazine / Minimal 用"
+                placeholder="主標下面那行說明，四種版型都會顯示"
                 className="w-full rounded-lg border border-stone-200 px-3 py-2 text-sm resize-none"
               />
             </Field>
-            {theme.layout.heroStyle !== "full-image" && (
+            {(
               <>
                 <Field label={`副標字體大小（${theme.layout.heroSubtitleFontScale.toFixed(2)}x）`}>
                   <input
@@ -1423,7 +1423,7 @@ export function EditorWorkspace({
                     ))}
                   </div>
                   <p className="text-[10px] text-stone-500 mt-1">
-                    預設跟版型走（Split 靠左 / Magazine / Minimal 置中）
+                    預設跟版型走（Split 靠左 / Magazine · Minimal 置中 / 滿版圖跟主標）
                   </p>
                 </Field>
               </>

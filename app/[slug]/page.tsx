@@ -484,10 +484,39 @@ export default async function StoreHomePage({
                         </span>
                       ))}
                     </h1>
+                    {!taglinePos && theme.layout.heroSubtitle && (() => {
+                      // 副標對齊預設跟主標走（inherit），block 寬度限縮後靠 margin
+                      // 把整段推到對應邊，避免置中主標卻配一段靠左的副標。
+                      const effAlign =
+                        subtitleAlign !== "inherit" ? subtitleAlign : taglineAlign;
+                      const blockAlign =
+                        effAlign === "center"
+                          ? { marginLeft: "auto", marginRight: "auto" }
+                          : effAlign === "right"
+                          ? { marginLeft: "auto" }
+                          : {};
+                      return (
+                        <p
+                          data-edit-text
+                          data-edit-field="heroSubtitle"
+                          className={`mt-5 text-base sm:text-lg leading-[1.9] ${fade2}`}
+                          style={{
+                            color: subtitleColor,
+                            fontFamily: "var(--store-font)",
+                            maxWidth: "32rem",
+                            ...blockAlign,
+                            ...subtitleSizeStyle,
+                            ...subtitleAlignStyle,
+                          }}
+                        >
+                          {theme.layout.heroSubtitle}
+                        </p>
+                      );
+                    })()}
                     {!taglinePos && (
                       <Link
                         href={`/${slug}/shop`}
-                        className={`sproutly-link mt-8 inline-block text-sm tracking-wider ${fade2}`}
+                        className={`sproutly-link mt-8 inline-block text-sm tracking-wider ${theme.layout.heroSubtitle ? fade3 : fade2}`}
                         data-default-line="true"
                         style={{
                           color: theme.text,
