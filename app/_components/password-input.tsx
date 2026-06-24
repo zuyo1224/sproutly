@@ -6,12 +6,14 @@ export default function PasswordInput({
   name,
   placeholder,
   required,
+  ariaRequired,
   minLength,
   autoComplete,
 }: {
   name: string;
   placeholder?: string;
   required?: boolean;
+  ariaRequired?: boolean;
   minLength?: number;
   autoComplete?: string;
 }) {
@@ -23,6 +25,7 @@ export default function PasswordInput({
         name={name}
         type={shown ? "text" : "password"}
         required={required}
+        aria-required={ariaRequired ? "true" : undefined}
         minLength={minLength}
         placeholder={placeholder}
         autoComplete={autoComplete}

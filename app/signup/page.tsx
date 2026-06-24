@@ -155,12 +155,17 @@ export default async function SignupPage({
                 className="block text-[0.6875rem] font-medium uppercase text-emerald-700/70 mb-2"
                 style={{ letterSpacing: "0.4em" }}
               >
-                Email
+                Email{" "}
+                <span className="text-red-500" aria-hidden="true">
+                  *
+                </span>
+                <span className="sr-only">（必填）</span>
               </label>
               <input
                 name="email"
                 type="email"
                 required
+                aria-required="true"
                 autoComplete="email"
                 placeholder="you@example.com"
                 className="w-full rounded-xl border border-emerald-100 px-4 py-3 text-emerald-950 placeholder:text-emerald-900/30 outline-none focus:border-emerald-400 focus:ring-2 focus:ring-emerald-100 transition"
@@ -171,11 +176,16 @@ export default async function SignupPage({
                 className="block text-[0.6875rem] font-medium uppercase text-emerald-700/70 mb-2"
                 style={{ letterSpacing: "0.4em" }}
               >
-                Password · 密碼
+                Password · 密碼{" "}
+                <span className="text-red-500" aria-hidden="true">
+                  *
+                </span>
+                <span className="sr-only">（必填）</span>
               </label>
               <PasswordInput
                 name="password"
                 required
+                ariaRequired
                 minLength={6}
                 autoComplete="new-password"
                 placeholder="至少 6 個字"
