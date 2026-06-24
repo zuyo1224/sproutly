@@ -5,6 +5,7 @@ import Link from "next/link";
 import {
   getRecentProducts,
   rememberProduct,
+  removeRecentProducts,
   type RecentProduct,
 } from "@/lib/recent-products";
 
@@ -45,6 +46,38 @@ export function RecentlyViewed({
     const prior = getRecentProducts(slug).filter((p) => p.id !== currentId);
     setItems(prior.slice(0, 4));
     if (current) rememberProduct(slug, current);
+
+    // 跟購物車／收藏徽章同款收斂：小抄存的只是看過當下的快照，那幾株可能已被商家下架／
+    // 刪除，列出來點進去就是 404。拿這些 id 去問既有 API（只回還在且 active 的），把問
+    // 不到的從這台裝置的小抄裡清掉、不再列。純讀既有 API、零 DB。安全前提沿用購物車：只有
+    // API 至少回一筆時才清——整批回空可能是店家暫時整間下架或一時抓不到，那種情況寧可留著
+    // 不動。當前正在看的這株沒進核對範圍（prior 已濾掉），不會被掃掉。
+    const ids = prior.map((p) => p.id);
+    if (ids.length === 0) return;
+    let aborted = false;
+    fetch(
+      `/${slug}/favorites/api?ids=${encodeURIComponent(ids.join(","))}`,
+      { cache: "no-store" }
+    )
+      .then((r) => (r.ok ? r.json() : Promise.reject(new Error())))
+      .then((data) => {
+        if (aborted || !Array.isArray(data) || data.length === 0) return;
+        const live = new Set(data.map((d) => String(d?.id)));
+        const dead = ids.filter((id) => !live.has(id));
+        if (dead.length === 0) return;
+        removeRecentProducts(slug, dead);
+        const cleaned = getRecentProducts(slug).filter(
+          (p) => p.id !== currentId
+        );
+        setItems(cleaned.slice(0, 4));
+      })
+      .catch(() => {
+        // 抓不到就維持快照顯示，不清小抄——可能只是一時連不上，不該因此把看過的紀錄清光。
+      });
+
+    return () => {
+      aborted = true;
+    };
     // 只在切換到不同商品時跑一次（current 物件每次 render 都是新的，靠 id 收斂）
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [slug, currentId]);

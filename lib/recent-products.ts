@@ -39,6 +39,23 @@ export function getRecentProducts(slug: string): RecentProduct[] {
   }
 }
 
+// 小抄裡某幾株被商家下架／刪除後，列出來點進去就是 404。詳情頁／空車頁核對過哪些
+// 還在（active）之後，把明確指名的那幾個 id 從這台裝置的小抄裡清掉。只移除指名的，
+// 其餘一律不動——剛看的當前商品還沒被核對到，不能順手掃掉。回傳有沒有真的改到。
+export function removeRecentProducts(slug: string, ids: string[]): boolean {
+  if (typeof window === "undefined" || ids.length === 0) return false;
+  try {
+    const dead = new Set(ids);
+    const current = getRecentProducts(slug);
+    const kept = current.filter((p) => !dead.has(p.id));
+    if (kept.length === current.length) return false;
+    localStorage.setItem(KEY_PREFIX + slug, JSON.stringify(kept));
+    return true;
+  } catch {
+    return false;
+  }
+}
+
 export function rememberProduct(
   slug: string,
   product: Omit<RecentProduct, "viewedAt">
