@@ -137,6 +137,7 @@ export function RecentlyViewed({
                 <img
                   src={p.image}
                   alt={p.name}
+                  loading="lazy"
                   className="w-full h-full object-cover group-hover:scale-105 transition duration-700"
                 />
               ) : (

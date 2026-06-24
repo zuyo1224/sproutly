@@ -486,6 +486,7 @@ export function SearchOverlay({ slug }: { slug: string }) {
                       <img
                         src={p.image_urls[0]}
                         alt={p.name}
+                        loading="lazy"
                         className={`w-full h-full object-cover ${
                           soldOut ? "opacity-55 grayscale" : ""
                         }`}
