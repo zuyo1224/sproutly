@@ -428,6 +428,7 @@ export default function FavoritesPage() {
                   <img
                     src={p.image_urls[0]}
                     alt={p.name}
+                    loading="lazy"
                     className={`w-full h-full object-cover transition ${
                       soldOut ? "opacity-55 grayscale" : ""
                     }`}

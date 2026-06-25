@@ -623,6 +623,7 @@ export default async function PublicProductPage({
                     <img
                       src={p.image_urls[0]}
                       alt={p.name}
+                      loading="lazy"
                       className={`w-full h-full object-cover group-hover:scale-105 transition duration-700 ${
                         soldOut ? "opacity-55 grayscale" : ""
                       }`}

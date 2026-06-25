@@ -745,6 +745,7 @@ export default function CartCheckoutPage() {
                       <img
                         src={r.product.image_urls[0]}
                         alt={r.product.name}
+                        loading="lazy"
                         className="w-full h-full object-cover"
                       />
                     ) : (

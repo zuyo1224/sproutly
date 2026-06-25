@@ -571,6 +571,7 @@ export default async function CheckoutPage({
                   <img
                     src={product.image_urls[0]}
                     alt={product.name}
+                    loading="lazy"
                     className="w-full h-full object-cover"
                   />
                 ) : (
