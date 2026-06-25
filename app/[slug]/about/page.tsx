@@ -116,6 +116,30 @@ export default async function AboutPage({ params }: { params: Params }) {
   const faqTitle =
     theme.homepage.faqTitle ?? HOMEPAGE_DEFAULTS.faqTitle;
 
+  // 麵包屑結構化資料 — 跟 shop / 商品詳情頁同一套，讓 Google 搜尋結果用
+  // 「店名 › 關於我們」標出這頁在店裡的位置，取代生硬的網址。
+  const BASE_URL =
+    process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/$/, "") ??
+    "https://sproutly-drab.vercel.app";
+  const breadcrumbJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      {
+        "@type": "ListItem",
+        position: 1,
+        name: store.name,
+        item: `${BASE_URL}/${slug}`,
+      },
+      {
+        "@type": "ListItem",
+        position: 2,
+        name: "關於我們",
+        item: `${BASE_URL}/${slug}/about`,
+      },
+    ],
+  };
+
   // FAQPage 結構化資料 — 這頁的 FAQ 來自 store.faq 文字欄（跟首頁那組 block 不同來源），
   // 之前完全沒有結構化標記，等於對 Google 隱形。補上後常見問題能在搜尋結果直接展開，
   // 條件跟畫面上實際渲染的 FAQ 一致（區段有開且真的解析出問答）才放，不會標到空的。
@@ -137,6 +161,11 @@ export default async function AboutPage({ params }: { params: Params }) {
 
   return (
     <>
+      <script
+        type="application/ld+json"
+        // eslint-disable-next-line react/no-danger
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
+      />
       {faqJsonLd && (
         <script
           type="application/ld+json"
