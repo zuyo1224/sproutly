@@ -119,6 +119,14 @@ export default async function PublicProductPage({
   const extraImages = images.slice(1);
   const inStock = product.stock === null || product.stock > 0;
   const maxQty = product.stock !== null ? Math.min(product.stock, 99) : 99;
+  // 庫存狀態給 Google：頁面上 stock ≤ 3 就亮「剩 N」琥珀色提示，結構化資料也跟著走——
+  // 還剩一點的用 LimitedAvailability（schema.org 正好有這個值），讓搜尋結果能標「所剩不多」，
+  // 跟客人在頁面上看到的低庫存提示一致；沒設庫存或量足就照常 InStock，賣完 OutOfStock。
+  const availability = !inStock
+    ? "https://schema.org/OutOfStock"
+    : product.stock !== null && product.stock <= 3
+      ? "https://schema.org/LimitedAvailability"
+      : "https://schema.org/InStock";
 
   const BASE_URL =
     process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/$/, "") ??
@@ -151,9 +159,7 @@ export default async function PublicProductPage({
       priceCurrency: product.currency,
       price: (product.price_cents / 100).toFixed(2),
       priceValidUntil,
-      availability: inStock
-        ? "https://schema.org/InStock"
-        : "https://schema.org/OutOfStock",
+      availability,
       // seller 的 @id 指回首頁／聯絡頁那份 Store 同一個身分證
       // （${BASE_URL}/${slug}#store）。Store 本來就是 Organization 的子類，型別相容，
       // 這樣 Google 把「賣這件商品的人」和店家本體連成同一間店，而非另一個匿名賣家。

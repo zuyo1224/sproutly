@@ -211,10 +211,14 @@ export default async function ShopPage({
                 "@type": "Offer",
                 priceCurrency: p.currency,
                 price: (p.price_cents / 100).toFixed(2),
+                // 跟商品詳情頁同一套：賣完 OutOfStock、剩 3 件以下 LimitedAvailability
+                // （對應卡片上的「剩 N」琥珀提示）、其餘 InStock，整站庫存標示一致。
                 availability:
-                  p.stock === null || p.stock > 0
-                    ? "https://schema.org/InStock"
-                    : "https://schema.org/OutOfStock",
+                  p.stock !== null && p.stock <= 0
+                    ? "https://schema.org/OutOfStock"
+                    : p.stock !== null && p.stock <= 3
+                      ? "https://schema.org/LimitedAvailability"
+                      : "https://schema.org/InStock",
               },
             },
           })),
