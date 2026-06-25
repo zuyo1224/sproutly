@@ -1,6 +1,7 @@
 import { redirect, notFound } from "next/navigation";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
+import { telHref } from "@/lib/contact-href";
 
 type Params = Promise<{ slug: string }>;
 type SearchParams = Promise<{ q?: string; sort?: string }>;
@@ -449,7 +450,7 @@ export default async function StoreCustomersPage({
                         </a>
                       )}
                       <a
-                        href={`tel:${r.phone}`}
+                        href={telHref(r.phone)}
                         className="block text-emerald-900/60 text-xs tabular-nums"
                       >
                         {r.phone}

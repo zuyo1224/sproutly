@@ -3,6 +3,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { parseBusinessHoursToSpec } from "@/lib/business-hours-schema";
+import { telHref } from "@/lib/contact-href";
 import { resolveTheme, HOMEPAGE_DEFAULTS } from "../_theme";
 
 type Params = Promise<{ slug: string }>;
@@ -76,7 +77,7 @@ export default async function ContactPage({ params }: { params: Params }) {
   const blocks: { kind: "phone" | "email" | "address" | "hours"; label: string; latin: string; value: string; href?: string; external?: boolean }[] = [];
   if (theme.sections.contact) {
     if (store.contact_phone) {
-      blocks.push({ kind: "phone", label: "電話", latin: "Phone", value: store.contact_phone, href: `tel:${store.contact_phone}` });
+      blocks.push({ kind: "phone", label: "電話", latin: "Phone", value: store.contact_phone, href: telHref(store.contact_phone) });
     }
     if (store.contact_email) {
       blocks.push({ kind: "email", label: "Email", latin: "Email", value: store.contact_email, href: `mailto:${store.contact_email}` });

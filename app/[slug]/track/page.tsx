@@ -9,6 +9,7 @@ import {
   decodeShippingFromNote,
   orderStatusMessage,
 } from "@/lib/order-labels";
+import { telHref } from "@/lib/contact-href";
 import { RememberOrder } from "@/app/_components/remember-order";
 import { RecentOrdersList } from "@/app/_components/recent-orders-list";
 import { PrintButton } from "@/app/_components/print-button";
@@ -640,7 +641,7 @@ export default async function TrackPage({
             <div className="flex flex-col sm:flex-row gap-3 print:hidden">
               {store.contact_phone && (
                 <a
-                  href={`tel:${store.contact_phone}`}
+                  href={telHref(store.contact_phone)}
                   className="sproutly-btn sproutly-btn-primary flex-1"
                 >
                   聯絡店家

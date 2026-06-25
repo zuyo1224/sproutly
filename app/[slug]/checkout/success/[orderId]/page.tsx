@@ -4,6 +4,7 @@ import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { resolveTheme } from "../../../_theme";
 import { PAYMENT_LABELS, decodeShippingFromNote } from "@/lib/order-labels";
+import { telHref } from "@/lib/contact-href";
 import { Confetti } from "@/app/_components/confetti";
 import { CopyOrderId } from "@/app/_components/copy-order-id";
 import { RememberOrder } from "@/app/_components/remember-order";
@@ -414,7 +415,7 @@ export default async function OrderSuccessPage({
           <div className="flex flex-col sm:flex-row gap-3">
             {store.contact_phone && (
               <a
-                href={`tel:${store.contact_phone}`}
+                href={telHref(store.contact_phone)}
                 className="sproutly-btn sproutly-btn-primary flex-1"
               >
                 聯絡店家

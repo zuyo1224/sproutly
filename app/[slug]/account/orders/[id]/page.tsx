@@ -7,6 +7,7 @@ import {
   decodeShippingFromNote,
   orderStatusMessage,
 } from "@/lib/order-labels";
+import { telHref } from "@/lib/contact-href";
 import { PrintButton } from "@/app/_components/print-button";
 
 type Params = Promise<{ slug: string; id: string }>;
@@ -502,7 +503,7 @@ export default async function CustomerOrderDetailPage({
         <div className="flex flex-col sm:flex-row gap-3 print:hidden">
           {store.contact_phone && (
             <a
-              href={`tel:${store.contact_phone}`}
+              href={telHref(store.contact_phone)}
               className="flex-1 text-center rounded-full px-6 py-3.5 text-sm transition hover:opacity-85"
               style={{
                 background: theme.text,

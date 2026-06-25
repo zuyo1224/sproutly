@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
+import { telHref } from "@/lib/contact-href";
 import { resolveTheme } from "../../_theme";
 import { ImageCarousel } from "@/app/_components/image-carousel";
 import { FavoriteButton } from "@/app/_components/favorite-button";
@@ -451,7 +452,7 @@ export default async function PublicProductPage({
 
             {store.contact_phone && (
               <a
-                href={`tel:${store.contact_phone}`}
+                href={telHref(store.contact_phone)}
                 className="sproutly-btn sproutly-btn-secondary sproutly-btn-lg w-full"
               >
                 來店看實品

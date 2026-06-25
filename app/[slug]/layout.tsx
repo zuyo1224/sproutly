@@ -10,6 +10,7 @@ import {
   Lora,
 } from "next/font/google";
 import { createClient } from "@/lib/supabase/server";
+import { telHref } from "@/lib/contact-href";
 import { resolveTheme, themeToCssVars, HOMEPAGE_DEFAULTS } from "./_theme";
 import { FavoritesCounter } from "@/app/_components/favorite-button";
 import { CartIcon } from "@/app/_components/cart-icon";
@@ -905,7 +906,7 @@ export default async function PublicStoreLayout({
                 {footerPhone && (
                   <p>
                     <a
-                      href={`tel:${footerPhone}`}
+                      href={telHref(footerPhone)}
                       className="sproutly-link"
                       style={{ color: theme.text, letterSpacing: "0.04em" }}
                     >
