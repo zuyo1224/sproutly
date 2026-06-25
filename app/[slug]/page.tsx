@@ -354,12 +354,38 @@ export default async function StoreHomePage({
         }
       : null;
 
+  // WebSite + SearchAction 給 Google：讓搜尋結果直接附上「這家店的站內搜尋框」
+  //（sitelinks search box），客人不用先點進來才找得到搜尋。target 指向商品頁的 ?q=
+  // 查詢，跟站內搜尋實際走的路徑完全一致；publisher 指回 storeId 同一個店家身分證，
+  // 讓這個網站節點跟首頁／聯絡頁那份 Store 綁成同一間店、不被當成另一個獨立實體。
+  const websiteJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    "@id": `${BASE_URL}/${slug}#website`,
+    url: `${BASE_URL}/${slug}`,
+    name: store.name,
+    publisher: { "@id": storeId },
+    potentialAction: {
+      "@type": "SearchAction",
+      target: {
+        "@type": "EntryPoint",
+        urlTemplate: `${BASE_URL}/${slug}/shop?q={search_term_string}`,
+      },
+      "query-input": "required name=search_term_string",
+    },
+  };
+
   return (
     <>
       <script
         type="application/ld+json"
         // eslint-disable-next-line react/no-danger
         dangerouslySetInnerHTML={{ __html: JSON.stringify(storeJsonLd) }}
+      />
+      <script
+        type="application/ld+json"
+        // eslint-disable-next-line react/no-danger
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteJsonLd) }}
       />
       {faqJsonLd && (
         <script
