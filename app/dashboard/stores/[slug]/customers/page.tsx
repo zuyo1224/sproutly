@@ -6,8 +6,13 @@ import { telHref } from "@/lib/contact-href";
 type Params = Promise<{ slug: string }>;
 type SearchParams = Promise<{ q?: string; sort?: string }>;
 
-function formatPrice(cents: number) {
-  return `NT$ ${Math.round(cents / 100).toLocaleString("zh-TW")}`;
+// 客人名單的金額一律跟著這間店實際出單的幣別走，不再對非 TWD 店家硬寫 NT$——
+// storefront、訂單列表、後台店家首頁都已照幣別顯示，唯獨這頁的平均/總消費還寫死，
+// 用非台幣的店家會看到「店面標 USD、客人名單卻變 NT$」的對不上。
+function formatPrice(cents: number, currency: string) {
+  const amount = Math.round(cents / 100);
+  if (currency === "TWD") return `NT$ ${amount.toLocaleString("zh-TW")}`;
+  return `${currency} ${amount.toLocaleString("zh-TW")}`;
 }
 
 function formatDate(iso: string) {
@@ -86,6 +91,7 @@ export default async function StoreCustomersPage({
     customer_email: string | null;
     customer_phone: string;
     total_cents: number;
+    currency: string;
     payment_status: string;
     status: string;
     created_at: string;
@@ -94,12 +100,14 @@ export default async function StoreCustomersPage({
   const { data: orders } = await supabase
     .from("sproutly_orders")
     .select(
-      "id, customer_id, customer_name, customer_email, customer_phone, total_cents, payment_status, status, created_at"
+      "id, customer_id, customer_name, customer_email, customer_phone, total_cents, currency, payment_status, status, created_at"
     )
     .eq("merchant_id", store.id)
     .neq("status", "cancelled");
 
   const orderList = (orders as OrderRow[] | null) ?? [];
+  // 單一店家實務上同一種幣別，取第一筆訂單的幣別當這頁的顯示單位；沒有訂單就退 TWD
+  const storeCurrency = orderList[0]?.currency ?? "TWD";
 
   // 分群邏輯：有 customer_id → 用 customer_id；否則 fallback 用 phone
   const groups = new Map<string, OrderRow[]>();
@@ -290,7 +298,7 @@ export default async function StoreCustomersPage({
             className="text-3xl sm:text-4xl text-emerald-950 font-medium tabular-nums"
             style={{ letterSpacing: "-0.02em", lineHeight: 1.1 }}
           >
-            {formatPrice(avgSpend)}
+            {formatPrice(avgSpend, storeCurrency)}
           </p>
           <p className="mt-2 text-xs text-emerald-900/50">每位客人</p>
         </div>
@@ -305,7 +313,7 @@ export default async function StoreCustomersPage({
             className="mt-2 text-emerald-100 tabular-nums"
             style={{ fontSize: "0.8125rem", letterSpacing: "-0.01em" }}
           >
-            {topCustomer ? formatPrice(topCustomer.totalCents) : ""}
+            {topCustomer ? formatPrice(topCustomer.totalCents, storeCurrency) : ""}
           </p>
         </div>
       </div>
@@ -402,7 +410,7 @@ export default async function StoreCustomersPage({
               {filtered.map((r) => {
                 const recencyDays = daysAgo(r.lastOrderAt);
                 const lifetimeDays = daysAgo(r.firstOrderAt);
-                const isVip = r.totalCents >= 200000; // NT$ 2000+
+                const isVip = r.totalCents >= 200000; // 累計 2000（店家幣別單位）以上
                 const isReturning = r.orderCount >= 2;
                 return (
                   <tr
@@ -472,13 +480,13 @@ export default async function StoreCustomersPage({
                         className="text-emerald-950 tabular-nums font-medium"
                         style={{ letterSpacing: "-0.01em" }}
                       >
-                        {formatPrice(r.totalCents)}
+                        {formatPrice(r.totalCents, storeCurrency)}
                       </p>
                       {r.paidCents < r.totalCents && (
                         <p className="text-[10px] text-amber-700/80 tabular-nums">
                           {r.paidCents === 0
                             ? "尚未收款"
-                            : `已收 ${formatPrice(r.paidCents)}`}
+                            : `已收 ${formatPrice(r.paidCents, storeCurrency)}`}
                         </p>
                       )}
                     </td>
@@ -522,7 +530,7 @@ export default async function StoreCustomersPage({
           <ul className="sm:hidden divide-y divide-emerald-50">
             {filtered.map((r) => {
               const recencyDays = daysAgo(r.lastOrderAt);
-              const isVip = r.totalCents >= 200000;
+              const isVip = r.totalCents >= 200000; // 同上：2000（店家幣別單位）以上
               const isReturning = r.orderCount >= 2;
               return (
                 <li key={r.key}>
@@ -567,7 +575,7 @@ export default async function StoreCustomersPage({
                         className="text-emerald-950 tabular-nums font-medium"
                         style={{ letterSpacing: "-0.02em", fontSize: "1.0625rem" }}
                       >
-                        {formatPrice(r.totalCents)}
+                        {formatPrice(r.totalCents, storeCurrency)}
                       </p>
                       <p className="text-[10px] text-emerald-900/50">
                         {r.orderCount} 筆訂單
@@ -576,7 +584,7 @@ export default async function StoreCustomersPage({
                         <p className="text-[10px] text-amber-700/80 tabular-nums mt-0.5">
                           {r.paidCents === 0
                             ? "尚未收款"
-                            : `已收 ${formatPrice(r.paidCents)}`}
+                            : `已收 ${formatPrice(r.paidCents, storeCurrency)}`}
                         </p>
                       )}
                     </div>
@@ -620,7 +628,7 @@ export default async function StoreCustomersPage({
           style={{ fontSize: "0.8125rem", lineHeight: 1.85, maxWidth: "44rem" }}
         >
           以電話為主分群（同一支電話的多次匿名下單算一位客人）；客人若有會員帳號，
-          會用會員 ID 分群更準確。VIP = 累計消費 NT$ 2,000+；回購 = 下過 2 次以上。
+          會用會員 ID 分群更準確。VIP = 累計消費 {formatPrice(200000, storeCurrency)}+；回購 = 下過 2 次以上。
           「總消費」是累計下單金額（含轉帳、貨到付款還沒收到的單）；款項還沒到齊的，
           下方會標出實際已收多少。點任一位客人的「看訂單」，會帶他的電話到訂單列表，
           篩出他的每一筆單。
