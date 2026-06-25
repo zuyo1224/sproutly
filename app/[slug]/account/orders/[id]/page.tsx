@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import { notFound, redirect } from "next/navigation";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
@@ -9,6 +10,9 @@ import {
 } from "@/lib/order-labels";
 import { telHref } from "@/lib/contact-href";
 import { PrintButton } from "@/app/_components/print-button";
+
+// 蓋掉父層 account/layout 的「會員中心」，單筆訂單分頁顯示「訂單明細」。
+export const metadata: Metadata = { title: "訂單明細" };
 
 type Params = Promise<{ slug: string; id: string }>;
 

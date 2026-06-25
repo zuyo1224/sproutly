@@ -1,8 +1,12 @@
+import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { resolveTheme } from "../../_theme";
 import { sendCustomerMagicLink } from "../actions";
+
+// 蓋掉父層 account/layout 的「會員中心」，登入頁分頁顯示「登入」。
+export const metadata: Metadata = { title: "登入" };
 
 type Params = Promise<{ slug: string }>;
 type SearchParams = Promise<{

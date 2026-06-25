@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
@@ -11,6 +12,9 @@ import { RememberOrder } from "@/app/_components/remember-order";
 import { PrintButton } from "@/app/_components/print-button";
 
 type Params = Promise<{ slug: string; orderId: string }>;
+
+// 蓋掉父層 checkout/layout 的「結帳」，成立後分頁顯示「訂單成立」。
+export const metadata: Metadata = { title: "訂單成立" };
 
 function formatPrice(cents: number, currency: string) {
   const amount = cents / 100;
