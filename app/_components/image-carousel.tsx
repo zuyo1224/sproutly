@@ -155,6 +155,10 @@ export function ImageCarousel({ images, alt, surfaceBg }: Props) {
               opacity: i === idx ? 1 : 0,
               transition: "opacity 0.8s cubic-bezier(0.22, 1, 0.36, 1)",
             }}
+            // 多張照片是疊在一起、靠 opacity 切換，全都在畫面內，所以全部會同時下載、
+            // 一起搶頻寬。第一張是客人一開頁就看到的主圖（商品頁最大那張），把它調高、
+            // 其餘調低，瀏覽器就先把主圖載出來，不會被後面幾張照片拖慢。
+            fetchPriority={i === 0 ? "high" : "low"}
             draggable={false}
           />
         ))}
