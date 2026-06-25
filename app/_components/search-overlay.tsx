@@ -246,9 +246,14 @@ export function SearchOverlay({ slug }: { slug: string }) {
                 <circle cx="11" cy="11" r="7" />
                 <path strokeLinecap="round" d="M21 21l-4.35-4.35" />
               </svg>
+              {/* 手機是靠放大鏡開這個面板（⌘K 提示只在桌機顯示），所以這欄才是手機客人
+                  真正打字搜尋的地方。type="search" + enterKeyHint 讓手機鍵盤的 enter 變成
+                  「搜尋」鍵而不是換行，客人打完商品名能直接按下去；autoCapitalize / autoCorrect
+                  關掉，打英文商品名（品種、品牌）時不會被自動首字大寫或改字。appearance 設 none
+                  是擋掉 type="search" 在 WebKit 自帶的圓角框與灰色叉叉，維持原本的乾淨樣式。 */}
               <input
                 ref={inputRef}
-                type="text"
+                type="search"
                 value={q}
                 onChange={(e) => setQ(e.target.value)}
                 placeholder="搜尋商品⋯"
@@ -259,11 +264,18 @@ export function SearchOverlay({ slug }: { slug: string }) {
                 aria-autocomplete="list"
                 aria-activedescendant={activeDescendantId}
                 autoComplete="off"
+                autoCorrect="off"
+                autoCapitalize="off"
+                spellCheck={false}
+                enterKeyHint="search"
+                inputMode="search"
                 className="flex-1 outline-none bg-transparent"
                 style={{
                   fontSize: "1rem",
                   color: "var(--store-text, #1a1a1a)",
                   caretColor: "var(--store-accent, currentColor)",
+                  WebkitAppearance: "none",
+                  appearance: "none",
                 }}
               />
               <button
