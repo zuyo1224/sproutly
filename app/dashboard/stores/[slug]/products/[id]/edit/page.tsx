@@ -59,6 +59,11 @@ export default async function EditProductPage({
   const deleteBound = deleteProduct.bind(null, slug, product.id);
   const price = (product.price_cents / 100).toFixed(0);
   const imageCount = product.image_urls?.length ?? 0;
+  // 價格 label 跟著這件商品實際的幣別走，非台幣的商品不再硬寫 NT$
+  const currencyLabel =
+    product.currency === "TWD" || !product.currency
+      ? "NT$"
+      : product.currency;
 
   return (
     <div>
@@ -145,7 +150,7 @@ export default async function EditProductPage({
                 className="block text-emerald-700/70 mb-2"
                 style={LABEL_STYLE}
               >
-                Price · 價格 NT${" "}
+                Price · 價格 {currencyLabel}{" "}
                 <span className="text-red-500" aria-hidden="true">
                   *
                 </span>

@@ -37,6 +37,7 @@ type OrderRow = {
   customer_email: string | null;
   customer_phone: string;
   total_cents: number;
+  currency: string;
   payment_status: string;
   status: string;
   created_at: string;
@@ -74,12 +75,17 @@ export async function GET(request: Request, { params }: { params: Params }) {
   const { data: orders } = await supabase
     .from("sproutly_orders")
     .select(
-      "id, customer_id, customer_name, customer_email, customer_phone, total_cents, payment_status, status, created_at"
+      "id, customer_id, customer_name, customer_email, customer_phone, total_cents, currency, payment_status, status, created_at"
     )
     .eq("merchant_id", store.id)
     .neq("status", "cancelled");
 
   const orderList = (orders as OrderRow[] | null) ?? [];
+
+  // 這份名單的金額欄一律跟著這間店出單的幣別走，跟客人列表頁同一套：
+  // 拿任一筆訂單的 currency 當基準，非台幣的店家不再硬寫 NT$。
+  const storeCurrency = orderList[0]?.currency ?? "TWD";
+  const currencyLabel = storeCurrency === "TWD" ? "NT$" : storeCurrency;
 
   type CustomerRow = {
     identityType: "account" | "guest";
@@ -169,8 +175,8 @@ export async function GET(request: Request, { params }: { params: Params }) {
     "標籤",
     "訂單筆數",
     "已付款筆數",
-    "累計消費（NT$）",
-    "已收金額（NT$）",
+    `累計消費（${currencyLabel}）`,
+    `已收金額（${currencyLabel}）`,
     "首次下單",
     "最近下單",
   ];
