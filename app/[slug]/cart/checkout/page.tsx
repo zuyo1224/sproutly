@@ -200,6 +200,10 @@ export default function CartCheckoutPage() {
     0
   );
   const itemCount = itemRows.reduce((s, r) => s + r.effectiveQty, 0);
+  // 小計／Total 的幣別跟著商品走，別硬寫 TWD——逐項價格早就用 r.product.currency，
+  // 摘要兩處卻寫死 NT$，同店若用非 TWD 幣別會出現「每項是 USD、小計卻變 NT$」的不一致
+  // （購物車頁已修過同一點）。同店商品幣別一致，取第一項即可，空車則 fallback TWD。
+  const summaryCurrency = itemRows[0]?.product.currency ?? "TWD";
   // 任何一列售完或被夾過，就先擋住送出、把客人帶回購物車調整，跟結帳 API 同一條
   // 紅線。購物車頁本來就是調數量的地方，這頁只當最後一道防呆，不重做逐列加減。
   const hasStockIssue = itemRows.some((r) => r.soldOut || r.clamped);
@@ -824,7 +828,7 @@ export default function CartCheckoutPage() {
                 style={{ color: "var(--store-text-muted, rgba(0,0,0,0.6))" }}
               >
                 <span>小計</span>
-                <span>{formatPrice(total, "TWD")}</span>
+                <span>{formatPrice(total, summaryCurrency)}</span>
               </div>
               <div
                 className="flex justify-between"
@@ -860,7 +864,7 @@ export default function CartCheckoutPage() {
                   lineHeight: 1,
                 }}
               >
-                {formatPrice(total, "TWD")}
+                {formatPrice(total, summaryCurrency)}
               </span>
             </div>
           </div>
