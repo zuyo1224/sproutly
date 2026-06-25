@@ -40,6 +40,11 @@ export function RecentlyViewed({
   className?: string;
 }) {
   const [items, setItems] = useState<RecentProduct[]>([]);
+  // 即時庫存（key = 商品 id）。小抄只是看過當下的快照、沒存庫存，
+  // 客人回頭從這排點進去才發現沒貨會白跑。下面清死連結那次 fetch 本來就把
+  // 還在架上的商品連同 stock 一起回了，順手收進來標售完／快沒貨，跟搜尋、
+  // 收藏、首頁同一套庫存語言。問不到（一時連不上）就不標，不假裝有貨或沒貨。
+  const [stockById, setStockById] = useState<Record<string, number>>({});
 
   const currentId = current?.id;
   useEffect(() => {
@@ -62,6 +67,14 @@ export function RecentlyViewed({
       .then((r) => (r.ok ? r.json() : Promise.reject(new Error())))
       .then((data) => {
         if (aborted || !Array.isArray(data) || data.length === 0) return;
+        // 把這次回來的即時庫存收進 map，標售完／快沒貨用（snapshot 沒這資料）。
+        const stockMap: Record<string, number> = {};
+        for (const d of data) {
+          if (d && d.id != null && typeof d.stock === "number") {
+            stockMap[String(d.id)] = d.stock;
+          }
+        }
+        setStockById(stockMap);
         const live = new Set(data.map((d) => String(d?.id)));
         const dead = ids.filter((id) => !live.has(id));
         if (dead.length === 0) return;
@@ -119,11 +132,18 @@ export function RecentlyViewed({
         />
       </div>
       <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-        {items.map((p) => (
+        {items.map((p) => {
+          // 庫存問到了才標：售完整列去彩＋縮圖蓋角標，快沒貨補一行琥珀「剩 N」，
+          // 跟搜尋面板、收藏、首頁完全一致。stock 是 undefined（這次沒問到）就不標。
+          const stock = stockById[p.id];
+          const soldOut = stock === 0;
+          const lowStock = !soldOut && typeof stock === "number" && stock <= 3;
+          return (
           <Link
             key={p.id}
             href={`/${slug}/products/${p.id}`}
             className="group block"
+            aria-label={`${p.name}，${formatPrice(p.priceCents, p.currency)}${soldOut ? "，已售完" : lowStock ? `，剩 ${stock} 件` : ""}`}
           >
             <div
               className="aspect-square rounded-2xl overflow-hidden transition relative"
@@ -132,13 +152,27 @@ export function RecentlyViewed({
                 boxShadow: "var(--sproutly-elev-2)",
               }}
             >
+              {soldOut && (
+                <span
+                  className="absolute inset-x-0 bottom-0 z-10 text-center py-1 text-[0.5625rem] uppercase font-medium"
+                  style={{
+                    background: "rgba(0,0,0,0.6)",
+                    color: "#fff",
+                    letterSpacing: "0.2em",
+                  }}
+                >
+                  售完
+                </span>
+              )}
               {p.image ? (
                 // eslint-disable-next-line @next/next/no-img-element
                 <img
                   src={p.image}
                   alt={p.name}
                   loading="lazy"
-                  className="w-full h-full object-cover group-hover:scale-105 transition duration-700"
+                  className={`w-full h-full object-cover group-hover:scale-105 transition duration-700 ${
+                    soldOut ? "opacity-55 grayscale" : ""
+                  }`}
                 />
               ) : (
                 <div
@@ -165,6 +199,7 @@ export function RecentlyViewed({
                 fontFamily: "var(--store-font)",
                 fontWeight: 500,
                 letterSpacing: "-0.005em",
+                opacity: soldOut ? 0.6 : 1,
               }}
             >
               {p.name}
@@ -179,8 +214,17 @@ export function RecentlyViewed({
             >
               {formatPrice(p.priceCents, p.currency)}
             </p>
+            {lowStock && (
+              <p
+                className="mt-1 text-[0.625rem] uppercase font-medium"
+                style={{ color: "#92400E", letterSpacing: "0.25em" }}
+              >
+                Low Stock · 剩 {stock}
+              </p>
+            )}
           </Link>
-        ))}
+          );
+        })}
       </div>
     </section>
   );
