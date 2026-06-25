@@ -128,6 +128,11 @@ export default async function ContactPage({ params }: { params: Params }) {
     name: store.name,
     url: `${BASE_URL}/${slug}`,
   };
+  // 跟首頁那段 Store 共用同一個 @id，理論上 Google 會把兩段合併看成同一間店；
+  // 但跨頁合併不是保證的事，而聯絡頁正是客人搜「店名 地址／電話／營業時間」會落地的頁，
+  // 所以這段自己也補上店家簡介、主視覺、社群連結，自成完整、不賭合併。
+  if (store.description) contactJsonLd.description = store.description;
+  if (theme.heroUrl) contactJsonLd.image = theme.heroUrl;
   if (store.logo_url) contactJsonLd.logo = store.logo_url;
   if (store.contact_phone) contactJsonLd.telephone = store.contact_phone;
   if (store.contact_email) contactJsonLd.email = store.contact_email;
@@ -145,6 +150,17 @@ export default async function ContactPage({ params }: { params: Params }) {
   //（頁面上給客人看的原始文字照常顯示）。
   const openingHoursSpec = parseBusinessHoursToSpec(businessHoursText);
   if (openingHoursSpec) contactJsonLd.openingHoursSpecification = openingHoursSpec;
+  // 把店家填的 Instagram / Facebook / LINE 連回同一個店家實體，Google 用這條把
+  // 社群帳號跟搜尋結果的店家對起來（跟首頁同一套）。商家可能填成 @帳號 之類的非網址，
+  // sameAs 只吃絕對網址，所以只放真的以 http(s) 開頭的，其餘略過不放錯的。
+  const socialUrls = [
+    theme.social.instagram,
+    theme.social.facebook,
+    theme.social.line,
+  ].filter((u): u is string => !!u && /^https?:\/\//i.test(u.trim()));
+  if (socialUrls.length > 0) {
+    contactJsonLd.sameAs = socialUrls.map((u) => u.trim());
+  }
   // 只有真的有任何一項聯絡資訊才放結構化資料，空店面不丟空殼給 Google。
   const hasContactData = Boolean(
     store.contact_phone ||
