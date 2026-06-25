@@ -47,6 +47,7 @@ export async function generateMetadata({
       description,
       siteName: store.name,
       type: "website",
+      locale: "zh_TW",
       images: ogImage ? [{ url: ogImage, alt: store.name }] : undefined,
     },
     twitter: {
