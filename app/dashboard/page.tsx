@@ -3,8 +3,48 @@ import { signOut } from "@/app/auth/actions";
 import { redirect } from "next/navigation";
 import Link from "next/link";
 
-function formatPrice(cents: number) {
-  return `NT$ ${Math.round(cents / 100).toLocaleString("zh-TW")}`;
+function formatPrice(cents: number, currency: string) {
+  const amount = Math.round(cents / 100);
+  if (currency === "TWD") return `NT$ ${amount.toLocaleString("zh-TW")}`;
+  return `${currency} ${amount.toLocaleString("zh-TW")}`;
+}
+
+// 總覽卡的金額。商家若同時開了不同幣別的店，不同幣別的錢不能相加成一個數字，
+// 就分幣別逐列；只有一種幣別（多數情況）才照舊顯示一個大數字。
+function RevenueValue({ byCurrency }: { byCurrency: Record<string, number> }) {
+  const entries = Object.entries(byCurrency);
+  if (entries.length <= 1) {
+    const [currency, cents] = entries[0] ?? ["TWD", 0];
+    return (
+      <p
+        className="mt-4 text-emerald-950 font-medium"
+        style={{
+          fontSize: "1.875rem",
+          letterSpacing: "-0.02em",
+          fontVariantNumeric: "tabular-nums",
+        }}
+      >
+        {formatPrice(cents, currency)}
+      </p>
+    );
+  }
+  return (
+    <div className="mt-4 space-y-1">
+      {entries.map(([currency, cents]) => (
+        <p
+          key={currency}
+          className="text-emerald-950 font-medium"
+          style={{
+            fontSize: "1.25rem",
+            letterSpacing: "-0.02em",
+            fontVariantNumeric: "tabular-nums",
+          }}
+        >
+          {formatPrice(cents, currency)}
+        </p>
+      ))}
+    </div>
+  );
 }
 
 export default async function DashboardPage() {
@@ -42,13 +82,18 @@ export default async function DashboardPage() {
     status: string;
     payment_status: string;
     total_cents: number;
+    currency: string;
     created_at: string;
   }[] = [];
   const productCounts: Record<string, number> = {};
   const pendingByStore: Record<string, number> = {};
   const monthRevenueByStore: Record<string, number> = {};
-  const totalRevenueByStore: Record<string, number> = {};
   const orderCountByStore: Record<string, number> = {};
+  // 每間店出單用的幣別（拿任一筆訂單的 currency 當基準，跟單店首頁同一套）
+  const currencyByStore: Record<string, string> = {};
+  // 跨店加總要分幣別，不同幣別不混在一起
+  const totalRevenueByCurrency: Record<string, number> = {};
+  const monthRevenueByCurrency: Record<string, number> = {};
 
   if (storeIds.length > 0) {
     const startOfMonth = new Date();
@@ -58,7 +103,9 @@ export default async function DashboardPage() {
     const [{ data: orders }, { data: products }] = await Promise.all([
       supabase
         .from("sproutly_orders")
-        .select("merchant_id, status, payment_status, total_cents, created_at")
+        .select(
+          "merchant_id, status, payment_status, total_cents, currency, created_at"
+        )
         .in("merchant_id", storeIds),
       supabase
         .from("sproutly_products")
@@ -73,6 +120,8 @@ export default async function DashboardPage() {
     });
 
     allOrders.forEach((o) => {
+      const cur = o.currency ?? "TWD";
+      currencyByStore[o.merchant_id] ??= cur;
       orderCountByStore[o.merchant_id] =
         (orderCountByStore[o.merchant_id] ?? 0) + 1;
       if (o.status === "pending") {
@@ -83,26 +132,20 @@ export default async function DashboardPage() {
         o.payment_status === "paid" &&
         o.status !== "cancelled"
       ) {
-        totalRevenueByStore[o.merchant_id] =
-          (totalRevenueByStore[o.merchant_id] ?? 0) + o.total_cents;
+        totalRevenueByCurrency[cur] =
+          (totalRevenueByCurrency[cur] ?? 0) + o.total_cents;
         if (new Date(o.created_at) >= startOfMonth) {
           monthRevenueByStore[o.merchant_id] =
             (monthRevenueByStore[o.merchant_id] ?? 0) + o.total_cents;
+          monthRevenueByCurrency[cur] =
+            (monthRevenueByCurrency[cur] ?? 0) + o.total_cents;
         }
       }
     });
   }
 
   const totalOrders = allOrders.length;
-  const totalRevenue = Object.values(totalRevenueByStore).reduce(
-    (s, v) => s + v,
-    0
-  );
   const totalPending = Object.values(pendingByStore).reduce((s, v) => s + v, 0);
-  const totalMonthRevenue = Object.values(monthRevenueByStore).reduce(
-    (s, v) => s + v,
-    0
-  );
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-emerald-50 via-white to-lime-50">
@@ -174,16 +217,7 @@ export default async function DashboardPage() {
                 >
                   總營收
                 </p>
-                <p
-                  className="mt-4 text-emerald-950 font-medium"
-                  style={{
-                    fontSize: "1.875rem",
-                    letterSpacing: "-0.02em",
-                    fontVariantNumeric: "tabular-nums",
-                  }}
-                >
-                  {formatPrice(totalRevenue)}
-                </p>
+                <RevenueValue byCurrency={totalRevenueByCurrency} />
                 <p className="mt-2 text-xs text-emerald-900/50">
                   {stores.length} 間店合計
                 </p>
@@ -202,16 +236,7 @@ export default async function DashboardPage() {
                 >
                   本月營收
                 </p>
-                <p
-                  className="mt-4 text-emerald-950 font-medium"
-                  style={{
-                    fontSize: "1.875rem",
-                    letterSpacing: "-0.02em",
-                    fontVariantNumeric: "tabular-nums",
-                  }}
-                >
-                  {formatPrice(totalMonthRevenue)}
-                </p>
+                <RevenueValue byCurrency={monthRevenueByCurrency} />
                 <p className="mt-2 text-xs text-emerald-900/50">已付款</p>
               </div>
               <div
@@ -468,7 +493,12 @@ export default async function DashboardPage() {
                             fontVariantNumeric: "tabular-nums",
                           }}
                         >
-                          {monthRev > 0 ? formatPrice(monthRev) : "—"}
+                          {monthRev > 0
+                            ? formatPrice(
+                                monthRev,
+                                currencyByStore[store.id] ?? "TWD"
+                              )
+                            : "—"}
                         </p>
                       </div>
                     </div>
