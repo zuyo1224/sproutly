@@ -6,8 +6,13 @@ import { updateOrderStatus } from "./orders/[orderId]/actions";
 
 type Params = Promise<{ slug: string }>;
 
-function formatPrice(cents: number) {
-  return `NT$ ${Math.round(cents / 100).toLocaleString("zh-TW")}`;
+// 後台首頁的金額一律跟著這間店實際出單的幣別走，不再對非 TWD 店家硬寫 NT$——
+// storefront 與訂單列表早就照幣別顯示，唯獨這頁的營收／熱銷／趨勢還寫死 NT$，
+// 用非台幣的店家會看到「店面標 USD、後台首頁卻變 NT$」的對不上。
+function formatPrice(cents: number, currency: string) {
+  const amount = Math.round(cents / 100);
+  if (currency === "TWD") return `NT$ ${amount.toLocaleString("zh-TW")}`;
+  return `${currency} ${amount.toLocaleString("zh-TW")}`;
 }
 
 // 回傳該時刻在台灣時區的日期字串（YYYY-MM-DD），分日統計一律用這個當 key，
@@ -74,7 +79,7 @@ export default async function StoreInsightsPage({
       .eq("merchant_id", store.id),
     supabase
       .from("sproutly_orders")
-      .select("id, created_at, total_cents, status, payment_status")
+      .select("id, created_at, total_cents, status, payment_status, currency")
       .eq("merchant_id", store.id),
     supabase
       .from("sproutly_orders")
@@ -104,6 +109,10 @@ export default async function StoreInsightsPage({
       .order("stock", { ascending: true })
       .limit(10),
   ]);
+
+  // 這間店出單用的幣別。跟訂單列表頁同一套：拿任一筆訂單的 currency 當基準
+  // （單一店家實務上同一種幣別），沒有訂單時退回 TWD。
+  const storeCurrency = allOrders?.[0]?.currency ?? "TWD";
 
   const totalOrders = allOrders?.length ?? 0;
   const totalRevenue =
@@ -357,7 +366,7 @@ export default async function StoreInsightsPage({
             總營收（已付款）
           </p>
           <p className="mt-3 text-2xl font-medium text-emerald-950 tracking-tight">
-            {formatPrice(totalRevenue)}
+            {formatPrice(totalRevenue, storeCurrency)}
           </p>
           <p className="mt-1.5 text-xs text-emerald-900/50">
             來自 {allOrders?.filter((o) => o.payment_status === "paid").length ?? 0} 筆訂單
@@ -374,7 +383,7 @@ export default async function StoreInsightsPage({
             {totalOrders}
           </p>
           <p className="mt-1.5 text-xs text-emerald-900/50">
-            平均 {formatPrice(avgOrderValue)}/筆
+            平均 {formatPrice(avgOrderValue, storeCurrency)}/筆
           </p>
         </Link>
         <Link
@@ -400,7 +409,7 @@ export default async function StoreInsightsPage({
             本月營收
           </p>
           <p className="mt-3 text-2xl font-medium text-emerald-950 tracking-tight">
-            {formatPrice(monthRevenue)}
+            {formatPrice(monthRevenue, storeCurrency)}
           </p>
           <p className="mt-1.5 text-xs text-emerald-900/50">
             本月 {monthOrderCount} 筆訂單
@@ -426,7 +435,7 @@ export default async function StoreInsightsPage({
           </div>
           <div className="text-right flex-shrink-0">
             <p className="text-lg font-medium text-amber-800 tracking-tight">
-              {formatPrice(outstandingCents)}
+              {formatPrice(outstandingCents, storeCurrency)}
             </p>
             <p className="text-[11px] text-amber-700/70 group-hover:text-amber-800 transition">
               看未付款訂單 →
@@ -456,7 +465,7 @@ export default async function StoreInsightsPage({
                 <>
                   <br />
                   <span className="text-emerald-900/45">
-                    進帳 {formatPrice(total14Revenue)}
+                    進帳 {formatPrice(total14Revenue, storeCurrency)}
                   </span>
                 </>
               )}
@@ -485,7 +494,7 @@ export default async function StoreInsightsPage({
                     ? "尚無訂單"
                     : `${d.orders} 筆訂單${
                         d.revenue > 0
-                          ? `，進帳 ${formatPrice(d.revenue)}`
+                          ? `，進帳 ${formatPrice(d.revenue, storeCurrency)}`
                           : "，未進帳"
                       }`
                 }`;
@@ -505,7 +514,7 @@ export default async function StoreInsightsPage({
                       {d.orders === 0
                         ? "尚無訂單"
                         : `${d.orders} 筆 · ${
-                            d.revenue > 0 ? formatPrice(d.revenue) : "未進帳"
+                            d.revenue > 0 ? formatPrice(d.revenue, storeCurrency) : "未進帳"
                           }`}
                     </div>
                     <div className="w-full flex-1 flex items-end">
@@ -571,7 +580,7 @@ export default async function StoreInsightsPage({
                     </p>
                   </div>
                   <p className="text-sm font-semibold text-emerald-950">
-                    {formatPrice(p.revenue)}
+                    {formatPrice(p.revenue, storeCurrency)}
                   </p>
                 </li>
               ))}
@@ -693,7 +702,7 @@ export default async function StoreInsightsPage({
                       {status.label}
                     </span>
                     <span className="font-semibold text-emerald-950 text-sm w-20 sm:w-24 text-right flex-shrink-0">
-                      {formatPrice(o.total_cents)}
+                      {formatPrice(o.total_cents, storeCurrency)}
                     </span>
                     <span className="text-xs text-emerald-900/40 hidden md:inline w-20 text-right flex-shrink-0">
                       {new Date(o.created_at).toLocaleString("zh-TW", {
