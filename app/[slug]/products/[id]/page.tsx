@@ -123,6 +123,13 @@ export default async function PublicProductPage({
     process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/$/, "") ??
     "https://sproutly-drab.vercel.app";
 
+  // 價格有效期限給 Google：Product 的 offers 沒帶 priceValidUntil 時，
+  // Search Console 會報「缺少建議欄位」，rich result 也可能不顯示價格。
+  // 商家不設到期日，這裡預設一年後，讓結構化資料完整、價格不被當成過期。
+  const priceValidUntil = new Date(Date.now() + 365 * 24 * 60 * 60 * 1000)
+    .toISOString()
+    .slice(0, 10);
+
   const productJsonLd = {
     "@context": "https://schema.org",
     "@type": "Product",
@@ -137,8 +144,12 @@ export default async function PublicProductPage({
     offers: {
       "@type": "Offer",
       url: `${BASE_URL}/${slug}/products/${product.id}`,
+      // 商品都是全新品（盆栽、家居用品），標明 NewCondition 讓 Google
+      // 商品結果不留空，也補上 Search Console 會提示的建議欄位。
+      itemCondition: "https://schema.org/NewCondition",
       priceCurrency: product.currency,
       price: (product.price_cents / 100).toFixed(2),
+      priceValidUntil,
       availability: inStock
         ? "https://schema.org/InStock"
         : "https://schema.org/OutOfStock",
