@@ -292,9 +292,14 @@ export default async function StoreHomePage({
     process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/$/, "") ??
     "https://sproutly-drab.vercel.app";
 
+  // @id 是這個店家在整個網站的唯一身分證：首頁、聯絡頁的 Store 和商品頁 offer 的
+  // seller 全指同一個 @id，Google 才知道散在各頁的結構化資料講的是「同一間店」，
+  // 而不是好幾間同名的不同店。沒有它，每段 Store 都是匿名節點、會被當成獨立實體。
+  const storeId = `${BASE_URL}/${slug}#store`;
   const storeJsonLd: Record<string, unknown> = {
     "@context": "https://schema.org",
     "@type": "Store",
+    "@id": storeId,
     name: store.name,
     url: `${BASE_URL}/${slug}`,
   };

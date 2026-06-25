@@ -115,9 +115,14 @@ export default async function ContactPage({ params }: { params: Params }) {
   const BASE_URL =
     process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/$/, "") ??
     "https://sproutly-drab.vercel.app";
+  // @id 跟首頁 page.tsx 那份 Store 用同一個值（${BASE_URL}/${slug}#store），
+  // 讓 Google 知道聯絡頁這段跟首頁那段講的是同一間店、不是兩間同名的不同店，
+  // 否則兩段匿名 Store 會被當成各自獨立的實體，搜尋結果可能對不起來。
+  const storeId = `${BASE_URL}/${slug}#store`;
   const contactJsonLd: Record<string, unknown> = {
     "@context": "https://schema.org",
     "@type": "Store",
+    "@id": storeId,
     name: store.name,
     url: `${BASE_URL}/${slug}`,
   };

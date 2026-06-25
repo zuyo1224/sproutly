@@ -141,8 +141,12 @@ export default async function PublicProductPage({
       availability: inStock
         ? "https://schema.org/InStock"
         : "https://schema.org/OutOfStock",
+      // seller 的 @id 指回首頁／聯絡頁那份 Store 同一個身分證
+      // （${BASE_URL}/${slug}#store）。Store 本來就是 Organization 的子類，型別相容，
+      // 這樣 Google 把「賣這件商品的人」和店家本體連成同一間店，而非另一個匿名賣家。
       seller: {
         "@type": "Organization",
+        "@id": `${BASE_URL}/${slug}#store`,
         name: store.name,
       },
     },
