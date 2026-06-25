@@ -6,7 +6,10 @@ const BASE_URL =
   process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/$/, "") ??
   "https://sproutly-drab.vercel.app";
 
-const STORE_SUBROUTES = ["shop", "about", "contact"] as const;
+// shop 對每間已發布店家都在；about / contact 是條件頁，商家關掉對應區段時
+// 頁面本身會 notFound（about 看 about/faq，contact 看 contact/hours），
+// 跟 layout nav 同一組判斷。sitemap 必須照著走，否則會列出 404 網址，
+// Google Search Console 會把它當 sitemap 錯誤回報。
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const supabase = createAdminClient();
@@ -34,8 +37,10 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       ? new Date(store.updated_at)
       : now;
 
+    const theme = resolveTheme(store.theme);
+
     // 把店面主視覺帶進 sitemap，Google 圖片搜尋能一起收這張首圖
-    const heroUrl = resolveTheme(store.theme).heroUrl;
+    const heroUrl = theme.heroUrl;
 
     entries.push({
       url: `${BASE_URL}/${store.slug}`,
@@ -45,7 +50,11 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       ...(heroUrl ? { images: [heroUrl] } : {}),
     });
 
-    for (const sub of STORE_SUBROUTES) {
+    const subRoutes = ["shop"];
+    if (theme.sections.about || theme.sections.faq) subRoutes.push("about");
+    if (theme.sections.contact || theme.sections.hours) subRoutes.push("contact");
+
+    for (const sub of subRoutes) {
       entries.push({
         url: `${BASE_URL}/${store.slug}/${sub}`,
         lastModified: storeLastModified,
