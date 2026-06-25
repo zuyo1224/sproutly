@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
+import { parseBusinessHoursToSpec } from "@/lib/business-hours-schema";
 import { resolveTheme, HOMEPAGE_DEFAULTS } from "../_theme";
 
 type Params = Promise<{ slug: string }>;
@@ -130,7 +131,13 @@ export default async function ContactPage({ params }: { params: Params }) {
       addressCountry: "TW",
     };
   }
-  if (businessHoursText) contactJsonLd.openingHours = businessHoursText;
+  // 營業時間給 Google：schema.org 的 openingHours 只吃結構化星期＋24 小時時間，
+  // 商家打的是中文自由文字，直接塞會被判無效、連整段 Store 結構化資料一起忽略
+  // （首頁 page.tsx 早就改用解析版，這頁之前漏掉，等於把整段結構化資料賭掉）。
+  // 解析得出來才放 openingHoursSpecification，判讀不出來就不放，不誤導搜尋結果
+  //（頁面上給客人看的原始文字照常顯示）。
+  const openingHoursSpec = parseBusinessHoursToSpec(businessHoursText);
+  if (openingHoursSpec) contactJsonLd.openingHoursSpecification = openingHoursSpec;
   // 只有真的有任何一項聯絡資訊才放結構化資料，空店面不丟空殼給 Google。
   const hasContactData = Boolean(
     store.contact_phone ||
