@@ -139,10 +139,14 @@ export default async function ContactPage({ params }: { params: Params }) {
   if (contactPhone) contactJsonLd.telephone = contactPhone;
   const contactEmail = cleanEmail(store.contact_email);
   if (contactEmail) contactJsonLd.email = contactEmail;
-  if (store.address) {
+  // 地址先去前後空白再放：商家若只打了空白（或地址前後黏了換行），原本
+  // if (store.address) 對「  」之類的全空白字串也成立，會吐出一個 streetAddress
+  // 是空白的 PostalAddress 給 Google，等於餵一筆空地址。trim 後仍有字才放。
+  const contactAddress = store.address?.trim();
+  if (contactAddress) {
     contactJsonLd.address = {
       "@type": "PostalAddress",
-      streetAddress: store.address,
+      streetAddress: contactAddress,
       addressCountry: "TW",
     };
   }
@@ -168,7 +172,7 @@ export default async function ContactPage({ params }: { params: Params }) {
   const hasContactData = Boolean(
     store.contact_phone ||
       store.contact_email ||
-      store.address ||
+      contactAddress ||
       businessHoursText,
   );
 

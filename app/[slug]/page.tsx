@@ -321,10 +321,14 @@ export default async function StoreHomePage({
   if (storePhone) storeJsonLd.telephone = storePhone;
   const storeEmail = cleanEmail(store.contact_email);
   if (storeEmail) storeJsonLd.email = storeEmail;
-  if (store.address) {
+  // 地址先去前後空白再放：商家若只打了空白（或地址前後黏了換行），原本
+  // if (store.address) 對「  」之類的全空白字串也成立，會吐出一個 streetAddress
+  // 是空白的 PostalAddress 給 Google，等於餵一筆空地址。trim 後仍有字才放。
+  const storeAddress = store.address?.trim();
+  if (storeAddress) {
     storeJsonLd.address = {
       "@type": "PostalAddress",
-      streetAddress: store.address,
+      streetAddress: storeAddress,
       addressCountry: "TW",
     };
   }
