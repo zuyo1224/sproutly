@@ -8,7 +8,7 @@ import {
   decodeShippingFromNote,
   orderStatusMessage,
 } from "@/lib/order-labels";
-import { telHref } from "@/lib/contact-href";
+import { telHref, mailHref } from "@/lib/contact-href";
 import { PrintButton } from "@/app/_components/print-button";
 
 // 蓋掉父層 account/layout 的「會員中心」，單筆訂單分頁顯示「訂單明細」。
@@ -517,9 +517,7 @@ export default async function CustomerOrderDetailPage({
           )}
           {store.contact_email && (
             <a
-              href={`mailto:${store.contact_email}?subject=${encodeURIComponent(
-                `關於訂單 #${shortId}`
-              )}`}
+              href={mailHref(store.contact_email, { subject: `關於訂單 #${shortId}` })}
               className="flex-1 text-center rounded-full px-6 py-3.5 text-sm transition hover:opacity-80"
               style={{
                 border: `1px solid ${theme.border}`,

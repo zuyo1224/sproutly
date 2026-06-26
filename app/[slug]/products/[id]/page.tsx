@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
-import { telHref } from "@/lib/contact-href";
+import { telHref, mailHref } from "@/lib/contact-href";
 import { resolveTheme } from "../../_theme";
 import { ImageCarousel } from "@/app/_components/image-carousel";
 import { FavoriteButton } from "@/app/_components/favorite-button";
@@ -474,7 +474,7 @@ export default async function PublicProductPage({
             )}
             {store.contact_email && (
               <a
-                href={`mailto:${store.contact_email}?subject=${encodeURIComponent("詢問商品：" + product.name)}`}
+                href={mailHref(store.contact_email, { subject: "詢問商品：" + product.name })}
                 className="sproutly-btn sproutly-btn-secondary sproutly-btn-lg w-full"
               >
                 Email 詢問

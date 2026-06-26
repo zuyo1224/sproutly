@@ -5,7 +5,7 @@ import Image from "next/image";
 import { createClient } from "@/lib/supabase/server";
 import { resolveTheme, HOMEPAGE_DEFAULTS, HOMEPAGE_DEFAULT_COLLECTIONS, JOURNAL_CARD_DEFAULTS } from "./_theme";
 import { parseBusinessHoursToSpec } from "@/lib/business-hours-schema";
-import { telHref } from "@/lib/contact-href";
+import { telHref, mailHref } from "@/lib/contact-href";
 import HeroAdaptiveBanner from "./HeroAdaptiveBanner";
 
 type Params = Promise<{ slug: string }>;
@@ -2071,7 +2071,7 @@ export default async function StoreHomePage({
                   )}
                   {store.contact_email && (
                     <a
-                      href={`mailto:${store.contact_email}`}
+                      href={mailHref(store.contact_email)}
                       className="border-b border-current pb-0.5 hover:opacity-70 transition"
                     >
                       {store.contact_email}

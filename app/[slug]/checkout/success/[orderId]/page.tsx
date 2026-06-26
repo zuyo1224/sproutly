@@ -5,7 +5,7 @@ import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { resolveTheme } from "../../../_theme";
 import { PAYMENT_LABELS, decodeShippingFromNote } from "@/lib/order-labels";
-import { telHref } from "@/lib/contact-href";
+import { telHref, mailHref } from "@/lib/contact-href";
 import { Confetti } from "@/app/_components/confetti";
 import { CopyOrderId } from "@/app/_components/copy-order-id";
 import { RememberOrder } from "@/app/_components/remember-order";
@@ -423,9 +423,7 @@ export default async function OrderSuccessPage({
             )}
             {store.contact_email && (
               <a
-                href={`mailto:${store.contact_email}?subject=${encodeURIComponent(
-                  `關於訂單 #${shortId}`
-                )}`}
+                href={mailHref(store.contact_email, { subject: `關於訂單 #${shortId}` })}
                 className="sproutly-btn sproutly-btn-secondary flex-1"
               >
                 Email 詢問

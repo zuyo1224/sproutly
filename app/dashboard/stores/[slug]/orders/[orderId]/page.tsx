@@ -10,7 +10,7 @@ import {
   decodeShippingFromNote,
   customerMessage,
 } from "@/lib/order-labels";
-import { telHref } from "@/lib/contact-href";
+import { telHref, mailHref } from "@/lib/contact-href";
 
 type Params = Promise<{ slug: string; orderId: string }>;
 type SearchParams = Promise<{ error?: string; saved?: string }>;
@@ -390,7 +390,7 @@ export default async function OrderDetailPage({
                   <dt className="text-emerald-900/50 w-20">Email</dt>
                   <dd className="text-emerald-950">
                     <a
-                      href={`mailto:${order.customer_email}`}
+                      href={mailHref(order.customer_email)}
                       className="hover:text-emerald-700 transition"
                     >
                       {order.customer_email}

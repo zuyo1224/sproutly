@@ -38,3 +38,35 @@ export function telHref(phone: string | null | undefined): string {
 
   return `tel:${hasPlus ? "+" : ""}${digits}${extDigits ? `;ext=${extDigits}` : ""}`;
 }
+
+// Email 連結 helper，跟 telHref 同個道理：商家在後台填 Email 時常多打了前後空白、
+// 用全形字（＠ 或全形英數，注音輸入法切換時很容易誤打）、甚至整段貼成「mailto:abc@x.com」。
+// 這串原文直接塞進 <a href="mailto:..."> 時，開頭的 mailto: 會被當成位址一部分、
+// 內部空白會讓部分信件 app 整串解析失敗，客人點了卻開不了寫信。
+// 所以畫面上「顯示」的 Email 維持商家原本打的不動，只把「href」這串清乾淨：
+// 全形字轉半形 → 去前後空白與內部空白 → 去掉誤貼的開頭 mailto: → 沒位址就退回陽春 "mailto:"。
+// subject / body 另外用 query 掛上去（各自 encode），讓各頁不必再自己拼 ?subject= 字串。
+export function mailHref(
+  email: string | null | undefined,
+  opts?: { subject?: string; body?: string }
+): string {
+  // 全形英數與符號（U+FF01–FF5E）轉半形，全形空白 U+3000 一併歸成一般空白好 trim
+  const normalized = (email ?? "")
+    .replace(/[！-～]/g, (c) => String.fromCharCode(c.charCodeAt(0) - 0xfee0))
+    .replace(/　/g, " ");
+
+  // 去掉誤貼的開頭 mailto:（大小寫不分），再清掉所有空白——Email 位址本來就不含空白
+  const cleaned = normalized
+    .trim()
+    .replace(/^mailto:/i, "")
+    .replace(/\s+/g, "");
+
+  // 沒有位址就退回最陽春的 "mailto:"，不硬掛一個只有 subject 的壞連結
+  if (!cleaned) return "mailto:";
+
+  const params: string[] = [];
+  if (opts?.subject) params.push(`subject=${encodeURIComponent(opts.subject)}`);
+  if (opts?.body) params.push(`body=${encodeURIComponent(opts.body)}`);
+
+  return `mailto:${cleaned}${params.length ? `?${params.join("&")}` : ""}`;
+}

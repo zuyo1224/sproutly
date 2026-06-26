@@ -9,7 +9,7 @@ import {
   decodeShippingFromNote,
   orderStatusMessage,
 } from "@/lib/order-labels";
-import { telHref } from "@/lib/contact-href";
+import { telHref, mailHref } from "@/lib/contact-href";
 import { RememberOrder } from "@/app/_components/remember-order";
 import { RecentOrdersList } from "@/app/_components/recent-orders-list";
 import { PrintButton } from "@/app/_components/print-button";
@@ -645,9 +645,9 @@ export default async function TrackPage({
               )}
               {store.contact_email && (
                 <a
-                  href={`mailto:${store.contact_email}?subject=${encodeURIComponent(
-                    `關於訂單 #${order.id.split("-")[0].toUpperCase()}`
-                  )}`}
+                  href={mailHref(store.contact_email, {
+                    subject: `關於訂單 #${order.id.split("-")[0].toUpperCase()}`,
+                  })}
                   className="sproutly-btn sproutly-btn-secondary flex-1"
                 >
                   Email 詢問

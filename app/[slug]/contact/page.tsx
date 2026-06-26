@@ -3,7 +3,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { parseBusinessHoursToSpec } from "@/lib/business-hours-schema";
-import { telHref } from "@/lib/contact-href";
+import { telHref, mailHref } from "@/lib/contact-href";
 import { resolveTheme, HOMEPAGE_DEFAULTS } from "../_theme";
 
 type Params = Promise<{ slug: string }>;
@@ -81,7 +81,7 @@ export default async function ContactPage({ params }: { params: Params }) {
       blocks.push({ kind: "phone", label: "電話", latin: "Phone", value: store.contact_phone, href: telHref(store.contact_phone) });
     }
     if (store.contact_email) {
-      blocks.push({ kind: "email", label: "Email", latin: "Email", value: store.contact_email, href: `mailto:${store.contact_email}` });
+      blocks.push({ kind: "email", label: "Email", latin: "Email", value: store.contact_email, href: mailHref(store.contact_email) });
     }
     if (store.address) {
       // 地址直接連去 Google Maps，手機上會開地圖 App 帶起導航，客人不用自己複製貼上。

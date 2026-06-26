@@ -1,7 +1,7 @@
 import { redirect, notFound } from "next/navigation";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
-import { telHref } from "@/lib/contact-href";
+import { telHref, mailHref } from "@/lib/contact-href";
 
 type Params = Promise<{ slug: string }>;
 type SearchParams = Promise<{ q?: string; sort?: string }>;
@@ -445,7 +445,7 @@ export default async function StoreCustomersPage({
                     <td className="px-3 py-3.5">
                       {r.email && (
                         <a
-                          href={`mailto:${r.email}`}
+                          href={mailHref(r.email)}
                           className="block text-emerald-700 hover:underline text-xs truncate max-w-44"
                         >
                           {r.email}
