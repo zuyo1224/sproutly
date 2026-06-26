@@ -225,6 +225,19 @@ export default async function StoreHomePage({
   // 文字色用 color + 覆寫 --store-text / --store-text-muted CSS var
   // 讓 muted 文字（副題 / eyebrow）也跟著走，避免淺底深字 section 突然有深底白字時 muted 還是深的看不見
   // 標題字級 --store-heading-scale 由 layout.tsx 的 attribute selector 套到 h2 上（em 相對倍率）
+  // muted 文字色（副題 / eyebrow）= 自訂文字色加 ~70% 透明。原本只會「字串接 B3」，
+  // 那只在文字色剛好是 6 碼 hex 才成立；商家在文字色框打 rgb() / 顏色名 / 3 碼 #abc 時，
+  // 接出來是無效 CSS，muted 色靜默失效 —— 在自訂深底上副題就看不見（對比防呆只認 hex，也不會警告）。
+  // 6 碼 hex 維持原本輸出（既有店家視覺不變），3 碼補展開，其餘交給 color-mix 算同樣的 70%。
+  const mutedFromText = (color: string): string => {
+    const c = color.trim();
+    if (/^#[0-9a-f]{6}$/i.test(c)) return c + "B3"; // 0xB3 ≈ 70% alpha
+    if (/^#[0-9a-f]{3}$/i.test(c)) {
+      const [r, g, b] = c.slice(1);
+      return `#${r}${r}${g}${g}${b}${b}B3`;
+    }
+    return `color-mix(in srgb, ${c} 70%, transparent)`;
+  };
   const mergeSectionStyle = (
     s: { bg: string | undefined; text: string | undefined; padOverride: number | undefined; divider: "none" | "top" | "bottom" | "both"; headingOverride: number | undefined; minHeightOverride: string | undefined; outlineOverride: { outline: string; outlineOffset: string } | undefined; shadowOverride: string | undefined; borderRadiusOverride: string | undefined; fontFamilyOverride: string | undefined; letterSpacingOverride: string | undefined; lineHeightOverride: number | undefined; opacityOverride: number | undefined; filterOverride: string | undefined; widthOverride: string | undefined; gapOverride: string | undefined },
     fallbackBg?: string
@@ -235,7 +248,7 @@ export default async function StoreHomePage({
     if (s.text) {
       out.color = s.text;
       out["--store-text"] = s.text;
-      out["--store-text-muted"] = s.text + "B3"; // 加 ~70% alpha 給 muted 用
+      out["--store-text-muted"] = mutedFromText(s.text); // 加 ~70% alpha 給 muted 用（容任何合法顏色）
     }
     if (s.padOverride !== undefined) out["--store-section-pad"] = String(s.padOverride);
     if (s.headingOverride !== undefined) out["--store-heading-scale"] = String(s.headingOverride);
