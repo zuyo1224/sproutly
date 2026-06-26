@@ -82,6 +82,18 @@ function findClosedDays(text: string): Set<number> {
     const idx = CN_DAY_INDEX[m[1]];
     if (idx !== undefined) closed.add(idx);
   }
+  // 「週末／週末／假日／例假日 + 公休/休」也很常見，但上面只認單一星期字，抓不到。
+  // 漏掉的話「每日 10:00-18:00，週末公休」會被當成全週營業，反而把錯的營業時間
+  // 丟給搜尋引擎（週六日明明休卻標有開）。週末＝週六(5)＋週日(6)，明講休才扣，
+  // 中間只允許空白（「週末 10-18 公休」這種前後矛盾的就不視為休、保持保守）。
+  const weekendClosed =
+    /(?:週末|周末|假日|例假日?|國定假日)\s*(?:公休|店休|休館|休息|休|不營業|不開)/.test(
+      text
+    );
+  if (weekendClosed) {
+    closed.add(5);
+    closed.add(6);
+  }
   return closed;
 }
 
