@@ -2738,6 +2738,31 @@ export function EditorWorkspace({
               },
             },
           ];
+          // 判斷目前這段是不是還套著某個快速風格（套完後又微調過就不算）。
+          // 一個 preset 算「套用中」= 它的每個欄位都還在這段樣式裡、值也相同。
+          // 多個同時符合時挑欄位最多的那個（最具體，通常是最後套的）。
+          function presetMatches(fields: typeof cur) {
+            return (Object.keys(fields) as Array<keyof typeof cur>).every((k) => {
+              const want = fields[k];
+              if (want === undefined) return true;
+              const have = cur[k];
+              if (typeof want === "string" && typeof have === "string" && want.startsWith("#")) {
+                return want.toLowerCase() === have.toLowerCase();
+              }
+              return want === have;
+            });
+          }
+          let activePresetKey: string | null = null;
+          let activePresetFieldCount = 0;
+          for (const p of presets) {
+            if (presetMatches(p.fields)) {
+              const n = Object.keys(p.fields).length;
+              if (n > activePresetFieldCount) {
+                activePresetFieldCount = n;
+                activePresetKey = p.key;
+              }
+            }
+          }
           function applyPreset(fields: typeof cur) {
             const merged: typeof cur = { ...cur, ...fields };
             (Object.keys(merged) as Array<keyof typeof merged>).forEach((k) => {
@@ -2875,17 +2900,27 @@ export function EditorWorkspace({
                   一鍵套樣式組合，套完還能微調個別控制
                 </p>
                 <div className="grid grid-cols-2 gap-1.5">
-                  {presets.map((p) => (
-                    <button
-                      key={p.key}
-                      type="button"
-                      onClick={() => applyPreset(p.fields)}
-                      title={p.hint}
-                      className="rounded-lg border border-stone-200 px-2 py-2 text-xs text-stone-700 hover:border-emerald-500 hover:bg-emerald-50 hover:text-emerald-900 transition text-left leading-tight"
-                    >
-                      {p.label}
-                    </button>
-                  ))}
+                  {presets.map((p) => {
+                    const isActive = activePresetKey === p.key;
+                    return (
+                      <button
+                        key={p.key}
+                        type="button"
+                        onClick={() => applyPreset(p.fields)}
+                        title={p.hint}
+                        className={`rounded-lg border px-2 py-2 text-xs transition text-left leading-tight ${
+                          isActive
+                            ? "border-emerald-500 bg-emerald-50 text-emerald-900"
+                            : "border-stone-200 text-stone-700 hover:border-emerald-500 hover:bg-emerald-50 hover:text-emerald-900"
+                        }`}
+                      >
+                        {p.label}
+                        {isActive && (
+                          <span className="ml-1 text-[10px] font-normal text-emerald-600">· 目前</span>
+                        )}
+                      </button>
+                    );
+                  })}
                 </div>
               </Field>
               <div className="mt-3 pt-3 border-t border-stone-200">
