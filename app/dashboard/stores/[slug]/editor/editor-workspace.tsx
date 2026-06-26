@@ -2740,6 +2740,24 @@ export function EditorWorkspace({
           }
           const canPaste = styleClipboard !== null && styleClipboard.source !== selectedSection;
           const clipboardCount = styleClipboard ? Object.keys(styleClipboard.fields).length : 0;
+          // 「套到全部」：把這段調好的樣式一次鋪到其他所有區段（hero 不吃區段樣式，排除）。
+          const otherSections = theme.layout.sectionOrder.filter(
+            (k) => k !== "hero" && k !== selectedSection,
+          );
+          function applyToAll() {
+            if (!hasCustom || otherSections.length === 0) return;
+            if (
+              !window.confirm(
+                `要把這段的 ${Object.keys(cur).length} 項樣式套到其他 ${otherSections.length} 個區段嗎？那些區段原本的自訂樣式會被蓋掉（可⌘Z 復原）。`,
+              )
+            )
+              return;
+            const nextStyles = { ...theme.layout.sectionStyles };
+            for (const k of otherSections) {
+              nextStyles[k] = { ...cur };
+            }
+            updateLayout({ sectionStyles: nextStyles });
+          }
           return (
             <PanelSection title="區段樣式">
               {hasCustom && (
@@ -2804,6 +2822,25 @@ export function EditorWorkspace({
                     已複製：{sectionLabels[styleClipboard.source]} 的 {clipboardCount} 項樣式
                   </p>
                 )}
+                <button
+                  type="button"
+                  onClick={applyToAll}
+                  disabled={!hasCustom || otherSections.length === 0}
+                  className={`mt-1.5 w-full rounded-lg border px-2 py-2 text-xs transition leading-tight ${
+                    hasCustom && otherSections.length > 0
+                      ? "border-stone-200 text-stone-700 hover:border-emerald-500 hover:bg-emerald-50 hover:text-emerald-900"
+                      : "border-stone-100 text-stone-300 cursor-not-allowed"
+                  }`}
+                  title={
+                    !hasCustom
+                      ? "這段沒有自訂樣式，先調一段才能套到全部"
+                      : otherSections.length === 0
+                      ? "沒有其他區段可套"
+                      : `把這段樣式一次套到其他 ${otherSections.length} 個區段（可⌘Z 復原）`
+                  }
+                >
+                  套到全部區段{hasCustom && otherSections.length > 0 ? `（${otherSections.length} 段）` : ""}
+                </button>
               </Field>
               <Field label="快速風格">
                 <p className="-mt-1 mb-1.5 text-[11px] text-stone-500 leading-snug">
