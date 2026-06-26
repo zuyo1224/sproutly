@@ -1,6 +1,7 @@
 import { createClient } from "@/lib/supabase/server";
 import { redirect, notFound } from "next/navigation";
 import Link from "next/link";
+import { formatPrice } from "@/lib/format-price";
 
 type Params = Promise<{ slug: string }>;
 type SearchParams = Promise<{ q?: string; filter?: string }>;
@@ -67,12 +68,6 @@ export default async function ProductsListPage({
     .eq("merchant_id", store.id)
     .order("sort_order", { ascending: true })
     .order("created_at", { ascending: false });
-
-  const formatPrice = (cents: number, currency: string) => {
-    const amount = cents / 100;
-    if (currency === "TWD") return `NT$ ${amount.toLocaleString("zh-TW")}`;
-    return `${currency} ${amount.toFixed(2)}`;
-  };
 
   // 商品數量不多（一間店頂多幾百件），一次撈回來在這裡篩，
   // chips 的 count 也順便從同一份資料算，不用多打一次 DB

@@ -3,11 +3,7 @@ import { signOut } from "@/app/auth/actions";
 import { redirect } from "next/navigation";
 import Link from "next/link";
 
-function formatPrice(cents: number, currency: string) {
-  const amount = Math.round(cents / 100);
-  if (currency === "TWD") return `NT$ ${amount.toLocaleString("zh-TW")}`;
-  return `${currency} ${amount.toLocaleString("zh-TW")}`;
-}
+import { formatPrice } from "@/lib/format-price";
 
 // 總覽卡的金額。商家若同時開了不同幣別的店，不同幣別的錢不能相加成一個數字，
 // 就分幣別逐列；只有一種幣別（多數情況）才照舊顯示一個大數字。

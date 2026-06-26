@@ -16,11 +16,7 @@ type Product = {
   image_urls: string[] | null;
 };
 
-function formatPrice(cents: number, currency: string) {
-  const amount = cents / 100;
-  if (currency === "TWD") return `NT$ ${amount.toLocaleString("zh-TW")}`;
-  return `${currency} ${amount.toFixed(2)}`;
-}
+import { formatPrice } from "@/lib/format-price";
 
 export default function CartCheckoutPage() {
   const params = useParams();

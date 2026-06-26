@@ -45,11 +45,7 @@ const PAYMENT_STATUS_BADGE: Record<string, { label: string; color: string }> = {
   refunded: { label: "已退款", color: "bg-zinc-100 text-zinc-600" },
 };
 
-function formatPrice(cents: number, currency: string) {
-  const amount = cents / 100;
-  if (currency === "TWD") return `NT$ ${amount.toLocaleString("zh-TW")}`;
-  return `${currency} ${amount.toFixed(2)}`;
-}
+import { formatPrice } from "@/lib/format-price";
 
 function formatDateTime(iso: string) {
   return new Date(iso).toLocaleString("zh-TW", { timeZone: "Asia/Taipei" });

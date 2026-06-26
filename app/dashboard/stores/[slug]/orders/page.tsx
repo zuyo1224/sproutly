@@ -71,11 +71,7 @@ const PAYMENT_LABEL: Record<string, { label: string; color: string }> = {
   refunded: { label: "已退款", color: "text-zinc-600" },
 };
 
-function formatPrice(cents: number, currency: string) {
-  const amount = cents / 100;
-  if (currency === "TWD") return `NT$ ${amount.toLocaleString("zh-TW")}`;
-  return `${currency} ${amount.toFixed(2)}`;
-}
+import { formatPrice } from "@/lib/format-price";
 
 export default async function OrdersListPage({
   params,

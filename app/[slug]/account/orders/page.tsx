@@ -45,11 +45,7 @@ function statusPillStyle(status: string, theme: ReturnType<typeof resolveTheme>)
   };
 }
 
-function formatPrice(cents: number, currency: string) {
-  const amount = cents / 100;
-  if (currency === "TWD") return `NT$ ${amount.toLocaleString("zh-TW")}`;
-  return `${currency} ${amount.toFixed(2)}`;
-}
+import { formatPrice } from "@/lib/format-price";
 
 function formatDate(iso: string) {
   const d = new Date(iso);

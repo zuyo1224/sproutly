@@ -6,14 +6,8 @@ import { telHref } from "@/lib/contact-href";
 type Params = Promise<{ slug: string }>;
 type SearchParams = Promise<{ q?: string; sort?: string }>;
 
-// 客人名單的金額一律跟著這間店實際出單的幣別走，不再對非 TWD 店家硬寫 NT$——
-// storefront、訂單列表、後台店家首頁都已照幣別顯示，唯獨這頁的平均/總消費還寫死，
-// 用非台幣的店家會看到「店面標 USD、客人名單卻變 NT$」的對不上。
-function formatPrice(cents: number, currency: string) {
-  const amount = Math.round(cents / 100);
-  if (currency === "TWD") return `NT$ ${amount.toLocaleString("zh-TW")}`;
-  return `${currency} ${amount.toLocaleString("zh-TW")}`;
-}
+// 客人名單的金額一律跟著這間店實際出單的幣別走（共用 formatPrice，不再對非 TWD 店家硬寫 NT$）。
+import { formatPrice } from "@/lib/format-price";
 
 function formatDate(iso: string) {
   return new Date(iso).toLocaleDateString("zh-TW", {

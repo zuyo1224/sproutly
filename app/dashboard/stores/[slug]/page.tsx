@@ -6,14 +6,8 @@ import { updateOrderStatus } from "./orders/[orderId]/actions";
 
 type Params = Promise<{ slug: string }>;
 
-// 後台首頁的金額一律跟著這間店實際出單的幣別走，不再對非 TWD 店家硬寫 NT$——
-// storefront 與訂單列表早就照幣別顯示，唯獨這頁的營收／熱銷／趨勢還寫死 NT$，
-// 用非台幣的店家會看到「店面標 USD、後台首頁卻變 NT$」的對不上。
-function formatPrice(cents: number, currency: string) {
-  const amount = Math.round(cents / 100);
-  if (currency === "TWD") return `NT$ ${amount.toLocaleString("zh-TW")}`;
-  return `${currency} ${amount.toLocaleString("zh-TW")}`;
-}
+// 後台首頁的金額一律跟著這間店實際出單的幣別走（共用 formatPrice，不再對非 TWD 店家硬寫 NT$）。
+import { formatPrice } from "@/lib/format-price";
 
 // 回傳該時刻在台灣時區的日期字串（YYYY-MM-DD），分日統計一律用這個當 key，
 // 不能用 toISOString / created_at 直接切：那是 UTC 日界線，跟台灣差 8 小時

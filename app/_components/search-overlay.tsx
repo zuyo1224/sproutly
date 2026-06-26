@@ -12,11 +12,7 @@ type Product = {
   stock: number | null;
 };
 
-function formatPrice(cents: number, currency: string) {
-  const amount = cents / 100;
-  if (currency === "TWD") return `NT$ ${amount.toLocaleString("zh-TW")}`;
-  return `${currency} ${amount.toFixed(2)}`;
-}
+import { formatPrice } from "@/lib/format-price";
 
 export function SearchOverlay({ slug }: { slug: string }) {
   const [open, setOpen] = useState(false);

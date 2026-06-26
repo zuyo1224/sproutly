@@ -9,11 +9,7 @@ import {
   type RecentProduct,
 } from "@/lib/recent-products";
 
-function formatPrice(cents: number, currency: string) {
-  const amount = cents / 100;
-  if (currency === "TWD") return `NT$ ${amount.toLocaleString("zh-TW")}`;
-  return `${currency} ${amount.toFixed(2)}`;
-}
+import { formatPrice } from "@/lib/format-price";
 
 // 「最近看過」一排。兩種用法：
 //  1. 商品詳情頁底部 — 傳 current，先讀出之前看過的清單顯示（自然排除當前這株），

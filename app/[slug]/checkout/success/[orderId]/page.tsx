@@ -16,11 +16,7 @@ type Params = Promise<{ slug: string; orderId: string }>;
 // 蓋掉父層 checkout/layout 的「結帳」，成立後分頁顯示「訂單成立」。
 export const metadata: Metadata = { title: "訂單成立" };
 
-function formatPrice(cents: number, currency: string) {
-  const amount = cents / 100;
-  if (currency === "TWD") return `NT$ ${amount.toLocaleString("zh-TW")}`;
-  return `${currency} ${amount.toFixed(2)}`;
-}
+import { formatPrice } from "@/lib/format-price";
 
 function formatDateTime(iso: string) {
   return new Date(iso).toLocaleString("zh-TW", {
