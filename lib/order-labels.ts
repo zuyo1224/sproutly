@@ -194,6 +194,8 @@ export function customerMessage(input: {
         lines.push("（這筆是銀行轉帳，匯款後再跟我們說一聲就可以囉）");
       else if (paymentMethod === "cod")
         lines.push("（這筆是貨到付款，取貨時再付款即可）");
+      else if (paymentMethod === "in_person")
+        lines.push("（這筆是面交付款，碰面時再付款即可）");
     }
   }
 
