@@ -12,7 +12,7 @@ import { RecentlyViewed } from "@/app/_components/recently-viewed";
 
 type Params = Promise<{ slug: string; id: string }>;
 
-import { formatPrice } from "@/lib/format-price";
+import { formatPrice, priceForSchema, currencyForSchema } from "@/lib/format-price";
 
 export async function generateMetadata({
   params,
@@ -152,8 +152,8 @@ export default async function PublicProductPage({
       // 商品都是全新品（盆栽、家居用品），標明 NewCondition 讓 Google
       // 商品結果不留空，也補上 Search Console 會提示的建議欄位。
       itemCondition: "https://schema.org/NewCondition",
-      priceCurrency: product.currency,
-      price: (product.price_cents / 100).toFixed(2),
+      priceCurrency: currencyForSchema(product.currency),
+      price: priceForSchema(product.price_cents, product.currency),
       priceValidUntil,
       availability,
       // seller 的 @id 指回首頁／聯絡頁那份 Store 同一個身分證

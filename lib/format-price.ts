@@ -29,3 +29,35 @@ export function formatPrice(cents: number, currency?: string | null): string {
     return `${code} ${amount.toFixed(2)}`;
   }
 }
+
+// 把幣別代碼正規化成結構化資料（JSON-LD 的 priceCurrency）能用的乾淨值：
+// 去空白、轉大寫，沒填（舊商品 null／空字串）就當台灣店退回 TWD——跟 formatPrice
+// 顯示端同一條防呆線。原本 offers.priceCurrency 直接塞 product.currency，沒填的
+// 商品會丟出 priceCurrency: null 給 Google，整段 offer 會被判無效。
+export function currencyForSchema(currency?: string | null): string {
+  return (currency ?? "").trim().toUpperCase() || "TWD";
+}
+
+// 給結構化資料（Product JSON-LD 的 offers.price）用的純數字價格字串——不帶貨幣
+// 符號、不帶千分位（schema.org 的 price 只收純數值），但小數位數要跟著幣別走。
+// 這是 formatPrice 顯示端那條「日圓／韓元不硬塞小數」防呆線在「餵給 Google」這端
+// 的對應：原本 offers.price 寫死 .toFixed(2)，對日圓／韓元這種零小數幣別會丟出
+// 「1200.00」這種它們根本不存在的小數金額。
+export function priceForSchema(cents: number, currency?: string | null): string {
+  const amount = (Number.isFinite(cents) ? cents : 0) / 100;
+  const code = currencyForSchema(currency);
+  // TWD 跟顯示端一致，四捨五入到整數、不留小數（台灣客人不用小數）。
+  if (code === "TWD") return String(Math.round(amount));
+  try {
+    // 問 Intl 這個幣別自然的小數位數：日圓／韓元 0 位、美金／歐元 2 位。
+    const digits =
+      new Intl.NumberFormat("en-US", {
+        style: "currency",
+        currency: code,
+      }).resolvedOptions().maximumFractionDigits ?? 2;
+    return amount.toFixed(digits);
+  } catch {
+    // 不認得的幣別代碼退回兩位小數，跟 formatPrice 的退路同一個態度。
+    return amount.toFixed(2);
+  }
+}

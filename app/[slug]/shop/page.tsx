@@ -66,7 +66,7 @@ const SORT_OPTIONS: { value: string; label: string }[] = [
   { value: "name", label: "名稱 A-Z" },
 ];
 
-import { formatPrice } from "@/lib/format-price";
+import { formatPrice, priceForSchema, currencyForSchema } from "@/lib/format-price";
 
 export default async function ShopPage({
   params,
@@ -205,8 +205,8 @@ export default async function ShopPage({
               image: p.image_urls?.[0] ?? undefined,
               offers: {
                 "@type": "Offer",
-                priceCurrency: p.currency,
-                price: (p.price_cents / 100).toFixed(2),
+                priceCurrency: currencyForSchema(p.currency),
+                price: priceForSchema(p.price_cents, p.currency),
                 // 跟商品詳情頁同一套：賣完 OutOfStock、剩 3 件以下 LimitedAvailability
                 // （對應卡片上的「剩 N」琥珀提示）、其餘 InStock，整站庫存標示一致。
                 availability:
