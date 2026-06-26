@@ -14,6 +14,7 @@ import { RecentlyViewed } from "@/app/_components/recently-viewed";
 type Params = Promise<{ slug: string; id: string }>;
 
 import { formatPrice, priceForSchema, currencyForSchema } from "@/lib/format-price";
+import { absoluteImageUrls } from "@/lib/image-url";
 
 export async function generateMetadata({
   params,
@@ -44,7 +45,10 @@ export async function generateMetadata({
   // 而非退回「商品名 · 售價」。先 trim，全空白就當沒填、走預設摘要。
   const description =
     product.description?.trim().slice(0, 160) || `${product.name} · ${priceLabel}`;
-  const image = product.image_urls?.[0] ?? null;
+  // OG／Twitter 預覽圖只認絕對網址：商家圖片清單裡可能混進空白列或相對路徑，
+  // 取第一張前先濾掉這些（原本 image_urls?.[0] 連「  」空白字串都當有效，會讓
+  // og:image 指向一串空白、分享出去開天窗）。
+  const image = absoluteImageUrls(product.image_urls)[0] ?? null;
 
   return {
     title: `${product.name} · ${priceLabel}`,
@@ -143,12 +147,17 @@ export default async function PublicProductPage({
   // 先 trim，全空白就當沒填（undefined）——JSON-LD 省略此欄、頁面也不渲染該段。
   const productDescription = product.description?.trim() || undefined;
 
+  // 餵給 Google 的商品圖只放絕對網址：商家圖片清單可能混進空白列或相對路徑，
+  // schema.org 的 image 收到這些值會讓整段 Product rich result 失效。先濾乾淨，
+  // 全濾光（一張合法的都沒有）就省略此欄，不送空陣列。頁面渲染照舊吃原始 images。
+  const schemaImages = absoluteImageUrls(images);
+
   const productJsonLd = {
     "@context": "https://schema.org",
     "@type": "Product",
     name: product.name,
     description: productDescription,
-    image: images.length > 0 ? images : undefined,
+    image: schemaImages.length > 0 ? schemaImages : undefined,
     sku: product.id,
     brand: {
       "@type": "Brand",
