@@ -346,20 +346,26 @@ export default async function StoreHomePage({
   const openingHoursSpec = parseBusinessHoursToSpec(businessHoursText);
   if (openingHoursSpec) storeJsonLd.openingHoursSpecification = openingHoursSpec;
 
+  // 商家可能留了只填問沒填答、或整列全空白的 FAQ。那種空列在頁面上會變成
+  // 點開後沒半句內容的「＋」空格，餵給 Google 也是一筆空的問答。問與答都
+  // 去掉前後空白後仍有字才算一列有效，頁面與結構化資料兩邊都只認這些。
+  const validFaqItems = theme.layout.faqItems.filter(
+    (item) => item.question.trim() !== "" && item.answer.trim() !== "",
+  );
+
   // FAQPage 結構化資料 — 跟頁面上 FAQ 區段同條件才放（區段有開且真的有問答），
   // 讓 Google 搜尋結果能直接展開常見問題，省客人點進來才看到答案的一步。
   const faqJsonLd =
-    theme.layout.sectionOrder.includes("faq") &&
-    theme.layout.faqItems.length > 0
+    theme.layout.sectionOrder.includes("faq") && validFaqItems.length > 0
       ? {
           "@context": "https://schema.org",
           "@type": "FAQPage",
-          mainEntity: theme.layout.faqItems.map((item) => ({
+          mainEntity: validFaqItems.map((item) => ({
             "@type": "Question",
-            name: item.question,
+            name: item.question.trim(),
             acceptedAnswer: {
               "@type": "Answer",
-              text: item.answer,
+              text: item.answer.trim(),
             },
           })),
         }
@@ -1580,7 +1586,7 @@ export default async function StoreHomePage({
 
         {/* === FAQ Accordion（optional block，<details> 原生 accordion） === */}
         {theme.layout.sectionOrder.includes("faq") &&
-          theme.layout.faqItems.length > 0 && (() => {
+          validFaqItems.length > 0 && (() => {
             const faqStyle = sectionStyleFor("faq");
             const faqDivider =
               faqStyle.align === "right"
@@ -1639,7 +1645,7 @@ export default async function StoreHomePage({
                 </div>
 
                 <ul className="divide-y" style={{ borderColor: theme.border }}>
-                  {theme.layout.faqItems.map((item, i) => (
+                  {validFaqItems.map((item, i) => (
                     <li
                       key={i}
                       style={{ borderColor: theme.border }}
