@@ -5,7 +5,7 @@ import Image from "next/image";
 import { createClient } from "@/lib/supabase/server";
 import { resolveTheme, HOMEPAGE_DEFAULTS, HOMEPAGE_DEFAULT_COLLECTIONS, JOURNAL_CARD_DEFAULTS } from "./_theme";
 import { parseBusinessHoursToSpec } from "@/lib/business-hours-schema";
-import { telHref, mailHref } from "@/lib/contact-href";
+import { telHref, mailHref, telDigits, cleanEmail } from "@/lib/contact-href";
 import HeroAdaptiveBanner from "./HeroAdaptiveBanner";
 
 type Params = Promise<{ slug: string }>;
@@ -316,8 +316,10 @@ export default async function StoreHomePage({
   if (store.description) storeJsonLd.description = store.description;
   if (theme.heroUrl) storeJsonLd.image = theme.heroUrl;
   if (store.logo_url) storeJsonLd.logo = store.logo_url;
-  if (store.contact_phone) storeJsonLd.telephone = store.contact_phone;
-  if (store.contact_email) storeJsonLd.email = store.contact_email;
+  const storePhone = telDigits(store.contact_phone);
+  if (storePhone) storeJsonLd.telephone = storePhone;
+  const storeEmail = cleanEmail(store.contact_email);
+  if (storeEmail) storeJsonLd.email = storeEmail;
   if (store.address) {
     storeJsonLd.address = {
       "@type": "PostalAddress",

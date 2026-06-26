@@ -3,7 +3,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { parseBusinessHoursToSpec } from "@/lib/business-hours-schema";
-import { telHref, mailHref } from "@/lib/contact-href";
+import { telHref, mailHref, telDigits, cleanEmail } from "@/lib/contact-href";
 import { resolveTheme, HOMEPAGE_DEFAULTS } from "../_theme";
 
 type Params = Promise<{ slug: string }>;
@@ -134,8 +134,10 @@ export default async function ContactPage({ params }: { params: Params }) {
   if (store.description) contactJsonLd.description = store.description;
   if (theme.heroUrl) contactJsonLd.image = theme.heroUrl;
   if (store.logo_url) contactJsonLd.logo = store.logo_url;
-  if (store.contact_phone) contactJsonLd.telephone = store.contact_phone;
-  if (store.contact_email) contactJsonLd.email = store.contact_email;
+  const contactPhone = telDigits(store.contact_phone);
+  if (contactPhone) contactJsonLd.telephone = contactPhone;
+  const contactEmail = cleanEmail(store.contact_email);
+  if (contactEmail) contactJsonLd.email = contactEmail;
   if (store.address) {
     contactJsonLd.address = {
       "@type": "PostalAddress",

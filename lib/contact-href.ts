@@ -15,10 +15,11 @@
 // 所以：畫面上「顯示」的電話維持商家原本打的好看格式不動，只有「href」這串清乾淨。
 // 清的規則：全形數字先轉半形 → 用分機標記（# / 分機 / 轉 / ext）把主號與分機切開
 // → 主號只留數字、若原文開頭是國碼（+ 或全形＋）就補回開頭的 + → 分機數字用 ;ext= 掛回去。
-export function telHref(phone: string | null | undefined): string {
-  if (!phone) return "tel:";
 
-  // 全形數字 ０-９（U+FF10–U+FF19）轉成半形 0-9，順手把全形加號＋也歸一成 +
+// 把原文切成「乾淨主號」與「分機數字」。telHref（撥號連結）與 telDigits（結構化資料
+// telephone）共用這份清理，兩邊不會各清一套導致顯示／撥號／給 Google 的號碼對不上。
+function splitPhone(phone: string): { main: string; ext: string } {
+  // 全形數字 ０-９（U+FF10–U+FF19）轉成半形 0-9
   const normalized = phone.replace(/[０-９]/g, (c) =>
     String.fromCharCode(c.charCodeAt(0) - 0xfee0)
   );
@@ -29,14 +30,31 @@ export function telHref(phone: string | null | undefined): string {
   const mainRaw = extMatch ? normalized.slice(0, extMatch.index) : normalized;
   const extRaw = extMatch ? normalized.slice(extMatch.index! + extMatch[0].length) : "";
 
+  // 原文開頭是國碼（+ 或全形＋）就在乾淨主號補回開頭的 +
   const hasPlus = /^[\s　]*[+＋]/.test(mainRaw);
   const digits = mainRaw.replace(/\D/g, "");
-  const extDigits = extRaw.replace(/\D/g, "");
 
+  return {
+    main: digits ? `${hasPlus ? "+" : ""}${digits}` : "",
+    ext: extRaw.replace(/\D/g, ""),
+  };
+}
+
+export function telHref(phone: string | null | undefined): string {
+  if (!phone) return "tel:";
+  const { main, ext } = splitPhone(phone);
   // 主號一個數字都沒有就退回最陽春的 "tel:"，不硬掛一個只有分機的壞連結。
-  if (!digits) return "tel:";
+  if (!main) return "tel:";
+  return `tel:${main}${ext ? `;ext=${ext}` : ""}`;
+}
 
-  return `tel:${hasPlus ? "+" : ""}${digits}${extDigits ? `;ext=${extDigits}` : ""}`;
+// 結構化資料（Store JSON-LD 的 telephone）用的乾淨主號（含開頭國碼 +）。
+// 商家原本打的「（02）1234-5678」「０９１２…」「02-… 分機 123」直接塞進 JSON-LD，
+// 機器（Google、語音助理）拿去做點擊撥號時一樣會吃到髒號碼，跟 href 當初的毛病一樣。
+// 分機是路由細節、不是主要聯絡號，結構化資料只放主號；沒有主號數字就回空字串。
+export function telDigits(phone: string | null | undefined): string {
+  if (!phone) return "";
+  return splitPhone(phone).main;
 }
 
 // Email 連結 helper，跟 telHref 同個道理：商家在後台填 Email 時常多打了前後空白、
@@ -46,20 +64,26 @@ export function telHref(phone: string | null | undefined): string {
 // 所以畫面上「顯示」的 Email 維持商家原本打的不動，只把「href」這串清乾淨：
 // 全形字轉半形 → 去前後空白與內部空白 → 去掉誤貼的開頭 mailto: → 沒位址就退回陽春 "mailto:"。
 // subject / body 另外用 query 掛上去（各自 encode），讓各頁不必再自己拼 ?subject= 字串。
-export function mailHref(
-  email: string | null | undefined,
-  opts?: { subject?: string; body?: string }
-): string {
+// 把商家原本填的 Email 清成乾淨位址。mailHref（寫信連結）與結構化資料的 email
+// 共用這份清理。沒有位址就回空字串。
+export function cleanEmail(email: string | null | undefined): string {
   // 全形英數與符號（U+FF01–FF5E）轉半形，全形空白 U+3000 一併歸成一般空白好 trim
   const normalized = (email ?? "")
     .replace(/[！-～]/g, (c) => String.fromCharCode(c.charCodeAt(0) - 0xfee0))
     .replace(/　/g, " ");
 
   // 去掉誤貼的開頭 mailto:（大小寫不分），再清掉所有空白——Email 位址本來就不含空白
-  const cleaned = normalized
+  return normalized
     .trim()
     .replace(/^mailto:/i, "")
     .replace(/\s+/g, "");
+}
+
+export function mailHref(
+  email: string | null | undefined,
+  opts?: { subject?: string; body?: string }
+): string {
+  const cleaned = cleanEmail(email);
 
   // 沒有位址就退回最陽春的 "mailto:"，不硬掛一個只有 subject 的壞連結
   if (!cleaned) return "mailto:";
