@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
+import { jsonLdHtml } from "@/lib/json-ld";
 import { parseBusinessHoursToSpec } from "@/lib/business-hours-schema";
 import { telHref, mailHref, telDigits, cleanEmail } from "@/lib/contact-href";
 import { resolveTheme, HOMEPAGE_DEFAULTS } from "../_theme";
@@ -197,13 +198,13 @@ export default async function ContactPage({ params }: { params: Params }) {
       <script
         type="application/ld+json"
         // eslint-disable-next-line react/no-danger
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
+        dangerouslySetInnerHTML={{ __html: jsonLdHtml(breadcrumbJsonLd) }}
       />
       {hasContactData && (
         <script
           type="application/ld+json"
           // eslint-disable-next-line react/no-danger
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(contactJsonLd) }}
+          dangerouslySetInnerHTML={{ __html: jsonLdHtml(contactJsonLd) }}
         />
       )}
       <header className="mb-16 sm:mb-20">

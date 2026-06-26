@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
+import { jsonLdHtml } from "@/lib/json-ld";
 import { resolveTheme, HOMEPAGE_DEFAULTS } from "../_theme";
 
 type Params = Promise<{ slug: string }>;
@@ -165,13 +166,13 @@ export default async function AboutPage({ params }: { params: Params }) {
       <script
         type="application/ld+json"
         // eslint-disable-next-line react/no-danger
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
+        dangerouslySetInnerHTML={{ __html: jsonLdHtml(breadcrumbJsonLd) }}
       />
       {faqJsonLd && (
         <script
           type="application/ld+json"
           // eslint-disable-next-line react/no-danger
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }}
+          dangerouslySetInnerHTML={{ __html: jsonLdHtml(faqJsonLd) }}
         />
       )}
       <main className="max-w-3xl mx-auto px-6 sm:px-10 py-20 sm:py-28">

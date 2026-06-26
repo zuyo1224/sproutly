@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
+import { jsonLdHtml } from "@/lib/json-ld";
 import { resolveTheme, HOMEPAGE_DEFAULTS } from "../_theme";
 import { RecentlyViewed } from "@/app/_components/recently-viewed";
 import { AutoSubmitOnChange } from "@/app/_components/auto-submit-on-change";
@@ -226,13 +227,13 @@ export default async function ShopPage({
       <script
         type="application/ld+json"
         // eslint-disable-next-line react/no-danger
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
+        dangerouslySetInnerHTML={{ __html: jsonLdHtml(breadcrumbJsonLd) }}
       />
       {itemListJsonLd && (
         <script
           type="application/ld+json"
           // eslint-disable-next-line react/no-danger
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(itemListJsonLd) }}
+          dangerouslySetInnerHTML={{ __html: jsonLdHtml(itemListJsonLd) }}
         />
       )}
       <header className="mb-16 sm:mb-20">

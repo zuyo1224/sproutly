@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
+import { jsonLdHtml } from "@/lib/json-ld";
 import { telHref, mailHref } from "@/lib/contact-href";
 import { resolveTheme } from "../../_theme";
 import { ImageCarousel } from "@/app/_components/image-carousel";
@@ -199,12 +200,12 @@ export default async function PublicProductPage({
       <script
         type="application/ld+json"
         // eslint-disable-next-line react/no-danger
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(productJsonLd) }}
+        dangerouslySetInnerHTML={{ __html: jsonLdHtml(productJsonLd) }}
       />
       <script
         type="application/ld+json"
         // eslint-disable-next-line react/no-danger
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
+        dangerouslySetInnerHTML={{ __html: jsonLdHtml(breadcrumbJsonLd) }}
       />
       {/* 可見的麵包屑導覽 — 跟上面 BreadcrumbList 結構化資料一致，
           讓客人一眼看到自己在店裡的位置，也能往回逛店或回所有商品。 */}

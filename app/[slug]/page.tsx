@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
 import { createClient } from "@/lib/supabase/server";
+import { jsonLdHtml } from "@/lib/json-ld";
 import { resolveTheme, HOMEPAGE_DEFAULTS, HOMEPAGE_DEFAULT_COLLECTIONS, JOURNAL_CARD_DEFAULTS } from "./_theme";
 import { parseBusinessHoursToSpec } from "@/lib/business-hours-schema";
 import { telHref, mailHref, telDigits, cleanEmail } from "@/lib/contact-href";
@@ -397,18 +398,18 @@ export default async function StoreHomePage({
       <script
         type="application/ld+json"
         // eslint-disable-next-line react/no-danger
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(storeJsonLd) }}
+        dangerouslySetInnerHTML={{ __html: jsonLdHtml(storeJsonLd) }}
       />
       <script
         type="application/ld+json"
         // eslint-disable-next-line react/no-danger
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteJsonLd) }}
+        dangerouslySetInnerHTML={{ __html: jsonLdHtml(websiteJsonLd) }}
       />
       {faqJsonLd && (
         <script
           type="application/ld+json"
           // eslint-disable-next-line react/no-danger
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }}
+          dangerouslySetInnerHTML={{ __html: jsonLdHtml(faqJsonLd) }}
         />
       )}
       <style>{`
