@@ -2709,6 +2709,32 @@ export function EditorWorkspace({
                 paddingScale: "spacious",
               },
             },
+            {
+              key: "boxed-card",
+              label: "置中卡片",
+              hint: "窄版置中 + 上下拉開 + 淺底圓角陰影（整段縮成一張浮起的卡片，適合 promise / testimonial / faq）",
+              fields: {
+                sectionWidth: "boxed",
+                sectionGap: "large",
+                bgColor: "#fafaf9",
+                borderRadius: "soft",
+                shadow: "soft",
+                outline: "subtle",
+                paddingScale: "default",
+              },
+            },
+            {
+              key: "left-story",
+              label: "靠左敘事",
+              hint: "標題靠左 + 宋體 + 寬行高 + 寬呼吸（左對齊的雜誌敘事感，適合 about / story / journal）",
+              fields: {
+                headingAlign: "left",
+                fontFamily: "serif",
+                lineHeight: "relaxed",
+                paddingScale: "spacious",
+                sectionWidth: "narrow",
+              },
+            },
           ];
           function applyPreset(fields: typeof cur) {
             const merged: typeof cur = { ...cur, ...fields };
