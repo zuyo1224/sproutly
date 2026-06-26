@@ -48,8 +48,12 @@ export async function generateMetadata({
   if (!store) return {};
 
   const theme = resolveTheme(store.theme);
+  // 商家描述先 trim 再決定要不要用：`??` 只擋 null／undefined，商家若只打了
+  // 空白（或前後黏了換行），會讓 meta description 與 OG／Twitter 描述變成一串
+  // 空白，搜尋結果與分享卡片的摘要就整段空掉。trim 後沒字才退回平台預設描述。
+  const trimmedDescription = store.description?.trim();
   const description =
-    store.description ?? `${store.name} · 在 Sproutly 上的線上店面`;
+    trimmedDescription || `${store.name} · 在 Sproutly 上的線上店面`;
   const ogImage = theme.heroUrl || theme.logoUrl || null;
   const iconUrl = theme.logoUrl;
 

@@ -314,7 +314,10 @@ export default async function StoreHomePage({
     name: store.name,
     url: `${BASE_URL}/${slug}`,
   };
-  if (store.description) storeJsonLd.description = store.description;
+  // 描述同地址一樣先 trim：商家若只打了空白，原本 if (store.description) 對
+  // 「  」之類的全空白字串也成立，會吐一筆空白 description 給 Google。trim 後仍有字才放。
+  const storeDescription = store.description?.trim();
+  if (storeDescription) storeJsonLd.description = storeDescription;
   if (theme.heroUrl) storeJsonLd.image = theme.heroUrl;
   if (store.logo_url) storeJsonLd.logo = store.logo_url;
   const storePhone = telDigits(store.contact_phone);
