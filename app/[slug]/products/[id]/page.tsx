@@ -483,6 +483,7 @@ export default async function PublicProductPage({
 
             <ShareButton
               productName={product.name}
+              storeName={store.name}
               className="sproutly-btn sproutly-btn-secondary sproutly-btn-lg w-full"
             >
               分享給朋友
