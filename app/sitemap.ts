@@ -1,6 +1,7 @@
 import type { MetadataRoute } from "next";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { resolveTheme } from "@/app/[slug]/_theme";
+import { absoluteImageUrls } from "@/lib/image-url";
 
 const BASE_URL =
   process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/$/, "") ??
@@ -39,15 +40,17 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
     const theme = resolveTheme(store.theme);
 
-    // 把店面主視覺帶進 sitemap，Google 圖片搜尋能一起收這張首圖
-    const heroUrl = theme.heroUrl;
+    // 把店面主視覺帶進 sitemap，Google 圖片搜尋能一起收這張首圖。
+    // image sitemap 的 <image:loc> 規定要絕對網址，heroUrl 是商家在後台填的，
+    // 可能是相對路徑或一串空白，先用同一條「只放絕對網址」的防呆濾過。
+    const heroImages = absoluteImageUrls([theme.heroUrl]);
 
     entries.push({
       url: `${BASE_URL}/${store.slug}`,
       lastModified: storeLastModified,
       changeFrequency: "weekly",
       priority: 0.9,
-      ...(heroUrl ? { images: [heroUrl] } : {}),
+      ...(heroImages.length > 0 ? { images: heroImages } : {}),
     });
 
     const subRoutes = ["shop"];
@@ -79,12 +82,10 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     for (const product of products) {
       const slug = storeBySlug.get(product.merchant_id);
       if (!slug) continue;
-      // 商品照片一併進 sitemap，Google 才知道每個商品頁有哪幾張圖可收錄
-      const images = Array.isArray(product.image_urls)
-        ? product.image_urls.filter(
-            (u): u is string => typeof u === "string" && u.length > 0
-          )
-        : [];
+      // 商品照片一併進 sitemap，Google 才知道每個商品頁有哪幾張圖可收錄。
+      // 跟 Product JSON-LD／OG image 同一條防呆：只放清乾淨的絕對網址，
+      // 混進的空白列或相對路徑不放進 <image:loc>，免得整筆 sitemap image 失效。
+      const images = absoluteImageUrls(product.image_urls);
       entries.push({
         url: `${BASE_URL}/${slug}/products/${product.id}`,
         lastModified: product.updated_at ? new Date(product.updated_at) : now,
