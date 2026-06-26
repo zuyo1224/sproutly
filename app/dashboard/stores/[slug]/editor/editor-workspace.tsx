@@ -54,6 +54,8 @@ const ADDABLE_BLOCKS: { key: SectionKey; label: string; description: string }[] 
 type EditorTheme = {
   primary: string;
   accent: string;
+  // 全站底色（preset base，唯讀）— 算區段文字色的對比防呆用，不經編輯器修改也不存回 DB
+  bg: string;
   tagline: string;
   heroUrl: string | null;
   logoUrl: string | null;
@@ -3007,24 +3009,30 @@ export function EditorWorkspace({
                 </p>
               </Field>
               {(() => {
-                // 防呆：背景色改深、文字色卻沒跟上 → 文字會跟全站深色文字糊在一起看不見。
-                // 編輯器只拿得到 primary / accent，拿不到 preset 底色，所以只在「有設背景色」時判斷。
-                const bgLum = bg ? hexLuminance(bg) : null;
+                // 防呆：文字色跟它疊上去的底色對比太低 → 文字會看不清。
+                // 這段沒設自訂背景色時，文字是疊在全站底色（theme.bg）上，就拿底色來比 —
+                // 才抓得到「只把文字改成淺色、底色其實還是淺色 → 白字配淺底整段看不見」這種沉默陷阱。
+                const sectionBg = bg ?? theme.bg; // 區段實際底色：自訂優先，否則全站底色
+                const sectionBgLum = hexLuminance(sectionBg);
                 const textLum = textCol ? hexLuminance(textCol) : null;
                 let warn: { msg: string; fix: string } | null = null;
-                if (bgLum !== null && textLum !== null) {
-                  const ratio = contrastRatio(bgLum, textLum);
+                if (sectionBgLum !== null && textLum !== null) {
+                  const ratio = contrastRatio(sectionBgLum, textLum);
                   if (ratio < 3) {
                     warn = {
                       msg: `背景跟文字色太接近（對比約 ${ratio.toFixed(1)} 比 1），文字會看不清`,
-                      fix: bgLum < 0.4 ? "#FFFFFF" : "#1A1A1A",
+                      fix: sectionBgLum < 0.4 ? "#FFFFFF" : "#1A1A1A",
                     };
                   }
-                } else if (bgLum !== null && textLum === null && bgLum < 0.18) {
-                  warn = {
-                    msg: "背景偏深、文字色還沒設 — 文字會用全站的深色，跟背景糊在一起會看不見",
-                    fix: "#FFFFFF",
-                  };
+                } else if (bg !== null && textLum === null) {
+                  // 有改深底色、文字色卻還沒設 → 文字會用全站深色，跟深底色糊在一起
+                  const bgLum = hexLuminance(bg);
+                  if (bgLum !== null && bgLum < 0.18) {
+                    warn = {
+                      msg: "背景偏深、文字色還沒設 — 文字會用全站的深色，跟背景糊在一起會看不見",
+                      fix: "#FFFFFF",
+                    };
+                  }
                 }
                 if (!warn) return null;
                 return (

@@ -36,6 +36,8 @@ export default async function EditorPage({
   const themeForEditor = {
     primary: theme.primary,
     accent: theme.accent,
+    // 全站底色（preset base）— 給編輯器算「文字色配在底色上看不看得清」的對比防呆
+    bg: theme.bg,
     tagline: theme.tagline ?? "",
     heroUrl: theme.heroUrl,
     logoUrl: theme.logoUrl,
