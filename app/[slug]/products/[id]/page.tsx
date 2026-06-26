@@ -40,8 +40,10 @@ export async function generateMetadata({
   if (!product) return {};
 
   const priceLabel = formatPrice(product.price_cents, product.currency);
+  // 商家描述只打空白時 .slice 出來仍是空白（truthy），會讓 meta/OG 摘要變一段空白，
+  // 而非退回「商品名 · 售價」。先 trim，全空白就當沒填、走預設摘要。
   const description =
-    (product.description ?? "").slice(0, 160) || `${product.name} · ${priceLabel}`;
+    product.description?.trim().slice(0, 160) || `${product.name} · ${priceLabel}`;
   const image = product.image_urls?.[0] ?? null;
 
   return {
@@ -136,11 +138,16 @@ export default async function PublicProductPage({
     .toISOString()
     .slice(0, 10);
 
+  // 商家只打空白的描述：?? 只擋 null，"  " 會被當有效描述餵進結構化資料與頁面，
+  // Google 收到空 description、頁面也長出一段只有「關於這株」標題卻無內文的空白區塊。
+  // 先 trim，全空白就當沒填（undefined）——JSON-LD 省略此欄、頁面也不渲染該段。
+  const productDescription = product.description?.trim() || undefined;
+
   const productJsonLd = {
     "@context": "https://schema.org",
     "@type": "Product",
     name: product.name,
-    description: product.description ?? undefined,
+    description: productDescription,
     image: images.length > 0 ? images : undefined,
     sku: product.id,
     brand: {
@@ -309,7 +316,7 @@ export default async function PublicProductPage({
             }}
           />
 
-          {product.description && (
+          {productDescription && (
             <div className="mt-10">
               <p
                 className="text-[0.6875rem] uppercase font-medium"
@@ -331,7 +338,7 @@ export default async function PublicProductPage({
                   overflowWrap: "break-word",
                 }}
               >
-                {product.description}
+                {productDescription}
               </div>
             </div>
           )}
