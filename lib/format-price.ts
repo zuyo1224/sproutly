@@ -9,8 +9,11 @@
 //   例如日圓、韓元本來就沒有小數，不會再被硬塞「.00」；美金、歐元才會顯示兩位。
 // - 舊商品有的根本沒填幣別（null / 空字串），這種就當台灣店看，退回 TWD，
 //   不然以前會跑出「null 12.34」這種醜字串給客人看到。
+// - 金額本身也可能是非有限數字：舊商品沒填價（null / undefined）、或後台統計時
+//   「總額 ÷ 0 筆訂單」算出 NaN / Infinity。這種一律當 0 處理，免得客人或店家
+//   看到「NT$ NaN」「NT$ ∞」這種壞字串（跟上面沒填幣別是同一條防呆線）。
 export function formatPrice(cents: number, currency?: string | null): string {
-  const amount = cents / 100;
+  const amount = (Number.isFinite(cents) ? cents : 0) / 100;
   // 正規化：去空白、轉大寫，沒填就當 TWD（台灣店預設）。
   const code = (currency ?? "").trim().toUpperCase() || "TWD";
   if (code === "TWD") {
