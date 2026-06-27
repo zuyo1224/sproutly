@@ -365,12 +365,20 @@ export function parseBusinessHoursToSpec(
   }
 
   const closed = findClosedDays(text);
-  // 星期：一般判不出就整段不放。但「24 小時」是「天天開」的強訊號（不是天天開的店會寫成
-  // 「週一至週五 24小時」，那種 findOpenDays 仍抓得到星期），所以只有 24 小時又判不出星期時，
-  // 保守退而取全週、再扣掉明講的公休日；非 24 小時維持原本判不出就不放。
-  const openDays =
-    findOpenDays(text, closed) ??
-    (open24 ? [0, 1, 2, 3, 4, 5, 6].filter((d) => !closed.has(d)) : null);
+  // 星期：一般判不出就整段不放。但有兩種情形是「天天開、只是沒逐一列星期」的強訊號，判不出
+  // 明確營業日時可保守退而取全週、再扣掉明講的公休日：
+  //   1) 24 小時店——不是天天開的會寫成「週一至週五 24小時」，那種 findOpenDays 仍抓得到星期。
+  //   2) 有明講公休日（「週一公休」「週末公休」）——台灣店家很常只寫「週一公休 10:00-18:00」
+  //      省略「其餘／其他／以外」這種連接詞，findOpenDays 的逐列規則因為那天被標休而排掉、
+  //      又沒有其他營業日字樣，整段就判不出星期 → 回 null，等於白白少餵一段正確的營業時間給
+  //      搜尋引擎（正是這支要避免的相反面）。但「公休日以外都營業」其實語意明確，跟既有
+  //      「其餘 10:00-18:00」走 findOpenDays 第 3 條取全週扣公休是同一個推定，只差連接詞。
+  // 兩者皆無（沒寫星期又沒寫公休）才是真的不可靠，維持保守不放（所以下面條件要求 closed 非空
+  // 或 24 小時店；closed 全空又非 24 小時時 openDays 留 null）。
+  let openDays = findOpenDays(text, closed);
+  if (!openDays && (closed.size > 0 || open24)) {
+    openDays = [0, 1, 2, 3, 4, 5, 6].filter((d) => !closed.has(d));
+  }
   if (!openDays || openDays.length === 0) return null;
 
   const dayOfWeek = openDays.map((d) => DAY_NAMES[d]);
