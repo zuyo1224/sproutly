@@ -6,7 +6,7 @@ import { createClient } from "@/lib/supabase/server";
 import { jsonLdHtml } from "@/lib/json-ld";
 import { resolveTheme, HOMEPAGE_DEFAULTS, HOMEPAGE_DEFAULT_COLLECTIONS, JOURNAL_CARD_DEFAULTS } from "./_theme";
 import { parseBusinessHoursToSpec } from "@/lib/business-hours-schema";
-import { telHref, mailHref, telDigits, cleanEmail, socialUrl } from "@/lib/contact-href";
+import { telHref, mailHref, telDigits, cleanEmail, socialUrl, mapsHref } from "@/lib/contact-href";
 import { absoluteImageUrls } from "@/lib/image-url";
 import HeroAdaptiveBanner from "./HeroAdaptiveBanner";
 
@@ -335,6 +335,9 @@ export default async function StoreHomePage({
   // if (store.address) 對「  」之類的全空白字串也成立，會吐出一個 streetAddress
   // 是空白的 PostalAddress 給 Google，等於餵一筆空地址。trim 後仍有字才放。
   const storeAddress = store.address?.trim();
+  // 來訪區段的地址連結也走共用 mapsHref（trim 完空白回 null），跟頁尾、聯絡頁同一條路徑，
+  // 商家只打空白時整段來訪資訊不冒出連到空白地圖搜尋的壞連結。
+  const storeMapsHref = mapsHref(store.address);
   if (storeAddress) {
     storeJsonLd.address = {
       "@type": "PostalAddress",
@@ -1975,7 +1978,7 @@ export default async function StoreHomePage({
           })()}
 
         {/* === Visit === */}
-        {(store.address || businessHoursText) && (() => {
+        {(storeAddress || businessHoursText) && (() => {
           const visitPos = theme.layout.freePositions["__disabled__"] ?? null;
           const visitStyle = sectionStyleFor("visit");
           const visitDivider =
@@ -2050,11 +2053,11 @@ export default async function StoreHomePage({
                   opacity: 0.5,
                 }}
               />
-              {store.address && (
+              {storeAddress && storeMapsHref && (
                 // 地址做成可點連結，手機點下去直接開地圖 App 帶導航，客人不用自己複製貼上。
                 // 跟聯絡頁的地址一致（contact/page.tsx），別讓兩頁一個能點一個不能點。
                 <a
-                  href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(store.address)}`}
+                  href={storeMapsHref}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="group inline-block hover:opacity-80 transition"
@@ -2063,7 +2066,7 @@ export default async function StoreHomePage({
                     className="text-base leading-loose border-b border-current pb-0.5"
                     style={{ color: theme.text }}
                   >
-                    {store.address}
+                    {storeAddress}
                   </span>
                   <span
                     className="block mt-3 text-[10px] tracking-[0.3em] uppercase"

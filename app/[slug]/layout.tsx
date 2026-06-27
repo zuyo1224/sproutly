@@ -10,7 +10,7 @@ import {
   Lora,
 } from "next/font/google";
 import { createClient } from "@/lib/supabase/server";
-import { telHref, socialUrl } from "@/lib/contact-href";
+import { telHref, socialUrl, mapsHref } from "@/lib/contact-href";
 import { resolveTheme, themeToCssVars, HOMEPAGE_DEFAULTS } from "./_theme";
 import { FavoritesCounter } from "@/app/_components/favorite-button";
 import { CartIcon } from "@/app/_components/cart-icon";
@@ -190,6 +190,7 @@ export default async function PublicStoreLayout({
   // 跟旁邊 businessHoursText 同一條防呆線。
   const footerAddress =
     theme.sections.contact && store.address ? store.address.trim() : "";
+  const footerMapsHref = mapsHref(footerAddress);
   const footerPhone =
     theme.sections.contact && store.contact_phone
       ? store.contact_phone.trim()
@@ -905,12 +906,10 @@ export default async function PublicStoreLayout({
                 className="space-y-2.5"
                 style={{ fontSize: "0.8125rem", lineHeight: 1.75 }}
               >
-                {footerAddress && (
+                {footerAddress && footerMapsHref && (
                   <p>
                     <a
-                      href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
-                        footerAddress
-                      )}`}
+                      href={footerMapsHref}
                       target="_blank"
                       rel="noopener"
                       className="sproutly-link"

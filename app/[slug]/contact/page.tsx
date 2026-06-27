@@ -4,7 +4,7 @@ import { notFound } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { jsonLdHtml } from "@/lib/json-ld";
 import { parseBusinessHoursToSpec } from "@/lib/business-hours-schema";
-import { telHref, mailHref, telDigits, cleanEmail, socialUrl } from "@/lib/contact-href";
+import { telHref, mailHref, telDigits, cleanEmail, socialUrl, mapsHref } from "@/lib/contact-href";
 import { resolveTheme, HOMEPAGE_DEFAULTS } from "../_theme";
 
 type Params = Promise<{ slug: string }>;
@@ -84,14 +84,18 @@ export default async function ContactPage({ params }: { params: Params }) {
     if (store.contact_email) {
       blocks.push({ kind: "email", label: "Email", latin: "Email", value: store.contact_email, href: mailHref(store.contact_email) });
     }
-    if (store.address) {
-      // 地址直接連去 Google Maps，手機上會開地圖 App 帶起導航，客人不用自己複製貼上。
+    // 地址直接連去 Google Maps，手機上會開地圖 App 帶起導航，客人不用自己複製貼上。
+    // 走共用 mapsHref（trim 完空白回 null），跟頁尾、首頁來訪區段同一條路徑：
+    // 商家只打空白時不冒出連到空白地圖搜尋的壞連結，顯示的地址也用 trim 後的值。
+    const addressText = store.address?.trim();
+    const addressMapsHref = mapsHref(store.address);
+    if (addressText && addressMapsHref) {
       blocks.push({
         kind: "address",
         label: "地址",
         latin: "Address",
-        value: store.address,
-        href: `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(store.address)}`,
+        value: addressText,
+        href: addressMapsHref,
         external: true,
       });
     }

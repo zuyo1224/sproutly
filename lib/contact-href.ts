@@ -123,6 +123,22 @@ export function socialUrl(raw: string | null | undefined): string | null {
   return null;
 }
 
+// 地圖連結 helper，跟 telHref / mailHref / socialUrl 同一條防呆線：商家在後台填地址時
+// 常前後多打了空白，或整格只剩空白（想之後再補、卻先存了草稿）。這串原文直接塞進
+// Google Maps 的 ?query= 時會出事：只剩空白會變成搜尋「%20%20」的空查詢，客人點下去
+// 開到一張「找不到地點」的地圖；前後多的空白也讓搜尋字串多無意義字元、定位變差。
+// 這跟頁尾地址只打空白會冒出隱形連結（commit f037ef9）是同一類毛病。
+// 所以地址先 trim：清完沒字就回 null（那個地址連結、甚至整段來訪資訊就不顯示），
+// 有字才組可點的地圖搜尋連結。顯示用的地址文字仍由各頁自己拿 trim 後的值，這支只負責 href。
+// 以前頁尾、首頁來訪區段、聯絡頁各自拼一段 maps URL，頁尾有 trim、另兩頁沒有，
+// 同一筆髒地址在三頁表現不一致；收成共用 helper 後三頁同一條路徑，不會一頁擋空白、
+// 另一頁漏。
+export function mapsHref(address: string | null | undefined): string | null {
+  const cleaned = (address ?? "").trim();
+  if (!cleaned) return null;
+  return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(cleaned)}`;
+}
+
 export function mailHref(
   email: string | null | undefined,
   opts?: { subject?: string; body?: string }
