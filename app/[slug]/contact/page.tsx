@@ -4,7 +4,7 @@ import { notFound } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { jsonLdHtml } from "@/lib/json-ld";
 import { parseBusinessHoursToSpec } from "@/lib/business-hours-schema";
-import { telHref, mailHref, telDigits, cleanEmail } from "@/lib/contact-href";
+import { telHref, mailHref, telDigits, cleanEmail, socialUrl } from "@/lib/contact-href";
 import { resolveTheme, HOMEPAGE_DEFAULTS } from "../_theme";
 
 type Params = Promise<{ slug: string }>;
@@ -164,9 +164,11 @@ export default async function ContactPage({ params }: { params: Params }) {
     theme.social.instagram,
     theme.social.facebook,
     theme.social.line,
-  ].filter((u): u is string => !!u && /^https?:\/\//i.test(u.trim()));
+  ]
+    .map(socialUrl)
+    .filter((u): u is string => u !== null);
   if (socialUrls.length > 0) {
-    contactJsonLd.sameAs = socialUrls.map((u) => u.trim());
+    contactJsonLd.sameAs = socialUrls;
   }
   // 只有真的有任何一項聯絡資訊才放結構化資料，空店面不丟空殼給 Google。
   const hasContactData = Boolean(

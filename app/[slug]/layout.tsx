@@ -10,7 +10,7 @@ import {
   Lora,
 } from "next/font/google";
 import { createClient } from "@/lib/supabase/server";
-import { telHref } from "@/lib/contact-href";
+import { telHref, socialUrl } from "@/lib/contact-href";
 import { resolveTheme, themeToCssVars, HOMEPAGE_DEFAULTS } from "./_theme";
 import { FavoritesCounter } from "@/app/_components/favorite-button";
 import { CartIcon } from "@/app/_components/cart-icon";
@@ -219,9 +219,16 @@ export default async function PublicStoreLayout({
     },
   ].filter((item) => item.always || item.show);
 
+  // 頁尾社群連結先清成乾淨的絕對網址再用，商家填了「@帳號」、純帳號名或只剩空白
+  // 都不會冒出一個點了跑到站內 404 的壞連結（沒清乾淨的那項就不顯示那個社群）。
+  const socialLinks = {
+    instagram: socialUrl(theme.social.instagram),
+    facebook: socialUrl(theme.social.facebook),
+    line: socialUrl(theme.social.line),
+  };
   const showSocial =
     theme.sections.social &&
-    (theme.social.instagram || theme.social.facebook || theme.social.line);
+    Boolean(socialLinks.instagram || socialLinks.facebook || socialLinks.line);
 
   return (
     <div
@@ -955,9 +962,9 @@ export default async function PublicStoreLayout({
                 />
               </div>
               <div className="flex justify-center gap-6">
-                {theme.social.instagram && (
+                {socialLinks.instagram && (
                   <a
-                    href={theme.social.instagram}
+                    href={socialLinks.instagram}
                     target="_blank"
                     rel="noopener"
                     className="sproutly-link uppercase"
@@ -970,9 +977,9 @@ export default async function PublicStoreLayout({
                     Instagram
                   </a>
                 )}
-                {theme.social.facebook && (
+                {socialLinks.facebook && (
                   <a
-                    href={theme.social.facebook}
+                    href={socialLinks.facebook}
                     target="_blank"
                     rel="noopener"
                     className="sproutly-link uppercase"
@@ -985,9 +992,9 @@ export default async function PublicStoreLayout({
                     Facebook
                   </a>
                 )}
-                {theme.social.line && (
+                {socialLinks.line && (
                   <a
-                    href={theme.social.line}
+                    href={socialLinks.line}
                     target="_blank"
                     rel="noopener"
                     className="sproutly-link uppercase"

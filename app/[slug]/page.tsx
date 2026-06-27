@@ -6,7 +6,7 @@ import { createClient } from "@/lib/supabase/server";
 import { jsonLdHtml } from "@/lib/json-ld";
 import { resolveTheme, HOMEPAGE_DEFAULTS, HOMEPAGE_DEFAULT_COLLECTIONS, JOURNAL_CARD_DEFAULTS } from "./_theme";
 import { parseBusinessHoursToSpec } from "@/lib/business-hours-schema";
-import { telHref, mailHref, telDigits, cleanEmail } from "@/lib/contact-href";
+import { telHref, mailHref, telDigits, cleanEmail, socialUrl } from "@/lib/contact-href";
 import HeroAdaptiveBanner from "./HeroAdaptiveBanner";
 
 type Params = Promise<{ slug: string }>;
@@ -343,9 +343,11 @@ export default async function StoreHomePage({
     theme.social.instagram,
     theme.social.facebook,
     theme.social.line,
-  ].filter((u): u is string => !!u && /^https?:\/\//i.test(u.trim()));
+  ]
+    .map(socialUrl)
+    .filter((u): u is string => u !== null);
   if (socialUrls.length > 0) {
-    storeJsonLd.sameAs = socialUrls.map((u) => u.trim());
+    storeJsonLd.sameAs = socialUrls;
   }
   // 營業時間給 Google：schema.org 的 openingHours 只吃結構化星期＋24 小時時間，
   // 商家打的是中文自由文字，直接塞會被判無效、連整段結構化資料一起忽略。

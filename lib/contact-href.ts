@@ -79,6 +79,22 @@ export function cleanEmail(email: string | null | undefined): string {
     .replace(/\s+/g, "");
 }
 
+// 社群連結 helper，跟 telHref / mailHref 同個態度：商家在後台填 Instagram /
+// Facebook / LINE 時，常只打了「@帳號」、純帳號名、貼成「instagram.com/foo」沒有
+// 開頭的 https://，甚至整格只剩空白。這串原文直接塞進頁尾的 <a href="..."> 會出事：
+//   - 只有空白 → 跟頁尾地址／電話那次一樣，冒出一個指到本站怪網址的隱形連結。
+//   - 沒有 http(s):// 開頭 → 瀏覽器把它當相對路徑，客人點了跑到「本店/@帳號」這種
+//     站內 404，而不是真的開到對方的社群。
+// 所以頁尾只在「真的是絕對網址」時才掛連結：去前後空白 → 只認 http(s):// 開頭的，
+// 其餘回 null（那個社群連結就不顯示）。寧可少一個連結，也不要給客人一個點了就壞的。
+// 這跟結構化資料的 sameAs、absoluteImageUrls 是同一條防呆線；contact 頁的 sameAs
+// 也共用這份清理，兩邊不會各判一套導致頁尾顯示與餵 Google 的連結對不上。
+export function socialUrl(raw: string | null | undefined): string | null {
+  if (!raw) return null;
+  const u = raw.trim();
+  return /^https?:\/\//i.test(u) ? u : null;
+}
+
 export function mailHref(
   email: string | null | undefined,
   opts?: { subject?: string; body?: string }
