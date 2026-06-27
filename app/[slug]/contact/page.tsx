@@ -79,10 +79,16 @@ export default async function ContactPage({ params }: { params: Params }) {
   const blocks: { kind: "phone" | "email" | "address" | "hours"; label: string; latin: string; value: string; href?: string; external?: boolean }[] = [];
   if (theme.sections.contact) {
     if (store.contact_phone) {
-      blocks.push({ kind: "phone", label: "電話", latin: "Phone", value: store.contact_phone, href: telHref(store.contact_phone) });
+      // 清得出可撥號的主號才掛 tel: 連結；商家在電話欄填「問我」「再問」這種非號碼
+      // （telDigits 回空、telHref 會退成陽春 "tel:"）時不掛死連結，仍把字顯示出來，
+      // 但不再給「點一下直接撥號」的假提示。跟 mapsHref／socialUrl 同一條防呆線。
+      const phoneDigits = telDigits(store.contact_phone);
+      blocks.push({ kind: "phone", label: "電話", latin: "Phone", value: store.contact_phone, href: phoneDigits ? telHref(store.contact_phone) : undefined });
     }
     if (store.contact_email) {
-      blocks.push({ kind: "email", label: "Email", latin: "Email", value: store.contact_email, href: mailHref(store.contact_email) });
+      // 同上：清完不像 email（cleanEmail 回空、mailHref 退成陽春 "mailto:"）就不掛死連結。
+      const emailClean = cleanEmail(store.contact_email);
+      blocks.push({ kind: "email", label: "Email", latin: "Email", value: store.contact_email, href: emailClean ? mailHref(store.contact_email) : undefined });
     }
     // 地址直接連去 Google Maps，手機上會開地圖 App 帶起導航，客人不用自己複製貼上。
     // 走共用 mapsHref（trim 完空白回 null），跟頁尾、首頁來訪區段同一條路徑：

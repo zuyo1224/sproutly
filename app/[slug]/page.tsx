@@ -2089,21 +2089,33 @@ export default async function StoreHomePage({
                   className={`mt-10 flex ${visitContactJustify} gap-8 text-sm tracking-wider`}
                   style={{ color: theme.text }}
                 >
+                  {/* 清得出乾淨目標（storePhone=telDigits、storeEmail=cleanEmail，上方結構化
+                      資料已算好）才掛 tel:／mailto: 連結；商家填「問我」這種非號碼／非 email 時
+                      telHref／mailHref 會退成陽春 "tel:"／"mailto:" 的死連結，這裡改成純文字
+                      顯示，字仍露出但不給客人一個點了沒用的連結。同 mapsHref／socialUrl 防呆線。 */}
                   {store.contact_phone && (
-                    <a
-                      href={telHref(store.contact_phone)}
-                      className="border-b border-current pb-0.5 hover:opacity-70 transition"
-                    >
-                      {store.contact_phone}
-                    </a>
+                    storePhone ? (
+                      <a
+                        href={telHref(store.contact_phone)}
+                        className="border-b border-current pb-0.5 hover:opacity-70 transition"
+                      >
+                        {store.contact_phone}
+                      </a>
+                    ) : (
+                      <span className="pb-0.5">{store.contact_phone}</span>
+                    )
                   )}
                   {store.contact_email && (
-                    <a
-                      href={mailHref(store.contact_email)}
-                      className="border-b border-current pb-0.5 hover:opacity-70 transition"
-                    >
-                      {store.contact_email}
-                    </a>
+                    storeEmail ? (
+                      <a
+                        href={mailHref(store.contact_email)}
+                        className="border-b border-current pb-0.5 hover:opacity-70 transition"
+                      >
+                        {store.contact_email}
+                      </a>
+                    ) : (
+                      <span className="pb-0.5">{store.contact_email}</span>
+                    )
                   )}
                 </div>
               )}
