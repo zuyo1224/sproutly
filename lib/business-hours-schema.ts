@@ -59,17 +59,41 @@ function pad(hhmm: string): string | null {
   return `${String(h).padStart(2, "0")}:${m[2]}`;
 }
 
-// 找出文字裡所有「HH:MM-HH:MM」時間區間。
-function findTimeRanges(text: string): { opens: string; closes: string }[] {
-  const ranges: { opens: string; closes: string }[] = [];
+// 找出文字裡所有「HH:MM-HH:MM」時間區間，連同它在原文的起訖位置（後面判斷
+// 「兩段時間之間有沒有夾星期字」要用，藉此區分午休拆段與不同日不同時）。
+type TimeRange = { opens: string; closes: string; start: number; end: number };
+function findTimeRanges(text: string): TimeRange[] {
+  const ranges: TimeRange[] = [];
   const re = /(\d{1,2}:\d{2})\s*-\s*(\d{1,2}:\d{2})/g;
   let m: RegExpExecArray | null;
   while ((m = re.exec(text)) !== null) {
     const opens = pad(m[1]);
     const closes = pad(m[2]);
-    if (opens && closes) ranges.push({ opens, closes });
+    if (opens && closes)
+      ranges.push({ opens, closes, start: m.index, end: m.index + m[0].length });
   }
   return ranges;
+}
+
+// 判斷多段時間是不是「同一批營業日的拆段」（最常見：午休拆兩段，餐飲業大宗，
+// 「11:00-14:00、17:00-21:00」），而不是「不同日不同時」（「週一至週五 09-18、
+// 週六 10-15」這種無法可靠把哪段對到哪天的）。判準：
+//   1) 時間先後排好且彼此不重疊（前一段的關門 ≤ 後一段的開門，HH:MM 補零後字串
+//      比較即等於時間比較）——重疊代表打錯或根本不是拆段，保守不認。
+//   2) 任兩段之間的原文「不夾星期字」——夾了就是在替不同日標不同時間，這支對不起
+//      來，維持回 null 不亂猜（正是這個解析器一貫的保守原則）。星期描述（每日／平日／
+//      週末）放在第一段之前不影響，只看「段與段中間」那截。
+function isContiguousSplit(text: string, ranges: TimeRange[]): boolean {
+  if (ranges.length < 2) return false;
+  // 段與段之間夾到星期字（一二三四五六日天七）或星期前綴（週周星期禮拜）就不認。
+  const dayBetween = /[一二三四五六日天七週周星期禮拜]/;
+  for (let i = 1; i < ranges.length; i++) {
+    const prev = ranges[i - 1];
+    const cur = ranges[i];
+    if (prev.closes > cur.opens) return false; // 重疊或順序亂
+    if (dayBetween.test(text.slice(prev.end, cur.start))) return false;
+  }
+  return true;
 }
 
 // 判斷文字是否在講「24 小時 / 全天候」營業。商家很常只寫「24小時營業」「全年無休 24小時」
@@ -199,16 +223,17 @@ export function parseBusinessHoursToSpec(
   // 沒抓到 HH:MM 區間時，先看是不是 24 小時／全天候店——那種寫法本來就沒有時間區間。
   const open24 = ranges.length === 0 && is24Hours(text);
 
-  // 時間：一般取唯一區間；多段（午休拆段、不同日不同時）難可靠對應到星期，與其猜錯不如不放。
-  // 24 小時店合成 00:00–23:59（Google 對 24 小時的建議寫法）。其餘（沒時間、多段）都不放。
-  let opens: string;
-  let closes: string;
+  // 時間：一般取唯一區間；多段時若是「同一批營業日的午休拆段」（11:00-14:00、17:00-21:00），
+  // 就保留每一段、稍後對同一批星期各輸出一筆 spec（schema.org 允許多筆，Google 也吃）。
+  // 多段但夾了星期字（不同日不同時）難可靠對應，與其猜錯不如不放。24 小時店合成
+  // 00:00–23:59（Google 對 24 小時的建議寫法）。其餘（沒時間、無法判讀的多段）都不放。
+  let slots: { opens: string; closes: string }[];
   if (ranges.length === 1) {
-    opens = ranges[0].opens;
-    closes = ranges[0].closes;
+    slots = [{ opens: ranges[0].opens, closes: ranges[0].closes }];
+  } else if (ranges.length >= 2 && isContiguousSplit(text, ranges)) {
+    slots = ranges.map((r) => ({ opens: r.opens, closes: r.closes }));
   } else if (open24) {
-    opens = "00:00";
-    closes = "23:59";
+    slots = [{ opens: "00:00", closes: "23:59" }];
   } else {
     return null;
   }
@@ -222,12 +247,11 @@ export function parseBusinessHoursToSpec(
     (open24 ? [0, 1, 2, 3, 4, 5, 6].filter((d) => !closed.has(d)) : null);
   if (!openDays || openDays.length === 0) return null;
 
-  return [
-    {
-      "@type": "OpeningHoursSpecification",
-      dayOfWeek: openDays.map((d) => DAY_NAMES[d]),
-      opens,
-      closes,
-    },
-  ];
+  const dayOfWeek = openDays.map((d) => DAY_NAMES[d]);
+  return slots.map((s) => ({
+    "@type": "OpeningHoursSpecification" as const,
+    dayOfWeek,
+    opens: s.opens,
+    closes: s.closes,
+  }));
 }
