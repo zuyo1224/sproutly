@@ -184,10 +184,16 @@ export default async function PublicStoreLayout({
     typeof store.business_hours === "object" && store.business_hours !== null
       ? ((store.business_hours as { text?: string }).text ?? "").trim()
       : "";
+  // address / contact_phone 先 trim 再判斷：商家只打了空白時，原始字串是 truthy，
+  // 頁尾會冒出「店面資訊」區塊，裡面是一個連到「Google Maps 搜尋一串空白」的隱形
+  // 連結、和一個只剩 tel: 的壞電話連結。trim 後只剩空字串就當沒填、整塊不顯示，
+  // 跟旁邊 businessHoursText 同一條防呆線。
   const footerAddress =
-    theme.sections.contact && store.address ? store.address : "";
+    theme.sections.contact && store.address ? store.address.trim() : "";
   const footerPhone =
-    theme.sections.contact && store.contact_phone ? store.contact_phone : "";
+    theme.sections.contact && store.contact_phone
+      ? store.contact_phone.trim()
+      : "";
   const footerHours = theme.sections.hours ? businessHoursText : "";
   const showStoreInfo = !!(footerAddress || footerPhone || footerHours);
 
