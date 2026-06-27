@@ -97,14 +97,30 @@ export function cleanEmail(email: string | null | undefined): string {
 //   - 只有空白 → 跟頁尾地址／電話那次一樣，冒出一個指到本站怪網址的隱形連結。
 //   - 沒有 http(s):// 開頭 → 瀏覽器把它當相對路徑，客人點了跑到「本店/@帳號」這種
 //     站內 404，而不是真的開到對方的社群。
-// 所以頁尾只在「真的是絕對網址」時才掛連結：去前後空白 → 只認 http(s):// 開頭的，
-// 其餘回 null（那個社群連結就不顯示）。寧可少一個連結，也不要給客人一個點了就壞的。
+// 所以頁尾只在「能確定指到對方社群」時才掛連結。分兩種情況：
+//   1. 已經是 http(s):// 開頭的絕對網址 → 去前後空白後直接用。
+//   2. 漏了開頭 https:// 的真網址，像「instagram.com/foo」「www.facebook.com/foo」
+//      「line.me/ti/p/xxx」—— 這種其實是好連結，只差一個 scheme。商家貼網址時瀏覽器
+//      網址列常不顯示開頭的 https://，整段複製就少了它，是最常見的填法。這種補回開頭
+//      的 https:// 就能正常開，硬丟掉等於白白少一個真的社群連結。判斷「是不是真網址」
+//      用網域形狀：label.label…結尾是字母 TLD（.com / .me / .tw），整串不含空白；
+//      像「0912.345.678」結尾是數字、「問我」沒有點，都不符合 → 仍然丟掉。
+// 其餘（純帳號「myshop」、@帳號、只剩空白、亂填字）一樣回 null（那個社群連結就不顯示）。
+// 純帳號／@帳號要還原成網址得先知道是哪個平台（這支 helper 三個平台共用、判斷不出來），
+// 寧可少一個連結，也不要猜錯平台給客人一個點了就壞的。
 // 這跟結構化資料的 sameAs、absoluteImageUrls 是同一條防呆線；contact 頁的 sameAs
 // 也共用這份清理，兩邊不會各判一套導致頁尾顯示與餵 Google 的連結對不上。
 export function socialUrl(raw: string | null | undefined): string | null {
   if (!raw) return null;
   const u = raw.trim();
-  return /^https?:\/\//i.test(u) ? u : null;
+  if (/^https?:\/\//i.test(u)) return u;
+
+  // 漏了 scheme 但形狀是真網域（host 後可帶 /path，不含空白，TLD 是字母）→ 補回 https://
+  if (/^[a-z0-9-]+(\.[a-z0-9-]+)*\.[a-z]{2,}(\/\S*)?$/i.test(u)) {
+    return `https://${u}`;
+  }
+
+  return null;
 }
 
 export function mailHref(
