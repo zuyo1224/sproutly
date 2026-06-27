@@ -565,10 +565,13 @@ export function EditorWorkspace({
       // 不要 hijack input / textarea 內的 native undo
       const tag = (e.target as HTMLElement)?.tagName;
       if (tag === "INPUT" || tag === "TEXTAREA" || tag === "SELECT") return;
-      if (e.key === "z" && !e.shiftKey) {
+      // 按住 Shift 時 e.key 會變大寫的 "Z"，所以先轉小寫再比 —
+      // 否則 Cmd+Shift+Z 重做永遠匹配不到（key 是 "Z" 不是 "z"），按了沒反應。
+      const key = e.key.toLowerCase();
+      if (key === "z" && !e.shiftKey) {
         e.preventDefault();
         undo();
-      } else if ((e.key === "z" && e.shiftKey) || e.key === "y") {
+      } else if ((key === "z" && e.shiftKey) || key === "y") {
         e.preventDefault();
         redo();
       }
