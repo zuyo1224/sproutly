@@ -72,6 +72,16 @@ function findTimeRanges(text: string): { opens: string; closes: string }[] {
   return ranges;
 }
 
+// 判斷文字是否在講「24 小時 / 全天候」營業。商家很常只寫「24小時營業」「全年無休 24小時」
+// 「全天候」「24/7」而不打出 HH:MM 區間，findTimeRanges 抓不到時間就整段回 null——明明是
+// 可靠的格式卻什麼都不餵給 Google，等於白白少一段正確的營業時間（正是這支想避免的相反面）。
+// 所以這裡單獨認 24 小時關鍵字，命中就用 Google 對 24 小時的建議寫法 opens 00:00 / closes 23:59。
+// 只認明確字樣（24 後接「小時／時／h／hr」、「二十四小時」、「全天(候)」、「24/7」），不認單獨
+// 的「24」，免得把「14:00-24:00」這種寫錯的收班時間（24:00 會被 pad 擋掉）誤判成全天 24 小時。
+function is24Hours(text: string): boolean {
+  return /24\s*\/\s*7|24\s*(?:小時|時|h|hr)|二十四\s*小時|全天候?/i.test(text);
+}
+
 // 收集「週X公休／週X休／週X店休」這種明講休息的星期，後面要從營業日扣掉。
 function findClosedDays(text: string): Set<number> {
   const closed = new Set<number>();
@@ -166,20 +176,38 @@ export function parseBusinessHoursToSpec(
   const text = normalize(raw);
 
   const ranges = findTimeRanges(text);
-  // 只接受剛好一個時間區間：多段（午休拆段、不同日不同時）難可靠對應到星期，
-  // 與其猜錯不如不放。沒抓到時間也不放。
-  if (ranges.length !== 1) return null;
+  // 沒抓到 HH:MM 區間時，先看是不是 24 小時／全天候店——那種寫法本來就沒有時間區間。
+  const open24 = ranges.length === 0 && is24Hours(text);
+
+  // 時間：一般取唯一區間；多段（午休拆段、不同日不同時）難可靠對應到星期，與其猜錯不如不放。
+  // 24 小時店合成 00:00–23:59（Google 對 24 小時的建議寫法）。其餘（沒時間、多段）都不放。
+  let opens: string;
+  let closes: string;
+  if (ranges.length === 1) {
+    opens = ranges[0].opens;
+    closes = ranges[0].closes;
+  } else if (open24) {
+    opens = "00:00";
+    closes = "23:59";
+  } else {
+    return null;
+  }
 
   const closed = findClosedDays(text);
-  const openDays = findOpenDays(text, closed);
+  // 星期：一般判不出就整段不放。但「24 小時」是「天天開」的強訊號（不是天天開的店會寫成
+  // 「週一至週五 24小時」，那種 findOpenDays 仍抓得到星期），所以只有 24 小時又判不出星期時，
+  // 保守退而取全週、再扣掉明講的公休日；非 24 小時維持原本判不出就不放。
+  const openDays =
+    findOpenDays(text, closed) ??
+    (open24 ? [0, 1, 2, 3, 4, 5, 6].filter((d) => !closed.has(d)) : null);
   if (!openDays || openDays.length === 0) return null;
 
   return [
     {
       "@type": "OpeningHoursSpecification",
       dayOfWeek: openDays.map((d) => DAY_NAMES[d]),
-      opens: ranges[0].opens,
-      closes: ranges[0].closes,
+      opens,
+      closes,
     },
   ];
 }
