@@ -39,12 +39,65 @@ const CN_DAY_INDEX: Record<string, number> = {
   七: 6,
 };
 
+// 把「早上10點」「9點半」「下午2點」這種中文「點」鐘點寫法轉成 HH:MM，讓後面統一吃 HH:MM
+// 的 findTimeRanges 接得到。台灣商家極常用「點」而非冒號打時間（「早上10點到晚上9點」
+// 「9點半-18點」「下午2點到6點」），原本整段抓不到時間就回 null，等於白白少餵一段正確
+// 的營業時間給搜尋引擎（正是這支解析器想避免的相反面）。沿用一貫的保守原則：只轉換能
+// 可靠判讀的（阿拉伯數字 + 點，可選上午/下午等時段詞與「半／X分」），算出來不是合法 24
+// 小時時間（時 >23 或 分 >59）就原樣留著、不亂猜。中文數字（「下午一點」）與沒數字的字
+// 不碰。時段詞處理：
+//   早上/上午/凌晨/清晨 → 上午（12 點視為 0 點）
+//   晚上/傍晚/夜間/夜晚/夜 → 晚上（12 點＝午夜 0 點，其餘 +12）
+//   中午/下午/午後 → 下午（不到 12 點 +12，12 點維持 12＝正午）
+//   沒寫時段 → 數字照用（「18點」＝18:00、「9點」＝09:00）
+const MORNING_MARK = /^(?:上午|早上|凌晨|清晨)$/;
+const NIGHT_MARK = /^(?:晚上|傍晚|夜間|夜晚|夜)$/;
+const AFTERNOON_MARK = /^(?:中午|下午|午後)$/;
+function convertCnClockTimes(text: string): string {
+  // 「下午2點到6點」這種區間，後段常省略時段詞、靠前段帶過（指的是下午 6 點＝18:00，不是
+  // 早上 6 點）。所以記住前一段的時段，當後一段沒寫時段、且兩段之間只隔破折號（已被 normalize
+  // 把「到～」統一成「-」）時就沿用——只認破折號相連、不認純空白分開的兩段（那比較可能是各自
+  // 獨立的時間，沿用會猜錯）。
+  let prevPeriod: string | null = null;
+  let prevEnd = -1;
+  return text.replace(
+    /(上午|早上|凌晨|清晨|中午|下午|午後|晚上|傍晚|夜間|夜晚|夜)?\s*(\d{1,2})\s*點\s*(?:(半|整)|(\d{1,2})\s*分)?/g,
+    (whole, period, hourStr, halfOrSharp, minStr, offset: number) => {
+      let h = Number(hourStr);
+      let min = 0;
+      if (halfOrSharp === "半") min = 30;
+      else if (minStr !== undefined) min = Number(minStr);
+      // 「整」與沒寫分鐘都當 0 分。
+      let eff: string | undefined = period;
+      if (!eff && prevPeriod && prevEnd >= 0 && /^\s*-\s*$/.test(text.slice(prevEnd, offset))) {
+        eff = prevPeriod;
+      }
+      prevPeriod = eff ?? null;
+      prevEnd = offset + whole.length;
+      if (eff) {
+        if (NIGHT_MARK.test(eff)) {
+          if (h === 12) h = 0;
+          else if (h < 12) h += 12;
+        } else if (AFTERNOON_MARK.test(eff)) {
+          if (h < 12) h += 12;
+        } else if (MORNING_MARK.test(eff)) {
+          if (h === 12) h = 0;
+        }
+      }
+      if (h > 23 || min > 59) return whole; // 判讀不可靠就原樣保留，維持保守
+      return `${String(h).padStart(2, "0")}:${String(min).padStart(2, "0")}`;
+    }
+  );
+}
+
 // 把全形數字／冒號、各種破折號統一成 ASCII，方便後面用單一 regex 抓。
 function normalize(raw: string): string {
-  return raw
-    .replace(/[０-９]/g, (c) => String.fromCharCode(c.charCodeAt(0) - 0xfee0))
-    .replace(/：/g, ":")
-    .replace(/[–—～〜~至到]/g, "-")
+  return convertCnClockTimes(
+    raw
+      .replace(/[０-９]/g, (c) => String.fromCharCode(c.charCodeAt(0) - 0xfee0))
+      .replace(/：/g, ":")
+      .replace(/[–—～〜~至到]/g, "-")
+  )
     .replace(/\s+/g, " ")
     .trim();
 }
