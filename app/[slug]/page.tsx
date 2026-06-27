@@ -7,6 +7,7 @@ import { jsonLdHtml } from "@/lib/json-ld";
 import { resolveTheme, HOMEPAGE_DEFAULTS, HOMEPAGE_DEFAULT_COLLECTIONS, JOURNAL_CARD_DEFAULTS } from "./_theme";
 import { parseBusinessHoursToSpec } from "@/lib/business-hours-schema";
 import { telHref, mailHref, telDigits, cleanEmail, socialUrl } from "@/lib/contact-href";
+import { absoluteImageUrls } from "@/lib/image-url";
 import HeroAdaptiveBanner from "./HeroAdaptiveBanner";
 
 type Params = Promise<{ slug: string }>;
@@ -318,8 +319,14 @@ export default async function StoreHomePage({
   // 「  」之類的全空白字串也成立，會吐一筆空白 description 給 Google。trim 後仍有字才放。
   const storeDescription = store.description?.trim();
   if (storeDescription) storeJsonLd.description = storeDescription;
-  if (theme.heroUrl) storeJsonLd.image = theme.heroUrl;
-  if (store.logo_url) storeJsonLd.logo = store.logo_url;
+  // Store 結構化資料的 image／logo 跟 Product image、sitemap 同一條防呆線：
+  // schema.org／Google 要絕對網址。heroUrl／logo_url 是商家貼的，可能是相對路徑
+  // 或一串空白，原本 if (theme.heroUrl) 直接放會餵一筆無效圖讓 Store rich result 失效。
+  // 走 absoluteImageUrls（去空白＋只留 http(s) 絕對網址）清過，清不出乾淨網址就不放。
+  const storeImage = absoluteImageUrls([theme.heroUrl])[0];
+  if (storeImage) storeJsonLd.image = storeImage;
+  const storeLogo = absoluteImageUrls([store.logo_url])[0];
+  if (storeLogo) storeJsonLd.logo = storeLogo;
   const storePhone = telDigits(store.contact_phone);
   if (storePhone) storeJsonLd.telephone = storePhone;
   const storeEmail = cleanEmail(store.contact_email);
