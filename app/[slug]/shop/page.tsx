@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { jsonLdHtml } from "@/lib/json-ld";
+import { absoluteImageUrls } from "@/lib/image-url";
 import { resolveTheme, HOMEPAGE_DEFAULTS } from "../_theme";
 import { RecentlyViewed } from "@/app/_components/recently-viewed";
 import { AutoSubmitOnChange } from "@/app/_components/auto-submit-on-change";
@@ -203,7 +204,10 @@ export default async function ShopPage({
               "@type": "Product",
               name: p.name,
               url: `${BASE_URL}/${slug}/products/${p.id}`,
-              image: p.image_urls?.[0] ?? undefined,
+              // 跟商品詳情頁、首頁同一條防呆線：image_urls 第一張可能是空白或相對路徑，
+              // 直接放會讓這筆 Product 在 ItemList 裡失效。走 absoluteImageUrls 清過，
+              // 清不出乾淨絕對網址就省略此欄（頁面卡片渲染照舊吃原始 image_urls）。
+              image: absoluteImageUrls(p.image_urls)[0] ?? undefined,
               offers: {
                 "@type": "Offer",
                 priceCurrency: currencyForSchema(p.currency),

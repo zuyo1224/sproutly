@@ -5,6 +5,7 @@ import { createClient } from "@/lib/supabase/server";
 import { jsonLdHtml } from "@/lib/json-ld";
 import { parseBusinessHoursToSpec } from "@/lib/business-hours-schema";
 import { telHref, mailHref, telDigits, cleanEmail, socialUrl, mapsHref } from "@/lib/contact-href";
+import { absoluteImageUrls } from "@/lib/image-url";
 import { resolveTheme, HOMEPAGE_DEFAULTS } from "../_theme";
 
 type Params = Promise<{ slug: string }>;
@@ -142,9 +143,16 @@ export default async function ContactPage({ params }: { params: Params }) {
   // 跟首頁那段 Store 共用同一個 @id，理論上 Google 會把兩段合併看成同一間店；
   // 但跨頁合併不是保證的事，而聯絡頁正是客人搜「店名 地址／電話／營業時間」會落地的頁，
   // 所以這段自己也補上店家簡介、主視覺、社群連結，自成完整、不賭合併。
-  if (store.description) contactJsonLd.description = store.description;
-  if (theme.heroUrl) contactJsonLd.image = theme.heroUrl;
-  if (store.logo_url) contactJsonLd.logo = store.logo_url;
+  // 簡介先 trim：商家只打空白時別吐一筆空白 description 給 Google（跟首頁同條防呆）。
+  const contactDescription = store.description?.trim();
+  if (contactDescription) contactJsonLd.description = contactDescription;
+  // image／logo 跟首頁 Store、Product image、sitemap 同一條防呆線：schema.org／Google
+  // 要絕對網址。heroUrl／logo_url 是商家貼的，可能是相對路徑或一串空白，原本直接放
+  // 會餵一筆無效圖讓 Store rich result 失效。走 absoluteImageUrls 清過，清不出乾淨網址就不放。
+  const contactImage = absoluteImageUrls([theme.heroUrl])[0];
+  if (contactImage) contactJsonLd.image = contactImage;
+  const contactLogo = absoluteImageUrls([store.logo_url])[0];
+  if (contactLogo) contactJsonLd.logo = contactLogo;
   const contactPhone = telDigits(store.contact_phone);
   if (contactPhone) contactJsonLd.telephone = contactPhone;
   const contactEmail = cleanEmail(store.contact_email);
