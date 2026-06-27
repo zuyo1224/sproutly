@@ -39,6 +39,23 @@ const CN_DAY_INDEX: Record<string, number> = {
   七: 6,
 };
 
+// 英文星期前三碼 → DAY_NAMES 的 index。配合下面 enDayIdx：任何完整或縮寫的英文星期
+// （Mon / Monday / Tue / Tues / Tuesday / Thu / Thur / Thurs / Thursday …）都先取前三碼查表。
+const EN_DAY_INDEX: Record<string, number> = {
+  mon: 0,
+  tue: 1,
+  wed: 2,
+  thu: 3,
+  fri: 4,
+  sat: 5,
+  sun: 6,
+};
+// 把一個英文星期 token（mon / monday / tues / thursday…）對到 0-6，認不出回 undefined。
+// 所有合法寫法都以那三個關鍵字母開頭，取前三碼小寫查表即可（tues→tue、thurs→thu、sunday→sun）。
+function enDayIdx(token: string): number | undefined {
+  return EN_DAY_INDEX[token.slice(0, 3).toLowerCase()];
+}
+
 // 把「十點」「廿一」這種中文數字（緊接在「點／時」前的那一串）轉成阿拉伯數字，回傳 0-24
 // 的整數，判讀不出（多字非法組合、超出範圍）就回 null。支援 一～九、十、十一～十九、二十～
 // 廿四，以及「兩」當 2（「兩點」）。只認單純的個位、十位寫法，不認「一二」這種亂湊。
@@ -270,6 +287,33 @@ function findClosedDays(text: string): Set<number> {
     closed.add(5);
     closed.add(6);
   }
+
+  // 英文公休：「Closed Monday」「Closed on Sundays」「Mon closed」「Closed Sat & Sun」
+  // 「Closed weekends」。配合下面 findOpenDays 的英文星期支援——少了這段，「Daily 10-6,
+  // closed Sunday」會被當成天天開、把錯的營業時間餵給搜尋引擎（正是這支要避免的相反面）。
+  // 只認 close/closed/closing 緊鄰一串英文星期（中間允許 on/and/the 與 ,&/ 空白等連接詞與
+  // 分隔符），星期可在 closed 前或後；下面用 EN_DAY_INDEX 查表，連接詞查不到自然略過。
+  const lc = text.toLowerCase();
+  const enDaysRun = "(?:(?:mon|tue|wed|thu|fri|sat|sun)[a-z]*\\.?[\\s,&/]*(?:and|on|the)?[\\s,&/]*)+";
+  const collectEnClosed = (run: string) => {
+    for (const dm of run.matchAll(/(mon|tue|wed|thu|fri|sat|sun)[a-z]*/g)) {
+      const idx = EN_DAY_INDEX[dm[1].slice(0, 3)];
+      if (idx !== undefined) closed.add(idx);
+    }
+  };
+  for (const m of lc.matchAll(
+    new RegExp("clos(?:e|ed|ing)\\b[\\s:,&/]*(?:on\\s+|the\\s+)?(" + enDaysRun + ")", "g")
+  )) {
+    collectEnClosed(m[1]);
+  }
+  for (const m of lc.matchAll(new RegExp("(" + enDaysRun + ")clos(?:e|ed)\\b", "g"))) {
+    collectEnClosed(m[1]);
+  }
+  // 「Closed weekends / weekends closed」整段休週末。
+  if (/clos(?:e|ed)\b[\s:,&/]*weekends?\b|\bweekends?\b[\s:,&/]*clos(?:e|ed)\b/.test(lc)) {
+    closed.add(5);
+    closed.add(6);
+  }
   return closed;
 }
 
@@ -277,6 +321,48 @@ function findClosedDays(text: string): Set<number> {
 function findOpenDays(text: string, closed: Set<number>): number[] | null {
   const all = [0, 1, 2, 3, 4, 5, 6];
   const minusClosed = (days: number[]) => days.filter((d) => !closed.has(d));
+
+  // 0) 英文星期（文青／英文風店家：「Mon-Fri 10am-6pm」「Saturday & Sunday」「Daily」）。
+  // 跟 AM/PM 同理，這類店常用英文打營業時間，原本 findOpenDays 只認中文星期字、整段判不出
+  // 星期就不輸出，等於少餵一段正確營業時間給搜尋引擎。沿用保守原則：只認語意明確的英文星期
+  // 範圍／列舉／daily／weekday／weekend，公休（含英文）已先在 findClosedDays 收進 closed 扣掉。
+  // 純中文文字不含這些英文字，全部不命中、自然往下走中文規則，互不干擾。
+  {
+    const enRange = text.match(
+      /\b(mon|tue|wed|thu|fri|sat|sun)[a-z]*\.?\s*(?:-|to|thru|through|till?|until)\s*(mon|tue|wed|thu|fri|sat|sun)[a-z]*\.?/i
+    );
+    if (enRange) {
+      const s = enDayIdx(enRange[1]);
+      const e = enDayIdx(enRange[2]);
+      if (s !== undefined && e !== undefined) {
+        const days: number[] = [];
+        // 允許跨週尾（Sat-Mon）：走到 6 再從 0 接回 end。
+        let i = s;
+        for (let n = 0; n < 7; n++) {
+          days.push(i);
+          if (i === e) break;
+          i = (i + 1) % 7;
+        }
+        return minusClosed(days);
+      }
+    }
+    if (/\b(?:daily|every\s*day|everyday|all\s*week|7\s*days(?:\s*a\s*week)?)\b/i.test(text))
+      return minusClosed(all);
+    if (/\bweekdays?\b/i.test(text)) return minusClosed([0, 1, 2, 3, 4]);
+    if (/\bweekends?\b/i.test(text)) {
+      const weekend = minusClosed([5, 6]);
+      if (weekend.length > 0) return weekend;
+    }
+    // 逐一列出：Mon, Wed, Fri / Saturday and Sunday。排掉已標公休的。
+    const enSingles = new Set<number>();
+    const reEn = /\b(mon|tue|wed|thu|fri|sat|sun)[a-z]*\.?/gi;
+    let em: RegExpExecArray | null;
+    while ((em = reEn.exec(text)) !== null) {
+      const idx = enDayIdx(em[1]);
+      if (idx !== undefined && !closed.has(idx)) enSingles.add(idx);
+    }
+    if (enSingles.size > 0) return [...enSingles].sort((a, b) => a - b);
+  }
 
   // 1) 星期區間：週一至週五 / 一-五 / 周二到週六。取頭尾兩個星期字之間（含）。
   const rangeMatch = text.match(
