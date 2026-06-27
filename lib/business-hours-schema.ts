@@ -76,11 +76,16 @@ function findTimeRanges(text: string): { opens: string; closes: string }[] {
 function findClosedDays(text: string): Set<number> {
   const closed = new Set<number>();
   // 星期字後面接公休/店休/休館/休息/休 → 視為該日休息。
-  const re = /(?:週|周|星期|禮拜|拜)?([一二三四五六日天七])\s*(?:公休|店休|休館|休息|休)/g;
+  // 一個前綴帶一串連續星期字（「週六日公休」「週一二三公休」）是台灣最常見的併寫法，
+  // 所以星期字抓「一串」（[…]+）而非單一字：以前只認最後一個字，「週六日公休」會漏掉
+  // 週六、把它當成有營業，等於餵錯的營業時間給搜尋引擎（正是這支要避免的事）。
+  const re = /(?:週|周|星期|禮拜|拜)?([一二三四五六日天七]+)\s*(?:公休|店休|休館|休息|休)/g;
   let m: RegExpExecArray | null;
   while ((m = re.exec(text)) !== null) {
-    const idx = CN_DAY_INDEX[m[1]];
-    if (idx !== undefined) closed.add(idx);
+    for (const ch of m[1]) {
+      const idx = CN_DAY_INDEX[ch];
+      if (idx !== undefined) closed.add(idx);
+    }
   }
   // 「週末／週末／假日／例假日 + 公休/休」也很常見，但上面只認單一星期字，抓不到。
   // 漏掉的話「每日 10:00-18:00，週末公休」會被當成全週營業，反而把錯的營業時間
@@ -131,12 +136,16 @@ function findOpenDays(text: string, closed: Set<number>): number[] | null {
   }
 
   // 4) 逐一列出的星期（週一、週三、週五），排掉被標成休息的那些。
+  // 同 findClosedDays：一個前綴帶一串連續星期字（「週一二三」「週六日」）很常見，
+  // 星期字抓「一串」（[…]+）而非單一字，否則「週一二三 10:00-18:00」只會認到週一。
   const singles = new Set<number>();
-  const re = /(?:週|周|星期|禮拜|拜)([一二三四五六日天七])/g;
+  const re = /(?:週|周|星期|禮拜|拜)([一二三四五六日天七]+)/g;
   let m: RegExpExecArray | null;
   while ((m = re.exec(text)) !== null) {
-    const idx = CN_DAY_INDEX[m[1]];
-    if (idx !== undefined && !closed.has(idx)) singles.add(idx);
+    for (const ch of m[1]) {
+      const idx = CN_DAY_INDEX[ch];
+      if (idx !== undefined && !closed.has(idx)) singles.add(idx);
+    }
   }
   if (singles.size > 0) return [...singles].sort((a, b) => a - b);
 
