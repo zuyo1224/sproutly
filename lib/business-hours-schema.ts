@@ -137,14 +137,40 @@ function convertCnClockTimes(text: string): string {
   );
 }
 
+// 把英文 AM／PM 鐘點（「10:00AM」「AM 10:00」「9PM」「10:30 p.m.」）轉成 24 小時 HH:MM，
+// 讓後面統一吃 HH:MM 的 findTimeRanges 接得到。走文青／英文風的店家（選物店、咖啡店——
+// 正好是 Sproutly 目標客群）常用 AM／PM 而非中文時段詞或冒號 24 小時制打營業時間
+// （「AM10:00-PM10:00」「10:00am-9:00pm」），原本整段抓不到合法時間就回 null，等於白白
+// 少餵一段正確的營業時間給搜尋引擎。AM／PM 緊貼時間時語意完全不含糊（不像中文自由文字
+// 還要猜時段），轉換零誤判風險，符合這支「只認可靠格式」的保守原則。換算照英文慣例：
+// 12AM＝午夜 00:00、12PM＝正午 12:00、其餘 PM 一律 +12。沒有 AM／PM 標記的純數字一律
+// 不碰（「10:00-18:00」「24小時」原樣留著），標記前後皆可（前綴「AM10:00」與後綴「10:00AM」
+// 都認）；小時 >12（如「13PM」打錯）或分鐘 >59 就原樣保留，不亂猜。
+function convertAmPm(text: string): string {
+  return text.replace(
+    /([ap])\.?m\.?\s*(\d{1,2})(?::(\d{2}))?|(\d{1,2})(?::(\d{2}))?\s*([ap])\.?m\.?/gi,
+    (whole, preMark, preH, preMin, postH, postMin, postMark) => {
+      const mark = (preMark ?? postMark).toLowerCase(); // "a" 或 "p"
+      let h = Number(preH ?? postH);
+      const min = (preMin ?? postMin) ?? "00";
+      if (h > 12 || Number(min) > 59) return whole; // 判讀不可靠就原樣保留
+      if (mark === "a") {
+        if (h === 12) h = 0; // 12AM = 午夜
+      } else if (h !== 12) {
+        h += 12; // 12PM = 正午維持 12，其餘下午 +12
+      }
+      return `${String(h).padStart(2, "0")}:${min.padStart(2, "0")}`;
+    }
+  );
+}
+
 // 把全形數字／冒號、各種破折號統一成 ASCII，方便後面用單一 regex 抓。
 function normalize(raw: string): string {
-  return convertCnClockTimes(
-    raw
-      .replace(/[０-９]/g, (c) => String.fromCharCode(c.charCodeAt(0) - 0xfee0))
-      .replace(/：/g, ":")
-      .replace(/[–—～〜~至到]/g, "-")
-  )
+  const pre = raw
+    .replace(/[０-９]/g, (c) => String.fromCharCode(c.charCodeAt(0) - 0xfee0))
+    .replace(/：/g, ":")
+    .replace(/[–—～〜~至到]/g, "-");
+  return convertCnClockTimes(convertAmPm(pre))
     .replace(/\s+/g, " ")
     .trim();
 }
