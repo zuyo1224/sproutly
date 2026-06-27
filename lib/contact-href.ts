@@ -64,8 +64,16 @@ export function telDigits(phone: string | null | undefined): string {
 // 所以畫面上「顯示」的 Email 維持商家原本打的不動，只把「href」這串清乾淨：
 // 全形字轉半形 → 去前後空白與內部空白 → 去掉誤貼的開頭 mailto: → 沒位址就退回陽春 "mailto:"。
 // subject / body 另外用 query 掛上去（各自 encode），讓各頁不必再自己拼 ?subject= 字串。
+//
+// 還有一種：商家根本沒填 Email，卻在那一格打了「問我」「再問」或誤貼了電話「0912…」。
+// 這種清完空白也不是 email 形狀，但以前一樣會原樣回傳，結果跟 tel／社群連結沒清乾淨那次
+// 一樣出事——mailHref 掛出「mailto:問我」這種點了開信但收件人是亂碼的壞連結，結構化資料的
+// email 也把髒字串餵給 Google。所以清完再認一次形狀（要有 @、@ 兩邊都非空、網域要有點），
+// 不像 email 就回空字串：mailHref 退回陽春 "mailto:"、結構化資料那邊的 if (email) 自然略過。
+// 這跟 telDigits 沒主號就回空、socialUrl 不是絕對網址就回 null 是同一條防呆線。
+//
 // 把商家原本填的 Email 清成乾淨位址。mailHref（寫信連結）與結構化資料的 email
-// 共用這份清理。沒有位址就回空字串。
+// 共用這份清理。沒有位址、或清完不像 email 就回空字串。
 export function cleanEmail(email: string | null | undefined): string {
   // 全形英數與符號（U+FF01–FF5E）轉半形，全形空白 U+3000 一併歸成一般空白好 trim
   const normalized = (email ?? "")
@@ -73,10 +81,14 @@ export function cleanEmail(email: string | null | undefined): string {
     .replace(/　/g, " ");
 
   // 去掉誤貼的開頭 mailto:（大小寫不分），再清掉所有空白——Email 位址本來就不含空白
-  return normalized
+  const cleaned = normalized
     .trim()
     .replace(/^mailto:/i, "")
     .replace(/\s+/g, "");
+
+  // 清完再認形狀：local@domain.tld，@ 兩邊都不能空、網域要有一個點。不收完整 RFC，
+  // 只擋明顯不是 email 的亂填／誤貼電話，寧可少掛一個連結也不給客人點了開不了信的。
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(cleaned) ? cleaned : "";
 }
 
 // 社群連結 helper，跟 telHref / mailHref 同個態度：商家在後台填 Instagram /
