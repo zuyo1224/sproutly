@@ -113,6 +113,9 @@ export function EditorClickBridge() {
       if (!textEl) return;
       e.preventDefault();
       e.stopPropagation();
+      // 記住原文，按 Esc 取消時要還原 —— 否則 user 打到一半的字會留在預覽畫面上，
+      // 直到下次重繪才消失，看起來像「取消了卻沒取消」。
+      const originalText = textEl.textContent ?? "";
       textEl.setAttribute("contenteditable", "true");
       textEl.focus();
       // 選取全部文字方便重打
@@ -133,9 +136,12 @@ export function EditorClickBridge() {
           textEl.blur();
         } else if (ke.key === "Escape") {
           ke.preventDefault();
-          textEl.removeAttribute("contenteditable");
+          // 先拔掉 blur 監聽，免得移除 contenteditable 連帶觸發 blur 又 commit 一筆原值
           textEl.removeEventListener("blur", onBlur);
           textEl.removeEventListener("keydown", onKey);
+          // 還原原文再移掉 contenteditable，讓畫面回到沒編輯前的樣子
+          textEl.textContent = originalText;
+          textEl.removeAttribute("contenteditable");
         }
       };
       textEl.addEventListener("blur", onBlur);
