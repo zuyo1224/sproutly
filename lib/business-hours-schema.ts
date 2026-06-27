@@ -39,16 +39,55 @@ const CN_DAY_INDEX: Record<string, number> = {
   七: 6,
 };
 
+// 把「十點」「廿一」這種中文數字（緊接在「點／時」前的那一串）轉成阿拉伯數字，回傳 0-24
+// 的整數，判讀不出（多字非法組合、超出範圍）就回 null。支援 一～九、十、十一～十九、二十～
+// 廿四，以及「兩」當 2（「兩點」）。只認單純的個位、十位寫法，不認「一二」這種亂湊。
+const CN_DIGIT: Record<string, number> = {
+  零: 0, 〇: 0, 一: 1, 二: 2, 兩: 2, 三: 3, 四: 4, 五: 5,
+  六: 6, 七: 7, 八: 8, 九: 9,
+};
+function cnNumToInt(s: string): number | null {
+  if (s.length === 0) return null;
+  // 廿 = 20（廿一＝21 … 廿四＝24）
+  if (s.includes("廿")) {
+    if (s === "廿") return 20;
+    const rest = s.replace("廿", "");
+    return rest.length === 1 && rest in CN_DIGIT ? 20 + CN_DIGIT[rest] : null;
+  }
+  const tenIdx = s.indexOf("十");
+  if (tenIdx === -1) {
+    // 沒有「十」：只接受單一個位字（多字如「一二」判不出，回 null 維持保守）
+    return s.length === 1 && s in CN_DIGIT ? CN_DIGIT[s] : null;
+  }
+  // 有「十」：十＝10、十X＝10+X、X十＝X*10、X十Y＝X*10+Y
+  const before = s.slice(0, tenIdx);
+  const after = s.slice(tenIdx + 1);
+  let tens = 1;
+  if (before.length > 0) {
+    if (before.length === 1 && before in CN_DIGIT) tens = CN_DIGIT[before];
+    else return null;
+  }
+  let ones = 0;
+  if (after.length > 0) {
+    if (after.length === 1 && after in CN_DIGIT) ones = CN_DIGIT[after];
+    else return null;
+  }
+  return tens * 10 + ones;
+}
+
 // 把「早上10點」「9點半」「下午2點」「上午9時」「下午6時」這種中文「點／時」鐘點寫法轉成
 // HH:MM，讓後面統一吃 HH:MM 的 findTimeRanges 接得到。台灣商家極常用「點」或較正式的「時」
 // 而非冒號打時間（「早上10點到晚上9點」「9點半-18點」「下午2點到6點」「上午9時至下午6時」
 // 「10時-18時」「晚上7時」），原本整段抓不到時間就回 null，等於白白少餵一段正確的營業時間
 // 給搜尋引擎（正是這支解析器想避免的相反面）。「時」與「點」同一套語意，只是用字較書面。
+// 一進來先把緊接「點／時」的中文數字（「早上十點到晚上九點」「下午兩點」「十點半」「下午一時」）
+// 換成阿拉伯數字，台灣店家也很常用中文數字打鐘點，換完就能重用下面整套時段詞／半小時邏輯。
 // 注意「24小時／半小時」的「小時」不會被誤吃：數字與「時」之間隔著「小」字，regex 要求數字
-// 後緊接（可空白）「點／時」才命中，所以 is24Hours 仍能正常認出 24 小時店。沿用一貫的保守原則：只轉換能
-// 可靠判讀的（阿拉伯數字 + 點，可選上午/下午等時段詞與「半／X分」），算出來不是合法 24
-// 小時時間（時 >23 或 分 >59）就原樣留著、不亂猜。中文數字（「下午一點」）與沒數字的字
-// 不碰。時段詞處理：
+// 後緊接（可空白）「點／時」才命中，所以 is24Hours 仍能正常認出 24 小時店；中文數字 pre-pass
+// 同理只換緊接「點／時」的那串，「二十四小時」夾著「小」字不會被換、星期的「週一/週三」沒接
+// 「點／時」也不碰。沿用一貫的保守原則：只轉換能可靠判讀的（阿拉伯或中文數字 + 點，可選
+// 上午/下午等時段詞與「半／X分」），算出來不是合法 24 小時時間（時 >23 或 分 >59）就原樣
+// 留著、不亂猜。時段詞處理：
 //   早上/上午/凌晨/清晨 → 上午（12 點視為 0 點）
 //   晚上/傍晚/夜間/夜晚/夜 → 晚上（12 點＝午夜 0 點，其餘 +12）
 //   中午/下午/午後 → 下午（不到 12 點 +12，12 點維持 12＝正午）
@@ -57,6 +96,11 @@ const MORNING_MARK = /^(?:上午|早上|凌晨|清晨)$/;
 const NIGHT_MARK = /^(?:晚上|傍晚|夜間|夜晚|夜)$/;
 const AFTERNOON_MARK = /^(?:中午|下午|午後)$/;
 function convertCnClockTimes(text: string): string {
+  // pre-pass：把緊接「點／時」前的中文數字串換成阿拉伯數字（換不出就原樣留著）。
+  text = text.replace(/[零〇一二兩三四五六七八九十廿]+(?=\s*[點時])/g, (run) => {
+    const v = cnNumToInt(run);
+    return v === null ? run : String(v);
+  });
   // 「下午2點到6點」這種區間，後段常省略時段詞、靠前段帶過（指的是下午 6 點＝18:00，不是
   // 早上 6 點）。所以記住前一段的時段，當後一段沒寫時段、且兩段之間只隔破折號（已被 normalize
   // 把「到～」統一成「-」）時就沿用——只認破折號相連、不認純空白分開的兩段（那比較可能是各自
