@@ -196,6 +196,10 @@ export function customerMessage(input: {
         lines.push("（這筆是貨到付款，取貨時再付款即可）");
       else if (paymentMethod === "in_person")
         lines.push("（這筆是面交付款，碰面時再付款即可）");
+      else if (paymentMethod === "linepay" || paymentMethod === "jkos")
+        // LINE Pay／街口目前沒接自動金流，收款是商家自己用 LINE Pay 請款 / 街口 QR 處理，
+        // 所以這裡只提醒「會再傳付款方式給你」，不寫死「點連結付款」承諾不存在的流程。
+        lines.push(`（這筆選${PAYMENT_LABELS[paymentMethod]}，我們會再把付款方式傳給你）`);
     }
   }
 
