@@ -11,12 +11,8 @@ import { formatPrice } from "@/lib/format-price";
 import { isSoldOut, LOW_STOCK_THRESHOLD } from "@/lib/product-stock";
 // 訂單狀態徽章（label + 色票）跟訂單列表、訂單詳情共用同一份，三頁同一筆單同色同字。
 import { ORDER_STATUS_BADGES } from "@/lib/order-labels";
-
-// 回傳該時刻在台灣時區的日期字串（YYYY-MM-DD），分日統計一律用這個當 key，
-// 不能用 toISOString / created_at 直接切：那是 UTC 日界線，跟台灣差 8 小時
-function taipeiDateKey(d: Date) {
-  return d.toLocaleDateString("en-CA", { timeZone: "Asia/Taipei" });
-}
+// 分日統計的台灣時區日期 key 跟訂單列表/匯出共用同一份（見檔內說明）。
+import { taipeiDateKey } from "@/lib/format-date";
 
 export default async function StoreInsightsPage({
   params,

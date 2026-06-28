@@ -3,6 +3,8 @@ import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 // 訂單狀態徽章（label + 色票）跟店家首頁、訂單詳情共用同一份。
 import { ORDER_STATUS_BADGES } from "@/lib/order-labels";
+// 分日統計的台灣時區日期 key 跟店家首頁/匯出共用同一份（見檔內說明）。
+import { taipeiDateKey } from "@/lib/format-date";
 
 type Params = Promise<{ slug: string }>;
 type SearchParams = Promise<{
@@ -18,11 +20,6 @@ const DATE_RANGES: { key: string; label: string }[] = [
   { key: "week", label: "本週" },
   { key: "month", label: "本月" },
 ];
-
-// 跟後台首頁同一套：日界線一律用台灣時間切，伺服器在 UTC 跑也不會把凌晨的單漏掉
-function taipeiDateKey(d: Date) {
-  return d.toLocaleDateString("en-CA", { timeZone: "Asia/Taipei" });
-}
 
 function computeDateRange(key: string): { since: Date | null } {
   const todayKey = taipeiDateKey(new Date()); // YYYY-MM-DD（台灣的今天）

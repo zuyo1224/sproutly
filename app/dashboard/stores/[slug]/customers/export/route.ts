@@ -1,5 +1,7 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
+// CSV 檔名日期的台灣時區日期 key 跟訂單匯出共用同一份（見檔內說明）。
+import { taipeiDateKey } from "@/lib/format-date";
 
 type Params = Promise<{ slug: string }>;
 
@@ -11,11 +13,6 @@ function csvEscape(v: unknown): string {
     return `"${s.replace(/"/g, '""')}"`;
   }
   return s;
-}
-
-// 檔名日期跟訂單匯出同一套：一律用台灣時間切，伺服器在 UTC 跑也不會差一天
-function taipeiDateKey(d: Date) {
-  return d.toLocaleDateString("en-CA", { timeZone: "Asia/Taipei" });
 }
 
 function formatDate(iso: string) {

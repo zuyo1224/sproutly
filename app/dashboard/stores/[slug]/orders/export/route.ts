@@ -5,6 +5,8 @@ import {
   ORDER_STATUS_LABELS,
   decodeShippingFromNote,
 } from "@/lib/order-labels";
+// 時間界線/檔名日期的台灣時區日期 key 跟訂單列表共用同一份（見檔內說明）。
+import { taipeiDateKey } from "@/lib/format-date";
 
 type Params = Promise<{ slug: string }>;
 
@@ -22,11 +24,6 @@ function csvEscape(v: unknown): string {
     return `"${s.replace(/"/g, '""')}"`;
   }
   return s;
-}
-
-// 時間界線跟訂單列表頁同一套：一律用台灣時間切，伺服器在 UTC 跑也不會漏掉凌晨的單
-function taipeiDateKey(d: Date) {
-  return d.toLocaleDateString("en-CA", { timeZone: "Asia/Taipei" });
 }
 
 function computeSince(key: string): Date | null {
