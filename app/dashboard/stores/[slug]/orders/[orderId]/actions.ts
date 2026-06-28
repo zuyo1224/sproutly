@@ -2,14 +2,10 @@
 
 import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
+import { ORDER_STATUSES } from "@/lib/order-labels";
 
-const ALLOWED_STATUS = new Set([
-  "pending",
-  "confirmed",
-  "shipped",
-  "completed",
-  "cancelled",
-]);
+// 收狀態更新時的合法值跟訂單列表 chip、詳情下拉、匯出白名單同一條 canonical 順序。
+const ALLOWED_STATUS = new Set(ORDER_STATUSES);
 const ALLOWED_PAYMENT = new Set(["unpaid", "paid", "refunded"]);
 
 export async function updateOrderStatus(

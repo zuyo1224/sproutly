@@ -50,6 +50,18 @@ export const ORDER_STATUS_LABELS: Record<string, string> = Object.fromEntries(
   Object.entries(ORDER_STATUS_BADGES).map(([value, badge]) => [value, badge.label])
 );
 
+// 訂單狀態的「正規順序」單一來源：待確認→已確認→已出貨→已完成→已取消。徽章 Record 的
+// key 插入順序就是這個流程順序，從它取出來當 canonical enum。後台四處原本各抄一份同序
+// 的狀態集合、只是形狀不同：訂單詳情下拉是 {value,label}[]、訂單列表篩選 chip 是
+// {key,label}[]（前面多一顆「全部」）、匯出白名單是純字串陣列、改狀態 server action 的
+// 合法值是 Set —— 日後改順序或增刪一個狀態得四處同步，漏一處就出現「下拉能選但匯出
+// 篩不到」「列表有 chip 但 action 拒收」這種對不上。收成這一份：純 enum 走 ORDER_STATUSES，
+// 要 {value,label} 的下拉走衍生的 ORDER_STATUS_OPTIONS（label 跟徽章同字、不另抄）。
+export const ORDER_STATUSES: string[] = Object.keys(ORDER_STATUS_BADGES);
+
+export const ORDER_STATUS_OPTIONS: { value: string; label: string }[] =
+  ORDER_STATUSES.map((value) => ({ value, label: ORDER_STATUS_BADGES[value].label }));
+
 // 訂單編號給客人看的短形式：訂單 id 是 UUID（8-4-4-4-12），平常只取最前面那段
 // 8 個字當作好念好報的編號（例如 #A1B2C3D4）。後台四處原本寫 split("-")[0]、客人端
 // 兩處寫 slice(0,8)，標準 UUID 下結果一樣，但萬一 id 不是正規格式（壞資料、之後換 id

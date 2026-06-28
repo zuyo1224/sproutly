@@ -10,6 +10,7 @@ import {
   decodeShippingFromNote,
   customerMessage,
   ORDER_STATUS_BADGES,
+  ORDER_STATUS_OPTIONS,
   shortOrderId,
 } from "@/lib/order-labels";
 import { telHref, mailHref } from "@/lib/contact-href";
@@ -17,14 +18,6 @@ import { siteBaseUrl } from "@/lib/store-schema";
 
 type Params = Promise<{ slug: string; orderId: string }>;
 type SearchParams = Promise<{ error?: string; saved?: string }>;
-
-const STATUS_OPTIONS = [
-  { value: "pending", label: "待確認" },
-  { value: "confirmed", label: "已確認" },
-  { value: "shipped", label: "已出貨" },
-  { value: "completed", label: "已完成" },
-  { value: "cancelled", label: "已取消" },
-];
 
 const PAYMENT_OPTIONS = [
   { value: "unpaid", label: "未付款" },
@@ -502,7 +495,7 @@ export default async function OrderDetailPage({
                   defaultValue={order.status}
                   className="w-full rounded-xl border border-emerald-100 px-3 py-2.5 outline-none focus:border-emerald-400 transition bg-white text-sm"
                 >
-                  {STATUS_OPTIONS.map((s) => (
+                  {ORDER_STATUS_OPTIONS.map((s) => (
                     <option key={s.value} value={s.value}>
                       {s.label}
                     </option>

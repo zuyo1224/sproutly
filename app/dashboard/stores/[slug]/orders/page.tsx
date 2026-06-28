@@ -1,8 +1,13 @@
 import { redirect, notFound } from "next/navigation";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
-// 訂單狀態徽章（label + 色票）跟店家首頁、訂單詳情共用同一份。
-import { ORDER_STATUS_BADGES, shortOrderId } from "@/lib/order-labels";
+// 訂單狀態徽章（label + 色票）跟店家首頁、訂單詳情共用同一份；篩選 chip 的狀態清單
+// 也從同一條 canonical 順序（ORDER_STATUS_OPTIONS）衍生，前面再補一顆「全部」。
+import {
+  ORDER_STATUS_BADGES,
+  ORDER_STATUS_OPTIONS,
+  shortOrderId,
+} from "@/lib/order-labels";
 // 分日統計的台灣時區日期 key 跟店家首頁/匯出共用同一份（見檔內說明）。
 import { taipeiDateKey } from "@/lib/format-date";
 
@@ -40,11 +45,7 @@ function computeDateRange(key: string): { since: Date | null } {
 
 const STATUS_FILTERS: { key: string; label: string }[] = [
   { key: "all", label: "全部" },
-  { key: "pending", label: "待確認" },
-  { key: "confirmed", label: "已確認" },
-  { key: "shipped", label: "已出貨" },
-  { key: "completed", label: "已完成" },
-  { key: "cancelled", label: "已取消" },
+  ...ORDER_STATUS_OPTIONS.map((o) => ({ key: o.value, label: o.label })),
 ];
 
 // 做轉帳 / 貨到付款的店家常要找「出貨了還沒收到錢」的單，

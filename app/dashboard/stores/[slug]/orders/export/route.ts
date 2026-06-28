@@ -3,6 +3,7 @@ import { createClient } from "@/lib/supabase/server";
 import {
   PAYMENT_LABELS,
   ORDER_STATUS_LABELS,
+  ORDER_STATUSES,
   decodeShippingFromNote,
   shortOrderId,
 } from "@/lib/order-labels";
@@ -42,7 +43,8 @@ function computeSince(key: string): Date | null {
   return null;
 }
 
-const VALID_STATUS = ["pending", "confirmed", "shipped", "completed", "cancelled"];
+// 匯出篩選的狀態白名單跟訂單列表 chip、詳情下拉同一條 canonical 順序（見 order-labels）。
+const VALID_STATUS = ORDER_STATUSES;
 const VALID_PAY = ["unpaid", "paid", "refunded"];
 const VALID_RANGE = ["today", "week", "month"];
 
