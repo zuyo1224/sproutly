@@ -69,6 +69,7 @@ const SORT_OPTIONS: { value: string; label: string }[] = [
 ];
 
 import { formatPrice, priceForSchema, currencyForSchema } from "@/lib/format-price";
+import { availabilityForSchema } from "@/lib/availability-schema";
 
 export default async function ShopPage({
   params,
@@ -214,12 +215,7 @@ export default async function ShopPage({
                 price: priceForSchema(p.price_cents, p.currency),
                 // 跟商品詳情頁同一套：賣完 OutOfStock、剩 3 件以下 LimitedAvailability
                 // （對應卡片上的「剩 N」琥珀提示）、其餘 InStock，整站庫存標示一致。
-                availability:
-                  p.stock !== null && p.stock <= 0
-                    ? "https://schema.org/OutOfStock"
-                    : p.stock !== null && p.stock <= 3
-                      ? "https://schema.org/LimitedAvailability"
-                      : "https://schema.org/InStock",
+                availability: availabilityForSchema(p.stock),
               },
             },
           })),

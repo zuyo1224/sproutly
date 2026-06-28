@@ -14,6 +14,7 @@ import { RecentlyViewed } from "@/app/_components/recently-viewed";
 type Params = Promise<{ slug: string; id: string }>;
 
 import { formatPrice, priceForSchema, currencyForSchema } from "@/lib/format-price";
+import { availabilityForSchema } from "@/lib/availability-schema";
 import { absoluteImageUrls } from "@/lib/image-url";
 
 export async function generateMetadata({
@@ -123,13 +124,9 @@ export default async function PublicProductPage({
   const inStock = product.stock === null || product.stock > 0;
   const maxQty = product.stock !== null ? Math.min(product.stock, 99) : 99;
   // 庫存狀態給 Google：頁面上 stock ≤ 3 就亮「剩 N」琥珀色提示，結構化資料也跟著走——
-  // 還剩一點的用 LimitedAvailability（schema.org 正好有這個值），讓搜尋結果能標「所剩不多」，
-  // 跟客人在頁面上看到的低庫存提示一致；沒設庫存或量足就照常 InStock，賣完 OutOfStock。
-  const availability = !inStock
-    ? "https://schema.org/OutOfStock"
-    : product.stock !== null && product.stock <= 3
-      ? "https://schema.org/LimitedAvailability"
-      : "https://schema.org/InStock";
+  // 還剩一點的用 LimitedAvailability、賣完 OutOfStock、其餘 InStock。三段式邏輯跟逛街頁
+  // ItemList 共用 availabilityForSchema，整站庫存標示一致（門檻見該檔 LOW_STOCK_THRESHOLD）。
+  const availability = availabilityForSchema(product.stock);
 
   const BASE_URL =
     process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/$/, "") ??
