@@ -11,6 +11,8 @@
 //   賣完（≤ 0，含資料怪掉的負數）       → OutOfStock
 //   剩 1-3 件                           → LimitedAvailability（卡片上亮「剩 N」琥珀提示）
 //
+import { isSoldOut } from "./product-stock";
+
 // LOW_STOCK_THRESHOLD 跟頁面 UI 的「Low Stock · 剩 N」門檻是同一個數字（3）；
 // 之所以放這裡導出，是讓結構化資料這端有個具名來源，不再到處散落魔術數字 3。
 export const LOW_STOCK_THRESHOLD = 3;
@@ -23,7 +25,9 @@ export function availabilityForSchema(
   stock: number | null | undefined
 ): string {
   if (stock === null || stock === undefined) return IN_STOCK;
-  if (stock <= 0) return OUT_OF_STOCK;
+  // 「售完」（含超賣／資料壞掉的負數）走 product-stock 的 isSoldOut 同一份判斷，
+  // 不在這裡另寫一條 stock <= 0，免得哪天缺貨定義改了兩邊又對不上。
+  if (isSoldOut(stock)) return OUT_OF_STOCK;
   if (stock <= LOW_STOCK_THRESHOLD) return LIMITED_AVAILABILITY;
   return IN_STOCK;
 }
