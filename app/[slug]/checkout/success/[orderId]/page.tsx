@@ -4,7 +4,7 @@ import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { resolveTheme } from "../../../_theme";
-import { PAYMENT_LABELS, decodeShippingFromNote } from "@/lib/order-labels";
+import { PAYMENT_LABELS, decodeShippingFromNote, shortOrderId } from "@/lib/order-labels";
 import { telHref, mailHref } from "@/lib/contact-href";
 import { Confetti } from "@/app/_components/confetti";
 import { CopyOrderId } from "@/app/_components/copy-order-id";
@@ -61,7 +61,7 @@ export default async function OrderSuccessPage({
     .select("*")
     .eq("order_id", order.id);
 
-  const shortId = order.id.split("-")[0].toUpperCase();
+  const shortId = shortOrderId(order.id);
   const decodedNote = decodeShippingFromNote(order.note);
   const paymentLabel = order.payment_method
     ? (PAYMENT_LABELS[order.payment_method] ?? order.payment_method)

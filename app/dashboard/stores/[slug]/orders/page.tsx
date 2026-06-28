@@ -2,7 +2,7 @@ import { redirect, notFound } from "next/navigation";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 // 訂單狀態徽章（label + 色票）跟店家首頁、訂單詳情共用同一份。
-import { ORDER_STATUS_BADGES } from "@/lib/order-labels";
+import { ORDER_STATUS_BADGES, shortOrderId } from "@/lib/order-labels";
 // 分日統計的台灣時區日期 key 跟店家首頁/匯出共用同一份（見檔內說明）。
 import { taipeiDateKey } from "@/lib/format-date";
 
@@ -413,7 +413,7 @@ export default async function OrdersListPage({
                 <div className="flex items-start justify-between gap-3">
                   <div className="min-w-0">
                     <span className="font-mono text-sm text-emerald-900">
-                      #{o.id.split("-")[0].toUpperCase()}
+                      #{shortOrderId(o.id)}
                     </span>
                     <div className="text-emerald-950 font-medium mt-1 truncate">
                       {o.customer_name}
@@ -488,7 +488,7 @@ export default async function OrdersListPage({
                           : "border-transparent"
                       }`}
                     >
-                      #{o.id.split("-")[0].toUpperCase()}
+                      #{shortOrderId(o.id)}
                     </td>
                     <td className="px-5 py-4">
                       <div className="text-emerald-950 font-medium">

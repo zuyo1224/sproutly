@@ -3,7 +3,7 @@ import { notFound, redirect } from "next/navigation";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { resolveTheme } from "../../_theme";
-import { PAYMENT_LABELS } from "@/lib/order-labels";
+import { PAYMENT_LABELS, shortOrderId } from "@/lib/order-labels";
 import { RecentlyViewed } from "@/app/_components/recently-viewed";
 
 // 蓋掉父層 account/layout 的「會員中心」，訂單列表分頁顯示「訂單紀錄」。
@@ -249,7 +249,7 @@ export default async function CustomerOrdersPage({
         <ul className="space-y-6">
           {orderList.map((order) => {
             const orderItems = items.filter((i) => i.order_id === order.id);
-            const shortId = order.id.slice(0, 8).toUpperCase();
+            const shortId = shortOrderId(order.id);
             return (
               <li key={order.id}>
                 <Link

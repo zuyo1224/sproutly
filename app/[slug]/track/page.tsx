@@ -8,6 +8,7 @@ import {
   PAYMENT_LABELS,
   decodeShippingFromNote,
   orderStatusMessage,
+  shortOrderId,
 } from "@/lib/order-labels";
 import { telHref, mailHref } from "@/lib/contact-href";
 import { RememberOrder } from "@/app/_components/remember-order";
@@ -132,7 +133,7 @@ export default async function TrackPage({
   }
 
   const headerCaption = order
-    ? `${store.name} · 訂單 #${order.id.split("-")[0].toUpperCase()}`
+    ? `${store.name} · 訂單 #${shortOrderId(order.id)}`
     : searched
       ? `${store.name} · 沒找到符合的訂單`
       : `${store.name} · 輸入編號 + 電話即可查詢`;
@@ -281,7 +282,7 @@ export default async function TrackPage({
               只要在這裡查過一次，之後也能一鍵帶入。 */}
           <RememberOrder
             slug={slug}
-            shortId={order.id.split("-")[0].toUpperCase()}
+            shortId={shortOrderId(order.id)}
             phone={order.customer_phone}
             totalCents={order.total_cents}
             currency={order.currency}
@@ -310,7 +311,7 @@ export default async function TrackPage({
                 marginTop: "0.25rem",
               }}
             >
-              訂單收據 · #{order.id.split("-")[0].toUpperCase()}
+              訂單收據 · #{shortOrderId(order.id)}
             </p>
           </div>
 
@@ -498,7 +499,7 @@ export default async function TrackPage({
                 className="font-mono text-[0.9375rem] font-semibold"
                 style={{ color: theme.text, letterSpacing: "0.02em" }}
               >
-                #{order.id.split("-")[0].toUpperCase()}
+                #{shortOrderId(order.id)}
               </p>
             </div>
 
@@ -646,7 +647,7 @@ export default async function TrackPage({
               {store.contact_email && (
                 <a
                   href={mailHref(store.contact_email, {
-                    subject: `關於訂單 #${order.id.split("-")[0].toUpperCase()}`,
+                    subject: `關於訂單 #${shortOrderId(order.id)}`,
                   })}
                   className="sproutly-btn sproutly-btn-secondary flex-1"
                 >
@@ -688,7 +689,7 @@ export default async function TrackPage({
               }}
             >
               感謝您的訂購 · 訂單編號 #
-              {order.id.split("-")[0].toUpperCase()}
+              {shortOrderId(order.id)}
             </p>
           </div>
         </div>

@@ -10,6 +10,7 @@ import {
   decodeShippingFromNote,
   customerMessage,
   ORDER_STATUS_BADGES,
+  shortOrderId,
 } from "@/lib/order-labels";
 import { telHref, mailHref } from "@/lib/contact-href";
 import { siteBaseUrl } from "@/lib/store-schema";
@@ -84,7 +85,7 @@ export default async function OrderDetailPage({
     .eq("order_id", order.id);
 
   const updateBound = updateOrderStatus.bind(null, slug, order.id);
-  const shortId = order.id.split("-")[0].toUpperCase();
+  const shortId = shortOrderId(order.id);
   const decodedNote = decodeShippingFromNote(order.note);
   const paymentLabel = order.payment_method
     ? (PAYMENT_LABELS[order.payment_method] ?? order.payment_method)

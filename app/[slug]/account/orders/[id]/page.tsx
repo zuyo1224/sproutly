@@ -7,6 +7,7 @@ import {
   PAYMENT_LABELS,
   decodeShippingFromNote,
   orderStatusMessage,
+  shortOrderId,
 } from "@/lib/order-labels";
 import { telHref, mailHref } from "@/lib/contact-href";
 import { PrintButton } from "@/app/_components/print-button";
@@ -91,7 +92,7 @@ export default async function CustomerOrderDetailPage({
     .select("id, name_snapshot, quantity, price_cents_snapshot")
     .eq("order_id", order.id);
 
-  const shortId = order.id.slice(0, 8).toUpperCase();
+  const shortId = shortOrderId(order.id);
   const decodedNote = decodeShippingFromNote(order.note);
   const paymentLabel = order.payment_method
     ? (PAYMENT_LABELS[order.payment_method] ?? order.payment_method)

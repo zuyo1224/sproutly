@@ -50,6 +50,16 @@ export const ORDER_STATUS_LABELS: Record<string, string> = Object.fromEntries(
   Object.entries(ORDER_STATUS_BADGES).map(([value, badge]) => [value, badge.label])
 );
 
+// 訂單編號給客人看的短形式：訂單 id 是 UUID（8-4-4-4-12），平常只取最前面那段
+// 8 個字當作好念好報的編號（例如 #A1B2C3D4）。後台四處原本寫 split("-")[0]、客人端
+// 兩處寫 slice(0,8)，標準 UUID 下結果一樣，但萬一 id 不是正規格式（壞資料、之後換 id
+// 規則）兩種寫法就會給出不同編號，同一筆單在後台與客人端對不上。收成這一份：先取
+// 第一段、再硬切到最多 8 字，空值也不炸，後台與客人端永遠報同一個編號。不含 # 前綴，
+// 由各處自行決定要不要加（有些地方是純編號、有些要 #）。
+export function shortOrderId(id: string | null | undefined): string {
+  return (id ?? "").split("-")[0].slice(0, 8).toUpperCase();
+}
+
 export const PAYMENT_LABELS: Record<string, string> = Object.fromEntries(
   PAYMENT_OPTIONS.map((o) => [o.value, o.label.replace(/（即將推出）/, "")])
 );

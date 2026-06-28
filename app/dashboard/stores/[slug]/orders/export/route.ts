@@ -4,6 +4,7 @@ import {
   PAYMENT_LABELS,
   ORDER_STATUS_LABELS,
   decodeShippingFromNote,
+  shortOrderId,
 } from "@/lib/order-labels";
 // 時間界線/檔名日期的台灣時區日期 key 跟訂單列表共用同一份（見檔內說明）。
 import { taipeiDateKey } from "@/lib/format-date";
@@ -162,7 +163,7 @@ export async function GET(
       : "";
 
     const row = [
-      "#" + o.id.split("-")[0].toUpperCase(),
+      "#" + shortOrderId(o.id),
       new Date(o.created_at).toLocaleString("zh-TW", {
         timeZone: "Asia/Taipei",
         year: "numeric",
