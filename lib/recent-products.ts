@@ -24,16 +24,31 @@ export function getRecentProducts(slug: string): RecentProduct[] {
     if (!raw) return [];
     const arr = JSON.parse(raw);
     if (!Array.isArray(arr)) return [];
-    return arr.filter(
-      (x) =>
-        x &&
-        typeof x.id === "string" &&
-        typeof x.name === "string" &&
-        Number.isFinite(Number(x.priceCents)) &&
-        typeof x.currency === "string" &&
-        (x.image === null || typeof x.image === "string") &&
-        typeof x.viewedAt === "string"
-    );
+    return arr
+      .filter(
+        (x) =>
+          x &&
+          typeof x.id === "string" &&
+          typeof x.name === "string" &&
+          Number.isFinite(Number(x.priceCents)) &&
+          typeof x.currency === "string" &&
+          (x.image === null || typeof x.image === "string") &&
+          typeof x.viewedAt === "string"
+      )
+      // priceCents 可能被存成字串／null（跨版本舊資料、或手動竄改 localStorage）。上面
+      // 只用 Number() 把它「當作數字」驗證有限，卻原樣回傳——比照 cart.ts 對 qty「驗證
+      // 並轉成真數字」的做法，這裡也一併轉成 number 再回傳。不轉的話，原樣的字串會一路
+      // 流到 formatPrice（它用 Number.isFinite(cents) 判斷、不做轉換，字串會被當 0），
+      // 「最近看過」列表就顯示「NT$ 0」；回傳值也對 RecentProduct.priceCents 的 number
+      // 型別撒謊（拿到的其實是字串）。
+      .map((x) => ({
+        id: x.id as string,
+        name: x.name as string,
+        priceCents: Number(x.priceCents),
+        currency: x.currency as string,
+        image: (x.image ?? null) as string | null,
+        viewedAt: x.viewedAt as string,
+      }));
   } catch {
     return [];
   }

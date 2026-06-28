@@ -20,15 +20,28 @@ export function getRecentOrders(slug: string): RecentOrder[] {
     if (!raw) return [];
     const arr = JSON.parse(raw);
     if (!Array.isArray(arr)) return [];
-    return arr.filter(
-      (x) =>
-        x &&
-        typeof x.shortId === "string" &&
-        typeof x.phone === "string" &&
-        Number.isFinite(Number(x.totalCents)) &&
-        typeof x.currency === "string" &&
-        typeof x.createdAt === "string"
-    );
+    return arr
+      .filter(
+        (x) =>
+          x &&
+          typeof x.shortId === "string" &&
+          typeof x.phone === "string" &&
+          Number.isFinite(Number(x.totalCents)) &&
+          typeof x.currency === "string" &&
+          typeof x.createdAt === "string"
+      )
+      // totalCents 可能被存成字串／null（跨版本舊資料、或手動竄改 localStorage）。上面
+      // 只用 Number() 把它「當作數字」驗證有限、卻原樣回傳——跟 recent-products 的
+      // priceCents、cart 的 qty 同一條「驗證並轉成真數字」防呆線。不轉的話原樣字串會流到
+      // formatPrice（用 Number.isFinite 不做轉換、字串被當 0），查單頁的「最近訂單」就
+      // 顯示「NT$ 0」；回傳值也對 RecentOrder.totalCents 的 number 型別撒謊。
+      .map((x) => ({
+        shortId: x.shortId as string,
+        phone: x.phone as string,
+        totalCents: Number(x.totalCents),
+        currency: x.currency as string,
+        createdAt: x.createdAt as string,
+      }));
   } catch {
     return [];
   }
