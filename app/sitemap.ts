@@ -2,10 +2,9 @@ import type { MetadataRoute } from "next";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { resolveTheme } from "@/app/[slug]/_theme";
 import { absoluteImageUrls } from "@/lib/image-url";
+import { siteBaseUrl } from "@/lib/store-schema";
 
-const BASE_URL =
-  process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/$/, "") ??
-  "https://sproutly-drab.vercel.app";
+const BASE_URL = siteBaseUrl();
 
 // shop 對每間已發布店家都在；about / contact 是條件頁，商家關掉對應區段時
 // 頁面本身會 notFound（about 看 about/faq，contact 看 contact/hours），

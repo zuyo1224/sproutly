@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { jsonLdHtml } from "@/lib/json-ld";
+import { siteBaseUrl, storeSchemaId } from "@/lib/store-schema";
 import { telHref, mailHref } from "@/lib/contact-href";
 import {
   isSoldOut,
@@ -133,9 +134,7 @@ export default async function PublicProductPage({
   // ItemList 共用 availabilityForSchema，整站庫存標示一致（門檻見該檔 LOW_STOCK_THRESHOLD）。
   const availability = availabilityForSchema(product.stock);
 
-  const BASE_URL =
-    process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/$/, "") ??
-    "https://sproutly-drab.vercel.app";
+  const BASE_URL = siteBaseUrl();
 
   // 商家只打空白的描述：?? 只擋 null，"  " 會被當有效描述餵進結構化資料與頁面，
   // Google 收到空 description、頁面也長出一段只有「關於這株」標題卻無內文的空白區塊。
@@ -170,7 +169,7 @@ export default async function PublicProductPage({
       // 這樣 Google 把「賣這件商品的人」和店家本體連成同一間店，而非另一個匿名賣家。
       seller: {
         "@type": "Organization",
-        "@id": `${BASE_URL}/${slug}#store`,
+        "@id": storeSchemaId(BASE_URL, slug),
         name: store.name,
       },
     },

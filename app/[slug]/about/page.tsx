@@ -3,6 +3,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { jsonLdHtml } from "@/lib/json-ld";
+import { siteBaseUrl } from "@/lib/store-schema";
 import { resolveTheme, HOMEPAGE_DEFAULTS } from "../_theme";
 
 type Params = Promise<{ slug: string }>;
@@ -127,9 +128,7 @@ export default async function AboutPage({ params }: { params: Params }) {
 
   // 麵包屑結構化資料 — 跟 shop / 商品詳情頁同一套，讓 Google 搜尋結果用
   // 「店名 › 關於我們」標出這頁在店裡的位置，取代生硬的網址。
-  const BASE_URL =
-    process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/$/, "") ??
-    "https://sproutly-drab.vercel.app";
+  const BASE_URL = siteBaseUrl();
   const breadcrumbJsonLd = {
     "@context": "https://schema.org",
     "@type": "BreadcrumbList",

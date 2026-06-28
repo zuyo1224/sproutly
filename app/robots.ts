@@ -1,8 +1,7 @@
 import type { MetadataRoute } from "next";
+import { siteBaseUrl } from "@/lib/store-schema";
 
-const BASE_URL =
-  process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/$/, "") ??
-  "https://sproutly-drab.vercel.app";
+const BASE_URL = siteBaseUrl();
 
 export default function robots(): MetadataRoute.Robots {
   return {

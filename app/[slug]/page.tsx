@@ -5,9 +5,8 @@ import Image from "next/image";
 import { createClient } from "@/lib/supabase/server";
 import { jsonLdHtml } from "@/lib/json-ld";
 import { resolveTheme, HOMEPAGE_DEFAULTS, HOMEPAGE_DEFAULT_COLLECTIONS, JOURNAL_CARD_DEFAULTS } from "./_theme";
-import { parseBusinessHoursToSpec } from "@/lib/business-hours-schema";
-import { telHref, mailHref, telDigits, cleanEmail, socialUrl, mapsHref } from "@/lib/contact-href";
-import { absoluteImageUrls } from "@/lib/image-url";
+import { buildStoreJsonLd, siteBaseUrl, storeSchemaId } from "@/lib/store-schema";
+import { telHref, mailHref, telDigits, cleanEmail, mapsHref } from "@/lib/contact-href";
 import { isSoldOut, isLowStock, bySoldOutLast } from "@/lib/product-stock";
 import HeroAdaptiveBanner from "./HeroAdaptiveBanner";
 
@@ -306,71 +305,36 @@ export default async function StoreHomePage({
     return Object.keys(out).length > 0 ? (out as React.CSSProperties) : undefined;
   };
 
-  const BASE_URL =
-    process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/$/, "") ??
-    "https://sproutly-drab.vercel.app";
+  const BASE_URL = siteBaseUrl();
 
   // @id 是這個店家在整個網站的唯一身分證：首頁、聯絡頁的 Store 和商品頁 offer 的
   // seller 全指同一個 @id，Google 才知道散在各頁的結構化資料講的是「同一間店」，
   // 而不是好幾間同名的不同店。沒有它，每段 Store 都是匿名節點、會被當成獨立實體。
-  const storeId = `${BASE_URL}/${slug}#store`;
-  const storeJsonLd: Record<string, unknown> = {
-    "@context": "https://schema.org",
-    "@type": "Store",
-    "@id": storeId,
+  const storeId = storeSchemaId(BASE_URL, slug);
+  // 店家本體 Store 結構化資料走共用 builder，跟聯絡頁同一份（欄位定義與每欄的防呆線
+  // 都在 lib/store-schema）。以前首頁與聯絡頁各手拼一份、靠人工維持一致，改一頁忘了
+  // 另一頁就兩頁對不上；收成單一來源後不再各抄各的。
+  const storeJsonLd = buildStoreJsonLd({
+    baseUrl: BASE_URL,
+    slug,
     name: store.name,
-    url: `${BASE_URL}/${slug}`,
-  };
-  // 描述同地址一樣先 trim：商家若只打了空白，原本 if (store.description) 對
-  // 「  」之類的全空白字串也成立，會吐一筆空白 description 給 Google。trim 後仍有字才放。
-  const storeDescription = store.description?.trim();
-  if (storeDescription) storeJsonLd.description = storeDescription;
-  // Store 結構化資料的 image／logo 跟 Product image、sitemap 同一條防呆線：
-  // schema.org／Google 要絕對網址。heroUrl／logo_url 是商家貼的，可能是相對路徑
-  // 或一串空白，原本 if (theme.heroUrl) 直接放會餵一筆無效圖讓 Store rich result 失效。
-  // 走 absoluteImageUrls（去空白＋只留 http(s) 絕對網址）清過，清不出乾淨網址就不放。
-  const storeImage = absoluteImageUrls([theme.heroUrl])[0];
-  if (storeImage) storeJsonLd.image = storeImage;
-  const storeLogo = absoluteImageUrls([store.logo_url])[0];
-  if (storeLogo) storeJsonLd.logo = storeLogo;
+    description: store.description,
+    heroUrl: theme.heroUrl,
+    logoUrl: store.logo_url,
+    phone: store.contact_phone,
+    email: store.contact_email,
+    address: store.address,
+    socialLinks: [theme.social.instagram, theme.social.facebook, theme.social.line],
+    businessHoursText,
+  });
+
+  // 以下幾個清過的值，頁面下方「來訪」區段的顯示連結要用（撥號、寫信、地圖）：跟上面
+  // 結構化資料走同一份 helper（telDigits／cleanEmail／mapsHref），畫面上能點的連結與
+  // 餵 Google 的號碼／位址不會對不上。地址只打空白時 mapsHref 回 null，整段不冒壞連結。
   const storePhone = telDigits(store.contact_phone);
-  if (storePhone) storeJsonLd.telephone = storePhone;
   const storeEmail = cleanEmail(store.contact_email);
-  if (storeEmail) storeJsonLd.email = storeEmail;
-  // 地址先去前後空白再放：商家若只打了空白（或地址前後黏了換行），原本
-  // if (store.address) 對「  」之類的全空白字串也成立，會吐出一個 streetAddress
-  // 是空白的 PostalAddress 給 Google，等於餵一筆空地址。trim 後仍有字才放。
   const storeAddress = store.address?.trim();
-  // 來訪區段的地址連結也走共用 mapsHref（trim 完空白回 null），跟頁尾、聯絡頁同一條路徑，
-  // 商家只打空白時整段來訪資訊不冒出連到空白地圖搜尋的壞連結。
   const storeMapsHref = mapsHref(store.address);
-  if (storeAddress) {
-    storeJsonLd.address = {
-      "@type": "PostalAddress",
-      streetAddress: storeAddress,
-      addressCountry: "TW",
-    };
-  }
-  // sameAs 給 Google：把店家填的 Instagram / Facebook / LINE 連回同一個店家實體，
-  // Google 用這條把社群帳號跟搜尋結果的店家對起來（知識面板、相關連結都靠它）。
-  // 頁尾這幾個欄位是直接當連結用的，但商家可能填成 @帳號 之類的非網址，
-  // sameAs 規格只吃絕對網址，所以只放真的以 http(s) 開頭的，其餘略過不放錯的。
-  const socialUrls = [
-    theme.social.instagram,
-    theme.social.facebook,
-    theme.social.line,
-  ]
-    .map(socialUrl)
-    .filter((u): u is string => u !== null);
-  if (socialUrls.length > 0) {
-    storeJsonLd.sameAs = socialUrls;
-  }
-  // 營業時間給 Google：schema.org 的 openingHours 只吃結構化星期＋24 小時時間，
-  // 商家打的是中文自由文字，直接塞會被判無效、連整段結構化資料一起忽略。
-  // 先試著解析成合法的 openingHoursSpecification，判讀不出來就乾脆不放，
-  // 不放錯誤的營業時間誤導搜尋結果（頁面上給客人看的原始文字照常顯示）。
-  const openingHoursSpec = parseBusinessHoursToSpec(businessHoursText);
-  if (openingHoursSpec) storeJsonLd.openingHoursSpecification = openingHoursSpec;
 
   // 商家可能留了只填問沒填答、或整列全空白的 FAQ。那種空列在頁面上會變成
   // 點開後沒半句內容的「＋」空格，餵給 Google 也是一筆空的問答。問與答都

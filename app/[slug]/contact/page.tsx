@@ -3,9 +3,8 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { jsonLdHtml } from "@/lib/json-ld";
-import { parseBusinessHoursToSpec } from "@/lib/business-hours-schema";
-import { telHref, mailHref, telDigits, cleanEmail, socialUrl, mapsHref } from "@/lib/contact-href";
-import { absoluteImageUrls } from "@/lib/image-url";
+import { buildStoreJsonLd, siteBaseUrl } from "@/lib/store-schema";
+import { telHref, mailHref, telDigits, cleanEmail, mapsHref } from "@/lib/contact-href";
 import { resolveTheme, HOMEPAGE_DEFAULTS } from "../_theme";
 
 type Params = Promise<{ slug: string }>;
@@ -125,74 +124,34 @@ export default async function ContactPage({ params }: { params: Params }) {
 
   // 聯絡頁結構化資料 — 這頁專門講「怎麼找到店家」，把電話、Email、地址、營業時間
   // 餵給 Google，客人搜「店名 電話」「店名 地址」「店名 營業時間」時，搜尋結果有機會
-  // 直接顯示這些資訊，少點一步進站。跟首頁那份用同一套欄位，只有真的有填才放。
-  const BASE_URL =
-    process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/$/, "") ??
-    "https://sproutly-drab.vercel.app";
-  // @id 跟首頁 page.tsx 那份 Store 用同一個值（${BASE_URL}/${slug}#store），
-  // 讓 Google 知道聯絡頁這段跟首頁那段講的是同一間店、不是兩間同名的不同店，
-  // 否則兩段匿名 Store 會被當成各自獨立的實體，搜尋結果可能對不起來。
-  const storeId = `${BASE_URL}/${slug}#store`;
-  const contactJsonLd: Record<string, unknown> = {
-    "@context": "https://schema.org",
-    "@type": "Store",
-    "@id": storeId,
+  // 直接顯示這些資訊，少點一步進站。
+  //
+  // Store 物件走共用 builder（lib/store-schema），跟首頁 page.tsx 那份是同一支：
+  // 同一個 @id（${BASE_URL}/${slug}#store）讓 Google 知道兩頁講的是同一間店，欄位與
+  // 每欄的防呆線也只有一處定義。以前這頁手抄一份、靠人工跟首頁對齊，這頁就曾漏掉把
+  // 營業時間解析成結構化格式（直接塞中文自由文字會讓整段 Store 被判無效）——收成單一
+  // 來源後不會再有這種一頁有、另一頁漏的情況。跨頁合併不是 Google 保證的事，而聯絡頁
+  // 正是客人搜「店名 地址／電話／營業時間」會落地的頁，所以這段同樣帶齊簡介、主視覺、
+  // 社群、營業時間，自成完整、不賭合併。
+  const BASE_URL = siteBaseUrl();
+  const contactJsonLd = buildStoreJsonLd({
+    baseUrl: BASE_URL,
+    slug,
     name: store.name,
-    url: `${BASE_URL}/${slug}`,
-  };
-  // 跟首頁那段 Store 共用同一個 @id，理論上 Google 會把兩段合併看成同一間店；
-  // 但跨頁合併不是保證的事，而聯絡頁正是客人搜「店名 地址／電話／營業時間」會落地的頁，
-  // 所以這段自己也補上店家簡介、主視覺、社群連結，自成完整、不賭合併。
-  // 簡介先 trim：商家只打空白時別吐一筆空白 description 給 Google（跟首頁同條防呆）。
-  const contactDescription = store.description?.trim();
-  if (contactDescription) contactJsonLd.description = contactDescription;
-  // image／logo 跟首頁 Store、Product image、sitemap 同一條防呆線：schema.org／Google
-  // 要絕對網址。heroUrl／logo_url 是商家貼的，可能是相對路徑或一串空白，原本直接放
-  // 會餵一筆無效圖讓 Store rich result 失效。走 absoluteImageUrls 清過，清不出乾淨網址就不放。
-  const contactImage = absoluteImageUrls([theme.heroUrl])[0];
-  if (contactImage) contactJsonLd.image = contactImage;
-  const contactLogo = absoluteImageUrls([store.logo_url])[0];
-  if (contactLogo) contactJsonLd.logo = contactLogo;
-  const contactPhone = telDigits(store.contact_phone);
-  if (contactPhone) contactJsonLd.telephone = contactPhone;
-  const contactEmail = cleanEmail(store.contact_email);
-  if (contactEmail) contactJsonLd.email = contactEmail;
-  // 地址先去前後空白再放：商家若只打了空白（或地址前後黏了換行），原本
-  // if (store.address) 對「  」之類的全空白字串也成立，會吐出一個 streetAddress
-  // 是空白的 PostalAddress 給 Google，等於餵一筆空地址。trim 後仍有字才放。
-  const contactAddress = store.address?.trim();
-  if (contactAddress) {
-    contactJsonLd.address = {
-      "@type": "PostalAddress",
-      streetAddress: contactAddress,
-      addressCountry: "TW",
-    };
-  }
-  // 營業時間給 Google：schema.org 的 openingHours 只吃結構化星期＋24 小時時間，
-  // 商家打的是中文自由文字，直接塞會被判無效、連整段 Store 結構化資料一起忽略
-  // （首頁 page.tsx 早就改用解析版，這頁之前漏掉，等於把整段結構化資料賭掉）。
-  // 解析得出來才放 openingHoursSpecification，判讀不出來就不放，不誤導搜尋結果
-  //（頁面上給客人看的原始文字照常顯示）。
-  const openingHoursSpec = parseBusinessHoursToSpec(businessHoursText);
-  if (openingHoursSpec) contactJsonLd.openingHoursSpecification = openingHoursSpec;
-  // 把店家填的 Instagram / Facebook / LINE 連回同一個店家實體，Google 用這條把
-  // 社群帳號跟搜尋結果的店家對起來（跟首頁同一套）。商家可能填成 @帳號 之類的非網址，
-  // sameAs 只吃絕對網址，所以只放真的以 http(s) 開頭的，其餘略過不放錯的。
-  const socialUrls = [
-    theme.social.instagram,
-    theme.social.facebook,
-    theme.social.line,
-  ]
-    .map(socialUrl)
-    .filter((u): u is string => u !== null);
-  if (socialUrls.length > 0) {
-    contactJsonLd.sameAs = socialUrls;
-  }
+    description: store.description,
+    heroUrl: theme.heroUrl,
+    logoUrl: store.logo_url,
+    phone: store.contact_phone,
+    email: store.contact_email,
+    address: store.address,
+    socialLinks: [theme.social.instagram, theme.social.facebook, theme.social.line],
+    businessHoursText,
+  });
   // 只有真的有任何一項聯絡資訊才放結構化資料，空店面不丟空殼給 Google。
   const hasContactData = Boolean(
     store.contact_phone ||
       store.contact_email ||
-      contactAddress ||
+      store.address?.trim() ||
       businessHoursText,
   );
 

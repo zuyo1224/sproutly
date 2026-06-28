@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { jsonLdHtml } from "@/lib/json-ld";
+import { siteBaseUrl } from "@/lib/store-schema";
 import { absoluteImageUrls } from "@/lib/image-url";
 import { resolveTheme, HOMEPAGE_DEFAULTS } from "../_theme";
 import { RecentlyViewed } from "@/app/_components/recently-viewed";
@@ -153,9 +154,7 @@ export default async function ShopPage({
   const shopEyebrow = theme.homepage.shopEyebrow ?? HOMEPAGE_DEFAULTS.shopEyebrow;
   const shopTitle = theme.homepage.shopTitle ?? HOMEPAGE_DEFAULTS.shopTitle;
 
-  const BASE_URL =
-    process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/$/, "") ??
-    "https://sproutly-drab.vercel.app";
+  const BASE_URL = siteBaseUrl();
 
   // 麵包屑結構化資料 — 跟首頁的 Store、商品詳情頁的 Product/BreadcrumbList 一套，
   // 讓 Google 搜尋結果用「店名 › 所有商品」標出這頁在店裡的位置。
