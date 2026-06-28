@@ -182,10 +182,19 @@ function convertAmPm(text: string): string {
 }
 
 // 把全形數字／冒號、各種破折號統一成 ASCII，方便後面用單一 regex 抓。
+// 順帶把「點當分隔」的時間寫法（「10.00-18.00」「9.30」「10.30am」）裡那個點換成冒號。
+// 為什麼：手機數字鍵盤與歐式習慣很常用點而非冒號打鐘點，台灣文青／咖啡店招牌也常見
+// 「10.00–18.00」這種寫法；normalize 原本只認全形冒號，點分隔的時間 findTimeRanges 整段
+// 抓不到（它只吃 HH:MM 的冒號制）就回 null，等於白白少餵一段正確的營業時間給搜尋引擎
+// （正是這支要避免的相反面）。只換「1-2 位數 + 點 + 剛好 2 位數、且左右都不再接數字」的
+// 那個點（用 (?<!\d) 擋左邊、(?!\d) 擋右邊），所以「100.00」「10.000」不會被誤切，純小數
+// 「1.5」也不碰（分鐘必須 2 位）。「a.m.／p.m.」的點前後沒有數字、自然不命中，convertAmPm
+// 仍照常處理；放在 convertAmPm 之前，「10.30am」先變「10:30am」再交給它換算。
 function normalize(raw: string): string {
   const pre = raw
     .replace(/[０-９]/g, (c) => String.fromCharCode(c.charCodeAt(0) - 0xfee0))
     .replace(/：/g, ":")
+    .replace(/(?<!\d)(\d{1,2})[.．](\d{2})(?!\d)/g, "$1:$2")
     .replace(/[–—～〜~至到]/g, "-");
   return convertCnClockTimes(convertAmPm(pre))
     .replace(/\s+/g, " ")
