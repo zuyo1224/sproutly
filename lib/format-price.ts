@@ -61,3 +61,23 @@ export function priceForSchema(cents: number, currency?: string | null): string 
     return amount.toFixed(2);
   }
 }
+
+// 商品詳情頁與逛街頁 ItemList 的 schema.org Offer，共用同一組「跟價格綁在一起」的欄位：
+// 幣別、純數字價格、價格有效期限、商品狀態（全新）。以前這幾欄是兩頁各抄一份，
+// 逛街頁還漏抄了 priceValidUntil 與 itemCondition——這兩欄缺了 Search Console 會報
+// 「缺少建議欄位」、rich result 也可能不顯示價格。集中成一份後兩頁保證一致、不再漏。
+//
+// - priceValidUntil：商家不設到期日，預設一年後，免得 Google 把價格當成過期的。
+// - itemCondition：商品都是全新品（盆栽、家居用品），標明 NewCondition 補上建議欄位。
+// availability（庫存）依各商品 stock 算，走 availability-schema.ts 那份共用，這裡不重複。
+export function productOfferFieldsForSchema(cents: number, currency?: string | null) {
+  const priceValidUntil = new Date(Date.now() + 365 * 24 * 60 * 60 * 1000)
+    .toISOString()
+    .slice(0, 10);
+  return {
+    priceCurrency: currencyForSchema(currency),
+    price: priceForSchema(cents, currency),
+    priceValidUntil,
+    itemCondition: "https://schema.org/NewCondition",
+  };
+}

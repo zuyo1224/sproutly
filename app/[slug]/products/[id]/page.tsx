@@ -13,7 +13,7 @@ import { RecentlyViewed } from "@/app/_components/recently-viewed";
 
 type Params = Promise<{ slug: string; id: string }>;
 
-import { formatPrice, priceForSchema, currencyForSchema } from "@/lib/format-price";
+import { formatPrice, productOfferFieldsForSchema } from "@/lib/format-price";
 import { availabilityForSchema } from "@/lib/availability-schema";
 import { absoluteImageUrls } from "@/lib/image-url";
 
@@ -132,13 +132,6 @@ export default async function PublicProductPage({
     process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/$/, "") ??
     "https://sproutly-drab.vercel.app";
 
-  // 價格有效期限給 Google：Product 的 offers 沒帶 priceValidUntil 時，
-  // Search Console 會報「缺少建議欄位」，rich result 也可能不顯示價格。
-  // 商家不設到期日，這裡預設一年後，讓結構化資料完整、價格不被當成過期。
-  const priceValidUntil = new Date(Date.now() + 365 * 24 * 60 * 60 * 1000)
-    .toISOString()
-    .slice(0, 10);
-
   // 商家只打空白的描述：?? 只擋 null，"  " 會被當有效描述餵進結構化資料與頁面，
   // Google 收到空 description、頁面也長出一段只有「關於這株」標題卻無內文的空白區塊。
   // 先 trim，全空白就當沒填（undefined）——JSON-LD 省略此欄、頁面也不渲染該段。
@@ -163,12 +156,9 @@ export default async function PublicProductPage({
     offers: {
       "@type": "Offer",
       url: `${BASE_URL}/${slug}/products/${product.id}`,
-      // 商品都是全新品（盆栽、家居用品），標明 NewCondition 讓 Google
-      // 商品結果不留空，也補上 Search Console 會提示的建議欄位。
-      itemCondition: "https://schema.org/NewCondition",
-      priceCurrency: currencyForSchema(product.currency),
-      price: priceForSchema(product.price_cents, product.currency),
-      priceValidUntil,
+      // 幣別／價格／價格有效期／全新狀態走共用 helper，跟逛街頁 ItemList 同一份，
+      // 兩頁餵 Google 的價格相關欄位保證一致（細節見該檔 productOfferFieldsForSchema）。
+      ...productOfferFieldsForSchema(product.price_cents, product.currency),
       availability,
       // seller 的 @id 指回首頁／聯絡頁那份 Store 同一個身分證
       // （${BASE_URL}/${slug}#store）。Store 本來就是 Organization 的子類，型別相容，

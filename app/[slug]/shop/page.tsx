@@ -68,7 +68,7 @@ const SORT_OPTIONS: { value: string; label: string }[] = [
   { value: "name", label: "名稱 A-Z" },
 ];
 
-import { formatPrice, priceForSchema, currencyForSchema } from "@/lib/format-price";
+import { formatPrice, productOfferFieldsForSchema } from "@/lib/format-price";
 import { availabilityForSchema } from "@/lib/availability-schema";
 
 export default async function ShopPage({
@@ -211,8 +211,9 @@ export default async function ShopPage({
               image: absoluteImageUrls(p.image_urls)[0] ?? undefined,
               offers: {
                 "@type": "Offer",
-                priceCurrency: currencyForSchema(p.currency),
-                price: priceForSchema(p.price_cents, p.currency),
+                // 幣別／價格／價格有效期／全新狀態走共用 helper，跟商品詳情頁同一份
+                // （以前這裡漏了 priceValidUntil 與 itemCondition，Search Console 會報缺欄）。
+                ...productOfferFieldsForSchema(p.price_cents, p.currency),
                 // 跟商品詳情頁同一套：賣完 OutOfStock、剩 3 件以下 LimitedAvailability
                 // （對應卡片上的「剩 N」琥珀提示）、其餘 InStock，整站庫存標示一致。
                 availability: availabilityForSchema(p.stock),
