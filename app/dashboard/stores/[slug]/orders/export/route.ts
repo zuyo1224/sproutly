@@ -1,16 +1,12 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
-import { PAYMENT_LABELS, decodeShippingFromNote } from "@/lib/order-labels";
+import {
+  PAYMENT_LABELS,
+  ORDER_STATUS_LABELS,
+  decodeShippingFromNote,
+} from "@/lib/order-labels";
 
 type Params = Promise<{ slug: string }>;
-
-const STATUS_LABEL: Record<string, string> = {
-  pending: "待確認",
-  confirmed: "已確認",
-  shipped: "已出貨",
-  completed: "已完成",
-  cancelled: "已取消",
-};
 
 const PAYMENT_STATUS_LABEL: Record<string, string> = {
   unpaid: "未付款",
@@ -181,7 +177,7 @@ export async function GET(
       o.customer_name,
       o.customer_phone,
       o.customer_email ?? "",
-      STATUS_LABEL[o.status] ?? o.status,
+      ORDER_STATUS_LABELS[o.status] ?? o.status,
       PAYMENT_STATUS_LABEL[o.payment_status] ?? o.payment_status,
       paymentLabel,
       decoded.shippingLabel ?? "",

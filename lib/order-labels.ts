@@ -30,6 +30,26 @@ export const SHIPPING_OPTIONS: ShippingOption[] = [
   { value: "pickup", label: "店面自取" },
 ];
 
+// 後台訂單狀態徽章：中文 label + 一組固定色票（amber→blue→purple→emerald→zinc，
+// 依「待處理→處理中→已出貨→完成→取消」逐步變化）。店家首頁最近訂單、訂單列表、
+// 訂單詳情三處原本各抄一份一模一樣的 {label,color}，改一處顏色（或日後多一個狀態）
+// 忘了另外兩處，同一筆單在三個畫面就會配不同色、甚至漏顯示。收成這一份，三頁吃同一個。
+// 注意：客人端（會員訂單頁、查訂單頁）用的是較柔的說法（completed「完成」、cancelled
+// 「取消」），語氣刻意不同、也不需要色票，那邊維持各自的 label，不共用這份。
+export const ORDER_STATUS_BADGES: Record<string, { label: string; color: string }> = {
+  pending: { label: "待確認", color: "bg-amber-100 text-amber-800" },
+  confirmed: { label: "已確認", color: "bg-blue-100 text-blue-800" },
+  shipped: { label: "已出貨", color: "bg-purple-100 text-purple-800" },
+  completed: { label: "已完成", color: "bg-emerald-100 text-emerald-800" },
+  cancelled: { label: "已取消", color: "bg-zinc-100 text-zinc-600" },
+};
+
+// 只要中文 label、不要色票的場合（訂單匯出 CSV 的狀態欄寫成中文）從徽章那份直接取
+// label，跟畫面同一套字，不另抄一份。
+export const ORDER_STATUS_LABELS: Record<string, string> = Object.fromEntries(
+  Object.entries(ORDER_STATUS_BADGES).map(([value, badge]) => [value, badge.label])
+);
+
 export const PAYMENT_LABELS: Record<string, string> = Object.fromEntries(
   PAYMENT_OPTIONS.map((o) => [o.value, o.label.replace(/（即將推出）/, "")])
 );

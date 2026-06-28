@@ -1,6 +1,8 @@
 import { redirect, notFound } from "next/navigation";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
+// 訂單狀態徽章（label + 色票）跟店家首頁、訂單詳情共用同一份。
+import { ORDER_STATUS_BADGES } from "@/lib/order-labels";
 
 type Params = Promise<{ slug: string }>;
 type SearchParams = Promise<{
@@ -56,14 +58,6 @@ const PAYMENT_FILTERS: { key: string; label: string }[] = [
   { key: "paid", label: "已付款" },
   { key: "refunded", label: "已退款" },
 ];
-
-const STATUS_LABEL: Record<string, { label: string; color: string }> = {
-  pending: { label: "待確認", color: "bg-amber-100 text-amber-800" },
-  confirmed: { label: "已確認", color: "bg-blue-100 text-blue-800" },
-  shipped: { label: "已出貨", color: "bg-purple-100 text-purple-800" },
-  completed: { label: "已完成", color: "bg-emerald-100 text-emerald-800" },
-  cancelled: { label: "已取消", color: "bg-zinc-100 text-zinc-600" },
-};
 
 const PAYMENT_LABEL: Record<string, { label: string; color: string }> = {
   unpaid: { label: "未付款", color: "text-amber-700" },
@@ -408,7 +402,7 @@ export default async function OrdersListPage({
             7 欄的表格擠在窄螢幕會糊成一團，所以小螢幕改一筆一張卡。 */}
         <div className="sm:hidden space-y-3">
           {orders.map((o) => {
-            const s = STATUS_LABEL[o.status] ?? STATUS_LABEL.pending;
+            const s = ORDER_STATUS_BADGES[o.status] ?? ORDER_STATUS_BADGES.pending;
             const p = PAYMENT_LABEL[o.payment_status] ?? PAYMENT_LABEL.unpaid;
             const needsAction = o.status === "pending";
             return (
@@ -474,7 +468,7 @@ export default async function OrdersListPage({
             </thead>
             <tbody>
               {orders.map((o, i) => {
-                const s = STATUS_LABEL[o.status] ?? STATUS_LABEL.pending;
+                const s = ORDER_STATUS_BADGES[o.status] ?? ORDER_STATUS_BADGES.pending;
                 const p =
                   PAYMENT_LABEL[o.payment_status] ?? PAYMENT_LABEL.unpaid;
                 // 待確認 = 商家還沒處理的單，給整列上色 + 左側色條，掃一眼就抓得到哪幾筆要回

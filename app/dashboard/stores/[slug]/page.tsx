@@ -9,20 +9,14 @@ type Params = Promise<{ slug: string }>;
 // 後台首頁的金額一律跟著這間店實際出單的幣別走（共用 formatPrice，不再對非 TWD 店家硬寫 NT$）。
 import { formatPrice } from "@/lib/format-price";
 import { isSoldOut, LOW_STOCK_THRESHOLD } from "@/lib/product-stock";
+// 訂單狀態徽章（label + 色票）跟訂單列表、訂單詳情共用同一份，三頁同一筆單同色同字。
+import { ORDER_STATUS_BADGES } from "@/lib/order-labels";
 
 // 回傳該時刻在台灣時區的日期字串（YYYY-MM-DD），分日統計一律用這個當 key，
 // 不能用 toISOString / created_at 直接切：那是 UTC 日界線，跟台灣差 8 小時
 function taipeiDateKey(d: Date) {
   return d.toLocaleDateString("en-CA", { timeZone: "Asia/Taipei" });
 }
-
-const STATUS_LABEL: Record<string, { label: string; color: string }> = {
-  pending: { label: "待確認", color: "bg-amber-100 text-amber-800" },
-  confirmed: { label: "已確認", color: "bg-blue-100 text-blue-800" },
-  shipped: { label: "已出貨", color: "bg-purple-100 text-purple-800" },
-  completed: { label: "已完成", color: "bg-emerald-100 text-emerald-800" },
-  cancelled: { label: "已取消", color: "bg-zinc-100 text-zinc-600" },
-};
 
 export default async function StoreInsightsPage({
   params,
@@ -671,7 +665,8 @@ export default async function StoreInsightsPage({
         {recentOrders && recentOrders.length > 0 ? (
           <div className="space-y-1">
             {recentOrders.map((o) => {
-              const status = STATUS_LABEL[o.status] ?? STATUS_LABEL.pending;
+              const status =
+                ORDER_STATUS_BADGES[o.status] ?? ORDER_STATUS_BADGES.pending;
               const isPending = o.status === "pending";
               return (
                 <div
