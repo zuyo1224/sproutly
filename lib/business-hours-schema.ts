@@ -204,10 +204,15 @@ function pad(hhmm: string): string | null {
 
 // 找出文字裡所有「HH:MM-HH:MM」時間區間，連同它在原文的起訖位置（後面判斷
 // 「兩段時間之間有沒有夾星期字」要用，藉此區分午休拆段與不同日不同時）。
+// 兩個時間之間的連接除了連字號，也認英文「to／till／until／through／thru」——normalize
+// 早就把中文的「至／到」和各種破折號統一成連字號，但英文連接詞沒被碰到，於是上一輪剛加的
+// 英文星期支援碰到「Mon-Fri 10am to 6pm」「10am till 6pm」這種很自然的寫法時，星期認得出、
+// 時間段卻因為中間是「to」不是連字號而抓不到，整段又回 null，等於白白少餵一段正確的營業時間
+// 給搜尋引擎（正是這支要避免的相反面）。連接詞沿用 findOpenDays 英文星期範圍那同一套，保持一致。
 type TimeRange = { opens: string; closes: string; start: number; end: number };
 function findTimeRanges(text: string): TimeRange[] {
   const ranges: TimeRange[] = [];
-  const re = /(\d{1,2}:\d{2})\s*-\s*(\d{1,2}:\d{2})/g;
+  const re = /(\d{1,2}:\d{2})\s*(?:-|to|thru|through|till?|until)\s*(\d{1,2}:\d{2})/gi;
   let m: RegExpExecArray | null;
   while ((m = re.exec(text)) !== null) {
     const opens = pad(m[1]);
