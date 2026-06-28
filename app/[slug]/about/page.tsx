@@ -104,6 +104,13 @@ export default async function AboutPage({ params }: { params: Params }) {
     }
   }
 
+  // 只留問題與答案都真的有字的項目 —— 商家可能只打了問題沒接答案（最後一條 Q 後面沒 A），
+  // 或誤留一行空白的「Q:」。空問 / 空答畫面上是空殼，餵給 FAQPage 更會讓整段常見問題 rich
+  // result 失效（Google 要求每題都要有答案文字）。畫面渲染與結構化資料共用同一份乾淨清單。
+  const cleanFaqItems = faqItems.filter(
+    (item) => item.question.trim() && item.answer.trim(),
+  );
+
   const hasDescription = Boolean(store.description);
   const aboutCaption = hasDescription
     ? "關於這間店 · 慢慢讀"
@@ -146,11 +153,11 @@ export default async function AboutPage({ params }: { params: Params }) {
   // 之前完全沒有結構化標記，等於對 Google 隱形。補上後常見問題能在搜尋結果直接展開，
   // 條件跟畫面上實際渲染的 FAQ 一致（區段有開且真的解析出問答）才放，不會標到空的。
   const faqJsonLd =
-    faqItems.length > 0
+    cleanFaqItems.length > 0
       ? {
           "@context": "https://schema.org",
           "@type": "FAQPage",
-          mainEntity: faqItems.map((item) => ({
+          mainEntity: cleanFaqItems.map((item) => ({
             "@type": "Question",
             name: item.question,
             acceptedAnswer: {
@@ -267,7 +274,7 @@ export default async function AboutPage({ params }: { params: Params }) {
         </>
       )}
 
-      {theme.sections.faq && faqItems.length > 0 && (
+      {theme.sections.faq && cleanFaqItems.length > 0 && (
         <section className={theme.sections.about ? "mt-20 sm:mt-24" : ""}>
           <div className="mb-12 sm:mb-14">
             <p
@@ -297,7 +304,7 @@ export default async function AboutPage({ params }: { params: Params }) {
             />
           </div>
           <div className="space-y-3">
-            {faqItems.map((item, idx) => (
+            {cleanFaqItems.map((item, idx) => (
               <details
                 key={idx}
                 className="group rounded-2xl overflow-hidden"
