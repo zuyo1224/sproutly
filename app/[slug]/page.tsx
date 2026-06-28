@@ -8,6 +8,7 @@ import { resolveTheme, HOMEPAGE_DEFAULTS, HOMEPAGE_DEFAULT_COLLECTIONS, JOURNAL_
 import { parseBusinessHoursToSpec } from "@/lib/business-hours-schema";
 import { telHref, mailHref, telDigits, cleanEmail, socialUrl, mapsHref } from "@/lib/contact-href";
 import { absoluteImageUrls } from "@/lib/image-url";
+import { isSoldOut, bySoldOutLast } from "@/lib/product-stock";
 import HeroAdaptiveBanner from "./HeroAdaptiveBanner";
 
 type Params = Promise<{ slug: string }>;
@@ -50,6 +51,11 @@ export default async function StoreHomePage({
     .eq("is_active", true)
     .order("created_at", { ascending: false })
     .limit(theme.layout.featuredCount);
+
+  // 售完的沉到精選列表最後，跟 shop 逛街頁、商品詳情「店裡其他」、收藏頁同一套——
+  // 本月選物原本只照 created_at 排，沒貨的株可能正好卡在第一排，客人滑到精選先看到
+  // 買不到的。在已排好的清單上再把售完那批整批往下挪（JS sort 穩定，有貨的維持原順序）。
+  featuredProducts?.sort(bySoldOutLast);
 
   const businessHoursText =
     typeof store.business_hours === "object" && store.business_hours !== null
@@ -1055,7 +1061,7 @@ export default async function StoreHomePage({
                 : "md:grid-cols-3"
               }`}>
                 {featuredProducts.map((p) => {
-                  const soldOut = p.stock !== null && p.stock === 0;
+                  const soldOut = isSoldOut(p.stock);
                   return (
                   <Link
                     key={p.id}

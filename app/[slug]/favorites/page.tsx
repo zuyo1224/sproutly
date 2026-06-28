@@ -15,6 +15,7 @@ type Product = {
 };
 
 import { formatPrice } from "@/lib/format-price";
+import { isSoldOut } from "@/lib/product-stock";
 
 const FAVORITES_KEY = "sproutly_favorites";
 
@@ -177,7 +178,7 @@ export default function FavoritesPage() {
   // 收藏是「想留下來慢慢看」，常擱一陣子才回來——這段時間裡有的可能已經被買走。
   // 先在標題就點出有幾株沒了，客人不必一張張點進去才發現白收藏一場。
   const soldOutCount =
-    products?.filter((p) => p.stock !== null && p.stock === 0).length ?? 0;
+    products?.filter((p) => isSoldOut(p.stock)).length ?? 0;
 
   return (
     <main className="max-w-5xl mx-auto px-6 sm:px-10 py-20 sm:py-28">
@@ -372,7 +373,7 @@ export default function FavoritesPage() {
       ) : (
         <div className="grid grid-cols-2 md:grid-cols-3 gap-x-6 sm:gap-x-10 gap-y-16">
           {products.map((p, i) => {
-            const soldOut = p.stock !== null && p.stock === 0;
+            const soldOut = isSoldOut(p.stock);
             return (
             <Link
               key={p.id}

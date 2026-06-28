@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
+import { isSoldOut } from "@/lib/product-stock";
 
 type Product = {
   id: string;
@@ -448,7 +449,7 @@ export function SearchOverlay({ slug }: { slug: string }) {
                 // 跟首頁、收藏、商品頁同一套庫存語言：搜尋是逛商品的入口之一，
                 // 客人搜到一株、點進去才發現沒了會白跑。售完整列去彩、縮圖蓋角標，
                 // 快沒貨補一行琥珀色「剩 N」。
-                const soldOut = p.stock !== null && p.stock === 0;
+                const soldOut = isSoldOut(p.stock);
                 const lowStock = !soldOut && p.stock !== null && p.stock <= 3;
                 return (
                 <Link

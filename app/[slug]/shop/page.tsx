@@ -7,6 +7,7 @@ import { absoluteImageUrls } from "@/lib/image-url";
 import { resolveTheme, HOMEPAGE_DEFAULTS } from "../_theme";
 import { RecentlyViewed } from "@/app/_components/recently-viewed";
 import { AutoSubmitOnChange } from "@/app/_components/auto-submit-on-change";
+import { isSoldOut, bySoldOutLast } from "@/lib/product-stock";
 
 type Params = Promise<{ slug: string }>;
 type SearchParams = Promise<{ q?: string; sort?: string; stock?: string }>;
@@ -145,11 +146,7 @@ export default async function ShopPage({
   // 跟最近替每個商品卡片補上售完標示同一個出發點：別讓人花眼力在買不到的東西上。
   // 在原排序之上再把 stock===0 的整批推到最後（JS sort 穩定，各自維持原順序），
   // 跟「只看有貨」勾選互補：不勾也是先看到買得到的，售完的仍排在下方可瀏覽。
-  products?.sort((a, b) => {
-    const aSold = a.stock !== null && a.stock === 0 ? 1 : 0;
-    const bSold = b.stock !== null && b.stock === 0 ? 1 : 0;
-    return aSold - bSold;
-  });
+  products?.sort(bySoldOutLast);
   const totalCount = products?.length ?? 0;
   const hasFilter = q || sort !== "newest" || inStock;
 
@@ -377,7 +374,7 @@ export default async function ShopPage({
       {products && products.length > 0 ? (
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-x-6 sm:gap-x-10 gap-y-16">
           {products.map((p) => {
-            const soldOut = p.stock !== null && p.stock === 0;
+            const soldOut = isSoldOut(p.stock);
             return (
             <Link
               key={p.id}

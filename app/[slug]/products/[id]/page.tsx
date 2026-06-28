@@ -4,6 +4,7 @@ import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { jsonLdHtml } from "@/lib/json-ld";
 import { telHref, mailHref } from "@/lib/contact-href";
+import { isSoldOut, bySoldOutLast } from "@/lib/product-stock";
 import { resolveTheme } from "../../_theme";
 import { ImageCarousel } from "@/app/_components/image-carousel";
 import { FavoriteButton } from "@/app/_components/favorite-button";
@@ -111,11 +112,10 @@ export default async function PublicProductPage({
     .order("created_at", { ascending: false })
     .limit(12);
 
-  const isSoldOut = (s: number | null) => (s !== null && s === 0 ? 1 : 0);
   // Array.sort 穩定（ES2019+），有貨與售完兩群各自維持 created_at 倒序
   const relatedProducts = (relatedRaw ?? [])
     .slice()
-    .sort((a, b) => isSoldOut(a.stock) - isSoldOut(b.stock))
+    .sort(bySoldOutLast)
     .slice(0, 4);
 
   const images: string[] = product.image_urls ?? [];
@@ -593,7 +593,7 @@ export default async function PublicProductPage({
               // 客人逛到某株植物、往下看「這些也在店裡」，常會點進去才發現沒貨。
               // 跟收藏頁、首頁精選、shop 逛街頁同一套語言：售完角標 + 圖片灰階壓暗、
               // 剩 3 件以下琥珀色提示，讓人在點進去前就分得出哪幾株沒了。
-              const soldOut = p.stock !== null && p.stock === 0;
+              const soldOut = isSoldOut(p.stock);
               return (
               <Link
                 key={p.id}
