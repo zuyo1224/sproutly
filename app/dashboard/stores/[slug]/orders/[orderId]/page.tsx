@@ -12,6 +12,7 @@ import {
   ORDER_STATUS_BADGES,
 } from "@/lib/order-labels";
 import { telHref, mailHref } from "@/lib/contact-href";
+import { siteBaseUrl } from "@/lib/store-schema";
 
 type Params = Promise<{ slug: string; orderId: string }>;
 type SearchParams = Promise<{ error?: string; saved?: string }>;
@@ -108,7 +109,10 @@ export default async function OrderDetailPage({
 
   // 商家平常在 LINE / IG 接客，訂單進度變了要手打一段通知客人。依當下狀態
   // 組好一段可直接貼給客人的訊息，按一下複製照貼就好，不用每次重打、不漏重點。
-  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://sproutly-drab.vercel.app";
+  // 走全站共用的 siteBaseUrl（會去掉結尾斜線）：商家若把 NEXT_PUBLIC_SITE_URL 設成
+  // 結尾帶 / 的網址，這裡原本自己拼 `${baseUrl}/${slug}/track` 會多一條斜線、貼給客人的
+  // 追蹤連結變「站根//slug/track」。收進同一份基底網址防呆線，跟結構化資料／canonical 一致。
+  const baseUrl = siteBaseUrl();
   const customerNote = customerMessage({
     status: order.status,
     customerName: order.customer_name,
