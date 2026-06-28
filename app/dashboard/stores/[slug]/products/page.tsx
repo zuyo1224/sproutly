@@ -2,7 +2,7 @@ import { createClient } from "@/lib/supabase/server";
 import { redirect, notFound } from "next/navigation";
 import Link from "next/link";
 import { formatPrice } from "@/lib/format-price";
-import { isSoldOut } from "@/lib/product-stock";
+import { isSoldOut, isLowStock } from "@/lib/product-stock";
 
 type Params = Promise<{ slug: string }>;
 type SearchParams = Promise<{ q?: string; filter?: string }>;
@@ -18,8 +18,9 @@ type ProductRow = {
   is_active: boolean;
 };
 
-// 快沒貨門檻跟卡片上的「剩 N 件」、後台首頁的快沒貨清單同一套（< 5），
-// 三個地方不會各說各話
+// 快沒貨判斷走 product-stock 的 isLowStock，跟卡片上的「剩 N 件」、後台首頁的
+// 快沒貨清單、客人端全站同一份門檻（LOW_STOCK_THRESHOLD），不會各說各話。
+// 以前這裡寫死 stock < 5（≤4），客人端卻是 ≤3，兩邊其實對不上才收成這一份。
 const STATUS_FILTERS: {
   key: string;
   label: string;
@@ -31,7 +32,7 @@ const STATUS_FILTERS: {
   {
     key: "low",
     label: "快沒貨",
-    match: (p) => p.stock !== null && p.stock > 0 && p.stock < 5,
+    match: (p) => isLowStock(p.stock),
   },
   { key: "soldout", label: "已售完", match: (p) => isSoldOut(p.stock) },
 ];
@@ -272,7 +273,7 @@ export default async function ProductsListPage({
                   {formatPrice(p.price_cents, p.currency)}
                 </p>
                 {/* 售完／快沒貨改用色塊標出來，商家掃列表時一眼看到該補哪幾件——
-                    門檻（< 5）與用字跟後台首頁的「快沒貨」清單一致，兩邊不會各說各話 */}
+                    門檻走 isLowStock 與用字跟後台首頁、客人端一致，不會各說各話 */}
                 {isSoldOut(p.stock) ? (
                   <span
                     className="mt-1.5 inline-block rounded-full bg-red-50 px-2 py-0.5 text-red-700 font-medium"
@@ -280,7 +281,7 @@ export default async function ProductsListPage({
                   >
                     已售完
                   </span>
-                ) : p.stock !== null && p.stock < 5 ? (
+                ) : isLowStock(p.stock) ? (
                   <span
                     className="mt-1.5 inline-block rounded-full bg-amber-50 px-2 py-0.5 text-amber-700 font-medium"
                     style={{ fontSize: "0.625rem", letterSpacing: "0.15em" }}

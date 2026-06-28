@@ -8,7 +8,7 @@ type Params = Promise<{ slug: string }>;
 
 // 後台首頁的金額一律跟著這間店實際出單的幣別走（共用 formatPrice，不再對非 TWD 店家硬寫 NT$）。
 import { formatPrice } from "@/lib/format-price";
-import { isSoldOut } from "@/lib/product-stock";
+import { isSoldOut, LOW_STOCK_THRESHOLD } from "@/lib/product-stock";
 
 // 回傳該時刻在台灣時區的日期字串（YYYY-MM-DD），分日統計一律用這個當 key，
 // 不能用 toISOString / created_at 直接切：那是 UTC 日界線，跟台灣差 8 小時
@@ -100,7 +100,9 @@ export default async function StoreInsightsPage({
       .eq("merchant_id", store.id)
       .eq("is_active", true)
       .not("stock", "is", null)
-      .lt("stock", 5)
+      // 快沒貨/售完門檻收進 product-stock 的 LOW_STOCK_THRESHOLD，跟後台商品列表、
+      // 客人端「剩 N」同一份。以前寫死 < 5（≤4），客人端卻是 ≤3，兩邊對不上。
+      .lte("stock", LOW_STOCK_THRESHOLD)
       .order("stock", { ascending: true })
       .limit(10),
   ]);
@@ -600,7 +602,7 @@ export default async function StoreInsightsPage({
                 庫存不足
               </h3>
               <p className="text-xs text-emerald-900/50 mt-1">
-                {lowStockProducts.length} 件商品庫存少於 5
+                {lowStockProducts.length} 件商品庫存剩 {LOW_STOCK_THRESHOLD} 件以內
               </p>
             </div>
           </div>
