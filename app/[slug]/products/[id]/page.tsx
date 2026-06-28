@@ -127,7 +127,7 @@ export default async function PublicProductPage({
   const images: string[] = product.image_urls ?? [];
   const primaryImage = images[0] ?? null;
   const extraImages = images.slice(1);
-  const inStock = product.stock === null || product.stock > 0;
+  const inStock = !isSoldOut(product.stock);
   const maxQty = product.stock !== null ? Math.min(product.stock, 99) : 99;
   // 庫存狀態給 Google：頁面上 stock ≤ 3 就亮「剩 N」琥珀色提示，結構化資料也跟著走——
   // 還剩一點的用 LimitedAvailability、賣完 OutOfStock、其餘 InStock。三段式邏輯跟逛街頁

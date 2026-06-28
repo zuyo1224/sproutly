@@ -8,6 +8,7 @@ type Params = Promise<{ slug: string }>;
 
 // 後台首頁的金額一律跟著這間店實際出單的幣別走（共用 formatPrice，不再對非 TWD 店家硬寫 NT$）。
 import { formatPrice } from "@/lib/format-price";
+import { isSoldOut } from "@/lib/product-stock";
 
 // 回傳該時刻在台灣時區的日期字串（YYYY-MM-DD），分日統計一律用這個當 key，
 // 不能用 toISOString / created_at 直接切：那是 UTC 日界線，跟台灣差 8 小時
@@ -630,12 +631,12 @@ export default async function StoreInsightsPage({
                   </p>
                   <p
                     className={`text-xs ${
-                      p.stock === 0
+                      isSoldOut(p.stock)
                         ? "text-red-600 font-medium"
                         : "text-amber-700"
                     }`}
                   >
-                    {p.stock === 0 ? "已售完" : `剩 ${p.stock} 件`}
+                    {isSoldOut(p.stock) ? "已售完" : `剩 ${p.stock} 件`}
                   </p>
                 </div>
                 <span className="text-xs text-emerald-700 opacity-0 group-hover:opacity-100 transition flex-shrink-0">

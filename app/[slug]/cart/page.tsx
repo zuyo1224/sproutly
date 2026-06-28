@@ -16,6 +16,7 @@ type Product = {
 };
 
 import { formatPrice } from "@/lib/format-price";
+import { isSoldOut } from "@/lib/product-stock";
 
 export default function CartPage() {
   const params = useParams();
@@ -474,7 +475,7 @@ export default function CartPage() {
                         letterSpacing: "0.04em",
                       }}
                     >
-                      {p.stock === 0
+                      {isSoldOut(p.stock)
                         ? "目前缺貨，結帳前請先移除"
                         : qty > (p.stock ?? 0)
                         ? `庫存只剩 ${p.stock} 件，結帳前請調整數量`

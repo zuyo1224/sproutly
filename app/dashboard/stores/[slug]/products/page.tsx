@@ -2,6 +2,7 @@ import { createClient } from "@/lib/supabase/server";
 import { redirect, notFound } from "next/navigation";
 import Link from "next/link";
 import { formatPrice } from "@/lib/format-price";
+import { isSoldOut } from "@/lib/product-stock";
 
 type Params = Promise<{ slug: string }>;
 type SearchParams = Promise<{ q?: string; filter?: string }>;
@@ -32,7 +33,7 @@ const STATUS_FILTERS: {
     label: "快沒貨",
     match: (p) => p.stock !== null && p.stock > 0 && p.stock < 5,
   },
-  { key: "soldout", label: "已售完", match: (p) => p.stock === 0 },
+  { key: "soldout", label: "已售完", match: (p) => isSoldOut(p.stock) },
 ];
 
 export default async function ProductsListPage({
@@ -272,7 +273,7 @@ export default async function ProductsListPage({
                 </p>
                 {/* 售完／快沒貨改用色塊標出來，商家掃列表時一眼看到該補哪幾件——
                     門檻（< 5）與用字跟後台首頁的「快沒貨」清單一致，兩邊不會各說各話 */}
-                {p.stock === 0 ? (
+                {isSoldOut(p.stock) ? (
                   <span
                     className="mt-1.5 inline-block rounded-full bg-red-50 px-2 py-0.5 text-red-700 font-medium"
                     style={{ fontSize: "0.625rem", letterSpacing: "0.15em" }}
