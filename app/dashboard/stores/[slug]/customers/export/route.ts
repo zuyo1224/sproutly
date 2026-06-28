@@ -2,6 +2,8 @@ import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 // CSV 檔名日期的台灣時區日期 key 跟訂單匯出共用同一份（見檔內說明）。
 import { taipeiDateKey } from "@/lib/format-date";
+// 金額欄表頭的貨幣符號跟商品編輯頁共用同一份（TWD→NT$，其他幣別顯示代碼）。
+import { currencySymbol } from "@/lib/format-price";
 
 type Params = Promise<{ slug: string }>;
 
@@ -81,8 +83,7 @@ export async function GET(request: Request, { params }: { params: Params }) {
 
   // 這份名單的金額欄一律跟著這間店出單的幣別走，跟客人列表頁同一套：
   // 拿任一筆訂單的 currency 當基準，非台幣的店家不再硬寫 NT$。
-  const storeCurrency = orderList[0]?.currency ?? "TWD";
-  const currencyLabel = storeCurrency === "TWD" ? "NT$" : storeCurrency;
+  const currencyLabel = currencySymbol(orderList[0]?.currency);
 
   type CustomerRow = {
     identityType: "account" | "guest";

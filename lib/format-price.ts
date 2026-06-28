@@ -38,6 +38,17 @@ export function currencyForSchema(currency?: string | null): string {
   return (currency ?? "").trim().toUpperCase() || "TWD";
 }
 
+// 後台「填價格的輸入框前綴」「CSV 金額欄表頭」要顯示的貨幣符號——TWD 顯示台灣客人
+// 最習慣的「NT$」，其他幣別就顯示代碼本身（USD / JPY…）。這跟 formatPrice 顯示端不同：
+// 那邊是「金額連符號一起格式化」，這邊只要「光一個前綴符號」貼在 input／表頭旁邊。
+// 原本商品編輯頁與客人匯出各抄一份「currency === 'TWD' ? 'NT$' : currency」的條件，
+// 收成同一份；正規化（去空白／轉大寫／沒填當 TWD）跟 currencyForSchema 同一條防呆線，
+// 順手讓小寫「twd」或前後空白的髒資料也對得上 NT$。
+export function currencySymbol(currency?: string | null): string {
+  const code = currencyForSchema(currency);
+  return code === "TWD" ? "NT$" : code;
+}
+
 // 給結構化資料（Product JSON-LD 的 offers.price）用的純數字價格字串——不帶貨幣
 // 符號、不帶千分位（schema.org 的 price 只收純數值），但小數位數要跟著幣別走。
 // 這是 formatPrice 顯示端那條「日圓／韓元不硬塞小數」防呆線在「餵給 Google」這端

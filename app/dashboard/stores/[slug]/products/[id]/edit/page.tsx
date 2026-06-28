@@ -5,6 +5,7 @@ import { updateProduct, deleteProduct } from "../../actions";
 import { SubmitButton } from "@/app/_components/submit-button";
 import { ImageFilePicker } from "@/app/_components/image-file-picker";
 import { UnsavedChangesGuard } from "@/app/_components/unsaved-changes-guard";
+import { currencySymbol } from "@/lib/format-price";
 
 type Params = Promise<{ slug: string; id: string }>;
 type SearchParams = Promise<{ error?: string }>;
@@ -59,11 +60,8 @@ export default async function EditProductPage({
   const deleteBound = deleteProduct.bind(null, slug, product.id);
   const price = (product.price_cents / 100).toFixed(0);
   const imageCount = product.image_urls?.length ?? 0;
-  // 價格 label 跟著這件商品實際的幣別走，非台幣的商品不再硬寫 NT$
-  const currencyLabel =
-    product.currency === "TWD" || !product.currency
-      ? "NT$"
-      : product.currency;
+  // 價格 label 跟著這件商品實際的幣別走，非台幣的商品不再硬寫 NT$（共用 currencySymbol）
+  const currencyLabel = currencySymbol(product.currency);
 
   return (
     <div>
