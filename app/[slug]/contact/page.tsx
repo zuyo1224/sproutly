@@ -3,7 +3,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { jsonLdHtml } from "@/lib/json-ld";
-import { buildStoreJsonLd, siteBaseUrl } from "@/lib/store-schema";
+import { buildStoreJsonLd, buildBreadcrumbJsonLd, siteBaseUrl } from "@/lib/store-schema";
 import { telHref, mailHref, telDigits, cleanEmail, mapsHref } from "@/lib/contact-href";
 import { resolveTheme, HOMEPAGE_DEFAULTS } from "../_theme";
 
@@ -157,24 +157,12 @@ export default async function ContactPage({ params }: { params: Params }) {
 
   // 麵包屑結構化資料 — 跟 shop / 商品詳情頁同一套，讓 Google 搜尋結果用
   // 「店名 › 聯絡與營業時間」標出這頁在店裡的位置，取代生硬的網址。
-  const breadcrumbJsonLd = {
-    "@context": "https://schema.org",
-    "@type": "BreadcrumbList",
-    itemListElement: [
-      {
-        "@type": "ListItem",
-        position: 1,
-        name: store.name,
-        item: `${BASE_URL}/${slug}`,
-      },
-      {
-        "@type": "ListItem",
-        position: 2,
-        name: "聯絡與營業時間",
-        item: `${BASE_URL}/${slug}/contact`,
-      },
-    ],
-  };
+  const breadcrumbJsonLd = buildBreadcrumbJsonLd({
+    baseUrl: BASE_URL,
+    slug,
+    storeName: store.name,
+    trail: [{ name: "聯絡與營業時間", path: "contact" }],
+  });
 
   return (
     <main className="max-w-3xl mx-auto px-6 sm:px-10 py-20 sm:py-28">

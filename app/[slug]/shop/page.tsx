@@ -3,7 +3,7 @@ import { notFound } from "next/navigation";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { jsonLdHtml } from "@/lib/json-ld";
-import { siteBaseUrl } from "@/lib/store-schema";
+import { siteBaseUrl, buildBreadcrumbJsonLd } from "@/lib/store-schema";
 import { absoluteImageUrls } from "@/lib/image-url";
 import { resolveTheme, HOMEPAGE_DEFAULTS } from "../_theme";
 import { RecentlyViewed } from "@/app/_components/recently-viewed";
@@ -158,24 +158,12 @@ export default async function ShopPage({
 
   // 麵包屑結構化資料 — 跟首頁的 Store、商品詳情頁的 Product/BreadcrumbList 一套，
   // 讓 Google 搜尋結果用「店名 › 所有商品」標出這頁在店裡的位置。
-  const breadcrumbJsonLd = {
-    "@context": "https://schema.org",
-    "@type": "BreadcrumbList",
-    itemListElement: [
-      {
-        "@type": "ListItem",
-        position: 1,
-        name: store.name,
-        item: `${BASE_URL}/${slug}`,
-      },
-      {
-        "@type": "ListItem",
-        position: 2,
-        name: "所有商品",
-        item: `${BASE_URL}/${slug}/shop`,
-      },
-    ],
-  };
+  const breadcrumbJsonLd = buildBreadcrumbJsonLd({
+    baseUrl: BASE_URL,
+    slug,
+    storeName: store.name,
+    trail: [{ name: "所有商品", path: "shop" }],
+  });
 
   // 商品列表結構化資料 — 首頁有 Store、商品詳情頁有 Product，唯獨這頁
   // （客人逛街的主入口）沒有，Google 看不出這是一份商品清單。補上 ItemList

@@ -103,3 +103,36 @@ export function buildStoreJsonLd(input: {
 
   return jsonLd;
 }
+
+// 麵包屑（schema.org BreadcrumbList）結構化資料的共用 builder。
+//
+// 為什麼集中到這裡：shop／about／contact／商品詳情四頁各自手拼一份同形的 BreadcrumbList——
+// position 1 永遠是「店名 → 店根網址」，後面接各頁自己那一兩層；連 @context、ListItem 的
+// 欄位順序、position 怎麼遞增都各抄一遍。改一處（譬如基底網址規則）忘了另外三頁，餵給
+// Google 的麵包屑就各頁對不上。收成這一支：各頁只給「店根之後的那幾層」，position 遞增與
+// 店根那一層由這支統一補。這跟 buildStoreJsonLd、format-price 把重複邏輯收成單一來源同個出發點。
+export function buildBreadcrumbJsonLd(input: {
+  baseUrl: string;
+  slug: string;
+  storeName: string;
+  // 店根之後的各層麵包屑，由淺到深；path 是接在 /${slug} 後面的子路徑（如 "shop"、
+  // "contact"、"products/abc"），最末層通常就是當前頁。位置 1 的店根這支會自動補上。
+  trail: { name: string; path: string }[];
+}): Record<string, unknown> {
+  const { baseUrl, slug } = input;
+  const root = `${baseUrl}/${slug}`;
+  const crumbs = [
+    { name: input.storeName, item: root },
+    ...input.trail.map((t) => ({ name: t.name, item: `${root}/${t.path}` })),
+  ];
+  return {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: crumbs.map((c, i) => ({
+      "@type": "ListItem",
+      position: i + 1,
+      name: c.name,
+      item: c.item,
+    })),
+  };
+}
