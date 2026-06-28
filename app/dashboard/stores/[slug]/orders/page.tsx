@@ -9,7 +9,7 @@ import {
   shortOrderId,
 } from "@/lib/order-labels";
 // 分日統計的台灣時區日期 key 跟店家首頁/匯出共用同一份（見檔內說明）。
-import { taipeiDateKey } from "@/lib/format-date";
+import { taipeiDateKey, taipeiStampShort } from "@/lib/format-date";
 
 type Params = Promise<{ slug: string }>;
 type SearchParams = Promise<{
@@ -428,13 +428,7 @@ export default async function OrdersListPage({
                       {formatPrice(o.total_cents, o.currency)}
                     </div>
                     <div className="text-xs text-emerald-900/50 mt-1">
-                      {new Date(o.created_at).toLocaleString("zh-TW", {
-                        timeZone: "Asia/Taipei",
-                        month: "2-digit",
-                        day: "2-digit",
-                        hour: "2-digit",
-                        minute: "2-digit",
-                      })}
+                      {taipeiStampShort(o.created_at)}
                     </div>
                   </div>
                 </div>
@@ -513,13 +507,7 @@ export default async function OrdersListPage({
                       {p.label}
                     </td>
                     <td className="px-5 py-4 text-xs text-emerald-900/60">
-                      {new Date(o.created_at).toLocaleString("zh-TW", {
-                        timeZone: "Asia/Taipei",
-                        month: "2-digit",
-                        day: "2-digit",
-                        hour: "2-digit",
-                        minute: "2-digit",
-                      })}
+                      {taipeiStampShort(o.created_at)}
                     </td>
                     <td className="px-5 py-4 text-right">
                       <Link

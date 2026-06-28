@@ -41,17 +41,8 @@ const PAYMENT_STATUS_LABELS: Record<string, string> = {
 };
 
 import { formatPrice } from "@/lib/format-price";
-
-function formatDateTime(iso: string) {
-  return new Date(iso).toLocaleString("zh-TW", {
-    timeZone: "Asia/Taipei",
-    year: "numeric",
-    month: "long",
-    day: "numeric",
-    hour: "2-digit",
-    minute: "2-digit",
-  });
-}
+// 下單／付款／出貨時間的「年 月 日 時:分」跟結帳成功頁共用同一份（見 format-date.ts）。
+import { taipeiStampLong as formatDateTime } from "@/lib/format-date";
 
 export default async function CustomerOrderDetailPage({
   params,

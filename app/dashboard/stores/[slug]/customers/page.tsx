@@ -8,15 +8,7 @@ type SearchParams = Promise<{ q?: string; sort?: string }>;
 
 // 客人名單的金額一律跟著這間店實際出單的幣別走（共用 formatPrice，不再對非 TWD 店家硬寫 NT$）。
 import { formatPrice } from "@/lib/format-price";
-
-function formatDate(iso: string) {
-  return new Date(iso).toLocaleDateString("zh-TW", {
-    timeZone: "Asia/Taipei",
-    year: "numeric",
-    month: "2-digit",
-    day: "2-digit",
-  });
-}
+import { taipeiDateNumeric } from "@/lib/format-date";
 
 function daysAgo(iso: string) {
   const diff = Date.now() - new Date(iso).getTime();
@@ -486,7 +478,7 @@ export default async function StoreCustomersPage({
                     </td>
                     <td className="px-3 py-3.5">
                       <p className="text-emerald-950 tabular-nums">
-                        {formatDate(r.lastOrderAt)}
+                        {taipeiDateNumeric(r.lastOrderAt)}
                       </p>
                       <p className="text-[10px] text-emerald-900/50">
                         {recencyDays === 0
@@ -498,7 +490,7 @@ export default async function StoreCustomersPage({
                     </td>
                     <td className="px-5 py-3.5">
                       <p className="text-emerald-950 tabular-nums">
-                        {formatDate(r.firstOrderAt)}
+                        {taipeiDateNumeric(r.firstOrderAt)}
                       </p>
                       <p className="text-[10px] text-emerald-900/50">
                         {lifetimeDays === 0

@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 // CSV 檔名日期的台灣時區日期 key 跟訂單匯出共用同一份（見檔內說明）。
-import { taipeiDateKey } from "@/lib/format-date";
+import { taipeiDateKey, taipeiDateNumeric } from "@/lib/format-date";
 // 金額欄表頭的貨幣符號跟商品編輯頁共用同一份（TWD→NT$，其他幣別顯示代碼）。
 import { currencySymbol } from "@/lib/format-price";
 
@@ -15,15 +15,6 @@ function csvEscape(v: unknown): string {
     return `"${s.replace(/"/g, '""')}"`;
   }
   return s;
-}
-
-function formatDate(iso: string) {
-  return new Date(iso).toLocaleDateString("zh-TW", {
-    timeZone: "Asia/Taipei",
-    year: "numeric",
-    month: "2-digit",
-    day: "2-digit",
-  });
 }
 
 // 客人頁的排序選項白名單，跟列表頁一致
@@ -198,8 +189,8 @@ export async function GET(request: Request, { params }: { params: Params }) {
       r.paidCount,
       Math.round(r.totalCents / 100),
       Math.round(r.paidCents / 100),
-      formatDate(r.firstOrderAt),
-      formatDate(r.lastOrderAt),
+      taipeiDateNumeric(r.firstOrderAt),
+      taipeiDateNumeric(r.lastOrderAt),
     ];
     csvRows.push(row.map(csvEscape).join(","));
   });

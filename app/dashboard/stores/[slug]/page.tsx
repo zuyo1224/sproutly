@@ -12,7 +12,7 @@ import { isSoldOut, LOW_STOCK_THRESHOLD } from "@/lib/product-stock";
 // 訂單狀態徽章（label + 色票）跟訂單列表、訂單詳情共用同一份，三頁同一筆單同色同字。
 import { ORDER_STATUS_BADGES, shortOrderId } from "@/lib/order-labels";
 // 分日統計的台灣時區日期 key 跟訂單列表/匯出共用同一份（見檔內說明）。
-import { taipeiDateKey } from "@/lib/format-date";
+import { taipeiDateKey, taipeiStampShort } from "@/lib/format-date";
 
 export default async function StoreInsightsPage({
   params,
@@ -693,13 +693,7 @@ export default async function StoreInsightsPage({
                       {formatPrice(o.total_cents, storeCurrency)}
                     </span>
                     <span className="text-xs text-emerald-900/40 hidden md:inline w-20 text-right flex-shrink-0">
-                      {new Date(o.created_at).toLocaleString("zh-TW", {
-                        timeZone: "Asia/Taipei",
-                        month: "2-digit",
-                        day: "2-digit",
-                        hour: "2-digit",
-                        minute: "2-digit",
-                      })}
+                      {taipeiStampShort(o.created_at)}
                     </span>
                   </Link>
                   {isPending && (
