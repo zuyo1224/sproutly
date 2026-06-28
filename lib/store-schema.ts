@@ -136,3 +136,35 @@ export function buildBreadcrumbJsonLd(input: {
     })),
   };
 }
+
+// 常見問題（schema.org FAQPage）結構化資料的共用 builder。
+//
+// 為什麼集中到這裡：首頁（FAQ block）與關於頁（store.faq 文字欄）各自手拼一份同形的
+// FAQPage——同樣的 @context、@type，同樣把每筆問答組成 Question + acceptedAnswer/Answer。
+// 兩頁問答的「來源」不同，但「組成 FAQPage 的形狀」完全一樣，卻各抄一遍：連「空問／空答
+// 要濾掉、文字要去前後空白」這條 Google 要求（每題都得有答案文字，否則整段 rich result
+// 失效）都得兩頁各自顧。實際上還已經各走各的——首頁在 map 裡補 trim、關於頁直接塞 raw 值，
+// 同一筆前後黏了空白的問答在兩頁輸出不一致。收成這一支：濾空與 trim 只剩一處，兩頁保證同款。
+// 這跟 buildStoreJsonLd、buildBreadcrumbJsonLd、format-price 把重複邏輯收成單一來源同個出發點。
+//
+// 注意：「這頁到底要不要放 FAQ」的判斷仍留在各頁（首頁要 FAQ 區段有開、關於頁要解析得出
+// 問答）。這支只負責把問答清乾淨、組成 FAQPage；清完一筆有效問答都不剩就回 null，呼叫端
+// 的 `if (faqJsonLd)` 自然略過，不丟一個 mainEntity 空陣列的 FAQPage 給 Google。
+export function buildFaqJsonLd(
+  items: { question: string; answer: string }[],
+): Record<string, unknown> | null {
+  const mainEntity = items
+    .map((it) => ({ question: it.question.trim(), answer: it.answer.trim() }))
+    .filter((it) => it.question !== "" && it.answer !== "")
+    .map((it) => ({
+      "@type": "Question",
+      name: it.question,
+      acceptedAnswer: { "@type": "Answer", text: it.answer },
+    }));
+  if (mainEntity.length === 0) return null;
+  return {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    mainEntity,
+  };
+}

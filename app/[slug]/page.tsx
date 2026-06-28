@@ -5,7 +5,7 @@ import Image from "next/image";
 import { createClient } from "@/lib/supabase/server";
 import { jsonLdHtml } from "@/lib/json-ld";
 import { resolveTheme, HOMEPAGE_DEFAULTS, HOMEPAGE_DEFAULT_COLLECTIONS, JOURNAL_CARD_DEFAULTS } from "./_theme";
-import { buildStoreJsonLd, siteBaseUrl, storeSchemaId } from "@/lib/store-schema";
+import { buildStoreJsonLd, buildFaqJsonLd, siteBaseUrl, storeSchemaId } from "@/lib/store-schema";
 import { telHref, mailHref, telDigits, cleanEmail, mapsHref } from "@/lib/contact-href";
 import { isSoldOut, isLowStock, bySoldOutLast } from "@/lib/product-stock";
 import HeroAdaptiveBanner from "./HeroAdaptiveBanner";
@@ -345,21 +345,11 @@ export default async function StoreHomePage({
 
   // FAQPage 結構化資料 — 跟頁面上 FAQ 區段同條件才放（區段有開且真的有問答），
   // 讓 Google 搜尋結果能直接展開常見問題，省客人點進來才看到答案的一步。
-  const faqJsonLd =
-    theme.layout.sectionOrder.includes("faq") && validFaqItems.length > 0
-      ? {
-          "@context": "https://schema.org",
-          "@type": "FAQPage",
-          mainEntity: validFaqItems.map((item) => ({
-            "@type": "Question",
-            name: item.question.trim(),
-            acceptedAnswer: {
-              "@type": "Answer",
-              text: item.answer.trim(),
-            },
-          })),
-        }
-      : null;
+  // 組成 FAQPage、濾空問空答與 trim 走 store-schema 的 buildFaqJsonLd（跟關於頁同一份）；
+  // 「FAQ 區段有沒有開」這個本頁專屬的 gate 留在這裡，沒開就不放。
+  const faqJsonLd = theme.layout.sectionOrder.includes("faq")
+    ? buildFaqJsonLd(validFaqItems)
+    : null;
 
   // WebSite + SearchAction 給 Google：讓搜尋結果直接附上「這家店的站內搜尋框」
   //（sitelinks search box），客人不用先點進來才找得到搜尋。target 指向商品頁的 ?q=

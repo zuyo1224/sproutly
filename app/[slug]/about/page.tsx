@@ -3,7 +3,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { jsonLdHtml } from "@/lib/json-ld";
-import { siteBaseUrl, buildBreadcrumbJsonLd } from "@/lib/store-schema";
+import { siteBaseUrl, buildBreadcrumbJsonLd, buildFaqJsonLd } from "@/lib/store-schema";
 import { resolveTheme, HOMEPAGE_DEFAULTS } from "../_theme";
 
 type Params = Promise<{ slug: string }>;
@@ -138,22 +138,10 @@ export default async function AboutPage({ params }: { params: Params }) {
 
   // FAQPage 結構化資料 — 這頁的 FAQ 來自 store.faq 文字欄（跟首頁那組 block 不同來源），
   // 之前完全沒有結構化標記，等於對 Google 隱形。補上後常見問題能在搜尋結果直接展開，
-  // 條件跟畫面上實際渲染的 FAQ 一致（區段有開且真的解析出問答）才放，不會標到空的。
-  const faqJsonLd =
-    cleanFaqItems.length > 0
-      ? {
-          "@context": "https://schema.org",
-          "@type": "FAQPage",
-          mainEntity: cleanFaqItems.map((item) => ({
-            "@type": "Question",
-            name: item.question,
-            acceptedAnswer: {
-              "@type": "Answer",
-              text: item.answer,
-            },
-          })),
-        }
-      : null;
+  // 條件跟畫面上實際渲染的 FAQ 一致（真的解析出問答）才放，不會標到空的。
+  // 組成 FAQPage、濾空問空答與 trim 走 store-schema 的 buildFaqJsonLd（跟首頁同一份）；
+  // 解析不出任何有效問答時 builder 回 null，下面 if 自然略過。
+  const faqJsonLd = buildFaqJsonLd(cleanFaqItems);
 
   return (
     <>
