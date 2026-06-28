@@ -4,7 +4,12 @@ import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { jsonLdHtml } from "@/lib/json-ld";
 import { telHref, mailHref } from "@/lib/contact-href";
-import { isSoldOut, bySoldOutLast } from "@/lib/product-stock";
+import {
+  isSoldOut,
+  isLowStock,
+  bySoldOutLast,
+  LOW_STOCK_THRESHOLD,
+} from "@/lib/product-stock";
 import { resolveTheme } from "../../_theme";
 import { ImageCarousel } from "@/app/_components/image-carousel";
 import { FavoriteButton } from "@/app/_components/favorite-button";
@@ -373,7 +378,7 @@ export default async function PublicProductPage({
                 style={{
                   background: !inStock
                     ? "rgba(0,0,0,0.04)"
-                    : product.stock <= 3
+                    : product.stock <= LOW_STOCK_THRESHOLD
                       ? "rgba(217,119,6,0.08)"
                       : `${theme.accent}14`,
                 }}
@@ -383,7 +388,7 @@ export default async function PublicProductPage({
                   style={{
                     background: !inStock
                       ? "#9CA3AF"
-                      : product.stock <= 3
+                      : product.stock <= LOW_STOCK_THRESHOLD
                         ? "#D97706"
                         : theme.accent,
                   }}
@@ -393,7 +398,7 @@ export default async function PublicProductPage({
                   style={{
                     color: !inStock
                       ? theme.textMuted
-                      : product.stock <= 3
+                      : product.stock <= LOW_STOCK_THRESHOLD
                         ? "#92400E"
                         : theme.text,
                     letterSpacing: "0.3em",
@@ -401,7 +406,7 @@ export default async function PublicProductPage({
                 >
                   {!inStock
                     ? "Sold Out"
-                    : product.stock <= 3
+                    : product.stock <= LOW_STOCK_THRESHOLD
                       ? `Low Stock · 剩 ${product.stock}`
                       : `In Stock · ${product.stock}`}
                 </p>
@@ -670,7 +675,7 @@ export default async function PublicProductPage({
                 </p>
                 {/* 售完已由圖上角標表達，這裡只留琥珀色「剩 N」提示快沒貨，
                     跟收藏頁、shop 頁、商品詳情頁本體一致。 */}
-                {!soldOut && p.stock !== null && p.stock <= 3 ? (
+                {isLowStock(p.stock) ? (
                   <p
                     className="mt-1 text-[0.6875rem] uppercase font-medium"
                     style={{

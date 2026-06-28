@@ -15,7 +15,7 @@ type Product = {
 };
 
 import { formatPrice } from "@/lib/format-price";
-import { isSoldOut } from "@/lib/product-stock";
+import { isSoldOut, isLowStock } from "@/lib/product-stock";
 
 const FAVORITES_KEY = "sproutly_favorites";
 
@@ -463,7 +463,7 @@ export default function FavoritesPage() {
               </p>
               {/* 售完已由圖上角標表達，這裡只留琥珀色「剩 N」提示快沒貨，
                   跟 shop 頁、商品詳情頁一致。 */}
-              {!soldOut && p.stock !== null && p.stock <= 3 ? (
+              {isLowStock(p.stock) ? (
                 <p
                   className="mt-1 text-[0.6875rem] uppercase font-medium"
                   style={{

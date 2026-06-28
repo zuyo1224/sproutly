@@ -8,7 +8,7 @@ import { resolveTheme, HOMEPAGE_DEFAULTS, HOMEPAGE_DEFAULT_COLLECTIONS, JOURNAL_
 import { parseBusinessHoursToSpec } from "@/lib/business-hours-schema";
 import { telHref, mailHref, telDigits, cleanEmail, socialUrl, mapsHref } from "@/lib/contact-href";
 import { absoluteImageUrls } from "@/lib/image-url";
-import { isSoldOut, bySoldOutLast } from "@/lib/product-stock";
+import { isSoldOut, isLowStock, bySoldOutLast } from "@/lib/product-stock";
 import HeroAdaptiveBanner from "./HeroAdaptiveBanner";
 
 type Params = Promise<{ slug: string }>;
@@ -1130,7 +1130,7 @@ export default async function StoreHomePage({
                     </p>
                     {/* 售完已由圖片角標表達，這裡只留「剩 N」琥珀色提示，
                         跟 shop 頁與商品詳情頁同一套語言。 */}
-                    {!soldOut && p.stock !== null && p.stock <= 3 ? (
+                    {isLowStock(p.stock) ? (
                       <p
                         className="mt-1 text-[0.6875rem] uppercase font-medium"
                         style={{ color: "#92400E", letterSpacing: "0.3em" }}

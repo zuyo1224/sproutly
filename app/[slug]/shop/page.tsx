@@ -7,7 +7,7 @@ import { absoluteImageUrls } from "@/lib/image-url";
 import { resolveTheme, HOMEPAGE_DEFAULTS } from "../_theme";
 import { RecentlyViewed } from "@/app/_components/recently-viewed";
 import { AutoSubmitOnChange } from "@/app/_components/auto-submit-on-change";
-import { isSoldOut, bySoldOutLast } from "@/lib/product-stock";
+import { isSoldOut, isLowStock, bySoldOutLast } from "@/lib/product-stock";
 
 type Params = Promise<{ slug: string }>;
 type SearchParams = Promise<{ q?: string; sort?: string; stock?: string }>;
@@ -441,7 +441,7 @@ export default async function ShopPage({
               </p>
               {/* 售完已由圖片上的角落標記表達，這裡只留「剩 N」的琥珀色提示，
                   跟商品詳情頁同一套語言，讓客人逛列表就分得出哪幾株快沒了。 */}
-              {!soldOut && p.stock !== null && p.stock <= 3 ? (
+              {isLowStock(p.stock) ? (
                 <p
                   className="mt-1 text-[0.6875rem] uppercase font-medium"
                   style={{

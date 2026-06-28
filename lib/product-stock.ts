@@ -18,6 +18,21 @@ export function isSoldOut(stock: number | null | undefined): boolean {
   return stock != null && stock <= 0;
 }
 
+// 「快沒貨」的門檻：剩這個數量（含）以內，卡片就亮琥珀色「剩 N」提示。
+// 以前各頁（首頁精選、shop、商品詳情、收藏、Cmd+K 搜尋、最近看過）都直接寫死
+// 魔術數字 3，要調門檻得一頁頁追。集中成一個具名常數，全站「剩 N」門檻同一個來源。
+// availability-schema 餵 Google 的 LimitedAvailability 判斷也 import 這個常數，
+// 結構化資料的「所剩不多」跟畫面上的琥珀提示保證踩同一條線。
+export const LOW_STOCK_THRESHOLD = 3;
+
+// 是否該亮「剩 N」提示：沒售完、有在管庫存、且剩量在門檻內。
+// null/undefined（沒在管庫存或這次沒問到庫存）一律 false，不標。
+// 內部走 isSoldOut 判售完，跟全站缺貨定義（<= 0，含超賣負數）同一份，
+// 不會出現「畫面標剩 N、其實已超賣售完」的對不上。
+export function isLowStock(stock: number | null | undefined): boolean {
+  return stock != null && !isSoldOut(stock) && stock <= LOW_STOCK_THRESHOLD;
+}
+
 // 把售完的整批沉到清單最後，有貨的維持原本的相對順序。
 // JS Array.sort 自 ES2019 起保證穩定（同組元素相對順序不變），所以這個 comparator
 // 套在「已經排好序」的清單上（例如已照 created_at 倒序或價格排好），只會把售完那群

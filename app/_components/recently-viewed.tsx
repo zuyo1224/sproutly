@@ -10,6 +10,7 @@ import {
 } from "@/lib/recent-products";
 
 import { formatPrice } from "@/lib/format-price";
+import { isSoldOut, isLowStock } from "@/lib/product-stock";
 
 // 「最近看過」一排。兩種用法：
 //  1. 商品詳情頁底部 — 傳 current，先讀出之前看過的清單顯示（自然排除當前這株），
@@ -132,8 +133,11 @@ export function RecentlyViewed({
           // 庫存問到了才標：售完整列去彩＋縮圖蓋角標，快沒貨補一行琥珀「剩 N」，
           // 跟搜尋面板、收藏、首頁完全一致。stock 是 undefined（這次沒問到）就不標。
           const stock = stockById[p.id];
-          const soldOut = stock === 0;
-          const lowStock = !soldOut && typeof stock === "number" && stock <= 3;
+          // 缺貨／快沒貨都走 product-stock 的共用判斷，跟搜尋面板、收藏、首頁、shop
+          // 同一份定義：售完含超賣負數（<= 0），「剩 N」門檻吃 LOW_STOCK_THRESHOLD。
+          // stock 是 undefined（這次沒問到庫存）兩支都回 false，不標。
+          const soldOut = isSoldOut(stock);
+          const lowStock = isLowStock(stock);
           return (
           <Link
             key={p.id}
