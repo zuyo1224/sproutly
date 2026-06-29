@@ -27,6 +27,15 @@ export default function StoreLoading() {
         .sproutly-loading-pulse {
           animation: sproutly-loading-pulse 1.6s cubic-bezier(0.45, 0, 0.55, 1) infinite;
         }
+        /* 卡片逐一淡入＋微上移，stagger 延遲才真正接到動畫上
+           （延遲原本掛在沒有 animation 的卡片外層，等於沒作用，六張同步出現）。 */
+        @keyframes sproutly-skeleton-rise {
+          from { opacity: 0; transform: translateY(8px); }
+          to { opacity: 1; transform: translateY(0); }
+        }
+        .sproutly-stagger-fade > * {
+          animation: sproutly-skeleton-rise 0.5s cubic-bezier(0.16, 1, 0.3, 1) both;
+        }
         .sproutly-stagger-fade > *:nth-child(1) { animation-delay: 0s; }
         .sproutly-stagger-fade > *:nth-child(2) { animation-delay: 0.08s; }
         .sproutly-stagger-fade > *:nth-child(3) { animation-delay: 0.16s; }
@@ -35,6 +44,7 @@ export default function StoreLoading() {
         .sproutly-stagger-fade > *:nth-child(6) { animation-delay: 0.40s; }
         @media (prefers-reduced-motion: reduce) {
           .sproutly-loading-pulse { animation: none; opacity: 0.08; }
+          .sproutly-stagger-fade > * { animation: none; opacity: 1; transform: none; }
         }
       `}</style>
     </div>
