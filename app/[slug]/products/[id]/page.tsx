@@ -445,6 +445,20 @@ export default async function PublicProductPage({
               {inStock ? "我想要這一株" : "已售完"}
             </button>
 
+            {/* 售完時上面只剩一顆按不動的「已售完」死鈕，原本沒半句話交代下一步——
+                客人撲空就只能離開。其餘頁面（購物車空車 / 收藏空了 / 查無訂單）都會
+                給一條去路，成交頁的售完狀態反而漏了。補一句引導，把客人接到下面本來
+                就有的「來店看實品 / Email 詢問」聯絡鈕。只有真的有聯絡方式才講，
+                免得指向不存在的按鈕。 */}
+            {!inStock && (store.contact_phone || store.contact_email) && (
+              <p
+                className="text-[0.8125rem]"
+                style={{ color: theme.textMuted, lineHeight: 1.7 }}
+              >
+                這株暫時售完了。想知道之後會不會再進貨，從下面直接問店家最快。
+              </p>
+            )}
+
             {inStock && (
               <AddToCartButton
                 slug={slug}
