@@ -9,7 +9,13 @@ import { formatPrice } from "@/lib/format-price";
 function formatDate(iso: string) {
   const d = new Date(iso);
   if (Number.isNaN(d.getTime())) return "";
-  return d.toLocaleDateString("zh-TW", { month: "long", day: "numeric" });
+  // 一律用台灣時區切日界線：訂單時間是 UTC，若跟著裝置時區跑，客人出國
+  // 或裝置時區設錯時，凌晨下的單會顯示成前一天，跟店家後台對不上。
+  return d.toLocaleDateString("zh-TW", {
+    timeZone: "Asia/Taipei",
+    month: "long",
+    day: "numeric",
+  });
 }
 
 // 查訂單頁的「這台裝置下過的單」捷徑。掛載後才讀 localStorage
