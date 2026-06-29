@@ -6,6 +6,8 @@ import { createClient } from "@/lib/supabase/server";
 import {
   ORDER_STATUS_BADGES,
   ORDER_STATUS_OPTIONS,
+  PAYMENT_STATUSES,
+  PAYMENT_STATUS_LABELS,
   shortOrderId,
 } from "@/lib/order-labels";
 // 分日統計的台灣時區日期 key 跟店家首頁/匯出共用同一份（見檔內說明）。
@@ -52,16 +54,24 @@ const STATUS_FILTERS: { key: string; label: string }[] = [
 // 訂單狀態 chip 篩不出這件事，另外給一排付款狀態的篩選。
 const PAYMENT_FILTERS: { key: string; label: string }[] = [
   { key: "all", label: "全部" },
-  { key: "unpaid", label: "未付款" },
-  { key: "paid", label: "已付款" },
-  { key: "refunded", label: "已退款" },
+  ...PAYMENT_STATUSES.map((key) => ({ key, label: PAYMENT_STATUS_LABELS[key] })),
 ];
 
-const PAYMENT_LABEL: Record<string, { label: string; color: string }> = {
-  unpaid: { label: "未付款", color: "text-amber-700" },
-  paid: { label: "已付款", color: "text-emerald-700" },
-  refunded: { label: "已退款", color: "text-zinc-600" },
+// 色票是列表獨有的「純文字色」視覺（跟詳情頁藥丸底色不同款），留在這頁；label 文字
+// 改吃共用的 PAYMENT_STATUS_LABELS，不再另抄一份未付款/已付款/已退款。
+const PAYMENT_TEXT_COLOR: Record<string, string> = {
+  unpaid: "text-amber-700",
+  paid: "text-emerald-700",
+  refunded: "text-zinc-600",
 };
+
+const PAYMENT_LABEL: Record<string, { label: string; color: string }> =
+  Object.fromEntries(
+    PAYMENT_STATUSES.map((key) => [
+      key,
+      { label: PAYMENT_STATUS_LABELS[key], color: PAYMENT_TEXT_COLOR[key] },
+    ])
+  );
 
 import { formatPrice } from "@/lib/format-price";
 

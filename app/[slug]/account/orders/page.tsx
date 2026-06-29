@@ -3,7 +3,7 @@ import { notFound, redirect } from "next/navigation";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { resolveTheme } from "../../_theme";
-import { PAYMENT_LABELS, shortOrderId } from "@/lib/order-labels";
+import { PAYMENT_LABELS, PAYMENT_STATUS_LABELS, shortOrderId } from "@/lib/order-labels";
 import { RecentlyViewed } from "@/app/_components/recently-viewed";
 
 // 蓋掉父層 account/layout 的「會員中心」，訂單列表分頁顯示「訂單紀錄」。
@@ -333,11 +333,8 @@ export default async function CustomerOrdersPage({
                       )}
                       <p>
                         付款狀態 ·{" "}
-                        {order.payment_status === "paid"
-                          ? "已付款"
-                          : order.payment_status === "refunded"
-                            ? "已退款"
-                            : "未付款"}
+                        {PAYMENT_STATUS_LABELS[order.payment_status] ??
+                          order.payment_status}
                       </p>
                     </div>
                     <p

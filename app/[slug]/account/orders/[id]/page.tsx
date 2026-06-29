@@ -5,6 +5,7 @@ import { createClient } from "@/lib/supabase/server";
 import { resolveTheme } from "../../../_theme";
 import {
   PAYMENT_LABELS,
+  PAYMENT_STATUS_LABELS,
   decodeShippingFromNote,
   orderStatusMessage,
   shortOrderId,
@@ -34,11 +35,6 @@ const STATUS_FLOW = [
   { key: "completed", label: "完成" },
 ];
 
-const PAYMENT_STATUS_LABELS: Record<string, string> = {
-  unpaid: "未付款",
-  paid: "已付款",
-  refunded: "已退款",
-};
 
 import { formatPrice } from "@/lib/format-price";
 // 下單／付款／出貨時間的「年 月 日 時:分」跟結帳成功頁共用同一份（見 format-date.ts）。

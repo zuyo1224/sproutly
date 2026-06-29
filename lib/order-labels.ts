@@ -62,6 +62,25 @@ export const ORDER_STATUSES: string[] = Object.keys(ORDER_STATUS_BADGES);
 export const ORDER_STATUS_OPTIONS: { value: string; label: string }[] =
   ORDER_STATUSES.map((value) => ({ value, label: ORDER_STATUS_BADGES[value].label }));
 
+// 付款狀態的「正規順序」與中文 label 單一來源：未付款→已付款→已退款。後台與客人端原本
+// 各抄一份這三個字——訂單列表的篩選 chip 與文字色標、詳情頁的狀態下拉與藥丸徽章、訂單
+// 匯出 CSV、查訂單頁、會員訂單詳情、會員訂單列表的 inline 三元、改狀態 server action 的
+// 合法值 Set，逐處重打 {unpaid,paid,refunded}→中文；日後增刪一個付款狀態（例如「部分付款」）
+// 得到處同步，漏一處就「下拉能選但匯出空白」「列表有 chip 但 action 拒收」。收成這份：純
+// enum 走 PAYMENT_STATUSES、要中文走 PAYMENT_STATUS_LABELS、要 {value,label} 下拉走衍生的
+// PAYMENT_STATUS_OPTIONS。注意：列表頁的文字色（text-xxx-700）與詳情頁的藥丸底色
+// （bg-xxx-100）是刻意的兩套視覺、不是重複，留在各自頁面，只是 label 改吃這份不另抄。
+export const PAYMENT_STATUSES: string[] = ["unpaid", "paid", "refunded"];
+
+export const PAYMENT_STATUS_LABELS: Record<string, string> = {
+  unpaid: "未付款",
+  paid: "已付款",
+  refunded: "已退款",
+};
+
+export const PAYMENT_STATUS_OPTIONS: { value: string; label: string }[] =
+  PAYMENT_STATUSES.map((value) => ({ value, label: PAYMENT_STATUS_LABELS[value] }));
+
 // 訂單編號給客人看的短形式：訂單 id 是 UUID（8-4-4-4-12），平常只取最前面那段
 // 8 個字當作好念好報的編號（例如 #A1B2C3D4）。後台四處原本寫 split("-")[0]、客人端
 // 兩處寫 slice(0,8)，標準 UUID 下結果一樣，但萬一 id 不是正規格式（壞資料、之後換 id

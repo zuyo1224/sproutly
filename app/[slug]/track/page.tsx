@@ -6,6 +6,7 @@ import { createAdminClient } from "@/lib/supabase/admin";
 import { resolveTheme } from "../_theme";
 import {
   PAYMENT_LABELS,
+  PAYMENT_STATUS_LABELS,
   decodeShippingFromNote,
   orderStatusMessage,
   shortOrderId,
@@ -32,11 +33,6 @@ const STATUS_STEPS: { key: string; label: string; num: string }[] = [
   { key: "completed", label: "完成", num: "4" },
 ];
 
-const PAYMENT_STATUS_LABELS: Record<string, string> = {
-  unpaid: "未付款",
-  paid: "已付款",
-  refunded: "已退款",
-};
 
 import { formatPrice } from "@/lib/format-price";
 

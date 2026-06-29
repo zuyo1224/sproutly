@@ -7,6 +7,8 @@ import { PrintButton } from "@/app/_components/print-button";
 import { CopyButton } from "@/app/_components/copy-button";
 import {
   PAYMENT_LABELS,
+  PAYMENT_STATUS_LABELS,
+  PAYMENT_STATUS_OPTIONS,
   decodeShippingFromNote,
   customerMessage,
   ORDER_STATUS_BADGES,
@@ -19,19 +21,14 @@ import { siteBaseUrl } from "@/lib/store-schema";
 type Params = Promise<{ slug: string; orderId: string }>;
 type SearchParams = Promise<{ error?: string; saved?: string }>;
 
-const PAYMENT_OPTIONS = [
-  { value: "unpaid", label: "未付款" },
-  { value: "paid", label: "已付款" },
-  { value: "refunded", label: "已退款" },
-];
-
 // 狀態徽章用跟訂單列表、店家首頁同一份 ORDER_STATUS_BADGES（pending=amber 上色那組），
 // 讓商家從列表點進詳情時第一眼就確認「這筆現在是什麼狀態」，不必去右側下拉選單裡找。
-
+// 藥丸底色（bg-xxx-100）是詳情頁獨有的視覺（跟列表頁純文字色不同款），留在這頁；label
+// 文字改吃共用的 PAYMENT_STATUS_LABELS，不再另抄一份。
 const PAYMENT_STATUS_BADGE: Record<string, { label: string; color: string }> = {
-  unpaid: { label: "未付款", color: "bg-amber-100 text-amber-800" },
-  paid: { label: "已付款", color: "bg-emerald-100 text-emerald-800" },
-  refunded: { label: "已退款", color: "bg-zinc-100 text-zinc-600" },
+  unpaid: { label: PAYMENT_STATUS_LABELS.unpaid, color: "bg-amber-100 text-amber-800" },
+  paid: { label: PAYMENT_STATUS_LABELS.paid, color: "bg-emerald-100 text-emerald-800" },
+  refunded: { label: PAYMENT_STATUS_LABELS.refunded, color: "bg-zinc-100 text-zinc-600" },
 };
 
 import { formatPrice } from "@/lib/format-price";
@@ -521,7 +518,7 @@ export default async function OrderDetailPage({
                   defaultValue={order.payment_status}
                   className="w-full rounded-xl border border-emerald-100 px-3 py-2.5 outline-none focus:border-emerald-400 transition bg-white text-sm"
                 >
-                  {PAYMENT_OPTIONS.map((p) => (
+                  {PAYMENT_STATUS_OPTIONS.map((p) => (
                     <option key={p.value} value={p.value}>
                       {p.label}
                     </option>

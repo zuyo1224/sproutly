@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import {
   PAYMENT_LABELS,
+  PAYMENT_STATUS_LABELS,
   ORDER_STATUS_LABELS,
   ORDER_STATUSES,
   decodeShippingFromNote,
@@ -11,12 +12,6 @@ import {
 import { taipeiDateKey } from "@/lib/format-date";
 
 type Params = Promise<{ slug: string }>;
-
-const PAYMENT_STATUS_LABEL: Record<string, string> = {
-  unpaid: "未付款",
-  paid: "已付款",
-  refunded: "已退款",
-};
 
 function csvEscape(v: unknown): string {
   if (v === null || v === undefined) return "";
@@ -178,7 +173,7 @@ export async function GET(
       o.customer_phone,
       o.customer_email ?? "",
       ORDER_STATUS_LABELS[o.status] ?? o.status,
-      PAYMENT_STATUS_LABEL[o.payment_status] ?? o.payment_status,
+      PAYMENT_STATUS_LABELS[o.payment_status] ?? o.payment_status,
       paymentLabel,
       decoded.shippingLabel ?? "",
       decoded.storeName ?? "",
