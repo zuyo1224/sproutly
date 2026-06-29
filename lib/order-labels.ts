@@ -95,6 +95,17 @@ export const PAYMENT_LABELS: Record<string, string> = Object.fromEntries(
   PAYMENT_OPTIONS.map((o) => [o.value, o.label.replace(/（即將推出）/, "")])
 );
 
+// 訂單上的付款方式給人看的中文：有方式就查 PAYMENT_LABELS（查不到就原樣顯示，
+// 避免壞資料變空白），沒填方式就回 null（讓畫面那一列整個不顯示）。後台訂單詳情、
+// 結帳成功頁、查訂單頁、會員訂單詳情四處原本各抄一份同樣的三元（payment_method
+// ? PAYMENT_LABELS[m] ?? m : null）；日後改 fallback 行為（例如查不到改顯示「其他」）
+// 得四處同步，漏一處同一筆單兩頁付款方式就長得不一樣。收成這一支，四處改吃同一條。
+export function paymentMethodLabel(
+  method: string | null | undefined
+): string | null {
+  return method ? (PAYMENT_LABELS[method] ?? method) : null;
+}
+
 export const SHIPPING_LABELS: Record<string, string> = Object.fromEntries(
   SHIPPING_OPTIONS.map((o) => [o.value, o.label])
 );

@@ -5,7 +5,7 @@ import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { resolveTheme } from "../_theme";
 import {
-  PAYMENT_LABELS,
+  paymentMethodLabel,
   PAYMENT_STATUS_LABELS,
   decodeShippingFromNote,
   orderStatusMessage,
@@ -552,9 +552,7 @@ export default async function TrackPage({
 
             {(() => {
               const decoded = decodeShippingFromNote(order.note);
-              const paymentLabel = order.payment_method
-                ? (PAYMENT_LABELS[order.payment_method] ?? order.payment_method)
-                : null;
+              const paymentLabel = paymentMethodLabel(order.payment_method);
               const paymentStatusLabel =
                 PAYMENT_STATUS_LABELS[order.payment_status] ??
                 order.payment_status;

@@ -6,7 +6,7 @@ import { SubmitButton } from "@/app/_components/submit-button";
 import { PrintButton } from "@/app/_components/print-button";
 import { CopyButton } from "@/app/_components/copy-button";
 import {
-  PAYMENT_LABELS,
+  paymentMethodLabel,
   PAYMENT_STATUS_LABELS,
   PAYMENT_STATUS_OPTIONS,
   decodeShippingFromNote,
@@ -77,9 +77,7 @@ export default async function OrderDetailPage({
   const updateBound = updateOrderStatus.bind(null, slug, order.id);
   const shortId = shortOrderId(order.id);
   const decodedNote = decodeShippingFromNote(order.note);
-  const paymentLabel = order.payment_method
-    ? (PAYMENT_LABELS[order.payment_method] ?? order.payment_method)
-    : null;
+  const paymentLabel = paymentMethodLabel(order.payment_method);
   const statusBadge =
     ORDER_STATUS_BADGES[order.status] ?? ORDER_STATUS_BADGES.pending;
   const paymentBadge =
