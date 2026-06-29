@@ -10,8 +10,8 @@ import {
   PAYMENT_STATUS_LABELS,
   shortOrderId,
 } from "@/lib/order-labels";
-// 分日統計的台灣時區日期 key 跟店家首頁/匯出共用同一份（見檔內說明）。
-import { taipeiDateKey, taipeiStampShort } from "@/lib/format-date";
+// 分日統計的台灣時區日期 key、時間戳、篩選區間起點跟店家首頁/匯出共用同一份（見檔內說明）。
+import { taipeiStampShort, taipeiRangeSince } from "@/lib/format-date";
 
 type Params = Promise<{ slug: string }>;
 type SearchParams = Promise<{
@@ -27,23 +27,6 @@ const DATE_RANGES: { key: string; label: string }[] = [
   { key: "week", label: "本週" },
   { key: "month", label: "本月" },
 ];
-
-function computeDateRange(key: string): { since: Date | null } {
-  const todayKey = taipeiDateKey(new Date()); // YYYY-MM-DD（台灣的今天）
-  const midnight = new Date(`${todayKey}T00:00:00+08:00`);
-  if (key === "today") {
-    return { since: midnight };
-  }
-  if (key === "week") {
-    const day = new Date(`${todayKey}T00:00:00Z`).getUTCDay(); // 台灣今天星期幾，0 = 週日
-    const back = day === 0 ? 6 : day - 1; // 回到本週一
-    return { since: new Date(midnight.getTime() - back * 86_400_000) };
-  }
-  if (key === "month") {
-    return { since: new Date(`${todayKey.slice(0, 8)}01T00:00:00+08:00`) };
-  }
-  return { since: null };
-}
 
 const STATUS_FILTERS: { key: string; label: string }[] = [
   { key: "all", label: "全部" },
@@ -101,7 +84,7 @@ export default async function OrdersListPage({
   const range = DATE_RANGES.some((r) => r.key === rangeFilter)
     ? rangeFilter!
     : "all";
-  const dateRange = computeDateRange(range);
+  const rangeSince = taipeiRangeSince(range);
 
   const supabase = await createClient();
   const {
@@ -148,8 +131,8 @@ export default async function OrdersListPage({
       `customer_name.ilike.%${escaped}%,customer_phone.ilike.%${escaped}%,customer_email.ilike.%${escaped}%`
     );
   }
-  if (dateRange.since) {
-    query = query.gte("created_at", dateRange.since.toISOString());
+  if (rangeSince) {
+    query = query.gte("created_at", rangeSince.toISOString());
   }
   const { data: orders } = await query.order("created_at", {
     ascending: false,

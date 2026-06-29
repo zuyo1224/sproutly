@@ -8,8 +8,8 @@ import {
   decodeShippingFromNote,
   shortOrderId,
 } from "@/lib/order-labels";
-// 時間界線/檔名日期的台灣時區日期 key 跟訂單列表共用同一份（見檔內說明）。
-import { taipeiDateKey } from "@/lib/format-date";
+// 檔名日期的台灣時區日期 key、篩選區間起點都跟訂單列表共用同一份（見檔內說明）。
+import { taipeiDateKey, taipeiRangeSince } from "@/lib/format-date";
 
 type Params = Promise<{ slug: string }>;
 
@@ -21,21 +21,6 @@ function csvEscape(v: unknown): string {
     return `"${s.replace(/"/g, '""')}"`;
   }
   return s;
-}
-
-function computeSince(key: string): Date | null {
-  const todayKey = taipeiDateKey(new Date());
-  const midnight = new Date(`${todayKey}T00:00:00+08:00`);
-  if (key === "today") return midnight;
-  if (key === "week") {
-    const day = new Date(`${todayKey}T00:00:00Z`).getUTCDay(); // 0 = 週日
-    const back = day === 0 ? 6 : day - 1;
-    return new Date(midnight.getTime() - back * 86_400_000);
-  }
-  if (key === "month") {
-    return new Date(`${todayKey.slice(0, 8)}01T00:00:00+08:00`);
-  }
-  return null;
 }
 
 // 匯出篩選的狀態白名單跟訂單列表 chip、詳情下拉同一條 canonical 順序（見 order-labels）。
@@ -76,7 +61,7 @@ export async function GET(
     ? sp.get("range")!
     : "all";
   const q = (sp.get("q") ?? "").trim();
-  const since = computeSince(range);
+  const since = taipeiRangeSince(range);
   const filterActive = status !== "all" || pay !== "all" || range !== "all" || q !== "";
 
   let ordersQuery = supabase

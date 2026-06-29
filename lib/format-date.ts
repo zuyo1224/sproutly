@@ -48,3 +48,22 @@ export function taipeiStampLong(iso: string): string {
     minute: "2-digit",
   });
 }
+
+// 訂單篩選「今天 / 本週 / 本月」的時間起點（含起、查 created_at >= since）。
+// 一律以台灣午夜為界：今天=今天 0:00；本週=回推到本週一 0:00（週日算上一週的尾，
+// 回推 6 天）；本月=當月 1 號 0:00。其餘（如「全部時間」）回 null 表不設下界。
+// 訂單列表頁與匯出 route 原本各抄一份同形邏輯，收成這支；日後改週界定義只動一處。
+export function taipeiRangeSince(key: string): Date | null {
+  const todayKey = taipeiDateKey(new Date()); // YYYY-MM-DD（台灣的今天）
+  const midnight = new Date(`${todayKey}T00:00:00+08:00`);
+  if (key === "today") return midnight;
+  if (key === "week") {
+    const day = new Date(`${todayKey}T00:00:00Z`).getUTCDay(); // 台灣今天星期幾，0 = 週日
+    const back = day === 0 ? 6 : day - 1; // 回到本週一
+    return new Date(midnight.getTime() - back * 86_400_000);
+  }
+  if (key === "month") {
+    return new Date(`${todayKey.slice(0, 8)}01T00:00:00+08:00`);
+  }
+  return null;
+}
