@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
+import { clampFreePos } from "@/lib/theme-scale";
 
 /**
  * iframe 內公開頁 client island —
@@ -255,8 +256,8 @@ export function EditorClickBridge() {
       const rect = section.getBoundingClientRect();
       const x = (e.clientX - rect.left) / rect.width;
       const y = (e.clientY - rect.top) / rect.height;
-      const xClamped = Math.max(0, Math.min(1, x));
-      const yClamped = Math.max(0, Math.min(1, y));
+      const xClamped = clampFreePos(x);
+      const yClamped = clampFreePos(y);
 
       // 即時跟著鼠標（視覺 follow，本地 transform override）
       el.style.left = `${xClamped * 100}%`;
@@ -279,8 +280,8 @@ export function EditorClickBridge() {
       const rect = section.getBoundingClientRect();
       const x = (e.clientX - rect.left) / rect.width;
       const y = (e.clientY - rect.top) / rect.height;
-      const xClamped = Math.max(0, Math.min(1, x));
-      const yClamped = Math.max(0, Math.min(1, y));
+      const xClamped = clampFreePos(x);
+      const yClamped = clampFreePos(y);
 
       el.removeAttribute("data-dragging");
 

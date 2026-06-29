@@ -5,6 +5,7 @@ import {
   clampHeroFontScale,
   clampFontScale,
   clampFeaturedCount,
+  clampFreePos,
 } from "@/lib/theme-scale";
 
 export type PresetKey = "editorial" | "plant-zen" | "nordic" | "aesop" | "modern";
@@ -743,8 +744,8 @@ function resolveLayout(raw: unknown): StoreTheme["layout"] {
           const y = typeof obj.y === "number" ? obj.y : NaN;
           if (!Number.isFinite(x) || !Number.isFinite(y)) continue;
           result[k] = {
-            x: Math.max(0, Math.min(1, x)),
-            y: Math.max(0, Math.min(1, y)),
+            x: clampFreePos(x),
+            y: clampFreePos(y),
           };
         }
       }
@@ -756,8 +757,8 @@ function resolveLayout(raw: unknown): StoreTheme["layout"] {
         const y = typeof obj.y === "number" ? obj.y : NaN;
         if (Number.isFinite(x) && Number.isFinite(y)) {
           result["hero-tagline"] = {
-            x: Math.max(0, Math.min(1, x)),
-            y: Math.max(0, Math.min(1, y)),
+            x: clampFreePos(x),
+            y: clampFreePos(y),
           };
         }
       }

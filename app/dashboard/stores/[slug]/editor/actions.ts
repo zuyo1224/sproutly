@@ -6,6 +6,7 @@ import {
   clampHeroFontScale,
   clampFontScale,
   clampFeaturedCount,
+  clampFreePos,
 } from "@/lib/theme-scale";
 import { redirect } from "next/navigation";
 
@@ -416,8 +417,8 @@ export async function saveEditorState(slug: string, payload: EditorPayload) {
           if (typeof x !== "number" || typeof y !== "number") continue;
           if (!Number.isFinite(x) || !Number.isFinite(y)) continue;
           sanitized[k] = {
-            x: Math.max(0, Math.min(1, x)),
-            y: Math.max(0, Math.min(1, y)),
+            x: clampFreePos(x),
+            y: clampFreePos(y),
           };
         }
       }

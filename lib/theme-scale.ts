@@ -45,3 +45,13 @@ export function clampFontScale(v: number): number {
 export function clampFeaturedCount(v: number): number {
   return Math.max(FEATURED_COUNT_MIN, Math.min(FEATURED_COUNT_MAX, Math.floor(v)));
 }
+
+// 自由定位（freePositions）的座標是 0-1 的相對比例（左/上 0、右/下 1），
+// render 時換算成 left/top 的百分比。同一條 Math.max(0, Math.min(1, v)) 之前抄了十遍：
+// 拖動時跟著鼠標 follow（editor-click-bridge.tsx，每軸一次、兩個 handler 共四次）、
+// 存檔 sanitize（editor/actions.ts，x／y 各一）、公開頁 resolve（[slug]/_theme.ts，
+// 新路徑與 legacy migrate 各一組 x／y）。三邊夾的範圍一定要一致，否則拖到的位置、
+// 存進去的、畫出來的會對不上。收成同一支，每軸呼叫一次。
+export function clampFreePos(v: number): number {
+  return Math.max(0, Math.min(1, v));
+}
