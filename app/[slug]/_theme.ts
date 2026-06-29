@@ -1,5 +1,12 @@
 // 公開店面主題系統：4 個 preset + 商家可微調主色 / 強調色 / 字體 / Logo / Hero / Section 開關 / 社群連結 / 標語
 
+import {
+  clampHeroZoom,
+  clampHeroFontScale,
+  clampFontScale,
+  clampFeaturedCount,
+} from "@/lib/theme-scale";
+
 export type PresetKey = "editorial" | "plant-zen" | "nordic" | "aesop" | "modern";
 
 // Hero 4 種 layout variants - 對應 Wix 拖拉編輯器內常見 hero 模板
@@ -554,47 +561,47 @@ function resolveLayout(raw: unknown): StoreTheme["layout"] {
     heroZoom: (() => {
       const z = l.heroZoom;
       if (typeof z !== "number" || !Number.isFinite(z)) return 1.0;
-      return Math.max(1.0, Math.min(2.5, z));
+      return clampHeroZoom(z);
     })(),
     // Per-viewport zoom — 預設不同 viewport 套不同值修米色 strip
     // 沒設定就 fallback：若 legacy heroZoom 有值就用它，否則套各 viewport 預設
     heroZoomMobile: (() => {
       const z = l.heroZoomMobile;
       if (typeof z === "number" && Number.isFinite(z)) {
-        return Math.max(1.0, Math.min(2.5, z));
+        return clampHeroZoom(z);
       }
       const fallback = l.heroZoom;
       if (typeof fallback === "number" && Number.isFinite(fallback)) {
-        return Math.max(1.0, Math.min(2.5, fallback));
+        return clampHeroZoom(fallback);
       }
       return 1.5;
     })(),
     heroZoomTablet: (() => {
       const z = l.heroZoomTablet;
       if (typeof z === "number" && Number.isFinite(z)) {
-        return Math.max(1.0, Math.min(2.5, z));
+        return clampHeroZoom(z);
       }
       const fallback = l.heroZoom;
       if (typeof fallback === "number" && Number.isFinite(fallback)) {
-        return Math.max(1.0, Math.min(2.5, fallback));
+        return clampHeroZoom(fallback);
       }
       return 1.3;
     })(),
     heroZoomDesktop: (() => {
       const z = l.heroZoomDesktop;
       if (typeof z === "number" && Number.isFinite(z)) {
-        return Math.max(1.0, Math.min(2.5, z));
+        return clampHeroZoom(z);
       }
       const fallback = l.heroZoom;
       if (typeof fallback === "number" && Number.isFinite(fallback)) {
-        return Math.max(1.0, Math.min(2.5, fallback));
+        return clampHeroZoom(fallback);
       }
       return 1.0;
     })(),
     heroTaglineFontScale: (() => {
       const v = l.heroTaglineFontScale;
       if (typeof v !== "number" || !Number.isFinite(v)) return 1.0;
-      return Math.max(0.6, Math.min(1.8, v));
+      return clampHeroFontScale(v);
     })(),
     heroTaglineColor: (() => {
       const v = l.heroTaglineColor;
@@ -609,7 +616,7 @@ function resolveLayout(raw: unknown): StoreTheme["layout"] {
     heroSubtitleFontScale: (() => {
       const v = l.heroSubtitleFontScale;
       if (typeof v !== "number" || !Number.isFinite(v)) return 1.0;
-      return Math.max(0.6, Math.min(1.8, v));
+      return clampHeroFontScale(v);
     })(),
     heroSubtitleColor: (() => {
       const v = l.heroSubtitleColor;
@@ -629,7 +636,7 @@ function resolveLayout(raw: unknown): StoreTheme["layout"] {
     fontScale: (() => {
       const v = l.fontScale;
       if (typeof v !== "number" || !Number.isFinite(v)) return 1.0;
-      return Math.max(0.8, Math.min(1.3, v));
+      return clampFontScale(v);
     })(),
     sectionPaddingScale: (() => {
       const v = l.sectionPaddingScale;
@@ -639,7 +646,7 @@ function resolveLayout(raw: unknown): StoreTheme["layout"] {
     featuredCount: (() => {
       const v = l.featuredCount;
       if (typeof v !== "number" || !Number.isFinite(v)) return 6;
-      return Math.max(3, Math.min(12, Math.floor(v)));
+      return clampFeaturedCount(v);
     })(),
     featuredColumns: (() => {
       const v = l.featuredColumns;

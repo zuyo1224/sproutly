@@ -22,6 +22,16 @@ import { CSS } from "@dnd-kit/utilities";
 import { saveEditorState } from "./actions";
 import { AssetPicker } from "@/app/_components/asset-picker";
 import { EditorAIChat } from "./editor-ai-chat";
+import {
+  HERO_ZOOM_MIN,
+  HERO_ZOOM_MAX,
+  HERO_FONT_SCALE_MIN,
+  HERO_FONT_SCALE_MAX,
+  FONT_SCALE_MIN,
+  FONT_SCALE_MAX,
+  FEATURED_COUNT_MIN,
+  FEATURED_COUNT_MAX,
+} from "@/lib/theme-scale";
 
 type SectionKey =
   | "hero"
@@ -1388,8 +1398,8 @@ export function EditorWorkspace({
                 <Field label={`副標字體大小（${theme.layout.heroSubtitleFontScale.toFixed(2)}x）`}>
                   <input
                     type="range"
-                    min="0.6"
-                    max="1.8"
+                    min={HERO_FONT_SCALE_MIN}
+                    max={HERO_FONT_SCALE_MAX}
                     step="0.05"
                     value={theme.layout.heroSubtitleFontScale}
                     onChange={(e) => updateLayout({ heroSubtitleFontScale: parseFloat(e.target.value) })}
@@ -1503,8 +1513,8 @@ export function EditorWorkspace({
             <Field label={`主標字體大小（${theme.layout.heroTaglineFontScale.toFixed(2)}x）`}>
               <input
                 type="range"
-                min="0.6"
-                max="1.8"
+                min={HERO_FONT_SCALE_MIN}
+                max={HERO_FONT_SCALE_MAX}
                 step="0.05"
                 value={theme.layout.heroTaglineFontScale}
                 onChange={(e) => updateLayout({ heroTaglineFontScale: parseFloat(e.target.value) })}
@@ -1604,8 +1614,8 @@ export function EditorWorkspace({
                   <div className="space-y-1.5">
                     <input
                       type="range"
-                      min="1.0"
-                      max="2.5"
+                      min={HERO_ZOOM_MIN}
+                      max={HERO_ZOOM_MAX}
                       step="0.05"
                       value={zoomValue}
                       onChange={(e) =>
@@ -1614,9 +1624,9 @@ export function EditorWorkspace({
                       className="w-full"
                     />
                     <div className="flex justify-between text-[10px] text-stone-500">
-                      <span>1.0x（原始）</span>
+                      <span>{HERO_ZOOM_MIN.toFixed(1)}x（原始）</span>
                       <span>{zoomValue.toFixed(2)}x</span>
-                      <span>2.5x</span>
+                      <span>{HERO_ZOOM_MAX.toFixed(1)}x</span>
                     </div>
                     <p className="text-[10px] text-stone-500 leading-relaxed pt-1">
                       手機 / 平板 / 桌機 各自一個值。切上面預覽裝置調對應的。
@@ -2377,8 +2387,8 @@ export function EditorWorkspace({
               <Field label={`顯示幾個商品（${theme.layout.featuredCount}）`}>
                 <input
                   type="range"
-                  min="3"
-                  max="12"
+                  min={FEATURED_COUNT_MIN}
+                  max={FEATURED_COUNT_MAX}
                   step="1"
                   value={theme.layout.featuredCount}
                   onChange={(e) => updateLayout({ featuredCount: parseInt(e.target.value, 10) })}
@@ -3601,8 +3611,8 @@ export function EditorWorkspace({
             <Field label={`全網站字體大小（${theme.layout.fontScale.toFixed(2)}x）`}>
               <input
                 type="range"
-                min="0.8"
-                max="1.3"
+                min={FONT_SCALE_MIN}
+                max={FONT_SCALE_MAX}
                 step="0.05"
                 value={theme.layout.fontScale}
                 onChange={(e) => updateLayout({ fontScale: parseFloat(e.target.value) })}
