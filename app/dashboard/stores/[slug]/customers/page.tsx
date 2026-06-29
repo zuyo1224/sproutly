@@ -9,6 +9,12 @@ type SearchParams = Promise<{ q?: string; sort?: string }>;
 // 客人名單的金額一律跟著這間店實際出單的幣別走（共用 formatPrice，不再對非 TWD 店家硬寫 NT$）。
 import { formatPrice } from "@/lib/format-price";
 import { taipeiDateNumeric } from "@/lib/format-date";
+import {
+  isVipCustomer,
+  isReturningCustomer,
+  VIP_THRESHOLD_CENTS,
+  REPEAT_ORDER_THRESHOLD,
+} from "@/lib/customer-tags";
 
 function daysAgo(iso: string) {
   const diff = Date.now() - new Date(iso).getTime();
@@ -171,7 +177,7 @@ export default async function StoreCustomersPage({
 
   const totalCustomers = rows.length;
   const accountCount = rows.filter((r) => r.identityType === "account").length;
-  const repeatCount = rows.filter((r) => r.orderCount >= 2).length;
+  const repeatCount = rows.filter((r) => isReturningCustomer(r.orderCount)).length;
   const grandTotal = rows.reduce((sum, r) => sum + r.totalCents, 0);
   const avgSpend = totalCustomers > 0 ? Math.round(grandTotal / totalCustomers) : 0;
   const topCustomer = [...rows].sort((a, b) => b.totalCents - a.totalCents)[0];
@@ -396,8 +402,8 @@ export default async function StoreCustomersPage({
               {filtered.map((r) => {
                 const recencyDays = daysAgo(r.lastOrderAt);
                 const lifetimeDays = daysAgo(r.firstOrderAt);
-                const isVip = r.totalCents >= 200000; // 累計 2000（店家幣別單位）以上
-                const isReturning = r.orderCount >= 2;
+                const isVip = isVipCustomer(r.totalCents);
+                const isReturning = isReturningCustomer(r.orderCount);
                 return (
                   <tr
                     key={r.key}
@@ -516,8 +522,8 @@ export default async function StoreCustomersPage({
           <ul className="sm:hidden divide-y divide-emerald-50">
             {filtered.map((r) => {
               const recencyDays = daysAgo(r.lastOrderAt);
-              const isVip = r.totalCents >= 200000; // 同上：2000（店家幣別單位）以上
-              const isReturning = r.orderCount >= 2;
+              const isVip = isVipCustomer(r.totalCents);
+              const isReturning = isReturningCustomer(r.orderCount);
               return (
                 <li key={r.key}>
                   <Link
@@ -614,7 +620,7 @@ export default async function StoreCustomersPage({
           style={{ fontSize: "0.8125rem", lineHeight: 1.85, maxWidth: "44rem" }}
         >
           以電話為主分群（同一支電話的多次匿名下單算一位客人）；客人若有會員帳號，
-          會用會員 ID 分群更準確。VIP = 累計消費 {formatPrice(200000, storeCurrency)}+；回購 = 下過 2 次以上。
+          會用會員 ID 分群更準確。VIP = 累計消費 {formatPrice(VIP_THRESHOLD_CENTS, storeCurrency)}+；回購 = 下過 {REPEAT_ORDER_THRESHOLD} 次以上。
           「總消費」是累計下單金額（含轉帳、貨到付款還沒收到的單）；款項還沒到齊的，
           下方會標出實際已收多少。點任一位客人的「看訂單」，會帶他的電話到訂單列表，
           篩出他的每一筆單。
