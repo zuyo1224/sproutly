@@ -371,6 +371,7 @@ export default function FavoritesPage() {
         <RecentlyViewed slug={slug} className="mt-8" />
         </>
       ) : (
+        <>
         <div className="grid grid-cols-2 md:grid-cols-3 gap-x-6 sm:gap-x-10 gap-y-16">
           {products.map((p, i) => {
             const soldOut = isSoldOut(p.stock);
@@ -478,6 +479,20 @@ export default function FavoritesPage() {
             );
           })}
         </div>
+        {/* 看完收藏的這幾株、想再挑更多時，這頁本來到底就斷了，只能捲回最上面的導覽找商品。
+            沿用購物車有貨時、關於／聯絡頁、以及這頁空狀態同一套低調「繼續逛」連結，補一條
+            往全部商品的去路——收藏有東西的這個分支，是 storefront 唯一還沒接上「每頁都有下一步」的地方。 */}
+        <div className="mt-16 text-center">
+          <Link
+            href={`/${slug}/shop`}
+            className="sproutly-link inline-block text-[0.75rem] uppercase font-medium"
+            style={{ letterSpacing: "0.3em" }}
+            data-default-line="true"
+          >
+            ← 繼續逛 shop
+          </Link>
+        </div>
+        </>
       )}
 
       {undo && (
