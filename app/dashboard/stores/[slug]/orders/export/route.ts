@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import {
-  PAYMENT_LABELS,
+  paymentMethodLabel,
   PAYMENT_STATUS_LABELS,
   ORDER_STATUS_LABELS,
   ORDER_STATUSES,
@@ -140,9 +140,7 @@ export async function GET(
       .join("；");
     const totalQty = items.reduce((s, it) => s + it.qty, 0);
     const decoded = decodeShippingFromNote(o.note);
-    const paymentLabel = o.payment_method
-      ? (PAYMENT_LABELS[o.payment_method] ?? o.payment_method)
-      : "";
+    const paymentLabel = paymentMethodLabel(o.payment_method) ?? "";
 
     const row = [
       "#" + shortOrderId(o.id),

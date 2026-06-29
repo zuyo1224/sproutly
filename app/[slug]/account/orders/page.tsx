@@ -3,7 +3,7 @@ import { notFound, redirect } from "next/navigation";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { resolveTheme } from "../../_theme";
-import { PAYMENT_LABELS, PAYMENT_STATUS_LABELS, shortOrderId } from "@/lib/order-labels";
+import { paymentMethodLabel, PAYMENT_STATUS_LABELS, shortOrderId } from "@/lib/order-labels";
 import { RecentlyViewed } from "@/app/_components/recently-viewed";
 
 // 蓋掉父層 account/layout 的「會員中心」，訂單列表分頁顯示「訂單紀錄」。
@@ -328,7 +328,7 @@ export default async function CustomerOrdersPage({
                       {order.payment_method && (
                         <p>
                           付款方式 ·{" "}
-                          {PAYMENT_LABELS[order.payment_method] ?? order.payment_method}
+                          {paymentMethodLabel(order.payment_method)}
                         </p>
                       )}
                       <p>
