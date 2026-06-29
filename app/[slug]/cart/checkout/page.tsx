@@ -4,7 +4,7 @@ import { useEffect, useState, useRef } from "react";
 import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import { getCart, clearCart } from "@/lib/cart";
-import { PAYMENT_OPTIONS, SHIPPING_OPTIONS } from "@/lib/order-labels";
+import { PAYMENT_OPTIONS, SHIPPING_OPTIONS, shippingNeedsStore } from "@/lib/order-labels";
 import { CVS_STORES, formatStoreLabel, CVS_LOOKUP_URLS } from "@/lib/cvs-stores";
 
 type Product = {
@@ -204,9 +204,7 @@ export default function CartCheckoutPage() {
   // 紅線。購物車頁本來就是調數量的地方，這頁只當最後一道防呆，不重做逐列加減。
   const hasStockIssue = itemRows.some((r) => r.soldOut || r.clamped);
 
-  const selectedShipping =
-    SHIPPING_OPTIONS.find((o) => o.value === shippingMethod) ?? null;
-  const needsStore = selectedShipping?.needsStore ?? false;
+  const needsStore = shippingNeedsStore(shippingMethod);
   const needsAddress = shippingMethod === "home_delivery";
   const isPickup = shippingMethod === "pickup";
 

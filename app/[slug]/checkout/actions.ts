@@ -3,7 +3,7 @@
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { redirect } from "next/navigation";
-import { encodeShippingIntoNote, SHIPPING_LABELS, PAYMENT_LABELS } from "@/lib/order-labels";
+import { encodeShippingIntoNote, SHIPPING_LABELS, PAYMENT_LABELS, shippingNeedsStore } from "@/lib/order-labels";
 
 export async function placeOrder(slug: string, formData: FormData) {
   const productId = String(formData.get("product_id") ?? "").trim();
@@ -43,12 +43,7 @@ export async function placeOrder(slug: string, formData: FormData) {
     redirect(baseRedirect + "&error=" + encodeURIComponent("請選擇配送方式"));
   }
   // 超商取貨必須填門市
-  if (
-    (shippingMethod === "cvs_711" ||
-      shippingMethod === "cvs_family" ||
-      shippingMethod === "cvs_hilife") &&
-    !shippingStoreName
-  ) {
+  if (shippingNeedsStore(shippingMethod) && !shippingStoreName) {
     redirect(
       baseRedirect +
         "&error=" +

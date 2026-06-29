@@ -5,6 +5,7 @@ import {
   encodeShippingIntoNote,
   PAYMENT_LABELS,
   SHIPPING_LABELS,
+  shippingNeedsStore,
 } from "@/lib/order-labels";
 
 type Params = Promise<{ slug: string }>;
@@ -66,12 +67,7 @@ export async function POST(
     cartItems.push({ productId, qty });
   }
 
-  if (
-    (shippingMethod === "cvs_711" ||
-      shippingMethod === "cvs_family" ||
-      shippingMethod === "cvs_hilife") &&
-    !shippingStoreName
-  ) {
+  if (shippingNeedsStore(shippingMethod) && !shippingStoreName) {
     return NextResponse.json({ error: "超商取貨必須填取貨門市名稱" }, { status: 400 });
   }
   if (shippingMethod === "home_delivery" && !shippingAddress) {

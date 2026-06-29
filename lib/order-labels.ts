@@ -110,6 +110,17 @@ export const SHIPPING_LABELS: Record<string, string> = Object.fromEntries(
   SHIPPING_OPTIONS.map((o) => [o.value, o.label])
 );
 
+// 「這個配送方式要不要填取貨門市」單一來源：直接從 SHIPPING_OPTIONS 的 needsStore 旗標衍生。
+// 結帳頁 client 早就用 SHIPPING_OPTIONS.find(...).needsStore 判斷要不要顯示門市欄，但兩個結帳
+// 後端（單品 checkout/actions、購物車 cart/checkout/submit）的「超商取貨必須填門市」防呆卻各自
+// 硬寫 shippingMethod === "cvs_711" || "cvs_family" || "cvs_hilife"——日後在 SHIPPING_OPTIONS 多
+// 加一家超商（例如 OK 超商，needsStore:true），client 會自動顯示門市欄，但這兩個後端不改就不擋，
+// 門市變成非必填、空門市單照樣成立。收成這支，三處（client 顯示 + 兩個後端驗證）吃同一條旗標。
+export function shippingNeedsStore(method: string | null | undefined): boolean {
+  if (!method) return false;
+  return SHIPPING_OPTIONS.find((o) => o.value === method)?.needsStore ?? false;
+}
+
 // 訂單 note 編碼格式：把物流資訊塞在 note 前面，用標記區隔
 // 範例：
 // [配送方式] 7-11 取貨
