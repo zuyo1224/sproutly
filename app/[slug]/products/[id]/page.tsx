@@ -23,6 +23,7 @@ type Params = Promise<{ slug: string; id: string }>;
 import { formatPrice, productOfferFieldsForSchema } from "@/lib/format-price";
 import { availabilityForSchema } from "@/lib/availability-schema";
 import { absoluteImageUrls } from "@/lib/image-url";
+import { QTY_MAX } from "@/lib/product-quantity";
 
 export async function generateMetadata({
   params,
@@ -128,7 +129,7 @@ export default async function PublicProductPage({
   const primaryImage = images[0] ?? null;
   const extraImages = images.slice(1);
   const inStock = !isSoldOut(product.stock);
-  const maxQty = product.stock !== null ? Math.min(product.stock, 99) : 99;
+  const maxQty = product.stock !== null ? Math.min(product.stock, QTY_MAX) : QTY_MAX;
   // 庫存狀態給 Google：頁面上 stock ≤ 3 就亮「剩 N」琥珀色提示，結構化資料也跟著走——
   // 還剩一點的用 LimitedAvailability、賣完 OutOfStock、其餘 InStock。三段式邏輯跟逛街頁
   // ItemList 共用 availabilityForSchema，整站庫存標示一致（門檻見該檔 LOW_STOCK_THRESHOLD）。

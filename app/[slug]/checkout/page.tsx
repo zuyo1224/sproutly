@@ -6,6 +6,7 @@ import { placeOrder } from "./actions";
 import { SubmitButton } from "@/app/_components/submit-button";
 import { PAYMENT_OPTIONS, SHIPPING_OPTIONS } from "@/lib/order-labels";
 import { CVS_STORES, formatStoreLabel, CVS_LOOKUP_URLS } from "@/lib/cvs-stores";
+import { QTY_MIN, QTY_MAX } from "@/lib/product-quantity";
 
 type Params = Promise<{ slug: string }>;
 type SearchParams = Promise<{
@@ -26,7 +27,7 @@ export default async function CheckoutPage({
   const { slug } = await params;
   const sp = await searchParams;
   const productId = sp.product_id ?? "";
-  const quantity = Math.min(Math.max(Number(sp.qty ?? 1), 1), 99) || 1;
+  const quantity = Math.min(Math.max(Number(sp.qty ?? 1), QTY_MIN), QTY_MAX) || QTY_MIN;
   const error = sp.error;
 
   if (!productId) notFound();

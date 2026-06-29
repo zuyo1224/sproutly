@@ -1,5 +1,7 @@
 // 客戶端購物車 helpers（localStorage based，per-store key）
 
+import { QTY_MIN, QTY_MAX } from "@/lib/product-quantity";
+
 export type CartItem = {
   productId: string;
   qty: number;
@@ -20,7 +22,7 @@ export function getCart(slug: string): CartItem[] {
       .filter((x) => x && typeof x.productId === "string")
       .map((x) => ({
         productId: x.productId as string,
-        qty: Math.min(Math.max(Math.floor(Number(x.qty)), 1), 99),
+        qty: Math.min(Math.max(Math.floor(Number(x.qty)), QTY_MIN), QTY_MAX),
       }))
       .filter((x) => Number.isFinite(x.qty));
   } catch {
@@ -41,9 +43,9 @@ export function addToCart(slug: string, productId: string, qty = 1) {
   const items = getCart(slug);
   const existing = items.find((i) => i.productId === productId);
   if (existing) {
-    existing.qty = Math.min(existing.qty + qty, 99);
+    existing.qty = Math.min(existing.qty + qty, QTY_MAX);
   } else {
-    items.push({ productId, qty: Math.min(qty, 99) });
+    items.push({ productId, qty: Math.min(qty, QTY_MAX) });
   }
   setCart(slug, items);
 }
@@ -53,7 +55,7 @@ export function updateQty(slug: string, productId: string, qty: number) {
   const idx = items.findIndex((i) => i.productId === productId);
   if (idx === -1) return;
   if (qty <= 0) items.splice(idx, 1);
-  else items[idx].qty = Math.min(qty, 99);
+  else items[idx].qty = Math.min(qty, QTY_MAX);
   setCart(slug, items);
 }
 

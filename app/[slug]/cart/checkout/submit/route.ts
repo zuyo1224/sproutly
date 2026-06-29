@@ -7,6 +7,7 @@ import {
   SHIPPING_LABELS,
   shippingNeedsStore,
 } from "@/lib/order-labels";
+import { isValidQty } from "@/lib/product-quantity";
 
 type Params = Promise<{ slug: string }>;
 
@@ -56,9 +57,7 @@ export async function POST(
     const qty = Number(raw?.qty);
     if (
       !productId ||
-      !Number.isInteger(qty) ||
-      qty < 1 ||
-      qty > 99 ||
+      !isValidQty(qty) ||
       seenIds.has(productId)
     ) {
       return NextResponse.json({ error: "購物車內容有誤，請重新確認" }, { status: 400 });

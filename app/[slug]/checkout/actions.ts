@@ -4,6 +4,7 @@ import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { redirect } from "next/navigation";
 import { encodeShippingIntoNote, SHIPPING_LABELS, PAYMENT_LABELS, shippingNeedsStore } from "@/lib/order-labels";
+import { QTY_MIN, QTY_MAX, isValidQty } from "@/lib/product-quantity";
 
 export async function placeOrder(slug: string, formData: FormData) {
   const productId = String(formData.get("product_id") ?? "").trim();
@@ -27,8 +28,8 @@ export async function placeOrder(slug: string, formData: FormData) {
   if (!productId) redirect(`/${slug}`);
 
   const quantity = Number(qtyRaw);
-  if (!Number.isInteger(quantity) || quantity < 1 || quantity > 99) {
-    redirect(baseRedirect + "&error=" + encodeURIComponent("數量必須是 1-99"));
+  if (!isValidQty(quantity)) {
+    redirect(baseRedirect + "&error=" + encodeURIComponent(`數量必須是 ${QTY_MIN}-${QTY_MAX}`));
   }
   if (!customerName) {
     redirect(baseRedirect + "&error=" + encodeURIComponent("請填收件人姓名"));

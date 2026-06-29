@@ -17,6 +17,7 @@ type Product = {
 
 import { formatPrice } from "@/lib/format-price";
 import { isSoldOut } from "@/lib/product-stock";
+import { QTY_MAX } from "@/lib/product-quantity";
 
 export default function CartPage() {
   const params = useParams();
@@ -351,10 +352,10 @@ export default function CartPage() {
         <>
           <div className="space-y-8">
             {itemRows.map(({ product: p, qty }) => {
-              // 庫存上限：null 視為不限（沿用 99 軟上限），否則卡在庫存量。
+              // 庫存上限：null 視為不限（沿用 QTY_MAX 軟上限），否則卡在庫存量。
               // 跟結帳 API 同一條紅線，只是搬到購物車先擋，讓客人不用排到
               // 結帳才被退回。
-              const maxQty = p.stock == null ? 99 : Math.min(p.stock, 99);
+              const maxQty = p.stock == null ? QTY_MAX : Math.min(p.stock, QTY_MAX);
               const atStockLimit = p.stock != null && qty >= p.stock;
               return (
               <div
