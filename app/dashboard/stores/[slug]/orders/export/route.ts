@@ -3,6 +3,7 @@ import { createClient } from "@/lib/supabase/server";
 import {
   paymentMethodLabel,
   PAYMENT_STATUS_LABELS,
+  PAYMENT_STATUSES,
   ORDER_STATUS_LABELS,
   ORDER_STATUSES,
   decodeShippingFromNote,
@@ -28,8 +29,10 @@ function csvEscape(v: unknown): string {
 }
 
 // 匯出篩選的狀態白名單跟訂單列表 chip、詳情下拉同一條 canonical 順序（見 order-labels）。
+// 付款白名單同理收成 PAYMENT_STATUSES，跟列表 chip 的 PAYMENT_FILTERS、詳情徽章、改狀態
+// action 的 ALLOWED_PAYMENT 同一條來源——日後增刪一個付款狀態不會「列表能篩但匯出悄悄擋掉」。
 const VALID_STATUS = ORDER_STATUSES;
-const VALID_PAY = ["unpaid", "paid", "refunded"];
+const VALID_PAY = PAYMENT_STATUSES;
 const VALID_RANGE = ["today", "week", "month"];
 
 export async function GET(
