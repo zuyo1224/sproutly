@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
-import { isSoldOut, isLowStock } from "@/lib/product-stock";
+import { isSoldOut, isLowStock, stockAriaSuffix } from "@/lib/product-stock";
 
 type Product = {
   id: string;
@@ -457,7 +457,7 @@ export function SearchOverlay({ slug }: { slug: string }) {
                   id={`sproutly-search-opt-${i}`}
                   role="option"
                   aria-selected={i === selectedIdx}
-                  aria-label={`${p.name}，${formatPrice(p.price_cents, p.currency)}${soldOut ? "，已售完" : lowStock ? `，剩 ${p.stock} 件` : ""}`}
+                  aria-label={`${p.name}，${formatPrice(p.price_cents, p.currency)}${stockAriaSuffix(p.stock)}`}
                   data-result-idx={i}
                   href={`/${slug}/products/${p.id}`}
                   onClick={() => setOpen(false)}

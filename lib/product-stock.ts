@@ -33,6 +33,19 @@ export function isLowStock(stock: number | null | undefined): boolean {
   return stock != null && !isSoldOut(stock) && stock <= LOW_STOCK_THRESHOLD;
 }
 
+// 商品卡的「報讀器庫存後綴」單一來源：接在「品名，價格」後面念給看不到畫面角標的人聽。
+// Cmd+K 搜尋結果卡與首頁「最近看過」卡兩處原本各自 inline 同一串三元
+// `soldOut ? "，已售完" : lowStock ? "，剩 N 件" : ""`，售完／剩 N 的判斷各自再呼叫一次
+// isSoldOut/isLowStock。畫面上那枚「售完」角標與「Low Stock · 剩 N」琥珀字是純視覺、報讀器
+// 念不到，這串後綴就是補給報讀器的同一個資訊。日後想改說法（例如「剩 N 件」改「庫存僅剩 N」）
+// 兩處才不會一處改一處沒改、同一張卡視覺與報讀器對不上。收成這支，兩處吃同一條，售完／剩 N
+// 的判斷一律走 isSoldOut/isLowStock。前綴逗號保留，讓呼叫端直接接在品名價格後；有貨回空字串。
+export function stockAriaSuffix(stock: number | null | undefined): string {
+  if (isSoldOut(stock)) return "，已售完";
+  if (isLowStock(stock)) return `，剩 ${stock} 件`;
+  return "";
+}
+
 // 把售完的整批沉到清單最後，有貨的維持原本的相對順序。
 // JS Array.sort 自 ES2019 起保證穩定（同組元素相對順序不變），所以這個 comparator
 // 套在「已經排好序」的清單上（例如已照 created_at 倒序或價格排好），只會把售完那群

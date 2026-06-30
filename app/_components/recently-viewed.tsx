@@ -10,7 +10,7 @@ import {
 } from "@/lib/recent-products";
 
 import { formatPrice } from "@/lib/format-price";
-import { isSoldOut, isLowStock } from "@/lib/product-stock";
+import { isSoldOut, isLowStock, stockAriaSuffix } from "@/lib/product-stock";
 
 // 「最近看過」一排。兩種用法：
 //  1. 商品詳情頁底部 — 傳 current，先讀出之前看過的清單顯示（自然排除當前這株），
@@ -143,7 +143,7 @@ export function RecentlyViewed({
             key={p.id}
             href={`/${slug}/products/${p.id}`}
             className="group block"
-            aria-label={`${p.name}，${formatPrice(p.priceCents, p.currency)}${soldOut ? "，已售完" : lowStock ? `，剩 ${stock} 件` : ""}`}
+            aria-label={`${p.name}，${formatPrice(p.priceCents, p.currency)}${stockAriaSuffix(stock)}`}
           >
             <div
               className="aspect-square rounded-2xl overflow-hidden transition relative"
