@@ -880,6 +880,7 @@ export function EditorWorkspace({
                 key={v}
                 type="button"
                 onClick={() => setViewport(v)}
+                aria-pressed={viewport === v}
                 className={`w-8 h-8 rounded flex items-center justify-center transition ${
                   viewport === v
                     ? "bg-white text-emerald-900 shadow-sm"
@@ -1449,6 +1450,7 @@ export function EditorWorkspace({
                         key={opt.v}
                         type="button"
                         onClick={() => updateLayout({ heroSubtitleAlign: opt.v })}
+                        aria-pressed={theme.layout.heroSubtitleAlign === opt.v}
                         className={`rounded-lg border py-2 text-xs transition ${
                           theme.layout.heroSubtitleAlign === opt.v
                             ? "border-emerald-500 bg-emerald-50 text-emerald-900"
@@ -1563,6 +1565,7 @@ export function EditorWorkspace({
                     key={opt.v}
                     type="button"
                     onClick={() => updateLayout({ heroTaglineAlign: opt.v })}
+                    aria-pressed={theme.layout.heroTaglineAlign === opt.v}
                     className={`rounded-lg border py-2 text-xs transition ${
                       theme.layout.heroTaglineAlign === opt.v
                         ? "border-emerald-500 bg-emerald-50 text-emerald-900"
@@ -1586,6 +1589,7 @@ export function EditorWorkspace({
                     key={opt.v}
                     type="button"
                     onClick={() => updateLayout({ heroHeight: opt.v })}
+                    aria-pressed={theme.layout.heroHeight === opt.v}
                     className={`rounded-lg border py-2 text-xs transition ${
                       theme.layout.heroHeight === opt.v
                         ? "border-emerald-500 bg-emerald-50 text-emerald-900"
@@ -2952,6 +2956,7 @@ export function EditorWorkspace({
                       key={opt.v}
                       type="button"
                       onClick={() => patch({ headingAlign: opt.v })}
+                      aria-pressed={align === opt.v}
                       className={`rounded-lg border py-2 text-xs transition ${
                         align === opt.v
                           ? "border-emerald-500 bg-emerald-50 text-emerald-900"
@@ -3114,6 +3119,7 @@ export function EditorWorkspace({
                       key={opt.v}
                       type="button"
                       onClick={() => patch({ paddingScale: opt.v })}
+                      aria-pressed={pad === opt.v}
                       className={`rounded-lg border py-2 text-xs transition ${
                         pad === opt.v
                           ? "border-emerald-500 bg-emerald-50 text-emerald-900"
@@ -3149,6 +3155,7 @@ export function EditorWorkspace({
                       key={opt.v}
                       type="button"
                       onClick={() => patch({ divider: opt.v })}
+                      aria-pressed={divider === opt.v}
                       className={`rounded-lg border py-2 text-xs transition ${
                         divider === opt.v
                           ? "border-emerald-500 bg-emerald-50 text-emerald-900"
@@ -3179,6 +3186,7 @@ export function EditorWorkspace({
                       key={opt.v}
                       type="button"
                       onClick={() => patch({ headingScale: opt.v })}
+                      aria-pressed={headingScale === opt.v}
                       className={`rounded-lg border py-2 text-xs transition ${
                         headingScale === opt.v
                           ? "border-emerald-500 bg-emerald-50 text-emerald-900"
@@ -3213,6 +3221,7 @@ export function EditorWorkspace({
                       key={opt.v}
                       type="button"
                       onClick={() => patch({ minHeight: opt.v })}
+                      aria-pressed={minHeight === opt.v}
                       className={`rounded-lg border py-2 text-xs transition ${
                         minHeight === opt.v
                           ? "border-emerald-500 bg-emerald-50 text-emerald-900"
@@ -3247,6 +3256,7 @@ export function EditorWorkspace({
                       key={opt.v}
                       type="button"
                       onClick={() => patch({ sectionWidth: opt.v })}
+                      aria-pressed={(sectionWidth ?? "full") === opt.v}
                       className={`rounded-lg border py-2 text-xs transition ${
                         (sectionWidth ?? "full") === opt.v
                           ? "border-emerald-500 bg-emerald-50 text-emerald-900"
@@ -3272,6 +3282,7 @@ export function EditorWorkspace({
                       key={opt.v}
                       type="button"
                       onClick={() => patch({ sectionGap: opt.v })}
+                      aria-pressed={(sectionGap ?? "none") === opt.v}
                       className={`rounded-lg border py-2 text-xs transition ${
                         (sectionGap ?? "none") === opt.v
                           ? "border-emerald-500 bg-emerald-50 text-emerald-900"
@@ -3297,6 +3308,7 @@ export function EditorWorkspace({
                       key={opt.v}
                       type="button"
                       onClick={() => patch({ outline: opt.v })}
+                      aria-pressed={(outline ?? "none") === opt.v}
                       className={`rounded-lg border py-2 text-xs transition ${
                         (outline ?? "none") === opt.v
                           ? "border-emerald-500 bg-emerald-50 text-emerald-900"
@@ -3331,6 +3343,7 @@ export function EditorWorkspace({
                       key={opt.v}
                       type="button"
                       onClick={() => patch({ shadow: opt.v })}
+                      aria-pressed={(shadow ?? "none") === opt.v}
                       className={`rounded-lg border py-2 text-xs transition ${
                         (shadow ?? "none") === opt.v
                           ? "border-emerald-500 bg-emerald-50 text-emerald-900"
@@ -3365,6 +3378,7 @@ export function EditorWorkspace({
                       key={opt.v}
                       type="button"
                       onClick={() => patch({ borderRadius: opt.v })}
+                      aria-pressed={(borderRadius ?? "none") === opt.v}
                       className={`rounded-lg border py-2 text-xs transition ${
                         (borderRadius ?? "none") === opt.v
                           ? "border-emerald-500 bg-emerald-50 text-emerald-900"
@@ -3404,6 +3418,7 @@ export function EditorWorkspace({
                       key={opt.v}
                       type="button"
                       onClick={() => patch({ entrance: opt.v })}
+                      aria-pressed={(entrance ?? "none") === opt.v}
                       className={`rounded-lg border py-2 text-xs transition ${
                         (entrance ?? "none") === opt.v
                           ? "border-emerald-500 bg-emerald-50 text-emerald-900"
@@ -3438,6 +3453,7 @@ export function EditorWorkspace({
                       key={opt.v}
                       type="button"
                       onClick={() => patch({ fontFamily: opt.v })}
+                      aria-pressed={(fontFamily ?? "default") === opt.v}
                       className={`rounded-lg border py-2 text-xs transition ${
                         (fontFamily ?? "default") === opt.v
                           ? "border-emerald-500 bg-emerald-50 text-emerald-900"
@@ -3472,6 +3488,7 @@ export function EditorWorkspace({
                       key={opt.v}
                       type="button"
                       onClick={() => patch({ letterSpacing: opt.v })}
+                      aria-pressed={(letterSpacing ?? "normal") === opt.v}
                       className={`rounded-lg border py-2 text-xs transition ${
                         (letterSpacing ?? "normal") === opt.v
                           ? "border-emerald-500 bg-emerald-50 text-emerald-900"
@@ -3506,6 +3523,7 @@ export function EditorWorkspace({
                       key={opt.v}
                       type="button"
                       onClick={() => patch({ lineHeight: opt.v })}
+                      aria-pressed={(lineHeight ?? "normal") === opt.v}
                       className={`rounded-lg border py-2 text-xs transition ${
                         (lineHeight ?? "normal") === opt.v
                           ? "border-emerald-500 bg-emerald-50 text-emerald-900"
@@ -3545,6 +3563,7 @@ export function EditorWorkspace({
                       key={opt.v}
                       type="button"
                       onClick={() => patch({ opacity: opt.v })}
+                      aria-pressed={(opacity ?? "default") === opt.v}
                       className={`rounded-lg border py-2 text-xs transition ${
                         (opacity ?? "default") === opt.v
                           ? "border-emerald-500 bg-emerald-50 text-emerald-900"
@@ -3579,6 +3598,7 @@ export function EditorWorkspace({
                       key={opt.v}
                       type="button"
                       onClick={() => patch({ filter: opt.v })}
+                      aria-pressed={(filter ?? "none") === opt.v}
                       className={`rounded-lg border py-2 text-xs transition ${
                         (filter ?? "none") === opt.v
                           ? "border-emerald-500 bg-emerald-50 text-emerald-900"
@@ -3635,6 +3655,7 @@ export function EditorWorkspace({
                     key={opt.v}
                     type="button"
                     onClick={() => updateLayout({ sectionPaddingScale: opt.v })}
+                    aria-pressed={theme.layout.sectionPaddingScale === opt.v}
                     className={`rounded-lg border py-2 text-xs transition ${
                       theme.layout.sectionPaddingScale === opt.v
                         ? "border-emerald-500 bg-emerald-50 text-emerald-900"
