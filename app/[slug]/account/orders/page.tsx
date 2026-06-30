@@ -8,6 +8,7 @@ import {
   PAYMENT_STATUS_LABELS,
   shortOrderId,
   CUSTOMER_STATUS_LABELS,
+  isOrderActive,
 } from "@/lib/order-labels";
 import { RecentlyViewed } from "@/app/_components/recently-viewed";
 import { StoreEmptyState } from "@/app/_components/store-empty-state";
@@ -109,13 +110,9 @@ export default async function CustomerOrdersPage({
 
   const totalCount = orderList.length;
   // 「在追蹤」只算真的還在跑的單。卡片 pill 已把進行中（accent）跟已結案（灰）分開，
-  // 標題若把已完成/已取消也算進「追蹤」，就跟下面的卡片講不同的話。
-  const activeCount = orderList.filter(
-    (o) =>
-      o.status === "pending" ||
-      o.status === "confirmed" ||
-      o.status === "shipped"
-  ).length;
+  // 標題若把已完成/已取消也算進「追蹤」，就跟下面的卡片講不同的話。口徑（pending/confirmed/
+  // shipped）收在 isOrderActive，跟會員中心首頁的「追蹤中」計數同一份、不另列一次。
+  const activeCount = orderList.filter((o) => isOrderActive(o.status)).length;
 
   return (
     <main className="max-w-3xl mx-auto px-6 sm:px-10 py-20 sm:py-28">

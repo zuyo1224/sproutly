@@ -3,6 +3,7 @@ import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { resolveTheme } from "../_theme";
 import { customerSignOut } from "./actions";
+import { ACTIVE_ORDER_STATUSES } from "@/lib/order-labels";
 
 type Params = Promise<{ slug: string }>;
 
@@ -41,13 +42,14 @@ export default async function CustomerAccountHome({
     .eq("merchant_id", store.id)
     .eq("customer_id", user.id);
 
-  // 「在追蹤」只算還在跑的單；已完成/已取消不該算進來（跟訂單歷史頁同一套口徑）
+  // 「在追蹤」只算還在跑的單；已完成/已取消不該算進來。口徑（pending/confirmed/shipped）
+  // 收在 ACTIVE_ORDER_STATUSES，跟訂單歷史頁的「追蹤中」計數同一份、不另列一次。
   const { count: activeOrderCount } = await supabase
     .from("sproutly_orders")
     .select("*", { count: "exact", head: true })
     .eq("merchant_id", store.id)
     .eq("customer_id", user.id)
-    .in("status", ["pending", "confirmed", "shipped"]);
+    .in("status", ACTIVE_ORDER_STATUSES);
 
   const displayName =
     customer?.display_name ||

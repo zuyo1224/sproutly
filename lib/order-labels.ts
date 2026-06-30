@@ -88,6 +88,20 @@ export const CUSTOMER_STATUS_FLOW: string[] = Object.keys(CUSTOMER_STATUS_LABELS
   (key) => key !== "cancelled"
 );
 
+// 「進行中 / 還在跑的訂單」單一來源：待店家確認、已確認、已出貨——也就是客人進度條那條線
+// （CUSTOMER_STATUS_FLOW）扣掉終點「完成」。會員中心首頁「追蹤中」計數用 .in() 查這幾個狀態、
+// 訂單歷史頁「追蹤中」標題用 .filter 數這幾個狀態，原本兩處各自硬列 pending/confirmed/shipped
+// （一處三個 ===、一處字串陣列），兩段註解還互相點名「同一套口徑」——日後流程多一個狀態
+// （例如 packing）忘了同步，首頁數的跟歷史頁數的就對不上。收成這份：要陣列查詢走
+// ACTIVE_ORDER_STATUSES、要逐筆判斷走 isOrderActive，口徑只剩一處。已完成 / 已取消都不算進行中。
+export const ACTIVE_ORDER_STATUSES: string[] = CUSTOMER_STATUS_FLOW.filter(
+  (key) => key !== "completed"
+);
+
+export function isOrderActive(status: string | null | undefined): boolean {
+  return status != null && ACTIVE_ORDER_STATUSES.includes(status);
+}
+
 // 付款狀態的「正規順序」與中文 label 單一來源：未付款→已付款→已退款。後台與客人端原本
 // 各抄一份這三個字——訂單列表的篩選 chip 與文字色標、詳情頁的狀態下拉與藥丸徽章、訂單
 // 匯出 CSV、查訂單頁、會員訂單詳情、會員訂單列表的 inline 三元、改狀態 server action 的
