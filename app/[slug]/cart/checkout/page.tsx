@@ -380,6 +380,7 @@ export default function CartCheckoutPage() {
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
                 <label
+                  htmlFor="co-name"
                   className="block text-sm font-medium mb-1.5"
                   style={{ color: "var(--store-text, #1a1a1a)" }}
                 >
@@ -389,6 +390,7 @@ export default function CartCheckoutPage() {
                   </span>
                 </label>
                 <input
+                  id="co-name"
                   name="customer_name"
                   type="text"
                   required
@@ -399,6 +401,7 @@ export default function CartCheckoutPage() {
               </div>
               <div>
                 <label
+                  htmlFor="co-phone"
                   className="block text-sm font-medium mb-1.5"
                   style={{ color: "var(--store-text, #1a1a1a)" }}
                 >
@@ -408,6 +411,7 @@ export default function CartCheckoutPage() {
                   </span>
                 </label>
                 <input
+                  id="co-phone"
                   name="customer_phone"
                   type="tel"
                   required
@@ -421,12 +425,14 @@ export default function CartCheckoutPage() {
 
             <div>
               <label
+                htmlFor="co-email"
                 className="block text-sm font-medium mb-1.5"
                 style={{ color: "var(--store-text, #1a1a1a)" }}
               >
                 Email（選填）
               </label>
               <input
+                id="co-email"
                 name="customer_email"
                 type="email"
                 autoComplete="email"
@@ -441,6 +447,7 @@ export default function CartCheckoutPage() {
           <section className="space-y-4">
             <div>
               <p
+                id="co-shipping-label"
                 className="text-[0.6875rem] uppercase font-medium"
                 style={{
                   color: "var(--store-accent, currentColor)",
@@ -458,7 +465,12 @@ export default function CartCheckoutPage() {
               />
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+            <div
+              role="radiogroup"
+              aria-labelledby="co-shipping-label"
+              aria-required="true"
+              className="grid grid-cols-1 sm:grid-cols-2 gap-2"
+            >
               {SHIPPING_OPTIONS.map((o) => (
                 <label
                   key={o.value}
@@ -495,6 +507,7 @@ export default function CartCheckoutPage() {
             {needsStore && (
               <div className="pt-2">
                 <label
+                  htmlFor="co-store"
                   className="block text-xs mb-1.5"
                   style={{ color: "var(--store-text-muted, rgba(0,0,0,0.6))" }}
                 >
@@ -504,6 +517,7 @@ export default function CartCheckoutPage() {
                   </span>
                 </label>
                 <input
+                  id="co-store"
                   name="shipping_store_name"
                   type="text"
                   required
@@ -511,6 +525,7 @@ export default function CartCheckoutPage() {
                   onChange={(e) => setStoreName(e.target.value)}
                   list="cvs-stores-list"
                   autoComplete="off"
+                  aria-describedby="co-store-help"
                   placeholder="開始打字搜尋⋯例如「信義」「板橋」「7-11」"
                   className="sproutly-input w-full text-sm"
                 />
@@ -545,6 +560,7 @@ export default function CartCheckoutPage() {
                   ))}
                 </div>
                 <p
+                  id="co-store-help"
                   className="mt-2 text-xs"
                   style={{
                     color: "var(--store-text-muted, rgba(0,0,0,0.6))",
@@ -559,6 +575,7 @@ export default function CartCheckoutPage() {
             {needsAddress && (
               <div className="pt-2">
                 <label
+                  htmlFor="co-address"
                   className="block text-xs mb-1.5"
                   style={{ color: "var(--store-text-muted, rgba(0,0,0,0.6))" }}
                 >
@@ -568,6 +585,7 @@ export default function CartCheckoutPage() {
                   </span>
                 </label>
                 <input
+                  id="co-address"
                   name="shipping_address"
                   type="text"
                   required
@@ -597,6 +615,7 @@ export default function CartCheckoutPage() {
           <section className="space-y-4">
             <div>
               <p
+                id="co-payment-label"
                 className="text-[0.6875rem] uppercase font-medium"
                 style={{
                   color: "var(--store-accent, currentColor)",
@@ -614,7 +633,12 @@ export default function CartCheckoutPage() {
               />
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+            <div
+              role="radiogroup"
+              aria-labelledby="co-payment-label"
+              aria-required="true"
+              className="grid grid-cols-1 sm:grid-cols-2 gap-2"
+            >
               {PAYMENT_OPTIONS.map((o) => (
                 <label
                   key={o.value}
@@ -665,12 +689,14 @@ export default function CartCheckoutPage() {
           {/* 備註 */}
           <section className="space-y-3">
             <label
+              htmlFor="co-note"
               className="block text-sm font-medium"
               style={{ color: "var(--store-text, #1a1a1a)" }}
             >
               備註（選填）
             </label>
             <textarea
+              id="co-note"
               name="note"
               rows={3}
               placeholder="特殊需求、希望送達時間..."
