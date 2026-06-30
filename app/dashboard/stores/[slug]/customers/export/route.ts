@@ -5,7 +5,7 @@ import { taipeiDateKey, taipeiDateNumeric } from "@/lib/format-date";
 // 金額欄表頭的貨幣符號跟商品編輯頁共用同一份（TWD→NT$，其他幣別顯示代碼）。
 import { currencySymbol } from "@/lib/format-price";
 // VIP / 回購標籤門檻跟客人列表頁共用同一份，避免列表標了 VIP 但 CSV 沒標。
-import { isVipCustomer, isReturningCustomer } from "@/lib/customer-tags";
+import { customerTier } from "@/lib/customer-tags";
 
 type Params = Promise<{ slug: string }>;
 
@@ -178,8 +178,9 @@ export async function GET(request: Request, { params }: { params: Params }) {
     // 標籤判定跟列表頁同門檻：VIP = 累計 NT$ 2,000+，回購 = 2 筆以上
     const tags: string[] = [];
     if (r.identityType === "account") tags.push("會員");
-    if (isVipCustomer(r.totalCents)) tags.push("VIP");
-    else if (isReturningCustomer(r.orderCount)) tags.push("回購");
+    const tier = customerTier(r.totalCents, r.orderCount);
+    if (tier === "vip") tags.push("VIP");
+    else if (tier === "returning") tags.push("回購");
 
     const row = [
       r.name,

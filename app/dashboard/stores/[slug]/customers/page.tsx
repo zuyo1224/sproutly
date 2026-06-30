@@ -10,7 +10,7 @@ type SearchParams = Promise<{ q?: string; sort?: string }>;
 import { formatPrice } from "@/lib/format-price";
 import { taipeiDateNumeric } from "@/lib/format-date";
 import {
-  isVipCustomer,
+  customerTier,
   isReturningCustomer,
   VIP_THRESHOLD_CENTS,
   REPEAT_ORDER_THRESHOLD,
@@ -402,8 +402,7 @@ export default async function StoreCustomersPage({
               {filtered.map((r) => {
                 const recencyDays = daysAgo(r.lastOrderAt);
                 const lifetimeDays = daysAgo(r.firstOrderAt);
-                const isVip = isVipCustomer(r.totalCents);
-                const isReturning = isReturningCustomer(r.orderCount);
+                const tier = customerTier(r.totalCents, r.orderCount);
                 return (
                   <tr
                     key={r.key}
@@ -422,7 +421,7 @@ export default async function StoreCustomersPage({
                             Member
                           </span>
                         )}
-                        {isVip && (
+                        {tier === "vip" && (
                           <span
                             className="text-[10px] px-1.5 py-0.5 rounded-full bg-amber-100 text-amber-800 uppercase"
                             style={{ letterSpacing: "0.3em" }}
@@ -430,7 +429,7 @@ export default async function StoreCustomersPage({
                             VIP
                           </span>
                         )}
-                        {isReturning && !isVip && (
+                        {tier === "returning" && (
                           <span
                             className="text-[10px] px-1.5 py-0.5 rounded-full bg-blue-100 text-blue-800 uppercase"
                             style={{ letterSpacing: "0.3em" }}
@@ -522,8 +521,7 @@ export default async function StoreCustomersPage({
           <ul className="sm:hidden divide-y divide-emerald-50">
             {filtered.map((r) => {
               const recencyDays = daysAgo(r.lastOrderAt);
-              const isVip = isVipCustomer(r.totalCents);
-              const isReturning = isReturningCustomer(r.orderCount);
+              const tier = customerTier(r.totalCents, r.orderCount);
               return (
                 <li key={r.key}>
                   <Link
@@ -544,7 +542,7 @@ export default async function StoreCustomersPage({
                             Member
                           </span>
                         )}
-                        {isVip && (
+                        {tier === "vip" && (
                           <span
                             className="text-[10px] px-1.5 py-0.5 rounded-full bg-amber-100 text-amber-800 uppercase"
                             style={{ letterSpacing: "0.3em" }}
@@ -552,7 +550,7 @@ export default async function StoreCustomersPage({
                             VIP
                           </span>
                         )}
-                        {isReturning && !isVip && (
+                        {tier === "returning" && (
                           <span
                             className="text-[10px] px-1.5 py-0.5 rounded-full bg-blue-100 text-blue-800 uppercase"
                             style={{ letterSpacing: "0.3em" }}
