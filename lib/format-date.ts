@@ -49,6 +49,60 @@ export function taipeiStampLong(iso: string): string {
   });
 }
 
+// 後台訂單詳情頁的下單／付款／出貨三個時間點：台灣時區的完整日期時間（年月日時分秒，
+// 用瀏覽器 zh-TW 預設版面，不另指定欄位）。原本詳情頁自寫一份只帶 timeZone 的
+// toLocaleString，收進這支跟其餘人看的時間戳同住一檔。
+export function taipeiStampFull(iso: string): string {
+  return new Date(iso).toLocaleString("zh-TW", { timeZone: "Asia/Taipei" });
+}
+
+// 訂單匯出 CSV 的下單時間：純數字「年/月/日 時:分」（年用 numeric、月日補零）。
+// 跟 taipeiStampShort 差在多了年份、跟 taipeiStampLong 差在月份用數字不用長名——
+// CSV 給人在試算表裡排序，純數字最好對齊。
+export function taipeiStampNumeric(iso: string): string {
+  return new Date(iso).toLocaleString("zh-TW", {
+    timeZone: "Asia/Taipei",
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+    hour: "2-digit",
+    minute: "2-digit",
+  });
+}
+
+// 查訂單頁「這台裝置下過的單」捷徑列出的下單日期：月（長名）日，不含年份與時間
+// （清單只是讓客人認出是哪一單，日期給個概念就好）。
+export function taipeiDateMonthDay(iso: string): string {
+  return new Date(iso).toLocaleDateString("zh-TW", {
+    timeZone: "Asia/Taipei",
+    month: "long",
+    day: "numeric",
+  });
+}
+
+// 查訂單頁進度時間軸每個節點的時間：月（長名）日 時:分，不含年份
+// （同一張單的進度都在近期，年份省略畫面更乾淨）。
+export function taipeiStampMonthDay(iso: string): string {
+  return new Date(iso).toLocaleString("zh-TW", {
+    timeZone: "Asia/Taipei",
+    month: "long",
+    day: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+  });
+}
+
+// 會員訂單列表的下單日期：年 月（長名）日，不含時間（會員可能翻很久以前的單，
+// 年份要留；詳情頁才用到時:分，走 taipeiStampLong）。
+export function taipeiDateLong(iso: string): string {
+  return new Date(iso).toLocaleDateString("zh-TW", {
+    timeZone: "Asia/Taipei",
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+  });
+}
+
 // 訂單篩選「今天 / 本週 / 本月」的時間起點（含起、查 created_at >= since）。
 // 一律以台灣午夜為界：今天=今天 0:00；本週=回推到本週一 0:00（週日算上一週的尾，
 // 回推 6 天）；本月=當月 1 號 0:00。其餘（如「全部時間」）回 null 表不設下界。

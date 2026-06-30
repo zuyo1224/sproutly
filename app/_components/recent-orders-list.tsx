@@ -5,17 +5,13 @@ import Link from "next/link";
 import { getRecentOrders, type RecentOrder } from "@/lib/recent-orders";
 
 import { formatPrice } from "@/lib/format-price";
+import { taipeiDateMonthDay } from "@/lib/format-date";
 
 function formatDate(iso: string) {
-  const d = new Date(iso);
-  if (Number.isNaN(d.getTime())) return "";
-  // 一律用台灣時區切日界線：訂單時間是 UTC，若跟著裝置時區跑，客人出國
-  // 或裝置時區設錯時，凌晨下的單會顯示成前一天，跟店家後台對不上。
-  return d.toLocaleDateString("zh-TW", {
-    timeZone: "Asia/Taipei",
-    month: "long",
-    day: "numeric",
-  });
+  // localStorage 來的字串可能壞掉，先擋掉 Invalid Date 再交給共用格式化（會回空字串）。
+  if (Number.isNaN(new Date(iso).getTime())) return "";
+  // 台灣時區切日界線跟全站一致（伺服器跑 UTC 也不會差一天），月日版面走共用那支。
+  return taipeiDateMonthDay(iso);
 }
 
 // 查訂單頁的「這台裝置下過的單」捷徑。掛載後才讀 localStorage

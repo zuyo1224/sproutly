@@ -46,16 +46,7 @@ function statusPillStyle(status: string, theme: ReturnType<typeof resolveTheme>)
 }
 
 import { formatPrice } from "@/lib/format-price";
-
-function formatDate(iso: string) {
-  const d = new Date(iso);
-  return d.toLocaleDateString("zh-TW", {
-    timeZone: "Asia/Taipei",
-    year: "numeric",
-    month: "long",
-    day: "numeric",
-  });
-}
+import { taipeiDateLong } from "@/lib/format-date";
 
 export default async function CustomerOrdersPage({
   params,
@@ -276,7 +267,7 @@ export default async function CustomerOrdersPage({
                         className="mt-3 text-sm"
                         style={{ color: theme.textMuted, lineHeight: 1.7 }}
                       >
-                        {formatDate(order.created_at)}
+                        {taipeiDateLong(order.created_at)}
                       </p>
                     </div>
                     <div className="text-right">

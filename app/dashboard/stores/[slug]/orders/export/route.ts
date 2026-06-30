@@ -9,7 +9,11 @@ import {
   shortOrderId,
 } from "@/lib/order-labels";
 // 檔名日期的台灣時區日期 key、篩選區間起點都跟訂單列表共用同一份（見檔內說明）。
-import { taipeiDateKey, taipeiRangeSince } from "@/lib/format-date";
+import {
+  taipeiDateKey,
+  taipeiRangeSince,
+  taipeiStampNumeric,
+} from "@/lib/format-date";
 
 type Params = Promise<{ slug: string }>;
 
@@ -144,14 +148,7 @@ export async function GET(
 
     const row = [
       "#" + shortOrderId(o.id),
-      new Date(o.created_at).toLocaleString("zh-TW", {
-        timeZone: "Asia/Taipei",
-        year: "numeric",
-        month: "2-digit",
-        day: "2-digit",
-        hour: "2-digit",
-        minute: "2-digit",
-      }),
+      taipeiStampNumeric(o.created_at),
       o.customer_name,
       o.customer_phone,
       o.customer_email ?? "",

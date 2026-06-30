@@ -32,10 +32,7 @@ const PAYMENT_STATUS_BADGE: Record<string, { label: string; color: string }> = {
 };
 
 import { formatPrice } from "@/lib/format-price";
-
-function formatDateTime(iso: string) {
-  return new Date(iso).toLocaleString("zh-TW", { timeZone: "Asia/Taipei" });
-}
+import { taipeiStampFull } from "@/lib/format-date";
 
 export default async function OrderDetailPage({
   params,
@@ -193,7 +190,7 @@ export default async function OrderDetailPage({
             className="mt-4 text-emerald-900/65"
             style={{ fontSize: "0.9375rem", lineHeight: 1.7 }}
           >
-            {formatDateTime(order.created_at)} 下單 · 在右側更新狀態
+            {taipeiStampFull(order.created_at)} 下單 · 在右側更新狀態
           </p>
         </div>
         <div className="no-print">
@@ -605,7 +602,7 @@ export default async function OrderDetailPage({
                   <span className="sr-only">下單時間</span>
                 </dt>
                 <dd className="text-emerald-950 tabular-nums">
-                  {formatDateTime(order.created_at)}
+                  {taipeiStampFull(order.created_at)}
                 </dd>
               </div>
               {order.paid_at && (
@@ -618,7 +615,7 @@ export default async function OrderDetailPage({
                     <span className="sr-only">付款時間</span>
                   </dt>
                   <dd className="text-emerald-950 tabular-nums">
-                    {formatDateTime(order.paid_at)}
+                    {taipeiStampFull(order.paid_at)}
                   </dd>
                 </div>
               )}
@@ -632,7 +629,7 @@ export default async function OrderDetailPage({
                     <span className="sr-only">出貨時間</span>
                   </dt>
                   <dd className="text-emerald-950 tabular-nums">
-                    {formatDateTime(order.shipped_at)}
+                    {taipeiStampFull(order.shipped_at)}
                   </dd>
                 </div>
               )}

@@ -35,16 +35,7 @@ const STATUS_STEPS: { key: string; label: string; num: string }[] = [
 
 
 import { formatPrice } from "@/lib/format-price";
-
-function formatDateTime(iso: string) {
-  return new Date(iso).toLocaleString("zh-TW", {
-    timeZone: "Asia/Taipei",
-    month: "long",
-    day: "numeric",
-    hour: "2-digit",
-    minute: "2-digit",
-  });
-}
+import { taipeiStampMonthDay } from "@/lib/format-date";
 
 export default async function TrackPage({
   params,
@@ -464,7 +455,7 @@ export default async function TrackPage({
                               fontVariantNumeric: "tabular-nums",
                             }}
                           >
-                            {formatDateTime(s.iso)}
+                            {taipeiStampMonthDay(s.iso)}
                           </dd>
                         </div>
                       ))}
