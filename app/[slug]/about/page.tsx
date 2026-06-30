@@ -5,6 +5,7 @@ import { createClient } from "@/lib/supabase/server";
 import { jsonLdHtml } from "@/lib/json-ld";
 import { siteBaseUrl, buildBreadcrumbJsonLd, buildFaqJsonLd } from "@/lib/store-schema";
 import { resolveTheme, HOMEPAGE_DEFAULTS } from "../_theme";
+import { StoreEmptyState } from "@/app/_components/store-empty-state";
 
 type Params = Promise<{ slug: string }>;
 
@@ -214,37 +215,20 @@ export default async function AboutPage({ params }: { params: Params }) {
               </p>
             </div>
           ) : (
-            <div className="py-12 max-w-md">
-              <p
-                className="text-[0.6875rem] uppercase font-medium"
-                style={{ color: theme.accent, letterSpacing: "0.4em" }}
-              >
-                Empty
-              </p>
-              <div
-                className="mt-5 h-px w-10"
-                style={{ background: theme.accent, opacity: 0.4 }}
-              />
-              <p
-                className="mt-6 text-2xl sm:text-3xl font-medium"
-                style={{
-                  color: theme.text,
-                  fontFamily: "var(--store-font)",
-                  letterSpacing: "-0.01em",
-                  lineHeight: 1.25,
-                }}
-              >
-                店家還沒
-                <br />
-                寫下故事
-              </p>
-              <p
-                className="mt-5 text-[0.9375rem]"
-                style={{ color: theme.textMuted, lineHeight: 1.7 }}
-              >
-                過幾天再回來看看。
-              </p>
-            </div>
+            <StoreEmptyState
+              className="py-12 max-w-md"
+              accentColor={theme.accent}
+              titleColor={theme.text}
+              descriptionColor={theme.textMuted}
+              title={
+                <>
+                  店家還沒
+                  <br />
+                  寫下故事
+                </>
+              }
+              description="過幾天再回來看看。"
+            />
           )}
         </>
       )}

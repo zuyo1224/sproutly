@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useParams } from "next/navigation";
 import { getCart, updateQty, removeFromCart, addToCart } from "@/lib/cart";
 import { RecentlyViewed } from "@/app/_components/recently-viewed";
+import { StoreEmptyState } from "@/app/_components/store-empty-state";
 
 type Product = {
   id: string;
@@ -296,44 +297,16 @@ export default function CartPage() {
         </div>
       ) : itemRows.length === 0 ? (
         <>
-        <div className="py-16 max-w-md">
-          <p
-            className="text-[0.6875rem] uppercase font-medium"
-            style={{
-              color: "var(--store-accent, currentColor)",
-              letterSpacing: "0.4em",
-            }}
-          >
-            Empty
-          </p>
-          <div
-            className="mt-5 h-px w-10"
-            style={{
-              background: "var(--store-accent, currentColor)",
-              opacity: 0.4,
-            }}
-          />
-          <p
-            className="mt-6 text-2xl sm:text-3xl font-medium"
-            style={{
-              fontFamily: "var(--store-font)",
-              letterSpacing: "-0.01em",
-              lineHeight: 1.25,
-            }}
-          >
-            購物車
-            <br />
-            還是空的
-          </p>
-          <p
-            className="mt-5 text-[0.9375rem]"
-            style={{
-              color: "var(--store-text-muted, rgba(0,0,0,0.6))",
-              lineHeight: 1.7,
-            }}
-          >
-            去逛逛 shop，遇到合眼緣的，加進來慢慢挑。
-          </p>
+        <StoreEmptyState
+          title={
+            <>
+              購物車
+              <br />
+              還是空的
+            </>
+          }
+          description="去逛逛 shop，遇到合眼緣的，加進來慢慢挑。"
+        >
           <Link
             href={`/${slug}/shop`}
             className="sproutly-link mt-10 inline-block text-[0.75rem] uppercase font-medium"
@@ -342,7 +315,7 @@ export default function CartPage() {
           >
             去逛逛 →
           </Link>
-        </div>
+        </StoreEmptyState>
         {/* 空車不是死路：把這台裝置剛看過的幾株帶回來，客人想起「剛剛那株」
             不用回頭一頁頁找。沒看過紀錄時整段不出現（元件自己判斷）。
             放在 max-w-md 文字塊外，讓商品網格用整個容器寬度。 */}

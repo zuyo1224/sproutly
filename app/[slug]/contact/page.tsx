@@ -6,6 +6,7 @@ import { jsonLdHtml } from "@/lib/json-ld";
 import { buildStoreJsonLd, buildBreadcrumbJsonLd, siteBaseUrl } from "@/lib/store-schema";
 import { telHref, mailHref, telDigits, cleanEmail, mapsHref } from "@/lib/contact-href";
 import { resolveTheme, HOMEPAGE_DEFAULTS } from "../_theme";
+import { StoreEmptyState } from "@/app/_components/store-empty-state";
 
 type Params = Promise<{ slug: string }>;
 
@@ -213,37 +214,19 @@ export default async function ContactPage({ params }: { params: Params }) {
       </header>
 
       {blocks.length === 0 ? (
-        <div className="py-16 max-w-md">
-          <p
-            className="text-[0.6875rem] uppercase font-medium"
-            style={{ color: theme.accent, letterSpacing: "0.4em" }}
-          >
-            Empty
-          </p>
-          <div
-            className="mt-5 h-px w-10"
-            style={{ background: theme.accent, opacity: 0.4 }}
-          />
-          <p
-            className="mt-6 text-2xl sm:text-3xl font-medium"
-            style={{
-              color: theme.text,
-              fontFamily: "var(--store-font)",
-              letterSpacing: "-0.01em",
-              lineHeight: 1.25,
-            }}
-          >
-            還沒留下
-            <br />
-            聯絡方式
-          </p>
-          <p
-            className="mt-5 text-[0.9375rem]"
-            style={{ color: theme.textMuted, lineHeight: 1.7 }}
-          >
-            店家正在準備 · 過幾天再回來看看。
-          </p>
-        </div>
+        <StoreEmptyState
+          accentColor={theme.accent}
+          titleColor={theme.text}
+          descriptionColor={theme.textMuted}
+          title={
+            <>
+              還沒留下
+              <br />
+              聯絡方式
+            </>
+          }
+          description="店家正在準備 · 過幾天再回來看看。"
+        />
       ) : (
         <div className="space-y-4">
           {blocks.map((block, idx) => {

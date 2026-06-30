@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import { RecentlyViewed } from "@/app/_components/recently-viewed";
+import { StoreEmptyState } from "@/app/_components/store-empty-state";
 
 type Product = {
   id: string;
@@ -316,44 +317,16 @@ export default function FavoritesPage() {
         </div>
       ) : products.length === 0 ? (
         <>
-        <div className="py-16 max-w-md">
-          <p
-            className="text-[0.6875rem] uppercase font-medium"
-            style={{
-              color: "var(--store-accent, currentColor)",
-              letterSpacing: "0.4em",
-            }}
-          >
-            Empty
-          </p>
-          <div
-            className="mt-5 h-px w-10"
-            style={{
-              background: "var(--store-accent, currentColor)",
-              opacity: 0.4,
-            }}
-          />
-          <p
-            className="mt-6 text-2xl sm:text-3xl font-medium"
-            style={{
-              fontFamily: "var(--store-font)",
-              letterSpacing: "-0.01em",
-              lineHeight: 1.25,
-            }}
-          >
-            還沒有
-            <br />
-            收藏的植物
-          </p>
-          <p
-            className="mt-5 text-[0.9375rem]"
-            style={{
-              color: "var(--store-text-muted, rgba(0,0,0,0.6))",
-              lineHeight: 1.7,
-            }}
-          >
-            逛逛 shop，遇到想留下來慢慢看的，按愛心收進這裡。
-          </p>
+        <StoreEmptyState
+          title={
+            <>
+              還沒有
+              <br />
+              收藏的植物
+            </>
+          }
+          description="逛逛 shop，遇到想留下來慢慢看的，按愛心收進這裡。"
+        >
           <Link
             href={`/${slug}/shop`}
             className="sproutly-link mt-10 inline-block text-[0.75rem] uppercase font-medium"
@@ -362,7 +335,7 @@ export default function FavoritesPage() {
           >
             去逛逛 →
           </Link>
-        </div>
+        </StoreEmptyState>
         {/* 還沒收藏不是死路：把這台裝置剛看過的幾株帶回來，客人想起「剛剛那株」
             可直接點回去再按愛心收藏。跟購物車空狀態、shop 搜不到時同一套用法
             （讀取模式：不傳 current 純讀取不記錄、不傳 colors 吃店面 --store-* 變數）。
