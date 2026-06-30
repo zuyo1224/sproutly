@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { addToCart, getCart, getCartCount } from "@/lib/cart";
 
@@ -44,6 +44,30 @@ export function AddToCartButton({
   // 等於加了卻不知下一步。車裡只要有東西就在按鈕下持續給一條「去購物車」連結。
   const [count, setCount] = useState(0);
 
+  // 「✓ 已加入」閃 1.5 秒、notice 顯示 4 秒，各自一條計時器。比照 CopyButton
+  // 的 timerRef 做法：設新的前先清舊的，連點兩次「加入」第一次的計時器才不會
+  // 把第二次該續顯的回饋提早關掉；卸載時一併清掉，免得對已卸載的元件 setState。
+  const addedTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const noticeTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  function flashAdded() {
+    setAdded(true);
+    if (addedTimerRef.current) clearTimeout(addedTimerRef.current);
+    addedTimerRef.current = setTimeout(() => setAdded(false), 1500);
+  }
+
+  function showNotice(message: string) {
+    setNotice(message);
+    if (noticeTimerRef.current) clearTimeout(noticeTimerRef.current);
+    noticeTimerRef.current = setTimeout(() => setNotice(null), 4000);
+  }
+
+  function clearNotice() {
+    if (noticeTimerRef.current) clearTimeout(noticeTimerRef.current);
+    noticeTimerRef.current = null;
+    setNotice(null);
+  }
+
   // 掛載先讀一次（可能先前頁面已加過），並跟著購物車變動同步——
   // addToCart / updateQty / remove 都會 dispatch 這個事件，數字才不會過時。
   useEffect(() => {
@@ -53,6 +77,15 @@ export function AddToCartButton({
     return () =>
       window.removeEventListener("sproutly-cart-changed", sync);
   }, [slug]);
+
+  // 卸載時清掉還沒觸發的回饋計時器（離開商品頁、popover 關閉等）。
+  useEffect(
+    () => () => {
+      if (addedTimerRef.current) clearTimeout(addedTimerRef.current);
+      if (noticeTimerRef.current) clearTimeout(noticeTimerRef.current);
+    },
+    []
+  );
 
   function resolveQty() {
     if (!qtyInputId) return qty;
@@ -73,25 +106,21 @@ export function AddToCartButton({
         getCart(slug).find((i) => i.productId === productId)?.qty ?? 0;
       const canAdd = Math.max(0, stock - already);
       if (canAdd <= 0) {
-        setNotice(`購物車已有全部 ${stock} 件庫存`);
-        setTimeout(() => setNotice(null), 4000);
+        showNotice(`購物車已有全部 ${stock} 件庫存`);
         return;
       }
       const toAdd = Math.min(wanted, canAdd);
       addToCart(slug, productId, toAdd);
-      setAdded(true);
-      setTimeout(() => setAdded(false), 1500);
+      flashAdded();
       if (toAdd < wanted) {
-        setNotice(`庫存只剩 ${stock} 件，已幫你加到上限`);
-        setTimeout(() => setNotice(null), 4000);
+        showNotice(`庫存只剩 ${stock} 件，已幫你加到上限`);
       } else {
-        setNotice(null);
+        clearNotice();
       }
       return;
     }
     addToCart(slug, productId, wanted);
-    setAdded(true);
-    setTimeout(() => setAdded(false), 1500);
+    flashAdded();
   }
 
   return (
