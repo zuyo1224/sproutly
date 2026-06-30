@@ -10,6 +10,7 @@ import {
   orderStatusMessage,
   shortOrderId,
   CUSTOMER_STATUS_LABELS,
+  CUSTOMER_STATUS_FLOW,
 } from "@/lib/order-labels";
 import { telHref, mailHref } from "@/lib/contact-href";
 import { PrintButton } from "@/app/_components/print-button";
@@ -18,16 +19,6 @@ import { PrintButton } from "@/app/_components/print-button";
 export const metadata: Metadata = { title: "訂單明細" };
 
 type Params = Promise<{ slug: string; id: string }>;
-
-// 一張單正常會走的四個階段，給客人看「現在到哪一步、還剩幾步」。
-// cancelled 不在這條線上，會另外顯示已取消，不畫進度條。
-const STATUS_FLOW = [
-  { key: "pending", label: "待確認" },
-  { key: "confirmed", label: "已確認" },
-  { key: "shipped", label: "已出貨" },
-  { key: "completed", label: "完成" },
-];
-
 
 import { formatPrice } from "@/lib/format-price";
 // 下單／付款／出貨時間的「年 月 日 時:分」跟結帳成功頁共用同一份（見 format-date.ts）。
@@ -80,7 +71,7 @@ export default async function CustomerOrderDetailPage({
 
   const isCancelled = order.status === "cancelled";
   // 找出目前走到第幾階段；查不到（理論上不會）就當還在第一步。
-  const currentStep = STATUS_FLOW.findIndex((s) => s.key === order.status);
+  const currentStep = CUSTOMER_STATUS_FLOW.indexOf(order.status);
   const stepIndex = currentStep === -1 ? 0 : currentStep;
 
   return (
@@ -150,10 +141,10 @@ export default async function CustomerOrderDetailPage({
           </p>
         ) : (
           <ol className="flex" aria-label="訂單進度">
-            {STATUS_FLOW.map((step, i) => {
+            {CUSTOMER_STATUS_FLOW.map((stepKey, i) => {
               const done = i <= stepIndex;
               const isCurrent = i === stepIndex;
-              const last = i === STATUS_FLOW.length - 1;
+              const last = i === CUSTOMER_STATUS_FLOW.length - 1;
               // 圈圈與連接線都 aria-hidden，純色塊報讀器讀不出意思；
               // 每步名稱後補一句 sr-only 狀態，目前那步再標 aria-current，
               // 讓看不見進度條的客人也聽得出走到第幾步（跟查訂單頁同一套）
@@ -164,7 +155,7 @@ export default async function CustomerOrderDetailPage({
                   : "尚未進行";
               return (
                 <li
-                  key={step.key}
+                  key={stepKey}
                   className="relative flex flex-1 flex-col items-center"
                   aria-current={isCurrent ? "step" : undefined}
                 >
@@ -195,7 +186,7 @@ export default async function CustomerOrderDetailPage({
                       fontWeight: isCurrent ? 600 : 400,
                     }}
                   >
-                    {step.label}
+                    {CUSTOMER_STATUS_LABELS[stepKey]}
                     <span className="sr-only">（{stateText}）</span>
                   </span>
                 </li>

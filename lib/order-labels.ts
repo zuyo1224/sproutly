@@ -76,6 +76,18 @@ export const CUSTOMER_STATUS_LABELS: Record<string, string> = {
   cancelled: "取消",
 };
 
+// 客人端訂單進度條的「正常四步流程」單一來源：待店家確認→已確認→已出貨→完成。順序就是
+// CUSTOMER_STATUS_LABELS 的 key 插入順序去掉不在這條線上的 cancelled（已取消不畫進度條、
+// 各頁另外處理）。查訂單頁與會員訂單詳情頁原本各自硬寫一份四步陣列、連 label 都各打各的：
+// 同一個 pending，一邊寫「待店家確認」另一邊寫「待確認」；同一個 confirmed，一邊「店家已確認」
+// 另一邊「已確認」。最明顯的破綻是會員訂單詳情頁——它頁首狀態大標吃 CUSTOMER_STATUS_LABELS
+// 顯示「待店家確認」，底下進度條卻吃自己那份硬寫的「待確認」，同一筆單同一頁兩個字。收成這份：
+// 兩頁的步驟順序走 CUSTOMER_STATUS_FLOW、每步 label 一律從 CUSTOMER_STATUS_LABELS 取，從此
+// 大標與進度條同字、兩頁也同字。各頁的視覺（圓圈號碼／連接線／顏色／字級）仍各自決定，不共用。
+export const CUSTOMER_STATUS_FLOW: string[] = Object.keys(CUSTOMER_STATUS_LABELS).filter(
+  (key) => key !== "cancelled"
+);
+
 // 付款狀態的「正規順序」與中文 label 單一來源：未付款→已付款→已退款。後台與客人端原本
 // 各抄一份這三個字——訂單列表的篩選 chip 與文字色標、詳情頁的狀態下拉與藥丸徽章、訂單
 // 匯出 CSV、查訂單頁、會員訂單詳情、會員訂單列表的 inline 三元、改狀態 server action 的

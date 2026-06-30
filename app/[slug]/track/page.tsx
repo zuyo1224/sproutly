@@ -10,6 +10,8 @@ import {
   decodeShippingFromNote,
   orderStatusMessage,
   shortOrderId,
+  CUSTOMER_STATUS_FLOW,
+  CUSTOMER_STATUS_LABELS,
 } from "@/lib/order-labels";
 import { telHref, mailHref } from "@/lib/contact-href";
 import { RememberOrder } from "@/app/_components/remember-order";
@@ -25,14 +27,6 @@ export const metadata: Metadata = {
   description: "輸入訂單編號與電話，查詢出貨進度。",
   robots: { index: false, follow: false },
 };
-
-const STATUS_STEPS: { key: string; label: string; num: string }[] = [
-  { key: "pending", label: "待店家確認", num: "1" },
-  { key: "confirmed", label: "店家已確認", num: "2" },
-  { key: "shipped", label: "已出貨", num: "3" },
-  { key: "completed", label: "完成", num: "4" },
-];
-
 
 import { formatPrice } from "@/lib/format-price";
 import { taipeiStampMonthDay } from "@/lib/format-date";
@@ -347,20 +341,18 @@ export default async function TrackPage({
                   Status · 進度
                 </p>
                 {/* 進度做成有序清單給報讀器：原本圈圈裡的數字、圈跟圈之間的連接線
-                    都是純視覺，報讀器只念得到「1 待店家確認 2 店家已確認…」這串數字＋
+                    都是純視覺，報讀器只念得到「1 待店家確認 2 已確認…」這串數字＋
                     步驟名，聽不出「走到第幾步」。把數字圈與連接線退出報讀器（aria-hidden），
                     每一步的名稱後補一句 sr-only 狀態（已完成／目前進度／尚未進行），
                     目前所在的那步再標 aria-current="step"，讓報讀器使用者也聽得出進度。 */}
                 {(() => {
-                  const currentIdx = STATUS_STEPS.findIndex(
-                    (s) => s.key === order.status
-                  );
+                  const currentIdx = CUSTOMER_STATUS_FLOW.indexOf(order.status);
                   return (
                     <ol
                       className="flex justify-between items-start mb-6"
                       aria-label="訂單進度"
                     >
-                      {STATUS_STEPS.map((step, i) => {
+                      {CUSTOMER_STATUS_FLOW.map((stepKey, i) => {
                         const done = i <= currentIdx;
                         const current = i === currentIdx;
                         const stateText = current
@@ -370,11 +362,11 @@ export default async function TrackPage({
                             : "尚未進行";
                         return (
                           <li
-                            key={step.key}
+                            key={stepKey}
                             className="flex flex-col items-center flex-1 min-w-0 relative"
                             aria-current={current ? "step" : undefined}
                           >
-                            {i < STATUS_STEPS.length - 1 && (
+                            {i < CUSTOMER_STATUS_FLOW.length - 1 && (
                               <div
                                 aria-hidden="true"
                                 className="absolute top-5 left-1/2 w-full h-0.5"
@@ -396,7 +388,7 @@ export default async function TrackPage({
                                 transform: current ? "scale(1.15)" : "scale(1)",
                               }}
                             >
-                              {step.num}
+                              {i + 1}
                             </div>
                             <p
                               className="mt-2 text-xs text-center px-1"
@@ -405,7 +397,7 @@ export default async function TrackPage({
                                 fontWeight: current ? 600 : 400,
                               }}
                             >
-                              {step.label}
+                              {CUSTOMER_STATUS_LABELS[stepKey]}
                               <span className="sr-only">（{stateText}）</span>
                             </p>
                           </li>
