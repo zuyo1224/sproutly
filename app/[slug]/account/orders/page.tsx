@@ -3,21 +3,18 @@ import { notFound, redirect } from "next/navigation";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { resolveTheme } from "../../_theme";
-import { paymentMethodLabel, PAYMENT_STATUS_LABELS, shortOrderId } from "@/lib/order-labels";
+import {
+  paymentMethodLabel,
+  PAYMENT_STATUS_LABELS,
+  shortOrderId,
+  CUSTOMER_STATUS_LABELS,
+} from "@/lib/order-labels";
 import { RecentlyViewed } from "@/app/_components/recently-viewed";
 
 // 蓋掉父層 account/layout 的「會員中心」，訂單列表分頁顯示「訂單紀錄」。
 export const metadata: Metadata = { title: "訂單紀錄" };
 
 type Params = Promise<{ slug: string }>;
-
-const STATUS_LABELS: Record<string, string> = {
-  pending: "待店家確認",
-  confirmed: "已確認",
-  shipped: "已出貨",
-  completed: "完成",
-  cancelled: "取消",
-};
 
 // 列表一次列出多筆單，狀態 pill 若全長一樣，客人分不出哪些還在追蹤、哪些已結案。
 // 沿用詳情頁進度條那套語言：還在跑的單（pending/confirmed/shipped）用店家 accent 點亮、
@@ -275,7 +272,7 @@ export default async function CustomerOrdersPage({
                         className="inline-block text-[0.6875rem] tracking-[0.3em] uppercase font-medium px-3 py-1.5 rounded-full"
                         style={statusPillStyle(order.status, theme)}
                       >
-                        {STATUS_LABELS[order.status] ?? order.status}
+                        {CUSTOMER_STATUS_LABELS[order.status] ?? order.status}
                       </span>
                     </div>
                   </div>

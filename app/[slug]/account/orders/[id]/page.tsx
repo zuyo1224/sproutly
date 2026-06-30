@@ -9,6 +9,7 @@ import {
   decodeShippingFromNote,
   orderStatusMessage,
   shortOrderId,
+  CUSTOMER_STATUS_LABELS,
 } from "@/lib/order-labels";
 import { telHref, mailHref } from "@/lib/contact-href";
 import { PrintButton } from "@/app/_components/print-button";
@@ -17,14 +18,6 @@ import { PrintButton } from "@/app/_components/print-button";
 export const metadata: Metadata = { title: "訂單明細" };
 
 type Params = Promise<{ slug: string; id: string }>;
-
-const STATUS_LABELS: Record<string, string> = {
-  pending: "待店家確認",
-  confirmed: "已確認",
-  shipped: "已出貨",
-  completed: "完成",
-  cancelled: "取消",
-};
 
 // 一張單正常會走的四個階段，給客人看「現在到哪一步、還剩幾步」。
 // cancelled 不在這條線上，會另外顯示已取消，不畫進度條。
@@ -109,7 +102,7 @@ export default async function CustomerOrderDetailPage({
             lineHeight: 1.2,
           }}
         >
-          {STATUS_LABELS[order.status] ?? order.status}
+          {CUSTOMER_STATUS_LABELS[order.status] ?? order.status}
         </h1>
         <p
           className="mt-5 text-sm"

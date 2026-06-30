@@ -62,6 +62,20 @@ export const ORDER_STATUSES: string[] = Object.keys(ORDER_STATUS_BADGES);
 export const ORDER_STATUS_OPTIONS: { value: string; label: string }[] =
   ORDER_STATUSES.map((value) => ({ value, label: ORDER_STATUS_BADGES[value].label }));
 
+// 客人端的訂單狀態說法：刻意比後台 ORDER_STATUS_BADGES 更柔（pending 寫成「待店家確認」
+// 而非後台的「待確認」、completed/cancelled 去掉「已」字只留「完成」「取消」），語氣站在
+// 客人角度、也不配後台那套 amber/red 硬色票（客人頁吃店家自訂 theme，顏色另由各頁依
+// accent 決定）。會員訂單列表頁與會員訂單詳情頁原本各抄一份逐字相同的這份 Record，
+// 日後改一個字（例如 pending 想改「等待店家確認中」）漏一頁，同一筆單在列表與詳情就長
+// 不一樣。收成這一份，兩頁吃同一個；查不到狀態時各頁自行 `?? order.status` 原樣顯示。
+export const CUSTOMER_STATUS_LABELS: Record<string, string> = {
+  pending: "待店家確認",
+  confirmed: "已確認",
+  shipped: "已出貨",
+  completed: "完成",
+  cancelled: "取消",
+};
+
 // 付款狀態的「正規順序」與中文 label 單一來源：未付款→已付款→已退款。後台與客人端原本
 // 各抄一份這三個字——訂單列表的篩選 chip 與文字色標、詳情頁的狀態下拉與藥丸徽章、訂單
 // 匯出 CSV、查訂單頁、會員訂單詳情、會員訂單列表的 inline 三元、改狀態 server action 的
