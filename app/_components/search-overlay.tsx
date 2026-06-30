@@ -291,7 +291,7 @@ export function SearchOverlay({ slug }: { slug: string }) {
               </button>
             </div>
             {/* 搜尋狀態念給報讀器聽，畫面看不到（畫面用下方的 Searching／No Match 區塊呈現） */}
-            <p aria-live="polite" className="sr-only">
+            <p role="status" aria-live="polite" className="sr-only">
               {statusMessage}
             </p>
             <div
