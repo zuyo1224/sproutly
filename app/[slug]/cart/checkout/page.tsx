@@ -18,6 +18,7 @@ type Product = {
 };
 
 import { formatPrice } from "@/lib/format-price";
+import { fetchProductsByIds } from "@/lib/fetch-products-by-ids";
 
 export default function CartCheckoutPage() {
   const params = useParams();
@@ -46,15 +47,8 @@ export default function CartCheckoutPage() {
         return;
       }
       try {
-        const res = await fetch(
-          `/${slug}/favorites/api?ids=${encodeURIComponent(ids.join(","))}`,
-          { cache: "no-store" }
-        );
-        if (!res.ok) throw new Error(`checkout api ${res.status}`);
-        const data = await res.json();
-        // 非陣列（API 異常回了物件／錯誤）就當讀取失敗，別讓後面 products.map 炸頁。
-        if (!Array.isArray(data)) throw new Error("checkout api: not an array");
-        if (!cancelled) setProducts(data as Product[]);
+        const data = await fetchProductsByIds<Product>(slug, ids.join(","));
+        if (!cancelled) setProducts(data);
       } catch {
         // 讀失敗就掛 failed、別讓 products 停在 null 整頁卡骨架；車裡的 id／數量
         // 還在 localStorage，沒有不見，給重試退路即可。
