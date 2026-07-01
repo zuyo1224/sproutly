@@ -5,7 +5,7 @@ import {
   encodeShippingIntoNote,
   PAYMENT_LABELS,
   SHIPPING_LABELS,
-  shippingNeedsStore,
+  shippingDetailError,
 } from "@/lib/order-labels";
 import { isValidQty } from "@/lib/product-quantity";
 
@@ -66,11 +66,13 @@ export async function POST(
     cartItems.push({ productId, qty });
   }
 
-  if (shippingNeedsStore(shippingMethod) && !shippingStoreName) {
-    return NextResponse.json({ error: "超商取貨必須填取貨門市名稱" }, { status: 400 });
-  }
-  if (shippingMethod === "home_delivery" && !shippingAddress) {
-    return NextResponse.json({ error: "宅配必須填收件地址" }, { status: 400 });
+  const shippingErr = shippingDetailError(
+    shippingMethod,
+    shippingStoreName,
+    shippingAddress
+  );
+  if (shippingErr) {
+    return NextResponse.json({ error: shippingErr }, { status: 400 });
   }
 
   const supabase = await createClient();

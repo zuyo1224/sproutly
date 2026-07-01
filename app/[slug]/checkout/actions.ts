@@ -3,7 +3,7 @@
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { redirect } from "next/navigation";
-import { encodeShippingIntoNote, SHIPPING_LABELS, PAYMENT_LABELS, shippingNeedsStore } from "@/lib/order-labels";
+import { encodeShippingIntoNote, SHIPPING_LABELS, PAYMENT_LABELS, shippingDetailError } from "@/lib/order-labels";
 import { QTY_MIN, QTY_MAX, isValidQty } from "@/lib/product-quantity";
 
 export async function placeOrder(slug: string, formData: FormData) {
@@ -43,19 +43,14 @@ export async function placeOrder(slug: string, formData: FormData) {
   if (!shippingMethod || !SHIPPING_LABELS[shippingMethod]) {
     redirect(baseRedirect + "&error=" + encodeURIComponent("請選擇配送方式"));
   }
-  // 超商取貨必須填門市
-  if (shippingNeedsStore(shippingMethod) && !shippingStoreName) {
-    redirect(
-      baseRedirect +
-        "&error=" +
-        encodeURIComponent("超商取貨必須填取貨門市名稱")
-    );
-  }
-  // 宅配必須填地址
-  if (shippingMethod === "home_delivery" && !shippingAddress) {
-    redirect(
-      baseRedirect + "&error=" + encodeURIComponent("宅配必須填收件地址")
-    );
+  // 超商取貨必須填門市、宅配必須填地址（規則與訊息收在 shippingDetailError 單一來源）
+  const shippingErr = shippingDetailError(
+    shippingMethod,
+    shippingStoreName,
+    shippingAddress
+  );
+  if (shippingErr) {
+    redirect(baseRedirect + "&error=" + encodeURIComponent(shippingErr));
   }
 
   const supabase = await createClient();

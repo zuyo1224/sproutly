@@ -161,6 +161,23 @@ export function shippingNeedsStore(method: string | null | undefined): boolean {
   return SHIPPING_OPTIONS.find((o) => o.value === method)?.needsStore ?? false;
 }
 
+// 「配送方式決定哪個欄位必填」單一來源：超商取貨要填門市名稱、宅配到府要填收件地址。
+// 兩個結帳後端（單品 checkout/actions、購物車 cart/checkout/submit）原本各抄一份這兩條
+// 防呆、連「超商取貨必須填取貨門市名稱」「宅配必須填收件地址」兩句錯誤訊息都逐字重打，
+// 宅配那條還各自硬寫 method === "home_delivery"。日後改一句訊息、或多一種要地址的配送
+// 方式，得兩個後端同步，漏一處兩條結帳路徑就驗得不一樣、甚至一邊放空門市單過。收成這支：
+// 有該擋的就回傳對應錯誤訊息、都合格回 null，由單品頁包成 redirect、購物車頁包成 JSON 400，
+// 驗證規則只剩一處。門市必填沿用 shippingNeedsStore 的旗標，宅配必填集中認 home_delivery。
+export function shippingDetailError(
+  method: string | null | undefined,
+  storeName: string | null | undefined,
+  address: string | null | undefined
+): string | null {
+  if (shippingNeedsStore(method) && !storeName) return "超商取貨必須填取貨門市名稱";
+  if (method === "home_delivery" && !address) return "宅配必須填收件地址";
+  return null;
+}
+
 // 訂單 note 編碼格式：把物流資訊塞在 note 前面，用標記區隔
 // 範例：
 // [配送方式] 7-11 取貨
