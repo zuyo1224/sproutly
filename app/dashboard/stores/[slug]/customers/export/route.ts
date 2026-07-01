@@ -3,7 +3,7 @@ import { createClient } from "@/lib/supabase/server";
 // CSV 檔名日期的台灣時區日期 key 跟訂單匯出共用同一份（見檔內說明）。
 import { taipeiDateKey, taipeiDateNumeric } from "@/lib/format-date";
 // 金額欄表頭的貨幣符號跟商品編輯頁共用同一份（TWD→NT$，其他幣別顯示代碼）。
-import { currencySymbol } from "@/lib/format-price";
+import { currencySymbol, centsToYuan } from "@/lib/format-price";
 // VIP / 回購標籤門檻跟客人列表頁共用同一份，避免列表標了 VIP 但 CSV 沒標。
 import { customerTier } from "@/lib/customer-tags";
 // CSV 欄位轉義跟訂單匯出共用同一份（見檔內說明）。
@@ -171,8 +171,8 @@ export async function GET(request: Request, { params }: { params: Params }) {
       tags.join("、"),
       r.orderCount,
       r.paidCount,
-      Math.round(r.totalCents / 100),
-      Math.round(r.paidCents / 100),
+      centsToYuan(r.totalCents),
+      centsToYuan(r.paidCents),
       taipeiDateNumeric(r.firstOrderAt),
       taipeiDateNumeric(r.lastOrderAt),
     ];

@@ -17,6 +17,8 @@ import {
 } from "@/lib/format-date";
 // CSV 欄位轉義跟客人匯出共用同一份（見檔內說明）。
 import { csvEscape } from "@/lib/csv-escape";
+// 分轉整數元的 CSV 金額欄跟客人匯出共用同一份（見檔內說明）。
+import { centsToYuan } from "@/lib/format-price";
 
 type Params = Promise<{ slug: string }>;
 
@@ -156,7 +158,7 @@ export async function GET(
       itemsText,
       totalQty,
       decoded.userNote ?? "",
-      Math.round(o.total_cents / 100),
+      centsToYuan(o.total_cents),
       o.currency,
       o.created_at,
       o.paid_at ?? "",

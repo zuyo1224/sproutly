@@ -30,6 +30,18 @@ export function formatPrice(cents: number, currency?: string | null): string {
   }
 }
 
+// CSV 匯出的金額欄要的是「純整數元」——不帶符號、不帶千分位、不帶小數（Excel 那格
+// 直接當數字算）。客人匯出（消費總額、已付金額）與訂單匯出（訂單總額）三處各抄一份
+// 同一串 Math.round(cents / 100)，收成一份：日後要改捨入規則（例如改無條件捨去、
+// 或跟著幣別小數位走）只動這裡，三個匯出欄不會一處改一處沒改而對不上。
+// 跟 formatPrice 顯示端不同：那邊連貨幣符號、千分位一起格式化給人看，這邊只吐一顆
+// 給試算表當數字用的整數（跟 priceForSchema 餵給 Google 的純數字字串也不同，那邊回字串、
+// 還要跟著幣別留小數）。維持原三處逐字寫法、不另加防呆——這三欄的來源都是整數欄位或
+// 訂單金額聚合，恆為有限數，跟 formatPrice 顯示端那條給客人看的防呆線用途不同。
+export function centsToYuan(cents: number): number {
+  return Math.round(cents / 100);
+}
+
 // 把幣別代碼正規化成結構化資料（JSON-LD 的 priceCurrency）能用的乾淨值：
 // 去空白、轉大寫，沒填（舊商品 null／空字串）就當台灣店退回 TWD——跟 formatPrice
 // 顯示端同一條防呆線。原本 offers.priceCurrency 直接塞 product.currency，沒填的
