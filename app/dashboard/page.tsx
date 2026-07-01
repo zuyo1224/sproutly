@@ -4,6 +4,7 @@ import { redirect } from "next/navigation";
 import Link from "next/link";
 
 import { formatPrice } from "@/lib/format-price";
+import { isPendingOrder } from "@/lib/order-labels";
 
 // 總覽卡的金額。商家若同時開了不同幣別的店，不同幣別的錢不能相加成一個數字，
 // 就分幣別逐列；只有一種幣別（多數情況）才照舊顯示一個大數字。
@@ -120,7 +121,7 @@ export default async function DashboardPage() {
       currencyByStore[o.merchant_id] ??= cur;
       orderCountByStore[o.merchant_id] =
         (orderCountByStore[o.merchant_id] ?? 0) + 1;
-      if (o.status === "pending") {
+      if (isPendingOrder(o.status)) {
         pendingByStore[o.merchant_id] =
           (pendingByStore[o.merchant_id] ?? 0) + 1;
       }

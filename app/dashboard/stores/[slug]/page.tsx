@@ -10,7 +10,7 @@ type Params = Promise<{ slug: string }>;
 import { formatPrice } from "@/lib/format-price";
 import { isSoldOut, LOW_STOCK_THRESHOLD } from "@/lib/product-stock";
 // 訂單狀態徽章（label + 色票）跟訂單列表、訂單詳情共用同一份，三頁同一筆單同色同字。
-import { ORDER_STATUS_BADGES, shortOrderId } from "@/lib/order-labels";
+import { ORDER_STATUS_BADGES, isPendingOrder, shortOrderId } from "@/lib/order-labels";
 // 分日統計的台灣時區日期 key 跟訂單列表/匯出共用同一份（見檔內說明）。
 import { taipeiDateKey, taipeiStampShort } from "@/lib/format-date";
 
@@ -109,7 +109,7 @@ export default async function StoreInsightsPage({
       )
       .reduce((sum, o) => sum + o.total_cents, 0) ?? 0;
   const pendingOrders =
-    allOrders?.filter((o) => o.status === "pending").length ?? 0;
+    allOrders?.filter((o) => isPendingOrder(o.status)).length ?? 0;
   // 「出貨了還沒收到錢」的應收。轉帳 / 貨到付款的店家最在意這個，
   // 但首頁四張指標只有「已付款」營收，看不出還有多少錢在外面——
   // 訂單列表（pay=unpaid 篩選）、客人列表、趨勢圖都已標出，唯獨第一眼的首頁漏了。
@@ -663,7 +663,7 @@ export default async function StoreInsightsPage({
             {recentOrders.map((o) => {
               const status =
                 ORDER_STATUS_BADGES[o.status] ?? ORDER_STATUS_BADGES.pending;
-              const isPending = o.status === "pending";
+              const isPending = isPendingOrder(o.status);
               return (
                 <div
                   key={o.id}

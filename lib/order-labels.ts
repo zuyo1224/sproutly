@@ -102,6 +102,15 @@ export function isOrderActive(status: string | null | undefined): boolean {
   return status != null && ACTIVE_ORDER_STATUSES.includes(status);
 }
 
+// 「這筆單商家還沒處理」單一來源：狀態剛好是流程第一步 pending（待確認）。後台原本五處
+// 各自硬寫 o.status === "pending"——首頁跨店未處理計數、店家首頁待確認數與最近訂單的
+// isPending、訂單列表卡片版與表格版的 needsAction，逐處重打同一個字串字面值。日後若把
+// 「待確認」的 value 改名（例如 pending 改 awaiting），或多一個同樣算「待商家處理」的狀態，
+// 這五處得同步，漏一處就「首頁紅點數的跟訂單列表上色的對不上」。收成這支，五處吃同一條口徑。
+export function isPendingOrder(status: string | null | undefined): boolean {
+  return status === "pending";
+}
+
 // 付款狀態的「正規順序」與中文 label 單一來源：未付款→已付款→已退款。後台與客人端原本
 // 各抄一份這三個字——訂單列表的篩選 chip 與文字色標、詳情頁的狀態下拉與藥丸徽章、訂單
 // 匯出 CSV、查訂單頁、會員訂單詳情、會員訂單列表的 inline 三元、改狀態 server action 的

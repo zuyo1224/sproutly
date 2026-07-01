@@ -6,6 +6,7 @@ import { createClient } from "@/lib/supabase/server";
 import {
   ORDER_STATUS_BADGES,
   ORDER_STATUS_OPTIONS,
+  isPendingOrder,
   PAYMENT_STATUSES,
   PAYMENT_STATUS_LABELS,
   shortOrderId,
@@ -395,7 +396,7 @@ export default async function OrdersListPage({
           {orders.map((o) => {
             const s = ORDER_STATUS_BADGES[o.status] ?? ORDER_STATUS_BADGES.pending;
             const p = PAYMENT_LABEL[o.payment_status] ?? PAYMENT_LABEL.unpaid;
-            const needsAction = o.status === "pending";
+            const needsAction = isPendingOrder(o.status);
             return (
               <Link
                 key={o.id}
@@ -457,7 +458,7 @@ export default async function OrdersListPage({
                 const p =
                   PAYMENT_LABEL[o.payment_status] ?? PAYMENT_LABEL.unpaid;
                 // 待確認 = 商家還沒處理的單，給整列上色 + 左側色條，掃一眼就抓得到哪幾筆要回
-                const needsAction = o.status === "pending";
+                const needsAction = isPendingOrder(o.status);
                 return (
                   <tr
                     key={o.id}
