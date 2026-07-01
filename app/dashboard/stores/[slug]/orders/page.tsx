@@ -16,6 +16,7 @@ import {
 // 分日統計的台灣時區日期 key、時間戳、篩選區間起點跟店家首頁/匯出共用同一份（見檔內說明）。
 import { taipeiStampShort, taipeiRangeSince } from "@/lib/format-date";
 import { sumOrderCents } from "@/lib/sum-order-cents";
+import { applyOrderSearch } from "@/lib/order-search";
 
 type Params = Promise<{ slug: string }>;
 type SearchParams = Promise<{
@@ -129,11 +130,7 @@ export default async function OrdersListPage({
     query = query.eq("payment_status", pay);
   }
   if (q) {
-    // 用 or 搜尋姓名 / 電話 / email
-    const escaped = q.replace(/[%_]/g, (m) => `\\${m}`);
-    query = query.or(
-      `customer_name.ilike.%${escaped}%,customer_phone.ilike.%${escaped}%,customer_email.ilike.%${escaped}%`
-    );
+    query = applyOrderSearch(query, q);
   }
   if (rangeSince) {
     query = query.gte("created_at", rangeSince.toISOString());

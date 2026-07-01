@@ -17,6 +17,7 @@ import {
 } from "@/lib/format-date";
 // CSV 欄位轉義跟客人匯出共用同一份（見檔內說明）。
 import { csvEscape } from "@/lib/csv-escape";
+import { applyOrderSearch } from "@/lib/order-search";
 // 分轉整數元的 CSV 金額欄跟客人匯出共用同一份（見檔內說明）。
 import { centsToYuan } from "@/lib/format-price";
 
@@ -72,10 +73,7 @@ export async function GET(
   if (status !== "all") ordersQuery = ordersQuery.eq("status", status);
   if (pay !== "all") ordersQuery = ordersQuery.eq("payment_status", pay);
   if (q) {
-    const escaped = q.replace(/[%_]/g, (m) => `\\${m}`);
-    ordersQuery = ordersQuery.or(
-      `customer_name.ilike.%${escaped}%,customer_phone.ilike.%${escaped}%,customer_email.ilike.%${escaped}%`
-    );
+    ordersQuery = applyOrderSearch(ordersQuery, q);
   }
   if (since) ordersQuery = ordersQuery.gte("created_at", since.toISOString());
   const { data: orders } = await ordersQuery.order("created_at", {
