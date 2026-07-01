@@ -15,6 +15,7 @@ import {
   VIP_THRESHOLD_CENTS,
   REPEAT_ORDER_THRESHOLD,
 } from "@/lib/customer-tags";
+import { matchesCustomerSearch } from "@/lib/customer-search";
 
 function daysAgo(iso: string) {
   const diff = Date.now() - new Date(iso).getTime();
@@ -143,16 +144,7 @@ export default async function StoreCustomersPage({
   }
 
   // 篩選
-  const filtered = q
-    ? rows.filter((r) => {
-        const needle = q.toLowerCase();
-        return (
-          r.name.toLowerCase().includes(needle) ||
-          (r.email ?? "").toLowerCase().includes(needle) ||
-          r.phone.toLowerCase().includes(needle)
-        );
-      })
-    : rows;
+  const filtered = q ? rows.filter((r) => matchesCustomerSearch(r, q)) : rows;
 
   // 排序
   switch (sort) {

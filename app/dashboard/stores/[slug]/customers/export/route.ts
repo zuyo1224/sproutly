@@ -8,6 +8,7 @@ import { currencySymbol } from "@/lib/format-price";
 import { customerTier } from "@/lib/customer-tags";
 // CSV 欄位轉義跟訂單匯出共用同一份（見檔內說明）。
 import { csvEscape } from "@/lib/csv-escape";
+import { matchesCustomerSearch } from "@/lib/customer-search";
 
 type Params = Promise<{ slug: string }>;
 
@@ -118,16 +119,7 @@ export async function GET(request: Request, { params }: { params: Params }) {
     });
   }
 
-  const filtered = q
-    ? rows.filter((r) => {
-        const needle = q.toLowerCase();
-        return (
-          r.name.toLowerCase().includes(needle) ||
-          (r.email ?? "").toLowerCase().includes(needle) ||
-          r.phone.toLowerCase().includes(needle)
-        );
-      })
-    : rows;
+  const filtered = q ? rows.filter((r) => matchesCustomerSearch(r, q)) : rows;
 
   switch (sort) {
     case "spend":
