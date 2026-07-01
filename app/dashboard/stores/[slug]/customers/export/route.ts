@@ -6,18 +6,10 @@ import { taipeiDateKey, taipeiDateNumeric } from "@/lib/format-date";
 import { currencySymbol } from "@/lib/format-price";
 // VIP / 回購標籤門檻跟客人列表頁共用同一份，避免列表標了 VIP 但 CSV 沒標。
 import { customerTier } from "@/lib/customer-tags";
+// CSV 欄位轉義跟訂單匯出共用同一份（見檔內說明）。
+import { csvEscape } from "@/lib/csv-escape";
 
 type Params = Promise<{ slug: string }>;
-
-function csvEscape(v: unknown): string {
-  if (v === null || v === undefined) return "";
-  const s = String(v);
-  // 含逗號、雙引號、換行 → 包雙引號 + escape 雙引號
-  if (/[",\n\r]/.test(s)) {
-    return `"${s.replace(/"/g, '""')}"`;
-  }
-  return s;
-}
 
 // 客人頁的排序選項白名單，跟列表頁一致
 const VALID_SORT = ["recent", "spend", "orders", "first"];

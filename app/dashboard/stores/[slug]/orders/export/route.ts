@@ -15,18 +15,10 @@ import {
   taipeiRangeSince,
   taipeiStampNumeric,
 } from "@/lib/format-date";
+// CSV 欄位轉義跟客人匯出共用同一份（見檔內說明）。
+import { csvEscape } from "@/lib/csv-escape";
 
 type Params = Promise<{ slug: string }>;
-
-function csvEscape(v: unknown): string {
-  if (v === null || v === undefined) return "";
-  const s = String(v);
-  // 含逗號、雙引號、換行 → 包雙引號 + escape 雙引號
-  if (/[",\n\r]/.test(s)) {
-    return `"${s.replace(/"/g, '""')}"`;
-  }
-  return s;
-}
 
 // 匯出篩選的狀態白名單跟訂單列表 chip、詳情下拉同一條 canonical 順序（見 order-labels）。
 // 付款白名單同理收成 PAYMENT_STATUSES，跟列表 chip 的 PAYMENT_FILTERS、詳情徽章、改狀態
