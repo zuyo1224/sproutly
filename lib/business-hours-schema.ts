@@ -92,6 +92,14 @@ function cnNumToInt(s: string): number | null {
   return tens * 10 + ones;
 }
 
+// 把時、分拼成補零的 "HH:MM"。這支檔案下面三處（中文鐘點、英文 AM/PM、pad 驗證）
+// 各自手寫一次同一句 `${String(h).padStart(2,"0")}:${...padStart(2,"0")}`，收成單一來源。
+// 分鐘傳進來時可能是 number（中文鐘點算出的 0/30/…）或已是 2 位字串（regex 抓到的），
+// 一律轉字串再補零：已滿 2 位的補零是 no-op，個位數的才真的補上，兩種來源結果一致。
+function toHhmm(h: number, min: number | string): string {
+  return `${String(h).padStart(2, "0")}:${String(min).padStart(2, "0")}`;
+}
+
 // 把「早上10點」「9點半」「下午2點」「上午9時」「下午6時」這種中文「點／時」鐘點寫法轉成
 // HH:MM，讓後面統一吃 HH:MM 的 findTimeRanges 接得到。台灣商家極常用「點」或較正式的「時」
 // 而非冒號打時間（「早上10點到晚上9點」「9點半-18點」「下午2點到6點」「上午9時至下午6時」
@@ -149,7 +157,7 @@ function convertCnClockTimes(text: string): string {
         }
       }
       if (h > 23 || min > 59) return whole; // 判讀不可靠就原樣保留，維持保守
-      return `${String(h).padStart(2, "0")}:${String(min).padStart(2, "0")}`;
+      return toHhmm(h, min);
     }
   );
 }
@@ -176,7 +184,7 @@ function convertAmPm(text: string): string {
       } else if (h !== 12) {
         h += 12; // 12PM = 正午維持 12，其餘下午 +12
       }
-      return `${String(h).padStart(2, "0")}:${min.padStart(2, "0")}`;
+      return toHhmm(h, min);
     }
   );
 }
@@ -208,7 +216,7 @@ function pad(hhmm: string): string | null {
   const h = Number(m[1]);
   const min = Number(m[2]);
   if (h < 0 || h > 23 || min < 0 || min > 59) return null;
-  return `${String(h).padStart(2, "0")}:${m[2]}`;
+  return toHhmm(h, m[2]);
 }
 
 // 找出文字裡所有「HH:MM-HH:MM」時間區間，連同它在原文的起訖位置（後面判斷
