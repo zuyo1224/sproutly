@@ -3,6 +3,7 @@ import { redirect, notFound } from "next/navigation";
 import Link from "next/link";
 import { formatPrice } from "@/lib/format-price";
 import { isSoldOut, isLowStock } from "@/lib/product-stock";
+import { matchesProductSearch } from "@/lib/product-search";
 
 type Params = Promise<{ slug: string }>;
 type SearchParams = Promise<{ q?: string; filter?: string }>;
@@ -79,15 +80,10 @@ export default async function ProductsListPage({
     filterCounts[f.key] = allProducts.filter(f.match).length;
   }
 
-  const qLower = q.toLowerCase();
   const activeFilter =
     STATUS_FILTERS.find((f) => f.key === filter) ?? STATUS_FILTERS[0];
   const visible = allProducts.filter(
-    (p) =>
-      activeFilter.match(p) &&
-      (!qLower ||
-        p.name.toLowerCase().includes(qLower) ||
-        (p.description ?? "").toLowerCase().includes(qLower))
+    (p) => activeFilter.match(p) && (!q || matchesProductSearch(p, q))
   );
 
   function chipHref(key: string) {

@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
+import { matchesProductName, matchesProductDescription } from "@/lib/product-search";
 
 type Params = Promise<{ slug: string }>;
 
@@ -32,13 +33,12 @@ export async function GET(
     .eq("merchant_id", store.id)
     .eq("is_active", true);
 
-  const ql = q.toLowerCase();
   const rows = data ?? [];
   const named: typeof rows = [];
   const described: typeof rows = [];
   for (const p of rows) {
-    if (p.name.toLowerCase().includes(ql)) named.push(p);
-    else if ((p.description ?? "").toLowerCase().includes(ql)) described.push(p);
+    if (matchesProductName(p, q)) named.push(p);
+    else if (matchesProductDescription(p, q)) described.push(p);
   }
   // 名稱命中的排前面，描述命中的接後面，再取前 10 筆——確保原本就搜得到的
   // （名稱命中）不會被新加入的描述命中擠掉。

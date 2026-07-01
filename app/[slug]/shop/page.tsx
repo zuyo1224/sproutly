@@ -9,6 +9,7 @@ import { resolveTheme, HOMEPAGE_DEFAULTS } from "../_theme";
 import { RecentlyViewed } from "@/app/_components/recently-viewed";
 import { AutoSubmitOnChange } from "@/app/_components/auto-submit-on-change";
 import { isSoldOut, isLowStock, bySoldOutLast } from "@/lib/product-stock";
+import { matchesProductSearch } from "@/lib/product-search";
 
 type Params = Promise<{ slug: string }>;
 type SearchParams = Promise<{ q?: string; sort?: string; stock?: string }>;
@@ -132,15 +133,10 @@ export default async function ShopPage({
   const { data: fetched } = await query;
   // 名稱或描述任一含關鍵字就算命中（跟後台商品列表、Cmd+K 搜尋同一套口徑）。
   // 沒搜尋字就維持原樣，撈不到（null）也維持 null 讓下方空狀態照常判斷。
-  const ql = q.toLowerCase();
   const products = !fetched
     ? fetched
     : q
-      ? fetched.filter(
-          (p) =>
-            p.name.toLowerCase().includes(ql) ||
-            (p.description ?? "").toLowerCase().includes(ql)
-        )
+      ? fetched.filter((p) => matchesProductSearch(p, q))
       : fetched;
   // 售完的商品一律沉到列表最底。選定的排序（最新／價格／名稱）原本把已售完
   // 跟有貨的混在一起，逛街頁第一排常卡著幾株沒貨的，客人得略過才看到買得到的——
