@@ -1,4 +1,5 @@
 "use server";
+import { formString, formStringOrNull } from "@/lib/form-fields";
 
 import { createClient } from "@/lib/supabase/server";
 import { uploadImage } from "@/lib/storage";
@@ -36,17 +37,17 @@ export async function updateStore(slug: string, formData: FormData) {
     .maybeSingle();
   if (!store) redirect("/dashboard");
 
-  const name = String(formData.get("name") ?? "").trim();
+  const name = formString(formData, "name");
   const description =
-    String(formData.get("description") ?? "").trim() || null;
+    formStringOrNull(formData, "description");
   const contact_phone =
-    String(formData.get("contact_phone") ?? "").trim() || null;
+    formStringOrNull(formData, "contact_phone");
   const contact_email =
-    String(formData.get("contact_email") ?? "").trim() || null;
-  const address = String(formData.get("address") ?? "").trim() || null;
+    formStringOrNull(formData, "contact_email");
+  const address = formStringOrNull(formData, "address");
   const businessHoursText =
-    String(formData.get("business_hours") ?? "").trim();
-  const faqText = String(formData.get("faq") ?? "").trim();
+    formString(formData, "business_hours");
+  const faqText = formString(formData, "faq");
   const isPublished = formData.get("is_published") === "on";
 
   if (!name) {
@@ -65,15 +66,15 @@ export async function updateStore(slug: string, formData: FormData) {
     ""
   );
   const accent = safeHex(String(formData.get("theme_accent") ?? ""), "");
-  const tagline = String(formData.get("theme_tagline") ?? "").trim() || null;
+  const tagline = formStringOrNull(formData, "theme_tagline");
 
   // logo / hero：優先上傳，沒上傳就保留原值 / 用 URL 欄
   const logoFile = formData.get("theme_logo_file") as File | null;
   const heroFile = formData.get("theme_hero_file") as File | null;
   const logoUrlInput =
-    String(formData.get("theme_logo_url") ?? "").trim() || null;
+    formStringOrNull(formData, "theme_logo_url");
   const heroUrlInput =
-    String(formData.get("theme_hero_url") ?? "").trim() || null;
+    formStringOrNull(formData, "theme_hero_url");
 
   const existingTheme = (store.theme as Record<string, unknown>) ?? {};
   let logoUrl = (existingTheme.logo_url as string | undefined) ?? null;
@@ -109,8 +110,8 @@ export async function updateStore(slug: string, formData: FormData) {
   const HP_KEYS = ["window", "living", "desk", "bathroom", "nordic", "japanese"];
   const collectionItems = HP_KEYS.map((k) => ({
     key: k,
-    title: String(formData.get(`hp_collection_${k}_title`) ?? "").trim(),
-    subtitle: String(formData.get(`hp_collection_${k}_subtitle`) ?? "").trim(),
+    title: formString(formData, `hp_collection_${k}_title`),
+    subtitle: formString(formData, `hp_collection_${k}_subtitle`),
   })).filter((c) => c.title); // 空標題 = 不顯示這個提案
 
   const existingCollections = (existingTheme.collections as Record<string, string>) ?? {};
@@ -135,10 +136,10 @@ export async function updateStore(slug: string, formData: FormData) {
   const homepage = {
     ...existingHomepage,
     collectionsIntro:
-      String(formData.get("hp_collections_intro") ?? "").trim() || null,
+      formStringOrNull(formData, "hp_collections_intro"),
     collectionItems,
-    promise: String(formData.get("hp_promise") ?? "").trim() || null,
-    visitTitle: String(formData.get("hp_visit_title") ?? "").trim() || null,
+    promise: formStringOrNull(formData, "hp_promise"),
+    visitTitle: formStringOrNull(formData, "hp_visit_title"),
     enableAnimation: formData.get("hp_enable_animation") === "on",
   };
 
@@ -169,9 +170,9 @@ export async function updateStore(slug: string, formData: FormData) {
     ...existingLayout,
     heroStyle,
     heroSubtitle:
-      String(formData.get("layout_hero_subtitle") ?? "").trim() || null,
+      formStringOrNull(formData, "layout_hero_subtitle"),
     heroEyebrow:
-      String(formData.get("layout_hero_eyebrow") ?? "").trim() || null,
+      formStringOrNull(formData, "layout_hero_eyebrow"),
     heroImageSide,
     sectionOrder,
   };
@@ -192,10 +193,10 @@ export async function updateStore(slug: string, formData: FormData) {
     },
     social: {
       instagram:
-        String(formData.get("social_instagram") ?? "").trim() || null,
+        formStringOrNull(formData, "social_instagram"),
       facebook:
-        String(formData.get("social_facebook") ?? "").trim() || null,
-      line: String(formData.get("social_line") ?? "").trim() || null,
+        formStringOrNull(formData, "social_facebook"),
+      line: formStringOrNull(formData, "social_line"),
     },
     tagline,
     collections: existingCollections,

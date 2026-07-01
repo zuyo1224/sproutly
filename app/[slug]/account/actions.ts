@@ -1,12 +1,13 @@
 "use server";
+import { formString } from "@/lib/form-fields";
 
 import { createClient } from "@/lib/supabase/server";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 
 export async function sendCustomerMagicLink(formData: FormData) {
-  const email = String(formData.get("email") ?? "").trim();
-  const slug = String(formData.get("slug") ?? "").trim();
+  const email = formString(formData, "email");
+  const slug = formString(formData, "slug");
   const next = String(formData.get("next") ?? `/${slug}/account`).trim();
 
   if (!email || !slug) {
@@ -41,7 +42,7 @@ export async function sendCustomerMagicLink(formData: FormData) {
 }
 
 export async function customerSignOut(formData: FormData) {
-  const slug = String(formData.get("slug") ?? "").trim();
+  const slug = formString(formData, "slug");
   const supabase = await createClient();
   await supabase.auth.signOut();
   redirect(`/${slug}`);

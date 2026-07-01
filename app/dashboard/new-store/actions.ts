@@ -1,4 +1,5 @@
 "use server";
+import { formString, formStringOrNull } from "@/lib/form-fields";
 
 import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
@@ -10,17 +11,17 @@ export async function createStore(formData: FormData) {
   } = await supabase.auth.getUser();
   if (!user) redirect("/login");
 
-  const name = String(formData.get("name") ?? "").trim();
+  const name = formString(formData, "name");
   const slug = String(formData.get("slug") ?? "")
     .trim()
     .toLowerCase();
   const description =
-    String(formData.get("description") ?? "").trim() || null;
+    formStringOrNull(formData, "description");
   const contact_phone =
-    String(formData.get("contact_phone") ?? "").trim() || null;
+    formStringOrNull(formData, "contact_phone");
   const contact_email =
-    String(formData.get("contact_email") ?? "").trim() || null;
-  const address = String(formData.get("address") ?? "").trim() || null;
+    formStringOrNull(formData, "contact_email");
+  const address = formStringOrNull(formData, "address");
 
   if (!name) {
     redirect("/dashboard/new-store?error=" + encodeURIComponent("請填店名"));

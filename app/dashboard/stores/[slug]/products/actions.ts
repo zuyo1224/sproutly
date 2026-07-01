@@ -1,4 +1,5 @@
 "use server";
+import { formString, formStringOrNull } from "@/lib/form-fields";
 
 import { createClient } from "@/lib/supabase/server";
 import { uploadImage } from "@/lib/storage";
@@ -53,12 +54,12 @@ export async function createProduct(slug: string, formData: FormData) {
   const baseRedirect = `/dashboard/stores/${slug}/products/new`;
   const { supabase, store } = await authorizedStore(slug);
 
-  const name = String(formData.get("name") ?? "").trim();
+  const name = formString(formData, "name");
   const description =
-    String(formData.get("description") ?? "").trim() || null;
-  const priceRaw = String(formData.get("price") ?? "").trim();
-  const stockRaw = String(formData.get("stock") ?? "").trim();
-  const imageUrlRaw = String(formData.get("image_url") ?? "").trim();
+    formStringOrNull(formData, "description");
+  const priceRaw = formString(formData, "price");
+  const stockRaw = formString(formData, "stock");
+  const imageUrlRaw = formString(formData, "image_url");
   const isActive = formData.get("is_active") === "on";
   const imageFiles = formData.getAll("image_files") as File[];
 
@@ -128,11 +129,11 @@ export async function updateProduct(
     redirect(`/dashboard/stores/${slug}/products`);
   }
 
-  const name = String(formData.get("name") ?? "").trim();
+  const name = formString(formData, "name");
   const description =
-    String(formData.get("description") ?? "").trim() || null;
-  const priceRaw = String(formData.get("price") ?? "").trim();
-  const stockRaw = String(formData.get("stock") ?? "").trim();
+    formStringOrNull(formData, "description");
+  const priceRaw = formString(formData, "price");
+  const stockRaw = formString(formData, "stock");
   const isActive = formData.get("is_active") === "on";
   const imageFiles = formData.getAll("image_files") as File[];
   const removeImageUrls = new Set(

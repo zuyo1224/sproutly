@@ -1,4 +1,5 @@
 "use server";
+import { formString, formStringOrNull } from "@/lib/form-fields";
 
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
@@ -7,21 +8,21 @@ import { encodeShippingIntoNote, SHIPPING_LABELS, PAYMENT_LABELS, shippingDetail
 import { QTY_MIN, QTY_MAX, isValidQty } from "@/lib/product-quantity";
 
 export async function placeOrder(slug: string, formData: FormData) {
-  const productId = String(formData.get("product_id") ?? "").trim();
+  const productId = formString(formData, "product_id");
   const qtyRaw = String(formData.get("quantity") ?? "1").trim();
-  const customerName = String(formData.get("customer_name") ?? "").trim();
-  const customerPhone = String(formData.get("customer_phone") ?? "").trim();
+  const customerName = formString(formData, "customer_name");
+  const customerPhone = formString(formData, "customer_phone");
   const customerEmail =
-    String(formData.get("customer_email") ?? "").trim() || null;
+    formStringOrNull(formData, "customer_email");
   const shippingAddress =
-    String(formData.get("shipping_address") ?? "").trim() || null;
-  const userNote = String(formData.get("note") ?? "").trim() || null;
+    formStringOrNull(formData, "shipping_address");
+  const userNote = formStringOrNull(formData, "note");
   const paymentMethod =
-    String(formData.get("payment_method") ?? "").trim() || null;
+    formStringOrNull(formData, "payment_method");
   const shippingMethod =
-    String(formData.get("shipping_method") ?? "").trim() || null;
+    formStringOrNull(formData, "shipping_method");
   const shippingStoreName =
-    String(formData.get("shipping_store_name") ?? "").trim() || null;
+    formStringOrNull(formData, "shipping_store_name");
 
   const baseRedirect = `/${slug}/checkout?product_id=${productId}&qty=${qtyRaw}`;
 

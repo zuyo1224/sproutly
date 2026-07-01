@@ -1,13 +1,14 @@
 "use server";
+import { formString } from "@/lib/form-fields";
 
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { redirect } from "next/navigation";
 
 export async function signUp(formData: FormData) {
-  const email = String(formData.get("email") ?? "").trim();
+  const email = formString(formData, "email");
   const password = String(formData.get("password") ?? "");
-  const name = String(formData.get("name") ?? "").trim();
+  const name = formString(formData, "name");
 
   if (!email || !password) {
     redirect("/signup?error=" + encodeURIComponent("請填寫 email 與密碼"));
@@ -74,7 +75,7 @@ export async function signUp(formData: FormData) {
 }
 
 export async function signIn(formData: FormData) {
-  const email = String(formData.get("email") ?? "").trim();
+  const email = formString(formData, "email");
   const password = String(formData.get("password") ?? "");
 
   if (!email || !password) {
