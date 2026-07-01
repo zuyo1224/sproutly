@@ -2,6 +2,7 @@
 
 import { createClient } from "@/lib/supabase/server";
 import { uploadImage } from "@/lib/storage";
+import { normalizeHexColor } from "@/lib/hex-color";
 import { redirect } from "next/navigation";
 
 const PRESETS = new Set(["editorial", "plant-zen", "nordic", "aesop", "modern"]);
@@ -15,7 +16,7 @@ const FONTS = new Set([
 ]);
 
 function safeHex(input: string, fallback: string): string {
-  return /^#[0-9a-fA-F]{6}$/.test(input) ? input : fallback;
+  return normalizeHexColor(input) ?? fallback;
 }
 
 export async function updateStore(slug: string, formData: FormData) {

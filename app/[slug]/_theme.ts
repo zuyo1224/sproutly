@@ -7,6 +7,7 @@ import {
   clampFeaturedCount,
   clampFreePos,
 } from "@/lib/theme-scale";
+import { normalizeHexColor } from "@/lib/hex-color";
 
 export type PresetKey = "editorial" | "plant-zen" | "nordic" | "aesop" | "modern";
 
@@ -604,11 +605,7 @@ function resolveLayout(raw: unknown): StoreTheme["layout"] {
       if (typeof v !== "number" || !Number.isFinite(v)) return 1.0;
       return clampHeroFontScale(v);
     })(),
-    heroTaglineColor: (() => {
-      const v = l.heroTaglineColor;
-      if (typeof v !== "string") return null;
-      return /^#[0-9a-fA-F]{6}$/.test(v.trim()) ? v.trim() : null;
-    })(),
+    heroTaglineColor: normalizeHexColor(l.heroTaglineColor),
     heroTaglineAlign: (() => {
       const v = l.heroTaglineAlign;
       if (v === "left" || v === "center" || v === "right") return v;
@@ -619,11 +616,7 @@ function resolveLayout(raw: unknown): StoreTheme["layout"] {
       if (typeof v !== "number" || !Number.isFinite(v)) return 1.0;
       return clampHeroFontScale(v);
     })(),
-    heroSubtitleColor: (() => {
-      const v = l.heroSubtitleColor;
-      if (typeof v !== "string") return null;
-      return /^#[0-9a-fA-F]{6}$/.test(v.trim()) ? v.trim() : null;
-    })(),
+    heroSubtitleColor: normalizeHexColor(l.heroSubtitleColor),
     heroSubtitleAlign: (() => {
       const v = l.heroSubtitleAlign;
       if (v === "left" || v === "center" || v === "right") return v;
@@ -670,16 +663,12 @@ function resolveLayout(raw: unknown): StoreTheme["layout"] {
           if (obj.headingAlign === "left" || obj.headingAlign === "center" || obj.headingAlign === "right") {
             entry.headingAlign = obj.headingAlign;
           }
-          if (typeof obj.bgColor === "string" && /^#[0-9a-fA-F]{6}$/.test(obj.bgColor.trim())) {
-            entry.bgColor = obj.bgColor.trim();
-          } else if (obj.bgColor === null) {
-            entry.bgColor = null;
-          }
-          if (typeof obj.textColor === "string" && /^#[0-9a-fA-F]{6}$/.test(obj.textColor.trim())) {
-            entry.textColor = obj.textColor.trim();
-          } else if (obj.textColor === null) {
-            entry.textColor = null;
-          }
+          const bg = normalizeHexColor(obj.bgColor);
+          if (bg) entry.bgColor = bg;
+          else if (obj.bgColor === null) entry.bgColor = null;
+          const text = normalizeHexColor(obj.textColor);
+          if (text) entry.textColor = text;
+          else if (obj.textColor === null) entry.textColor = null;
           if (obj.paddingScale === "compact" || obj.paddingScale === "default" || obj.paddingScale === "spacious") {
             entry.paddingScale = obj.paddingScale;
           }

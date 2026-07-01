@@ -8,6 +8,7 @@ import {
   clampFeaturedCount,
   clampFreePos,
 } from "@/lib/theme-scale";
+import { normalizeHexColor } from "@/lib/hex-color";
 import { redirect } from "next/navigation";
 
 const HERO_STYLES = new Set(["full-image", "split", "minimal", "magazine"]);
@@ -117,8 +118,7 @@ type EditorPayload = {
 };
 
 function sanitizeHex(s: unknown): string | undefined {
-  if (typeof s !== "string") return undefined;
-  return /^#[0-9a-fA-F]{6}$/.test(s.trim()) ? s.trim() : undefined;
+  return normalizeHexColor(s) ?? undefined;
 }
 
 export async function saveEditorState(slug: string, payload: EditorPayload) {
@@ -270,8 +270,9 @@ export async function saveEditorState(slug: string, payload: EditorPayload) {
       const v = payload.layout.heroTaglineColor;
       if (v === null || v === "") {
         layoutPatch.heroTaglineColor = null;
-      } else if (typeof v === "string" && /^#[0-9a-fA-F]{6}$/.test(v.trim())) {
-        layoutPatch.heroTaglineColor = v.trim();
+      } else {
+        const hex = normalizeHexColor(v);
+        if (hex) layoutPatch.heroTaglineColor = hex;
       }
     }
     if (payload.layout.heroHeight !== undefined) {
@@ -296,8 +297,9 @@ export async function saveEditorState(slug: string, payload: EditorPayload) {
       const v = payload.layout.heroSubtitleColor;
       if (v === null || v === "") {
         layoutPatch.heroSubtitleColor = null;
-      } else if (typeof v === "string" && /^#[0-9a-fA-F]{6}$/.test(v.trim())) {
-        layoutPatch.heroSubtitleColor = v.trim();
+      } else {
+        const hex = normalizeHexColor(v);
+        if (hex) layoutPatch.heroSubtitleColor = hex;
       }
     }
     if (payload.layout.heroSubtitleAlign !== undefined) {
@@ -343,16 +345,12 @@ export async function saveEditorState(slug: string, payload: EditorPayload) {
           if (v.headingAlign === "left" || v.headingAlign === "center" || v.headingAlign === "right") {
             entry.headingAlign = v.headingAlign;
           }
-          if (typeof v.bgColor === "string" && /^#[0-9a-fA-F]{6}$/.test(v.bgColor.trim())) {
-            entry.bgColor = v.bgColor.trim();
-          } else if (v.bgColor === null) {
-            entry.bgColor = null;
-          }
-          if (typeof v.textColor === "string" && /^#[0-9a-fA-F]{6}$/.test(v.textColor.trim())) {
-            entry.textColor = v.textColor.trim();
-          } else if (v.textColor === null) {
-            entry.textColor = null;
-          }
+          const bg = normalizeHexColor(v.bgColor);
+          if (bg) entry.bgColor = bg;
+          else if (v.bgColor === null) entry.bgColor = null;
+          const text = normalizeHexColor(v.textColor);
+          if (text) entry.textColor = text;
+          else if (v.textColor === null) entry.textColor = null;
           if (v.paddingScale === "compact" || v.paddingScale === "default" || v.paddingScale === "spacious") {
             entry.paddingScale = v.paddingScale;
           }
