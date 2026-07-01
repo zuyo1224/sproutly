@@ -4,6 +4,7 @@ import { useEffect, useState, useRef } from "react";
 import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import { getCart, clearCart } from "@/lib/cart";
+import { clampToStock } from "@/lib/product-stock";
 import { PAYMENT_OPTIONS, SHIPPING_OPTIONS, shippingNeedsStore } from "@/lib/order-labels";
 import { CVS_STORES, formatStoreLabel, CVS_LOOKUP_URLS } from "@/lib/cvs-stores";
 
@@ -184,10 +185,8 @@ export default function CartCheckoutPage() {
   // 整張表單填完按送出才被伺服器退回「庫存不足」，等於白填一遍。
   const itemRows = products.map((p) => {
     const qty = cartRef.current.find((c) => c.productId === p.id)?.qty ?? 0;
-    const soldOut = p.stock !== null && p.stock <= 0;
-    const effectiveQty =
-      p.stock !== null ? Math.min(qty, Math.max(p.stock, 0)) : qty;
-    const clamped = !soldOut && effectiveQty < qty;
+    // 夾取規則與單品結帳頁共用，見 clampToStock。
+    const { effectiveQty, soldOut, clamped } = clampToStock(p.stock, qty);
     return { product: p, qty, effectiveQty, soldOut, clamped };
   });
   // 摘要的小計／總計／件數一律吃夾過的數量，畫面上的數字才跟真正能下的單一致。

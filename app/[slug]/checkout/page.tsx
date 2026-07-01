@@ -7,6 +7,7 @@ import { SubmitButton } from "@/app/_components/submit-button";
 import { PAYMENT_OPTIONS, SHIPPING_OPTIONS } from "@/lib/order-labels";
 import { CVS_STORES, formatStoreLabel, CVS_LOOKUP_URLS } from "@/lib/cvs-stores";
 import { QTY_MIN, QTY_MAX } from "@/lib/product-quantity";
+import { clampToStock } from "@/lib/product-stock";
 
 type Params = Promise<{ slug: string }>;
 type SearchParams = Promise<{
@@ -52,15 +53,11 @@ export default async function CheckoutPage({
     .maybeSingle();
   if (!product) notFound();
 
-  // 把顯示數量夾到實際庫存。商品詳情頁的數量選單雖已限在庫存內，但庫存可能
-  // 在客人從商品頁載入到結帳之間被別人買走，或客人帶著舊的分享／書籤網址
-  // （?qty=...）直接進來——沒夾的話結帳頁會照樣顯示一個結不掉的數量與總價，
-  // 整張表單填完按送出才被伺服器退回「庫存只剩 N 件」，等於白填一遍。
-  const stock: number | null = product.stock;
-  const soldOut = stock !== null && stock <= 0;
-  const effectiveQty =
-    stock !== null ? Math.min(quantity, Math.max(stock, 0)) : quantity;
-  const wasClamped = !soldOut && effectiveQty < quantity;
+  // 把顯示數量夾到實際庫存（規則與購物車結帳頁共用，見 clampToStock）。
+  const { effectiveQty, soldOut, clamped: wasClamped } = clampToStock(
+    product.stock,
+    quantity
+  );
   const total = product.price_cents * effectiveQty;
   const placeBound = placeOrder.bind(null, slug);
 
@@ -186,7 +183,7 @@ export default async function CheckoutPage({
             Notice · 庫存提醒
           </p>
           <p className="text-sm" style={{ lineHeight: 1.6 }}>
-            這株目前只剩 {stock} 件，數量已自動調整成 {effectiveQty} 件。
+            這株目前只剩 {product.stock} 件，數量已自動調整成 {effectiveQty} 件。
           </p>
         </div>
       )}

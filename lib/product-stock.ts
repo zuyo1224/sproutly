@@ -46,6 +46,27 @@ export function stockAriaSuffix(stock: number | null | undefined): string {
   return "";
 }
 
+// 結帳頁「把顯示數量夾到實際庫存」的單一來源，回傳夾過的數量 + 售完/被夾兩個旗標。
+// 單品結帳頁與購物車結帳頁是同一件事的兩條路徑：商品頁的數量選單雖已限在庫存內，
+// 但庫存可能在客人載入到結帳之間被別人買走（race），或客人帶著舊的分享／書籤網址
+// （?qty=... 或購物車殘留）直接進來——沒夾的話結帳頁會照樣顯示一個結不掉的數量與
+// 總價，整張表單填完按送出才被伺服器退回「庫存不足」，等於白填一遍。兩頁原本各自
+// inline 同一組三元（soldOut / effectiveQty / clamped），日後想改夾取規則（例如
+// 負庫存的新處理、或「部分銷售」狀態）就得兩頁追著改、一漏就一邊算得出、一邊算不出。
+// soldOut 直接走 isSoldOut，跟全站缺貨定義（<= 0，含超賣負數）同一份；clamped 指
+// 「沒售完但要的量超過庫存、被砍下來」，呼叫端據此擋送出、把客人帶回去調整。
+export type StockClamp = { effectiveQty: number; soldOut: boolean; clamped: boolean };
+
+export function clampToStock(
+  stock: number | null | undefined,
+  qty: number
+): StockClamp {
+  const soldOut = isSoldOut(stock);
+  const effectiveQty = stock != null ? Math.min(qty, Math.max(stock, 0)) : qty;
+  const clamped = !soldOut && effectiveQty < qty;
+  return { effectiveQty, soldOut, clamped };
+}
+
 // 把售完的整批沉到清單最後，有貨的維持原本的相對順序。
 // JS Array.sort 自 ES2019 起保證穩定（同組元素相對順序不變），所以這個 comparator
 // 套在「已經排好序」的清單上（例如已照 created_at 倒序或價格排好），只會把售完那群
