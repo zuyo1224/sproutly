@@ -18,6 +18,10 @@ import {
 import { matchesCustomerSearch } from "@/lib/customer-search";
 import { compareIsoAsc, compareIsoDesc } from "@/lib/date-compare";
 import { isPaidOrder } from "@/lib/order-labels";
+import {
+  groupOrdersByCustomer,
+  isAccountGroupKey,
+} from "@/lib/group-orders-by-customer";
 
 function daysAgo(iso: string) {
   const diff = Date.now() - new Date(iso).getTime();
@@ -104,16 +108,9 @@ export default async function StoreCustomersPage({
   // 單一店家實務上同一種幣別，取第一筆訂單的幣別當這頁的顯示單位；沒有訂單就退 TWD
   const storeCurrency = orderList[0]?.currency ?? "TWD";
 
-  // 分群邏輯：有 customer_id → 用 customer_id；否則 fallback 用 phone
-  const groups = new Map<string, OrderRow[]>();
-  for (const order of orderList) {
-    const key = order.customer_id
-      ? `account:${order.customer_id}`
-      : `guest:${order.customer_phone || "unknown"}`;
-    const arr = groups.get(key) ?? [];
-    arr.push(order);
-    groups.set(key, arr);
-  }
+  // 分群邏輯：有 customer_id → 用 customer_id；否則 fallback 用 phone。
+  // 跟匯出 CSV 共用同一份分群口徑（見 lib/group-orders-by-customer 說明）。
+  const groups = groupOrdersByCustomer(orderList);
 
   const rows: CustomerRow[] = [];
   for (const [key, orders] of groups) {
@@ -126,7 +123,7 @@ export default async function StoreCustomersPage({
     const paidOrders = orders.filter((o) => isPaidOrder(o.payment_status));
     const paidCount = paidOrders.length;
     const paidCents = paidOrders.reduce((sum, o) => sum + o.total_cents, 0);
-    const identityType: CustomerRow["identityType"] = key.startsWith("account:")
+    const identityType: CustomerRow["identityType"] = isAccountGroupKey(key)
       ? "account"
       : "guest";
     rows.push({

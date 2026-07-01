@@ -11,6 +11,10 @@ import { csvEscape } from "@/lib/csv-escape";
 import { matchesCustomerSearch } from "@/lib/customer-search";
 import { compareIsoAsc, compareIsoDesc } from "@/lib/date-compare";
 import { isPaidOrder } from "@/lib/order-labels";
+import {
+  groupOrdersByCustomer,
+  isAccountGroupKey,
+} from "@/lib/group-orders-by-customer";
 
 type Params = Promise<{ slug: string }>;
 
@@ -57,8 +61,8 @@ export async function GET(request: Request, { params }: { params: Params }) {
     : "recent";
   const filterActive = q !== "" || sort !== "recent";
 
-  // 分群邏輯與客人列表頁一字不差：取消的單不算，有 customer_id 用會員 ID 分群、
-  // 否則 fallback 用電話。兩邊各算各的就會對不上，所以刻意複製同一套。
+  // 取消的單不算。分群本身跟客人列表頁共用同一份口徑
+  // （見 lib/group-orders-by-customer 說明），兩邊不再各抄一套。
   const { data: orders } = await supabase
     .from("sproutly_orders")
     .select(
@@ -86,15 +90,7 @@ export async function GET(request: Request, { params }: { params: Params }) {
     lastOrderAt: string;
   };
 
-  const groups = new Map<string, OrderRow[]>();
-  for (const order of orderList) {
-    const key = order.customer_id
-      ? `account:${order.customer_id}`
-      : `guest:${order.customer_phone || "unknown"}`;
-    const arr = groups.get(key) ?? [];
-    arr.push(order);
-    groups.set(key, arr);
-  }
+  const groups = groupOrdersByCustomer(orderList);
 
   const rows: CustomerRow[] = [];
   for (const [key, group] of groups) {
@@ -107,7 +103,7 @@ export async function GET(request: Request, { params }: { params: Params }) {
     const paidOrders = group.filter((o) => isPaidOrder(o.payment_status));
     const paidCents = paidOrders.reduce((sum, o) => sum + o.total_cents, 0);
     rows.push({
-      identityType: key.startsWith("account:") ? "account" : "guest",
+      identityType: isAccountGroupKey(key) ? "account" : "guest",
       name: latest.customer_name || "—",
       email: latest.customer_email,
       phone: latest.customer_phone,
