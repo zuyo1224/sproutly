@@ -15,6 +15,7 @@ import {
 } from "@/lib/order-labels";
 // 分日統計的台灣時區日期 key、時間戳、篩選區間起點跟店家首頁/匯出共用同一份（見檔內說明）。
 import { taipeiStampShort, taipeiRangeSince } from "@/lib/format-date";
+import { sumOrderCents } from "@/lib/sum-order-cents";
 
 type Params = Promise<{ slug: string }>;
 type SearchParams = Promise<{
@@ -146,11 +147,11 @@ export default async function OrdersListPage({
   // 這條就直接告訴他現在還有多少錢在外面沒進來，不用自己一筆筆加。
   const moneyOrders = (orders ?? []).filter((o) => o.status !== "cancelled");
   const summaryCurrency = orders?.[0]?.currency ?? "TWD";
-  const receivedCents = moneyOrders
-    .filter((o) => isPaidOrder(o.payment_status))
-    .reduce((sum, o) => sum + o.total_cents, 0);
+  const receivedCents = sumOrderCents(
+    moneyOrders.filter((o) => isPaidOrder(o.payment_status))
+  );
   const unpaidOrders = moneyOrders.filter((o) => isUnpaidOrder(o.payment_status));
-  const outstandingCents = unpaidOrders.reduce((sum, o) => sum + o.total_cents, 0);
+  const outstandingCents = sumOrderCents(unpaidOrders);
 
   // 給 chip 用的 URL builder（每個只換自己那一維，其餘篩選原樣帶著走）
   function chipHref(s: string) {

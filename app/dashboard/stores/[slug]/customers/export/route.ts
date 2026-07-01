@@ -10,6 +10,7 @@ import { customerTier } from "@/lib/customer-tags";
 import { csvEscape } from "@/lib/csv-escape";
 import { matchesCustomerSearch } from "@/lib/customer-search";
 import { compareIsoAsc, compareIsoDesc } from "@/lib/date-compare";
+import { sumOrderCents } from "@/lib/sum-order-cents";
 import { isPaidOrder } from "@/lib/order-labels";
 import {
   groupOrdersByCustomer,
@@ -99,9 +100,9 @@ export async function GET(request: Request, { params }: { params: Params }) {
     );
     const latest = sorted[sorted.length - 1];
     const earliest = sorted[0];
-    const total = group.reduce((sum, o) => sum + o.total_cents, 0);
+    const total = sumOrderCents(group);
     const paidOrders = group.filter((o) => isPaidOrder(o.payment_status));
-    const paidCents = paidOrders.reduce((sum, o) => sum + o.total_cents, 0);
+    const paidCents = sumOrderCents(paidOrders);
     rows.push({
       identityType: isAccountGroupKey(key) ? "account" : "guest",
       name: latest.customer_name || "—",

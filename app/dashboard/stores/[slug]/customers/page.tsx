@@ -17,6 +17,7 @@ import {
 } from "@/lib/customer-tags";
 import { matchesCustomerSearch } from "@/lib/customer-search";
 import { compareIsoAsc, compareIsoDesc } from "@/lib/date-compare";
+import { sumOrderCents } from "@/lib/sum-order-cents";
 import { isPaidOrder } from "@/lib/order-labels";
 import {
   groupOrdersByCustomer,
@@ -119,10 +120,10 @@ export default async function StoreCustomersPage({
     );
     const latest = sorted[sorted.length - 1];
     const earliest = sorted[0];
-    const total = orders.reduce((sum, o) => sum + o.total_cents, 0);
+    const total = sumOrderCents(orders);
     const paidOrders = orders.filter((o) => isPaidOrder(o.payment_status));
     const paidCount = paidOrders.length;
-    const paidCents = paidOrders.reduce((sum, o) => sum + o.total_cents, 0);
+    const paidCents = sumOrderCents(paidOrders);
     const identityType: CustomerRow["identityType"] = isAccountGroupKey(key)
       ? "account"
       : "guest";

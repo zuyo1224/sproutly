@@ -8,6 +8,7 @@ type Params = Promise<{ slug: string }>;
 
 // 後台首頁的金額一律跟著這間店實際出單的幣別走（共用 formatPrice，不再對非 TWD 店家硬寫 NT$）。
 import { formatPrice } from "@/lib/format-price";
+import { sumOrderCents } from "@/lib/sum-order-cents";
 import { isSoldOut, LOW_STOCK_THRESHOLD } from "@/lib/product-stock";
 // 訂單狀態徽章（label + 色票）跟訂單列表、訂單詳情共用同一份，三頁同一筆單同色同字。
 import {
@@ -108,12 +109,11 @@ export default async function StoreInsightsPage({
   const storeCurrency = allOrders?.[0]?.currency ?? "TWD";
 
   const totalOrders = allOrders?.length ?? 0;
-  const totalRevenue =
-    allOrders
-      ?.filter(
-        (o) => isPaidOrder(o.payment_status) && o.status !== "cancelled"
-      )
-      .reduce((sum, o) => sum + o.total_cents, 0) ?? 0;
+  const totalRevenue = sumOrderCents(
+    allOrders?.filter(
+      (o) => isPaidOrder(o.payment_status) && o.status !== "cancelled"
+    ) ?? []
+  );
   const pendingOrders =
     allOrders?.filter((o) => isPendingOrder(o.status)).length ?? 0;
   // 「出貨了還沒收到錢」的應收。轉帳 / 貨到付款的店家最在意這個，
@@ -125,23 +125,19 @@ export default async function StoreInsightsPage({
       (o) => o.status !== "cancelled" && isUnpaidOrder(o.payment_status)
     ) ?? [];
   const outstandingCount = unpaidOrders.length;
-  const outstandingCents = unpaidOrders.reduce(
-    (sum, o) => sum + o.total_cents,
-    0
+  const outstandingCents = sumOrderCents(unpaidOrders);
+  const monthRevenue = sumOrderCents(
+    monthOrders?.filter(
+      (o) => isPaidOrder(o.payment_status) && o.status !== "cancelled"
+    ) ?? []
   );
-  const monthRevenue =
-    monthOrders
-      ?.filter(
-        (o) => isPaidOrder(o.payment_status) && o.status !== "cancelled"
-      )
-      .reduce((sum, o) => sum + o.total_cents, 0) ?? 0;
   const monthOrderCount = monthOrders?.length ?? 0;
   const avgOrderValue =
     totalOrders > 0
       ? Math.round(
-          (allOrders!
-            .filter((o) => o.status !== "cancelled")
-            .reduce((s, o) => s + o.total_cents, 0) /
+          (sumOrderCents(
+            allOrders!.filter((o) => o.status !== "cancelled")
+          ) /
             Math.max(
               allOrders!.filter((o) => o.status !== "cancelled").length,
               1
