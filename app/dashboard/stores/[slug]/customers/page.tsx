@@ -16,6 +16,7 @@ import {
   REPEAT_ORDER_THRESHOLD,
 } from "@/lib/customer-tags";
 import { matchesCustomerSearch } from "@/lib/customer-search";
+import { compareIsoAsc, compareIsoDesc } from "@/lib/date-compare";
 
 function daysAgo(iso: string) {
   const diff = Date.now() - new Date(iso).getTime();
@@ -115,8 +116,8 @@ export default async function StoreCustomersPage({
 
   const rows: CustomerRow[] = [];
   for (const [key, orders] of groups) {
-    const sorted = [...orders].sort(
-      (a, b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime()
+    const sorted = [...orders].sort((a, b) =>
+      compareIsoAsc(a.created_at, b.created_at)
     );
     const latest = sorted[sorted.length - 1];
     const earliest = sorted[0];
@@ -155,15 +156,13 @@ export default async function StoreCustomersPage({
       filtered.sort((a, b) => b.orderCount - a.orderCount);
       break;
     case "first":
-      filtered.sort(
-        (a, b) =>
-          new Date(a.firstOrderAt).getTime() - new Date(b.firstOrderAt).getTime()
+      filtered.sort((a, b) =>
+        compareIsoAsc(a.firstOrderAt, b.firstOrderAt)
       );
       break;
     default:
-      filtered.sort(
-        (a, b) =>
-          new Date(b.lastOrderAt).getTime() - new Date(a.lastOrderAt).getTime()
+      filtered.sort((a, b) =>
+        compareIsoDesc(a.lastOrderAt, b.lastOrderAt)
       );
   }
 

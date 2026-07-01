@@ -9,6 +9,7 @@ import { customerTier } from "@/lib/customer-tags";
 // CSV 欄位轉義跟訂單匯出共用同一份（見檔內說明）。
 import { csvEscape } from "@/lib/csv-escape";
 import { matchesCustomerSearch } from "@/lib/customer-search";
+import { compareIsoAsc, compareIsoDesc } from "@/lib/date-compare";
 
 type Params = Promise<{ slug: string }>;
 
@@ -96,9 +97,8 @@ export async function GET(request: Request, { params }: { params: Params }) {
 
   const rows: CustomerRow[] = [];
   for (const [key, group] of groups) {
-    const sorted = [...group].sort(
-      (a, b) =>
-        new Date(a.created_at).getTime() - new Date(b.created_at).getTime()
+    const sorted = [...group].sort((a, b) =>
+      compareIsoAsc(a.created_at, b.created_at)
     );
     const latest = sorted[sorted.length - 1];
     const earliest = sorted[0];
@@ -129,16 +129,13 @@ export async function GET(request: Request, { params }: { params: Params }) {
       filtered.sort((a, b) => b.orderCount - a.orderCount);
       break;
     case "first":
-      filtered.sort(
-        (a, b) =>
-          new Date(a.firstOrderAt).getTime() -
-          new Date(b.firstOrderAt).getTime()
+      filtered.sort((a, b) =>
+        compareIsoAsc(a.firstOrderAt, b.firstOrderAt)
       );
       break;
     default:
-      filtered.sort(
-        (a, b) =>
-          new Date(b.lastOrderAt).getTime() - new Date(a.lastOrderAt).getTime()
+      filtered.sort((a, b) =>
+        compareIsoDesc(a.lastOrderAt, b.lastOrderAt)
       );
   }
 
