@@ -60,7 +60,7 @@ const PAYMENT_LABEL: Record<string, { label: string; color: string }> =
     ])
   );
 
-import { formatPrice } from "@/lib/format-price";
+import { formatPrice, displayCurrency } from "@/lib/format-price";
 
 export default async function OrdersListPage({
   params,
@@ -146,7 +146,8 @@ export default async function OrdersListPage({
   // 轉帳 / 貨到付款的店家最在意「未收」這個數字 — 篩到「已出貨 + 未付款」時，
   // 這條就直接告訴他現在還有多少錢在外面沒進來，不用自己一筆筆加。
   const moneyOrders = (orders ?? []).filter((o) => o.status !== "cancelled");
-  const summaryCurrency = orders?.[0]?.currency ?? "TWD";
+  // 這頁的顯示幣別（取第一筆訂單、空退 TWD），見 displayCurrency。
+  const summaryCurrency = displayCurrency(orders);
   const receivedCents = sumOrderCents(
     moneyOrders.filter((o) => isPaidOrder(o.payment_status))
   );

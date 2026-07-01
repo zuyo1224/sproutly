@@ -7,7 +7,7 @@ type Params = Promise<{ slug: string }>;
 type SearchParams = Promise<{ q?: string; sort?: string }>;
 
 // 客人名單的金額一律跟著這間店實際出單的幣別走（共用 formatPrice，不再對非 TWD 店家硬寫 NT$）。
-import { formatPrice } from "@/lib/format-price";
+import { formatPrice, displayCurrency } from "@/lib/format-price";
 import { taipeiDateNumeric } from "@/lib/format-date";
 import {
   customerTier,
@@ -106,8 +106,8 @@ export default async function StoreCustomersPage({
     .neq("status", "cancelled");
 
   const orderList = (orders as OrderRow[] | null) ?? [];
-  // 單一店家實務上同一種幣別，取第一筆訂單的幣別當這頁的顯示單位；沒有訂單就退 TWD
-  const storeCurrency = orderList[0]?.currency ?? "TWD";
+  // 這頁的顯示幣別（取第一筆訂單、空退 TWD），見 displayCurrency。
+  const storeCurrency = displayCurrency(orderList);
 
   // 分群邏輯：有 customer_id → 用 customer_id；否則 fallback 用 phone。
   // 跟匯出 CSV 共用同一份分群口徑（見 lib/group-orders-by-customer 說明）。

@@ -7,7 +7,7 @@ import { updateOrderStatus } from "./orders/[orderId]/actions";
 type Params = Promise<{ slug: string }>;
 
 // 後台首頁的金額一律跟著這間店實際出單的幣別走（共用 formatPrice，不再對非 TWD 店家硬寫 NT$）。
-import { formatPrice } from "@/lib/format-price";
+import { formatPrice, displayCurrency } from "@/lib/format-price";
 import { sumOrderCents } from "@/lib/sum-order-cents";
 import { isSoldOut, LOW_STOCK_THRESHOLD } from "@/lib/product-stock";
 // 訂單狀態徽章（label + 色票）跟訂單列表、訂單詳情共用同一份，三頁同一筆單同色同字。
@@ -104,9 +104,8 @@ export default async function StoreInsightsPage({
       .limit(10),
   ]);
 
-  // 這間店出單用的幣別。跟訂單列表頁同一套：拿任一筆訂單的 currency 當基準
-  // （單一店家實務上同一種幣別），沒有訂單時退回 TWD。
-  const storeCurrency = allOrders?.[0]?.currency ?? "TWD";
+  // 這間店出單用的顯示幣別（取第一筆訂單、空退 TWD），見 displayCurrency。
+  const storeCurrency = displayCurrency(allOrders);
 
   const totalOrders = allOrders?.length ?? 0;
   const totalRevenue = sumOrderCents(

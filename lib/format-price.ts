@@ -30,6 +30,19 @@ export function formatPrice(cents: number, currency?: string | null): string {
   }
 }
 
+// 一批訂單在後台某頁要用哪個幣別顯示金額：單一店家實務上同一種幣別，取清單第一筆
+// 訂單的 currency 當這頁的顯示單位，沒有訂單（空清單／null）就退回 TWD。店家首頁、
+// 訂單列表、客人列表三頁原本各抄一份 `orders?.[0]?.currency ?? "TWD"`，兩處註解還互相
+// 點名「跟訂單列表頁同一套」——日後改挑法（例如改抓最近一筆而非第一筆）得三處同步，
+// 漏一處同一店在三頁就可能顯示不同幣別。收成這支，三頁吃同一條口徑。跟 formatPrice
+// 內部那條 currency 正規化（去空白／轉大寫／沒填當 TWD）用途不同：那邊管「單一 currency
+// 值怎麼正規化成顯示」，這邊管「從一批訂單挑出代表幣別」，不合併。
+export function displayCurrency(
+  orders: { currency?: string | null }[] | null | undefined
+): string {
+  return orders?.[0]?.currency ?? "TWD";
+}
+
 // CSV 匯出的金額欄要的是「純整數元」——不帶符號、不帶千分位、不帶小數（Excel 那格
 // 直接當數字算）。客人匯出（消費總額、已付金額）與訂單匯出（訂單總額）三處各抄一份
 // 同一串 Math.round(cents / 100)，收成一份：日後要改捨入規則（例如改無條件捨去、
