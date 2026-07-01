@@ -111,6 +111,25 @@ export function isPendingOrder(status: string | null | undefined): boolean {
   return status === "pending";
 }
 
+// 「這筆單的錢收到了嗎 / 還沒收」單一來源：逐筆看 payment_status。後台原本把
+// paymentStatus === "paid" 這個原子述詞散在八處各自硬寫——跨店首頁總營收累加
+// （dashboard/page.tsx）、店家首頁總營收/月營收/14 天趨勢/「來自 N 筆」與客人列表、
+// 客人匯出的已付款筆數、訂單列表的已收金額，逐處重打同一個字串字面值；「還沒收」
+// （=== "unpaid"）也散在店家首頁應收與訂單列表未付款兩處。日後把付款狀態的 value
+// 改名（例如 paid 改 settled）、或多一個同樣算「已收到錢」的狀態，這些地方得同步，
+// 漏一處就「首頁營收算的跟訂單列表已收算的對不上」。收成這兩支，逐筆判斷吃同一條口徑。
+// 注意：多數呼叫端還會 && o.status !== "cancelled"（只算未取消的單），那條篩選各處
+// 自己保留、不併進來；這裡只管「收沒收到錢」這一個原子問題。改狀態 server action
+// （actions.ts）裡的 paymentStatus === "paid"/"unpaid" 是判斷「這次要寫進去的值」以決定
+// 蓋不蓋 paid_at 時間章、語意不同（比照 isPendingOrder 不收 action 的 guard），刻意不收。
+export function isPaidOrder(status: string | null | undefined): boolean {
+  return status === "paid";
+}
+
+export function isUnpaidOrder(status: string | null | undefined): boolean {
+  return status === "unpaid";
+}
+
 // 付款狀態的「正規順序」與中文 label 單一來源：未付款→已付款→已退款。後台與客人端原本
 // 各抄一份這三個字——訂單列表的篩選 chip 與文字色標、詳情頁的狀態下拉與藥丸徽章、訂單
 // 匯出 CSV、查訂單頁、會員訂單詳情、會員訂單列表的 inline 三元、改狀態 server action 的

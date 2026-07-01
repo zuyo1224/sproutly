@@ -17,6 +17,7 @@ import {
 } from "@/lib/customer-tags";
 import { matchesCustomerSearch } from "@/lib/customer-search";
 import { compareIsoAsc, compareIsoDesc } from "@/lib/date-compare";
+import { isPaidOrder } from "@/lib/order-labels";
 
 function daysAgo(iso: string) {
   const diff = Date.now() - new Date(iso).getTime();
@@ -122,7 +123,7 @@ export default async function StoreCustomersPage({
     const latest = sorted[sorted.length - 1];
     const earliest = sorted[0];
     const total = orders.reduce((sum, o) => sum + o.total_cents, 0);
-    const paidOrders = orders.filter((o) => o.payment_status === "paid");
+    const paidOrders = orders.filter((o) => isPaidOrder(o.payment_status));
     const paidCount = paidOrders.length;
     const paidCents = paidOrders.reduce((sum, o) => sum + o.total_cents, 0);
     const identityType: CustomerRow["identityType"] = key.startsWith("account:")

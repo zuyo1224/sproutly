@@ -7,6 +7,8 @@ import {
   ORDER_STATUS_BADGES,
   ORDER_STATUS_OPTIONS,
   isPendingOrder,
+  isPaidOrder,
+  isUnpaidOrder,
   PAYMENT_STATUSES,
   PAYMENT_STATUS_LABELS,
   shortOrderId,
@@ -145,9 +147,9 @@ export default async function OrdersListPage({
   const moneyOrders = (orders ?? []).filter((o) => o.status !== "cancelled");
   const summaryCurrency = orders?.[0]?.currency ?? "TWD";
   const receivedCents = moneyOrders
-    .filter((o) => o.payment_status === "paid")
+    .filter((o) => isPaidOrder(o.payment_status))
     .reduce((sum, o) => sum + o.total_cents, 0);
-  const unpaidOrders = moneyOrders.filter((o) => o.payment_status === "unpaid");
+  const unpaidOrders = moneyOrders.filter((o) => isUnpaidOrder(o.payment_status));
   const outstandingCents = unpaidOrders.reduce((sum, o) => sum + o.total_cents, 0);
 
   // 給 chip 用的 URL builder（每個只換自己那一維，其餘篩選原樣帶著走）

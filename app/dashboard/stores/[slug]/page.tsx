@@ -10,7 +10,13 @@ type Params = Promise<{ slug: string }>;
 import { formatPrice } from "@/lib/format-price";
 import { isSoldOut, LOW_STOCK_THRESHOLD } from "@/lib/product-stock";
 // 訂單狀態徽章（label + 色票）跟訂單列表、訂單詳情共用同一份，三頁同一筆單同色同字。
-import { ORDER_STATUS_BADGES, isPendingOrder, shortOrderId } from "@/lib/order-labels";
+import {
+  ORDER_STATUS_BADGES,
+  isPendingOrder,
+  isPaidOrder,
+  isUnpaidOrder,
+  shortOrderId,
+} from "@/lib/order-labels";
 // 分日統計的台灣時區日期 key 跟訂單列表/匯出共用同一份（見檔內說明）。
 import { taipeiDateKey, taipeiStampShort } from "@/lib/format-date";
 
@@ -105,7 +111,7 @@ export default async function StoreInsightsPage({
   const totalRevenue =
     allOrders
       ?.filter(
-        (o) => o.payment_status === "paid" && o.status !== "cancelled"
+        (o) => isPaidOrder(o.payment_status) && o.status !== "cancelled"
       )
       .reduce((sum, o) => sum + o.total_cents, 0) ?? 0;
   const pendingOrders =
@@ -116,7 +122,7 @@ export default async function StoreInsightsPage({
   // 口徑跟訂單列表一致：未取消的單裡 payment_status 還是 unpaid 的（已退款不算）。
   const unpaidOrders =
     allOrders?.filter(
-      (o) => o.status !== "cancelled" && o.payment_status === "unpaid"
+      (o) => o.status !== "cancelled" && isUnpaidOrder(o.payment_status)
     ) ?? [];
   const outstandingCount = unpaidOrders.length;
   const outstandingCents = unpaidOrders.reduce(
@@ -126,7 +132,7 @@ export default async function StoreInsightsPage({
   const monthRevenue =
     monthOrders
       ?.filter(
-        (o) => o.payment_status === "paid" && o.status !== "cancelled"
+        (o) => isPaidOrder(o.payment_status) && o.status !== "cancelled"
       )
       .reduce((sum, o) => sum + o.total_cents, 0) ?? 0;
   const monthOrderCount = monthOrders?.length ?? 0;
@@ -166,7 +172,7 @@ export default async function StoreInsightsPage({
       if (stats) {
         stats.orders++;
         if (
-          o.payment_status === "paid" &&
+          isPaidOrder(o.payment_status) &&
           o.status !== "cancelled"
         ) {
           stats.revenue += o.total_cents;
@@ -356,7 +362,7 @@ export default async function StoreInsightsPage({
             {formatPrice(totalRevenue, storeCurrency)}
           </p>
           <p className="mt-1.5 text-xs text-emerald-900/50">
-            來自 {allOrders?.filter((o) => o.payment_status === "paid").length ?? 0} 筆訂單
+            來自 {allOrders?.filter((o) => isPaidOrder(o.payment_status)).length ?? 0} 筆訂單
           </p>
         </div>
         <Link
