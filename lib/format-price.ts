@@ -55,6 +55,16 @@ export function centsToYuan(cents: number): number {
   return Math.round(cents / 100);
 }
 
+// 反過來：把後台表單填的「元」金額存進資料庫的整數「分」欄位。新增商品與更新商品
+// 兩個 server action 原本各抄一份逐字相同的 Math.round(price * 100)，收成一份：日後
+// 若要改捨入規則（例如支援不足一分的無條件進位），只動這裡，兩個寫入路徑不會一處改
+// 一處沒改而讓同一個價格在新增／編輯時存出不同的分數。乘 100 前的 price 由呼叫端的
+// parsePrice 保證已是非負有限數，這裡不重複防呆；用 Math.round 收掉浮點誤差（例如
+// 19.99 * 100 = 1998.9999… 收成 1999），跟 centsToYuan 讀取端同一種捨入態度。
+export function yuanToCents(yuan: number): number {
+  return Math.round(yuan * 100);
+}
+
 // 把幣別代碼正規化成結構化資料（JSON-LD 的 priceCurrency）能用的乾淨值：
 // 去空白、轉大寫，沒填（舊商品 null／空字串）就當台灣店退回 TWD——跟 formatPrice
 // 顯示端同一條防呆線。原本 offers.priceCurrency 直接塞 product.currency，沒填的

@@ -2,6 +2,7 @@
 
 import { createClient } from "@/lib/supabase/server";
 import { uploadImage } from "@/lib/storage";
+import { yuanToCents } from "@/lib/format-price";
 import { redirect } from "next/navigation";
 
 const BUCKET = "sproutly-products";
@@ -95,7 +96,7 @@ export async function createProduct(slug: string, formData: FormData) {
     merchant_id: store.id,
     name,
     description,
-    price_cents: Math.round(price! * 100),
+    price_cents: yuanToCents(price!),
     currency: "TWD",
     image_urls: imageUrls,
     stock: stock!,
@@ -175,7 +176,7 @@ export async function updateProduct(
     .update({
       name,
       description,
-      price_cents: Math.round(price! * 100),
+      price_cents: yuanToCents(price!),
       image_urls: finalImages,
       stock: stock!,
       is_active: isActive,
