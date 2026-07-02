@@ -226,6 +226,7 @@ export interface StoreTheme {
     testimonialsColumns: 2 | 3 | 4;    // 好評卡排成幾欄（預設 3）
     statsColumns: 2 | 3 | 4;           // 數字排成幾欄（預設 4）
     galleryColumns: 2 | 3 | 4;         // 相簿排成幾欄（預設 3）
+    journalColumns: 2 | 3;             // 慢讀卡排成幾欄（預設 3；固定三張卡，4 欄永遠填不滿所以不開）
     // 每個 section 的元素級樣式覆寫（北極星：超越 Wix 的元素級控制覆蓋率）
     sectionStyles: Record<string, {
       headingAlign?: "left" | "center" | "right";
@@ -668,6 +669,11 @@ function resolveLayout(raw: unknown): StoreTheme["layout"] {
     galleryColumns: (() => {
       const v = l.galleryColumns;
       if (v === 2 || v === 3 || v === 4) return v;
+      return 3 as const;
+    })(),
+    journalColumns: (() => {
+      const v = l.journalColumns;
+      if (v === 2 || v === 3) return v;
       return 3 as const;
     })(),
     sectionStyles: (() => {

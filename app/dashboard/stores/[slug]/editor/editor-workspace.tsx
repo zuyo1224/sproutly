@@ -102,6 +102,7 @@ type EditorTheme = {
     testimonialsColumns: 2 | 3 | 4;
     statsColumns: 2 | 3 | 4;
     galleryColumns: 2 | 3 | 4;
+    journalColumns: 2 | 3;
     sectionStyles: Record<string, {
       headingAlign?: "left" | "center" | "right";
       bgColor?: string | null;
@@ -913,6 +914,7 @@ export function EditorWorkspace({
           testimonialsColumns: t.layout.testimonialsColumns,
           statsColumns: t.layout.statsColumns,
           galleryColumns: t.layout.galleryColumns,
+          journalColumns: t.layout.journalColumns,
           sectionStyles: t.layout.sectionStyles,
         },
         homepage: t.homepage,
@@ -2771,6 +2773,27 @@ export function EditorWorkspace({
                 ));
               })()}
             </div>
+            <Field label="排幾欄">
+              <div className="grid grid-cols-2 gap-1.5">
+                {([2, 3] as const).map((n) => (
+                  <button
+                    key={n}
+                    type="button"
+                    onClick={() => updateLayout({ journalColumns: n })}
+                    className={`rounded-lg border py-2 text-xs transition ${
+                      theme.layout.journalColumns === n
+                        ? "border-emerald-500 bg-emerald-50 text-emerald-900"
+                        : "border-stone-200 text-stone-600 hover:border-stone-400"
+                    }`}
+                  >
+                    {n} 欄
+                  </button>
+                ))}
+              </div>
+              <p className="mt-1 text-[11px] text-stone-500 leading-relaxed">
+                桌機排幾欄。固定三張卡，4 欄一定留空格所以不開。手機一律 1 欄不受影響。
+              </p>
+            </Field>
           </PanelSection>
         )}
 

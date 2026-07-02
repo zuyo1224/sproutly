@@ -51,6 +51,7 @@ type EditorPayload = {
     testimonialsColumns?: number;
     statsColumns?: number;
     galleryColumns?: number;
+    journalColumns?: number;
     sectionStyles?: Record<string, {
       headingAlign?: string;
       bgColor?: string | null;
@@ -341,6 +342,11 @@ export async function saveEditorState(slug: string, payload: EditorPayload) {
     if (payload.layout.galleryColumns !== undefined) {
       const v = payload.layout.galleryColumns;
       if (v === 2 || v === 3 || v === 4) layoutPatch.galleryColumns = v;
+    }
+    if (payload.layout.journalColumns !== undefined) {
+      const v = payload.layout.journalColumns;
+      // 慢讀固定三張卡，4 欄永遠填不滿，只收 2/3
+      if (v === 2 || v === 3) layoutPatch.journalColumns = v;
     }
     if (payload.layout.sectionStyles !== undefined) {
       const raw = payload.layout.sectionStyles;

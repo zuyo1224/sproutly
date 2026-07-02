@@ -1233,7 +1233,9 @@ export default async function StoreHomePage({
               </div>
             )}
 
-            <div className="sproutly-stagger grid grid-cols-1 sm:grid-cols-3 gap-x-8 sm:gap-x-10 gap-y-16">
+            <div className={`sproutly-stagger grid grid-cols-1 gap-x-8 sm:gap-x-10 gap-y-16 ${
+              theme.layout.journalColumns === 2 ? "sm:grid-cols-2" : "sm:grid-cols-3"
+            }`}>
               {(theme.homepage.journalCards.length > 0
                 ? theme.homepage.journalCards
                 : JOURNAL_CARD_DEFAULTS
