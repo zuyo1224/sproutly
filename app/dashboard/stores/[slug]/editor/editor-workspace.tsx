@@ -477,6 +477,10 @@ export function EditorWorkspace({
           updateHomepage({ statsEyebrow: value });
         } else if (msg.field === "statsTitle") {
           updateHomepage({ statsTitle: value });
+        } else if (msg.field === "faqEyebrow") {
+          updateHomepage({ faqEyebrow: value });
+        } else if (msg.field === "faqTitle") {
+          updateHomepage({ faqTitle: value });
         } else if (msg.field === "heroCta") {
           updateHomepage({ heroCta: value });
         } else if (msg.field === "heroSecondaryCta") {
