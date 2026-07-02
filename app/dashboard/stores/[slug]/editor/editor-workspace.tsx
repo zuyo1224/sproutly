@@ -515,6 +515,16 @@ export function EditorWorkspace({
           updateHomepage({ shopTitle: value });
         } else if (msg.field === "journalCardLabel") {
           updateHomepage({ journalCardLabel: value });
+        } else if (msg.field === "journalEyebrow") {
+          updateHomepage({ journalEyebrow: value });
+        } else if (msg.field === "journalTitle") {
+          updateHomepage({ journalTitle: value });
+        } else if (msg.field === "journalSubtitle") {
+          updateHomepage({ journalSubtitle: value });
+        } else if (msg.field === "testimonialsEyebrow") {
+          updateHomepage({ testimonialsEyebrow: value });
+        } else if (msg.field === "testimonialsTitle") {
+          updateHomepage({ testimonialsTitle: value });
         }
       }
     }

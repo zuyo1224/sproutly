@@ -1168,12 +1168,16 @@ export default async function StoreHomePage({
                 }}
               >
                 <p
+                  data-edit-text
+                  data-edit-field="journalEyebrow"
                   className="text-[10px] tracking-[0.4em] uppercase mb-5"
                   style={{ color: theme.accent }}
                 >
                   {journalEyebrow}
                 </p>
                 <h2
+                  data-edit-text
+                  data-edit-field="journalTitle"
                   className="text-3xl sm:text-4xl lg:text-[2.5rem]"
                   style={{
                     color: theme.text,
@@ -1186,6 +1190,8 @@ export default async function StoreHomePage({
                   {journalTitle}
                 </h2>
                 <p
+                  data-edit-text
+                  data-edit-field="journalSubtitle"
                   className="mt-6 text-sm sm:text-base leading-[1.9]"
                   style={{ color: theme.textMuted }}
                 >
@@ -1195,12 +1201,16 @@ export default async function StoreHomePage({
             ) : (
               <div className="mb-20 sm:mb-28" data-edit-drag={FREE_POS_KEYS.journalIntro}>
                 <p
+                  data-edit-text
+                  data-edit-field="journalEyebrow"
                   className="text-[10px] tracking-[0.4em] uppercase mb-5"
                   style={{ color: theme.accent }}
                 >
                   {journalEyebrow}
                 </p>
                 <h2
+                  data-edit-text
+                  data-edit-field="journalTitle"
                   className="text-3xl sm:text-4xl lg:text-[2.5rem]"
                   style={{
                     color: theme.text,
@@ -1213,6 +1223,8 @@ export default async function StoreHomePage({
                   {journalTitle}
                 </h2>
                 <p
+                  data-edit-text
+                  data-edit-field="journalSubtitle"
                   className="mt-6 text-sm sm:text-base max-w-xl leading-[1.9]"
                   style={{ color: theme.textMuted }}
                 >
@@ -1461,12 +1473,16 @@ export default async function StoreHomePage({
                     }}
                   >
                     <p
+                      data-edit-text
+                      data-edit-field="testimonialsEyebrow"
                       className="text-[10px] tracking-[0.4em] uppercase mb-5"
                       style={{ color: theme.accent }}
                     >
                       {testimonialsEyebrow}
                     </p>
                     <h2
+                      data-edit-text
+                      data-edit-field="testimonialsTitle"
                       className="text-2xl sm:text-3xl md:text-4xl"
                       style={{
                         color: theme.text,
@@ -1494,12 +1510,16 @@ export default async function StoreHomePage({
                     data-edit-drag={FREE_POS_KEYS.testimonialsTitle}
                   >
                     <p
+                      data-edit-text
+                      data-edit-field="testimonialsEyebrow"
                       className="text-[10px] tracking-[0.4em] uppercase mb-5"
                       style={{ color: theme.accent }}
                     >
                       {testimonialsEyebrow}
                     </p>
                     <h2
+                      data-edit-text
+                      data-edit-field="testimonialsTitle"
                       className="text-2xl sm:text-3xl md:text-4xl"
                       style={{
                         color: theme.text,
