@@ -32,6 +32,7 @@ import {
   FEATURED_COUNT_MIN,
   FEATURED_COUNT_MAX,
 } from "@/lib/theme-scale";
+import { SECTION_DRAG_ELEMENT, stripLegacyFreePositions } from "@/lib/free-positions";
 
 type SectionKey =
   | "hero"
@@ -757,7 +758,8 @@ export function EditorWorkspace({
             .filter((g) => g.url.trim())
             .map((g) => ({ url: g.url, caption: g.caption })),
           mapEmbedUrl: t.layout.mapEmbedUrl,
-          freePositions: t.layout.freePositions,
+          // 順手過濾停用世代的殘留 key，第一次存檔就把 DB 裡的垃圾座標掃掉
+          freePositions: stripLegacyFreePositions(t.layout.freePositions),
           heroZoom: t.layout.heroZoom,
           heroZoomMobile: t.layout.heroZoomMobile,
           heroZoomTablet: t.layout.heroZoomTablet,
@@ -2845,6 +2847,39 @@ export function EditorWorkspace({
                   </button>
                 </div>
               )}
+              {(() => {
+                const drag = SECTION_DRAG_ELEMENT[selectedSection!];
+                if (!drag) return null;
+                const pos = theme.layout.freePositions[drag.key];
+                return (
+                  <Field label="版位">
+                    {pos ? (
+                      <div className="space-y-2">
+                        <p className="text-[11px] text-stone-600">
+                          {drag.label}拖到了自訂位置：X={Math.round(pos.x * 100)}% · Y={Math.round(pos.y * 100)}%
+                        </p>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            const { [drag.key]: _removed, ...rest } =
+                              theme.layout.freePositions;
+                            void _removed;
+                            updateLayout({ freePositions: rest });
+                          }}
+                          className="w-full rounded-lg border border-stone-200 text-stone-700 text-xs py-2 hover:bg-stone-50 transition"
+                          title={`把${drag.label}放回原本的版面位置（可用 ⌘Z 復原）`}
+                        >
+                          重設回預設版位
+                        </button>
+                      </div>
+                    ) : (
+                      <p className="text-[11px] text-stone-500 leading-relaxed">
+                        在中間預覽按住{drag.label}直接拖，放到哪就顯示在哪，位置會自動記住。
+                      </p>
+                    )}
+                  </Field>
+                );
+              })()}
               <Field label="樣式複製">
                 <p className="-mt-1 mb-1.5 text-[11px] text-stone-500 leading-snug">
                   這段調好之後，可貼到別段一鍵套同樣樣式

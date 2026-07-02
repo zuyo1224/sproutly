@@ -8,6 +8,7 @@ import { resolveTheme, HOMEPAGE_DEFAULTS, HOMEPAGE_DEFAULT_COLLECTIONS, JOURNAL_
 import { buildStoreJsonLd, buildFaqJsonLd, siteBaseUrl, storeSchemaId } from "@/lib/store-schema";
 import { telHref, mailHref, telDigits, cleanEmail, mapsHref } from "@/lib/contact-href";
 import { isSoldOut, isLowStock, bySoldOutLast } from "@/lib/product-stock";
+import { FREE_POS_KEYS } from "@/lib/free-positions";
 import HeroAdaptiveBanner from "./HeroAdaptiveBanner";
 
 type Params = Promise<{ slug: string }>;
@@ -810,13 +811,9 @@ export default async function StoreHomePage({
 
         {/* === 選物提案 === */}
         {visibleCollections.length > 0 && (() => {
-          // free positioning 暫時停用（舊座標導致 absolute 重疊）
-          const introPos = theme.layout.freePositions["__disabled__"] ?? null;
-          // 暫時 disable 所有 section 的 free positioning，舊 DB 座標會把
-          // collection-intro / featured-title / journal-intro / promise-card /
-          // visit-card / testimonials-title 各種跑掉 absolute 重疊。等正式
-          // free-positioning feature 重做再開回來。
-          const introFree = false; void introPos;
+          // key 換代重開（舊 DB 殘留座標掛在舊 key 下自動失效，見 lib/free-positions）
+          const introPos = theme.layout.freePositions[FREE_POS_KEYS.collectionIntro] ?? null;
+          const introFree = introPos !== null;
           const collStyle = sectionStyleFor("collections");
           const collectionsCardCta =
             theme.homepage.collectionsCardCta ?? HOMEPAGE_DEFAULTS.collectionsCardCta;
@@ -833,7 +830,7 @@ export default async function StoreHomePage({
                 <h2
                   data-edit-text
                   data-edit-field="collectionsIntro"
-                  data-edit-drag="collection-intro"
+                  data-edit-drag={FREE_POS_KEYS.collectionIntro}
                   className="absolute text-xl sm:text-2xl leading-[1.9]"
                   style={{
                     left: `${introPos!.x * 100}%`,
@@ -874,7 +871,7 @@ export default async function StoreHomePage({
                 <h2
                   data-edit-text
                   data-edit-field="collectionsIntro"
-                  data-edit-drag="collection-intro"
+                  data-edit-drag={FREE_POS_KEYS.collectionIntro}
                   className={`text-xl sm:text-2xl max-w-xl ${collStyle.align === "center" ? "mx-auto" : collStyle.align === "right" ? "ml-auto" : ""} mb-32 leading-[1.9]`}
                   style={{
                     color: theme.text,
@@ -949,8 +946,8 @@ export default async function StoreHomePage({
 
         {/* === 本月選物 === */}
         {featuredProducts && featuredProducts.length > 0 && (() => {
-          const featuredPos = theme.layout.freePositions["__disabled__"] ?? null;
-          const featuredFree = false; void featuredPos;
+          const featuredPos = theme.layout.freePositions[FREE_POS_KEYS.featuredTitle] ?? null;
+          const featuredFree = featuredPos !== null;
           const featuredStyle = sectionStyleFor("featured");
           return (
           <section
@@ -963,7 +960,7 @@ export default async function StoreHomePage({
             <div className="max-w-5xl mx-auto px-8 sm:px-12" style={{ textAlign: featuredStyle.align }}>
               {featuredFree ? (
                 <h2
-                  data-edit-drag="featured-title"
+                  data-edit-drag={FREE_POS_KEYS.featuredTitle}
                   className="absolute text-xl sm:text-2xl"
                   style={{
                     left: `${featuredPos!.x * 100}%`,
@@ -995,7 +992,7 @@ export default async function StoreHomePage({
                     </p>
                   )}
                   <h2
-                    data-edit-drag="featured-title"
+                    data-edit-drag={FREE_POS_KEYS.featuredTitle}
                     data-edit-text
                     data-edit-field="featuredTitle"
                     className="text-xl sm:text-2xl mb-20 sm:mb-28"
@@ -1115,8 +1112,8 @@ export default async function StoreHomePage({
 
         {/* === Journal（placeholder：尚無實際文章） === */}
         {(() => {
-          const journalPos = theme.layout.freePositions["__disabled__"] ?? null;
-          const journalFree = false; void journalPos;
+          const journalPos = theme.layout.freePositions[FREE_POS_KEYS.journalIntro] ?? null;
+          const journalFree = journalPos !== null;
           const journalStyle = sectionStyleFor("journal");
           const journalEyebrow =
             theme.homepage.journalEyebrow || HOMEPAGE_DEFAULTS.journalEyebrow;
@@ -1137,7 +1134,7 @@ export default async function StoreHomePage({
           <div className="max-w-5xl mx-auto px-8 sm:px-12" style={{ textAlign: journalStyle.align }}>
             {journalFree ? (
               <div
-                data-edit-drag="journal-intro"
+                data-edit-drag={FREE_POS_KEYS.journalIntro}
                 className="absolute"
                 style={{
                   left: `${journalPos!.x * 100}%`,
@@ -1173,7 +1170,7 @@ export default async function StoreHomePage({
                 </p>
               </div>
             ) : (
-              <div className="mb-20 sm:mb-28" data-edit-drag="journal-intro">
+              <div className="mb-20 sm:mb-28" data-edit-drag={FREE_POS_KEYS.journalIntro}>
                 <p
                   className="text-[10px] tracking-[0.4em] uppercase mb-5"
                   style={{ color: theme.accent }}
@@ -1273,8 +1270,7 @@ export default async function StoreHomePage({
 
         {/* === Promise（雜誌風 quote card） === */}
         {promiseLines.length > 0 && (() => {
-          // free positioning 暫時停用：lookup 一個不存在的 key 拿到 undefined → null
-          const promisePos = theme.layout.freePositions["__disabled__"] ?? null;
+          const promisePos = theme.layout.freePositions[FREE_POS_KEYS.promiseCard] ?? null;
           const promiseStyle = sectionStyleFor("promise");
           const promiseCardWrap =
             promiseStyle.align === "right"
@@ -1296,7 +1292,7 @@ export default async function StoreHomePage({
                   ? "absolute"
                   : `max-w-3xl ${promiseCardWrap} px-6 sm:px-12`
               }
-              data-edit-drag="promise-card"
+              data-edit-drag={FREE_POS_KEYS.promiseCard}
               style={
                 promisePos
                   ? {
@@ -1400,8 +1396,8 @@ export default async function StoreHomePage({
         {theme.layout.sectionOrder.includes("testimonials") &&
           theme.layout.testimonials.length > 0 &&
           (() => {
-            const testimonialsPos = theme.layout.freePositions["__disabled__"] ?? null;
-            const testimonialsFree = false;
+            const testimonialsPos = theme.layout.freePositions[FREE_POS_KEYS.testimonialsTitle] ?? null;
+            const testimonialsFree = testimonialsPos !== null;
             const testimonialsStyle = sectionStyleFor("testimonials");
             const testimonialsEyebrow =
               theme.homepage.testimonialsEyebrow ||
@@ -1429,7 +1425,7 @@ export default async function StoreHomePage({
               >
                 {testimonialsFree ? (
                   <div
-                    data-edit-drag="testimonials-title"
+                    data-edit-drag={FREE_POS_KEYS.testimonialsTitle}
                     className="absolute"
                     style={{
                       left: `${testimonialsPos!.x * 100}%`,
@@ -1470,7 +1466,7 @@ export default async function StoreHomePage({
                 ) : (
                   <div
                     className="mb-20 sm:mb-28"
-                    data-edit-drag="testimonials-title"
+                    data-edit-drag={FREE_POS_KEYS.testimonialsTitle}
                   >
                     <p
                       className="text-[10px] tracking-[0.4em] uppercase mb-5"
@@ -1939,7 +1935,7 @@ export default async function StoreHomePage({
 
         {/* === Visit === */}
         {(storeAddress || businessHoursText) && (() => {
-          const visitPos = theme.layout.freePositions["__disabled__"] ?? null;
+          const visitPos = theme.layout.freePositions[FREE_POS_KEYS.visitCard] ?? null;
           const visitStyle = sectionStyleFor("visit");
           const visitDivider =
             visitStyle.align === "right"
@@ -1962,7 +1958,7 @@ export default async function StoreHomePage({
             data-anim={visitStyle.entranceVal}
           >
             <div
-              data-edit-drag="visit-card"
+              data-edit-drag={FREE_POS_KEYS.visitCard}
               className={
                 visitPos
                   ? "absolute"
