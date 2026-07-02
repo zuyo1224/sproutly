@@ -350,9 +350,21 @@ export function EditorWorkspace({
     });
     setDirty(true);
   }
-  function updateLayout(patch: Partial<EditorTheme["layout"]>) {
+  // coalesce 參數：不傳 = 照 patch 欄位名合併（打字、拉 slider 用）；
+  // 傳字串 = 用呼叫端給的更細 key 合併（list 類要分到第幾筆哪個欄位，
+  // 不然改完第 1 張卡馬上改第 2 張會被當同一段編輯，復原一次退掉兩張）；
+  // 傳 false = 完全不合併（新增/刪除/換順序這種一下就完成的動作，各自一步）。
+  function updateLayout(
+    patch: Partial<EditorTheme["layout"]>,
+    coalesce?: string | false
+  ) {
     setTheme((t) => {
-      pushHistory(t, "layout:" + Object.keys(patch).sort().join(","));
+      pushHistory(
+        t,
+        coalesce === false
+          ? undefined
+          : coalesce ?? "layout:" + Object.keys(patch).sort().join(",")
+      );
       return { ...t, layout: { ...t.layout, ...patch } };
     });
     setDirty(true);
@@ -615,9 +627,10 @@ export function EditorWorkspace({
     const oldIdx = theme.layout.sectionOrder.indexOf(active.id as SectionKey);
     const newIdx = theme.layout.sectionOrder.indexOf(over.id as SectionKey);
     if (oldIdx === -1 || newIdx === -1) return;
-    updateLayout({
-      sectionOrder: arrayMove(theme.layout.sectionOrder, oldIdx, newIdx),
-    });
+    updateLayout(
+      { sectionOrder: arrayMove(theme.layout.sectionOrder, oldIdx, newIdx) },
+      false
+    );
   }
 
   function addBlock(blockKey: SectionKey) {
@@ -630,52 +643,65 @@ export function EditorWorkspace({
     } else {
       next.push(blockKey);
     }
-    updateLayout({ sectionOrder: next });
+    updateLayout({ sectionOrder: next }, false);
     setSelectedSection(blockKey);
   }
 
   function removeBlock(blockKey: SectionKey) {
-    updateLayout({
-      sectionOrder: theme.layout.sectionOrder.filter((k) => k !== blockKey),
-    });
+    updateLayout(
+      { sectionOrder: theme.layout.sectionOrder.filter((k) => k !== blockKey) },
+      false
+    );
     if (selectedSection === blockKey) setSelectedSection("hero");
   }
 
   function updateTestimonial(idx: number, patch: Partial<Testimonial>) {
     const next = [...theme.layout.testimonials];
     next[idx] = { ...next[idx], ...patch };
-    updateLayout({ testimonials: next });
+    updateLayout(
+      { testimonials: next },
+      `layout:testimonials:${idx}:` + Object.keys(patch).sort().join(",")
+    );
   }
   function addTestimonial() {
     if (theme.layout.testimonials.length >= 6) return;
-    updateLayout({
-      testimonials: [
-        ...theme.layout.testimonials,
-        { quote: "", author: "", role: null },
-      ],
-    });
+    updateLayout(
+      {
+        testimonials: [
+          ...theme.layout.testimonials,
+          { quote: "", author: "", role: null },
+        ],
+      },
+      false
+    );
   }
   function removeTestimonial(idx: number) {
-    updateLayout({
-      testimonials: theme.layout.testimonials.filter((_, i) => i !== idx),
-    });
+    updateLayout(
+      { testimonials: theme.layout.testimonials.filter((_, i) => i !== idx) },
+      false
+    );
   }
 
   function updateFaq(idx: number, patch: Partial<FaqItem>) {
     const next = [...theme.layout.faqItems];
     next[idx] = { ...next[idx], ...patch };
-    updateLayout({ faqItems: next });
+    updateLayout(
+      { faqItems: next },
+      `layout:faqItems:${idx}:` + Object.keys(patch).sort().join(",")
+    );
   }
   function addFaq() {
     if (theme.layout.faqItems.length >= 20) return;
-    updateLayout({
-      faqItems: [...theme.layout.faqItems, { question: "", answer: "" }],
-    });
+    updateLayout(
+      { faqItems: [...theme.layout.faqItems, { question: "", answer: "" }] },
+      false
+    );
   }
   function removeFaq(idx: number) {
-    updateLayout({
-      faqItems: theme.layout.faqItems.filter((_, i) => i !== idx),
-    });
+    updateLayout(
+      { faqItems: theme.layout.faqItems.filter((_, i) => i !== idx) },
+      false
+    );
   }
 
   // Stats / Partners / Gallery 通用 list helpers
@@ -683,7 +709,10 @@ export function EditorWorkspace({
     const list = theme.layout[field] as T[];
     const next = [...list];
     next[idx] = { ...next[idx], ...patch };
-    updateLayout({ [field]: next } as Partial<EditorTheme["layout"]>);
+    updateLayout(
+      { [field]: next } as Partial<EditorTheme["layout"]>,
+      `layout:${field}:${idx}:` + Object.keys(patch).sort().join(",")
+    );
   }
   function addListItem(field: "stats" | "partners" | "gallery") {
     const cur = theme.layout[field] as Array<unknown>;
@@ -694,11 +723,17 @@ export function EditorWorkspace({
       partners: { name: "", logoUrl: "", href: null },
       gallery: { url: "", caption: null },
     }[field] as Record<string, unknown>;
-    updateLayout({ [field]: [...cur, blank] } as Partial<EditorTheme["layout"]>);
+    updateLayout(
+      { [field]: [...cur, blank] } as Partial<EditorTheme["layout"]>,
+      false
+    );
   }
   function removeListItem(field: "stats" | "partners" | "gallery", idx: number) {
     const cur = theme.layout[field] as Array<unknown>;
-    updateLayout({ [field]: cur.filter((_, i) => i !== idx) } as Partial<EditorTheme["layout"]>);
+    updateLayout(
+      { [field]: cur.filter((_, i) => i !== idx) } as Partial<EditorTheme["layout"]>,
+      false
+    );
   }
 
   function handleAssetSelected(url: string) {
