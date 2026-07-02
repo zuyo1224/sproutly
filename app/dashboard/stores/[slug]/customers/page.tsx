@@ -297,9 +297,10 @@ export default async function StoreCustomersPage({
       </div>
 
       {/* Search + sort */}
+      <div className="bg-white rounded-2xl p-4 shadow-lg shadow-emerald-700/5 mb-6">
       <form
         method="GET"
-        className="mb-6 flex flex-col sm:flex-row gap-3 items-stretch sm:items-center"
+        className="flex flex-col sm:flex-row gap-3 items-stretch sm:items-center"
       >
         <input
           name="q"
@@ -327,6 +328,7 @@ export default async function StoreCustomersPage({
           套用
         </button>
       </form>
+      </div>
 
       {/* Customer list */}
       {filtered.length === 0 ? (

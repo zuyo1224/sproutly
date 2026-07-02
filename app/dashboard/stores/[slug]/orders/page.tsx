@@ -459,13 +459,13 @@ export default async function OrdersListPage({
                 return (
                   <tr
                     key={o.id}
-                    className={
+                    className={`transition ${
                       needsAction
-                        ? "bg-amber-50/50"
+                        ? "bg-amber-50/50 hover:bg-amber-50"
                         : i % 2 === 0
-                          ? "bg-white"
-                          : "bg-emerald-50/20"
-                    }
+                          ? "bg-white hover:bg-emerald-50/30"
+                          : "bg-emerald-50/20 hover:bg-emerald-50/40"
+                    }`}
                   >
                     <td
                       className={`px-5 py-4 font-mono text-emerald-900 border-l-[3px] ${
