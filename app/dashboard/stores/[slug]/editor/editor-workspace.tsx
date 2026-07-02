@@ -32,7 +32,7 @@ import {
   FEATURED_COUNT_MIN,
   FEATURED_COUNT_MAX,
 } from "@/lib/theme-scale";
-import { SECTION_DRAG_ELEMENT, stripLegacyFreePositions } from "@/lib/free-positions";
+import { FREE_POS_KEYS, SECTION_DRAG_ELEMENT, stripLegacyFreePositions } from "@/lib/free-positions";
 
 type SectionKey =
   | "hero"
@@ -1849,30 +1849,44 @@ export function EditorWorkspace({
             {theme.layout.heroStyle === "full-image" && (
               <Field label="Free Positioning（Phase 5）">
                 {(() => {
-                  const pos = theme.layout.freePositions["hero-tagline"];
-                  if (pos) {
+                  // 主標 + 副標各自一個 key，哪個拖過就列哪個的重設
+                  const dragables = [
+                    { key: FREE_POS_KEYS.heroTagline, label: "主標" },
+                    { key: FREE_POS_KEYS.heroSubtitle, label: "副標" },
+                  ];
+                  const dragged = dragables.filter(
+                    (d) => theme.layout.freePositions[d.key]
+                  );
+                  if (dragged.length > 0) {
                     return (
-                      <div className="space-y-2">
-                        <p className="text-[11px] text-stone-600">
-                          Tagline 自訂位置：X={Math.round(pos.x * 100)}% Y={Math.round(pos.y * 100)}%
-                        </p>
-                        <button
-                          type="button"
-                          onClick={() => {
-                            const { ["hero-tagline"]: _, ...rest } =
-                              theme.layout.freePositions;
-                            updateLayout({ freePositions: rest });
-                          }}
-                          className="w-full rounded-lg border border-stone-200 text-stone-700 text-xs py-2 hover:bg-stone-50 transition"
-                        >
-                          重設為預設位置（左下）
-                        </button>
+                      <div className="space-y-3">
+                        {dragged.map(({ key, label }) => {
+                          const pos = theme.layout.freePositions[key];
+                          return (
+                            <div key={key} className="space-y-2">
+                              <p className="text-[11px] text-stone-600">
+                                {label}自訂位置：X={Math.round(pos.x * 100)}% Y={Math.round(pos.y * 100)}%
+                              </p>
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  const { [key]: _, ...rest } =
+                                    theme.layout.freePositions;
+                                  updateLayout({ freePositions: rest });
+                                }}
+                                className="w-full rounded-lg border border-stone-200 text-stone-700 text-xs py-2 hover:bg-stone-50 transition"
+                              >
+                                {label}重設為預設位置
+                              </button>
+                            </div>
+                          );
+                        })}
                       </div>
                     );
                   }
                   return (
                     <p className="text-[11px] text-stone-500 leading-relaxed">
-                      在 iframe 內拖藍色虛線 tagline 框到任何位置 → 自動儲存位置。
+                      在預覽內拖主標或副標到任何位置 → 自動儲存位置。
                     </p>
                   );
                 })()}

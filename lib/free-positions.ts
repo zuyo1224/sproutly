@@ -12,6 +12,9 @@
 // hero-tagline 從頭到尾沒停用（一直只綁 h1、行為正常），維持原 key 不換代。
 export const FREE_POS_KEYS = {
   heroTagline: "hero-tagline",
+  // 副標是主標之後才開拖動的，停用風波（3b081e7）時沒有這個 key，
+  // DB 不可能有殘留座標，跟 faq-intro 那批一樣不用 -v2 換代。
+  heroSubtitle: "hero-subtitle",
   collectionIntro: "collection-intro-v2",
   featuredTitle: "featured-title-v2",
   journalIntro: "journal-intro-v2",

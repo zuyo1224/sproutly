@@ -479,10 +479,14 @@ export default async function StoreHomePage({
                   // 主標拖動：data-edit-drag 只綁在 h1，不綁外層整塊。
                   // 拖動座標範圍 = cream block（position:relative wrapper）。
                   const taglinePos = theme.layout.freePositions["hero-tagline"] ?? null;
+                  // 副標同款：有自訂位置就走 absolute。主標拖走後副標本來整段藏起來
+                  //（跟著 flow 排會疊在 absolute 主標上），副標自己定過位就不用藏。
+                  const subtitlePos =
+                    theme.layout.freePositions[FREE_POS_KEYS.heroSubtitle] ?? null;
                   return (
                 <div
                   className="relative px-6 sm:px-12 py-14 sm:py-20"
-                  style={{ backgroundColor: theme.bg, minHeight: taglinePos ? "300px" : undefined }}
+                  style={{ backgroundColor: theme.bg, minHeight: taglinePos || subtitlePos ? "300px" : undefined }}
                   data-edit-target="hero-text-area"
                 >
                   <div
@@ -527,7 +531,31 @@ export default async function StoreHomePage({
                         </span>
                       ))}
                     </h1>
-                    {!taglinePos && theme.layout.heroSubtitle && (() => {
+                    {(subtitlePos || !taglinePos) && theme.layout.heroSubtitle && (() => {
+                      // 拖過版位 → absolute（座標系跟主標一樣是 cream block）
+                      if (subtitlePos) {
+                        return (
+                          <p
+                            data-edit-text
+                            data-edit-field="heroSubtitle"
+                            data-edit-drag={FREE_POS_KEYS.heroSubtitle}
+                            className={`text-base sm:text-lg leading-[1.9] ${fade2}`}
+                            style={{
+                              position: "absolute",
+                              left: `${subtitlePos.x * 100}%`,
+                              top: `${subtitlePos.y * 100}%`,
+                              transform: "translate(-50%, -50%)",
+                              maxWidth: "min(32rem, 90%)",
+                              color: subtitleColor,
+                              fontFamily: "var(--store-font)",
+                              ...subtitleSizeStyle,
+                              ...subtitleAlignStyle,
+                            }}
+                          >
+                            {theme.layout.heroSubtitle}
+                          </p>
+                        );
+                      }
                       // 副標對齊預設跟主標走（inherit），block 寬度限縮後靠 margin
                       // 把整段推到對應邊，避免置中主標卻配一段靠左的副標。
                       const effAlign =
@@ -542,6 +570,7 @@ export default async function StoreHomePage({
                         <p
                           data-edit-text
                           data-edit-field="heroSubtitle"
+                          data-edit-drag={FREE_POS_KEYS.heroSubtitle}
                           className={`mt-5 text-base sm:text-lg leading-[1.9] ${fade2}`}
                           style={{
                             color: subtitleColor,
