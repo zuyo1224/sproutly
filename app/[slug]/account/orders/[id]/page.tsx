@@ -78,7 +78,7 @@ export default async function CustomerOrderDetailPage({
     <main className="max-w-3xl mx-auto px-6 py-24 sm:py-32">
       <div className="mb-14 sm:mb-20">
         <p
-          className="text-[10px] tracking-[0.4em] uppercase mb-5"
+          className="text-[0.6875rem] tracking-[0.4em] uppercase mb-5"
           style={{ color: theme.accent }}
         >
           Order · #{shortId}
@@ -95,6 +95,10 @@ export default async function CustomerOrderDetailPage({
         >
           {CUSTOMER_STATUS_LABELS[order.status] ?? order.status}
         </h1>
+        <div
+          className="mt-5 h-px w-12"
+          style={{ background: theme.accent, opacity: 0.5 }}
+        />
         <p
           className="mt-5 text-sm"
           style={{ color: theme.textMuted }}
@@ -124,10 +128,11 @@ export default async function CustomerOrderDetailPage({
         style={{
           background: theme.surface,
           border: `1px solid ${theme.border}`,
+          boxShadow: "var(--sproutly-elev-2)",
         }}
       >
         <p
-          className="text-[10px] tracking-[0.4em] uppercase mb-7"
+          className="text-[0.6875rem] tracking-[0.4em] uppercase mb-7"
           style={{ color: theme.accent }}
         >
           Progress · 訂單進度
@@ -220,10 +225,11 @@ export default async function CustomerOrderDetailPage({
         style={{
           background: theme.surface,
           border: `1px solid ${theme.border}`,
+          boxShadow: "var(--sproutly-elev-2)",
         }}
       >
         <p
-          className="text-[10px] tracking-[0.4em] uppercase mb-5"
+          className="text-[0.6875rem] tracking-[0.4em] uppercase mb-5"
           style={{ color: theme.accent }}
         >
           Items
@@ -265,7 +271,7 @@ export default async function CustomerOrderDetailPage({
           style={{ borderColor: theme.border }}
         >
           <span
-            className="text-[10px] tracking-[0.4em] uppercase"
+            className="text-[0.6875rem] tracking-[0.4em] uppercase"
             style={{ color: theme.textMuted }}
           >
             合計
@@ -289,10 +295,11 @@ export default async function CustomerOrderDetailPage({
         style={{
           background: theme.surface,
           border: `1px solid ${theme.border}`,
+          boxShadow: "var(--sproutly-elev-2)",
         }}
       >
         <p
-          className="text-[10px] tracking-[0.4em] uppercase mb-5"
+          className="text-[0.6875rem] tracking-[0.4em] uppercase mb-5"
           style={{ color: theme.accent }}
         >
           Recipient
@@ -360,10 +367,11 @@ export default async function CustomerOrderDetailPage({
           style={{
             background: theme.surface,
             border: `1px solid ${theme.border}`,
+            boxShadow: "var(--sproutly-elev-2)",
           }}
         >
           <p
-            className="text-[10px] tracking-[0.4em] uppercase mb-5"
+            className="text-[0.6875rem] tracking-[0.4em] uppercase mb-5"
             style={{ color: theme.accent }}
           >
             Logistics
@@ -426,10 +434,11 @@ export default async function CustomerOrderDetailPage({
         style={{
           background: theme.surface,
           border: `1px solid ${theme.border}`,
+          boxShadow: "var(--sproutly-elev-2)",
         }}
       >
         <p
-          className="text-[10px] tracking-[0.4em] uppercase mb-5"
+          className="text-[0.6875rem] tracking-[0.4em] uppercase mb-5"
           style={{ color: theme.accent }}
         >
           Timeline
@@ -474,13 +483,7 @@ export default async function CustomerOrderDetailPage({
           {store.contact_phone && (
             <a
               href={telHref(store.contact_phone)}
-              className="flex-1 text-center rounded-full px-6 py-3.5 text-sm transition hover:opacity-85"
-              style={{
-                background: theme.text,
-                color: theme.bg,
-                fontFamily: "var(--store-font)",
-                letterSpacing: "0.05em",
-              }}
+              className="sproutly-btn sproutly-btn-primary flex-1"
             >
               聯絡店家
             </a>
@@ -488,14 +491,7 @@ export default async function CustomerOrderDetailPage({
           {store.contact_email && (
             <a
               href={mailHref(store.contact_email, { subject: `關於訂單 #${shortId}` })}
-              className="flex-1 text-center rounded-full px-6 py-3.5 text-sm transition hover:opacity-80"
-              style={{
-                border: `1px solid ${theme.border}`,
-                background: theme.surface,
-                color: theme.text,
-                fontFamily: "var(--store-font)",
-                letterSpacing: "0.05em",
-              }}
+              className="sproutly-btn sproutly-btn-secondary flex-1"
             >
               Email 詢問
             </a>
