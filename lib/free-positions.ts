@@ -18,6 +18,12 @@ export const FREE_POS_KEYS = {
   promiseCard: "promise-card-v2",
   visitCard: "visit-card-v2",
   testimonialsTitle: "testimonials-title-v2",
+  // 下面四個是後來才開拖動的區段，第一代停用風波（3b081e7）時根本還沒有
+  // 這些 key，DB 不可能有殘留座標，所以不用 -v2 換代。
+  faqIntro: "faq-intro",
+  statsIntro: "stats-intro",
+  partnersEyebrow: "partners-eyebrow",
+  galleryIntro: "gallery-intro",
 } as const;
 
 // 停用世代留在 DB 的殘留 key（含更早期的 featured-h2 命名）。
@@ -55,4 +61,8 @@ export const SECTION_DRAG_ELEMENT: Record<
   promise: { key: FREE_POS_KEYS.promiseCard, label: "引言卡片" },
   visit: { key: FREE_POS_KEYS.visitCard, label: "資訊卡片" },
   testimonials: { key: FREE_POS_KEYS.testimonialsTitle, label: "區段標題" },
+  faq: { key: FREE_POS_KEYS.faqIntro, label: "開頭文字" },
+  stats: { key: FREE_POS_KEYS.statsIntro, label: "開頭文字" },
+  partners: { key: FREE_POS_KEYS.partnersEyebrow, label: "開頭小字" },
+  gallery: { key: FREE_POS_KEYS.galleryIntro, label: "開頭文字" },
 };

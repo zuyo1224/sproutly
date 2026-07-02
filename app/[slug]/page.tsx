@@ -1564,6 +1564,8 @@ export default async function StoreHomePage({
         {/* === FAQ Accordion（optional block，<details> 原生 accordion） === */}
         {theme.layout.sectionOrder.includes("faq") &&
           validFaqItems.length > 0 && (() => {
+            const faqPos = theme.layout.freePositions[FREE_POS_KEYS.faqIntro] ?? null;
+            const faqFree = faqPos !== null;
             const faqStyle = sectionStyleFor("faq");
             const faqDivider =
               faqStyle.align === "right"
@@ -1577,7 +1579,7 @@ export default async function StoreHomePage({
               theme.homepage.faqTitle ?? HOMEPAGE_DEFAULTS.faqTitle;
             return (
             <section
-              className={`py-40 sm:py-56 ${animClass}`}
+              className={`relative py-40 sm:py-56 ${animClass} ${faqFree ? "min-h-[60vh]" : ""}`}
               style={mergeSectionStyle(faqStyle)}
               data-edit-target="faq"
               data-edit-label="常見問題"
@@ -1587,7 +1589,48 @@ export default async function StoreHomePage({
                 className="max-w-2xl mx-auto px-6 sm:px-12"
                 style={{ textAlign: faqStyle.align }}
               >
-                <div className="mb-16">
+                {faqFree ? (
+                  <div
+                    data-edit-drag={FREE_POS_KEYS.faqIntro}
+                    className="absolute"
+                    style={{
+                      left: `${faqPos!.x * 100}%`,
+                      top: `${faqPos!.y * 100}%`,
+                      transform: "translate(-50%, -50%)",
+                      maxWidth: "min(560px, 80vw)",
+                      width: "100%",
+                    }}
+                  >
+                    <p
+                      className="text-[10px] tracking-[0.4em] uppercase mb-5"
+                      style={{ color: theme.accent }}
+                    >
+                      {faqEyebrow}
+                    </p>
+                    <h2
+                      className="text-2xl sm:text-3xl md:text-4xl"
+                      style={{
+                        color: theme.text,
+                        fontFamily: "var(--store-font)",
+                        fontWeight: 400,
+                        letterSpacing: "-0.01em",
+                        lineHeight: 1.2,
+                      }}
+                    >
+                      {faqTitle}
+                    </h2>
+                    <div
+                      className="mt-6"
+                      style={{
+                        width: "32px",
+                        height: "1px",
+                        background: theme.accent,
+                        opacity: 0.5,
+                      }}
+                    />
+                  </div>
+                ) : (
+                <div className="mb-16" data-edit-drag={FREE_POS_KEYS.faqIntro}>
                   <p
                     data-edit-text
                     data-edit-field="faqEyebrow"
@@ -1620,6 +1663,7 @@ export default async function StoreHomePage({
                     }}
                   />
                 </div>
+                )}
 
                 <ul className="divide-y" style={{ borderColor: theme.border }}>
                   {validFaqItems.map((item, i) => (
@@ -1673,12 +1717,15 @@ export default async function StoreHomePage({
         {/* === Stats（optional block：4 個大數字 + label） === */}
         {theme.layout.sectionOrder.includes("stats") &&
           theme.layout.stats.length > 0 && (() => {
+            const statsPos = theme.layout.freePositions[FREE_POS_KEYS.statsIntro] ?? null;
             const statsStyle = sectionStyleFor("stats");
             const statsEyebrow =
               theme.homepage.statsEyebrow ?? HOMEPAGE_DEFAULTS.statsEyebrow;
             const statsTitle =
               theme.homepage.statsTitle ?? HOMEPAGE_DEFAULTS.statsTitle;
             const statsHasHeading = !!(statsEyebrow || statsTitle);
+            // 沒有開頭文字就沒有可拖的東西，殘留座標也不該把區段撐高
+            const statsFree = statsPos !== null && statsHasHeading;
             const statsDivider =
               statsStyle.align === "right"
                 ? "ml-auto"
@@ -1687,7 +1734,7 @@ export default async function StoreHomePage({
                 : "mx-auto";
             return (
             <section
-              className={`py-32 sm:py-44 ${animClass}`}
+              className={`relative py-32 sm:py-44 ${animClass} ${statsFree ? "min-h-[60vh]" : ""}`}
               style={mergeSectionStyle(statsStyle, theme.surface)}
               data-edit-target="stats"
               data-edit-label="數字 / 成就"
@@ -1697,8 +1744,53 @@ export default async function StoreHomePage({
                 className="max-w-5xl mx-auto px-8 sm:px-12"
                 style={{ textAlign: statsStyle.align }}
               >
-                {statsHasHeading && (
-                  <div className="mb-16 sm:mb-20">
+                {statsFree && (
+                  <div
+                    data-edit-drag={FREE_POS_KEYS.statsIntro}
+                    className="absolute"
+                    style={{
+                      left: `${statsPos!.x * 100}%`,
+                      top: `${statsPos!.y * 100}%`,
+                      transform: "translate(-50%, -50%)",
+                      maxWidth: "min(560px, 80vw)",
+                      width: "100%",
+                    }}
+                  >
+                    {statsEyebrow && (
+                      <p
+                        className="text-[0.6875rem] tracking-[0.4em] uppercase mb-5"
+                        style={{ color: theme.accent }}
+                      >
+                        {statsEyebrow}
+                      </p>
+                    )}
+                    {statsTitle && (
+                      <h2
+                        className="text-2xl sm:text-3xl md:text-4xl"
+                        style={{
+                          color: theme.text,
+                          fontFamily: "var(--store-font)",
+                          fontWeight: 500,
+                          letterSpacing: "-0.01em",
+                          lineHeight: 1.2,
+                        }}
+                      >
+                        {statsTitle}
+                      </h2>
+                    )}
+                    <div
+                      className="mt-6"
+                      style={{
+                        width: "32px",
+                        height: "1px",
+                        background: theme.accent,
+                        opacity: 0.6,
+                      }}
+                    />
+                  </div>
+                )}
+                {statsHasHeading && !statsFree && (
+                  <div className="mb-16 sm:mb-20" data-edit-drag={FREE_POS_KEYS.statsIntro}>
                     {statsEyebrow && (
                       <p
                         data-edit-text
@@ -1777,6 +1869,8 @@ export default async function StoreHomePage({
         {/* === Partners（optional block：合作夥伴 logos 灰階） === */}
         {theme.layout.sectionOrder.includes("partners") &&
           theme.layout.partners.length > 0 && (() => {
+            const partnersPos = theme.layout.freePositions[FREE_POS_KEYS.partnersEyebrow] ?? null;
+            const partnersFree = partnersPos !== null;
             const partnersStyle = sectionStyleFor("partners");
             const partnersJustify =
               partnersStyle.align === "left"
@@ -1788,7 +1882,7 @@ export default async function StoreHomePage({
               theme.homepage.partnersEyebrow ?? HOMEPAGE_DEFAULTS.partnersEyebrow;
             return (
             <section
-              className={`py-32 sm:py-44 ${animClass}`}
+              className={`relative py-32 sm:py-44 ${animClass} ${partnersFree ? "min-h-[50vh]" : ""}`}
               style={mergeSectionStyle(partnersStyle)}
               data-edit-target="partners"
               data-edit-label="合作夥伴"
@@ -1798,7 +1892,23 @@ export default async function StoreHomePage({
                 className="max-w-5xl mx-auto px-8 sm:px-12"
                 style={{ textAlign: partnersStyle.align }}
               >
+                {partnersFree ? (
+                  <p
+                    data-edit-drag={FREE_POS_KEYS.partnersEyebrow}
+                    className="absolute text-[10px] tracking-[0.4em] uppercase"
+                    style={{
+                      left: `${partnersPos!.x * 100}%`,
+                      top: `${partnersPos!.y * 100}%`,
+                      transform: "translate(-50%, -50%)",
+                      whiteSpace: "nowrap",
+                      color: theme.textMuted,
+                    }}
+                  >
+                    {partnersEyebrow}
+                  </p>
+                ) : (
                 <p
+                  data-edit-drag={FREE_POS_KEYS.partnersEyebrow}
                   data-edit-text
                   data-edit-field="partnersEyebrow"
                   className="text-[10px] tracking-[0.4em] uppercase mb-12"
@@ -1806,6 +1916,7 @@ export default async function StoreHomePage({
                 >
                   {partnersEyebrow}
                 </p>
+                )}
                 <div className={`flex flex-wrap items-center ${partnersJustify} gap-8 sm:gap-12 md:gap-16`}>
                   {theme.layout.partners.slice(0, 12).map((p, i) => {
                     const inner = (
@@ -1844,6 +1955,8 @@ export default async function StoreHomePage({
         {/* === Gallery（optional block：3 欄圖片網格） === */}
         {theme.layout.sectionOrder.includes("gallery") &&
           theme.layout.gallery.length > 0 && (() => {
+            const galleryPos = theme.layout.freePositions[FREE_POS_KEYS.galleryIntro] ?? null;
+            const galleryFree = galleryPos !== null;
             const galleryStyle = sectionStyleFor("gallery");
             const galleryDivider =
               galleryStyle.align === "right"
@@ -1857,7 +1970,7 @@ export default async function StoreHomePage({
               theme.homepage.galleryTitle ?? HOMEPAGE_DEFAULTS.galleryTitle;
             return (
             <section
-              className={`py-40 sm:py-56 ${animClass}`}
+              className={`relative py-40 sm:py-56 ${animClass} ${galleryFree ? "min-h-[60vh]" : ""}`}
               style={mergeSectionStyle(galleryStyle)}
               data-edit-target="gallery"
               data-edit-label="圖片相簿"
@@ -1867,7 +1980,48 @@ export default async function StoreHomePage({
                 className="max-w-6xl mx-auto px-6 sm:px-10"
                 style={{ textAlign: galleryStyle.align }}
               >
-                <div className="mb-16 sm:mb-20">
+                {galleryFree ? (
+                  <div
+                    data-edit-drag={FREE_POS_KEYS.galleryIntro}
+                    className="absolute"
+                    style={{
+                      left: `${galleryPos!.x * 100}%`,
+                      top: `${galleryPos!.y * 100}%`,
+                      transform: "translate(-50%, -50%)",
+                      maxWidth: "min(560px, 80vw)",
+                      width: "100%",
+                    }}
+                  >
+                    <p
+                      className="text-[10px] tracking-[0.4em] uppercase mb-5"
+                      style={{ color: theme.accent }}
+                    >
+                      {galleryEyebrow}
+                    </p>
+                    <h2
+                      className="text-2xl sm:text-3xl md:text-4xl"
+                      style={{
+                        color: theme.text,
+                        fontFamily: "var(--store-font)",
+                        fontWeight: 400,
+                        letterSpacing: "-0.01em",
+                        lineHeight: 1.2,
+                      }}
+                    >
+                      {galleryTitle}
+                    </h2>
+                    <div
+                      className="mt-6"
+                      style={{
+                        width: "32px",
+                        height: "1px",
+                        background: theme.accent,
+                        opacity: 0.5,
+                      }}
+                    />
+                  </div>
+                ) : (
+                <div className="mb-16 sm:mb-20" data-edit-drag={FREE_POS_KEYS.galleryIntro}>
                   <p
                     data-edit-text
                     data-edit-field="galleryEyebrow"
@@ -1900,6 +2054,7 @@ export default async function StoreHomePage({
                     }}
                   />
                 </div>
+                )}
 
                 <div className="sproutly-stagger grid grid-cols-2 md:grid-cols-3 gap-3 sm:gap-5">
                   {theme.layout.gallery.slice(0, 12).map((g, i) => (
