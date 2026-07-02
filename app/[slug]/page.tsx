@@ -931,7 +931,7 @@ export default async function StoreHomePage({
                       </p>
                     )}
                     <span
-                      className="sproutly-card-action inline-block text-xs tracking-widest uppercase"
+                      className="sproutly-card-action inline-block text-[10px] tracking-[0.3em] uppercase"
                       style={{ color: theme.accent }}
                     >
                       {collectionsCardCta}
@@ -1052,10 +1052,11 @@ export default async function StoreHomePage({
                           style={{ background: theme.bg }}
                         >
                           <span
-                            className="text-xs tracking-widest uppercase"
+                            className="text-[0.6875rem] uppercase"
                             style={{
                               color: theme.textMuted,
                               opacity: 0.4,
+                              letterSpacing: "0.4em",
                             }}
                           >
                             No Image
