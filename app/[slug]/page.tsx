@@ -1543,7 +1543,11 @@ export default async function StoreHomePage({
                   </div>
                 )}
 
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8">
+                <div className={`grid grid-cols-1 gap-6 md:gap-8 ${
+                  theme.layout.testimonialsColumns === 2 ? "md:grid-cols-2"
+                  : theme.layout.testimonialsColumns === 4 ? "md:grid-cols-4"
+                  : "md:grid-cols-3"
+                }`}>
                   {theme.layout.testimonials.slice(0, 6).map((t, i) => (
                     <figure
                       key={i}
@@ -1872,7 +1876,11 @@ export default async function StoreHomePage({
                     />
                   </div>
                 )}
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-y-12 gap-x-8">
+                <div className={`grid grid-cols-2 gap-y-12 gap-x-8 ${
+                  theme.layout.statsColumns === 2 ? "md:grid-cols-2"
+                  : theme.layout.statsColumns === 3 ? "md:grid-cols-3"
+                  : "md:grid-cols-4"
+                }`}>
                   {theme.layout.stats.slice(0, 6).map((s, i) => (
                     <div key={i} className="space-y-3">
                       <p
@@ -2100,7 +2108,11 @@ export default async function StoreHomePage({
                 </div>
                 )}
 
-                <div className="sproutly-stagger grid grid-cols-2 md:grid-cols-3 gap-3 sm:gap-5">
+                <div className={`sproutly-stagger grid grid-cols-2 gap-3 sm:gap-5 ${
+                  theme.layout.galleryColumns === 2 ? "md:grid-cols-2"
+                  : theme.layout.galleryColumns === 4 ? "md:grid-cols-4"
+                  : "md:grid-cols-3"
+                }`}>
                   {theme.layout.gallery.slice(0, 12).map((g, i) => (
                     <figure
                       key={i}

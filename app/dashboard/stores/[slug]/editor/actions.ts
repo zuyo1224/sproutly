@@ -48,6 +48,9 @@ type EditorPayload = {
     featuredCount?: number;
     featuredColumns?: number;
     collectionsColumns?: number;
+    testimonialsColumns?: number;
+    statsColumns?: number;
+    galleryColumns?: number;
     sectionStyles?: Record<string, {
       headingAlign?: string;
       bgColor?: string | null;
@@ -326,6 +329,18 @@ export async function saveEditorState(slug: string, payload: EditorPayload) {
     if (payload.layout.collectionsColumns !== undefined) {
       const v = payload.layout.collectionsColumns;
       if (v === 2 || v === 3 || v === 4) layoutPatch.collectionsColumns = v;
+    }
+    if (payload.layout.testimonialsColumns !== undefined) {
+      const v = payload.layout.testimonialsColumns;
+      if (v === 2 || v === 3 || v === 4) layoutPatch.testimonialsColumns = v;
+    }
+    if (payload.layout.statsColumns !== undefined) {
+      const v = payload.layout.statsColumns;
+      if (v === 2 || v === 3 || v === 4) layoutPatch.statsColumns = v;
+    }
+    if (payload.layout.galleryColumns !== undefined) {
+      const v = payload.layout.galleryColumns;
+      if (v === 2 || v === 3 || v === 4) layoutPatch.galleryColumns = v;
     }
     if (payload.layout.sectionStyles !== undefined) {
       const raw = payload.layout.sectionStyles;

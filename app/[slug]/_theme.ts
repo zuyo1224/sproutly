@@ -223,6 +223,9 @@ export interface StoreTheme {
     featuredCount: number;             // 顯示幾個商品 3-12（預設 6）
     featuredColumns: 2 | 3 | 4;        // 排成幾欄（預設 3）
     collectionsColumns: 2 | 3 | 4;     // 選物提案排成幾欄（預設 3）
+    testimonialsColumns: 2 | 3 | 4;    // 好評卡排成幾欄（預設 3）
+    statsColumns: 2 | 3 | 4;           // 數字排成幾欄（預設 4）
+    galleryColumns: 2 | 3 | 4;         // 相簿排成幾欄（預設 3）
     // 每個 section 的元素級樣式覆寫（北極星：超越 Wix 的元素級控制覆蓋率）
     sectionStyles: Record<string, {
       headingAlign?: "left" | "center" | "right";
@@ -649,6 +652,21 @@ function resolveLayout(raw: unknown): StoreTheme["layout"] {
     })(),
     collectionsColumns: (() => {
       const v = l.collectionsColumns;
+      if (v === 2 || v === 3 || v === 4) return v;
+      return 3 as const;
+    })(),
+    testimonialsColumns: (() => {
+      const v = l.testimonialsColumns;
+      if (v === 2 || v === 3 || v === 4) return v;
+      return 3 as const;
+    })(),
+    statsColumns: (() => {
+      const v = l.statsColumns;
+      if (v === 2 || v === 3 || v === 4) return v;
+      return 4 as const;
+    })(),
+    galleryColumns: (() => {
+      const v = l.galleryColumns;
       if (v === 2 || v === 3 || v === 4) return v;
       return 3 as const;
     })(),

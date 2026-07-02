@@ -99,6 +99,9 @@ type EditorTheme = {
     featuredCount: number;
     featuredColumns: 2 | 3 | 4;
     collectionsColumns: 2 | 3 | 4;
+    testimonialsColumns: 2 | 3 | 4;
+    statsColumns: 2 | 3 | 4;
+    galleryColumns: 2 | 3 | 4;
     sectionStyles: Record<string, {
       headingAlign?: "left" | "center" | "right";
       bgColor?: string | null;
@@ -825,6 +828,9 @@ export function EditorWorkspace({
           featuredCount: t.layout.featuredCount,
           featuredColumns: t.layout.featuredColumns,
           collectionsColumns: t.layout.collectionsColumns,
+          testimonialsColumns: t.layout.testimonialsColumns,
+          statsColumns: t.layout.statsColumns,
+          galleryColumns: t.layout.galleryColumns,
           sectionStyles: t.layout.sectionStyles,
         },
         homepage: t.homepage,
@@ -2016,6 +2022,27 @@ export function EditorWorkspace({
                 ({theme.layout.stats.length}/6)
               </span>
             </button>
+            <Field label="排幾欄">
+              <div className="grid grid-cols-3 gap-1.5">
+                {([2, 3, 4] as const).map((n) => (
+                  <button
+                    key={n}
+                    type="button"
+                    onClick={() => updateLayout({ statsColumns: n })}
+                    className={`rounded-lg border py-2 text-xs transition ${
+                      theme.layout.statsColumns === n
+                        ? "border-emerald-500 bg-emerald-50 text-emerald-900"
+                        : "border-stone-200 text-stone-600 hover:border-stone-400"
+                    }`}
+                  >
+                    {n} 欄
+                  </button>
+                ))}
+              </div>
+              <p className="mt-1 text-[11px] text-stone-500 leading-relaxed">
+                桌機排幾欄。手機一律 2 欄不受影響。
+              </p>
+            </Field>
           </PanelSection>
         )}
 
@@ -2218,6 +2245,27 @@ export function EditorWorkspace({
             <p className="mt-2 text-[10px] text-stone-500 text-center">
               {theme.layout.gallery.length}/12 張 · 圖庫由 Pexels 提供商用免費
             </p>
+            <Field label="排幾欄">
+              <div className="grid grid-cols-3 gap-1.5">
+                {([2, 3, 4] as const).map((n) => (
+                  <button
+                    key={n}
+                    type="button"
+                    onClick={() => updateLayout({ galleryColumns: n })}
+                    className={`rounded-lg border py-2 text-xs transition ${
+                      theme.layout.galleryColumns === n
+                        ? "border-emerald-500 bg-emerald-50 text-emerald-900"
+                        : "border-stone-200 text-stone-600 hover:border-stone-400"
+                    }`}
+                  >
+                    {n} 欄
+                  </button>
+                ))}
+              </div>
+              <p className="mt-1 text-[11px] text-stone-500 leading-relaxed">
+                桌機排幾欄。手機一律 2 欄不受影響。
+              </p>
+            </Field>
           </PanelSection>
         )}
 
@@ -2411,6 +2459,27 @@ export function EditorWorkspace({
                 ({theme.layout.testimonials.length}/6)
               </span>
             </button>
+            <Field label="排幾欄">
+              <div className="grid grid-cols-3 gap-1.5">
+                {([2, 3, 4] as const).map((n) => (
+                  <button
+                    key={n}
+                    type="button"
+                    onClick={() => updateLayout({ testimonialsColumns: n })}
+                    className={`rounded-lg border py-2 text-xs transition ${
+                      theme.layout.testimonialsColumns === n
+                        ? "border-emerald-500 bg-emerald-50 text-emerald-900"
+                        : "border-stone-200 text-stone-600 hover:border-stone-400"
+                    }`}
+                  >
+                    {n} 欄
+                  </button>
+                ))}
+              </div>
+              <p className="mt-1 text-[11px] text-stone-500 leading-relaxed">
+                桌機排幾欄。手機一律 1 欄不受影響。
+              </p>
+            </Field>
           </PanelSection>
         )}
 
