@@ -483,10 +483,13 @@ export default async function StoreHomePage({
                   //（跟著 flow 排會疊在 absolute 主標上），副標自己定過位就不用藏。
                   const subtitlePos =
                     theme.layout.freePositions[FREE_POS_KEYS.heroSubtitle] ?? null;
+                  // CTA 按鈕同款：定過位走 absolute，沒定位維持「主標拖走就跟著藏」。
+                  const ctaPos =
+                    theme.layout.freePositions[FREE_POS_KEYS.heroCta] ?? null;
                   return (
                 <div
                   className="relative px-6 sm:px-12 py-14 sm:py-20"
-                  style={{ backgroundColor: theme.bg, minHeight: taglinePos || subtitlePos ? "300px" : undefined }}
+                  style={{ backgroundColor: theme.bg, minHeight: taglinePos || subtitlePos || ctaPos ? "300px" : undefined }}
                   data-edit-target="hero-text-area"
                 >
                   <div
@@ -585,13 +588,36 @@ export default async function StoreHomePage({
                         </p>
                       );
                     })()}
-                    {!taglinePos && (
+                    {ctaPos ? (
+                      // 拖過版位 → absolute（座標系跟主標 / 副標一樣是 cream block），
+                      // 定過位就不再被主標連坐藏掉。
+                      <Link
+                        href={`/${slug}/shop`}
+                        className={`sproutly-link inline-block text-sm tracking-wider ${theme.layout.heroSubtitle ? fade3 : fade2}`}
+                        data-default-line="true"
+                        data-edit-text
+                        data-edit-field="heroCta"
+                        data-edit-drag={FREE_POS_KEYS.heroCta}
+                        style={{
+                          position: "absolute",
+                          left: `${ctaPos.x * 100}%`,
+                          top: `${ctaPos.y * 100}%`,
+                          transform: "translate(-50%, -50%)",
+                          maxWidth: "min(24rem, 90%)",
+                          color: theme.text,
+                          fontFamily: "var(--store-font)",
+                        }}
+                      >
+                        {heroCta}
+                      </Link>
+                    ) : !taglinePos && (
                       <Link
                         href={`/${slug}/shop`}
                         className={`sproutly-link mt-8 inline-block text-sm tracking-wider ${theme.layout.heroSubtitle ? fade3 : fade2}`}
                         data-default-line="true"
                         data-edit-text
                         data-edit-field="heroCta"
+                        data-edit-drag={FREE_POS_KEYS.heroCta}
                         style={{
                           color: theme.text,
                           fontFamily: "var(--store-font)",

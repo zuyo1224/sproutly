@@ -1849,10 +1849,11 @@ export function EditorWorkspace({
             {theme.layout.heroStyle === "full-image" && (
               <Field label="Free Positioning（Phase 5）">
                 {(() => {
-                  // 主標 + 副標各自一個 key，哪個拖過就列哪個的重設
+                  // 主標 / 副標 / 按鈕各自一個 key，哪個拖過就列哪個的重設
                   const dragables = [
                     { key: FREE_POS_KEYS.heroTagline, label: "主標" },
                     { key: FREE_POS_KEYS.heroSubtitle, label: "副標" },
+                    { key: FREE_POS_KEYS.heroCta, label: "按鈕" },
                   ];
                   const dragged = dragables.filter(
                     (d) => theme.layout.freePositions[d.key]
@@ -1886,7 +1887,7 @@ export function EditorWorkspace({
                   }
                   return (
                     <p className="text-[11px] text-stone-500 leading-relaxed">
-                      在預覽內拖主標或副標到任何位置 → 自動儲存位置。
+                      在預覽內拖主標、副標或按鈕到任何位置 → 自動儲存位置。
                     </p>
                   );
                 })()}

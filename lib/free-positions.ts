@@ -15,6 +15,8 @@ export const FREE_POS_KEYS = {
   // 副標是主標之後才開拖動的，停用風波（3b081e7）時沒有這個 key，
   // DB 不可能有殘留座標，跟 faq-intro 那批一樣不用 -v2 換代。
   heroSubtitle: "hero-subtitle",
+  // CTA 按鈕跟副標同期之後才開拖動，同理不用 -v2 換代。
+  heroCta: "hero-cta",
   collectionIntro: "collection-intro-v2",
   featuredTitle: "featured-title-v2",
   journalIntro: "journal-intro-v2",
