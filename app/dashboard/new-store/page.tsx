@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { requireUser } from "@/lib/require-user";
 import { createStore } from "./actions";
+import { SubmitButton } from "@/app/_components/submit-button";
 
 type SearchParams = Promise<{ error?: string }>;
 
@@ -254,12 +255,12 @@ export default async function NewStorePage({
             </div>
 
             <div className="pt-4 flex gap-3">
-              <button
-                type="submit"
-                className="flex-1 rounded-full bg-emerald-700 px-8 py-3.5 text-white font-medium hover:bg-emerald-800 transition shadow-lg shadow-emerald-700/20 tracking-tight"
+              <SubmitButton
+                pendingText="建立中，請稍候..."
+                className="flex-1 rounded-full bg-emerald-700 px-8 py-3.5 text-white font-medium hover:bg-emerald-800 shadow-lg shadow-emerald-700/20 tracking-tight"
               >
                 建立店面
-              </button>
+              </SubmitButton>
               <Link
                 href="/dashboard"
                 className="rounded-full border border-emerald-200 bg-white px-6 py-3.5 text-emerald-800 font-medium hover:bg-emerald-50 transition tracking-tight"
