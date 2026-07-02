@@ -856,6 +856,8 @@ export default async function PublicStoreLayout({
           {theme.tagline && (
             <div className="space-y-3">
               <p
+                data-edit-text
+                data-edit-field="footerWordsLabel"
                 className="font-medium uppercase"
                 style={{
                   color: theme.textMuted,
@@ -946,6 +948,8 @@ export default async function PublicStoreLayout({
             <div className="space-y-4">
               <div className="flex items-center justify-center gap-3">
                 <span
+                  data-edit-text
+                  data-edit-field="footerFollowLabel"
                   className="font-medium uppercase"
                   style={{
                     color: theme.textMuted,
@@ -1024,7 +1028,10 @@ export default async function PublicStoreLayout({
                 letterSpacing: "0.3em",
               }}
             >
-              {theme.homepage.footerTrackLabel || HOMEPAGE_DEFAULTS.footerTrackLabel}
+              {/* 標在 span 不標在 Link 本體：照 magazine 版 heroCta 同款，編輯範圍只有文字 */}
+              <span data-edit-text data-edit-field="footerTrackLabel">
+                {theme.homepage.footerTrackLabel || HOMEPAGE_DEFAULTS.footerTrackLabel}
+              </span>
             </Link>
             <span
               className="h-px w-8"

@@ -540,6 +540,14 @@ export function EditorWorkspace({
           updateHomepage({ testimonialsEyebrow: value });
         } else if (msg.field === "testimonialsTitle") {
           updateHomepage({ testimonialsTitle: value });
+        } else if (msg.field === "promiseEyebrow") {
+          updateHomepage({ promiseEyebrow: value });
+        } else if (msg.field === "footerWordsLabel") {
+          updateHomepage({ footerWordsLabel: value });
+        } else if (msg.field === "footerFollowLabel") {
+          updateHomepage({ footerFollowLabel: value });
+        } else if (msg.field === "footerTrackLabel") {
+          updateHomepage({ footerTrackLabel: value });
         } else if (typeof msg.index === "number" && Number.isInteger(msg.index) && msg.index >= 0) {
           // 清單卡片欄位：訊息多帶 index 說是第幾筆。
           // 這個 effect deps 是 []，closure 裡的 theme 是掛載當下的舊值，

@@ -1405,6 +1405,8 @@ export default async function StoreHomePage({
 
                 {/* 上方 eyebrow */}
                 <p
+                  data-edit-text
+                  data-edit-field="promiseEyebrow"
                   className="text-[10px] tracking-[0.4em] uppercase mb-8 relative z-10"
                   style={{ color: theme.accent }}
                 >
