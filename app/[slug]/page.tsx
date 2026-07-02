@@ -1266,12 +1266,18 @@ export default async function StoreHomePage({
                       )}
                     </div>
                     <p
+                      data-edit-text
+                      data-edit-field="journalCardEyebrow"
+                      data-edit-index={i}
                       className="mt-6 text-[10px] tracking-[0.4em] uppercase"
                       style={{ color: theme.accent }}
                     >
                       {entry.eyebrow}
                     </p>
                     <h3
+                      data-edit-text
+                      data-edit-field="journalCardTitle"
+                      data-edit-index={i}
                       className="sproutly-card-title mt-3 text-lg sm:text-xl leading-[1.4]"
                       style={{
                         color: theme.text,
@@ -1283,6 +1289,9 @@ export default async function StoreHomePage({
                       {entry.title}
                     </h3>
                     <p
+                      data-edit-text
+                      data-edit-field="journalCardExcerpt"
+                      data-edit-index={i}
                       className="mt-3 text-sm leading-[1.85]"
                       style={{ color: theme.textMuted }}
                     >
@@ -1574,6 +1583,9 @@ export default async function StoreHomePage({
                         &ldquo;
                       </span>
                       <blockquote
+                        data-edit-text
+                        data-edit-field="testimonialQuote"
+                        data-edit-index={i}
                         className="text-base leading-[1.95] relative z-10 mb-6"
                         style={{
                           color: theme.text,
@@ -1587,6 +1599,9 @@ export default async function StoreHomePage({
                       </blockquote>
                       <figcaption className="relative z-10">
                         <p
+                          data-edit-text
+                          data-edit-field="testimonialAuthor"
+                          data-edit-index={i}
                           className="text-sm font-medium"
                           style={{ color: theme.text }}
                         >
@@ -1594,6 +1609,9 @@ export default async function StoreHomePage({
                         </p>
                         {t.role && (
                           <p
+                            data-edit-text
+                            data-edit-field="testimonialRole"
+                            data-edit-index={i}
                             className="text-xs mt-1"
                             style={{ color: theme.textMuted }}
                           >
@@ -1726,6 +1744,9 @@ export default async function StoreHomePage({
                           style={{ color: theme.text }}
                         >
                           <span
+                            data-edit-text
+                            data-edit-field="faqQuestion"
+                            data-edit-index={i}
                             className="text-base sm:text-lg pr-4"
                             style={{
                               fontFamily: "var(--store-font)",
@@ -1744,6 +1765,9 @@ export default async function StoreHomePage({
                           </span>
                         </summary>
                         <div
+                          data-edit-text
+                          data-edit-field="faqAnswer"
+                          data-edit-index={i}
                           className="pb-7 pr-8 text-sm sm:text-base leading-[1.95]"
                           style={{ color: theme.textMuted }}
                         >
@@ -1884,6 +1908,9 @@ export default async function StoreHomePage({
                   {theme.layout.stats.slice(0, 6).map((s, i) => (
                     <div key={i} className="space-y-3">
                       <p
+                        data-edit-text
+                        data-edit-field="statValue"
+                        data-edit-index={i}
                         className="text-4xl sm:text-5xl md:text-6xl tabular-nums"
                         style={{
                           color: theme.text,
@@ -1905,6 +1932,9 @@ export default async function StoreHomePage({
                         }}
                       />
                       <p
+                        data-edit-text
+                        data-edit-field="statLabel"
+                        data-edit-index={i}
                         className="text-xs sm:text-sm tracking-[0.2em] uppercase"
                         style={{ color: theme.textMuted }}
                       >
@@ -2131,6 +2161,9 @@ export default async function StoreHomePage({
                       </div>
                       {g.caption && (
                         <figcaption
+                          data-edit-text
+                          data-edit-field="galleryCaption"
+                          data-edit-index={i}
                           className="mt-3 text-xs sm:text-sm leading-relaxed"
                           style={{ color: theme.textMuted }}
                         >

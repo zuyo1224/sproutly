@@ -409,7 +409,7 @@ export function EditorWorkspace({
   useEffect(() => {
     function onMessage(e: MessageEvent) {
       if (typeof e.data !== "object" || !e.data) return;
-      const msg = e.data as { type?: string; target?: string; field?: string; value?: string };
+      const msg = e.data as { type?: string; target?: string; field?: string; value?: string; index?: number };
       if (msg.type === "sproutly-edit-click" && typeof msg.target === "string") {
         const validKeys = [
           "hero",
@@ -528,6 +528,88 @@ export function EditorWorkspace({
           updateHomepage({ testimonialsEyebrow: value });
         } else if (msg.field === "testimonialsTitle") {
           updateHomepage({ testimonialsTitle: value });
+        } else if (typeof msg.index === "number" && Number.isInteger(msg.index) && msg.index >= 0) {
+          // 清單卡片欄位：訊息多帶 index 說是第幾筆。
+          // 這個 effect deps 是 []，closure 裡的 theme 是掛載當下的舊值，
+          // 所以不能走 updateTestimonial 那些讀 closure theme 的 helper，
+          // 要照上面 position-update 分支同款：setTheme functional form 拿最新 state。
+          // coalesce key 也對齊側欄同欄位的格式，雙擊改字跟側欄打字共用合併行為。
+          const idx = msg.index;
+          const patchListText = (
+            field: "testimonials" | "faqItems" | "stats" | "gallery",
+            key: string,
+            // 公開頁 FAQ render 前有先濾掉空問空答，畫面上的第 i 條不一定是
+            // 原始清單的第 i 筆；有給 isValid 就把畫面 index 對回原始 index
+            isValid?: (item: Record<string, unknown>) => boolean
+          ) => {
+            setTheme((t) => {
+              const list = t.layout[field] as Array<Record<string, unknown>>;
+              let real = idx;
+              if (isValid) {
+                real = -1;
+                let seen = -1;
+                for (let j = 0; j < list.length; j++) {
+                  if (isValid(list[j])) {
+                    seen++;
+                    if (seen === idx) {
+                      real = j;
+                      break;
+                    }
+                  }
+                }
+              }
+              if (real < 0 || real >= list.length) return t;
+              pushHistory(t, `layout:${field}:${real}:${key}`);
+              const next = [...list];
+              next[real] = { ...next[real], [key]: value };
+              return { ...t, layout: { ...t.layout, [field]: next } };
+            });
+            setDirty(true);
+          };
+          const faqValid = (item: Record<string, unknown>) =>
+            String(item.question ?? "").trim() !== "" && String(item.answer ?? "").trim() !== "";
+          if (msg.field === "testimonialQuote") {
+            patchListText("testimonials", "quote");
+          } else if (msg.field === "testimonialAuthor") {
+            patchListText("testimonials", "author");
+          } else if (msg.field === "testimonialRole") {
+            patchListText("testimonials", "role");
+          } else if (msg.field === "faqQuestion") {
+            patchListText("faqItems", "question", faqValid);
+          } else if (msg.field === "faqAnswer") {
+            patchListText("faqItems", "answer", faqValid);
+          } else if (msg.field === "statValue") {
+            patchListText("stats", "value");
+          } else if (msg.field === "statLabel") {
+            patchListText("stats", "label");
+          } else if (msg.field === "galleryCaption") {
+            patchListText("gallery", "caption");
+          } else if (
+            msg.field === "journalCardEyebrow" ||
+            msg.field === "journalCardTitle" ||
+            msg.field === "journalCardExcerpt"
+          ) {
+            const key =
+              msg.field === "journalCardEyebrow"
+                ? "eyebrow"
+                : msg.field === "journalCardTitle"
+                ? "title"
+                : "excerpt";
+            setTheme((t) => {
+              // 慢讀卡沒存過內容時公開頁顯示預設三張，第一次雙擊改字
+              // 要先把預設整組帶進來再改那一格（跟側欄同一招）
+              const base =
+                t.homepage.journalCards.length > 0
+                  ? t.homepage.journalCards
+                  : JOURNAL_CARD_DEFAULTS;
+              if (idx >= base.length) return t;
+              pushHistory(t, `homepage:journalCards:${idx}:${key}`);
+              const next = base.map((c) => ({ ...c }));
+              next[idx] = { ...next[idx], [key]: value };
+              return { ...t, homepage: { ...t.homepage, journalCards: next } };
+            });
+            setDirty(true);
+          }
         }
       }
     }

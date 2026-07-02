@@ -95,14 +95,25 @@ export function EditorClickBridge() {
     function commitTextEdit(el: HTMLElement) {
       const field = el.dataset.editField;
       if (!field) return;
-      const value = (el.textContent ?? "").trim();
+      // innerText 不是 textContent：FAQ 答案這種多段落欄位（answer 依換行拆成
+      // 多個 <p>）用 textContent 會把段落黏成一串、雙擊後即使沒改字也毀掉換行；
+      // innerText 依排版還原換行，存回去再 split 得回原本的段落。
+      const value = (el.innerText ?? "").trim();
       el.removeAttribute("contenteditable");
+      // 清單卡片的欄位（好評第 2 張的引言、FAQ 第 3 條的問題⋯）多帶一個
+      // data-edit-index 說是第幾筆，editor 端才知道要改進哪張卡
+      const indexRaw = el.dataset.editIndex;
+      const index =
+        indexRaw !== undefined && /^\d+$/.test(indexRaw)
+          ? Number(indexRaw)
+          : undefined;
       if (window.parent !== window) {
         window.parent.postMessage(
           {
             type: "sproutly-edit-text-update",
             field,
             value,
+            ...(index !== undefined ? { index } : {}),
           },
           "*"
         );
@@ -116,7 +127,8 @@ export function EditorClickBridge() {
       e.stopPropagation();
       // 記住原文，按 Esc 取消時要還原 —— 否則 user 打到一半的字會留在預覽畫面上，
       // 直到下次重繪才消失，看起來像「取消了卻沒取消」。
-      const originalText = textEl.textContent ?? "";
+      // 存 innerHTML 不是 textContent：多段落欄位（FAQ 答案）取消時才能連段落結構一起還原。
+      const originalHtml = textEl.innerHTML;
       textEl.setAttribute("contenteditable", "true");
       textEl.focus();
       // 選取全部文字方便重打
@@ -141,7 +153,7 @@ export function EditorClickBridge() {
           textEl.removeEventListener("blur", onBlur);
           textEl.removeEventListener("keydown", onKey);
           // 還原原文再移掉 contenteditable，讓畫面回到沒編輯前的樣子
-          textEl.textContent = originalText;
+          textEl.innerHTML = originalHtml;
           textEl.removeAttribute("contenteditable");
         }
       };
