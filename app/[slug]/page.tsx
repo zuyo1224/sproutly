@@ -989,6 +989,8 @@ export default async function StoreHomePage({
             <div className="max-w-5xl mx-auto px-8 sm:px-12" style={{ textAlign: featuredStyle.align }}>
               {featuredFree ? (
                 <h2
+                  data-edit-text
+                  data-edit-field="featuredTitle"
                   data-edit-drag={FREE_POS_KEYS.featuredTitle}
                   className="absolute text-xl sm:text-2xl"
                   style={{
@@ -1841,6 +1843,8 @@ export default async function StoreHomePage({
                   >
                     {statsEyebrow && (
                       <p
+                        data-edit-text
+                        data-edit-field="statsEyebrow"
                         className="text-[0.6875rem] tracking-[0.4em] uppercase mb-5"
                         style={{ color: theme.accent }}
                       >
@@ -1849,6 +1853,8 @@ export default async function StoreHomePage({
                     )}
                     {statsTitle && (
                       <h2
+                        data-edit-text
+                        data-edit-field="statsTitle"
                         className="text-2xl sm:text-3xl md:text-4xl"
                         style={{
                           color: theme.text,
@@ -1987,6 +1993,8 @@ export default async function StoreHomePage({
               >
                 {partnersFree ? (
                   <p
+                    data-edit-text
+                    data-edit-field="partnersEyebrow"
                     data-edit-drag={FREE_POS_KEYS.partnersEyebrow}
                     className="absolute text-[10px] tracking-[0.4em] uppercase"
                     style={{
@@ -2086,12 +2094,16 @@ export default async function StoreHomePage({
                     }}
                   >
                     <p
+                      data-edit-text
+                      data-edit-field="galleryEyebrow"
                       className="text-[10px] tracking-[0.4em] uppercase mb-5"
                       style={{ color: theme.accent }}
                     >
                       {galleryEyebrow}
                     </p>
                     <h2
+                      data-edit-text
+                      data-edit-field="galleryTitle"
                       className="text-2xl sm:text-3xl md:text-4xl"
                       style={{
                         color: theme.text,
