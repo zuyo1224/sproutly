@@ -560,6 +560,8 @@ export default async function StoreHomePage({
                         href={`/${slug}/shop`}
                         className={`sproutly-link mt-8 inline-block text-sm tracking-wider ${theme.layout.heroSubtitle ? fade3 : fade2}`}
                         data-default-line="true"
+                        data-edit-text
+                        data-edit-field="heroCta"
                         style={{
                           color: theme.text,
                           fontFamily: "var(--store-font)",
@@ -645,6 +647,8 @@ export default async function StoreHomePage({
                     <Link
                       href={`/${slug}/shop`}
                       className="sproutly-btn sproutly-btn-primary sproutly-btn-lg"
+                      data-edit-text
+                      data-edit-field="heroCta"
                     >
                       {heroCta}
                     </Link>
@@ -652,6 +656,8 @@ export default async function StoreHomePage({
                       <Link
                         href={`/${slug}/about`}
                         className="sproutly-btn sproutly-btn-secondary sproutly-btn-lg"
+                        data-edit-text
+                        data-edit-field="heroSecondaryCta"
                       >
                         {heroSecondaryCta}
                       </Link>
@@ -677,7 +683,9 @@ export default async function StoreHomePage({
                     className={`flex justify-between items-center text-[10px] tracking-[0.32em] uppercase ${fade1}`}
                     style={{ color: theme.textMuted }}
                   >
-                    <span>{theme.layout.heroEyebrow || "Issue"}</span>
+                    <span data-edit-text data-edit-field="heroEyebrow">
+                      {theme.layout.heroEyebrow || "Issue"}
+                    </span>
                     <span>{store.name}</span>
                   </div>
                   <div
@@ -709,6 +717,8 @@ export default async function StoreHomePage({
                   </h1>
                   {theme.layout.heroSubtitle && (
                     <p
+                      data-edit-text
+                      data-edit-field="heroSubtitle"
                       className={`mt-8 text-base sm:text-lg italic max-w-xl mx-auto leading-[1.9] ${fade2}`}
                       style={{ color: subtitleColor, ...subtitleSizeStyle, ...subtitleAlignStyle }}
                     >
@@ -739,7 +749,11 @@ export default async function StoreHomePage({
                       data-default-line="true"
                       style={{ color: theme.text }}
                     >
-                      {heroCta} →
+                      {/* 箭頭留在可編輯範圍外，雙擊改到的只有文字本體 */}
+                      <span data-edit-text data-edit-field="heroCta">
+                        {heroCta}
+                      </span>{" "}
+                      →
                     </Link>
                   </div>
                 </div>
@@ -757,6 +771,8 @@ export default async function StoreHomePage({
             >
               {theme.layout.heroEyebrow && (
                 <p
+                  data-edit-text
+                  data-edit-field="heroEyebrow"
                   className={`text-[10px] tracking-[0.4em] uppercase mb-8 ${fade1}`}
                   style={{ color: theme.accent }}
                 >
@@ -784,6 +800,8 @@ export default async function StoreHomePage({
               </h1>
               {theme.layout.heroSubtitle && (
                 <p
+                  data-edit-text
+                  data-edit-field="heroSubtitle"
                   className={`mt-8 text-base sm:text-lg max-w-xl mx-auto leading-[1.9] ${fade2}`}
                   style={{ color: subtitleColor, ...subtitleSizeStyle, ...subtitleAlignStyle }}
                 >
@@ -802,6 +820,8 @@ export default async function StoreHomePage({
               <Link
                 href={`/${slug}/shop`}
                 className={`sproutly-btn sproutly-btn-primary sproutly-btn-lg mt-12 ${fade3}`}
+                data-edit-text
+                data-edit-field="heroCta"
               >
                 {heroCta}
               </Link>
@@ -931,6 +951,8 @@ export default async function StoreHomePage({
                       </p>
                     )}
                     <span
+                      data-edit-text
+                      data-edit-field="collectionsCardCta"
                       className="sproutly-card-action inline-block text-[10px] tracking-[0.3em] uppercase"
                       style={{ color: theme.accent }}
                     >
@@ -1255,6 +1277,8 @@ export default async function StoreHomePage({
                       {entry.excerpt}
                     </p>
                     <p
+                      data-edit-text
+                      data-edit-field="journalCardLabel"
                       className="mt-5 text-[10px] tracking-[0.3em] uppercase"
                       style={{ color: theme.textMuted, opacity: 0.65 }}
                     >
