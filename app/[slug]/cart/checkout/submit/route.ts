@@ -8,6 +8,7 @@ import {
   shippingDetailError,
 } from "@/lib/order-labels";
 import { isValidQty } from "@/lib/product-quantity";
+import { restoreStock } from "@/lib/stock-restore";
 
 type Params = Promise<{ slug: string }>;
 
@@ -98,7 +99,9 @@ export async function POST(
 
   // 庫存檢查 + atomic 扣減（用 service_role）
   const admin = createAdminClient();
-  const stockBackup: { id: string; original: number }[] = [];
+  // 記「這張單扣了誰幾件」，失敗時逐筆加回去（不能記舊值整欄蓋回，
+  // 會把 rollback 空檔中別的客人買走的庫存變回來，原因見 restoreStock）
+  const decremented: { id: string; qty: number }[] = [];
   let totalCents = 0;
   let currency = "TWD";
 
@@ -107,11 +110,8 @@ export async function POST(
     if (!product) return NextResponse.json({ error: "商品錯誤" }, { status: 400 });
     if (product.stock !== null && product.stock < item.qty) {
       // rollback already decremented
-      for (const b of stockBackup) {
-        await admin
-          .from("sproutly_products")
-          .update({ stock: b.original })
-          .eq("id", b.id);
+      for (const b of decremented) {
+        await restoreStock(admin, b.id, b.qty);
       }
       return NextResponse.json({
         error: `「${product.name}」庫存不足，剩 ${product.stock}`,
@@ -126,17 +126,14 @@ export async function POST(
         .select("id");
       if (uerr || !updated || updated.length === 0) {
         // rollback
-        for (const b of stockBackup) {
-          await admin
-            .from("sproutly_products")
-            .update({ stock: b.original })
-            .eq("id", b.id);
+        for (const b of decremented) {
+          await restoreStock(admin, b.id, b.qty);
         }
         return NextResponse.json({
           error: `「${product.name}」庫存剛被搶光，請重試`,
         }, { status: 409 });
       }
-      stockBackup.push({ id: product.id, original: product.stock });
+      decremented.push({ id: product.id, qty: item.qty });
     }
     totalCents += product.price_cents * item.qty;
     currency = product.currency;
@@ -175,8 +172,8 @@ export async function POST(
 
   if (orderError || !order) {
     // rollback
-    for (const b of stockBackup) {
-      await admin.from("sproutly_products").update({ stock: b.original }).eq("id", b.id);
+    for (const b of decremented) {
+      await restoreStock(admin, b.id, b.qty);
     }
     return NextResponse.json({ error: "訂單建立失敗" }, { status: 500 });
   }
@@ -197,8 +194,8 @@ export async function POST(
     .insert(orderItemsData);
   if (itemsErr) {
     await admin.from("sproutly_orders").delete().eq("id", order.id);
-    for (const b of stockBackup) {
-      await admin.from("sproutly_products").update({ stock: b.original }).eq("id", b.id);
+    for (const b of decremented) {
+      await restoreStock(admin, b.id, b.qty);
     }
     return NextResponse.json({ error: "訂單明細失敗" }, { status: 500 });
   }

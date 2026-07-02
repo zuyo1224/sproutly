@@ -6,6 +6,7 @@ import { createAdminClient } from "@/lib/supabase/admin";
 import { redirect } from "next/navigation";
 import { encodeShippingIntoNote, SHIPPING_LABELS, PAYMENT_LABELS, shippingDetailError } from "@/lib/order-labels";
 import { QTY_MIN, QTY_MAX, isValidQty } from "@/lib/product-quantity";
+import { restoreStock } from "@/lib/stock-restore";
 
 export async function placeOrder(slug: string, formData: FormData) {
   const productId = formString(formData, "product_id");
@@ -144,10 +145,8 @@ export async function placeOrder(slug: string, formData: FormData) {
 
   if (orderError || !order) {
     if (product.stock !== null) {
-      await admin
-        .from("sproutly_products")
-        .update({ stock: product.stock })
-        .eq("id", productId);
+      // 加回剛扣的數量，不能整欄寫回舊值（會蓋掉這空檔別人下單扣走的份，原因見 restoreStock）
+      await restoreStock(admin, productId, quantity);
     }
     redirect(
       baseRedirect +
@@ -169,10 +168,7 @@ export async function placeOrder(slug: string, formData: FormData) {
   if (itemError) {
     await admin.from("sproutly_orders").delete().eq("id", order.id);
     if (product.stock !== null) {
-      await admin
-        .from("sproutly_products")
-        .update({ stock: product.stock })
-        .eq("id", productId);
+      await restoreStock(admin, productId, quantity);
     }
     redirect(
       baseRedirect +
