@@ -1083,9 +1083,24 @@ export function EditorWorkspace({
               homepage: theme.homepage,
             }}
             onPatch={(patch) => {
-              if (patch.primary) update("primary", patch.primary);
-              if (patch.accent) update("accent", patch.accent);
-              if (patch.tagline !== undefined) update("tagline", patch.tagline);
+              // AI 一個指令常常同時改好幾個欄位（配色 + 文案 + layout）。
+              // 若逐欄位走 update()，每個欄位各推一筆復原點，按一次「復原」
+              // 只退掉其中一個欄位 — user 看起來就是「復原只復原某些動作」。
+              // 所以整包合成一個 theme、只推一筆復原點：復原一次退掉整個 AI 指令。
+              const next: EditorTheme = { ...theme };
+              let changed = false;
+              if (patch.primary) {
+                next.primary = patch.primary;
+                changed = true;
+              }
+              if (patch.accent) {
+                next.accent = patch.accent;
+                changed = true;
+              }
+              if (patch.tagline !== undefined) {
+                next.tagline = patch.tagline;
+                changed = true;
+              }
               if (patch.layout) {
                 const l = patch.layout;
                 const patchObj: Partial<EditorTheme["layout"]> = {};
@@ -1096,15 +1111,25 @@ export function EditorWorkspace({
                 if (l.sectionOrder && Array.isArray(l.sectionOrder)) {
                   patchObj.sectionOrder = l.sectionOrder as SectionKey[];
                 }
-                if (Object.keys(patchObj).length) updateLayout(patchObj);
+                if (Object.keys(patchObj).length) {
+                  next.layout = { ...theme.layout, ...patchObj };
+                  changed = true;
+                }
               }
               if (patch.homepage) {
                 const hpPatch: Partial<EditorTheme["homepage"]> = {};
                 if (patch.homepage.promise !== undefined) hpPatch.promise = patch.homepage.promise;
                 if (patch.homepage.collectionsIntro !== undefined) hpPatch.collectionsIntro = patch.homepage.collectionsIntro;
                 if (patch.homepage.visitTitle !== undefined) hpPatch.visitTitle = patch.homepage.visitTitle;
-                if (Object.keys(hpPatch).length) updateHomepage(hpPatch);
+                if (Object.keys(hpPatch).length) {
+                  next.homepage = { ...theme.homepage, ...hpPatch };
+                  changed = true;
+                }
               }
+              if (!changed) return;
+              pushHistory(theme); // 不帶 coalesceKey：每個 AI 指令是獨立的一步
+              setTheme(next);
+              setDirty(true);
             }}
           />
         )}
