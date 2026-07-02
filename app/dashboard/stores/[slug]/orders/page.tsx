@@ -1,6 +1,6 @@
-import { redirect, notFound } from "next/navigation";
+import { notFound } from "next/navigation";
 import Link from "next/link";
-import { createClient } from "@/lib/supabase/server";
+import { requireUser } from "@/lib/require-user";
 // 訂單狀態徽章（label + 色票）跟店家首頁、訂單詳情共用同一份；篩選 chip 的狀態清單
 // 也從同一條 canonical 順序（ORDER_STATUS_OPTIONS）衍生，前面再補一顆「全部」。
 import {
@@ -91,11 +91,7 @@ export default async function OrdersListPage({
     : "all";
   const rangeSince = taipeiRangeSince(range);
 
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-  if (!user) redirect("/login");
+  const { supabase, user } = await requireUser();
 
   const { data: store } = await supabase
     .from("sproutly_merchants")

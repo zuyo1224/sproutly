@@ -1,4 +1,4 @@
-import { createClient } from "@/lib/supabase/server";
+import { requireUser } from "@/lib/require-user";
 import { signOut } from "@/app/auth/actions";
 import { redirect } from "next/navigation";
 import Link from "next/link";
@@ -45,11 +45,7 @@ function RevenueValue({ byCurrency }: { byCurrency: Record<string, number> }) {
 }
 
 export default async function DashboardPage() {
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-  if (!user) redirect("/login");
+  const { supabase, user } = await requireUser();
 
   const { data: stores } = await supabase
     .from("sproutly_merchants")

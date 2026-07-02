@@ -1,6 +1,6 @@
 import Link from "next/link";
-import { redirect, notFound } from "next/navigation";
-import { createClient } from "@/lib/supabase/server";
+import { notFound } from "next/navigation";
+import { requireUser } from "@/lib/require-user";
 import { createProduct } from "../actions";
 import { SubmitButton } from "@/app/_components/submit-button";
 import { ImageFilePicker } from "@/app/_components/image-file-picker";
@@ -33,11 +33,7 @@ export default async function NewProductPage({
   const { slug } = await params;
   const { error } = await searchParams;
 
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-  if (!user) redirect("/login");
+  const { supabase, user } = await requireUser();
 
   const { data: store } = await supabase
     .from("sproutly_merchants")

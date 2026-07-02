@@ -1,6 +1,6 @@
-import { redirect, notFound } from "next/navigation";
+import { notFound } from "next/navigation";
 import Link from "next/link";
-import { createClient } from "@/lib/supabase/server";
+import { requireUser } from "@/lib/require-user";
 import { resolveTheme, SECTION_LABELS } from "@/app/[slug]/_theme";
 import { EditorWorkspace } from "./editor-workspace";
 
@@ -16,11 +16,7 @@ export default async function EditorPage({
 }) {
   const { slug } = await params;
   const { saved, error } = await searchParams;
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-  if (!user) redirect("/login");
+  const { supabase, user } = await requireUser();
 
   const { data: store } = await supabase
     .from("sproutly_merchants")

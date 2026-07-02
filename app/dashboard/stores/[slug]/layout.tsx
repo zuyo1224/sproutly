@@ -1,6 +1,6 @@
 import Link from "next/link";
-import { redirect, notFound } from "next/navigation";
-import { createClient } from "@/lib/supabase/server";
+import { notFound } from "next/navigation";
+import { requireUser } from "@/lib/require-user";
 import { signOut } from "@/app/auth/actions";
 import { DashboardStoreTabs } from "@/app/_components/dashboard-store-tabs";
 
@@ -14,11 +14,7 @@ export default async function StoreLayout({
   params: Params;
 }) {
   const { slug } = await params;
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-  if (!user) redirect("/login");
+  const { supabase, user } = await requireUser();
 
   const [{ data: store }, { data: allStores }] = await Promise.all([
     supabase

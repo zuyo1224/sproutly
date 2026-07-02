@@ -1,5 +1,5 @@
-import { createClient } from "@/lib/supabase/server";
-import { redirect, notFound } from "next/navigation";
+import { requireUser } from "@/lib/require-user";
+import { notFound } from "next/navigation";
 import Link from "next/link";
 import { resolveTheme } from "@/app/[slug]/_theme";
 import { updateOrderStatus } from "./orders/[orderId]/actions";
@@ -27,11 +27,7 @@ export default async function StoreInsightsPage({
   params: Params;
 }) {
   const { slug } = await params;
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-  if (!user) redirect("/login");
+  const { supabase, user } = await requireUser();
 
   const { data: store } = await supabase
     .from("sproutly_merchants")

@@ -1,5 +1,5 @@
-import { createClient } from "@/lib/supabase/server";
-import { redirect, notFound } from "next/navigation";
+import { requireUser } from "@/lib/require-user";
+import { notFound } from "next/navigation";
 import Link from "next/link";
 import { formatPrice } from "@/lib/format-price";
 import { isSoldOut, isLowStock } from "@/lib/product-stock";
@@ -51,11 +51,7 @@ export default async function ProductsListPage({
   const filter = STATUS_FILTERS.some((f) => f.key === rawFilter)
     ? rawFilter!
     : "all";
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-  if (!user) redirect("/login");
+  const { supabase, user } = await requireUser();
 
   const { data: store } = await supabase
     .from("sproutly_merchants")

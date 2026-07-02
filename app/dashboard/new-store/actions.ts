@@ -1,15 +1,11 @@
 "use server";
 import { formString, formStringOrNull } from "@/lib/form-fields";
 
-import { createClient } from "@/lib/supabase/server";
+import { requireUser } from "@/lib/require-user";
 import { redirect } from "next/navigation";
 
 export async function createStore(formData: FormData) {
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-  if (!user) redirect("/login");
+  const { supabase, user } = await requireUser();
 
   const name = formString(formData, "name");
   const slug = String(formData.get("slug") ?? "")

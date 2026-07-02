@@ -1,7 +1,7 @@
 "use server";
 import { formString, formStringOrNull } from "@/lib/form-fields";
 
-import { createClient } from "@/lib/supabase/server";
+import { requireUser } from "@/lib/require-user";
 import { uploadImage } from "@/lib/storage";
 import { normalizeHexColor } from "@/lib/hex-color";
 import { redirect } from "next/navigation";
@@ -23,11 +23,7 @@ function safeHex(input: string, fallback: string): string {
 export async function updateStore(slug: string, formData: FormData) {
   const baseRedirect = `/dashboard/stores/${slug}/settings`;
 
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-  if (!user) redirect("/login");
+  const { supabase, user } = await requireUser();
 
   const { data: store } = await supabase
     .from("sproutly_merchants")

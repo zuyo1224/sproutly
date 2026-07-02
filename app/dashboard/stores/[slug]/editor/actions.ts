@@ -1,6 +1,6 @@
 "use server";
 
-import { createClient } from "@/lib/supabase/server";
+import { requireUser } from "@/lib/require-user";
 import {
   clampHeroZoom,
   clampHeroFontScale,
@@ -9,7 +9,6 @@ import {
   clampFreePos,
 } from "@/lib/theme-scale";
 import { normalizeHexColor } from "@/lib/hex-color";
-import { redirect } from "next/navigation";
 
 const HERO_STYLES = new Set(["full-image", "split", "minimal", "magazine"]);
 const SECTION_KEYS = ["hero", "collections", "featured", "journal", "promise", "testimonials", "faq", "stats", "partners", "gallery", "visit"];
@@ -124,13 +123,7 @@ function sanitizeHex(s: unknown): string | undefined {
 export async function saveEditorState(slug: string, payload: EditorPayload) {
   if (!slug) return { error: "missing slug" };
 
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-  if (!user) {
-    redirect("/login");
-  }
+  const { supabase, user } = await requireUser();
 
   const { data: store } = await supabase
     .from("sproutly_merchants")

@@ -1,6 +1,6 @@
-import { redirect, notFound } from "next/navigation";
+import { notFound } from "next/navigation";
 import Link from "next/link";
-import { createClient } from "@/lib/supabase/server";
+import { requireUser } from "@/lib/require-user";
 import { updateOrderStatus } from "./actions";
 import { SubmitButton } from "@/app/_components/submit-button";
 import { PrintButton } from "@/app/_components/print-button";
@@ -44,11 +44,7 @@ export default async function OrderDetailPage({
   const { slug, orderId } = await params;
   const { error, saved } = await searchParams;
 
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-  if (!user) redirect("/login");
+  const { supabase, user } = await requireUser();
 
   const { data: store } = await supabase
     .from("sproutly_merchants")

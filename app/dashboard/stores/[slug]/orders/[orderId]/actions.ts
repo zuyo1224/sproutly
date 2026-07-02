@@ -1,6 +1,6 @@
 "use server";
 
-import { createClient } from "@/lib/supabase/server";
+import { requireUser } from "@/lib/require-user";
 import { redirect } from "next/navigation";
 import { ORDER_STATUSES, PAYMENT_STATUSES } from "@/lib/order-labels";
 
@@ -13,11 +13,7 @@ export async function updateOrderStatus(
   orderId: string,
   formData: FormData
 ) {
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-  if (!user) redirect("/login");
+  const { supabase, user } = await requireUser();
 
   const { data: store } = await supabase
     .from("sproutly_merchants")

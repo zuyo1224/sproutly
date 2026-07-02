@@ -1,6 +1,6 @@
-import { redirect, notFound } from "next/navigation";
+import { notFound } from "next/navigation";
 import Link from "next/link";
-import { createClient } from "@/lib/supabase/server";
+import { requireUser } from "@/lib/require-user";
 import { telHref, mailHref } from "@/lib/contact-href";
 
 type Params = Promise<{ slug: string }>;
@@ -70,11 +70,7 @@ export default async function StoreCustomersPage({
   const sort = (SORT_OPTIONS.find((o) => o.key === sp.sort)?.key ??
     "recent") as (typeof SORT_OPTIONS)[number]["key"];
 
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-  if (!user) redirect("/login");
+  const { supabase, user } = await requireUser();
 
   const { data: store } = await supabase
     .from("sproutly_merchants")
