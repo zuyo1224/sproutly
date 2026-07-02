@@ -150,6 +150,7 @@ type EditorTheme = {
     heroSecondaryCta: string;
     heroMagazineByline: string;
     collectionsCardCta: string;
+    collectionItems: Array<{ key: string; title: string; subtitle: string }>;
     aboutEyebrow: string;
     aboutTitle: string;
     contactEyebrow: string;
@@ -178,6 +179,16 @@ const JOURNAL_CARD_DEFAULTS: { eyebrow: string; title: string; excerpt: string }
   { eyebrow: "Care", title: "新手綠手指的第一步", excerpt: "光線、澆水頻率、換盆時機 — 把基本功講清楚，少走幾年彎路。" },
   { eyebrow: "Space", title: "把植物放進小空間", excerpt: "套房、租屋、窗台一隅，不同光線條件下的擺放提案。" },
   { eyebrow: "Story", title: "我們挑植物的方式", excerpt: "從花市到溫室，這些植物是怎麼被選進這間店的。" },
+];
+
+// 選物提案六張卡預設內容（跟 _theme.ts 的 HOMEPAGE_DEFAULT_COLLECTIONS 對齊）
+const COLLECTION_ITEM_DEFAULTS: { key: string; title: string; subtitle: string }[] = [
+  { key: "window", title: "給窗邊的", subtitle: "明亮散光也活得好" },
+  { key: "living", title: "給客廳的", subtitle: "撐起整個空間" },
+  { key: "desk", title: "給辦公桌的", subtitle: "小巧好顧" },
+  { key: "bathroom", title: "給浴室的", subtitle: "潮濕也不怕" },
+  { key: "nordic", title: "給北歐風的", subtitle: "搭淺木色家具" },
+  { key: "japanese", title: "給日式空間的", subtitle: "配榻榻米和障子" },
 ];
 
 const HERO_STYLE_LABELS: Record<HeroStyle, string> = {
@@ -608,6 +619,26 @@ export function EditorWorkspace({
               const next = base.map((c) => ({ ...c }));
               next[idx] = { ...next[idx], [key]: value };
               return { ...t, homepage: { ...t.homepage, journalCards: next } };
+            });
+            setDirty(true);
+          } else if (
+            msg.field === "collectionCardTitle" ||
+            msg.field === "collectionCardSubtitle"
+          ) {
+            const key = msg.field === "collectionCardTitle" ? "title" : "subtitle";
+            setTheme((t) => {
+              // 沒存過選物卡時公開頁顯示預設六張，第一次雙擊改字
+              // 要先把預設整組帶進來再改那一格（跟慢讀卡同一招）。
+              // index 是公開頁濾掉沒圖的卡「之前」的原始位置，直接用不必重對。
+              const base =
+                t.homepage.collectionItems.length > 0
+                  ? t.homepage.collectionItems
+                  : COLLECTION_ITEM_DEFAULTS;
+              if (idx >= base.length) return t;
+              pushHistory(t, `homepage:collectionItems:${idx}:${key}`);
+              const next = base.map((c) => ({ ...c }));
+              next[idx] = { ...next[idx], [key]: value };
+              return { ...t, homepage: { ...t.homepage, collectionItems: next } };
             });
             setDirty(true);
           }

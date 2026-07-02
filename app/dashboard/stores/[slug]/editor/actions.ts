@@ -110,6 +110,7 @@ type EditorPayload = {
     footerTrackLabel?: string;
     journalCardLabel?: string;
     journalCards?: Array<{ eyebrow?: string; title?: string; excerpt?: string }>;
+    collectionItems?: Array<{ key?: string; title?: string; subtitle?: string }>;
   };
   sections?: {
     about?: boolean;
@@ -605,6 +606,22 @@ export async function saveEditorState(slug: string, payload: EditorPayload) {
         }))
         .filter((c) => c.eyebrow || c.title || c.excerpt)
         .slice(0, 3);
+    }
+    if (payload.homepage.collectionItems !== undefined) {
+      const arr = Array.isArray(payload.homepage.collectionItems)
+        ? payload.homepage.collectionItems
+        : [];
+      // 空標題的卡照 settings 頁同款規則丟掉（空標題 = 不顯示這個提案）；
+      // 上限 6 跟固定六個情境 key 對齊
+      hpPatch.collectionItems = arr
+        .filter((c) => c && typeof c === "object")
+        .map((c) => ({
+          key: String(c.key ?? "").trim().slice(0, 40),
+          title: String(c.title ?? "").trim().slice(0, 60),
+          subtitle: String(c.subtitle ?? "").trim().slice(0, 80),
+        }))
+        .filter((c) => c.key && c.title)
+        .slice(0, 6);
     }
     merged.homepage = hpPatch;
   }

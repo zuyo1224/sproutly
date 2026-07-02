@@ -87,9 +87,10 @@ export default async function StoreHomePage({
       ? theme.homepage.collectionItems
       : HOMEPAGE_DEFAULT_COLLECTIONS;
 
-  // 篩出有情境照的提案
+  // 篩出有情境照的提案。index 在濾掉沒圖的卡「之前」先記下來，
+  // 雙擊改卡片標題時編輯器才對得回原始 collectionItems 的第幾筆
   const visibleCollections = collectionsConfig
-    .map((c) => ({ ...c, image: theme.collections[c.key] }))
+    .map((c, i) => ({ ...c, image: theme.collections[c.key], index: i }))
     .filter((c) => c.image);
 
   // 中文按全形標點自然分行
@@ -933,6 +934,9 @@ export default async function StoreHomePage({
                       />
                     </div>
                     <h3
+                      data-edit-text
+                      data-edit-field="collectionCardTitle"
+                      data-edit-index={c.index}
                       className="sproutly-card-title mt-6 text-lg sm:text-xl"
                       style={{
                         color: theme.text,
@@ -944,6 +948,9 @@ export default async function StoreHomePage({
                     </h3>
                     {c.subtitle && (
                       <p
+                        data-edit-text
+                        data-edit-field="collectionCardSubtitle"
+                        data-edit-index={c.index}
                         className="sproutly-card-meta mt-1 text-sm"
                         style={{ color: theme.textMuted }}
                       >
