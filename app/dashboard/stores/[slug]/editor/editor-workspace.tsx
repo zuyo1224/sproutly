@@ -1809,6 +1809,9 @@ export function EditorWorkspace({
                   </button>
                 ))}
               </div>
+              <p className="text-[10px] text-stone-500 mt-1">
+                高度只有「整版圖片」版型會套用；其他版型的高度是版型設計的一部分，先跟著版型走
+              </p>
             </Field>
             {theme.layout.heroStyle === "full-image" && (() => {
               // Per-viewport zoom：依當前預覽裝置決定編哪個欄位

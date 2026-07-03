@@ -506,6 +506,18 @@ export default async function StoreHomePage({
                     className={taglinePos ? "" : "max-w-4xl mx-auto"}
                     style={{ textAlign: taglineAlign }}
                   >
+                    {/* Eyebrow 小標：其他三版型都有渲染，full-image 一直漏掉。
+                        跟副標 / CTA 同邏輯：主標拖走後 flow 內容會疊到 absolute 主標，先藏。 */}
+                    {!taglinePos && theme.layout.heroEyebrow && (
+                      <p
+                        data-edit-text
+                        data-edit-field="heroEyebrow"
+                        className={`text-[10px] tracking-[0.4em] uppercase mb-6 ${fade1}`}
+                        style={{ color: theme.accent }}
+                      >
+                        {theme.layout.heroEyebrow}
+                      </p>
+                    )}
                     <h1
                       className={`leading-[1.6] ${fade1}`}
                       style={
