@@ -433,6 +433,19 @@ export default async function StoreHomePage({
             theme.homepage.heroSecondaryCta ?? HOMEPAGE_DEFAULTS.heroSecondaryCta;
           const heroMagazineByline =
             theme.homepage.heroMagazineByline ?? `Curated by ${store.name}`;
+          // 主標自訂顏色 / 字級（四個版型共用；對齊另計——magazine / minimal
+          // 天生置中，套預設值 left 會把現有店家的版型翻掉，只在 full-image 生效）
+          const taglineColor = theme.layout.heroTaglineColor ?? theme.text;
+          const taglineFontScale = theme.layout.heroTaglineFontScale;
+          // 各版型的預設字級是 Tailwind responsive class，只在 user 動過 slider
+          // 時才用 inline clamp 蓋掉（1.0x 完全不覆寫，維持原本斷點行為）；
+          // min / vw / max 各版型自己帶，對齊該版型原本 class 的字級範圍。
+          const taglineSizeStyle = (minRem: number, vw: number, maxRem: number) =>
+            taglineFontScale !== 1
+              ? {
+                  fontSize: `clamp(${minRem * taglineFontScale}rem, ${vw * taglineFontScale}vw, ${maxRem * taglineFontScale}rem)`,
+                }
+              : {};
           // 副標自訂顏色 / 字級（split / magazine / minimal 共用）
           const subtitleColor =
             theme.layout.heroSubtitleColor ?? theme.textMuted;
@@ -461,9 +474,6 @@ export default async function StoreHomePage({
                 : theme.layout.heroHeight === "full"
                 ? "min-h-screen"
                 : ""; // auto
-            const taglineColor =
-              theme.layout.heroTaglineColor ?? theme.text;
-            const taglineFontScale = theme.layout.heroTaglineFontScale;
             const taglineAlign = theme.layout.heroTaglineAlign;
             return (
               <section
@@ -673,12 +683,13 @@ export default async function StoreHomePage({
                   <h1
                     className={`text-3xl sm:text-4xl lg:text-5xl xl:text-6xl leading-[1.15] ${fade1}`}
                     style={{
-                      color: theme.text,
+                      color: taglineColor,
                       fontFamily: "var(--store-font)",
                       fontWeight: 400,
                       letterSpacing: "-0.01em",
                       wordBreak: "keep-all",
                       overflowWrap: "break-word",
+                      ...taglineSizeStyle(1.875, 5, 3.75),
                     }}
                     data-edit-text
                     data-edit-field="tagline"
@@ -755,12 +766,13 @@ export default async function StoreHomePage({
                   <h1
                     className={`text-4xl sm:text-6xl md:text-7xl lg:text-8xl leading-[1.05] ${fade1}`}
                     style={{
-                      color: theme.text,
+                      color: taglineColor,
                       fontFamily: "var(--store-font)",
                       fontWeight: 400,
                       letterSpacing: "-0.02em",
                       wordBreak: "keep-all",
                       overflowWrap: "break-word",
+                      ...taglineSizeStyle(2.25, 8, 6),
                     }}
                     data-edit-text
                     data-edit-field="tagline"
@@ -838,12 +850,13 @@ export default async function StoreHomePage({
               <h1
                 className={`text-3xl sm:text-5xl md:text-6xl leading-[1.2] ${fade1}`}
                 style={{
-                  color: theme.text,
+                  color: taglineColor,
                   fontFamily: "var(--store-font)",
                   fontWeight: 400,
                   letterSpacing: "-0.015em",
                   wordBreak: "keep-all",
                   overflowWrap: "break-word",
+                  ...taglineSizeStyle(1.875, 6, 3.75),
                 }}
                 data-edit-text
                 data-edit-field="tagline"

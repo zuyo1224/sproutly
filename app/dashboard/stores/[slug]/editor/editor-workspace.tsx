@@ -1781,6 +1781,9 @@ export function EditorWorkspace({
                   </button>
                 ))}
               </div>
+              <p className="text-[10px] text-stone-500 mt-1">
+                對齊只有「整版圖片」版型會套用；其他版型的主標位置是版型設計的一部分，先跟著版型走
+              </p>
             </Field>
             <Field label="Hero 高度">
               <div className="grid grid-cols-4 gap-1.5">
