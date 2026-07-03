@@ -109,7 +109,11 @@ export default async function OrderDetailPage({
     pickupStore: decodedNote.storeName,
     paymentMethod: order.payment_method,
     paymentStatus: order.payment_status,
-    trackUrl: `${baseUrl}/${slug}/track`,
+    // 帶上編號＋電話（結帳成功頁同款），客人點開直接看到自己的單；
+    // 光桿 /track 只會落在空白查詢表單，客人得自己手打編號跟電話。
+    trackUrl: `${baseUrl}/${slug}/track?id=${shortId}&phone=${encodeURIComponent(
+      order.customer_phone
+    )}`,
   });
 
   return (
