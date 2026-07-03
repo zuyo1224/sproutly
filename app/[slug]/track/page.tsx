@@ -533,6 +533,95 @@ export default async function TrackPage({
               </span>
             </div>
 
+            <hr style={{ borderColor: theme.border }} />
+
+            {/* 收件資訊：客人查單常是要核對「地址／電話有沒有填錯」，結帳成功頁跟
+                會員訂單詳情都看得到這段，匿名查單這頭原本沒有——查到單只看得到商品
+                跟金額，想確認收件地址還得去翻信或問店家。能進到這裡已經過編號＋
+                電話雙因子驗證，給的欄位跟那兩頁同一套。 */}
+            {(() => {
+              const decoded = decodeShippingFromNote(order.note);
+              return (
+                <div>
+                  <p
+                    className="text-[0.6875rem] uppercase mb-4 font-medium"
+                    style={{ color: theme.accent, letterSpacing: "0.4em" }}
+                  >
+                    Recipient · 收件資訊
+                  </p>
+                  <dl className="text-[0.9375rem] space-y-2">
+                    <div className="flex gap-3">
+                      <dt
+                        className="w-20 shrink-0"
+                        style={{ color: theme.textMuted }}
+                      >
+                        姓名
+                      </dt>
+                      <dd style={{ color: theme.text }}>
+                        {order.customer_name}
+                      </dd>
+                    </div>
+                    <div className="flex gap-3">
+                      <dt
+                        className="w-20 shrink-0"
+                        style={{ color: theme.textMuted }}
+                      >
+                        電話
+                      </dt>
+                      <dd style={{ color: theme.text }}>
+                        {order.customer_phone}
+                      </dd>
+                    </div>
+                    {order.customer_email && (
+                      <div className="flex gap-3">
+                        <dt
+                          className="w-20 shrink-0"
+                          style={{ color: theme.textMuted }}
+                        >
+                          Email
+                        </dt>
+                        <dd
+                          className="min-w-0 truncate"
+                          style={{ color: theme.text }}
+                        >
+                          {order.customer_email}
+                        </dd>
+                      </div>
+                    )}
+                    {order.shipping_address && (
+                      <div className="flex gap-3">
+                        <dt
+                          className="w-20 shrink-0"
+                          style={{ color: theme.textMuted }}
+                        >
+                          地址
+                        </dt>
+                        <dd style={{ color: theme.text }}>
+                          {order.shipping_address}
+                        </dd>
+                      </div>
+                    )}
+                    {decoded.userNote && (
+                      <div
+                        className="flex gap-3 pt-3 mt-3 border-t"
+                        style={{ borderColor: theme.border }}
+                      >
+                        <dt
+                          className="w-20 shrink-0"
+                          style={{ color: theme.textMuted }}
+                        >
+                          備註
+                        </dt>
+                        <dd className="italic" style={{ color: theme.textMuted }}>
+                          {decoded.userNote}
+                        </dd>
+                      </div>
+                    )}
+                  </dl>
+                </div>
+              );
+            })()}
+
             {(() => {
               const decoded = decodeShippingFromNote(order.note);
               const paymentLabel = paymentMethodLabel(order.payment_method);
