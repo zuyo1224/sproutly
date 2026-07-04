@@ -9,6 +9,7 @@ import {
   paymentNextStepMessage,
   decodeShippingFromNote,
   shortOrderId,
+  orderStatusMessage,
   PAYMENT_STATUS_LABELS,
   CUSTOMER_STATUS_LABELS,
 } from "@/lib/order-labels";
@@ -453,6 +454,27 @@ export default async function OrderSuccessPage({
               </div>
             )}
           </dl>
+          {/* 「訂單狀態」列只有一個詞（已確認／已出貨），客人回頭看還是不知道
+              「這步代表什麼、接下來換誰動」：/track 進度卡跟會員詳情都有一句
+              解釋（已出貨還依取貨方式提醒超商取貨要帶證件），唯獨這頁只有
+              label。同一支 orderStatusMessage，已取消的單不講（大標已講明）。 */}
+          {!isCancelled &&
+            (() => {
+              const msg = orderStatusMessage(
+                order.status,
+                decodedNote.shippingLabel,
+                decodedNote.storeName
+              );
+              if (!msg) return null;
+              return (
+                <p
+                  className="mt-6 pt-5 border-t text-sm leading-[1.85]"
+                  style={{ borderColor: theme.border, color: theme.textMuted }}
+                >
+                  {msg}
+                </p>
+              );
+            })()}
         </section>
       )}
 
