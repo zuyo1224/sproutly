@@ -17,6 +17,7 @@ import { telHref, mailHref } from "@/lib/contact-href";
 import { RememberOrder } from "@/app/_components/remember-order";
 import { RecentOrdersList } from "@/app/_components/recent-orders-list";
 import { PrintButton } from "@/app/_components/print-button";
+import { CopyOrderId } from "@/app/_components/copy-order-id";
 
 type Params = Promise<{ slug: string }>;
 type SearchParams = Promise<{ id?: string; phone?: string }>;
@@ -474,12 +475,9 @@ export default async function TrackPage({
               >
                 Order ID · 訂單編號
               </p>
-              <p
-                className="font-mono text-[0.9375rem] font-semibold"
-                style={{ color: theme.text, letterSpacing: "0.02em" }}
-              >
-                #{shortOrderId(order.id)}
-              </p>
+              <span className="text-[0.9375rem]">
+                <CopyOrderId shortId={shortOrderId(order.id)} />
+              </span>
             </div>
 
             <hr style={{ borderColor: theme.border }} />
@@ -495,13 +493,20 @@ export default async function TrackPage({
                 {items.map((it, i) => (
                   <div
                     key={i}
-                    className="flex justify-between items-baseline text-[0.9375rem]"
+                    className="flex justify-between gap-4 items-baseline text-[0.9375rem]"
                     style={{ color: theme.text }}
                   >
-                    <span>
-                      {it.name_snapshot} × {it.quantity}
-                    </span>
-                    <span style={{ fontVariantNumeric: "tabular-nums" }}>
+                    <div className="min-w-0">
+                      <span className="block truncate">{it.name_snapshot}</span>
+                      <span className="text-xs" style={{ color: theme.textMuted }}>
+                        {formatPrice(it.price_cents_snapshot, order.currency)} ×{" "}
+                        {it.quantity}
+                      </span>
+                    </div>
+                    <span
+                      className="whitespace-nowrap"
+                      style={{ fontVariantNumeric: "tabular-nums" }}
+                    >
                       {formatPrice(
                         it.price_cents_snapshot * it.quantity,
                         order.currency

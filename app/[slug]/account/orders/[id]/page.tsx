@@ -14,6 +14,7 @@ import {
 } from "@/lib/order-labels";
 import { telHref, mailHref } from "@/lib/contact-href";
 import { PrintButton } from "@/app/_components/print-button";
+import { CopyOrderId } from "@/app/_components/copy-order-id";
 
 // 蓋掉父層 account/layout 的「會員中心」，單筆訂單分頁顯示「訂單明細」。
 export const metadata: Metadata = { title: "訂單明細" };
@@ -81,7 +82,7 @@ export default async function CustomerOrderDetailPage({
           className="text-[0.6875rem] tracking-[0.4em] uppercase mb-5"
           style={{ color: theme.accent }}
         >
-          Order · #{shortId}
+          Order · <CopyOrderId shortId={shortId} />
         </p>
         <h1
           className="text-3xl sm:text-4xl lg:text-[2.5rem]"
