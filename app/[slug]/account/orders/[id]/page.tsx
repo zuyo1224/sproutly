@@ -72,6 +72,8 @@ export default async function CustomerOrderDetailPage({
   const shortId = shortOrderId(order.id);
   const decodedNote = decodeShippingFromNote(order.note);
   const paymentLabel = paymentMethodLabel(order.payment_method);
+  const paymentStatusLabel =
+    PAYMENT_STATUS_LABELS[order.payment_status] ?? order.payment_status;
 
   const orderItems = items ?? [];
 
@@ -398,7 +400,10 @@ export default async function CustomerOrderDetailPage({
         </dl>
       </section>
 
-      {(decodedNote.shippingLabel || paymentLabel) && (
+      {/* 守門條件要含付款狀態，跟成功頁／查訂單頁同款：note 解不出配送方式、
+          payment_method 又是 null 的單（舊資料或非標準流程建的），這區整塊被藏，
+          付款狀態跟未付款下一步提示就沒地方看——同一筆單在另外兩頁卻看得到。 */}
+      {(decodedNote.shippingLabel || paymentLabel || paymentStatusLabel) && (
         <section
           className="rounded-2xl p-7 sm:p-9 mb-6"
           style={{
@@ -457,10 +462,7 @@ export default async function CustomerOrderDetailPage({
               >
                 付款狀態
               </dt>
-              <dd>
-                {PAYMENT_STATUS_LABELS[order.payment_status] ??
-                  order.payment_status}
-              </dd>
+              <dd>{paymentStatusLabel}</dd>
             </div>
           </dl>
           {/* 還沒付款的單，光一個「未付款」客人不知道下一步在誰身上——要不要先匯、
