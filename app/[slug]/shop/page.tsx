@@ -8,7 +8,7 @@ import { absoluteImageUrls } from "@/lib/image-url";
 import { resolveTheme, HOMEPAGE_DEFAULTS } from "../_theme";
 import { RecentlyViewed } from "@/app/_components/recently-viewed";
 import { AutoSubmitOnChange } from "@/app/_components/auto-submit-on-change";
-import { isSoldOut, isLowStock, bySoldOutLast } from "@/lib/product-stock";
+import { isSoldOut, isLowStock, bySoldOutLast, stockAriaSuffix } from "@/lib/product-stock";
 import { matchesProductSearch } from "@/lib/product-search";
 
 type Params = Promise<{ slug: string }>;
@@ -363,6 +363,7 @@ export default async function ShopPage({
               key={p.id}
               href={`/${slug}/products/${p.id}`}
               className="sproutly-card"
+              aria-label={`${p.name}，${formatPrice(p.price_cents, p.currency)}${stockAriaSuffix(p.stock)}`}
             >
               <div className="sproutly-card-image aspect-square relative">
                 {/* 售完的圖片去彩、壓暗，再蓋一枚角落標記。逛列表時一眼就看得出

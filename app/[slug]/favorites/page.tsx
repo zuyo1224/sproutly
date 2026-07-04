@@ -16,7 +16,7 @@ type Product = {
 };
 
 import { formatPrice } from "@/lib/format-price";
-import { isSoldOut, isLowStock } from "@/lib/product-stock";
+import { isSoldOut, isLowStock, stockAriaSuffix } from "@/lib/product-stock";
 
 const FAVORITES_KEY = "sproutly_favorites";
 
@@ -353,6 +353,7 @@ export default function FavoritesPage() {
               key={p.id}
               href={`/${slug}/products/${p.id}`}
               className="sproutly-card"
+              aria-label={`${p.name}，${formatPrice(p.price_cents, p.currency)}${stockAriaSuffix(p.stock)}`}
             >
               <div className="sproutly-card-image aspect-square relative">
                 {/* 售完的去彩壓暗 + 角落標記，跟 shop 頁同一套語言，
