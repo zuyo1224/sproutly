@@ -6,6 +6,8 @@ import { createAdminClient } from "@/lib/supabase/admin";
 import { resolveTheme } from "../_theme";
 import {
   paymentMethodLabel,
+  paymentNextStepMessage,
+  isUnpaidOrder,
   PAYMENT_STATUS_LABELS,
   decodeShippingFromNote,
   orderStatusMessage,
@@ -697,6 +699,26 @@ export default async function TrackPage({
                         </dd>
                       </div>
                     </dl>
+                    {/* 還沒付款的單，光一個「未付款」客人不知道下一步在誰身上——
+                        要不要先匯、帳號哪來、還是到貨再付。結帳成功頁已依已選方式
+                        講對的話（paymentNextStepMessage），查單這頁常是事後回來看的
+                        入口反而漏了。同一支 helper，已付款／已退款或已取消的單不催。 */}
+                    {isUnpaidOrder(order.payment_status) &&
+                      order.status !== "cancelled" &&
+                      (() => {
+                        const next = paymentNextStepMessage(
+                          order.payment_method
+                        );
+                        if (!next) return null;
+                        return (
+                          <p
+                            className="mt-4 text-[0.8125rem]"
+                            style={{ color: theme.textMuted, lineHeight: 1.7 }}
+                          >
+                            {next}
+                          </p>
+                        );
+                      })()}
                   </div>
                 </>
               );
