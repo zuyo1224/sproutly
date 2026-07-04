@@ -4,8 +4,8 @@ import { createClient } from "@/lib/supabase/server";
 import { resolveTheme } from "../_theme";
 import { placeOrder } from "./actions";
 import { SubmitButton } from "@/app/_components/submit-button";
-import { PAYMENT_OPTIONS, SHIPPING_OPTIONS } from "@/lib/order-labels";
-import { CVS_STORES, formatStoreLabel, CVS_LOOKUP_URLS } from "@/lib/cvs-stores";
+import { PAYMENT_OPTIONS } from "@/lib/order-labels";
+import { ShippingFields } from "./shipping-fields";
 import { QTY_MIN, QTY_MAX } from "@/lib/product-quantity";
 import { clampToStock } from "@/lib/product-stock";
 
@@ -296,121 +296,7 @@ export default async function CheckoutPage({
               />
             </div>
 
-            <div
-              role="radiogroup"
-              aria-labelledby="co-shipping-label"
-              aria-required="true"
-              className="grid grid-cols-1 sm:grid-cols-2 gap-2"
-            >
-              {SHIPPING_OPTIONS.map((opt) => (
-                <label
-                  key={opt.value}
-                  className="cursor-pointer block has-[:checked]:ring-2 rounded-xl transition"
-                  style={{ ["--tw-ring-color" as string]: theme.primary }}
-                >
-                  <input
-                    type="radio"
-                    name="shipping_method"
-                    value={opt.value}
-                    className="peer sr-only"
-                    required
-                  />
-                  <div
-                    className="rounded-xl p-3.5 transition peer-checked:font-medium"
-                    style={{
-                      background: "var(--store-surface, rgba(0,0,0,0.03))",
-                      border: "1px solid var(--store-border, rgba(0,0,0,0.12))",
-                      color: "var(--store-text, #1a1a1a)",
-                    }}
-                  >
-                    <span className="text-sm">{opt.label}</span>
-                  </div>
-                </label>
-              ))}
-            </div>
-
-            {/* 超商門市搜尋 */}
-            <div className="pt-2">
-              <label
-                htmlFor="co-store"
-                className="block text-xs mb-1.5"
-                style={{ color: theme.textMuted }}
-              >
-                超商取貨門市（若選超商取貨必填）
-              </label>
-              <input
-                id="co-store"
-                name="shipping_store_name"
-                type="text"
-                list="cvs-stores-list"
-                placeholder="開始打字搜尋⋯例如「信義」「板橋」「7-11」"
-                autoComplete="off"
-                aria-describedby="co-store-help"
-                className="sproutly-input w-full text-sm"
-              />
-              <datalist id="cvs-stores-list">
-                {CVS_STORES.map((s) => (
-                  <option key={`${s.cvs}-${s.code}`} value={formatStoreLabel(s)} />
-                ))}
-              </datalist>
-              <div className="mt-3 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs">
-                <span style={{ color: theme.textMuted, opacity: 0.7 }}>
-                  找不到？打開官方查詢：
-                </span>
-                <a
-                  href={CVS_LOOKUP_URLS["7-11"]}
-                  target="_blank"
-                  rel="noopener"
-                  className="sproutly-link"
-                  style={{ color: theme.accent }}
-                >
-                  7-11 ↗
-                </a>
-                <a
-                  href={CVS_LOOKUP_URLS["全家"]}
-                  target="_blank"
-                  rel="noopener"
-                  className="sproutly-link"
-                  style={{ color: theme.accent }}
-                >
-                  全家 ↗
-                </a>
-                <a
-                  href={CVS_LOOKUP_URLS["萊爾富"]}
-                  target="_blank"
-                  rel="noopener"
-                  className="sproutly-link"
-                  style={{ color: theme.accent }}
-                >
-                  萊爾富 ↗
-                </a>
-              </div>
-              <p
-                id="co-store-help"
-                className="mt-2 text-xs"
-                style={{ color: theme.textMuted, opacity: 0.5 }}
-              >
-                目前提供台北 / 新北 / 桃園熱門門市搜尋。接綠界 API 後會升級成全台 16,000+ 門市的地圖選店
-              </p>
-            </div>
-
-            <div className="pt-2">
-              <label
-                htmlFor="co-address"
-                className="block text-xs mb-1.5"
-                style={{ color: theme.textMuted }}
-              >
-                收件地址（宅配必填）
-              </label>
-              <input
-                id="co-address"
-                name="shipping_address"
-                type="text"
-                autoComplete="street-address"
-                placeholder="台北市 ..."
-                className="sproutly-input w-full text-sm"
-              />
-            </div>
+            <ShippingFields ringColor={theme.primary} />
           </section>
 
           {/* 付款方式 */}
