@@ -66,11 +66,18 @@ export default async function OrderSuccessPage({
 
   const orderItems = items ?? [];
 
+  // 這頁會被回頭重看（頁尾就叫客人記編號回來對），單若已被店家取消，
+  // 查訂單頁與會員詳情都會講「訂單已取消」且不催付款，唯獨這頁照樣
+  // 慶祝＋催匯款——依取消狀態換掉標題句，彩帶也不放。
+  const isCancelled = order.status === "cancelled";
+
   return (
     <main className="max-w-3xl mx-auto px-6 sm:px-10 py-20 sm:py-28">
-      <div className="print:hidden">
-        <Confetti count={70} />
-      </div>
+      {!isCancelled && (
+        <div className="print:hidden">
+          <Confetti count={70} />
+        </div>
+      )}
       {/* 把這筆訂單記進這台裝置的小抄：成功頁是訪客唯一一次看到編號的地方，
           沒抄下來之後想查單就斷了。記下來後查訂單頁可以一鍵帶入。 */}
       <RememberOrder
@@ -91,7 +98,7 @@ export default async function OrderSuccessPage({
             letterSpacing: "0.4em",
           }}
         >
-          Order Received · #{shortId}
+          {isCancelled ? "Cancelled" : "Order Received"} · #{shortId}
         </p>
         <div
           className="h-px w-12 mx-auto mb-7"
@@ -107,7 +114,7 @@ export default async function OrderSuccessPage({
             letterSpacing: "-0.01em",
           }}
         >
-          訂單已送出
+          {isCancelled ? "訂單已取消" : "訂單已送出"}
         </h1>
         <p
           className="mx-auto"
@@ -120,12 +127,23 @@ export default async function OrderSuccessPage({
         >
           {/* 付款這邊接下來要做什麼：依結帳時選的方式講對的話（見 order-labels 的
               paymentNextStepMessage），沒選方式或不認得的值才退回原本那句籠統話。
-              已付款的單（重新整理或回頭看這頁時狀態可能已被店家改掉）不再催付款。 */}
-          {store.name} 已收到你的訂單，{formatDateTime(order.created_at)} 送出。
-          {order.payment_status === "paid"
-            ? "款項已收到，店家會盡快為你安排"
-            : (paymentNextStepMessage(order.payment_method) ??
-              "店家會盡快聯絡你確認付款方式")}
+              已付款的單（重新整理或回頭看這頁時狀態可能已被店家改掉）不再催付款；
+              已取消的單整句換掉、更不催（跟查訂單頁／會員詳情同一條口徑）。 */}
+          {isCancelled ? (
+            <>
+              這筆訂單（{formatDateTime(order.created_at)} 送出）已取消。
+              如有疑問，可從下方直接聯絡店家。
+            </>
+          ) : (
+            <>
+              {store.name} 已收到你的訂單，{formatDateTime(order.created_at)}{" "}
+              送出。
+              {order.payment_status === "paid"
+                ? "款項已收到，店家會盡快為你安排"
+                : (paymentNextStepMessage(order.payment_method) ??
+                  "店家會盡快聯絡你確認付款方式")}
+            </>
+          )}
         </p>
         {/* 列印 / 存 PDF 收據：報帳或想要紙本留底的客人用得到。列印時自己藏起來，
             版面靠 layout 的 @media print 把導覽/頁尾收乾淨。 */}
