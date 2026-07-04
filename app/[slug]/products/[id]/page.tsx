@@ -9,6 +9,7 @@ import {
   isSoldOut,
   isLowStock,
   bySoldOutLast,
+  stockAriaSuffix,
   LOW_STOCK_THRESHOLD,
 } from "@/lib/product-stock";
 import { resolveTheme } from "../../_theme";
@@ -603,6 +604,7 @@ export default async function PublicProductPage({
                 key={p.id}
                 href={`/${slug}/products/${p.id}`}
                 className="group block"
+                aria-label={`${p.name}，${formatPrice(p.price_cents, p.currency)}${stockAriaSuffix(p.stock)}`}
               >
                 <div
                   className="aspect-square rounded-2xl overflow-hidden transition relative"
