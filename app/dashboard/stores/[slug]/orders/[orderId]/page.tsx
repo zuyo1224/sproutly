@@ -5,6 +5,7 @@ import { updateOrderStatus } from "./actions";
 import { SubmitButton } from "@/app/_components/submit-button";
 import { PrintButton } from "@/app/_components/print-button";
 import { CopyButton } from "@/app/_components/copy-button";
+import { CopyOrderId } from "@/app/_components/copy-order-id";
 import {
   paymentMethodLabel,
   PAYMENT_STATUS_LABELS,
@@ -160,7 +161,7 @@ export default async function OrderDetailPage({
               letterSpacing: "0.4em",
             }}
           >
-            Order · #{shortId}
+            Order · <CopyOrderId shortId={shortId} />
           </p>
           <h2
             className="mt-3 text-3xl sm:text-4xl text-emerald-950 font-medium tracking-tight"

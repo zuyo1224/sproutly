@@ -35,16 +35,25 @@ export function CopyOrderId({ shortId }: { shortId: string }) {
         onClick={copy}
         aria-label={copied ? "已複製訂單編號" : `複製訂單編號 ${shortId}`}
         className="font-mono inline-flex items-center gap-1.5 align-baseline transition-opacity hover:opacity-70"
-        style={{ color: "var(--store-text)", letterSpacing: "0.05em" }}
+        style={{
+          color: "var(--store-text, currentColor)",
+          letterSpacing: "0.05em",
+        }}
       >
         <strong style={{ fontWeight: 600 }}>#{shortId}</strong>
+        {/* --store-* 變數只在 [slug] 店面注入；後台沒有，全部 fallback 到
+            currentColor / inherit，讓按鈕吃所在 eyebrow 的顏色與字體。
+            「複製」提示只對螢幕操作有意義，列印訂單時藏掉、只留編號本身。 */}
         <span
           aria-hidden="true"
+          className="print:hidden"
           style={{
-            color: copied ? "var(--store-accent)" : "var(--store-text-muted)",
+            color: copied
+              ? "var(--store-accent, currentColor)"
+              : "var(--store-text-muted, currentColor)",
             fontSize: "0.6875rem",
             letterSpacing: "0.15em",
-            fontFamily: "var(--store-font)",
+            fontFamily: "var(--store-font, inherit)",
             opacity: copied ? 1 : 0.75,
           }}
         >
