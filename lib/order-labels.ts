@@ -174,6 +174,33 @@ export function paymentMethodLabel(
   return method ? (PAYMENT_LABELS[method] ?? method) : null;
 }
 
+// 剛下完單「付款這邊接下來要做什麼」的一句話：結帳成功頁原本不分方式一律講「會盡快
+// 聯絡你確認付款方式」，但客人結帳時早就選好了——選貨到付款／面交的不用等店家聯絡、
+// 到時再付就好；選轉帳的最想知道「要不要先匯、帳號哪來」；一句籠統話讓前者白等、
+// 後者多問一輪。依已選方式給對的下一步，說法跟後台一鍵複製訊息（customerMessage）
+// 的付款提醒同一套口徑，只是那邊是店家第一人稱（「我們會…」）、這邊是平台替店家講
+// （「店家會…」）。沒填方式或不認得的值回 null，由頁面用原本那句籠統話兜底，壞資料
+// 不會變成空白。
+export function paymentNextStepMessage(
+  method: string | null | undefined
+): string | null {
+  switch (method) {
+    case "transfer":
+      return "這筆選了銀行轉帳，店家會再把匯款帳號傳給你，匯款後回覆一聲就可以";
+    case "cod":
+      return "這筆是貨到付款，取貨時再付款就可以，店家確認後會安排出貨";
+    case "in_person":
+      return "這筆是面交付款，碰面時再付款就可以，店家確認後會跟你聯絡";
+    case "linepay":
+    case "jkos":
+      // LINE Pay／街口目前沒接自動金流（同 customerMessage 那段的緣由），
+      // 只承諾「店家會再把付款方式傳給你」，不寫死不存在的付款連結流程。
+      return `這筆選了${PAYMENT_LABELS[method]}，店家會再把付款方式傳給你`;
+    default:
+      return null;
+  }
+}
+
 export const SHIPPING_LABELS: Record<string, string> = Object.fromEntries(
   SHIPPING_OPTIONS.map((o) => [o.value, o.label])
 );

@@ -4,7 +4,12 @@ import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { resolveTheme } from "../../../_theme";
-import { paymentMethodLabel, decodeShippingFromNote, shortOrderId } from "@/lib/order-labels";
+import {
+  paymentMethodLabel,
+  paymentNextStepMessage,
+  decodeShippingFromNote,
+  shortOrderId,
+} from "@/lib/order-labels";
 import { telHref, mailHref } from "@/lib/contact-href";
 import { Confetti } from "@/app/_components/confetti";
 import { CopyOrderId } from "@/app/_components/copy-order-id";
@@ -110,7 +115,14 @@ export default async function OrderSuccessPage({
             maxWidth: "32rem",
           }}
         >
-          {store.name} 已收到你的訂單，{formatDateTime(order.created_at)} 送出，會盡快聯絡你確認付款方式
+          {/* 付款這邊接下來要做什麼：依結帳時選的方式講對的話（見 order-labels 的
+              paymentNextStepMessage），沒選方式或不認得的值才退回原本那句籠統話。
+              已付款的單（重新整理或回頭看這頁時狀態可能已被店家改掉）不再催付款。 */}
+          {store.name} 已收到你的訂單，{formatDateTime(order.created_at)} 送出。
+          {order.payment_status === "paid"
+            ? "款項已收到，店家會盡快為你安排"
+            : (paymentNextStepMessage(order.payment_method) ??
+              "店家會盡快聯絡你確認付款方式")}
         </p>
         {/* 列印 / 存 PDF 收據：報帳或想要紙本留底的客人用得到。列印時自己藏起來，
             版面靠 layout 的 @media print 把導覽/頁尾收乾淨。 */}
