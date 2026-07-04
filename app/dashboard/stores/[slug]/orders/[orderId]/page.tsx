@@ -220,7 +220,7 @@ export default async function OrderDetailPage({
               letterSpacing: "0.4em",
             }}
           >
-            Notice · 錯誤
+            Notice · 提醒
           </p>
           <p className="mt-2 text-sm text-red-700">{error}</p>
         </div>
@@ -229,7 +229,7 @@ export default async function OrderDetailPage({
         <div
           role="status"
           aria-live="polite"
-          className="mb-6 rounded-2xl bg-emerald-50/80 border border-emerald-200/60 p-5"
+          className="mb-6 rounded-2xl bg-emerald-50/80 border border-emerald-200/60 p-5 animate-in fade-in slide-in-from-top-2"
           style={{ boxShadow: "var(--sproutly-elev-2)" }}
         >
           <p

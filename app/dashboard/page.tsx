@@ -177,10 +177,7 @@ export default async function DashboardPage() {
           >
             Hi {name}
           </h1>
-          <div
-            className="mt-5 bg-emerald-700/40"
-            style={{ width: "48px", height: "1px" }}
-          />
+          <span aria-hidden className="block mt-5 h-px w-12 bg-emerald-600/60" />
           <p
             className="mt-5 text-emerald-900/55"
             style={{ fontSize: "0.9375rem", lineHeight: 1.7 }}
@@ -323,10 +320,7 @@ export default async function DashboardPage() {
               >
                 我的店
               </h2>
-              <div
-                className="mt-4 bg-emerald-700/40"
-                style={{ width: "48px", height: "1px" }}
-              />
+              <span aria-hidden className="block mt-4 h-px w-12 bg-emerald-600/60" />
               <p
                 className="mt-4 text-emerald-900/55"
                 style={{ fontSize: "0.9375rem", lineHeight: 1.7 }}
@@ -543,10 +537,7 @@ export default async function DashboardPage() {
               >
                 Welcome
               </p>
-              <div
-                className="mt-4 mx-auto bg-emerald-700/40"
-                style={{ width: "40px", height: "1px" }}
-              />
+              <span aria-hidden className="block mt-4 mx-auto h-px w-12 bg-emerald-600/60" />
               <h3
                 className="mt-6 text-2xl md:text-3xl font-medium text-emerald-950"
                 style={{ lineHeight: 1.15, letterSpacing: "-0.01em" }}
