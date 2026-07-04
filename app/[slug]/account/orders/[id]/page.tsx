@@ -23,7 +23,10 @@ type Params = Promise<{ slug: string; id: string }>;
 
 import { formatPrice } from "@/lib/format-price";
 // 下單／付款／出貨時間的「年 月 日 時:分」跟結帳成功頁共用同一份（見 format-date.ts）。
-import { taipeiStampLong as formatDateTime } from "@/lib/format-date";
+import {
+  taipeiStampLong as formatDateTime,
+  taipeiStampMonthDay,
+} from "@/lib/format-date";
 
 export default async function CustomerOrderDetailPage({
   params,
@@ -217,6 +220,37 @@ export default async function CustomerOrderDetailPage({
               >
                 {msg}
               </p>
+            );
+          })()}
+        {/* 每一步是哪天發生的——進度條只給「走到第幾步」，這裡補上確切日期，
+            客人才知道「我是 6/10 下單、6/12 出貨」而不用自己回想（跟查訂單頁同一套）。
+            paid_at／shipped_at 還沒發生就不列，只留已經走過的步。 */}
+        {!isCancelled &&
+          (() => {
+            const stamps: { label: string; iso: string }[] = [
+              { label: "下單時間", iso: order.created_at },
+            ];
+            if (order.paid_at)
+              stamps.push({ label: "付款時間", iso: order.paid_at });
+            if (order.shipped_at)
+              stamps.push({ label: "出貨時間", iso: order.shipped_at });
+            return (
+              <dl
+                className="mt-7 pt-6 border-t flex flex-col gap-2 text-sm"
+                style={{ borderColor: theme.border }}
+              >
+                {stamps.map((s) => (
+                  <div key={s.label} className="flex justify-between gap-3">
+                    <dt style={{ color: theme.textMuted }}>{s.label}</dt>
+                    <dd
+                      className="tabular-nums"
+                      style={{ color: theme.text }}
+                    >
+                      {taipeiStampMonthDay(s.iso)}
+                    </dd>
+                  </div>
+                ))}
+              </dl>
             );
           })()}
       </section>
