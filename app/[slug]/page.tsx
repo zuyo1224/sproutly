@@ -7,7 +7,7 @@ import { jsonLdHtml } from "@/lib/json-ld";
 import { resolveTheme, HOMEPAGE_DEFAULTS, HOMEPAGE_DEFAULT_COLLECTIONS, JOURNAL_CARD_DEFAULTS } from "./_theme";
 import { buildStoreJsonLd, buildFaqJsonLd, siteBaseUrl, storeSchemaId } from "@/lib/store-schema";
 import { telHref, mailHref, telDigits, cleanEmail, mapsHref } from "@/lib/contact-href";
-import { isSoldOut, isLowStock, bySoldOutLast } from "@/lib/product-stock";
+import { isSoldOut, isLowStock, bySoldOutLast, stockAriaSuffix } from "@/lib/product-stock";
 import { FREE_POS_KEYS } from "@/lib/free-positions";
 import HeroAdaptiveBanner from "./HeroAdaptiveBanner";
 
@@ -1129,6 +1129,7 @@ export default async function StoreHomePage({
                     key={p.id}
                     href={`/${slug}/products/${p.id}`}
                     className="sproutly-card"
+                    aria-label={`${p.name}，${formatPrice(p.price_cents, p.currency)}${stockAriaSuffix(p.stock)}`}
                   >
                     <div className="sproutly-card-image aspect-square relative">
                       {/* 售完的圖片去彩、壓暗，再蓋一枚角落標記——跟 shop 逛街頁
