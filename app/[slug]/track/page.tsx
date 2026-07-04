@@ -422,43 +422,46 @@ export default async function TrackPage({
                     );
                   })()}
                 </p>
-
-                {/* 每一步是哪天發生的——進度條只給「走到第幾步」，這裡補上確切時間，
-                    客人才知道「我是 6/10 下單、6/12 出貨」而不用自己回想 */}
-                {(() => {
-                  const stamps: { label: string; iso: string }[] = [
-                    { label: "下單時間", iso: order.created_at },
-                  ];
-                  if (order.paid_at)
-                    stamps.push({ label: "付款時間", iso: order.paid_at });
-                  if (order.shipped_at)
-                    stamps.push({ label: "出貨時間", iso: order.shipped_at });
-                  return (
-                    <dl
-                      className="mt-6 pt-6 flex flex-col gap-2 text-[0.9375rem]"
-                      style={{ borderTop: `1px solid ${theme.border}` }}
-                    >
-                      {stamps.map((s) => (
-                        <div
-                          key={s.label}
-                          className="flex justify-between gap-3"
-                        >
-                          <dt style={{ color: theme.textMuted }}>{s.label}</dt>
-                          <dd
-                            style={{
-                              color: theme.text,
-                              fontVariantNumeric: "tabular-nums",
-                            }}
-                          >
-                            {taipeiStampMonthDay(s.iso)}
-                          </dd>
-                        </div>
-                      ))}
-                    </dl>
-                  );
-                })()}
               </>
             )}
+
+            {/* 每一步是哪天發生的——進度條只給「走到第幾步」，這裡補上確切時間，
+                客人才知道「我是 6/10 下單、6/12 出貨」而不用自己回想。
+                已取消的單也照列：會員訂單詳情的 Timeline 區塊不分取消與否都看得到
+                下單／付款時間，客人查一筆取消單想確認「哪天下的、款付過沒」在這頁
+                原本完全沒時間可看，得跳去別頁翻。 */}
+            {(() => {
+              const stamps: { label: string; iso: string }[] = [
+                { label: "下單時間", iso: order.created_at },
+              ];
+              if (order.paid_at)
+                stamps.push({ label: "付款時間", iso: order.paid_at });
+              if (order.shipped_at)
+                stamps.push({ label: "出貨時間", iso: order.shipped_at });
+              return (
+                <dl
+                  className="mt-6 pt-6 flex flex-col gap-2 text-[0.9375rem]"
+                  style={{ borderTop: `1px solid ${theme.border}` }}
+                >
+                  {stamps.map((s) => (
+                    <div
+                      key={s.label}
+                      className="flex justify-between gap-3"
+                    >
+                      <dt style={{ color: theme.textMuted }}>{s.label}</dt>
+                      <dd
+                        style={{
+                          color: theme.text,
+                          fontVariantNumeric: "tabular-nums",
+                        }}
+                      >
+                        {taipeiStampMonthDay(s.iso)}
+                      </dd>
+                    </div>
+                  ))}
+                </dl>
+              );
+            })()}
           </section>
 
           {/* 訂單詳細 */}
