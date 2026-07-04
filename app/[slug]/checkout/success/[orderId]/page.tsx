@@ -24,7 +24,7 @@ type Params = Promise<{ slug: string; orderId: string }>;
 export const metadata: Metadata = { title: "訂單成立" };
 
 import { formatPrice } from "@/lib/format-price";
-// 下單時間的「年 月 日 時:分」跟會員訂單詳情頁共用同一份（見 format-date.ts）。
+// 下單／付款／出貨時間的「年 月 日 時:分」跟會員訂單詳情頁共用同一份（見 format-date.ts）。
 import { taipeiStampLong as formatDateTime } from "@/lib/format-date";
 
 export default async function OrderSuccessPage({
@@ -421,6 +421,32 @@ export default async function OrderSuccessPage({
               </dt>
               <dd>{paymentStatusLabel}</dd>
             </div>
+            {/* 回頭重看時光一個「已付款／已出貨」不夠——客人要對帳（哪天匯的款
+                店家哪天收到）或推算到貨日，得知道確切時間。/track 的進度卡、會員
+                詳情的 Timeline 區都列了付款／出貨時間，唯獨這頁只有標題句裡的
+                下單時間。還沒發生就不列，時間格式吃同一支 formatDateTime。 */}
+            {order.paid_at && (
+              <div className="flex gap-4">
+                <dt
+                  className="w-20 flex-shrink-0"
+                  style={{ color: theme.textMuted }}
+                >
+                  付款時間
+                </dt>
+                <dd>{formatDateTime(order.paid_at)}</dd>
+              </div>
+            )}
+            {order.shipped_at && (
+              <div className="flex gap-4">
+                <dt
+                  className="w-20 flex-shrink-0"
+                  style={{ color: theme.textMuted }}
+                >
+                  出貨時間
+                </dt>
+                <dd>{formatDateTime(order.shipped_at)}</dd>
+              </div>
+            )}
           </dl>
         </section>
       )}
