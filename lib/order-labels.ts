@@ -383,8 +383,10 @@ export function customerMessage(input: {
       );
     }
 
-    // 付款提醒：只在還沒付、且是要客人主動處理的方式時才講，避免多嘴
-    if (paymentStatus !== "paid") {
+    // 付款提醒：只在還沒付（unpaid）、且是要客人主動處理的方式時才講，避免多嘴。
+    // 口徑同客人端三頁的 isUnpaidOrder——已退款（refunded）的單不能再催匯款，
+    // 反面邏輯（!== "paid"）會把退款單也算進去，對一筆錢已退回的單叫客人去付款。
+    if (isUnpaidOrder(paymentStatus)) {
       if (paymentMethod === "transfer")
         lines.push("（這筆是銀行轉帳，匯款後再跟我們說一聲就可以囉）");
       else if (paymentMethod === "cod")
@@ -395,6 +397,10 @@ export function customerMessage(input: {
         // LINE Pay／街口目前沒接自動金流，收款是商家自己用 LINE Pay 請款 / 街口 QR 處理，
         // 所以這裡只提醒「會再傳付款方式給你」，不寫死「點連結付款」承諾不存在的流程。
         lines.push(`（這筆選${PAYMENT_LABELS[paymentMethod]}，我們會再把付款方式傳給你）`);
+    } else if (paymentStatus === "refunded") {
+      // 退款單不催款之外也不能默不作聲：客人看到訊息第一個想問的就是錢，
+      // 主動講一句，口徑同結帳成功頁的「款項已退還」。
+      lines.push("（這筆的款項已退還給你，如有疑問再跟我們說一聲）");
     }
   }
 
