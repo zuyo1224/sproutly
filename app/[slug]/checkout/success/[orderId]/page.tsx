@@ -73,6 +73,12 @@ export default async function OrderSuccessPage({
   // 慶祝＋催匯款——依取消狀態換掉標題句，彩帶也不放。
   const isCancelled = order.status === "cancelled";
 
+  // 「如有疑問，可從下方直接聯絡店家」這句指向頁面下方的聯絡區塊，但那塊只在
+  // 店家有填電話或 Email 時才渲染——沒填的店，已取消／已退款的句子照樣叫客人
+  // 去找一個不存在的區塊。/track 查單頁的已取消句早就先看過聯絡方式才講，
+  // 唯獨這頁（跟會員詳情）漏了同一道守門，又是「A 處有、B 處漏」。
+  const hasContact = Boolean(store.contact_phone || store.contact_email);
+
   return (
     <main className="max-w-3xl mx-auto px-6 sm:px-10 py-20 sm:py-28">
       {!isCancelled && (
@@ -137,7 +143,7 @@ export default async function OrderSuccessPage({
           {isCancelled ? (
             <>
               這筆訂單（{formatDateTime(order.created_at)} 送出）已取消。
-              如有疑問，可從下方直接聯絡店家。
+              {hasContact && "如有疑問，可從下方直接聯絡店家。"}
             </>
           ) : (
             <>
@@ -146,7 +152,9 @@ export default async function OrderSuccessPage({
               {order.payment_status === "paid"
                 ? "款項已收到，店家會盡快為你安排"
                 : order.payment_status === "refunded"
-                  ? "這筆訂單的款項已退還，如有疑問可從下方直接聯絡店家"
+                  ? hasContact
+                    ? "這筆訂單的款項已退還，如有疑問可從下方直接聯絡店家"
+                    : "這筆訂單的款項已退還"
                   : (paymentNextStepMessage(order.payment_method) ??
                     "店家會盡快聯絡你確認付款方式")}
             </>

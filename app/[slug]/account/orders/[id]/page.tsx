@@ -150,7 +150,12 @@ export default async function CustomerOrderDetailPage({
             className="text-sm leading-[1.85]"
             style={{ color: theme.textMuted }}
           >
-            這筆訂單已取消。如有疑問，可從下方聯絡店家。
+            {/* 「可從下方聯絡店家」指向頁尾的聯絡按鈕，那排只在店家有填電話或
+                Email 時才渲染——沒填的店這句就指向不存在的東西。/track 查單頁
+                的已取消句早就先看過聯絡方式才講，這頁漏了同一道守門。 */}
+            這筆訂單已取消。
+            {(store.contact_phone || store.contact_email) &&
+              "如有疑問，可從下方聯絡店家。"}
           </p>
         ) : (
           <ol className="flex" aria-label="訂單進度">
