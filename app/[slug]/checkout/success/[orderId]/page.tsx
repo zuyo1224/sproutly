@@ -9,6 +9,7 @@ import {
   paymentNextStepMessage,
   decodeShippingFromNote,
   shortOrderId,
+  PAYMENT_STATUS_LABELS,
 } from "@/lib/order-labels";
 import { telHref, mailHref } from "@/lib/contact-href";
 import { Confetti } from "@/app/_components/confetti";
@@ -60,6 +61,8 @@ export default async function OrderSuccessPage({
   const shortId = shortOrderId(order.id);
   const decodedNote = decodeShippingFromNote(order.note);
   const paymentLabel = paymentMethodLabel(order.payment_method);
+  const paymentStatusLabel =
+    PAYMENT_STATUS_LABELS[order.payment_status] ?? order.payment_status;
 
   const orderItems = items ?? [];
 
@@ -311,7 +314,7 @@ export default async function OrderSuccessPage({
         </dl>
       </section>
 
-      {(decodedNote.shippingLabel || paymentLabel) && (
+      {(decodedNote.shippingLabel || paymentLabel || paymentStatusLabel) && (
         <section
           className="rounded-2xl p-7 sm:p-8 mb-12"
           style={{
@@ -377,6 +380,17 @@ export default async function OrderSuccessPage({
                 <dd>{paymentLabel}</dd>
               </div>
             )}
+            {/* 這頁可能被回頭重看（店家改狀態後），付款狀態跟查訂單頁、
+                會員訂單詳情同一列——標題句已依狀態講對的話，這裡給看得到的欄位。 */}
+            <div className="flex gap-4">
+              <dt
+                className="w-20 flex-shrink-0"
+                style={{ color: theme.textMuted }}
+              >
+                付款狀態
+              </dt>
+              <dd>{paymentStatusLabel}</dd>
+            </div>
           </dl>
         </section>
       )}
