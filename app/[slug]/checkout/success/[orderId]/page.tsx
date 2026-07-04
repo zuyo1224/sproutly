@@ -129,6 +129,9 @@ export default async function OrderSuccessPage({
           {/* 付款這邊接下來要做什麼：依結帳時選的方式講對的話（見 order-labels 的
               paymentNextStepMessage），沒選方式或不認得的值才退回原本那句籠統話。
               已付款的單（重新整理或回頭看這頁時狀態可能已被店家改掉）不再催付款；
+              已退款的單改講款項已退還——查訂單頁／會員詳情只在 unpaid 才催
+              （isUnpaidOrder），這頁原本用「不是 paid 就催」的反面邏輯，退款單
+              回頭看會被催去匯一筆已經退回來的錢；
               已取消的單整句換掉、更不催（跟查訂單頁／會員詳情同一條口徑）。 */}
           {isCancelled ? (
             <>
@@ -141,8 +144,10 @@ export default async function OrderSuccessPage({
               送出。
               {order.payment_status === "paid"
                 ? "款項已收到，店家會盡快為你安排"
-                : (paymentNextStepMessage(order.payment_method) ??
-                  "店家會盡快聯絡你確認付款方式")}
+                : order.payment_status === "refunded"
+                  ? "這筆訂單的款項已退還，如有疑問可從下方直接聯絡店家"
+                  : (paymentNextStepMessage(order.payment_method) ??
+                    "店家會盡快聯絡你確認付款方式")}
             </>
           )}
         </p>
