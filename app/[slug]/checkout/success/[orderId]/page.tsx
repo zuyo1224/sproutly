@@ -10,6 +10,7 @@ import {
   decodeShippingFromNote,
   shortOrderId,
   PAYMENT_STATUS_LABELS,
+  CUSTOMER_STATUS_LABELS,
 } from "@/lib/order-labels";
 import { telHref, mailHref } from "@/lib/contact-href";
 import { Confetti } from "@/app/_components/confetti";
@@ -398,8 +399,19 @@ export default async function OrderSuccessPage({
                 <dd>{paymentLabel}</dd>
               </div>
             )}
-            {/* 這頁可能被回頭重看（店家改狀態後），付款狀態跟查訂單頁、
-                會員訂單詳情同一列——標題句已依狀態講對的話，這裡給看得到的欄位。 */}
+            {/* 這頁可能被回頭重看（店家改狀態後），訂單狀態跟付款狀態一樣要有
+                欄位可看：/track、會員詳情、後台都看得到「已確認／已出貨」，唯獨
+                這頁大標永遠停在「訂單已送出」——客人回來想知道店家動了沒，還是
+                得跳去 /track。中文吃客人端同一份 CUSTOMER_STATUS_LABELS。 */}
+            <div className="flex gap-4">
+              <dt
+                className="w-20 flex-shrink-0"
+                style={{ color: theme.textMuted }}
+              >
+                訂單狀態
+              </dt>
+              <dd>{CUSTOMER_STATUS_LABELS[order.status] ?? order.status}</dd>
+            </div>
             <div className="flex gap-4">
               <dt
                 className="w-20 flex-shrink-0"
