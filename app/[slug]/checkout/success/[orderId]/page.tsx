@@ -143,6 +143,10 @@ export default async function OrderSuccessPage({
           {isCancelled ? (
             <>
               這筆訂單（{formatDateTime(order.created_at)} 送出）已取消。
+              {/* 取消單最常伴隨退款，錢退了沒是客人第一個想確認的事——同一頁
+                  「未取消＋已退款」的分支早就主動講「款項已退還」，取消分支反而
+                  隻字不提，口徑補齊（同後台一鍵複製訊息 customerMessage）。 */}
+              {order.payment_status === "refunded" && "款項已退還給你。"}
               {hasContact && "如有疑問，可從下方直接聯絡店家。"}
             </>
           ) : (

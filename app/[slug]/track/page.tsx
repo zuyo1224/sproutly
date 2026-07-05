@@ -326,12 +326,19 @@ export default async function TrackPage({
                 >
                   訂單已取消
                 </p>
-                {(store.contact_phone || store.contact_email) && (
+                {/* 取消單最常伴隨退款，錢退了沒是客人第一個想確認的事——已退款的
+                    取消單主動講一句，口徑同成功頁與後台一鍵複製訊息 customerMessage，
+                    不讓客人只看到「已取消」還得自己開口問錢。 */}
+                {(order.payment_status === "refunded" ||
+                  store.contact_phone ||
+                  store.contact_email) && (
                   <p
                     className="mt-3 text-[0.9375rem]"
                     style={{ color: theme.textMuted, lineHeight: 1.7 }}
                   >
-                    如有疑問，可從下方聯絡店家
+                    {order.payment_status === "refunded" && "款項已退還給你。"}
+                    {(store.contact_phone || store.contact_email) &&
+                      "如有疑問，可從下方聯絡店家"}
                   </p>
                 )}
               </div>

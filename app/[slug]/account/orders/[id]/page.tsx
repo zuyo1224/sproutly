@@ -154,6 +154,9 @@ export default async function CustomerOrderDetailPage({
                 Email 時才渲染——沒填的店這句就指向不存在的東西。/track 查單頁
                 的已取消句早就先看過聯絡方式才講，這頁漏了同一道守門。 */}
             這筆訂單已取消。
+            {/* 取消單最常伴隨退款，錢退了沒是客人第一個想確認的事——已退款的
+                取消單主動講一句，口徑同成功頁與後台一鍵複製訊息 customerMessage。 */}
+            {order.payment_status === "refunded" && "款項已退還給你。"}
             {(store.contact_phone || store.contact_email) &&
               "如有疑問，可從下方聯絡店家。"}
           </p>
