@@ -357,8 +357,15 @@ export function customerMessage(input: {
       );
       break;
     case "cancelled":
+      // 已取消的單下面整段品項／付款提醒都不列（見 status !== "cancelled" 那個 guard），
+      // 連帶「款項已退還」那句也被跳過——取消單偏偏最常伴隨退款，客人收到的訊息是
+      // 推播式的（不像成功頁／查訂單頁有付款狀態列可自己看），一句「已取消」就結束，
+      // 客人第一個想問的還是錢。已退款的取消單在開場句就講明錢退了，口徑同
+      // 未取消退款單那句「款項已退還給你」。
       lines.push(
-        `${name} 你好，我是「${storeName}」，你的訂單 #${shortId} 已取消，若有疑問歡迎直接回覆我們。`
+        `${name} 你好，我是「${storeName}」，你的訂單 #${shortId} 已取消，${
+          paymentStatus === "refunded" ? "款項已退還給你，" : ""
+        }若有疑問歡迎直接回覆我們。`
       );
       break;
     default:
