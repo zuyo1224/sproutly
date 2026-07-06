@@ -16,24 +16,14 @@ import {
   groupOrdersByCustomer,
   isAccountGroupKey,
 } from "@/lib/group-orders-by-customer";
+// 撈整家店未取消訂單的查詢跟客人列表頁共用同一份（分頁撈齊，不吃 1000 列上限，
+// 見 lib/fetch-customer-orders 說明）。
+import { fetchCustomerOrders } from "@/lib/fetch-customer-orders";
 
 type Params = Promise<{ slug: string }>;
 
 // 客人頁的排序選項白名單，跟列表頁一致
 const VALID_SORT = ["recent", "spend", "orders", "first"];
-
-type OrderRow = {
-  id: string;
-  customer_id: string | null;
-  customer_name: string;
-  customer_email: string | null;
-  customer_phone: string;
-  total_cents: number;
-  currency: string;
-  payment_status: string;
-  status: string;
-  created_at: string;
-};
 
 export async function GET(request: Request, { params }: { params: Params }) {
   const { slug } = await params;
@@ -64,15 +54,7 @@ export async function GET(request: Request, { params }: { params: Params }) {
 
   // 取消的單不算。分群本身跟客人列表頁共用同一份口徑
   // （見 lib/group-orders-by-customer 說明），兩邊不再各抄一套。
-  const { data: orders } = await supabase
-    .from("sproutly_orders")
-    .select(
-      "id, customer_id, customer_name, customer_email, customer_phone, total_cents, currency, payment_status, status, created_at"
-    )
-    .eq("merchant_id", store.id)
-    .neq("status", "cancelled");
-
-  const orderList = (orders as OrderRow[] | null) ?? [];
+  const orderList = await fetchCustomerOrders(supabase, store.id);
 
   // 這份名單的金額欄一律跟著這間店出單的幣別走，跟客人列表頁同一套：
   // 拿任一筆訂單的 currency 當基準，非台幣的店家不再硬寫 NT$。

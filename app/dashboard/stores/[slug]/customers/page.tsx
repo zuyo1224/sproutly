@@ -23,6 +23,7 @@ import {
   groupOrdersByCustomer,
   isAccountGroupKey,
 } from "@/lib/group-orders-by-customer";
+import { fetchCustomerOrders } from "@/lib/fetch-customer-orders";
 
 // 點客人 → 帶他的電話（沒有就 email / 姓名）去訂單列表用既有的 ?q= 篩出他的所有單
 function customerOrdersHref(slug: string, r: CustomerRow) {
@@ -75,28 +76,9 @@ export default async function StoreCustomersPage({
     .maybeSingle();
   if (!store) notFound();
 
-  type OrderRow = {
-    id: string;
-    customer_id: string | null;
-    customer_name: string;
-    customer_email: string | null;
-    customer_phone: string;
-    total_cents: number;
-    currency: string;
-    payment_status: string;
-    status: string;
-    created_at: string;
-  };
-
-  const { data: orders } = await supabase
-    .from("sproutly_orders")
-    .select(
-      "id, customer_id, customer_name, customer_email, customer_phone, total_cents, currency, payment_status, status, created_at"
-    )
-    .eq("merchant_id", store.id)
-    .neq("status", "cancelled");
-
-  const orderList = (orders as OrderRow[] | null) ?? [];
+  // 撈整家店未取消訂單的查詢跟 CSV 匯出共用同一份（分頁撈齊，不吃 1000 列上限，
+  // 見 lib/fetch-customer-orders 說明）。
+  const orderList = await fetchCustomerOrders(supabase, store.id);
   // 這頁的顯示幣別（取第一筆訂單、空退 TWD），見 displayCurrency。
   const storeCurrency = displayCurrency(orderList);
 
