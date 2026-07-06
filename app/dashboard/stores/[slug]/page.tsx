@@ -187,7 +187,10 @@ export default async function StoreInsightsPage({
   const total14Orders = trendData.reduce((s, d) => s + d.orders, 0);
   const total14Revenue = trendData.reduce((s, d) => s + d.revenue, 0);
 
-  // 熱銷商品 top 5
+  // 熱銷商品 top 5。口徑跟上面的平均客單價同一套：未取消的單都算（含還沒收到錢
+  // 的轉帳/貨到付款單，見 orderItems query 只排除 cancelled）——所以每件旁邊的
+  // 金額是「訂單金額」不是「營收」；這頁「營收」一詞已被總營收卡定義成已付款的
+  // 錢，熱銷卡若也寫營收，店家拿 top 5 加總對不回總營收。
   const productMap = new Map<
     string,
     { name: string; qty: number; revenue: number; productId: string | null }
@@ -547,7 +550,9 @@ export default async function StoreInsightsPage({
           <h3 className="mt-1.5 text-lg font-medium text-emerald-950 tracking-tight">
             熱銷商品
           </h3>
-          <p className="text-xs text-emerald-900/50 mb-5 mt-1">依營收排序</p>
+          <p className="text-xs text-emerald-900/50 mb-5 mt-1">
+            依訂單金額排序 · 不含取消單
+          </p>
           {topProducts.length > 0 ? (
             <ol className="space-y-3">
               {topProducts.map((p, i) => (
