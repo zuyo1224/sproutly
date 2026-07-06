@@ -80,14 +80,10 @@ export async function GET(
     ascending: false,
   });
 
-  const { data: allItems } = await supabase
-    .from("sproutly_order_items")
-    .select(
-      "order_id, name_snapshot, quantity, price_cents_snapshot, sproutly_orders!inner(merchant_id)"
-    )
-    .eq("sproutly_orders.merchant_id", store.id);
-
-  // group items by order_id
+  // 品項只查「這次要匯出的訂單」的，不是全店歷史全部——原本用 merchant_id join
+  // 撈整家店的品項，Supabase 一次最多回約 1000 列，店累積品項超過之後，落在
+  // 上限外的訂單在 CSV 裡「商品」欄空白、「件數」變 0，畫面上明明看得到品項。
+  // 訂單編號一批可能上千筆，in() 塞太多會讓查詢網址過長，分批各查一次再合併。
   const itemsByOrder = new Map<
     string,
     { name: string; qty: number; price: number }[]
@@ -98,15 +94,23 @@ export async function GET(
     quantity: number;
     price_cents_snapshot: number;
   };
-  (allItems as ItemRow[] | null)?.forEach((it) => {
-    const arr = itemsByOrder.get(it.order_id) ?? [];
-    arr.push({
-      name: it.name_snapshot,
-      qty: it.quantity,
-      price: it.price_cents_snapshot,
+  const orderIds = (orders ?? []).map((o) => o.id as string);
+  const CHUNK = 100;
+  for (let i = 0; i < orderIds.length; i += CHUNK) {
+    const { data: chunkItems } = await supabase
+      .from("sproutly_order_items")
+      .select("order_id, name_snapshot, quantity, price_cents_snapshot")
+      .in("order_id", orderIds.slice(i, i + CHUNK));
+    (chunkItems as ItemRow[] | null)?.forEach((it) => {
+      const arr = itemsByOrder.get(it.order_id) ?? [];
+      arr.push({
+        name: it.name_snapshot,
+        qty: it.quantity,
+        price: it.price_cents_snapshot,
+      });
+      itemsByOrder.set(it.order_id, arr);
     });
-    itemsByOrder.set(it.order_id, arr);
-  });
+  }
 
   const headers = [
     "訂單編號",
