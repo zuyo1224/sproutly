@@ -129,12 +129,14 @@ export default async function StoreInsightsPage({
     ) ?? [];
   const outstandingCount = unpaidOrders.length;
   const outstandingCents = sumOrderCents(unpaidOrders);
-  const monthRevenue = sumOrderCents(
+  // 「本月營收」卡跟上面「總營收」卡同一條規則：金額與底下的筆數必須同一份單。
+  // 原本金額排除未付款/已取消、筆數卻拿 monthOrders 全數（連取消單都數），
+  // 又是「4 筆的錢說來自 5 筆」——13bec9c 修了總營收卡，這張孿生卡漏掉。
+  const monthPaidOrders =
     monthOrders?.filter(
       (o) => isPaidOrder(o.payment_status) && o.status !== "cancelled"
-    ) ?? []
-  );
-  const monthOrderCount = monthOrders?.length ?? 0;
+    ) ?? [];
+  const monthRevenue = sumOrderCents(monthPaidOrders);
   const avgOrderValue =
     totalOrders > 0
       ? Math.round(
@@ -404,7 +406,7 @@ export default async function StoreInsightsPage({
             {formatPrice(monthRevenue, storeCurrency)}
           </p>
           <p className="mt-1.5 text-xs text-emerald-900/50">
-            本月 {monthOrderCount} 筆訂單
+            來自 {monthPaidOrders.length} 筆訂單
           </p>
         </div>
       </div>
