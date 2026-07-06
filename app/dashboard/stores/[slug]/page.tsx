@@ -19,7 +19,11 @@ import {
   shortOrderId,
 } from "@/lib/order-labels";
 // 分日統計的台灣時區日期 key 跟訂單列表/匯出共用同一份（見檔內說明）。
-import { taipeiDateKey, taipeiStampShort } from "@/lib/format-date";
+import {
+  taipeiDateKey,
+  taipeiStampShort,
+  taipeiStartOfMonth,
+} from "@/lib/format-date";
 
 export default async function StoreInsightsPage({
   params,
@@ -48,9 +52,10 @@ export default async function StoreInsightsPage({
   // 過去 30 天訂單 + 商品數 + 全部訂單摘要（用來算統計）
   const now = new Date();
   const todayKey = taipeiDateKey(now);
-  // 台灣的今天 00:00 與本月 1 號 00:00（伺服器在 Vercel 是 UTC，不能用本地 midnight）
+  // 台灣的今天 00:00（伺服器在 Vercel 是 UTC，不能用本地 midnight）；
+  // 本月 1 號 00:00 走 taipeiStartOfMonth 單一來源，跟跨店首頁、訂單篩選同一個切點。
   const taipeiMidnight = new Date(`${todayKey}T00:00:00+08:00`);
-  const startOfMonth = new Date(`${todayKey.slice(0, 7)}-01T00:00:00+08:00`);
+  const startOfMonth = taipeiStartOfMonth();
   const since14 = new Date(taipeiMidnight.getTime() - 13 * 86_400_000);
 
   const [

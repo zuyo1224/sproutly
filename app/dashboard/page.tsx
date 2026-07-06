@@ -5,6 +5,7 @@ import Link from "next/link";
 
 import { formatPrice } from "@/lib/format-price";
 import { isPendingOrder, isPaidOrder } from "@/lib/order-labels";
+import { taipeiStartOfMonth } from "@/lib/format-date";
 
 // 總覽卡的金額。商家若同時開了不同幣別的店，不同幣別的錢不能相加成一個數字，
 // 就分幣別逐列；只有一種幣別（多數情況）才照舊顯示一個大數字。
@@ -89,9 +90,10 @@ export default async function DashboardPage() {
   const monthRevenueByCurrency: Record<string, number> = {};
 
   if (storeIds.length > 0) {
-    const startOfMonth = new Date();
-    startOfMonth.setDate(1);
-    startOfMonth.setHours(0, 0, 0, 0);
+    // 月初切點走台灣時區的單一來源（taipeiStartOfMonth）。原本用 new Date() +
+    // setDate(1)/setHours(0) 是伺服器本地時區，Vercel 跑 UTC 等於台灣 1 號早上
+    // 8 點才換月，跟單店首頁的本月營收對不上（詳見 lib/format-date.ts 那段註解）。
+    const startOfMonth = taipeiStartOfMonth();
 
     const [{ data: orders }, { data: products }] = await Promise.all([
       supabase

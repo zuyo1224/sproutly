@@ -103,6 +103,16 @@ export function taipeiDateLong(iso: string): string {
   });
 }
 
+// 台灣時區的「本月 1 號 00:00」單一來源。「本月營收」的月初切點原本散在三處：
+// 訂單篩選（下面 taipeiRangeSince 的 month 分支）與店家首頁各自拼 +08:00 字串、
+// 跨店首頁卻用 new Date() + setDate(1)/setHours(0)——那是伺服器本地時區，Vercel 跑
+// UTC 等於台灣 1 號早上 8 點才換月：每月 1 號 00:00-08:00 下的單，單店首頁算本月、
+// 跨店首頁算上個月，兩個首頁的「本月營收」對不上。收成這支，三處吃同一個切點。
+export function taipeiStartOfMonth(): Date {
+  const todayKey = taipeiDateKey(new Date()); // YYYY-MM-DD（台灣的今天）
+  return new Date(`${todayKey.slice(0, 8)}01T00:00:00+08:00`);
+}
+
 // 訂單篩選「今天 / 本週 / 本月」的時間起點（含起、查 created_at >= since）。
 // 一律以台灣午夜為界：今天=今天 0:00；本週=回推到本週一 0:00（週日算上一週的尾，
 // 回推 6 天）；本月=當月 1 號 0:00。其餘（如「全部時間」）回 null 表不設下界。
@@ -117,7 +127,7 @@ export function taipeiRangeSince(key: string): Date | null {
     return new Date(midnight.getTime() - back * 86_400_000);
   }
   if (key === "month") {
-    return new Date(`${todayKey.slice(0, 8)}01T00:00:00+08:00`);
+    return taipeiStartOfMonth();
   }
   return null;
 }
