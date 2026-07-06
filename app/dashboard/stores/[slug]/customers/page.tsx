@@ -8,7 +8,7 @@ type SearchParams = Promise<{ q?: string; sort?: string }>;
 
 // 客人名單的金額一律跟著這間店實際出單的幣別走（共用 formatPrice，不再對非 TWD 店家硬寫 NT$）。
 import { formatPrice, displayCurrency } from "@/lib/format-price";
-import { taipeiDateNumeric } from "@/lib/format-date";
+import { taipeiDateNumeric, taipeiDaysAgo } from "@/lib/format-date";
 import {
   customerTier,
   isReturningCustomer,
@@ -23,11 +23,6 @@ import {
   groupOrdersByCustomer,
   isAccountGroupKey,
 } from "@/lib/group-orders-by-customer";
-
-function daysAgo(iso: string) {
-  const diff = Date.now() - new Date(iso).getTime();
-  return Math.floor(diff / (1000 * 60 * 60 * 24));
-}
 
 // 點客人 → 帶他的電話（沒有就 email / 姓名）去訂單列表用既有的 ?q= 篩出他的所有單
 function customerOrdersHref(slug: string, r: CustomerRow) {
@@ -388,8 +383,8 @@ export default async function StoreCustomersPage({
             </thead>
             <tbody>
               {filtered.map((r) => {
-                const recencyDays = daysAgo(r.lastOrderAt);
-                const lifetimeDays = daysAgo(r.firstOrderAt);
+                const recencyDays = taipeiDaysAgo(r.lastOrderAt);
+                const lifetimeDays = taipeiDaysAgo(r.firstOrderAt);
                 const tier = customerTier(r.totalCents, r.orderCount);
                 return (
                   <tr
@@ -508,7 +503,7 @@ export default async function StoreCustomersPage({
           {/* Mobile card list */}
           <ul className="sm:hidden divide-y divide-emerald-50">
             {filtered.map((r) => {
-              const recencyDays = daysAgo(r.lastOrderAt);
+              const recencyDays = taipeiDaysAgo(r.lastOrderAt);
               const tier = customerTier(r.totalCents, r.orderCount);
               return (
                 <li key={r.key}>
@@ -577,7 +572,7 @@ export default async function StoreCustomersPage({
                       : recencyDays === 1
                         ? "昨天"
                         : `${recencyDays} 天前`}{" "}
-                    · 認識 {daysAgo(r.firstOrderAt)} 天
+                    · 認識 {taipeiDaysAgo(r.firstOrderAt)} 天
                   </p>
                   <p className="text-[11px] text-emerald-700 mt-2 font-medium">
                     看訂單 →

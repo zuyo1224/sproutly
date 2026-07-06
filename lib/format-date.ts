@@ -113,6 +113,18 @@ export function taipeiStartOfMonth(): Date {
   return new Date(`${todayKey.slice(0, 8)}01T00:00:00+08:00`);
 }
 
+// 「幾天前」的天數：算的是台灣日曆上跨了幾天，不是滿不滿 24 小時。客人列表頁原本
+// 自己寫 (now - 下單時間) / 86400000 取整——昨晚 8 點下的單今早 10 點看，才過 14 小時
+// 被算成 0 天，標「今天」；偏偏同一格上面印的日期（taipeiDateNumeric）是昨天的日期，
+// 同一張卡自打臉。跟人講「今天／昨天」是日曆概念，切點得跟全站其他分日統計一樣
+// 用台灣午夜（見檔頭說明），所以收進這支：兩個時間各取台灣日期 key、當 UTC 午夜
+// 相減，跨一個午夜就是 1 天，跟畫面印的日期永遠對得上。
+export function taipeiDaysAgo(iso: string): number {
+  const dayNumber = (d: Date) =>
+    new Date(`${taipeiDateKey(d)}T00:00:00Z`).getTime() / 86_400_000;
+  return Math.round(dayNumber(new Date()) - dayNumber(new Date(iso)));
+}
+
 // 訂單篩選「今天 / 本週 / 本月」的時間起點（含起、查 created_at >= since）。
 // 一律以台灣午夜為界：今天=今天 0:00；本週=回推到本週一 0:00（週日算上一週的尾，
 // 回推 6 天）；本月=當月 1 號 0:00。其餘（如「全部時間」）回 null 表不設下界。
