@@ -17,6 +17,7 @@ import {
   CUSTOMER_STATUS_LABELS,
 } from "@/lib/order-labels";
 import { telHref, mailHref } from "@/lib/contact-href";
+import { samePhone } from "@/lib/phone-match";
 import { RememberOrder } from "@/app/_components/remember-order";
 import { RecentOrdersList } from "@/app/_components/recent-orders-list";
 import { PrintButton } from "@/app/_components/print-button";
@@ -113,6 +114,32 @@ export default async function TrackPage({
       );
       order =
         orders.find((o) => o.id.toLowerCase().startsWith(shortId)) ?? null;
+
+      // 完全比對沒中時，退回「只留數字」比對：訂單存的是下單當下打的原文，
+      // 「0912-345-678」「0912 345 678」「+886912…」「０９１２…」跟事後查單
+      // 打的「0912345678」字面全不同、實際是同一支，上面的 eq 一筆都撈不到，
+      // 客人拿著正確的編號＋電話也被告知查無訂單。撈這家店的訂單逐筆用
+      // samePhone 比（口徑見 lib/phone-match），編號＋整支電話的雙因子不變，
+      // 只是不再挑剔格式。只在快路徑落空才走這條，格式一致的查詢不多花錢。
+      if (!order) {
+        const all = await fetchAllRows<Order>((from, to) =>
+          admin
+            .from("sproutly_orders")
+            .select(
+              "id, status, payment_status, paid_at, shipped_at, created_at, customer_name, customer_phone, customer_email, shipping_address, note, total_cents, currency, payment_method"
+            )
+            .eq("merchant_id", store.id)
+            .order("created_at", { ascending: false })
+            .order("id", { ascending: true })
+            .range(from, to)
+        );
+        order =
+          all.find(
+            (o) =>
+              samePhone(o.customer_phone, phone) &&
+              o.id.toLowerCase().startsWith(shortId)
+          ) ?? null;
+      }
 
       if (order) {
         const { data: it } = await admin
