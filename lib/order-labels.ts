@@ -163,6 +163,21 @@ export const PAYMENT_LABELS: Record<string, string> = Object.fromEntries(
   PAYMENT_OPTIONS.map((o) => [o.value, o.label.replace(/（即將推出）/, "")])
 );
 
+// 「這個付款方式現在可以選嗎」單一來源：要在 PAYMENT_OPTIONS 名單上、而且沒被標 disabled。
+// 兩個結帳後端（單品 checkout/actions、購物車 cart/checkout/submit）原本拿 PAYMENT_LABELS
+// 當合法值白名單，但那份是給「顯示」用的——連停用中的「信用卡（即將推出）」都在裡面
+// （舊訂單要能顯示中文），結果結帳頁把信用卡 radio 設了 disabled，後端卻照樣放行：
+// 只要繞過畫面直接送 payment_method=credit_card，訂單就用一個根本還沒開通的金流成立，
+// 成功頁／後台還把它顯示成正常的「信用卡」，店家收單後才發現收不到錢。驗證改吃這支，
+// PAYMENT_LABELS 回歸純顯示用途（查舊單、壞資料 fallback 都不受影響）。
+export function isSelectablePaymentMethod(
+  method: string | null | undefined
+): boolean {
+  if (!method) return false;
+  const opt = PAYMENT_OPTIONS.find((o) => o.value === method);
+  return opt !== undefined && !opt.disabled;
+}
+
 // 訂單上的付款方式給人看的中文：有方式就查 PAYMENT_LABELS（查不到就原樣顯示，
 // 避免壞資料變空白），沒填方式就回 null（讓畫面那一列整個不顯示）。後台訂單詳情、
 // 結帳成功頁、查訂單頁、會員訂單詳情四處原本各抄一份同樣的三元（payment_method

@@ -3,7 +3,7 @@ import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import {
   encodeShippingIntoNote,
-  PAYMENT_LABELS,
+  isSelectablePaymentMethod,
   SHIPPING_LABELS,
   shippingDetailError,
 } from "@/lib/order-labels";
@@ -36,7 +36,9 @@ export async function POST(
 
   if (!customerName) return NextResponse.json({ error: "請填收件人姓名" }, { status: 400 });
   if (!customerPhone) return NextResponse.json({ error: "請填電話" }, { status: 400 });
-  if (!paymentMethod || !PAYMENT_LABELS[paymentMethod])
+  // 合法性看 isSelectablePaymentMethod（名單上且未停用），不吃顯示用的 PAYMENT_LABELS——
+  // 那份含停用中的信用卡，拿來當白名單會把「即將推出」的金流放行（緣由見該檔說明）。
+  if (!isSelectablePaymentMethod(paymentMethod))
     return NextResponse.json({ error: "請選擇付款方式" }, { status: 400 });
   if (!shippingMethod || !SHIPPING_LABELS[shippingMethod])
     return NextResponse.json({ error: "請選擇配送方式" }, { status: 400 });

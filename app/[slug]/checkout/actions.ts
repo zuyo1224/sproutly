@@ -4,7 +4,7 @@ import { formString, formStringOrNull } from "@/lib/form-fields";
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { redirect } from "next/navigation";
-import { encodeShippingIntoNote, SHIPPING_LABELS, PAYMENT_LABELS, shippingDetailError } from "@/lib/order-labels";
+import { encodeShippingIntoNote, SHIPPING_LABELS, isSelectablePaymentMethod, shippingDetailError } from "@/lib/order-labels";
 import { QTY_MIN, QTY_MAX, isValidQty } from "@/lib/product-quantity";
 import { decrementStock, restoreStock } from "@/lib/stock-restore";
 
@@ -39,7 +39,9 @@ export async function placeOrder(slug: string, formData: FormData) {
   if (!customerPhone) {
     redirect(baseRedirect + "&error=" + encodeURIComponent("請填聯絡電話"));
   }
-  if (!paymentMethod || !PAYMENT_LABELS[paymentMethod]) {
+  // 合法性看 isSelectablePaymentMethod（名單上且未停用），不吃顯示用的 PAYMENT_LABELS——
+  // 那份含停用中的信用卡，拿來當白名單會把「即將推出」的金流放行（緣由見該檔說明）。
+  if (!isSelectablePaymentMethod(paymentMethod)) {
     redirect(baseRedirect + "&error=" + encodeURIComponent("請選擇付款方式"));
   }
   if (!shippingMethod || !SHIPPING_LABELS[shippingMethod]) {
