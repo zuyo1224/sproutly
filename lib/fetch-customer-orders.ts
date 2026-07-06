@@ -1,4 +1,5 @@
 import type { createClient } from "@/lib/supabase/server";
+import { fetchAllRows } from "@/lib/fetch-all-rows";
 
 type ServerClient = Awaited<ReturnType<typeof createClient>>;
 
@@ -10,8 +11,8 @@ type ServerClient = Awaited<ReturnType<typeof createClient>>;
 // 被留下還隨每次查詢浮動，同一位客人重整頁面標籤可能忽有忽無。
 // 跟 7f9d6d0 修掉的訂單匯出品項欄是同一種病，只是這次少的是訂單本身。
 //
-// 這裡改成固定排序（created_at 舊→新、同時間再比 id 保證每頁切點穩定）
-// 加 .range() 一頁頁往後翻，翻到不滿一頁為止，多少單都撈得齊。
+// 這裡下固定排序（created_at 舊→新、同時間再比 id 保證每頁切點穩定），
+// 翻頁本身走共用的 fetchAllRows，多少單都撈得齊。
 // 分群、統計等口徑照舊由呼叫端處理，這支只保證「單子有撈齊」。
 export type CustomerOrderRow = {
   id: string;
@@ -26,14 +27,11 @@ export type CustomerOrderRow = {
   created_at: string;
 };
 
-const PAGE_SIZE = 1000;
-
 export async function fetchCustomerOrders(
   supabase: ServerClient,
   merchantId: string
 ): Promise<CustomerOrderRow[]> {
-  const all: CustomerOrderRow[] = [];
-  for (let from = 0; ; from += PAGE_SIZE) {
+  return fetchAllRows<CustomerOrderRow>(async (from, to) => {
     const { data } = await supabase
       .from("sproutly_orders")
       .select(
@@ -43,10 +41,7 @@ export async function fetchCustomerOrders(
       .neq("status", "cancelled")
       .order("created_at", { ascending: true })
       .order("id", { ascending: true })
-      .range(from, from + PAGE_SIZE - 1);
-    const page = (data as CustomerOrderRow[] | null) ?? [];
-    all.push(...page);
-    if (page.length < PAGE_SIZE) break;
-  }
-  return all;
+      .range(from, to);
+    return { data: data as CustomerOrderRow[] | null };
+  });
 }

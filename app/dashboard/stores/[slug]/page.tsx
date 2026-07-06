@@ -24,6 +24,25 @@ import {
   taipeiStampShort,
   taipeiStartOfMonth,
 } from "@/lib/format-date";
+// 全店訂單與品項的查詢走分頁撈齊（Supabase 一次最多回約 1000 列，
+// 一次 select 整家店在訂單/品項破千後會默默少算，見 fetch-all-rows）。
+import { fetchAllRows } from "@/lib/fetch-all-rows";
+
+type OrderSummaryRow = {
+  id: string;
+  created_at: string;
+  total_cents: number;
+  status: string;
+  payment_status: string;
+  currency: string;
+};
+
+type ItemRow = {
+  product_id: string | null;
+  name_snapshot: string;
+  quantity: number;
+  price_cents_snapshot: number;
+};
 
 export default async function StoreInsightsPage({
   params,
@@ -60,38 +79,50 @@ export default async function StoreInsightsPage({
 
   const [
     { count: productCount },
-    { data: allOrders },
-    { data: monthOrders },
+    allOrders,
     { data: recentOrders },
-    { data: orderItems },
+    orderItems,
     { data: lowStockProducts },
   ] = await Promise.all([
     supabase
       .from("sproutly_products")
       .select("*", { count: "exact", head: true })
       .eq("merchant_id", store.id),
-    supabase
-      .from("sproutly_orders")
-      .select("id, created_at, total_cents, status, payment_status, currency")
-      .eq("merchant_id", store.id),
-    supabase
-      .from("sproutly_orders")
-      .select("id, total_cents, payment_status, status")
-      .eq("merchant_id", store.id)
-      .gte("created_at", startOfMonth.toISOString()),
+    // 全部訂單摘要：以前一次 select 整家店，破千筆後總營收/訂單總數/趨勢圖
+    // 全默默算少，哪 1000 筆被留下還隨每次查詢浮動。改分頁撈齊，排序跟
+    // fetch-customer-orders 同一套（created_at 舊→新 + id tiebreaker）。
+    fetchAllRows<OrderSummaryRow>(async (from, to) => {
+      const { data } = await supabase
+        .from("sproutly_orders")
+        .select(
+          "id, created_at, total_cents, status, payment_status, currency"
+        )
+        .eq("merchant_id", store.id)
+        .order("created_at", { ascending: true })
+        .order("id", { ascending: true })
+        .range(from, to);
+      return { data: data as OrderSummaryRow[] | null };
+    }),
     supabase
       .from("sproutly_orders")
       .select("*")
       .eq("merchant_id", store.id)
       .order("created_at", { ascending: false })
       .limit(5),
-    supabase
-      .from("sproutly_order_items")
-      .select(
-        "product_id, name_snapshot, quantity, price_cents_snapshot, sproutly_orders!inner(merchant_id, status)"
-      )
-      .eq("sproutly_orders.merchant_id", store.id)
-      .neq("sproutly_orders.status", "cancelled"),
+    // 熱銷 top 5 的品項：join 撈整家店史上所有品項，同樣吃 1000 列上限
+    //（7f9d6d0 修的匯出品項欄就是這個病），照樣分頁撈齊。
+    fetchAllRows<ItemRow>(async (from, to) => {
+      const { data } = await supabase
+        .from("sproutly_order_items")
+        .select(
+          "product_id, name_snapshot, quantity, price_cents_snapshot, sproutly_orders!inner(merchant_id, status)"
+        )
+        .eq("sproutly_orders.merchant_id", store.id)
+        .neq("sproutly_orders.status", "cancelled")
+        .order("id", { ascending: true })
+        .range(from, to);
+      return { data: data as ItemRow[] | null };
+    }),
     supabase
       .from("sproutly_products")
       .select("id, name, stock, image_urls")
@@ -108,41 +139,45 @@ export default async function StoreInsightsPage({
   // 這間店出單用的顯示幣別（取第一筆訂單、空退 TWD），見 displayCurrency。
   const storeCurrency = displayCurrency(allOrders);
 
-  const totalOrders = allOrders?.length ?? 0;
+  const totalOrders = allOrders.length;
+  // 本月的單直接從撈齊的 allOrders 篩（以前另發一條 gte(created_at) 的查詢，
+  // 同樣吃 1000 列上限；allOrders 已經撈齊，切點也跟 startOfMonth 同一個）。
+  const monthOrders = allOrders.filter(
+    (o) => new Date(o.created_at) >= startOfMonth
+  );
   // 「總營收（已付款）」卡的金額與底下「來自 N 筆訂單」必須同一份單：金額原本
   // 排除已取消、筆數卻沒排除，已付款後被取消的單會變成「4 筆的錢說來自 5 筆」。
   // 比照下面 unpaidOrders 收成一個陣列，錢跟筆數不可能再對不上。
-  const paidOrders =
-    allOrders?.filter(
-      (o) => isPaidOrder(o.payment_status) && o.status !== "cancelled"
-    ) ?? [];
+  const paidOrders = allOrders.filter(
+    (o) => isPaidOrder(o.payment_status) && o.status !== "cancelled"
+  );
   const totalRevenue = sumOrderCents(paidOrders);
-  const pendingOrders =
-    allOrders?.filter((o) => isPendingOrder(o.status)).length ?? 0;
+  const pendingOrders = allOrders.filter((o) =>
+    isPendingOrder(o.status)
+  ).length;
   // 「出貨了還沒收到錢」的應收。轉帳 / 貨到付款的店家最在意這個，
   // 但首頁四張指標只有「已付款」營收，看不出還有多少錢在外面——
   // 訂單列表（pay=unpaid 篩選）、客人列表、趨勢圖都已標出，唯獨第一眼的首頁漏了。
   // 口徑跟訂單列表一致：未取消的單裡 payment_status 還是 unpaid 的（已退款不算）。
-  const unpaidOrders =
-    allOrders?.filter(
-      (o) => o.status !== "cancelled" && isUnpaidOrder(o.payment_status)
-    ) ?? [];
+  const unpaidOrders = allOrders.filter(
+    (o) => o.status !== "cancelled" && isUnpaidOrder(o.payment_status)
+  );
   const outstandingCount = unpaidOrders.length;
   const outstandingCents = sumOrderCents(unpaidOrders);
   // 「本月營收」卡跟上面「總營收」卡同一條規則：金額與底下的筆數必須同一份單。
   // 原本金額排除未付款/已取消、筆數卻拿 monthOrders 全數（連取消單都數），
   // 又是「4 筆的錢說來自 5 筆」——13bec9c 修了總營收卡，這張孿生卡漏掉。
-  const monthPaidOrders =
-    monthOrders?.filter(
-      (o) => isPaidOrder(o.payment_status) && o.status !== "cancelled"
-    ) ?? [];
+  const monthPaidOrders = monthOrders.filter(
+    (o) => isPaidOrder(o.payment_status) && o.status !== "cancelled"
+  );
   const monthRevenue = sumOrderCents(monthPaidOrders);
   // 「訂單總數」卡的平均客單價：分子分母比照上面 paidOrders 的收法收成同一份
   // 「未取消的單」陣列（原本同一個 filter 寫兩次）。但卡片主數字 totalOrders 是
   // 歷來全部的單（含取消，跟跨店首頁「累計」同口徑），平均卻不含取消——店家拿
   // 總數 × 平均對不回任何數字，caption 把「不含取消單」講明，兩個數字各自成立。
-  const nonCancelledOrders =
-    allOrders?.filter((o) => o.status !== "cancelled") ?? [];
+  const nonCancelledOrders = allOrders.filter(
+    (o) => o.status !== "cancelled"
+  );
   const avgOrderValue =
     nonCancelledOrders.length > 0
       ? Math.round(
@@ -166,7 +201,7 @@ export default async function StoreInsightsPage({
     });
   }
   allOrders
-    ?.filter((o) => new Date(o.created_at) >= since14)
+    .filter((o) => new Date(o.created_at) >= since14)
     .forEach((o) => {
       const key = taipeiDateKey(new Date(o.created_at));
       const stats = dayMap.get(key);
@@ -195,13 +230,7 @@ export default async function StoreInsightsPage({
     string,
     { name: string; qty: number; revenue: number; productId: string | null }
   >();
-  type ItemRow = {
-    product_id: string | null;
-    name_snapshot: string;
-    quantity: number;
-    price_cents_snapshot: number;
-  };
-  (orderItems as ItemRow[] | null)?.forEach((item) => {
+  orderItems.forEach((item) => {
     const key = item.product_id ?? `__deleted_${item.name_snapshot}`;
     const existing = productMap.get(key) ?? {
       name: item.name_snapshot,

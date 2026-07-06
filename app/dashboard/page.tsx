@@ -6,6 +6,9 @@ import Link from "next/link";
 import { formatPrice } from "@/lib/format-price";
 import { isPendingOrder, isPaidOrder } from "@/lib/order-labels";
 import { taipeiStartOfMonth } from "@/lib/format-date";
+// 跨店的訂單/商品查詢走分頁撈齊（Supabase 一次最多回約 1000 列，
+// 一次 select 全帳號在資料破千後會默默少算，見 fetch-all-rows）。
+import { fetchAllRows } from "@/lib/fetch-all-rows";
 
 // 總覽卡的金額。商家若同時開了不同幣別的店，不同幣別的錢不能相加成一個數字，
 // 就分幣別逐列；只有一種幣別（多數情況）才照舊顯示一個大數字。
@@ -95,21 +98,42 @@ export default async function DashboardPage() {
     // 8 點才換月，跟單店首頁的本月營收對不上（詳見 lib/format-date.ts 那段註解）。
     const startOfMonth = taipeiStartOfMonth();
 
-    const [{ data: orders }, { data: products }] = await Promise.all([
-      supabase
-        .from("sproutly_orders")
-        .select(
-          "merchant_id, status, payment_status, total_cents, currency, created_at"
-        )
-        .in("merchant_id", storeIds),
-      supabase
-        .from("sproutly_products")
-        .select("merchant_id")
-        .in("merchant_id", storeIds),
+    // 以前兩條都是一次 select 全帳號：總營收/訂單數在破千筆後默默算少，
+    // 哪 1000 筆被留下還隨每次查詢浮動。改分頁撈齊，訂單排序跟單店首頁
+    // 同一套（created_at 舊→新 + id tiebreaker），currencyByStore 取到的
+    // 「第一筆」也因此固定是最早那張單，不再浮動。
+    const [orders, products] = await Promise.all([
+      fetchAllRows<(typeof allOrders)[number] & { id: string }>(
+        async (from, to) => {
+          const { data } = await supabase
+            .from("sproutly_orders")
+            .select(
+              "id, merchant_id, status, payment_status, total_cents, currency, created_at"
+            )
+            .in("merchant_id", storeIds)
+            .order("created_at", { ascending: true })
+            .order("id", { ascending: true })
+            .range(from, to);
+          return {
+            data: data as
+              | ((typeof allOrders)[number] & { id: string })[]
+              | null,
+          };
+        }
+      ),
+      fetchAllRows<{ merchant_id: string }>(async (from, to) => {
+        const { data } = await supabase
+          .from("sproutly_products")
+          .select("id, merchant_id")
+          .in("merchant_id", storeIds)
+          .order("id", { ascending: true })
+          .range(from, to);
+        return { data: data as { merchant_id: string }[] | null };
+      }),
     ]);
 
-    allOrders = (orders as typeof allOrders) ?? [];
-    products?.forEach((p) => {
+    allOrders = orders;
+    products.forEach((p) => {
       productCounts[p.merchant_id] =
         (productCounts[p.merchant_id] ?? 0) + 1;
     });
