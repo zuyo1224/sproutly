@@ -137,16 +137,16 @@ export default async function StoreInsightsPage({
       (o) => isPaidOrder(o.payment_status) && o.status !== "cancelled"
     ) ?? [];
   const monthRevenue = sumOrderCents(monthPaidOrders);
+  // 「訂單總數」卡的平均客單價：分子分母比照上面 paidOrders 的收法收成同一份
+  // 「未取消的單」陣列（原本同一個 filter 寫兩次）。但卡片主數字 totalOrders 是
+  // 歷來全部的單（含取消，跟跨店首頁「累計」同口徑），平均卻不含取消——店家拿
+  // 總數 × 平均對不回任何數字，caption 把「不含取消單」講明，兩個數字各自成立。
+  const nonCancelledOrders =
+    allOrders?.filter((o) => o.status !== "cancelled") ?? [];
   const avgOrderValue =
-    totalOrders > 0
+    nonCancelledOrders.length > 0
       ? Math.round(
-          (sumOrderCents(
-            allOrders!.filter((o) => o.status !== "cancelled")
-          ) /
-            Math.max(
-              allOrders!.filter((o) => o.status !== "cancelled").length,
-              1
-            ))
+          sumOrderCents(nonCancelledOrders) / nonCancelledOrders.length
         )
       : 0;
 
@@ -377,7 +377,7 @@ export default async function StoreInsightsPage({
             {totalOrders}
           </p>
           <p className="mt-1.5 text-xs text-emerald-900/50">
-            平均 {formatPrice(avgOrderValue, storeCurrency)}/筆
+            平均 {formatPrice(avgOrderValue, storeCurrency)}/筆 · 不含取消單
           </p>
         </Link>
         <Link
