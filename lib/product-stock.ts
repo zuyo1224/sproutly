@@ -54,7 +54,8 @@ export function stockAriaSuffix(stock: number | null | undefined): string {
 // inline 同一組三元（soldOut / effectiveQty / clamped），日後想改夾取規則（例如
 // 負庫存的新處理、或「部分銷售」狀態）就得兩頁追著改、一漏就一邊算得出、一邊算不出。
 // soldOut 直接走 isSoldOut，跟全站缺貨定義（<= 0，含超賣負數）同一份；clamped 指
-// 「沒售完但要的量超過庫存、被砍下來」，呼叫端據此擋送出、把客人帶回去調整。
+// 「沒售完但要的量超過庫存、被砍下來」。兩頁的處理口徑一致：soldOut 才擋送出，
+// clamped 只提示「數量已自動調整」後照送（送出的量就是夾過的 effectiveQty）。
 export type StockClamp = { effectiveQty: number; soldOut: boolean; clamped: boolean };
 
 export function clampToStock(
