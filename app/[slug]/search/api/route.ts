@@ -2,6 +2,8 @@ import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { matchesProductName, matchesProductDescription } from "@/lib/product-search";
 import { bySoldOutLast } from "@/lib/product-stock";
+// 商品撈整批要分頁撈齊，不然吃 Supabase 1000 列上限，見 fetch-all-rows。
+import { fetchAllRows } from "@/lib/fetch-all-rows";
 
 type Params = Promise<{ slug: string }>;
 
@@ -25,17 +27,24 @@ export async function GET(
 
   // 連商品描述一起比對（跟後台商品列表、逛街頁同一套口徑）：客人搜「耐陰」
   // 「適合新手」這種寫在描述、名稱沒有的字，原本只 ilike 名稱會查不到。
-  // 一間店商品量不大，撈回來在 JS 篩比 PostgREST .or() 串接安全（免煩惱
-  // 關鍵字含逗號／括號破壞 or 過濾語法，也免 %/_ 跳脫）。description 只拿來
-  // 比對、不回傳，保持回應欄位跟原本一致。
-  const { data } = await supabase
-    .from("sproutly_products")
-    .select("id, name, description, price_cents, currency, image_urls, stock")
-    .eq("merchant_id", store.id)
-    .eq("is_active", true)
-    .order("created_at", { ascending: false });
-
-  const rows = data ?? [];
+  // 撈回來在 JS 篩比 PostgREST .or() 串接安全（免煩惱關鍵字含逗號／括號
+  // 破壞 or 過濾語法，也免 %/_ 跳脫）。description 只拿來比對、不回傳，
+  // 保持回應欄位跟原本一致。
+  //
+  // 撈法走共用 fetchAllRows 分頁撈齊（Supabase 一次最多回約 1000 列，
+  // 商品破千後排序在後的舊品會默默搜不到——逛街頁、後台列表、sitemap
+  // 都修過同一種病，這支快搜當時漏掉）；排序尾端補 id tiebreaker 釘住
+  // 同時間列的順序，翻頁切點才不會浮動漏列或重複。
+  const rows = await fetchAllRows((from, to) =>
+    supabase
+      .from("sproutly_products")
+      .select("id, name, description, price_cents, currency, image_urls, stock")
+      .eq("merchant_id", store.id)
+      .eq("is_active", true)
+      .order("created_at", { ascending: false })
+      .order("id", { ascending: true })
+      .range(from, to)
+  );
   const named: typeof rows = [];
   const described: typeof rows = [];
   for (const p of rows) {
