@@ -20,6 +20,7 @@ import { csvEscape } from "@/lib/csv-escape";
 import { applyOrderSearch } from "@/lib/order-search";
 // 分轉整數元的 CSV 金額欄跟客人匯出共用同一份（見檔內說明）。
 import { centsToYuan } from "@/lib/format-price";
+import { fetchAllRows } from "@/lib/fetch-all-rows";
 
 type Params = Promise<{ slug: string }>;
 
@@ -66,18 +67,26 @@ export async function GET(
   const since = taipeiRangeSince(range);
   const filterActive = status !== "all" || pay !== "all" || range !== "all" || q !== "";
 
-  let ordersQuery = supabase
-    .from("sproutly_orders")
-    .select("*")
-    .eq("merchant_id", store.id);
-  if (status !== "all") ordersQuery = ordersQuery.eq("status", status);
-  if (pay !== "all") ordersQuery = ordersQuery.eq("payment_status", pay);
-  if (q) {
-    ordersQuery = applyOrderSearch(ordersQuery, q);
-  }
-  if (since) ordersQuery = ordersQuery.gte("created_at", since.toISOString());
-  const { data: orders } = await ordersQuery.order("created_at", {
-    ascending: false,
+  // 訂單本體分頁撈齊——以前一次 select 吃 Supabase 約 1000 列上限，
+  // 店累積訂單破千後，匯出的 CSV 默默少掉排在後面的舊單，商家只會以為
+  // 那些單不存在（7f9d6d0 修的是品項欄，這次少的是訂單列本身）。
+  // 排序維持新到舊，同時間再比 id 讓每頁切點穩定不漏不重。
+  const orders = await fetchAllRows(async (from, to) => {
+    let ordersQuery = supabase
+      .from("sproutly_orders")
+      .select("*")
+      .eq("merchant_id", store.id);
+    if (status !== "all") ordersQuery = ordersQuery.eq("status", status);
+    if (pay !== "all") ordersQuery = ordersQuery.eq("payment_status", pay);
+    if (q) {
+      ordersQuery = applyOrderSearch(ordersQuery, q);
+    }
+    if (since) ordersQuery = ordersQuery.gte("created_at", since.toISOString());
+    const { data } = await ordersQuery
+      .order("created_at", { ascending: false })
+      .order("id", { ascending: false })
+      .range(from, to);
+    return { data };
   });
 
   // 品項只查「這次要匯出的訂單」的，不是全店歷史全部——原本用 merchant_id join

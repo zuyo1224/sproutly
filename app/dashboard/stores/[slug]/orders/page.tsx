@@ -17,6 +17,7 @@ import {
 import { taipeiStampShort, taipeiRangeSince } from "@/lib/format-date";
 import { sumOrderCents } from "@/lib/sum-order-cents";
 import { applyOrderSearch } from "@/lib/order-search";
+import { fetchAllRows } from "@/lib/fetch-all-rows";
 
 type Params = Promise<{ slug: string }>;
 type SearchParams = Promise<{
@@ -101,38 +102,57 @@ export default async function OrdersListPage({
     .maybeSingle();
   if (!store) notFound();
 
-  // 算每個狀態的 count（不受目前 filter 影響）
-  const { data: allOrders } = await supabase
-    .from("sproutly_orders")
-    .select("status, payment_status")
-    .eq("merchant_id", store.id);
-  const statusCounts: Record<string, number> = { all: allOrders?.length ?? 0 };
-  const paymentCounts: Record<string, number> = { all: allOrders?.length ?? 0 };
-  allOrders?.forEach((o) => {
+  // 算每個狀態的 count（不受目前 filter 影響）。
+  // 以前一次 select 整家店：Supabase 一次最多回約 1000 列，訂單破千後
+  // chip 上的數字默默算少，改走共用的 fetchAllRows 分頁撈齊（id tiebreaker
+  // 保證每頁切點穩定，這條只拿來數數，排序用 id 就夠）。
+  const allOrders = await fetchAllRows<{
+    status: string;
+    payment_status: string;
+  }>(async (from, to) => {
+    const { data } = await supabase
+      .from("sproutly_orders")
+      .select("id, status, payment_status")
+      .eq("merchant_id", store.id)
+      .order("id", { ascending: true })
+      .range(from, to);
+    return {
+      data: data as { status: string; payment_status: string }[] | null,
+    };
+  });
+  const statusCounts: Record<string, number> = { all: allOrders.length };
+  const paymentCounts: Record<string, number> = { all: allOrders.length };
+  allOrders.forEach((o) => {
     statusCounts[o.status] = (statusCounts[o.status] ?? 0) + 1;
     paymentCounts[o.payment_status] =
       (paymentCounts[o.payment_status] ?? 0) + 1;
   });
 
-  // 套用 filter + search 查訂單
-  let query = supabase
-    .from("sproutly_orders")
-    .select("*")
-    .eq("merchant_id", store.id);
-  if (status !== "all") {
-    query = query.eq("status", status);
-  }
-  if (pay !== "all") {
-    query = query.eq("payment_status", pay);
-  }
-  if (q) {
-    query = applyOrderSearch(query, q);
-  }
-  if (rangeSince) {
-    query = query.gte("created_at", rangeSince.toISOString());
-  }
-  const { data: orders } = await query.order("created_at", {
-    ascending: false,
+  // 套用 filter + search 查訂單。同樣分頁撈齊——以前超過 1000 筆時，
+  // 列表尾端的舊單直接看不到，下面的已收/未收金額也跟著算少。
+  // 顯示維持新到舊，同時間再比 id 讓翻頁切點穩定。
+  const orders = await fetchAllRows(async (from, to) => {
+    let query = supabase
+      .from("sproutly_orders")
+      .select("*")
+      .eq("merchant_id", store.id);
+    if (status !== "all") {
+      query = query.eq("status", status);
+    }
+    if (pay !== "all") {
+      query = query.eq("payment_status", pay);
+    }
+    if (q) {
+      query = applyOrderSearch(query, q);
+    }
+    if (rangeSince) {
+      query = query.gte("created_at", rangeSince.toISOString());
+    }
+    const { data } = await query
+      .order("created_at", { ascending: false })
+      .order("id", { ascending: false })
+      .range(from, to);
+    return { data };
   });
 
   // 這批篩出來的單裡錢的狀況：已取消的不算錢（沒成交）。
