@@ -104,11 +104,14 @@ export default async function StoreInsightsPage({
   const storeCurrency = displayCurrency(allOrders);
 
   const totalOrders = allOrders?.length ?? 0;
-  const totalRevenue = sumOrderCents(
+  // 「總營收（已付款）」卡的金額與底下「來自 N 筆訂單」必須同一份單：金額原本
+  // 排除已取消、筆數卻沒排除，已付款後被取消的單會變成「4 筆的錢說來自 5 筆」。
+  // 比照下面 unpaidOrders 收成一個陣列，錢跟筆數不可能再對不上。
+  const paidOrders =
     allOrders?.filter(
       (o) => isPaidOrder(o.payment_status) && o.status !== "cancelled"
-    ) ?? []
-  );
+    ) ?? [];
+  const totalRevenue = sumOrderCents(paidOrders);
   const pendingOrders =
     allOrders?.filter((o) => isPendingOrder(o.status)).length ?? 0;
   // 「出貨了還沒收到錢」的應收。轉帳 / 貨到付款的店家最在意這個，
@@ -353,7 +356,7 @@ export default async function StoreInsightsPage({
             {formatPrice(totalRevenue, storeCurrency)}
           </p>
           <p className="mt-1.5 text-xs text-emerald-900/50">
-            來自 {allOrders?.filter((o) => isPaidOrder(o.payment_status)).length ?? 0} 筆訂單
+            來自 {paidOrders.length} 筆訂單
           </p>
         </div>
         <Link
