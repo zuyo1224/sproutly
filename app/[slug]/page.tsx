@@ -233,6 +233,9 @@ export default async function StoreHomePage({
   // 自訂 CSS variable 在 TS CSSProperties 預設沒有，所以走 Record<string, unknown> cast
   // 文字色用 color + 覆寫 --store-text / --store-text-muted CSS var
   // 讓 muted 文字（副題 / eyebrow）也跟著走，避免淺底深字 section 突然有深底白字時 muted 還是深的看不見
+  // 約定：直接坐在區段底色上的文字，inline color 要寫 var(--store-text)/var(--store-text-muted)
+  // 而不是 theme.text/theme.textMuted —— 寫死 theme 值會把這裡的覆寫蓋掉，商家設了文字色沒反應。
+  // 例外是有自己底色的容器（promise 卡 / 客人好評卡 / No Image 佔位）：底色不跟區段換，字也維持 theme 值。
   // 標題字級 --store-heading-scale 由 layout.tsx 的 attribute selector 套到 h2 上（em 相對倍率）
   // muted 文字色（副題 / eyebrow）= 自訂文字色加 ~70% 透明。原本只會「字串接 B3」，
   // 那只在文字色剛好是 6 碼 hex 才成立；商家在文字色框打 rgb() / 顏色名 / 3 碼 #abc 時，
@@ -939,7 +942,7 @@ export default async function StoreHomePage({
                     transform: "translate(-50%, -50%)",
                     maxWidth: "min(560px, 80vw)",
                     width: "100%",
-                    color: theme.text,
+                    color: "var(--store-text)",
                     fontFamily: "var(--store-font)",
                     fontWeight: 400,
                     wordBreak: "keep-all",
@@ -975,7 +978,7 @@ export default async function StoreHomePage({
                   data-edit-drag={FREE_POS_KEYS.collectionIntro}
                   className={`text-xl sm:text-2xl max-w-xl ${collStyle.align === "center" ? "mx-auto" : collStyle.align === "right" ? "ml-auto" : ""} mb-32 leading-[1.9]`}
                   style={{
-                    color: theme.text,
+                    color: "var(--store-text)",
                     fontFamily: "var(--store-font)",
                     fontWeight: 400,
                     wordBreak: "keep-all",
@@ -1019,7 +1022,7 @@ export default async function StoreHomePage({
                       data-edit-index={c.index}
                       className="sproutly-card-title mt-6 text-lg sm:text-xl"
                       style={{
-                        color: theme.text,
+                        color: "var(--store-text)",
                         fontFamily: "var(--store-font)",
                         fontWeight: 400,
                       }}
@@ -1032,7 +1035,7 @@ export default async function StoreHomePage({
                         data-edit-field="collectionCardSubtitle"
                         data-edit-index={c.index}
                         className="sproutly-card-meta mt-1 text-sm"
-                        style={{ color: theme.textMuted }}
+                        style={{ color: "var(--store-text-muted)" }}
                       >
                         {c.subtitle}
                       </p>
@@ -1077,7 +1080,7 @@ export default async function StoreHomePage({
                     left: `${featuredPos!.x * 100}%`,
                     top: `${featuredPos!.y * 100}%`,
                     transform: "translate(-50%, -50%)",
-                    color: theme.text,
+                    color: "var(--store-text)",
                     fontFamily: "var(--store-font)",
                     fontWeight: 400,
                     whiteSpace: "nowrap",
@@ -1108,7 +1111,7 @@ export default async function StoreHomePage({
                     data-edit-field="featuredTitle"
                     className="text-xl sm:text-2xl mb-20 sm:mb-28"
                     style={{
-                      color: theme.text,
+                      color: "var(--store-text)",
                       fontFamily: "var(--store-font)",
                       fontWeight: 400,
                     }}
@@ -1179,7 +1182,7 @@ export default async function StoreHomePage({
                     <h3
                       className="sproutly-card-title mt-5 text-base line-clamp-1"
                       style={{
-                        color: theme.text,
+                        color: "var(--store-text)",
                         fontFamily: "var(--store-font)",
                         fontWeight: 400,
                       }}
@@ -1188,7 +1191,7 @@ export default async function StoreHomePage({
                     </h3>
                     <p
                       className="sproutly-card-meta mt-1 text-sm"
-                      style={{ color: theme.textMuted }}
+                      style={{ color: "var(--store-text-muted)" }}
                     >
                       {formatPrice(p.price_cents, p.currency)}
                     </p>
@@ -1213,7 +1216,7 @@ export default async function StoreHomePage({
                   data-default-line="true"
                   data-edit-text
                   data-edit-field="featuredCta"
-                  style={{ color: theme.text }}
+                  style={{ color: "var(--store-text)" }}
                 >
                   {featuredCta}
                 </Link>
@@ -1270,7 +1273,7 @@ export default async function StoreHomePage({
                   data-edit-field="journalTitle"
                   className="text-3xl sm:text-4xl lg:text-[2.5rem]"
                   style={{
-                    color: theme.text,
+                    color: "var(--store-text)",
                     fontFamily: "var(--store-font)",
                     fontWeight: 400,
                     letterSpacing: "-0.01em",
@@ -1283,7 +1286,7 @@ export default async function StoreHomePage({
                   data-edit-text
                   data-edit-field="journalSubtitle"
                   className="mt-6 text-sm sm:text-base leading-[1.9]"
-                  style={{ color: theme.textMuted }}
+                  style={{ color: "var(--store-text-muted)" }}
                 >
                   {journalSubtitle}
                 </p>
@@ -1303,7 +1306,7 @@ export default async function StoreHomePage({
                   data-edit-field="journalTitle"
                   className="text-3xl sm:text-4xl lg:text-[2.5rem]"
                   style={{
-                    color: theme.text,
+                    color: "var(--store-text)",
                     fontFamily: "var(--store-font)",
                     fontWeight: 400,
                     letterSpacing: "-0.01em",
@@ -1316,7 +1319,7 @@ export default async function StoreHomePage({
                   data-edit-text
                   data-edit-field="journalSubtitle"
                   className="mt-6 text-sm sm:text-base max-w-xl leading-[1.9]"
-                  style={{ color: theme.textMuted }}
+                  style={{ color: "var(--store-text-muted)" }}
                 >
                   {journalSubtitle}
                 </p>
@@ -1372,7 +1375,7 @@ export default async function StoreHomePage({
                       data-edit-index={i}
                       className="sproutly-card-title mt-3 text-lg sm:text-xl leading-[1.4]"
                       style={{
-                        color: theme.text,
+                        color: "var(--store-text)",
                         fontFamily: "var(--store-font)",
                         fontWeight: 400,
                         letterSpacing: "-0.005em",
@@ -1385,7 +1388,7 @@ export default async function StoreHomePage({
                       data-edit-field="journalCardExcerpt"
                       data-edit-index={i}
                       className="mt-3 text-sm leading-[1.85]"
-                      style={{ color: theme.textMuted }}
+                      style={{ color: "var(--store-text-muted)" }}
                     >
                       {entry.excerpt}
                     </p>
@@ -1393,7 +1396,7 @@ export default async function StoreHomePage({
                       data-edit-text
                       data-edit-field="journalCardLabel"
                       className="mt-5 text-[10px] tracking-[0.3em] uppercase"
-                      style={{ color: theme.textMuted, opacity: 0.65 }}
+                      style={{ color: "var(--store-text-muted)", opacity: 0.65 }}
                     >
                       {journalCardLabel}
                     </p>
@@ -1588,7 +1591,7 @@ export default async function StoreHomePage({
                       data-edit-field="testimonialsTitle"
                       className="text-2xl sm:text-3xl md:text-4xl"
                       style={{
-                        color: theme.text,
+                        color: "var(--store-text)",
                         fontFamily: "var(--store-font)",
                         fontWeight: 400,
                         letterSpacing: "-0.01em",
@@ -1625,7 +1628,7 @@ export default async function StoreHomePage({
                       data-edit-field="testimonialsTitle"
                       className="text-2xl sm:text-3xl md:text-4xl"
                       style={{
-                        color: theme.text,
+                        color: "var(--store-text)",
                         fontFamily: "var(--store-font)",
                         fontWeight: 400,
                         letterSpacing: "-0.01em",
@@ -1770,7 +1773,7 @@ export default async function StoreHomePage({
                     <h2
                       className="text-2xl sm:text-3xl md:text-4xl"
                       style={{
-                        color: theme.text,
+                        color: "var(--store-text)",
                         fontFamily: "var(--store-font)",
                         fontWeight: 400,
                         letterSpacing: "-0.01em",
@@ -1804,7 +1807,7 @@ export default async function StoreHomePage({
                     data-edit-field="faqTitle"
                     className="text-2xl sm:text-3xl md:text-4xl"
                     style={{
-                      color: theme.text,
+                      color: "var(--store-text)",
                       fontFamily: "var(--store-font)",
                       fontWeight: 400,
                       letterSpacing: "-0.01em",
@@ -1835,7 +1838,7 @@ export default async function StoreHomePage({
                       <details className="group">
                         <summary
                           className="flex items-center justify-between cursor-pointer py-6 list-none transition hover:opacity-80"
-                          style={{ color: theme.text }}
+                          style={{ color: "var(--store-text)" }}
                         >
                           <span
                             data-edit-text
@@ -1863,7 +1866,7 @@ export default async function StoreHomePage({
                           data-edit-field="faqAnswer"
                           data-edit-index={i}
                           className="pb-7 pr-8 text-sm sm:text-base leading-[1.95]"
-                          style={{ color: theme.textMuted }}
+                          style={{ color: "var(--store-text-muted)" }}
                         >
                           {item.answer.split(/\n+/).map((line, idx) => (
                             <p key={idx} className={idx > 0 ? "mt-3" : ""}>
@@ -1938,7 +1941,7 @@ export default async function StoreHomePage({
                         data-edit-field="statsTitle"
                         className="text-2xl sm:text-3xl md:text-4xl"
                         style={{
-                          color: theme.text,
+                          color: "var(--store-text)",
                           fontFamily: "var(--store-font)",
                           fontWeight: 500,
                           letterSpacing: "-0.01em",
@@ -1977,7 +1980,7 @@ export default async function StoreHomePage({
                         data-edit-field="statsTitle"
                         className="text-2xl sm:text-3xl md:text-4xl"
                         style={{
-                          color: theme.text,
+                          color: "var(--store-text)",
                           fontFamily: "var(--store-font)",
                           fontWeight: 500,
                           letterSpacing: "-0.01em",
@@ -2011,7 +2014,7 @@ export default async function StoreHomePage({
                         data-edit-index={i}
                         className="text-4xl sm:text-5xl md:text-6xl tabular-nums"
                         style={{
-                          color: theme.text,
+                          color: "var(--store-text)",
                           fontFamily: "var(--store-font)",
                           fontWeight: 400,
                           letterSpacing: "-0.02em",
@@ -2034,7 +2037,7 @@ export default async function StoreHomePage({
                         data-edit-field="statLabel"
                         data-edit-index={i}
                         className="text-xs sm:text-sm tracking-[0.2em] uppercase"
-                        style={{ color: theme.textMuted }}
+                        style={{ color: "var(--store-text-muted)" }}
                       >
                         {s.label}
                       </p>
@@ -2083,7 +2086,7 @@ export default async function StoreHomePage({
                       top: `${partnersPos!.y * 100}%`,
                       transform: "translate(-50%, -50%)",
                       whiteSpace: "nowrap",
-                      color: theme.textMuted,
+                      color: "var(--store-text-muted)",
                     }}
                   >
                     {partnersEyebrow}
@@ -2094,7 +2097,7 @@ export default async function StoreHomePage({
                   data-edit-text
                   data-edit-field="partnersEyebrow"
                   className="text-[10px] tracking-[0.4em] uppercase mb-12"
-                  style={{ color: theme.textMuted }}
+                  style={{ color: "var(--store-text-muted)" }}
                 >
                   {partnersEyebrow}
                 </p>
@@ -2187,7 +2190,7 @@ export default async function StoreHomePage({
                       data-edit-field="galleryTitle"
                       className="text-2xl sm:text-3xl md:text-4xl"
                       style={{
-                        color: theme.text,
+                        color: "var(--store-text)",
                         fontFamily: "var(--store-font)",
                         fontWeight: 400,
                         letterSpacing: "-0.01em",
@@ -2221,7 +2224,7 @@ export default async function StoreHomePage({
                     data-edit-field="galleryTitle"
                     className="text-2xl sm:text-3xl md:text-4xl"
                     style={{
-                      color: theme.text,
+                      color: "var(--store-text)",
                       fontFamily: "var(--store-font)",
                       fontWeight: 400,
                       letterSpacing: "-0.01em",
@@ -2269,7 +2272,7 @@ export default async function StoreHomePage({
                           data-edit-field="galleryCaption"
                           data-edit-index={i}
                           className="mt-3 text-xs sm:text-sm leading-relaxed"
-                          style={{ color: theme.textMuted }}
+                          style={{ color: "var(--store-text-muted)" }}
                         >
                           {g.caption}
                         </figcaption>
@@ -2340,7 +2343,7 @@ export default async function StoreHomePage({
                 data-edit-field="visitTitle"
                 className="text-2xl sm:text-3xl md:text-4xl mb-4"
                 style={{
-                  color: theme.text,
+                  color: "var(--store-text)",
                   fontFamily: "var(--store-font)",
                   fontWeight: 400,
                   letterSpacing: "-0.01em",
@@ -2369,7 +2372,7 @@ export default async function StoreHomePage({
                 >
                   <span
                     className="text-base leading-loose border-b border-current pb-0.5"
-                    style={{ color: theme.text }}
+                    style={{ color: "var(--store-text)" }}
                   >
                     {storeAddress}
                   </span>
@@ -2384,7 +2387,7 @@ export default async function StoreHomePage({
               {businessHoursText && (
                 <div
                   className="mt-4 text-sm whitespace-pre-line leading-loose"
-                  style={{ color: theme.textMuted }}
+                  style={{ color: "var(--store-text-muted)" }}
                 >
                   {businessHoursText}
                 </div>
@@ -2392,7 +2395,7 @@ export default async function StoreHomePage({
               {(store.contact_phone || store.contact_email) && (
                 <div
                   className={`mt-10 flex ${visitContactJustify} gap-8 text-sm tracking-wider`}
-                  style={{ color: theme.text }}
+                  style={{ color: "var(--store-text)" }}
                 >
                   {/* 清得出乾淨目標（storePhone=telDigits、storeEmail=cleanEmail，上方結構化
                       資料已算好）才掛 tel:／mailto: 連結；商家填「問我」這種非號碼／非 email 時
