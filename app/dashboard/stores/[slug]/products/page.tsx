@@ -4,6 +4,8 @@ import Link from "next/link";
 import { formatPrice } from "@/lib/format-price";
 import { isSoldOut, isLowStock } from "@/lib/product-stock";
 import { matchesProductSearch } from "@/lib/product-search";
+// 商品撈整批要分頁撈齊，不然吃 Supabase 1000 列上限，見 fetch-all-rows。
+import { fetchAllRows } from "@/lib/fetch-all-rows";
 
 type Params = Promise<{ slug: string }>;
 type SearchParams = Promise<{ q?: string; filter?: string }>;
@@ -61,16 +63,20 @@ export default async function ProductsListPage({
     .maybeSingle();
   if (!store) notFound();
 
-  const { data: products } = await supabase
-    .from("sproutly_products")
-    .select("*")
-    .eq("merchant_id", store.id)
-    .order("sort_order", { ascending: true })
-    .order("created_at", { ascending: false });
-
-  // 商品數量不多（一間店頂多幾百件），一次撈回來在這裡篩，
-  // chips 的 count 也順便從同一份資料算，不用多打一次 DB
-  const allProducts: ProductRow[] = products ?? [];
+  // 整批撈回來在這裡篩，chips 的 count 也順便從同一份資料算，不用多打一次 DB。
+  // 撈法走共用 fetchAllRows 分頁撈齊（Supabase 一次最多回約 1000 列，商品破千後
+  // 超出的會默默從列表消失、chips 數字也算少）；排序尾端補 id tiebreaker
+  // 釘住同值列的順序，翻頁切點才不會浮動漏列或重複。
+  const allProducts = await fetchAllRows<ProductRow>(async (from, to) =>
+    supabase
+      .from("sproutly_products")
+      .select("*")
+      .eq("merchant_id", store.id)
+      .order("sort_order", { ascending: true })
+      .order("created_at", { ascending: false })
+      .order("id", { ascending: true })
+      .range(from, to)
+  );
   const filterCounts: Record<string, number> = {};
   for (const f of STATUS_FILTERS) {
     filterCounts[f.key] = allProducts.filter(f.match).length;

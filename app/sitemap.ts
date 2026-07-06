@@ -3,8 +3,24 @@ import { createAdminClient } from "@/lib/supabase/admin";
 import { resolveTheme } from "@/app/[slug]/_theme";
 import { absoluteImageUrls } from "@/lib/image-url";
 import { siteBaseUrl } from "@/lib/store-schema";
+// 整批撈店家/商品要分頁撈齊，不然吃 Supabase 1000 列上限，見 fetch-all-rows。
+import { fetchAllRows } from "@/lib/fetch-all-rows";
 
 const BASE_URL = siteBaseUrl();
+
+type StoreRow = {
+  id: string;
+  slug: string;
+  updated_at: string | null;
+  theme: unknown;
+};
+
+type ProductRow = {
+  id: string;
+  merchant_id: string;
+  updated_at: string | null;
+  image_urls: string[] | null;
+};
 
 // shop 對每間已發布店家都在；about / contact 是條件頁，商家關掉對應區段時
 // 頁面本身會 notFound（about 看 about/faq，contact 看 contact/hours），
@@ -25,12 +41,18 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     },
   ];
 
-  const { data: stores } = await supabase
-    .from("sproutly_merchants")
-    .select("id, slug, updated_at, theme")
-    .eq("is_published", true);
+  // 店家與商品都分頁撈齊（Supabase 一次最多回約 1000 列，超出的會默默
+  // 從 sitemap 消失，Google 就收不到那些頁）；用 id 排序讓每頁切點穩定。
+  const stores = await fetchAllRows<StoreRow>(async (from, to) =>
+    supabase
+      .from("sproutly_merchants")
+      .select("id, slug, updated_at, theme")
+      .eq("is_published", true)
+      .order("id", { ascending: true })
+      .range(from, to)
+  );
 
-  if (!stores || stores.length === 0) return entries;
+  if (stores.length === 0) return entries;
 
   for (const store of stores) {
     const storeLastModified = store.updated_at
@@ -68,31 +90,38 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
   const storeBySlug = new Map(stores.map((s) => [s.id, s.slug]));
 
-  const { data: products } = await supabase
-    .from("sproutly_products")
-    .select("id, merchant_id, updated_at, image_urls")
-    .eq("is_active", true)
-    .in(
-      "merchant_id",
-      stores.map((s) => s.id)
+  // 店家 id 每 100 筆一批下 in()（全塞一個 in() 會讓查詢網址過長，
+  // 跟訂單匯出撈品項同一套切法），每批各自分頁撈齊。
+  const products: ProductRow[] = [];
+  const storeIds = stores.map((s) => s.id);
+  for (let i = 0; i < storeIds.length; i += 100) {
+    const batchIds = storeIds.slice(i, i + 100);
+    const batch = await fetchAllRows<ProductRow>(async (from, to) =>
+      supabase
+        .from("sproutly_products")
+        .select("id, merchant_id, updated_at, image_urls")
+        .eq("is_active", true)
+        .in("merchant_id", batchIds)
+        .order("id", { ascending: true })
+        .range(from, to)
     );
+    products.push(...batch);
+  }
 
-  if (products) {
-    for (const product of products) {
-      const slug = storeBySlug.get(product.merchant_id);
-      if (!slug) continue;
-      // 商品照片一併進 sitemap，Google 才知道每個商品頁有哪幾張圖可收錄。
-      // 跟 Product JSON-LD／OG image 同一條防呆：只放清乾淨的絕對網址，
-      // 混進的空白列或相對路徑不放進 <image:loc>，免得整筆 sitemap image 失效。
-      const images = absoluteImageUrls(product.image_urls);
-      entries.push({
-        url: `${BASE_URL}/${slug}/products/${product.id}`,
-        lastModified: product.updated_at ? new Date(product.updated_at) : now,
-        changeFrequency: "weekly",
-        priority: 0.7,
-        ...(images.length > 0 ? { images } : {}),
-      });
-    }
+  for (const product of products) {
+    const slug = storeBySlug.get(product.merchant_id);
+    if (!slug) continue;
+    // 商品照片一併進 sitemap，Google 才知道每個商品頁有哪幾張圖可收錄。
+    // 跟 Product JSON-LD／OG image 同一條防呆：只放清乾淨的絕對網址，
+    // 混進的空白列或相對路徑不放進 <image:loc>，免得整筆 sitemap image 失效。
+    const images = absoluteImageUrls(product.image_urls);
+    entries.push({
+      url: `${BASE_URL}/${slug}/products/${product.id}`,
+      lastModified: product.updated_at ? new Date(product.updated_at) : now,
+      changeFrequency: "weekly",
+      priority: 0.7,
+      ...(images.length > 0 ? { images } : {}),
+    });
   }
 
   return entries;

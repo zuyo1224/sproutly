@@ -10,6 +10,8 @@ import { RecentlyViewed } from "@/app/_components/recently-viewed";
 import { AutoSubmitOnChange } from "@/app/_components/auto-submit-on-change";
 import { isSoldOut, isLowStock, bySoldOutLast, stockAriaSuffix } from "@/lib/product-stock";
 import { matchesProductSearch } from "@/lib/product-search";
+// 商品撈整批要分頁撈齊，不然吃 Supabase 1000 列上限，見 fetch-all-rows。
+import { fetchAllRows } from "@/lib/fetch-all-rows";
 
 type Params = Promise<{ slug: string }>;
 type SearchParams = Promise<{ q?: string; sort?: string; stock?: string }>;
@@ -100,51 +102,54 @@ export default async function ShopPage({
 
   const theme = resolveTheme(store.theme);
 
-  let query = supabase
-    .from("sproutly_products")
-    .select("*")
-    .eq("merchant_id", store.id)
-    .eq("is_active", true);
-
   // 關鍵字比對搬到 JS 做（見下方 fetched 之後）：原本只 ilike 商品名稱，
   // 客人搜「耐陰」「適合新手」這種寫在描述裡、名稱沒有的字會一場空，
   // 但商家後台商品列表早就連描述一起搜。逛街頁本來就把整批商品撈回來再排序，
   // 多比一個欄位零額外查詢，也順手免掉 ilike 的 %/_ 跳脫。
-  if (inStock) {
-    query = query.or("stock.is.null,stock.gt.0");
-  }
+  //
+  // 撈法走共用 fetchAllRows 分頁撈齊（Supabase 一次最多回約 1000 列，
+  // 商品破千後超出的會默默從逛街頁消失）；每種排序最後都補 id tiebreaker
+  // 釘住同值列的順序，翻頁切點才不會浮動漏列或重複。
+  const fetched = await fetchAllRows(async (from, to) => {
+    let query = supabase
+      .from("sproutly_products")
+      .select("*")
+      .eq("merchant_id", store.id)
+      .eq("is_active", true);
 
-  switch (sort) {
-    case "price-asc":
-      query = query.order("price_cents", { ascending: true });
-      break;
-    case "price-desc":
-      query = query.order("price_cents", { ascending: false });
-      break;
-    case "name":
-      query = query.order("name", { ascending: true });
-      break;
-    default:
-      query = query
-        .order("sort_order", { ascending: true })
-        .order("created_at", { ascending: false });
-  }
+    if (inStock) {
+      query = query.or("stock.is.null,stock.gt.0");
+    }
 
-  const { data: fetched } = await query;
+    switch (sort) {
+      case "price-asc":
+        query = query.order("price_cents", { ascending: true });
+        break;
+      case "price-desc":
+        query = query.order("price_cents", { ascending: false });
+        break;
+      case "name":
+        query = query.order("name", { ascending: true });
+        break;
+      default:
+        query = query
+          .order("sort_order", { ascending: true })
+          .order("created_at", { ascending: false });
+    }
+
+    return query.order("id", { ascending: true }).range(from, to);
+  });
   // 名稱或描述任一含關鍵字就算命中（跟後台商品列表、Cmd+K 搜尋同一套口徑）。
-  // 沒搜尋字就維持原樣，撈不到（null）也維持 null 讓下方空狀態照常判斷。
-  const products = !fetched
-    ? fetched
-    : q
-      ? fetched.filter((p) => matchesProductSearch(p, q))
-      : fetched;
+  const products = q
+    ? fetched.filter((p) => matchesProductSearch(p, q))
+    : fetched;
   // 售完的商品一律沉到列表最底。選定的排序（最新／價格／名稱）原本把已售完
   // 跟有貨的混在一起，逛街頁第一排常卡著幾株沒貨的，客人得略過才看到買得到的——
   // 跟最近替每個商品卡片補上售完標示同一個出發點：別讓人花眼力在買不到的東西上。
   // 在原排序之上再把 stock===0 的整批推到最後（JS sort 穩定，各自維持原順序），
   // 跟「只看有貨」勾選互補：不勾也是先看到買得到的，售完的仍排在下方可瀏覽。
-  products?.sort(bySoldOutLast);
-  const totalCount = products?.length ?? 0;
+  products.sort(bySoldOutLast);
+  const totalCount = products.length;
   const hasFilter = q || sort !== "newest" || inStock;
 
   const shopEyebrow = theme.homepage.shopEyebrow ?? HOMEPAGE_DEFAULTS.shopEyebrow;
@@ -169,8 +174,7 @@ export default async function ShopPage({
   // numberOfItems 必須等於 itemListElement 真正列出的筆數——超過上限時拿全部
   // 商品數去填，會讓 Google 判定宣稱的數量跟實際清單對不上，所以先把要列的
   // 清單切好，數量直接吃這份的長度。
-  const listedProducts =
-    !hasFilter && products ? products.slice(0, 30) : [];
+  const listedProducts = !hasFilter ? products.slice(0, 30) : [];
   const itemListJsonLd =
     listedProducts.length > 0
       ? {
@@ -354,7 +358,7 @@ export default async function ShopPage({
         )}
       </form>
 
-      {products && products.length > 0 ? (
+      {products.length > 0 ? (
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-x-6 sm:gap-x-10 gap-y-16">
           {products.map((p) => {
             const soldOut = isSoldOut(p.stock);
