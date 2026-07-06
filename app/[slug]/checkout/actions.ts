@@ -6,7 +6,7 @@ import { createAdminClient } from "@/lib/supabase/admin";
 import { redirect } from "next/navigation";
 import { encodeShippingIntoNote, SHIPPING_LABELS, PAYMENT_LABELS, shippingDetailError } from "@/lib/order-labels";
 import { QTY_MIN, QTY_MAX, isValidQty } from "@/lib/product-quantity";
-import { restoreStock } from "@/lib/stock-restore";
+import { decrementStock, restoreStock } from "@/lib/stock-restore";
 
 export async function placeOrder(slug: string, formData: FormData) {
   const productId = formString(formData, "product_id");
@@ -88,27 +88,25 @@ export async function placeOrder(slug: string, formData: FormData) {
     );
   }
 
-  // Atomic 庫存扣減（optimistic locking 防超賣）
+  // Atomic 庫存扣減（重讀重試防超賣，跟別的客人撞單不再直接退回，見 decrementStock）
   const admin = createAdminClient();
+  let stockDecremented = false;
   if (product.stock !== null) {
-    const { data: updated, error: updateError } = await admin
-      .from("sproutly_products")
-      .update({ stock: product.stock - quantity })
-      .eq("id", productId)
-      .eq("stock", product.stock)
-      .select("id");
-    if (updateError) {
-      redirect(
-        baseRedirect + "&error=" + encodeURIComponent(updateError.message)
-      );
-    }
-    if (!updated || updated.length === 0) {
+    const dec = await decrementStock(admin, product.id, quantity);
+    if (!dec.ok) {
       redirect(
         baseRedirect +
           "&error=" +
-          encodeURIComponent("剛剛有其他客人下單，庫存已變動，請重新確認")
+          encodeURIComponent(
+            dec.reason === "insufficient"
+              ? dec.stock <= 0
+                ? "商品已售完"
+                : `庫存只剩 ${dec.stock} 件`
+              : "剛剛有其他客人下單，庫存已變動，請重新確認"
+          )
       );
     }
+    stockDecremented = dec.decremented;
   }
 
   // 把物流資訊編碼進 note 欄位（避免需要 schema migration）
@@ -144,7 +142,7 @@ export async function placeOrder(slug: string, formData: FormData) {
     .single();
 
   if (orderError || !order) {
-    if (product.stock !== null) {
+    if (stockDecremented) {
       // 加回剛扣的數量，不能整欄寫回舊值（會蓋掉這空檔別人下單扣走的份，原因見 restoreStock）
       await restoreStock(admin, productId, quantity);
     }
@@ -167,7 +165,7 @@ export async function placeOrder(slug: string, formData: FormData) {
 
   if (itemError) {
     await admin.from("sproutly_orders").delete().eq("id", order.id);
-    if (product.stock !== null) {
+    if (stockDecremented) {
       await restoreStock(admin, productId, quantity);
     }
     redirect(

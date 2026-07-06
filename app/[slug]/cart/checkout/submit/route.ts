@@ -8,7 +8,7 @@ import {
   shippingDetailError,
 } from "@/lib/order-labels";
 import { isValidQty } from "@/lib/product-quantity";
-import { restoreStock } from "@/lib/stock-restore";
+import { decrementStock, restoreStock } from "@/lib/stock-restore";
 
 type Params = Promise<{ slug: string }>;
 
@@ -108,32 +108,28 @@ export async function POST(
   for (const item of cartItems) {
     const product = products.find((p) => p.id === item.productId);
     if (!product) return NextResponse.json({ error: "商品錯誤" }, { status: 400 });
-    if (product.stock !== null && product.stock < item.qty) {
-      // rollback already decremented
-      for (const b of decremented) {
-        await restoreStock(admin, b.id, b.qty);
-      }
-      return NextResponse.json({
-        error: `「${product.name}」庫存不足，剩 ${product.stock}`,
-      }, { status: 400 });
-    }
     if (product.stock !== null) {
-      const { data: updated, error: uerr } = await admin
-        .from("sproutly_products")
-        .update({ stock: product.stock - item.qty })
-        .eq("id", product.id)
-        .eq("stock", product.stock)
-        .select("id");
-      if (uerr || !updated || updated.length === 0) {
-        // rollback
+      // 扣減走 decrementStock 的重讀重試：頁面早前讀到的 stock 只當「有限量」
+      // 的判斷，實際夠不夠以扣減當下重讀的為準——跟別的客人前後腳下單，
+      // 只要庫存真的夠就不再整單退回。
+      const dec = await decrementStock(admin, product.id, item.qty);
+      if (!dec.ok) {
+        // rollback already decremented
         for (const b of decremented) {
           await restoreStock(admin, b.id, b.qty);
+        }
+        if (dec.reason === "insufficient") {
+          return NextResponse.json({
+            error: `「${product.name}」庫存不足，剩 ${dec.stock}`,
+          }, { status: 400 });
         }
         return NextResponse.json({
           error: `「${product.name}」庫存剛被搶光，請重試`,
         }, { status: 409 });
       }
-      decremented.push({ id: product.id, qty: item.qty });
+      if (dec.decremented) {
+        decremented.push({ id: product.id, qty: item.qty });
+      }
     }
     totalCents += product.price_cents * item.qty;
     currency = product.currency;
