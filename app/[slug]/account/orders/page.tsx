@@ -12,6 +12,7 @@ import {
 } from "@/lib/order-labels";
 import { RecentlyViewed } from "@/app/_components/recently-viewed";
 import { StoreEmptyState } from "@/app/_components/store-empty-state";
+import { fetchAllRows } from "@/lib/fetch-all-rows";
 
 // 蓋掉父層 account/layout 的「會員中心」，訂單列表分頁顯示「訂單紀錄」。
 export const metadata: Metadata = { title: "訂單紀錄" };
@@ -88,24 +89,35 @@ export default async function CustomerOrdersPage({
     price_cents_snapshot: number;
   };
 
-  const { data: orders } = await supabase
-    .from("sproutly_orders")
-    .select(
-      "id, status, payment_status, payment_method, total_cents, currency, created_at"
-    )
-    .eq("merchant_id", store.id)
-    .eq("customer_id", user.id)
-    .order("created_at", { ascending: false });
-
-  const orderList = (orders as Order[] | null) ?? [];
+  // 整批一次 select 會吃 Supabase 1000 列上限：常客訂單破千後，尾端的舊單
+  // 默默不見、上方「共 N 筆」也算少。改走 fetch-all-rows 翻頁撈齊，排序在
+  // created_at 之外補 id tiebreaker，每頁切點才穩定不漏不重。
+  const orderList = await fetchAllRows<Order>((from, to) =>
+    supabase
+      .from("sproutly_orders")
+      .select(
+        "id, status, payment_status, payment_method, total_cents, currency, created_at"
+      )
+      .eq("merchant_id", store.id)
+      .eq("customer_id", user.id)
+      .order("created_at", { ascending: false })
+      .order("id", { ascending: true })
+      .range(from, to)
+  );
   let items: OrderItem[] = [];
   if (orderList.length > 0) {
+    // 品項不能把幾千個 order id 塞進同一個 .in()（回列數一樣吃 1000 上限，
+    // 超出的品項整列消失、卡片變空白；網址也會過長）。比照訂單匯出
+    // 每 100 筆訂單一批撈。
     const ids = orderList.map((o) => o.id);
-    const { data: it } = await supabase
-      .from("sproutly_order_items")
-      .select("order_id, name_snapshot, quantity, price_cents_snapshot")
-      .in("order_id", ids);
-    items = (it as OrderItem[] | null) ?? [];
+    const CHUNK = 100;
+    for (let i = 0; i < ids.length; i += CHUNK) {
+      const { data: it } = await supabase
+        .from("sproutly_order_items")
+        .select("order_id, name_snapshot, quantity, price_cents_snapshot")
+        .in("order_id", ids.slice(i, i + CHUNK));
+      items.push(...((it as OrderItem[] | null) ?? []));
+    }
   }
 
   const totalCount = orderList.length;

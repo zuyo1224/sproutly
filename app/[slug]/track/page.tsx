@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
+import { fetchAllRows } from "@/lib/fetch-all-rows";
 import { resolveTheme } from "../_theme";
 import {
   paymentMethodLabel,
@@ -93,18 +94,25 @@ export default async function TrackPage({
     searched = true;
     if (shortId.length >= SHORT_ID_MIN) {
       const admin = createAdminClient();
-      const { data: orders } = await admin
-        .from("sproutly_orders")
-        .select(
-          "id, status, payment_status, paid_at, shipped_at, created_at, customer_name, customer_phone, customer_email, shipping_address, note, total_cents, currency, payment_method"
-        )
-        .eq("merchant_id", store.id)
-        .eq("customer_phone", phone)
-        .order("created_at", { ascending: false });
+      // 短碼比對是撈出這支電話的全部訂單再在 JS 裡 find，整批一次 select 會吃
+      // Supabase 1000 列上限：同一支電話（常客、或店家幫客人代下單都填店裡電話）
+      // 訂單破千後，排序在後的舊單根本不在比對池裡，客人拿著正確的編號＋電話
+      // 也會被告知查無訂單。改走 fetch-all-rows 翻頁撈齊，created_at 之外補
+      // id tiebreaker 讓每頁切點穩定不漏不重。
+      const orders = await fetchAllRows<Order>((from, to) =>
+        admin
+          .from("sproutly_orders")
+          .select(
+            "id, status, payment_status, paid_at, shipped_at, created_at, customer_name, customer_phone, customer_email, shipping_address, note, total_cents, currency, payment_method"
+          )
+          .eq("merchant_id", store.id)
+          .eq("customer_phone", phone)
+          .order("created_at", { ascending: false })
+          .order("id", { ascending: true })
+          .range(from, to)
+      );
       order =
-        (orders as Order[] | null)?.find((o) =>
-          o.id.toLowerCase().startsWith(shortId)
-        ) ?? null;
+        orders.find((o) => o.id.toLowerCase().startsWith(shortId)) ?? null;
 
       if (order) {
         const { data: it } = await admin
