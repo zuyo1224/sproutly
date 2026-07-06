@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { matchesProductName, matchesProductDescription } from "@/lib/product-search";
+import { bySoldOutLast } from "@/lib/product-stock";
 
 type Params = Promise<{ slug: string }>;
 
@@ -31,7 +32,8 @@ export async function GET(
     .from("sproutly_products")
     .select("id, name, description, price_cents, currency, image_urls, stock")
     .eq("merchant_id", store.id)
-    .eq("is_active", true);
+    .eq("is_active", true)
+    .order("created_at", { ascending: false });
 
   const rows = data ?? [];
   const named: typeof rows = [];
@@ -40,8 +42,14 @@ export async function GET(
     if (matchesProductName(p, q)) named.push(p);
     else if (matchesProductDescription(p, q)) described.push(p);
   }
-  // 名稱命中的排前面，描述命中的接後面，再取前 10 筆——確保原本就搜得到的
-  // （名稱命中）不會被新加入的描述命中擠掉。
+  // 名稱命中的排前面，描述命中的接後面，各群內售完的沉底，再取前 10 筆。
+  // 名稱優先確保原本就搜得到的不會被新加入的描述命中擠掉；售完沉底跟首頁精選、
+  // shop 逛街頁、收藏頁、商品詳情「這些也在店裡」同一套——快搜面板明明標了
+  // 售完角標，沒沉底的話售完的照樣佔住前排，還可能把第 11 筆之後有貨的命中
+  // 擠出前 10。Array.sort 穩定（ES2019+），各群內有貨與售完兩批各自維持
+  // created_at 新到舊（上面的 .order 同時把原本沒指定、順序不保證的查詢釘住）。
+  named.sort(bySoldOutLast);
+  described.sort(bySoldOutLast);
   const matched = [...named, ...described].slice(0, 10).map((p) => ({
     id: p.id,
     name: p.name,
