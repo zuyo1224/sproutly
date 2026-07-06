@@ -12,16 +12,24 @@
 // 只看得到 customer_id 與 customer_phone，所以用泛型收下任何帶這兩個欄位的訂單，
 // 原本各自的 OrderRow 型別都能直接套進來、回傳的 Map 也還是原本的訂單型別。
 
+import { phoneDigits } from "./phone-match";
+
 type CustomerGroupable = {
   customer_id: string | null;
   customer_phone: string;
 };
 
 // 一筆訂單該歸到哪個客人桶：有會員 ID 用會員、否則退電話、再沒有退 "unknown"。
+//
+// 電話先過 lib/phone-match 的 phoneDigits 再當 key：訂單存的是客人下單當下打的
+// 原文（0912-345-678、0912 345 678、+886912…、全形數字都有可能），拿原文當 key
+// 的話同一位客人兩次打的格式不同就被拆成兩位——列表多算人頭、累計消費被攤薄、
+// 該標 VIP／回購的標不上。轉成純數字後格式怎麼打都是同一桶。清完連一個數字都
+// 沒有的（純亂打的字串）退回原文自成一桶，不跟真的沒填電話的 "unknown" 混在一起。
 export function customerGroupKey(order: CustomerGroupable): string {
-  return order.customer_id
-    ? `account:${order.customer_id}`
-    : `guest:${order.customer_phone || "unknown"}`;
+  if (order.customer_id) return `account:${order.customer_id}`;
+  const digits = phoneDigits(order.customer_phone);
+  return `guest:${digits || order.customer_phone || "unknown"}`;
 }
 
 // 分群 key 是不是「登入會員」（account:）而非匿名訪客（guest:）。列表頁與匯出都要

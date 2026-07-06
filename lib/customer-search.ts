@@ -1,3 +1,5 @@
+import { phoneDigits } from "./phone-match";
+
 // 客人列表關鍵字比對（姓名 / Email / 電話）單一來源。
 //
 // 客人後台的「列表頁」與「匯出 CSV」是同一份客人名單的兩個出口，兩邊都吃同一個
@@ -10,14 +12,21 @@
 // email 可能為 null，比對前補空字串（維持原本 (email ?? "") 行為）；query 由呼叫端
 // 自行決定空字串時是否略過整個 filter（兩處都是 q ? rows.filter(...) : rows），這支
 // 只負責「單一客人是否命中」。
+//
+// 電話除了原文字面比對，再補一條「兩邊都轉純數字後」的比對（lib/phone-match 的
+// phoneDigits）：客人列表顯示的電話是訂單原文，客人下單打「0912-345-678」、商家
+// 憑記憶搜「0912345678」就字面對不上，明明人在名單裡卻搜不到。轉數字後怎麼打
+// 都找得到；搜的字串清完沒半個數字（搜姓名、email）就跳過這條，不影響原本行為。
 export function matchesCustomerSearch(
   customer: { name: string; email: string | null; phone: string },
   query: string,
 ): boolean {
   const needle = query.toLowerCase();
+  const needleDigits = phoneDigits(query);
   return (
     customer.name.toLowerCase().includes(needle) ||
     (customer.email ?? "").toLowerCase().includes(needle) ||
-    customer.phone.toLowerCase().includes(needle)
+    customer.phone.toLowerCase().includes(needle) ||
+    (needleDigits !== "" && phoneDigits(customer.phone).includes(needleDigits))
   );
 }
