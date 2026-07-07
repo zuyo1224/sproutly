@@ -46,7 +46,16 @@ export default async function TrackPage({
   const { slug } = await params;
   const sp = await searchParams;
   const rawId = (sp.id ?? "").trim();
-  const shortId = rawId.replace(/^#/, "").toLowerCase();
+  // 編號輸入跟電話同一條精神：不挑剔格式。客人從 LINE／IG 對話抄短碼，中文輸入法
+  // 很容易打成全形（＃Ａ１Ｂ２…）、複製時夾到空白，原本只去掉半形 # 跟頭尾空白，
+  // 這些輸入字面 startsWith 一律對不上，客人拿著正確的編號＋電話也被告知查無訂單。
+  // 這裡把全形英數與＃轉半形、去掉所有空白（訂單 id 是 UUID，本來就沒有空白，
+  // 砍了不會誤傷）；dash 保留，有人貼整串完整 UUID 也照樣查得到。
+  const shortId = rawId
+    .replace(/[！-～]/g, (c) => String.fromCharCode(c.charCodeAt(0) - 0xfee0))
+    .replace(/\s+/g, "")
+    .replace(/^#/, "")
+    .toLowerCase();
   const phone = (sp.phone ?? "").trim();
 
   const supabase = await createClient();
