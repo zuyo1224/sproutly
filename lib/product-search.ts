@@ -14,18 +14,33 @@
 // 略過整個 filter，這支只負責「單一商品是否命中」。
 type ProductSearchFields = { name: string; description: string | null };
 
+// 比對前把兩邊都轉成同一種寫法：全形英數與符號（！-～）轉半形、全形空白轉
+// 半形空白，再轉小寫。客人用中文輸入法很容易打出全形（ｍｏｎｓｔｅｒａ、
+// ５號盆），商品名存的多半是半形，原本只 toLowerCase 逐字比，全形對半形
+// 一律不中——查訂單頁的編號輸入（fbe7460）、電話比對（lib/phone-match）
+// 修過同一種病，這裡是商品搜尋的同款破口。兩邊都轉，商品名反過來存成
+// 全形、客人打半形也照樣中。中文字不在轉換範圍，純中文搜尋行為不變。
+function normalizeSearchText(text: string): string {
+  return text
+    .replace(/[！-～]/g, (c) => String.fromCharCode(c.charCodeAt(0) - 0xfee0))
+    .replace(/　/g, " ")
+    .toLowerCase();
+}
+
 export function matchesProductName(
   product: ProductSearchFields,
   query: string,
 ): boolean {
-  return product.name.toLowerCase().includes(query.toLowerCase());
+  return normalizeSearchText(product.name).includes(normalizeSearchText(query));
 }
 
 export function matchesProductDescription(
   product: ProductSearchFields,
   query: string,
 ): boolean {
-  return (product.description ?? "").toLowerCase().includes(query.toLowerCase());
+  return normalizeSearchText(product.description ?? "").includes(
+    normalizeSearchText(query),
+  );
 }
 
 export function matchesProductSearch(
