@@ -1,5 +1,6 @@
 "use server";
 import { formString, formStringOrNull } from "@/lib/form-fields";
+import { normalizeEmail } from "@/lib/email-normalize";
 
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
@@ -14,7 +15,7 @@ export async function placeOrder(slug: string, formData: FormData) {
   const customerName = formString(formData, "customer_name");
   const customerPhone = formString(formData, "customer_phone");
   const customerEmail =
-    formStringOrNull(formData, "customer_email");
+    normalizeEmail(formStringOrNull(formData, "customer_email")) || null;
   const shippingAddress =
     formStringOrNull(formData, "shipping_address");
   const userNote = formStringOrNull(formData, "note");

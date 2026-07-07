@@ -8,6 +8,7 @@ import {
   shippingDetailError,
 } from "@/lib/order-labels";
 import { isValidQty } from "@/lib/product-quantity";
+import { normalizeEmail } from "@/lib/email-normalize";
 import { decrementStock, restoreStock } from "@/lib/stock-restore";
 
 type Params = Promise<{ slug: string }>;
@@ -22,7 +23,7 @@ export async function POST(
   const customerName = String(fd.get("customer_name") ?? "").trim();
   const customerPhone = String(fd.get("customer_phone") ?? "").trim();
   const customerEmail =
-    String(fd.get("customer_email") ?? "").trim() || null;
+    normalizeEmail(String(fd.get("customer_email") ?? "")) || null;
   const shippingMethod =
     String(fd.get("shipping_method") ?? "").trim() || null;
   const shippingStoreName =

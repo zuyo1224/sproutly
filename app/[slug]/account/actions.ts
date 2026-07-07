@@ -1,12 +1,13 @@
 "use server";
 import { formString } from "@/lib/form-fields";
+import { normalizeEmail } from "@/lib/email-normalize";
 
 import { createClient } from "@/lib/supabase/server";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 
 export async function sendCustomerMagicLink(formData: FormData) {
-  const email = formString(formData, "email");
+  const email = normalizeEmail(formString(formData, "email"));
   const slug = formString(formData, "slug");
   const next = String(formData.get("next") ?? `/${slug}/account`).trim();
 

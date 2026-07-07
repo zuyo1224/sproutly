@@ -1,12 +1,13 @@
 "use server";
 import { formString } from "@/lib/form-fields";
+import { normalizeEmail } from "@/lib/email-normalize";
 
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { redirect } from "next/navigation";
 
 export async function signUp(formData: FormData) {
-  const email = formString(formData, "email");
+  const email = normalizeEmail(formString(formData, "email"));
   const password = String(formData.get("password") ?? "");
   const name = formString(formData, "name");
 
@@ -75,7 +76,7 @@ export async function signUp(formData: FormData) {
 }
 
 export async function signIn(formData: FormData) {
-  const email = formString(formData, "email");
+  const email = normalizeEmail(formString(formData, "email"));
   const password = String(formData.get("password") ?? "");
 
   if (!email || !password) {
