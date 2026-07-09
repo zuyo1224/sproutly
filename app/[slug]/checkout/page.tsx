@@ -28,7 +28,14 @@ export default async function CheckoutPage({
   const { slug } = await params;
   const sp = await searchParams;
   const productId = sp.product_id ?? "";
-  const quantity = Math.min(Math.max(Number(sp.qty ?? 1), QTY_MIN), QTY_MAX) || QTY_MIN;
+  // ?qty= 是客人可改可分享的 GET 參數，只夾範圍不取整的話，qty=2.5 會一路
+  // 通到表單（頁面顯示 2.5 件、總價小數），送出才被後端 isValidQty 的整數
+  // 檢查退回「數量必須是 1-99」——但 2.5 就在 1-99 內，客人照訊息改也改不對，
+  // 卡死在結帳頁。這裡先捨去取整，讓表單送出的數量必然過得了後端驗證。
+  // Math.floor(NaN) 仍是 NaN，非數字照舊由 || QTY_MIN 收掉。
+  const quantity =
+    Math.min(Math.max(Math.floor(Number(sp.qty ?? 1)), QTY_MIN), QTY_MAX) ||
+    QTY_MIN;
   const error = sp.error;
 
   if (!productId) notFound();
