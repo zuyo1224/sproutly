@@ -6,6 +6,7 @@ import { placeOrder } from "./actions";
 import { SubmitButton } from "@/app/_components/submit-button";
 import { PAYMENT_OPTIONS } from "@/lib/order-labels";
 import { ShippingFields } from "./shipping-fields";
+import { CheckoutFormMemory } from "./form-memory";
 import { QTY_MIN, QTY_MAX } from "@/lib/product-quantity";
 import { clampToStock } from "@/lib/product-stock";
 
@@ -199,6 +200,9 @@ export default async function CheckoutPage({
         <form action={placeBound} className="space-y-12">
           <input type="hidden" name="product_id" value={product.id} />
           <input type="hidden" name="quantity" value={effectiveQty} />
+          {/* server 端退單（庫存被搶、商品下架…）redirect 回來時，把客人打過的
+              欄位塞回去，不用整張重打（緣由見 form-memory）。 */}
+          <CheckoutFormMemory storageKey={slug} hasError={Boolean(error)} />
 
           {/* 收件資訊 */}
           <section className="space-y-5">
