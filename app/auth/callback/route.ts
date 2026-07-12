@@ -49,6 +49,10 @@ export async function GET(request: Request) {
     return NextResponse.redirect(`${origin}${safeNext}`);
   }
 
-  // 商家流程：照舊跳 dashboard 或 next
-  return NextResponse.redirect(`${origin}${next}`);
+  // 商家流程：跳 dashboard 或 next。next 是網址列上的參數、跟客人流程同一個
+  // 不可信來源，原本只有客人分支守門、這裡原樣接在 origin 後面——next=.evil.com
+  // 會黏成 https://本站.evil.com 這種掛在攻擊者網域下的網址，登入成功的商家被
+  // 原封不動送去外站。套客人分支同一道「必須以 / 開頭」守門，不合格退回 dashboard。
+  const safeNext = next.startsWith("/") ? next : "/dashboard";
+  return NextResponse.redirect(`${origin}${safeNext}`);
 }
