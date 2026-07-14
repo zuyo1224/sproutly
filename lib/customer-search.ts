@@ -1,4 +1,5 @@
 import { phoneDigits } from "./phone-match";
+import { normalizeSearchText } from "./search-normalize";
 
 // 客人列表關鍵字比對（姓名 / Email / 電話）單一來源。
 //
@@ -17,16 +18,21 @@ import { phoneDigits } from "./phone-match";
 // phoneDigits）：客人列表顯示的電話是訂單原文，客人下單打「0912-345-678」、商家
 // 憑記憶搜「0912345678」就字面對不上，明明人在名單裡卻搜不到。轉數字後怎麼打
 // 都找得到；搜的字串清完沒半個數字（搜姓名、email）就跳過這條，不影響原本行為。
+//
+// 姓名 / Email / 電話原文的子字串比對改用 lib/search-normalize 的口徑（全形英數
+// 轉半形再轉小寫、兩邊都轉）：商家用中文輸入法搜「ｄａｎｎｙ」，客人名單存的是
+// 半形 danny，原本裸 toLowerCase 一律不中，明明人在名單裡卻搜不到——商品搜尋
+// （c923c04）修過同一種病，這裡是客人列表的同款破口。純中文搜尋行為不變。
 export function matchesCustomerSearch(
   customer: { name: string; email: string | null; phone: string },
   query: string,
 ): boolean {
-  const needle = query.toLowerCase();
+  const needle = normalizeSearchText(query);
   const needleDigits = phoneDigits(query);
   return (
-    customer.name.toLowerCase().includes(needle) ||
-    (customer.email ?? "").toLowerCase().includes(needle) ||
-    customer.phone.toLowerCase().includes(needle) ||
+    normalizeSearchText(customer.name).includes(needle) ||
+    normalizeSearchText(customer.email ?? "").includes(needle) ||
+    normalizeSearchText(customer.phone).includes(needle) ||
     (needleDigits !== "" && phoneDigits(customer.phone).includes(needleDigits))
   );
 }

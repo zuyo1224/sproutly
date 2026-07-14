@@ -1,4 +1,5 @@
 import { phoneDigits } from "./phone-match";
+import { normalizeSearchText } from "./search-normalize";
 
 // 後台訂單「用關鍵字搜姓名／電話／Email」單一來源。訂單列表頁與匯出 route 是同一份
 // 訂單名單的兩個出口，兩邊都吃同一個搜尋字串 q，也都該用同一套「比對哪些欄位、怎麼
@@ -14,14 +15,32 @@ import { phoneDigits } from "./phone-match";
 //
 // 型別用 { or }: PostgREST 的 filter builder 每個方法都回傳自己（this），這裡只約束「有一個
 // 吃 filter 字串、回傳同型 builder 的 or 方法」，就不必把 Supabase 那串泛型型別搬進來。
+//
+// 搜尋字串除了原文，再多一組「全形轉半形」（lib/search-normalize）的 needle 一起
+// or 進去：商家用中文輸入法搜「ｄａｎｎｙ」，訂單存的姓名／Email 多半是半形，
+// 原文 ilike 一律不中，明明單在列表裡卻搜不到——商品搜尋（c923c04）修過同一種病。
+// 原文那組照舊保留，資料反過來存成全形、搜尋也打全形的情況不受影響。
+// DB ilike 沒辦法正規化「存在資料庫那一邊」，全形存檔＋半形搜尋這個方向這裡救不了
+// （記憶體比對的 matchesOrderSearch 兩邊都轉、救得了）；正規化在轉義之前做，
+// 全形％＿轉出來的半形萬用字元照樣被轉義掉。
 export function applyOrderSearch<T extends { or(filter: string): T }>(
   query: T,
   q: string,
 ): T {
-  const escaped = q.replace(/[%_]/g, (m) => `\\${m}`);
-  return query.or(
-    `customer_name.ilike.%${escaped}%,customer_phone.ilike.%${escaped}%,customer_email.ilike.%${escaped}%`,
-  );
+  // 半形的 , ( ) 是 PostgREST or() 語法的保留字元，全形，（ ）轉出來會把整條
+  // 查詢弄壞（原本查無資料、變成查詢錯誤），這種 needle 不加、只留原文那組。
+  const norm = normalizeSearchText(q);
+  const needles = [q];
+  if (norm !== q && !/[,()]/.test(norm)) needles.push(norm);
+  const conditions = needles.flatMap((n) => {
+    const escaped = n.replace(/[%_]/g, (m) => `\\${m}`);
+    return [
+      `customer_name.ilike.%${escaped}%`,
+      `customer_phone.ilike.%${escaped}%`,
+      `customer_email.ilike.%${escaped}%`,
+    ];
+  });
+  return query.or(conditions.join(","));
 }
 
 // 上面那支 DB ilike 是「逐字比對」：訂單存的電話是客人下單當下打的原文
@@ -36,6 +55,7 @@ export function applyOrderSearch<T extends { or(filter: string): T }>(
 // （搜姓名、Email）維持走 DB ilike，行為與成本都不變。
 // 跟 lib/customer-search 的 matchesCustomerSearch 是同一套精神，但欄位形狀不同
 // （那邊吃分群後的客人、這邊吃訂單列），不合併。
+// 子字串比對同樣改吃 lib/search-normalize 的口徑（兩邊都轉），全形半形怎麼打都中。
 export function matchesOrderSearch(
   order: {
     customer_name: string | null;
@@ -44,12 +64,12 @@ export function matchesOrderSearch(
   },
   query: string,
 ): boolean {
-  const needle = query.toLowerCase();
+  const needle = normalizeSearchText(query);
   const needleDigits = phoneDigits(query);
   return (
-    (order.customer_name ?? "").toLowerCase().includes(needle) ||
-    (order.customer_phone ?? "").toLowerCase().includes(needle) ||
-    (order.customer_email ?? "").toLowerCase().includes(needle) ||
+    normalizeSearchText(order.customer_name ?? "").includes(needle) ||
+    normalizeSearchText(order.customer_phone ?? "").includes(needle) ||
+    normalizeSearchText(order.customer_email ?? "").includes(needle) ||
     (needleDigits !== "" &&
       phoneDigits(order.customer_phone).includes(needleDigits))
   );
