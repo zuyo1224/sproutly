@@ -17,6 +17,7 @@ import {
 import { telHref, mailHref } from "@/lib/contact-href";
 import { PrintButton } from "@/app/_components/print-button";
 import { CopyOrderId } from "@/app/_components/copy-order-id";
+import { ReorderButton } from "@/app/_components/reorder-button";
 
 // 蓋掉父層 account/layout 的「會員中心」，單筆訂單分頁顯示「訂單明細」。
 export const metadata: Metadata = { title: "訂單明細" };
@@ -66,7 +67,7 @@ export default async function CustomerOrderDetailPage({
 
   const { data: items } = await supabase
     .from("sproutly_order_items")
-    .select("id, name_snapshot, quantity, price_cents_snapshot")
+    .select("id, product_id, name_snapshot, quantity, price_cents_snapshot")
     .eq("order_id", order.id);
 
   const shortId = shortOrderId(order.id);
@@ -76,6 +77,12 @@ export default async function CustomerOrderDetailPage({
     PAYMENT_STATUS_LABELS[order.payment_status] ?? order.payment_status;
 
   const orderItems = items ?? [];
+
+  // 「再買一次」只帶還對得回商品的品項：商品被商家刪除後 product_id 會被設成
+  // null，那種加回購物車也對不到東西。整單都對不回（全刪光）就不出按鈕。
+  const reorderItems = orderItems
+    .filter((it) => it.product_id)
+    .map((it) => ({ productId: it.product_id as string, qty: it.quantity }));
 
   const isCancelled = order.status === "cancelled";
   // 找出目前走到第幾階段；查不到（理論上不會）就當還在第一步。
@@ -128,6 +135,15 @@ export default async function CustomerOrderDetailPage({
           <PrintButton className="sproutly-link text-xs tracking-[0.3em] uppercase">
             列印收據 · 存 PDF
           </PrintButton>
+          {/* 再買一次：把這單的品項按原數量加回購物車、直接帶去購物車頁。
+              回購的客人原本得對著這頁一項一項回商品頁重加（緣由見 ReorderButton）。 */}
+          {reorderItems.length > 0 && (
+            <ReorderButton
+              slug={slug}
+              items={reorderItems}
+              className="sproutly-link text-xs tracking-[0.3em] uppercase"
+            />
+          )}
         </div>
       </div>
 

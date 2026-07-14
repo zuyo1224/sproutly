@@ -22,6 +22,7 @@ import { RememberOrder } from "@/app/_components/remember-order";
 import { RecentOrdersList } from "@/app/_components/recent-orders-list";
 import { PrintButton } from "@/app/_components/print-button";
 import { CopyOrderId } from "@/app/_components/copy-order-id";
+import { ReorderButton } from "@/app/_components/reorder-button";
 
 type Params = Promise<{ slug: string }>;
 type SearchParams = Promise<{ id?: string; phone?: string }>;
@@ -88,6 +89,7 @@ export default async function TrackPage({
 
   let order: Order | null = null;
   let items: {
+    product_id: string | null;
     name_snapshot: string;
     quantity: number;
     price_cents_snapshot: number;
@@ -153,7 +155,7 @@ export default async function TrackPage({
       if (order) {
         const { data: it } = await admin
           .from("sproutly_order_items")
-          .select("name_snapshot, quantity, price_cents_snapshot")
+          .select("product_id, name_snapshot, quantity, price_cents_snapshot")
           .eq("order_id", order.id);
         items = it ?? [];
       }
@@ -320,10 +322,26 @@ export default async function TrackPage({
           {/* 列印 / 存 PDF 收據：轉帳要對帳、報帳或想留紙本底的客人用得到——
               成功頁、會員訂單詳情都印得了，匿名查單這頭原本沒有。列印時自己藏起來，
               導覽/頁尾靠 layout 的 @media print 收乾淨。 */}
-          <div className="print:hidden">
+          <div className="flex flex-wrap gap-3 print:hidden">
             <PrintButton className="sproutly-btn sproutly-btn-secondary sproutly-btn-sm">
               列印收據 · 存 PDF
             </PrintButton>
+            {/* 再買一次：把這單的品項按原數量加回購物車、直接帶去購物車頁。
+                匿名查單常是回頭客翻舊單的入口，原本想回購只能一項一項回商品頁重加。
+                只帶還對得回商品的品項（商品被刪後 product_id 是 null），
+                整單都對不回就不出按鈕（緣由見 ReorderButton）。 */}
+            {items.some((it) => it.product_id) && (
+              <ReorderButton
+                slug={slug}
+                items={items
+                  .filter((it) => it.product_id)
+                  .map((it) => ({
+                    productId: it.product_id as string,
+                    qty: it.quantity,
+                  }))}
+                className="sproutly-btn sproutly-btn-secondary sproutly-btn-sm"
+              />
+            )}
           </div>
 
           {/* 列印專屬抬頭：螢幕上的頁首是「查當前狀態」搜尋標題，列印時被藏起來，
