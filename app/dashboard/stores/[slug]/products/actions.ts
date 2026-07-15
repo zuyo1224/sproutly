@@ -31,7 +31,13 @@ function parsePrice(raw: string): number {
 function parseStock(raw: string): number | null {
   if (raw === "") return null;
   const n = Number(raw);
-  if (!Number.isFinite(n) || n < 0) throw new Error("庫存必須是非負數或留空");
+  // 必須是非負整數：庫存欄只在瀏覽器端靠 <input type="number" step="1"> 擋小數，
+  // 那層驗證能被繞過（停用 JS 直接送表單、或行動裝置數字鍵盤本來就打得出小數點）。
+  // 沒有這條，"5.5" 會通過這裡、一路送進 DB 的 integer 欄位，Postgres 直接丟出
+  // 「invalid input syntax for type integer」這種原始錯誤字串給商家看，看不懂哪裡錯。
+  // 跟 lib/product-quantity 的 isValidQty（Number.isInteger 同時擋 NaN／小數／負數）
+  // 同一個態度，這裡在插入前就攔下、換成看得懂的中文訊息。
+  if (!Number.isInteger(n) || n < 0) throw new Error("庫存必須是非負整數或留空");
   return n;
 }
 
