@@ -290,6 +290,7 @@ export default async function PublicProductPage({
               {product.name}
             </h1>
             <FavoriteButton
+              slug={slug}
               productId={product.id}
               size="lg"
               className="flex-shrink-0 mt-1 hover:scale-110"

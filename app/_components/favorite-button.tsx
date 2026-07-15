@@ -1,37 +1,19 @@
 "use client";
 
 import { useEffect, useState } from "react";
-
-const STORAGE_KEY = "sproutly_favorites";
-
-function readFavorites(): Set<string> {
-  if (typeof window === "undefined") return new Set();
-  try {
-    const raw = localStorage.getItem(STORAGE_KEY);
-    if (!raw) return new Set();
-    const arr = JSON.parse(raw);
-    if (!Array.isArray(arr)) return new Set();
-    return new Set(arr.filter((x) => typeof x === "string"));
-  } catch {
-    return new Set();
-  }
-}
-
-function writeFavorites(set: Set<string>) {
-  try {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify([...set]));
-    // notify other tabs / same-tab listeners
-    window.dispatchEvent(new Event("sproutly-favorites-changed"));
-  } catch {
-    /* ignore */
-  }
-}
+import {
+  FAVORITES_CHANGED_EVENT,
+  getFavoriteIds,
+  setFavoriteIds,
+} from "@/lib/favorites";
 
 export function FavoriteButton({
+  slug,
   productId,
   className,
   size = "md",
 }: {
+  slug: string;
   productId: string;
   className?: string;
   size?: "sm" | "md" | "lg";
@@ -39,24 +21,26 @@ export function FavoriteButton({
   const [favorited, setFavorited] = useState(false);
 
   useEffect(() => {
-    setFavorited(readFavorites().has(productId));
-    const onChange = () => setFavorited(readFavorites().has(productId));
-    window.addEventListener("sproutly-favorites-changed", onChange);
+    const onChange = () =>
+      setFavorited(getFavoriteIds(slug).includes(productId));
+    onChange();
+    window.addEventListener(FAVORITES_CHANGED_EVENT, onChange);
     window.addEventListener("storage", onChange);
     return () => {
-      window.removeEventListener("sproutly-favorites-changed", onChange);
+      window.removeEventListener(FAVORITES_CHANGED_EVENT, onChange);
       window.removeEventListener("storage", onChange);
     };
-  }, [productId]);
+  }, [slug, productId]);
 
   function toggle(e: React.MouseEvent) {
     e.preventDefault();
     e.stopPropagation();
-    const favs = readFavorites();
-    if (favs.has(productId)) favs.delete(productId);
-    else favs.add(productId);
-    writeFavorites(favs);
-    setFavorited(favs.has(productId));
+    const ids = getFavoriteIds(slug);
+    const next = ids.includes(productId)
+      ? ids.filter((id) => id !== productId)
+      : [...ids, productId];
+    setFavoriteIds(slug, next);
+    setFavorited(next.includes(productId));
   }
 
   const dim = size === "sm" ? 16 : size === "lg" ? 26 : 20;
@@ -93,24 +77,26 @@ export function FavoriteButton({
 }
 
 export function FavoritesCounter({
+  slug,
   className,
   href,
 }: {
+  slug: string;
   className?: string;
   href: string;
 }) {
   const [count, setCount] = useState(0);
 
   useEffect(() => {
-    setCount(readFavorites().size);
-    const onChange = () => setCount(readFavorites().size);
-    window.addEventListener("sproutly-favorites-changed", onChange);
+    const onChange = () => setCount(getFavoriteIds(slug).length);
+    onChange();
+    window.addEventListener(FAVORITES_CHANGED_EVENT, onChange);
     window.addEventListener("storage", onChange);
     return () => {
-      window.removeEventListener("sproutly-favorites-changed", onChange);
+      window.removeEventListener(FAVORITES_CHANGED_EVENT, onChange);
       window.removeEventListener("storage", onChange);
     };
-  }, []);
+  }, [slug]);
 
   if (count === 0) return null;
 

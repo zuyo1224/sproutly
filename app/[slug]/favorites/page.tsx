@@ -17,20 +17,7 @@ type Product = {
 
 import { formatPrice } from "@/lib/format-price";
 import { isSoldOut, isLowStock, stockAriaSuffix } from "@/lib/product-stock";
-
-const FAVORITES_KEY = "sproutly_favorites";
-
-function readFavoriteIds(): string[] {
-  try {
-    const raw = localStorage.getItem(FAVORITES_KEY);
-    if (!raw) return [];
-    const arr = JSON.parse(raw);
-    if (Array.isArray(arr)) return arr.filter((x) => typeof x === "string");
-  } catch {
-    /* ignore */
-  }
-  return [];
-}
+import { getFavoriteIds, setFavoriteIds } from "@/lib/favorites";
 
 export default function FavoritesPage() {
   const params = useParams();
@@ -53,7 +40,7 @@ export default function FavoritesPage() {
   useEffect(() => {
     let cancelled = false;
     async function load() {
-      const ids = readFavoriteIds();
+      const ids = getFavoriteIds(slug);
       if (ids.length === 0) {
         if (!cancelled) setProducts([]);
         return;
@@ -79,20 +66,17 @@ export default function FavoritesPage() {
         // 但 id 還留在 localStorage，nav 那顆愛心徽章（FavoritesCounter 讀 localStorage
         // 的 size）仍把這些看不到的幽靈算進去——徽章數字比實際顯示的多，客人一頭霧水卻
         // 找不到地方清。抓回資料的當下順手把對不上的 id 清掉，讓徽章跟收藏內容一致，並
-        // 通知 nav 與其他分頁更新。安全前提同購物車：只有在「至少撈回一株」時才清——整批
-        // 回空可能是店家暫時整間下架或一時抓不到（API 對未發布店面也回空陣列），那種情況
-        // 寧可留著不動，免得把整批有效收藏清光。
+        // 通知 nav 與其他分頁更新。收藏 key 是 per-store 的（見 lib/favorites），這裡
+        // 清掉的必然是「這家店真的下架／刪除」的 id，不會誤刪別家店的收藏；從舊全站
+        // 共用 key 播種帶進來的別店 id 也在這裡順勢修掉。安全前提同購物車：只有在
+        // 「至少撈回一株」時才清——整批回空可能是店家暫時整間下架或一時抓不到（API 對
+        // 未發布店面也回空陣列），那種情況寧可留著不動，免得把整批有效收藏清光。
         if (!cancelled && data.length > 0) {
           const returnedIds = new Set(data.map((p) => p.id));
-          const stored = readFavoriteIds();
+          const stored = getFavoriteIds(slug);
           const cleaned = stored.filter((id) => returnedIds.has(id));
           if (cleaned.length !== stored.length) {
-            try {
-              localStorage.setItem(FAVORITES_KEY, JSON.stringify(cleaned));
-              window.dispatchEvent(new Event("sproutly-favorites-changed"));
-            } catch {
-              /* ignore */
-            }
+            setFavoriteIds(slug, cleaned);
           }
         }
       } catch {
@@ -111,7 +95,7 @@ export default function FavoritesPage() {
   // 別處（商品頁愛心、其他分頁）取消收藏時，這頁即時跟著移除，不用重整
   useEffect(() => {
     const sync = () => {
-      const favs = new Set(readFavoriteIds());
+      const favs = new Set(getFavoriteIds(slug));
       setProducts((prev) => (prev ? prev.filter((p) => favs.has(p.id)) : prev));
     };
     window.addEventListener("sproutly-favorites-changed", sync);
@@ -120,17 +104,14 @@ export default function FavoritesPage() {
       window.removeEventListener("sproutly-favorites-changed", sync);
       window.removeEventListener("storage", sync);
     };
-  }, []);
+  }, [slug]);
 
   function removeFavorite(product: Product, index: number) {
-    try {
-      const next = readFavoriteIds().filter((x) => x !== product.id);
-      localStorage.setItem(FAVORITES_KEY, JSON.stringify(next));
-      // 通知 nav 收藏數與其他分頁；本頁的 sync effect 也會接到並移除卡片
-      window.dispatchEvent(new Event("sproutly-favorites-changed"));
-    } catch {
-      /* ignore */
-    }
+    // setFavoriteIds 會通知 nav 收藏數與其他分頁；本頁的 sync effect 也會接到並移除卡片
+    setFavoriteIds(
+      slug,
+      getFavoriteIds(slug).filter((x) => x !== product.id)
+    );
     // 記住剛移除那株與原位置，6 秒內可一鍵放回
     setUndo({ product, index });
     startUndoTimer();
@@ -149,22 +130,17 @@ export default function FavoritesPage() {
 
   function handleUndo() {
     if (!undo) return;
-    try {
-      // 把 id 放回原本在清單裡的位置，再復原卡片，最後通知 nav 收藏數回升
-      const ids = readFavoriteIds().filter((x) => x !== undo.product.id);
-      ids.splice(undo.index, 0, undo.product.id);
-      localStorage.setItem(FAVORITES_KEY, JSON.stringify(ids));
-      setProducts((prev) => {
-        if (!prev) return prev;
-        if (prev.some((p) => p.id === undo.product.id)) return prev;
-        const next = [...prev];
-        next.splice(Math.min(undo.index, next.length), 0, undo.product);
-        return next;
-      });
-      window.dispatchEvent(new Event("sproutly-favorites-changed"));
-    } catch {
-      /* ignore */
-    }
+    // 把 id 放回原本在清單裡的位置（setFavoriteIds 同時通知 nav 收藏數回升），再復原卡片
+    const ids = getFavoriteIds(slug).filter((x) => x !== undo.product.id);
+    ids.splice(undo.index, 0, undo.product.id);
+    setFavoriteIds(slug, ids);
+    setProducts((prev) => {
+      if (!prev) return prev;
+      if (prev.some((p) => p.id === undo.product.id)) return prev;
+      const next = [...prev];
+      next.splice(Math.min(undo.index, next.length), 0, undo.product);
+      return next;
+    });
     if (undoTimer.current) clearTimeout(undoTimer.current);
     setUndo(null);
   }

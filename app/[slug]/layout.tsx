@@ -803,6 +803,7 @@ export default async function PublicStoreLayout({
               </svg>
             </Link>
             <FavoritesCounter
+              slug={slug}
               href={`/${slug}/favorites`}
               className="ml-1 px-2 py-2 whitespace-nowrap"
             />
