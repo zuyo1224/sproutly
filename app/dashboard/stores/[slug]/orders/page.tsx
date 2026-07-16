@@ -16,8 +16,11 @@ import {
 // 分日統計的台灣時區日期 key、時間戳、篩選區間起點跟店家首頁/匯出共用同一份（見檔內說明）。
 import { taipeiStampShort, taipeiRangeSince } from "@/lib/format-date";
 import { sumOrderCents } from "@/lib/sum-order-cents";
-import { applyOrderSearch, matchesOrderSearch } from "@/lib/order-search";
-import { phoneDigits } from "@/lib/phone-match";
+import {
+  applyOrderSearch,
+  matchesOrderSearch,
+  needsMemoryOrderSearch,
+} from "@/lib/order-search";
 import { fetchAllRows } from "@/lib/fetch-all-rows";
 
 type Params = Promise<{ slug: string }>;
@@ -133,11 +136,13 @@ export default async function OrdersListPage({
   // 列表尾端的舊單直接看不到，下面的已收/未收金額也跟著算少。
   // 顯示維持新到舊，同時間再比 id 讓翻頁切點穩定。
   //
-  // 搜尋字串含數字時（搜電話、或客人頁「看訂單」帶原文電話跳過來）不交給 DB ilike
-  // 逐字比——訂單存的電話是下單當下的原文，格式不同就一筆搜不到——改撈回來在
-  // 記憶體用 matchesOrderSearch 逐筆比（原文子字串照舊 + 轉純數字比對）。
-  // 純文字查詢（姓名 / Email）維持 DB ilike，行為與成本不變。
-  const qDigits = phoneDigits(q);
+  // 搜尋字串含數字（搜電話、或客人頁「看訂單」帶原文電話跳過來）、或含 , ( )
+  // （PostgREST or() 的保留字元，塞進 DB 查詢會整條報錯，搜「Wang, Danny」
+  // 「王小明(阿明)」直接變 0 筆）時不交給 DB ilike——改撈回來在記憶體用
+  // matchesOrderSearch 逐筆比（正規化子字串 + 轉純數字比對），分流判斷收在
+  // lib/order-search 的 needsMemoryOrderSearch，跟匯出 route 同口徑。
+  // 其餘純文字查詢（姓名 / Email）維持 DB ilike，行為與成本不變。
+  const memorySearch = q !== "" && needsMemoryOrderSearch(q);
   const fetchedOrders = await fetchAllRows(async (from, to) => {
     let query = supabase
       .from("sproutly_orders")
@@ -149,7 +154,7 @@ export default async function OrdersListPage({
     if (pay !== "all") {
       query = query.eq("payment_status", pay);
     }
-    if (q && qDigits === "") {
+    if (q && !memorySearch) {
       query = applyOrderSearch(query, q);
     }
     if (rangeSince) {
@@ -161,10 +166,9 @@ export default async function OrdersListPage({
       .range(from, to);
     return { data };
   });
-  const orders =
-    q && qDigits !== ""
-      ? fetchedOrders.filter((o) => matchesOrderSearch(o, q))
-      : fetchedOrders;
+  const orders = memorySearch
+    ? fetchedOrders.filter((o) => matchesOrderSearch(o, q))
+    : fetchedOrders;
 
   // 這批篩出來的單裡錢的狀況：已取消的不算錢（沒成交）。
   // 轉帳 / 貨到付款的店家最在意「未收」這個數字 — 篩到「已出貨 + 未付款」時，

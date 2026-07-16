@@ -23,12 +23,26 @@ import { normalizeSearchText } from "./search-normalize";
 // DB ilike 沒辦法正規化「存在資料庫那一邊」，全形存檔＋半形搜尋這個方向這裡救不了
 // （記憶體比對的 matchesOrderSearch 兩邊都轉、救得了）；正規化在轉義之前做，
 // 全形％＿轉出來的半形萬用字元照樣被轉義掉。
+
+// 半形的 , ( ) 是 PostgREST or() 語法的保留字元，塞進 ilike 的值裡沒有轉義
+// 機制可救：搜「Wang, Danny」「王小明(阿明)」這種姓名，逗號會把 or() 整條
+// 條件拆爛、查詢直接報錯，fetchAllRows 拿到 null 當空頁，商家看到「0 筆」
+// 只會以為單不存在。之前（52d9eae）只把「轉半形那組 needle」含保留字元時
+// 不加，原文那組照樣會炸；而全形，（ ）的查詢因為 needle 被丟掉，全形搜
+// 半形存也永遠不中。所以比照「含數字走記憶體比對」的先例：搜尋字串含這些
+// 字元（原文或轉半形後）就整個改走 matchesOrderSearch 的記憶體路徑，兩個
+// 出口（列表頁、匯出 route）都用這支判斷，才不會一邊搜得到一邊炸。
+export function needsMemoryOrderSearch(q: string): boolean {
+  return phoneDigits(q) !== "" || /[,()]/.test(normalizeSearchText(q));
+}
+
 export function applyOrderSearch<T extends { or(filter: string): T }>(
   query: T,
   q: string,
 ): T {
-  // 半形的 , ( ) 是 PostgREST or() 語法的保留字元，全形，（ ）轉出來會把整條
-  // 查詢弄壞（原本查無資料、變成查詢錯誤），這種 needle 不加、只留原文那組。
+  // 呼叫端先過 needsMemoryOrderSearch 分流，這裡收到的 q 保證不含 , ( )
+  // （含的話整包走記憶體比對，不會進來）；下面轉半形 needle 的 guard 留著
+  // 當第二道保險，真漏進來也只是少一組 needle。
   const norm = normalizeSearchText(q);
   const needles = [q];
   if (norm !== q && !/[,()]/.test(norm)) needles.push(norm);

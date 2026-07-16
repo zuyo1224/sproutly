@@ -17,8 +17,11 @@ import {
 } from "@/lib/format-date";
 // CSV 欄位轉義跟客人匯出共用同一份（見檔內說明）。
 import { csvEscape } from "@/lib/csv-escape";
-import { applyOrderSearch, matchesOrderSearch } from "@/lib/order-search";
-import { phoneDigits } from "@/lib/phone-match";
+import {
+  applyOrderSearch,
+  matchesOrderSearch,
+  needsMemoryOrderSearch,
+} from "@/lib/order-search";
 // 分轉整數元的 CSV 金額欄跟客人匯出共用同一份（見檔內說明）。
 import { centsToYuan } from "@/lib/format-price";
 import { fetchAllRows } from "@/lib/fetch-all-rows";
@@ -73,11 +76,12 @@ export async function GET(
   // 那些單不存在（7f9d6d0 修的是品項欄，這次少的是訂單列本身）。
   // 排序維持新到舊，同時間再比 id 讓每頁切點穩定不漏不重。
   //
-  // 搜尋字串含數字時（搜電話）不交給 DB ilike 逐字比——電話存的是下單原文，
-  // 格式不同就搜不到——改跟列表頁同款：撈回來在記憶體用 matchesOrderSearch
-  // 逐筆比，「列表看到哪批、匯出就是哪批」兩個出口才對得上。
-  // 純文字查詢（姓名 / Email）維持 DB ilike 不變。
-  const qDigits = phoneDigits(q);
+  // 搜尋字串含數字（搜電話）、或含 , ( )（PostgREST or() 保留字元，塞進
+  // DB 查詢整條報錯、搜「Wang, Danny」變 0 筆）時不交給 DB ilike——改跟
+  // 列表頁同款：撈回來在記憶體用 matchesOrderSearch 逐筆比，分流判斷收在
+  // lib/order-search 的 needsMemoryOrderSearch，「列表看到哪批、匯出就是
+  // 哪批」兩個出口才對得上。其餘純文字查詢（姓名 / Email）維持 DB ilike 不變。
+  const memorySearch = q !== "" && needsMemoryOrderSearch(q);
   const fetchedOrders = await fetchAllRows(async (from, to) => {
     let ordersQuery = supabase
       .from("sproutly_orders")
@@ -85,7 +89,7 @@ export async function GET(
       .eq("merchant_id", store.id);
     if (status !== "all") ordersQuery = ordersQuery.eq("status", status);
     if (pay !== "all") ordersQuery = ordersQuery.eq("payment_status", pay);
-    if (q && qDigits === "") {
+    if (q && !memorySearch) {
       ordersQuery = applyOrderSearch(ordersQuery, q);
     }
     if (since) ordersQuery = ordersQuery.gte("created_at", since.toISOString());
@@ -95,10 +99,9 @@ export async function GET(
       .range(from, to);
     return { data };
   });
-  const orders =
-    q && qDigits !== ""
-      ? fetchedOrders.filter((o) => matchesOrderSearch(o, q))
-      : fetchedOrders;
+  const orders = memorySearch
+    ? fetchedOrders.filter((o) => matchesOrderSearch(o, q))
+    : fetchedOrders;
 
   // 品項只查「這次要匯出的訂單」的，不是全店歷史全部——原本用 merchant_id join
   // 撈整家店的品項，Supabase 一次最多回約 1000 列，店累積品項超過之後，落在
