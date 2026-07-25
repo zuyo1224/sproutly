@@ -8,8 +8,18 @@ import { CVS_STORES, formatStoreLabel, CVS_LOOKUP_URLS } from "@/lib/cvs-stores"
 // 要等 server 退回才知道；且門市欄打過字再改選宅配，字還留在欄位裡會被一起送出、
 // 寫進宅配單的 note。抽成 client 元件照購物車結帳同款——選到才顯示、顯示就 required、
 // 切走就卸載（不再進 FormData），自取則給「不需填地址」的提示。
+//
+// 門市／地址兩欄的值存在 state 裡（受控），不是留給 DOM 自己記。切走時欄位照樣卸載、
+// 照樣不進 FormData（上面那條「不會被送進別種配送方式的單」不變），但客人打過的字
+// 留在 state：手機上四個配送選項擠在一起，點錯一下再點回來是常事，不留的話整串
+// 「7-11 信義門市 #116002（台北信義區）」或整行收件地址就消失、得從頭打一遍——
+// 剛好是結帳流程最容易讓人放棄的那一步。購物車結帳頁本來就是這樣寫的（storeName /
+// address 兩個 state），單品結帳這支當初抽出來時漏掉，兩條結帳路徑同一個動作
+// 行為不一樣：購物車結帳點錯回來字還在，單品結帳點錯回來就空了。
 export function ShippingFields({ ringColor }: { ringColor: string }) {
   const [shippingMethod, setShippingMethod] = useState("");
+  const [storeName, setStoreName] = useState("");
+  const [address, setAddress] = useState("");
   const needsStore = shippingNeedsStore(shippingMethod);
   const needsAddress = shippingMethod === "home_delivery";
   const isPickup = shippingMethod === "pickup";
@@ -68,6 +78,8 @@ export function ShippingFields({ ringColor }: { ringColor: string }) {
             name="shipping_store_name"
             type="text"
             required
+            value={storeName}
+            onChange={(e) => setStoreName(e.target.value)}
             list="cvs-stores-list"
             placeholder="開始打字搜尋⋯例如「信義」「板橋」「7-11」"
             autoComplete="off"
@@ -131,6 +143,8 @@ export function ShippingFields({ ringColor }: { ringColor: string }) {
             name="shipping_address"
             type="text"
             required
+            value={address}
+            onChange={(e) => setAddress(e.target.value)}
             autoComplete="street-address"
             placeholder="台北市 ..."
             className="sproutly-input w-full text-sm"
