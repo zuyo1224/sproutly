@@ -13,6 +13,25 @@ import { useEffect, useRef } from "react";
 // 配送方式的門市／地址欄是「選到才出現」的 React 條件欄位（見 shipping-fields），
 // 得先把 radio 用 click() 點回去（走 React onChange 讓欄位長出來），下一個 frame
 // 再回填文字欄。正常進頁（沒帶 error）就把舊小抄清掉，上一張單的資料不會塞進新表單。
+//
+// 回填值一律走這支，而不是直接 `el.value = v`：配送的門市欄與地址欄現在是 React
+// 受控欄位（值存在 shipping-fields 的 state 裡），直接寫 DOM 的話 React 完全不知道
+// 值變了——畫面上看得到字，state 仍是空字串，等到那個欄位再 render 一次（客人點錯
+// 配送方式再點回來、或 React 校正受控值）就把還原的字蓋回空，「打過的字不清空」
+// 這件事在最需要它的路徑上失效。用原生 value setter 寫值再補派一個 input 事件，
+// React 的 onChange 才收得到、state 跟著同步；非受控欄位（姓名、電話、備註）走同一
+// 條路徑結果不變。
+function setFieldValue(el: HTMLInputElement | HTMLTextAreaElement, v: string) {
+  const proto =
+    el instanceof HTMLTextAreaElement
+      ? HTMLTextAreaElement.prototype
+      : HTMLInputElement.prototype;
+  const setter = Object.getOwnPropertyDescriptor(proto, "value")?.set;
+  if (setter) setter.call(el, v);
+  else el.value = v;
+  el.dispatchEvent(new Event("input", { bubbles: true }));
+}
+
 export function CheckoutFormMemory({
   storageKey,
   hasError,
@@ -98,7 +117,7 @@ export function CheckoutFormMemory({
                 return;
               }
               const v = byName.get(el.name);
-              if (typeof v === "string" && !el.value) el.value = v;
+              if (typeof v === "string" && !el.value) setFieldValue(el, v);
             });
         });
       }
