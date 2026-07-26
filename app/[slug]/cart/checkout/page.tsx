@@ -20,6 +20,12 @@ type Product = {
 import { formatPrice } from "@/lib/format-price";
 import { fetchProductsByIds } from "@/lib/fetch-products-by-ids";
 
+// 送出後「連線出狀況、看不出單有沒有成立」時給客人的話。不能寫成「送出失敗」——
+// 逾時／閘道錯誤發生時訂單很可能已經在資料庫裡了，叫客人重送就會下成兩張；也不能
+// 說「已成立」。所以講實話：結果不明、先確認再決定要不要重送。
+const SUBMIT_UNCERTAIN_MESSAGE =
+  "送出的時候連線出了狀況，這張單有沒有成立我們這邊看不到。先別急著重送——請聯絡店家確認一下，確定沒收到再送一次，免得下成兩張。";
+
 export default function CartCheckoutPage() {
   const params = useParams();
   const router = useRouter();
@@ -229,17 +235,39 @@ export default function CartCheckoutPage() {
         method: "POST",
         body: fd,
       });
-      const data = await res.json();
-      if (!res.ok || data.error) {
-        setError(data.error || "送出失敗");
+      // 後端「有話要說」的錯誤（庫存不足、少填欄位）一律回 JSON；但閘道逾時／502、
+      // 伺服器端未預期的例外回的是 HTML 錯誤頁，res.json() 會當場丟
+      // 「Unexpected token '<' ... is not valid JSON」，原樣塞進錯誤框就是給客人看一句
+      // 看不懂的英文、還誤導成表單填錯。先讀成文字再試著 parse，parse 不出來就換成
+      // 講得清楚的中文（同一頁的 load() 早就補過這道，送出這條漏了）。
+      const rawBody = await res.text();
+      let data: { orderId?: unknown; error?: unknown } | null = null;
+      try {
+        const parsed = JSON.parse(rawBody);
+        if (parsed && typeof parsed === "object") data = parsed;
+      } catch {
+        data = null;
+      }
+      const serverError =
+        typeof data?.error === "string" && data.error ? data.error : null;
+      if (serverError) {
+        setError(serverError);
+        setSubmitting(false);
+        window.scrollTo({ top: 0, behavior: "smooth" });
+        return;
+      }
+      if (!res.ok || typeof data?.orderId !== "string") {
+        setError(SUBMIT_UNCERTAIN_MESSAGE);
         setSubmitting(false);
         window.scrollTo({ top: 0, behavior: "smooth" });
         return;
       }
       clearCart(slug);
       router.push(`/${slug}/checkout/success/${data.orderId}`);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "送出失敗");
+    } catch {
+      // fetch 自己丟錯（斷線、逾時）也走同一句：原本是把 err.message 直接顯示，
+      // 客人看到的是「Failed to fetch」這種英文。
+      setError(SUBMIT_UNCERTAIN_MESSAGE);
       setSubmitting(false);
       window.scrollTo({ top: 0, behavior: "smooth" });
     }
