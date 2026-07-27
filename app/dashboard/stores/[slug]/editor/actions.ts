@@ -71,6 +71,7 @@ type EditorPayload = {
       filter?: string;
       sectionWidth?: string;
       sectionGap?: string;
+      headingWeight?: string;
     }>;
   };
   homepage?: {
@@ -351,12 +352,12 @@ export async function saveEditorState(slug: string, payload: EditorPayload) {
     }
     if (payload.layout.sectionStyles !== undefined) {
       const raw = payload.layout.sectionStyles;
-      const sanitized: Record<string, { headingAlign?: string; bgColor?: string | null; textColor?: string | null; paddingScale?: string; divider?: string; headingScale?: string; minHeight?: string; outline?: string; shadow?: string; borderRadius?: string; entrance?: string; fontFamily?: string; letterSpacing?: string; lineHeight?: string; opacity?: string; filter?: string; sectionWidth?: string; sectionGap?: string }> = {};
+      const sanitized: Record<string, { headingAlign?: string; bgColor?: string | null; textColor?: string | null; paddingScale?: string; divider?: string; headingScale?: string; minHeight?: string; outline?: string; shadow?: string; borderRadius?: string; entrance?: string; fontFamily?: string; letterSpacing?: string; lineHeight?: string; opacity?: string; filter?: string; sectionWidth?: string; sectionGap?: string; headingWeight?: string }> = {};
       if (raw && typeof raw === "object") {
         for (const [k, v] of Object.entries(raw)) {
           if (!k || typeof k !== "string" || k.length > 60) continue;
           if (!v || typeof v !== "object") continue;
-          const entry: { headingAlign?: string; bgColor?: string | null; textColor?: string | null; paddingScale?: string; divider?: string; headingScale?: string; minHeight?: string; outline?: string; shadow?: string; borderRadius?: string; entrance?: string; fontFamily?: string; letterSpacing?: string; lineHeight?: string; opacity?: string; filter?: string; sectionWidth?: string; sectionGap?: string } = {};
+          const entry: { headingAlign?: string; bgColor?: string | null; textColor?: string | null; paddingScale?: string; divider?: string; headingScale?: string; minHeight?: string; outline?: string; shadow?: string; borderRadius?: string; entrance?: string; fontFamily?: string; letterSpacing?: string; lineHeight?: string; opacity?: string; filter?: string; sectionWidth?: string; sectionGap?: string; headingWeight?: string } = {};
           if (v.headingAlign === "left" || v.headingAlign === "center" || v.headingAlign === "right") {
             entry.headingAlign = v.headingAlign;
           }
@@ -411,7 +412,12 @@ export async function saveEditorState(slug: string, payload: EditorPayload) {
           if (v.sectionGap === "none" || v.sectionGap === "normal" || v.sectionGap === "large") {
             entry.sectionGap = v.sectionGap;
           }
-          if (entry.headingAlign !== undefined || entry.bgColor !== undefined || entry.textColor !== undefined || entry.paddingScale !== undefined || entry.divider !== undefined || entry.headingScale !== undefined || entry.minHeight !== undefined || entry.outline !== undefined || entry.shadow !== undefined || entry.borderRadius !== undefined || entry.entrance !== undefined || entry.fontFamily !== undefined || entry.letterSpacing !== undefined || entry.lineHeight !== undefined || entry.opacity !== undefined || entry.filter !== undefined || entry.sectionWidth !== undefined || entry.sectionGap !== undefined) {
+          if (v.headingWeight === "light" || v.headingWeight === "normal" || v.headingWeight === "bold") {
+            entry.headingWeight = v.headingWeight;
+          }
+          // 只要有任何一欄過關就存這個 section 的覆寫。以前是一長串 entry.X !== undefined
+          // 的手寫 or，每加一個控制就要記得補一項，漏掉那個控制單獨設定時整筆存不進去。
+          if (Object.keys(entry).length > 0) {
             sanitized[k] = entry;
           }
         }

@@ -33,6 +33,7 @@ import {
   FEATURED_COUNT_MAX,
 } from "@/lib/theme-scale";
 import { FREE_POS_KEYS, SECTION_DRAG_ELEMENT, stripLegacyFreePositions } from "@/lib/free-positions";
+import type { SectionStyle } from "@/app/[slug]/_theme";
 
 type SectionKey =
   | "hero"
@@ -103,26 +104,8 @@ type EditorTheme = {
     statsColumns: 2 | 3 | 4;
     galleryColumns: 2 | 3 | 4;
     journalColumns: 2 | 3;
-    sectionStyles: Record<string, {
-      headingAlign?: "left" | "center" | "right";
-      bgColor?: string | null;
-      textColor?: string | null;
-      paddingScale?: "compact" | "default" | "spacious";
-      divider?: "none" | "top" | "bottom" | "both";
-      headingScale?: "small" | "default" | "large";
-      minHeight?: "auto" | "tall" | "fullscreen";
-      outline?: "none" | "subtle" | "strong";
-      shadow?: "none" | "soft" | "deep";
-      borderRadius?: "none" | "soft" | "strong";
-      entrance?: "none" | "fade" | "slide-up";
-      fontFamily?: "default" | "serif" | "sans";
-      letterSpacing?: "tight" | "normal" | "wide";
-      lineHeight?: "tight" | "normal" | "relaxed";
-      opacity?: "default" | "muted" | "faint";
-      filter?: "none" | "grayscale" | "sepia";
-      sectionWidth?: "full" | "boxed" | "narrow";
-      sectionGap?: "none" | "normal" | "large";
-    }>;
+    // 欄位表跟公開頁共用同一份 SectionStyle，加控制不必兩邊各抄一次
+    sectionStyles: Record<string, SectionStyle>;
   };
   homepage: {
     promise: string;
@@ -2879,6 +2862,7 @@ export function EditorWorkspace({
           const filter = cur.filter ?? null;
           const sectionWidth = cur.sectionWidth ?? null;
           const sectionGap = cur.sectionGap ?? null;
+          const headingWeight = cur.headingWeight ?? null;
           // 色票快選：全站主色 + 中性白/奶油/淺灰/近黑，省得每次自己對色碼
           const bgSwatches = [
             { c: "#FFFFFF", label: "白" },
@@ -2895,8 +2879,8 @@ export function EditorWorkspace({
             { c: theme.primary, label: "主色" },
             { c: theme.accent, label: "Accent" },
           ];
-          function patch(p: { headingAlign?: "left" | "center" | "right"; bgColor?: string | null; textColor?: string | null; paddingScale?: "compact" | "default" | "spacious" | null; divider?: "none" | "top" | "bottom" | "both"; headingScale?: "small" | "default" | "large" | null; minHeight?: "auto" | "tall" | "fullscreen" | null; outline?: "none" | "subtle" | "strong" | null; shadow?: "none" | "soft" | "deep" | null; borderRadius?: "none" | "soft" | "strong" | null; entrance?: "none" | "fade" | "slide-up" | null; fontFamily?: "default" | "serif" | "sans" | null; letterSpacing?: "tight" | "normal" | "wide" | null; lineHeight?: "tight" | "normal" | "relaxed" | null; opacity?: "default" | "muted" | "faint" | null; filter?: "none" | "grayscale" | "sepia" | null; sectionWidth?: "full" | "boxed" | "narrow" | null; sectionGap?: "none" | "normal" | "large" | null }) {
-            const next: { headingAlign?: "left" | "center" | "right"; bgColor?: string | null; textColor?: string | null; paddingScale?: "compact" | "default" | "spacious"; divider?: "none" | "top" | "bottom" | "both"; headingScale?: "small" | "default" | "large"; minHeight?: "auto" | "tall" | "fullscreen"; outline?: "none" | "subtle" | "strong"; shadow?: "none" | "soft" | "deep"; borderRadius?: "none" | "soft" | "strong"; entrance?: "none" | "fade" | "slide-up"; fontFamily?: "default" | "serif" | "sans"; letterSpacing?: "tight" | "normal" | "wide"; lineHeight?: "tight" | "normal" | "relaxed"; opacity?: "default" | "muted" | "faint"; filter?: "none" | "grayscale" | "sepia"; sectionWidth?: "full" | "boxed" | "narrow"; sectionGap?: "none" | "normal" | "large" } = { ...cur };
+          function patch(p: { headingAlign?: "left" | "center" | "right"; bgColor?: string | null; textColor?: string | null; paddingScale?: "compact" | "default" | "spacious" | null; divider?: "none" | "top" | "bottom" | "both"; headingScale?: "small" | "default" | "large" | null; minHeight?: "auto" | "tall" | "fullscreen" | null; outline?: "none" | "subtle" | "strong" | null; shadow?: "none" | "soft" | "deep" | null; borderRadius?: "none" | "soft" | "strong" | null; entrance?: "none" | "fade" | "slide-up" | null; fontFamily?: "default" | "serif" | "sans" | null; letterSpacing?: "tight" | "normal" | "wide" | null; lineHeight?: "tight" | "normal" | "relaxed" | null; opacity?: "default" | "muted" | "faint" | null; filter?: "none" | "grayscale" | "sepia" | null; sectionWidth?: "full" | "boxed" | "narrow" | null; sectionGap?: "none" | "normal" | "large" | null; headingWeight?: "light" | "normal" | "bold" | null }) {
+            const next: SectionStyle = { ...cur };
             if (p.headingAlign !== undefined) next.headingAlign = p.headingAlign;
             if (p.bgColor !== undefined) next.bgColor = p.bgColor;
             if (p.textColor !== undefined) next.textColor = p.textColor;
@@ -2953,6 +2937,10 @@ export function EditorWorkspace({
             if (p.sectionGap !== undefined) {
               if (p.sectionGap === null || p.sectionGap === "none") delete next.sectionGap;
               else next.sectionGap = p.sectionGap;
+            }
+            if (p.headingWeight !== undefined) {
+              if (p.headingWeight === null || p.headingWeight === "normal") delete next.headingWeight;
+              else next.headingWeight = p.headingWeight;
             }
             updateLayout({
               sectionStyles: {
@@ -3546,6 +3534,45 @@ export function EditorWorkspace({
                     <button
                       type="button"
                       onClick={() => patch({ headingScale: null })}
+                      className="text-stone-500 hover:text-stone-800 underline"
+                    >
+                      清除
+                    </button>
+                  )}
+                </div>
+              </Field>
+              <Field label="標題粗細">
+                <div className="grid grid-cols-3 gap-1.5">
+                  {([
+                    { v: "light", label: "細" },
+                    { v: "normal", label: "預設" },
+                    { v: "bold", label: "粗" },
+                  ] as const).map((opt) => (
+                    <button
+                      key={opt.v}
+                      type="button"
+                      onClick={() => patch({ headingWeight: opt.v })}
+                      aria-pressed={(headingWeight ?? "normal") === opt.v}
+                      className={`rounded-lg border py-2 text-xs transition ${
+                        (headingWeight ?? "normal") === opt.v
+                          ? "border-emerald-500 bg-emerald-50 text-emerald-900"
+                          : "border-stone-200 text-stone-600 hover:border-stone-400"
+                      }`}
+                      style={{
+                        fontWeight:
+                          opt.v === "light" ? 400 : opt.v === "bold" ? 700 : undefined,
+                      }}
+                    >
+                      {opt.label}
+                    </button>
+                  ))}
+                </div>
+                <div className="mt-1.5 flex items-center justify-between text-[11px] text-stone-500">
+                  <span>細常規 · 預設維持原樣 · 粗</span>
+                  {headingWeight && (
+                    <button
+                      type="button"
+                      onClick={() => patch({ headingWeight: null })}
                       className="text-stone-500 hover:text-stone-800 underline"
                     >
                       清除

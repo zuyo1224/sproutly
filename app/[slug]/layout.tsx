@@ -689,6 +689,19 @@ export default async function PublicStoreLayout({
           font-size: calc(1em * var(--store-heading-scale, 1));
         }
 
+        /* 區段標題粗細：editor 各 section panel「標題粗細」三按鈕（細 / 預設 / 粗）。
+           走 data-heading-weight attribute 不走 CSS variable —— font-weight 的 var()
+           fallback 只能填另一個值，等於沒設定的 section 也會被那個值一律蓋掉，各 section
+           原本 Tailwind class 的粗細層級就沒了。attribute selector 才有「沒設就不存在」。
+           400 / 700 是 layout 這支已經載進來的字重，不用 300 之類沒載的（瀏覽器會拿常規
+           假變細，中文筆畫糊掉）。排除 hero — hero 主標的字級 / 顏色 / 對齊自成一組控制。 */
+        section[data-edit-target]:not([data-edit-target="hero"])[data-heading-weight="light"] h2 {
+          font-weight: 400;
+        }
+        section[data-edit-target]:not([data-edit-target="hero"])[data-heading-weight="bold"] h2 {
+          font-weight: 700;
+        }
+
         /* 區段進場動畫：editor 各 section panel「進場動畫」三按鈕（無 / 淡入 / 上滑）
            靠 data-anim attribute + CSS scroll-driven animation（animation-timeline: view()）觸發。
            沒設定 = 無 attr = 不動畫；fade = opacity 0→1；slide-up = opacity + translateY 上滑。

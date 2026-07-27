@@ -122,6 +122,36 @@ export type FontKey =
   | "noto-serif"
   | "lora";
 
+// 單一個 section 的元素級樣式覆寫。以前這份欄位表在四個地方各抄一份（這裡的
+// 型別、resolveTheme 的 sanitize、editor 的 EditorTheme、editor actions 的存檔
+// sanitize），加一個控制要四處同步改，漏一處那個控制就存不進 DB 或讀不回來。
+// 收成具名型別後，型別那層至少是同一份，加欄位只要動這裡跟兩層 sanitize 的判斷。
+export interface SectionStyle {
+  headingAlign?: "left" | "center" | "right";
+  bgColor?: string | null;          // null = 用 theme.bg；hex = 覆寫
+  textColor?: string | null;        // null = 用 theme.text；hex = 覆寫（深底配淺字常用）
+  paddingScale?: "compact" | "default" | "spacious"; // 該 section 獨立上下空白（覆寫全網站值）
+  divider?: "none" | "top" | "bottom" | "both"; // 分隔線（上 / 下 / 上下都有 / 沒有）
+  headingScale?: "small" | "default" | "large"; // 該 section 標題字級（small 0.85x / default 1x / large 1.25x）
+  minHeight?: "auto" | "tall" | "fullscreen"; // 該 section 最低高度（auto 不限制 / tall 80vh / fullscreen 100vh）
+  outline?: "none" | "subtle" | "strong"; // 該 section 外框（subtle 1px / strong 2px，用 outline 避免跟 divider borderTop/Bottom 打架）
+  shadow?: "none" | "soft" | "deep"; // 該 section 陰影（soft 淺 / deep 深），讓有 bgColor 的 section 像卡片浮起
+  borderRadius?: "none" | "soft" | "strong"; // 該 section 圓角（soft 16px / strong 32px），跟 bgColor + outline + shadow 三件套組成卡片風
+  entrance?: "none" | "fade" | "slide-up"; // 該 section 進場動畫（fade 淡入 / slide-up 上滑），靠 CSS scroll-driven 觸發，edit mode 內 disable
+  fontFamily?: "default" | "serif" | "sans"; // 該 section 字體（default 跟全網站 / serif 思源宋體 / sans 思源黑體），讓某段獨立切字體做雜誌 / 現代風對比
+  letterSpacing?: "tight" | "normal" | "wide"; // 該 section 字距（tight -0.02em / normal 預設 / wide 0.1em），雜誌大標常見 wide
+  lineHeight?: "tight" | "normal" | "relaxed"; // 該 section 行高（tight 1.4 緊湊 / normal 預設不套 / relaxed 2.0 舒展），給內文段落獨立調整呼吸感
+  opacity?: "default" | "muted" | "faint"; // 該 section 淡化（default 不套 / muted 0.85 / faint 0.7），讓 partners / stats / faq 次要 section 變淡，襯托 hero / featured 跳出
+  filter?: "none" | "grayscale" | "sepia"; // 該 section 濾鏡（grayscale 黑白 / sepia 復古褐），用 CSS filter 套整段含 children，partners / gallery / hero 套黑白做雜誌感
+  sectionWidth?: "full" | "boxed" | "narrow"; // 該 section 寬度（full 滿版預設 / boxed 置中 1100px / narrow 窄欄 760px），配 bgColor + 陰影 + 圓角做置中卡片式區段，滿版時不套任何樣式維持原狀
+  sectionGap?: "none" | "normal" | "large"; // 該 section 上下外距（none 不套貼緊相鄰 / normal 64px / large 112px），配 sectionWidth 置中卡片時讓卡片從上下區段拉開、真正浮出來
+  // 該 section 標題粗細（light 400 常規 / normal 不套維持原樣 / bold 700 粗）。
+  // 只用思源黑體 / 宋體有載進來的字重（400 / 700），不挑 300 之類沒載的——
+  // 瀏覽器會拿常規去「假變細」，中文筆畫糊掉。字級 / 字體 / 字距 / 行高 / 對齊
+  // 都能各段獨立調，只有粗細一直缺，雜誌風那種「大標細、內文常規」做不出來。
+  headingWeight?: "light" | "normal" | "bold";
+}
+
 export interface StoreTheme {
   preset: PresetKey;
   primary: string;
@@ -228,26 +258,7 @@ export interface StoreTheme {
     galleryColumns: 2 | 3 | 4;         // 相簿排成幾欄（預設 3）
     journalColumns: 2 | 3;             // 慢讀卡排成幾欄（預設 3；固定三張卡，4 欄永遠填不滿所以不開）
     // 每個 section 的元素級樣式覆寫（北極星：超越 Wix 的元素級控制覆蓋率）
-    sectionStyles: Record<string, {
-      headingAlign?: "left" | "center" | "right";
-      bgColor?: string | null;          // null = 用 theme.bg；hex = 覆寫
-      textColor?: string | null;        // null = 用 theme.text；hex = 覆寫（深底配淺字常用）
-      paddingScale?: "compact" | "default" | "spacious"; // 該 section 獨立上下空白（覆寫全網站值）
-      divider?: "none" | "top" | "bottom" | "both"; // 分隔線（上 / 下 / 上下都有 / 沒有）
-      headingScale?: "small" | "default" | "large"; // 該 section 標題字級（small 0.85x / default 1x / large 1.25x）
-      minHeight?: "auto" | "tall" | "fullscreen"; // 該 section 最低高度（auto 不限制 / tall 80vh / fullscreen 100vh）
-      outline?: "none" | "subtle" | "strong"; // 該 section 外框（subtle 1px / strong 2px，用 outline 避免跟 divider borderTop/Bottom 打架）
-      shadow?: "none" | "soft" | "deep"; // 該 section 陰影（soft 淺 / deep 深），讓有 bgColor 的 section 像卡片浮起
-      borderRadius?: "none" | "soft" | "strong"; // 該 section 圓角（soft 16px / strong 32px），跟 bgColor + outline + shadow 三件套組成卡片風
-      entrance?: "none" | "fade" | "slide-up"; // 該 section 進場動畫（fade 淡入 / slide-up 上滑），靠 CSS scroll-driven 觸發，edit mode 內 disable
-      fontFamily?: "default" | "serif" | "sans"; // 該 section 字體（default 跟全網站 / serif 思源宋體 / sans 思源黑體），讓某段獨立切字體做雜誌 / 現代風對比
-      letterSpacing?: "tight" | "normal" | "wide"; // 該 section 字距（tight -0.02em / normal 預設 / wide 0.1em），雜誌大標常見 wide
-      lineHeight?: "tight" | "normal" | "relaxed"; // 該 section 行高（tight 1.4 緊湊 / normal 預設不套 / relaxed 2.0 舒展），給內文段落獨立調整呼吸感
-      opacity?: "default" | "muted" | "faint"; // 該 section 淡化（default 不套 / muted 0.85 / faint 0.7），讓 partners / stats / faq 次要 section 變淡，襯托 hero / featured 跳出
-      filter?: "none" | "grayscale" | "sepia"; // 該 section 濾鏡（grayscale 黑白 / sepia 復古褐），用 CSS filter 套整段含 children，partners / gallery / hero 套黑白做雜誌感
-      sectionWidth?: "full" | "boxed" | "narrow"; // 該 section 寬度（full 滿版預設 / boxed 置中 1100px / narrow 窄欄 760px），配 bgColor + 陰影 + 圓角做置中卡片式區段，滿版時不套任何樣式維持原狀
-      sectionGap?: "none" | "normal" | "large"; // 該 section 上下外距（none 不套貼緊相鄰 / normal 64px / large 112px），配 sectionWidth 置中卡片時讓卡片從上下區段拉開、真正浮出來
-    }>;
+    sectionStyles: Record<string, SectionStyle>;
   };
 }
 
@@ -678,12 +689,12 @@ function resolveLayout(raw: unknown): StoreTheme["layout"] {
     })(),
     sectionStyles: (() => {
       const raw = l.sectionStyles;
-      const result: Record<string, { headingAlign?: "left" | "center" | "right"; bgColor?: string | null; textColor?: string | null; paddingScale?: "compact" | "default" | "spacious"; divider?: "none" | "top" | "bottom" | "both"; headingScale?: "small" | "default" | "large"; minHeight?: "auto" | "tall" | "fullscreen"; outline?: "none" | "subtle" | "strong"; shadow?: "none" | "soft" | "deep"; borderRadius?: "none" | "soft" | "strong"; entrance?: "none" | "fade" | "slide-up"; fontFamily?: "default" | "serif" | "sans"; letterSpacing?: "tight" | "normal" | "wide"; lineHeight?: "tight" | "normal" | "relaxed"; opacity?: "default" | "muted" | "faint"; filter?: "none" | "grayscale" | "sepia"; sectionWidth?: "full" | "boxed" | "narrow"; sectionGap?: "none" | "normal" | "large" }> = {};
+      const result: Record<string, SectionStyle> = {};
       if (raw && typeof raw === "object" && !Array.isArray(raw)) {
         for (const [k, v] of Object.entries(raw as Record<string, unknown>)) {
           if (!v || typeof v !== "object" || typeof k !== "string") continue;
           const obj = v as Record<string, unknown>;
-          const entry: { headingAlign?: "left" | "center" | "right"; bgColor?: string | null; textColor?: string | null; paddingScale?: "compact" | "default" | "spacious"; divider?: "none" | "top" | "bottom" | "both"; headingScale?: "small" | "default" | "large"; minHeight?: "auto" | "tall" | "fullscreen"; outline?: "none" | "subtle" | "strong"; shadow?: "none" | "soft" | "deep"; borderRadius?: "none" | "soft" | "strong"; entrance?: "none" | "fade" | "slide-up"; fontFamily?: "default" | "serif" | "sans"; letterSpacing?: "tight" | "normal" | "wide"; lineHeight?: "tight" | "normal" | "relaxed"; opacity?: "default" | "muted" | "faint"; filter?: "none" | "grayscale" | "sepia"; sectionWidth?: "full" | "boxed" | "narrow"; sectionGap?: "none" | "normal" | "large" } = {};
+          const entry: SectionStyle = {};
           if (obj.headingAlign === "left" || obj.headingAlign === "center" || obj.headingAlign === "right") {
             entry.headingAlign = obj.headingAlign;
           }
@@ -738,7 +749,12 @@ function resolveLayout(raw: unknown): StoreTheme["layout"] {
           if (obj.sectionGap === "none" || obj.sectionGap === "normal" || obj.sectionGap === "large") {
             entry.sectionGap = obj.sectionGap;
           }
-          if (entry.headingAlign !== undefined || entry.bgColor !== undefined || entry.textColor !== undefined || entry.paddingScale !== undefined || entry.divider !== undefined || entry.headingScale !== undefined || entry.minHeight !== undefined || entry.outline !== undefined || entry.shadow !== undefined || entry.borderRadius !== undefined || entry.entrance !== undefined || entry.fontFamily !== undefined || entry.letterSpacing !== undefined || entry.lineHeight !== undefined || entry.opacity !== undefined || entry.filter !== undefined || entry.sectionWidth !== undefined || entry.sectionGap !== undefined) {
+          if (obj.headingWeight === "light" || obj.headingWeight === "normal" || obj.headingWeight === "bold") {
+            entry.headingWeight = obj.headingWeight;
+          }
+          // 只要有任何一欄過關就留下這個 section 的覆寫。以前是一長串 entry.X !== undefined
+          // 的手寫 or，每加一個控制就要記得補一項，漏掉那個控制單獨設定時整筆會被丟掉。
+          if (Object.keys(entry).length > 0) {
             result[k] = entry;
           }
         }

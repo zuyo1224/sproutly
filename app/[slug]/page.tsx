@@ -207,6 +207,14 @@ export default async function StoreHomePage({
     // 實際 CSS keyframes + scroll-timeline 在 layout.tsx 注入；edit mode 內 disable
     const entranceVal: "fade" | "slide-up" | undefined =
       s?.entrance === "fade" || s?.entrance === "slide-up" ? s.entrance : undefined;
+    // 標題粗細：跟進場動畫同一招走 data attribute（data-heading-weight），不走 inline
+    // CSS variable。font-weight 沒有「這個 var 沒設就別管我」的寫法——var() 的 fallback
+    // 只能是另一個值，填什麼就等於把各 section 原本 Tailwind class 的粗細一律蓋成那個值。
+    // 用 attribute selector 才能做到「沒設就整條規則不存在」，原本的粗細原封不動。
+    const headingWeightVal: "light" | "bold" | undefined =
+      s?.headingWeight === "light" || s?.headingWeight === "bold"
+        ? s.headingWeight
+        : undefined;
     return {
       bg: s?.bgColor ?? undefined,
       text: s?.textColor ?? undefined,
@@ -226,7 +234,8 @@ export default async function StoreHomePage({
       widthOverride: width,
       gapOverride: gap,
       entranceVal,
-    } as { bg: string | undefined; text: string | undefined; align: "left" | "center" | "right"; padOverride: number | undefined; divider: "none" | "top" | "bottom" | "both"; headingOverride: number | undefined; minHeightOverride: string | undefined; outlineOverride: { outline: string; outlineOffset: string } | undefined; shadowOverride: string | undefined; borderRadiusOverride: string | undefined; fontFamilyOverride: string | undefined; letterSpacingOverride: string | undefined; lineHeightOverride: number | undefined; opacityOverride: number | undefined; filterOverride: string | undefined; widthOverride: string | undefined; gapOverride: string | undefined; entranceVal: "fade" | "slide-up" | undefined };
+      headingWeightVal,
+    } as { bg: string | undefined; text: string | undefined; align: "left" | "center" | "right"; padOverride: number | undefined; divider: "none" | "top" | "bottom" | "both"; headingOverride: number | undefined; minHeightOverride: string | undefined; outlineOverride: { outline: string; outlineOffset: string } | undefined; shadowOverride: string | undefined; borderRadiusOverride: string | undefined; fontFamilyOverride: string | undefined; letterSpacingOverride: string | undefined; lineHeightOverride: number | undefined; opacityOverride: number | undefined; filterOverride: string | undefined; widthOverride: string | undefined; gapOverride: string | undefined; entranceVal: "fade" | "slide-up" | undefined; headingWeightVal: "light" | "bold" | undefined };
   };
 
   // 把背景色 + 文字色 + padOverride + 分隔線 + 標題字級合併成 section 用的 inline style
@@ -927,6 +936,7 @@ export default async function StoreHomePage({
             data-edit-target="collections"
             data-edit-label="選物提案"
             data-anim={collStyle.entranceVal}
+            data-heading-weight={collStyle.headingWeightVal}
             style={mergeSectionStyle(collStyle)}
           >
             <div className="max-w-5xl mx-auto px-8 sm:px-12" style={{ textAlign: collStyle.align }}>
@@ -1068,6 +1078,7 @@ export default async function StoreHomePage({
             data-edit-target="featured"
             data-edit-label="本月選物"
             data-anim={featuredStyle.entranceVal}
+            data-heading-weight={featuredStyle.headingWeightVal}
           >
             <div className="max-w-5xl mx-auto px-8 sm:px-12" style={{ textAlign: featuredStyle.align }}>
               {featuredFree ? (
@@ -1246,6 +1257,7 @@ export default async function StoreHomePage({
             data-edit-target="journal"
             data-edit-label="Journal 區段"
             data-anim={journalStyle.entranceVal}
+            data-heading-weight={journalStyle.headingWeightVal}
           >
           <div className="max-w-5xl mx-auto px-8 sm:px-12" style={{ textAlign: journalStyle.align }}>
             {journalFree ? (
@@ -1426,6 +1438,7 @@ export default async function StoreHomePage({
             data-edit-target="promise"
             data-edit-label="Promise 區段"
             data-anim={promiseStyle.entranceVal}
+            data-heading-weight={promiseStyle.headingWeightVal}
           >
             <div
               className={
@@ -1561,6 +1574,7 @@ export default async function StoreHomePage({
               data-edit-target="testimonials"
               data-edit-label="顧客評語"
               data-anim={testimonialsStyle.entranceVal}
+              data-heading-weight={testimonialsStyle.headingWeightVal}
             >
               <div
                 className="max-w-5xl mx-auto px-8 sm:px-12"
@@ -1747,6 +1761,7 @@ export default async function StoreHomePage({
               data-edit-target="faq"
               data-edit-label="常見問題"
               data-anim={faqStyle.entranceVal}
+              data-heading-weight={faqStyle.headingWeightVal}
             >
               <div
                 className="max-w-2xl mx-auto px-6 sm:px-12"
@@ -1908,6 +1923,7 @@ export default async function StoreHomePage({
               data-edit-target="stats"
               data-edit-label="數字 / 成就"
               data-anim={statsStyle.entranceVal}
+              data-heading-weight={statsStyle.headingWeightVal}
             >
               <div
                 className="max-w-5xl mx-auto px-8 sm:px-12"
@@ -2070,6 +2086,7 @@ export default async function StoreHomePage({
               data-edit-target="partners"
               data-edit-label="合作夥伴"
               data-anim={partnersStyle.entranceVal}
+              data-heading-weight={partnersStyle.headingWeightVal}
             >
               <div
                 className="max-w-5xl mx-auto px-8 sm:px-12"
@@ -2160,6 +2177,7 @@ export default async function StoreHomePage({
               data-edit-target="gallery"
               data-edit-label="圖片相簿"
               data-anim={galleryStyle.entranceVal}
+              data-heading-weight={galleryStyle.headingWeightVal}
             >
               <div
                 className="max-w-6xl mx-auto px-6 sm:px-10"
@@ -2308,6 +2326,7 @@ export default async function StoreHomePage({
             data-edit-target="visit"
             data-edit-label="來訪資訊"
             data-anim={visitStyle.entranceVal}
+            data-heading-weight={visitStyle.headingWeightVal}
           >
             <div
               data-edit-drag={FREE_POS_KEYS.visitCard}
