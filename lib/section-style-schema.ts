@@ -59,6 +59,10 @@ export const SECTION_STYLE_ENUMS = {
   // 標題底線（short 短線 / full 整條），畫在該段 h2 底下。顏色跟外框、分隔線同一個口徑
   // （自訂文字色算出來的淡色），所以深底淺字的段落自動變成淺色線、不用另挑一次顏色。
   headingRule: ["none", "short", "full"],
+  // 側邊色條（left 左緣 / right 右緣），畫在該段的左或右邊緣，4px 粗。分隔線佔的是
+  // borderTop/Bottom、外框走 outline，三者不互相蓋。顏色比照外框與分隔線：該段設了
+  // 文字色就從它算（深底淺字自動變淺色條），沒設就用全站主色 accent。
+  accentBar: ["none", "left", "right"],
 } as const satisfies Record<string, readonly string[]>;
 
 // 每一欄「等同沒設定」的那個值。editor 端商家選到它就把整欄 delete 掉（少一欄存進 DB，
@@ -81,6 +85,7 @@ export const SECTION_STYLE_NEUTRAL_VALUES = {
   texture: "none",
   bgGradient: "none",
   headingRule: "none",
+  accentBar: "none",
 } as const satisfies Partial<{
   [K in keyof typeof SECTION_STYLE_ENUMS]: (typeof SECTION_STYLE_ENUMS)[K][number];
 }>;

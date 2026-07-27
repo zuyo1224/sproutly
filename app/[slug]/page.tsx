@@ -267,6 +267,10 @@ export default async function StoreHomePage({
     // 標題底線：同樣走 data attribute（線畫在 h2::after，只有 CSS 生得出偽元素）。
     const headingRuleVal: "short" | "full" | undefined =
       s?.headingRule === "short" || s?.headingRule === "full" ? s.headingRule : undefined;
+    // 側邊色條：只回哪一邊，粗細與顏色在 mergeSectionStyle 一起算（顏色要跟外框、
+    // 分隔線同一份口徑，分開算就會出現同一段裡三種線各一個顏色）。
+    const accentBarVal: "left" | "right" | undefined =
+      s?.accentBar === "left" || s?.accentBar === "right" ? s.accentBar : undefined;
     return {
       bg: s?.bgColor ?? undefined,
       text: s?.textColor ?? undefined,
@@ -290,6 +294,7 @@ export default async function StoreHomePage({
       entranceVal,
       headingWeightVal,
       headingRuleVal,
+      accentBarVal,
     };
     // 這裡本來手抄一份 `as { ... }`（整份欄位再列一次）。它推不出比 TS 自己推更精確的型別，
     // 卻是第三份要跟著欄位表同步改的清單——加控制忘了補就編不過（好），改錯就悄悄放寬（不好）。
@@ -360,6 +365,20 @@ export default async function StoreHomePage({
       out["--store-rule-color"] = lineColor;
       out["--store-rule-ml"] = s.align === "left" ? "0" : "auto";
       out["--store-rule-mr"] = s.align === "right" ? "0" : "auto";
+    }
+    // 側邊色條：報紙／雜誌標示重點段落（引言、公告）那條粗色條。整段外框太重、分隔線
+    // 太輕，中間這一級原本做不出來。畫在 borderLeft / borderRight——分隔線佔的是上下兩邊、
+    // 外框走 outline，三個控制同時開也不互相蓋掉。
+    // 顏色比照外框與分隔線那條線（70c8177）：該段設了自訂文字色就從它算，深底淺字的段落
+    // 自動變成淺色條、不會挑出一個壓在自己底色上看不見的值；沒設就用全站主色 accent
+    // ——它本來就是配著全站底色挑來跳出的顏色，一條 4px 的實心條要的正是這種存在感，
+    // 用 28% 那條細線的淡色會淡到跟沒開一樣。
+    if (s.accentBarVal) {
+      const bar = `4px solid ${
+        s.text ? `color-mix(in srgb, ${s.text} 60%, transparent)` : theme.accent
+      }`;
+      if (s.accentBarVal === "left") out.borderLeft = bar;
+      else out.borderRight = bar;
     }
     if (s.shadowOverride) {
       out.boxShadow = s.shadowOverride;
