@@ -202,7 +202,7 @@ export default async function CheckoutPage({
           <input type="hidden" name="quantity" value={effectiveQty} />
           {/* server 端退單（庫存被搶、商品下架…）redirect 回來時，把客人打過的
               欄位塞回去，不用整張重打（緣由見 form-memory）。 */}
-          <CheckoutFormMemory storageKey={slug} hasError={Boolean(error)} />
+          <CheckoutFormMemory storageKey={slug} restore={Boolean(error)} />
 
           {/* 收件資訊 */}
           <section className="space-y-5">

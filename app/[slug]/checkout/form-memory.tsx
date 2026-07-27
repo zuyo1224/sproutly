@@ -6,7 +6,13 @@ import { useEffect, useRef } from "react";
 // 退回（庫存剛被別的客人買走、商品下架、訂單建立失敗），redirect 回這頁只帶得回
 // product_id / qty / error，客人打好的姓名、電話、Email、地址、備註、選好的配送
 // 與付款方式全部清空——錯誤訊息說「請重新確認」，重新確認的代價卻是整張表單重打。
-// 購物車結帳是 fetch 不換頁、欄位天生留著，只有單品這條有這個洞。
+//
+// 購物車結帳沒有「被 server 退回」這條路（fetch 不換頁、錯誤只是塞進紅框，欄位留著），
+// 但它一樣會整張清空，只是觸發的動作不同：客人填到一半想起數量要改，按上一頁回購物車
+// 調完再點結帳，回來是全新的 React state、什麼都沒了；手機上切去查地址／找超商門市名稱
+// 再切回來，分頁被系統回收重載也一樣；不小心下拉重新整理更不用說。這些都是結帳到一半
+// 很自然會做的事，代價卻是姓名、電話、Email、地址、備註、配送與付款方式整套重打——
+// 跟單品結帳被退回時的下場一模一樣，只是沒人幫它接住。兩條結帳路徑共用這支。
 //
 // 做法：欄位每次輸入就把值記進 sessionStorage（只留在這個分頁、關掉就丟，
 // 姓名電話地址不進網址列、不落地到磁碟以外的地方）；帶著 error 回來時塞回欄位。
@@ -32,19 +38,40 @@ function setFieldValue(el: HTMLInputElement | HTMLTextAreaElement, v: string) {
   el.dispatchEvent(new Event("input", { bubbles: true }));
 }
 
+function memoryKey(storageKey: string) {
+  return `sproutly_checkout_form_${storageKey}`;
+}
+
+// 下單成功後把小抄丟掉，下一張單不會塞著上一張的收件資料。單品結帳走 server action、
+// 成功就 redirect 去成功頁，重進結帳頁時 restore 為 false 自然會清；購物車結帳不換頁
+// （fetch + router.push），沒有「重進頁面」這一刻，得由送出成功那條路自己清。
+export function clearCheckoutFormMemory(storageKey: string) {
+  try {
+    sessionStorage.removeItem(memoryKey(storageKey));
+  } catch {
+    /* ignore */
+  }
+}
+
+// restore：這次進來要不要把小抄塞回欄位。
+// - 單品結帳傳 `Boolean(error)`——只有被 server 退回來時才還原，正常進頁就清掉小抄。
+// - 購物車結帳恆傳 true——它不換頁，沒有「帶著 error 重進頁面」這回事，客人離開這頁的
+//   方式是按上一頁回購物車改數量、手機切去別的 app 被系統丟掉分頁、或不小心重新整理，
+//   回來時整張表單本來就是空的，一律還原才有意義；清除改由送出成功後
+//   呼叫 clearCheckoutFormMemory 負責。
 export function CheckoutFormMemory({
   storageKey,
-  hasError,
+  restore,
 }: {
   storageKey: string;
-  hasError: boolean;
+  restore: boolean;
 }) {
   const markerRef = useRef<HTMLSpanElement>(null);
 
   useEffect(() => {
     const form = markerRef.current?.closest("form");
     if (!form) return;
-    const key = `sproutly_checkout_form_${storageKey}`;
+    const key = memoryKey(storageKey);
 
     // 記的只有客人親手填／選的欄位：hidden（product_id、quantity）與 disabled
     // （「即將推出」的付款方式）不收，radio 只收選中的那顆。
@@ -73,7 +100,7 @@ export function CheckoutFormMemory({
       }
     }
 
-    if (!hasError) {
+    if (!restore) {
       try {
         sessionStorage.removeItem(key);
       } catch {
@@ -131,7 +158,7 @@ export function CheckoutFormMemory({
       form.removeEventListener("input", save);
       form.removeEventListener("change", save);
     };
-  }, [storageKey, hasError]);
+  }, [storageKey, restore]);
 
   return <span ref={markerRef} hidden />;
 }

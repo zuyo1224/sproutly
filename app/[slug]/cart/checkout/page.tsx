@@ -7,6 +7,10 @@ import { getCart, clearCart } from "@/lib/cart";
 import { clampToStock } from "@/lib/product-stock";
 import { PAYMENT_OPTIONS, SHIPPING_OPTIONS, shippingNeedsStore } from "@/lib/order-labels";
 import { CVS_STORES, formatStoreLabel, CVS_LOOKUP_URLS } from "@/lib/cvs-stores";
+import {
+  CheckoutFormMemory,
+  clearCheckoutFormMemory,
+} from "../../checkout/form-memory";
 
 type Product = {
   id: string;
@@ -263,6 +267,9 @@ export default function CartCheckoutPage() {
         return;
       }
       clearCart(slug);
+      // 單成立了才丟掉小抄——下一次結帳是新的一張單，不該塞著這次的收件資料。
+      // 只有走到這裡才清：前面每一條退出（庫存不足、結果不明）都要留著讓客人接著改。
+      clearCheckoutFormMemory(`${slug}:cart`);
       router.push(`/${slug}/checkout/success/${data.orderId}`);
     } catch {
       // fetch 自己丟錯（斷線、逾時）也走同一句：原本是把 err.message 直接顯示，
@@ -382,6 +389,11 @@ export default function CartCheckoutPage() {
 
       <div className="grid grid-cols-1 md:grid-cols-[1fr_320px] gap-10 md:gap-12">
         <form onSubmit={onSubmit} className="space-y-12">
+          {/* 填到一半離開這頁（回購物車改數量、手機切去查門市名稱、不小心重新整理）
+              再回來時，把打過的字與選過的配送／付款塞回去，不用整張重打
+              （緣由見 form-memory）。小抄的 key 跟單品結帳分開，兩條路徑各記各的。 */}
+          <CheckoutFormMemory storageKey={`${slug}:cart`} restore />
+
           {/* 收件資訊 */}
           <section className="space-y-5">
             <div>
