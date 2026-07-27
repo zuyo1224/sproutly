@@ -9,6 +9,10 @@ import {
   clampFreePos,
 } from "@/lib/theme-scale";
 import { normalizeHexColor } from "@/lib/hex-color";
+import {
+  sanitizeSectionStyles,
+  type SectionStyle,
+} from "@/lib/section-style-schema";
 
 const HERO_STYLES = new Set(["full-image", "split", "minimal", "magazine"]);
 const SECTION_KEYS = ["hero", "collections", "featured", "journal", "promise", "testimonials", "faq", "stats", "partners", "gallery", "visit"];
@@ -52,27 +56,8 @@ type EditorPayload = {
     statsColumns?: number;
     galleryColumns?: number;
     journalColumns?: number;
-    sectionStyles?: Record<string, {
-      headingAlign?: string;
-      bgColor?: string | null;
-      textColor?: string | null;
-      paddingScale?: string;
-      divider?: string;
-      headingScale?: string;
-      minHeight?: string;
-      outline?: string;
-      shadow?: string;
-      borderRadius?: string;
-      entrance?: string;
-      fontFamily?: string;
-      letterSpacing?: string;
-      lineHeight?: string;
-      opacity?: string;
-      filter?: string;
-      sectionWidth?: string;
-      sectionGap?: string;
-      headingWeight?: string;
-    }>;
+    // 直接用共用型別，不再手抄一份欄位表（值合不合法交給 sanitizeSectionStyles 擋）
+    sectionStyles?: Record<string, SectionStyle>;
   };
   homepage?: {
     promise?: string;
@@ -351,78 +336,9 @@ export async function saveEditorState(slug: string, payload: EditorPayload) {
       if (v === 2 || v === 3) layoutPatch.journalColumns = v;
     }
     if (payload.layout.sectionStyles !== undefined) {
-      const raw = payload.layout.sectionStyles;
-      const sanitized: Record<string, { headingAlign?: string; bgColor?: string | null; textColor?: string | null; paddingScale?: string; divider?: string; headingScale?: string; minHeight?: string; outline?: string; shadow?: string; borderRadius?: string; entrance?: string; fontFamily?: string; letterSpacing?: string; lineHeight?: string; opacity?: string; filter?: string; sectionWidth?: string; sectionGap?: string; headingWeight?: string }> = {};
-      if (raw && typeof raw === "object") {
-        for (const [k, v] of Object.entries(raw)) {
-          if (!k || typeof k !== "string" || k.length > 60) continue;
-          if (!v || typeof v !== "object") continue;
-          const entry: { headingAlign?: string; bgColor?: string | null; textColor?: string | null; paddingScale?: string; divider?: string; headingScale?: string; minHeight?: string; outline?: string; shadow?: string; borderRadius?: string; entrance?: string; fontFamily?: string; letterSpacing?: string; lineHeight?: string; opacity?: string; filter?: string; sectionWidth?: string; sectionGap?: string; headingWeight?: string } = {};
-          if (v.headingAlign === "left" || v.headingAlign === "center" || v.headingAlign === "right") {
-            entry.headingAlign = v.headingAlign;
-          }
-          const bg = normalizeHexColor(v.bgColor);
-          if (bg) entry.bgColor = bg;
-          else if (v.bgColor === null) entry.bgColor = null;
-          const text = normalizeHexColor(v.textColor);
-          if (text) entry.textColor = text;
-          else if (v.textColor === null) entry.textColor = null;
-          if (v.paddingScale === "compact" || v.paddingScale === "default" || v.paddingScale === "spacious") {
-            entry.paddingScale = v.paddingScale;
-          }
-          if (v.divider === "none" || v.divider === "top" || v.divider === "bottom" || v.divider === "both") {
-            entry.divider = v.divider;
-          }
-          if (v.headingScale === "small" || v.headingScale === "default" || v.headingScale === "large") {
-            entry.headingScale = v.headingScale;
-          }
-          if (v.minHeight === "auto" || v.minHeight === "tall" || v.minHeight === "fullscreen") {
-            entry.minHeight = v.minHeight;
-          }
-          if (v.outline === "none" || v.outline === "subtle" || v.outline === "strong") {
-            entry.outline = v.outline;
-          }
-          if (v.shadow === "none" || v.shadow === "soft" || v.shadow === "deep") {
-            entry.shadow = v.shadow;
-          }
-          if (v.borderRadius === "none" || v.borderRadius === "soft" || v.borderRadius === "strong") {
-            entry.borderRadius = v.borderRadius;
-          }
-          if (v.entrance === "none" || v.entrance === "fade" || v.entrance === "slide-up") {
-            entry.entrance = v.entrance;
-          }
-          if (v.fontFamily === "default" || v.fontFamily === "serif" || v.fontFamily === "sans") {
-            entry.fontFamily = v.fontFamily;
-          }
-          if (v.letterSpacing === "tight" || v.letterSpacing === "normal" || v.letterSpacing === "wide") {
-            entry.letterSpacing = v.letterSpacing;
-          }
-          if (v.lineHeight === "tight" || v.lineHeight === "normal" || v.lineHeight === "relaxed") {
-            entry.lineHeight = v.lineHeight;
-          }
-          if (v.opacity === "default" || v.opacity === "muted" || v.opacity === "faint") {
-            entry.opacity = v.opacity;
-          }
-          if (v.filter === "none" || v.filter === "grayscale" || v.filter === "sepia") {
-            entry.filter = v.filter;
-          }
-          if (v.sectionWidth === "full" || v.sectionWidth === "boxed" || v.sectionWidth === "narrow") {
-            entry.sectionWidth = v.sectionWidth;
-          }
-          if (v.sectionGap === "none" || v.sectionGap === "normal" || v.sectionGap === "large") {
-            entry.sectionGap = v.sectionGap;
-          }
-          if (v.headingWeight === "light" || v.headingWeight === "normal" || v.headingWeight === "bold") {
-            entry.headingWeight = v.headingWeight;
-          }
-          // 只要有任何一欄過關就存這個 section 的覆寫。以前是一長串 entry.X !== undefined
-          // 的手寫 or，每加一個控制就要記得補一項，漏掉那個控制單獨設定時整筆存不進去。
-          if (Object.keys(entry).length > 0) {
-            sanitized[k] = entry;
-          }
-        }
-      }
-      layoutPatch.sectionStyles = sanitized;
+      // 欄位表與合法值都在 lib/section-style-schema，跟公開頁讀回那層走同一支——
+      // 以前這裡跟 _theme.ts 各手抄一條長判斷鏈，漏在存這邊就是「存得下去、重整就沒了」。
+      layoutPatch.sectionStyles = sanitizeSectionStyles(payload.layout.sectionStyles);
     }
     if (payload.layout.freePositions !== undefined) {
       const fp = payload.layout.freePositions;
