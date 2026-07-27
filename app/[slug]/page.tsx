@@ -188,6 +188,28 @@ export default async function StoreHomePage({
     if (s === "large") return "112px";
     return undefined;
   };
+  // 底紋：純 CSS gradient 疊在底色上（不吃圖檔、不多一次請求）。線的顏色一律用 currentColor
+  // 算，所以深底淺字的 section 自動變成淺色紋，商家不用再另外挑一次紋路顏色。
+  // 回 backgroundImage + backgroundSize 一組，跟 backgroundColor 是不同屬性、不互相蓋掉。
+  const textureToVal = (s: "none" | "grid" | "dots" | "lines" | undefined) => {
+    const line = "color-mix(in srgb, currentColor 7%, transparent)";
+    if (s === "grid")
+      return {
+        backgroundImage: `linear-gradient(to right, ${line} 1px, transparent 1px), linear-gradient(to bottom, ${line} 1px, transparent 1px)`,
+        backgroundSize: "32px 32px",
+      };
+    if (s === "dots")
+      return {
+        backgroundImage: `radial-gradient(color-mix(in srgb, currentColor 14%, transparent) 1px, transparent 1px)`,
+        backgroundSize: "20px 20px",
+      };
+    if (s === "lines")
+      return {
+        backgroundImage: `repeating-linear-gradient(45deg, ${line} 0, ${line} 1px, transparent 1px, transparent 10px)`,
+        backgroundSize: "auto",
+      };
+    return undefined;
+  };
   const sectionStyleFor = (key: string) => {
     const s = theme.layout.sectionStyles[key];
     const padVar = padScaleToVar(s?.paddingScale);
@@ -203,6 +225,7 @@ export default async function StoreHomePage({
     const filter = filterToVal(s?.filter);
     const width = widthToVal(s?.sectionWidth);
     const gap = gapToVal(s?.sectionGap);
+    const texture = textureToVal(s?.texture);
     // 進場動畫：只回 "fade" / "slide-up" 給 wrapper 設 data-anim attr；
     // 實際 CSS keyframes + scroll-timeline 在 layout.tsx 注入；edit mode 內 disable
     const entranceVal: "fade" | "slide-up" | undefined =
@@ -233,10 +256,15 @@ export default async function StoreHomePage({
       filterOverride: filter,
       widthOverride: width,
       gapOverride: gap,
+      textureOverride: texture,
       entranceVal,
       headingWeightVal,
-    } as { bg: string | undefined; text: string | undefined; align: "left" | "center" | "right"; padOverride: number | undefined; divider: "none" | "top" | "bottom" | "both"; headingOverride: number | undefined; minHeightOverride: string | undefined; outlineOverride: { outline: string; outlineOffset: string } | undefined; shadowOverride: string | undefined; borderRadiusOverride: string | undefined; fontFamilyOverride: string | undefined; letterSpacingOverride: string | undefined; lineHeightOverride: number | undefined; opacityOverride: number | undefined; filterOverride: string | undefined; widthOverride: string | undefined; gapOverride: string | undefined; entranceVal: "fade" | "slide-up" | undefined; headingWeightVal: "light" | "bold" | undefined };
+    };
+    // 這裡本來手抄一份 `as { ... }`（整份欄位再列一次）。它推不出比 TS 自己推更精確的型別，
+    // 卻是第三份要跟著欄位表同步改的清單——加控制忘了補就編不過（好），改錯就悄悄放寬（不好）。
+    // 直接交給推導，下面 mergeSectionStyle 也改吃 ReturnType，兩邊不可能再漂移。
   };
+  type ResolvedSectionStyle = ReturnType<typeof sectionStyleFor>;
 
   // 把背景色 + 文字色 + padOverride + 分隔線 + 標題字級合併成 section 用的 inline style
   // 自訂 CSS variable 在 TS CSSProperties 預設沒有，所以走 Record<string, unknown> cast
@@ -260,7 +288,7 @@ export default async function StoreHomePage({
     return `color-mix(in srgb, ${c} 70%, transparent)`;
   };
   const mergeSectionStyle = (
-    s: { bg: string | undefined; text: string | undefined; padOverride: number | undefined; divider: "none" | "top" | "bottom" | "both"; headingOverride: number | undefined; minHeightOverride: string | undefined; outlineOverride: { outline: string; outlineOffset: string } | undefined; shadowOverride: string | undefined; borderRadiusOverride: string | undefined; fontFamilyOverride: string | undefined; letterSpacingOverride: string | undefined; lineHeightOverride: number | undefined; opacityOverride: number | undefined; filterOverride: string | undefined; widthOverride: string | undefined; gapOverride: string | undefined },
+    s: ResolvedSectionStyle,
     fallbackBg?: string
   ): React.CSSProperties | undefined => {
     const out: Record<string, unknown> = {};
@@ -315,6 +343,11 @@ export default async function StoreHomePage({
     if (s.gapOverride) {
       out.marginTop = s.gapOverride;
       out.marginBottom = s.gapOverride;
+    }
+    // 底紋疊在底色之上：backgroundImage 跟 backgroundColor 是兩個屬性，底色照舊看得到
+    if (s.textureOverride) {
+      out.backgroundImage = s.textureOverride.backgroundImage;
+      out.backgroundSize = s.textureOverride.backgroundSize;
     }
     return Object.keys(out).length > 0 ? (out as React.CSSProperties) : undefined;
   };
@@ -508,10 +541,13 @@ export default async function StoreHomePage({
                   // CTA 按鈕同款：定過位走 absolute，沒定位維持「主標拖走就跟著藏」。
                   const ctaPos =
                     theme.layout.freePositions[FREE_POS_KEYS.heroCta] ?? null;
+                  // Eyebrow 小標同款：定過位走 absolute，不再被主標連坐藏掉。
+                  const eyebrowPos =
+                    theme.layout.freePositions[FREE_POS_KEYS.heroEyebrow] ?? null;
                   return (
                 <div
                   className="relative px-6 sm:px-12 py-14 sm:py-20"
-                  style={{ backgroundColor: theme.bg, minHeight: taglinePos || subtitlePos || ctaPos ? "300px" : undefined }}
+                  style={{ backgroundColor: theme.bg, minHeight: taglinePos || subtitlePos || ctaPos || eyebrowPos ? "300px" : undefined }}
                   data-edit-target="hero-text-area"
                 >
                   <div
@@ -519,17 +555,36 @@ export default async function StoreHomePage({
                     style={{ textAlign: taglineAlign }}
                   >
                     {/* Eyebrow 小標：其他三版型都有渲染，full-image 一直漏掉。
-                        跟副標 / CTA 同邏輯：主標拖走後 flow 內容會疊到 absolute 主標，先藏。 */}
-                    {!taglinePos && theme.layout.heroEyebrow && (
+                        跟副標 / CTA 同邏輯：定過位走 absolute（不再被主標連坐藏），
+                        沒定位維持 flow、主標拖走就跟著藏（flow 內容會疊到 absolute 主標）。 */}
+                    {eyebrowPos && theme.layout.heroEyebrow ? (
                       <p
                         data-edit-text
                         data-edit-field="heroEyebrow"
+                        data-edit-drag={FREE_POS_KEYS.heroEyebrow}
+                        className={`text-[10px] tracking-[0.4em] uppercase ${fade1}`}
+                        style={{
+                          position: "absolute",
+                          left: `${eyebrowPos.x * 100}%`,
+                          top: `${eyebrowPos.y * 100}%`,
+                          transform: "translate(-50%, -50%)",
+                          maxWidth: "min(24rem, 90%)",
+                          color: theme.accent,
+                        }}
+                      >
+                        {theme.layout.heroEyebrow}
+                      </p>
+                    ) : !taglinePos && theme.layout.heroEyebrow ? (
+                      <p
+                        data-edit-text
+                        data-edit-field="heroEyebrow"
+                        data-edit-drag={FREE_POS_KEYS.heroEyebrow}
                         className={`text-[10px] tracking-[0.4em] uppercase mb-6 ${fade1}`}
                         style={{ color: theme.accent }}
                       >
                         {theme.layout.heroEyebrow}
                       </p>
-                    )}
+                    ) : null}
                     <h1
                       className={`leading-[1.6] ${fade1}`}
                       style={

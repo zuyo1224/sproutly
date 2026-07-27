@@ -34,6 +34,7 @@ import {
 } from "@/lib/theme-scale";
 import { FREE_POS_KEYS, SECTION_DRAG_ELEMENT, stripLegacyFreePositions } from "@/lib/free-positions";
 import type { SectionStyle } from "@/app/[slug]/_theme";
+import { applySectionStylePatch, type SectionStylePatch } from "@/lib/section-style-schema";
 
 type SectionKey =
   | "hero"
@@ -1838,11 +1839,12 @@ export function EditorWorkspace({
             {theme.layout.heroStyle === "full-image" && (
               <Field label="Free Positioning（Phase 5）">
                 {(() => {
-                  // 主標 / 副標 / 按鈕各自一個 key，哪個拖過就列哪個的重設
+                  // 主標 / 副標 / 按鈕 / 小標各自一個 key，哪個拖過就列哪個的重設
                   const dragables = [
                     { key: FREE_POS_KEYS.heroTagline, label: "主標" },
                     { key: FREE_POS_KEYS.heroSubtitle, label: "副標" },
                     { key: FREE_POS_KEYS.heroCta, label: "按鈕" },
+                    { key: FREE_POS_KEYS.heroEyebrow, label: "小標" },
                   ];
                   const dragged = dragables.filter(
                     (d) => theme.layout.freePositions[d.key]
@@ -1876,7 +1878,7 @@ export function EditorWorkspace({
                   }
                   return (
                     <p className="text-[11px] text-stone-500 leading-relaxed">
-                      在預覽內拖主標、副標或按鈕到任何位置 → 自動儲存位置。
+                      在預覽內拖主標、副標、按鈕或小標到任何位置 → 自動儲存位置。
                     </p>
                   );
                 })()}
@@ -2863,6 +2865,7 @@ export function EditorWorkspace({
           const sectionWidth = cur.sectionWidth ?? null;
           const sectionGap = cur.sectionGap ?? null;
           const headingWeight = cur.headingWeight ?? null;
+          const texture = cur.texture ?? null;
           // 色票快選：全站主色 + 中性白/奶油/淺灰/近黑，省得每次自己對色碼
           const bgSwatches = [
             { c: "#FFFFFF", label: "白" },
@@ -2879,69 +2882,11 @@ export function EditorWorkspace({
             { c: theme.primary, label: "主色" },
             { c: theme.accent, label: "Accent" },
           ];
-          function patch(p: { headingAlign?: "left" | "center" | "right"; bgColor?: string | null; textColor?: string | null; paddingScale?: "compact" | "default" | "spacious" | null; divider?: "none" | "top" | "bottom" | "both"; headingScale?: "small" | "default" | "large" | null; minHeight?: "auto" | "tall" | "fullscreen" | null; outline?: "none" | "subtle" | "strong" | null; shadow?: "none" | "soft" | "deep" | null; borderRadius?: "none" | "soft" | "strong" | null; entrance?: "none" | "fade" | "slide-up" | null; fontFamily?: "default" | "serif" | "sans" | null; letterSpacing?: "tight" | "normal" | "wide" | null; lineHeight?: "tight" | "normal" | "relaxed" | null; opacity?: "default" | "muted" | "faint" | null; filter?: "none" | "grayscale" | "sepia" | null; sectionWidth?: "full" | "boxed" | "narrow" | null; sectionGap?: "none" | "normal" | "large" | null; headingWeight?: "light" | "normal" | "bold" | null }) {
-            const next: SectionStyle = { ...cur };
-            if (p.headingAlign !== undefined) next.headingAlign = p.headingAlign;
-            if (p.bgColor !== undefined) next.bgColor = p.bgColor;
-            if (p.textColor !== undefined) next.textColor = p.textColor;
-            if (p.paddingScale === null) delete next.paddingScale;
-            else if (p.paddingScale !== undefined) next.paddingScale = p.paddingScale;
-            if (p.divider !== undefined) {
-              if (p.divider === "none") delete next.divider;
-              else next.divider = p.divider;
-            }
-            if (p.headingScale === null) delete next.headingScale;
-            else if (p.headingScale !== undefined) next.headingScale = p.headingScale;
-            if (p.minHeight === null) delete next.minHeight;
-            else if (p.minHeight !== undefined) next.minHeight = p.minHeight;
-            if (p.outline !== undefined) {
-              if (p.outline === null || p.outline === "none") delete next.outline;
-              else next.outline = p.outline;
-            }
-            if (p.shadow !== undefined) {
-              if (p.shadow === null || p.shadow === "none") delete next.shadow;
-              else next.shadow = p.shadow;
-            }
-            if (p.borderRadius !== undefined) {
-              if (p.borderRadius === null || p.borderRadius === "none") delete next.borderRadius;
-              else next.borderRadius = p.borderRadius;
-            }
-            if (p.entrance !== undefined) {
-              if (p.entrance === null || p.entrance === "none") delete next.entrance;
-              else next.entrance = p.entrance;
-            }
-            if (p.fontFamily !== undefined) {
-              if (p.fontFamily === null || p.fontFamily === "default") delete next.fontFamily;
-              else next.fontFamily = p.fontFamily;
-            }
-            if (p.letterSpacing !== undefined) {
-              if (p.letterSpacing === null || p.letterSpacing === "normal") delete next.letterSpacing;
-              else next.letterSpacing = p.letterSpacing;
-            }
-            if (p.lineHeight !== undefined) {
-              if (p.lineHeight === null || p.lineHeight === "normal") delete next.lineHeight;
-              else next.lineHeight = p.lineHeight;
-            }
-            if (p.opacity !== undefined) {
-              if (p.opacity === null || p.opacity === "default") delete next.opacity;
-              else next.opacity = p.opacity;
-            }
-            if (p.filter !== undefined) {
-              if (p.filter === null || p.filter === "none") delete next.filter;
-              else next.filter = p.filter;
-            }
-            if (p.sectionWidth !== undefined) {
-              if (p.sectionWidth === null || p.sectionWidth === "full") delete next.sectionWidth;
-              else next.sectionWidth = p.sectionWidth;
-            }
-            if (p.sectionGap !== undefined) {
-              if (p.sectionGap === null || p.sectionGap === "none") delete next.sectionGap;
-              else next.sectionGap = p.sectionGap;
-            }
-            if (p.headingWeight !== undefined) {
-              if (p.headingWeight === null || p.headingWeight === "normal") delete next.headingWeight;
-              else next.headingWeight = p.headingWeight;
-            }
+          // 這支以前是「每欄一段 if、每欄自己手打一次合法值」的長鏈，加一個控制就要在型別與
+          // 判斷各補一段。實際規則全欄一致（給 null 或選到等同預設的那個值就清掉整欄），
+          // 已經連同欄位表收進 lib/section-style-schema，這裡只負責把結果交給 undo history。
+          function patch(p: SectionStylePatch) {
+            const next = applySectionStylePatch(cur, p);
             updateLayout({
               sectionStyles: {
                 ...theme.layout.sectionStyles,
@@ -3765,6 +3710,42 @@ export function EditorWorkspace({
                     <button
                       type="button"
                       onClick={() => patch({ borderRadius: null })}
+                      className="text-stone-500 hover:text-stone-800 underline"
+                    >
+                      清除
+                    </button>
+                  )}
+                </div>
+              </Field>
+              <Field label="底紋">
+                <div className="grid grid-cols-4 gap-1.5">
+                  {([
+                    { v: "none", label: "無" },
+                    { v: "grid", label: "格線" },
+                    { v: "dots", label: "點陣" },
+                    { v: "lines", label: "斜紋" },
+                  ] as const).map((opt) => (
+                    <button
+                      key={opt.v}
+                      type="button"
+                      onClick={() => patch({ texture: opt.v })}
+                      aria-pressed={(texture ?? "none") === opt.v}
+                      className={`rounded-lg border py-2 text-xs transition ${
+                        (texture ?? "none") === opt.v
+                          ? "border-emerald-500 bg-emerald-50 text-emerald-900"
+                          : "border-stone-200 text-stone-600 hover:border-stone-400"
+                      }`}
+                    >
+                      {opt.label}
+                    </button>
+                  ))}
+                </div>
+                <div className="mt-1.5 flex items-center justify-between text-[11px] text-stone-500">
+                  <span>很淡的紋路疊在底色上，顏色跟著這段的文字色走</span>
+                  {texture && (
+                    <button
+                      type="button"
+                      onClick={() => patch({ texture: null })}
                       className="text-stone-500 hover:text-stone-800 underline"
                     >
                       清除

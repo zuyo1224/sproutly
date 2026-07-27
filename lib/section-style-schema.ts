@@ -50,7 +50,32 @@ export const SECTION_STYLE_ENUMS = {
   // 標題粗細（light 400 常規 / normal 不套維持原樣 / bold 700 粗）。只用思源黑體 / 宋體有
   // 載進來的字重（400 / 700），不挑 300 之類沒載的——瀏覽器會拿常規去假變細，中文筆畫糊掉。
   headingWeight: ["light", "normal", "bold"],
+  // 底紋（grid 細格線 / dots 點陣 / lines 斜紋），純 CSS gradient 疊在底色上，不吃圖檔。
+  // 線的顏色走 currentColor，所以深底淺字的 section 換成淺色紋、不用另外設一組顏色。
+  texture: ["none", "grid", "dots", "lines"],
 } as const satisfies Record<string, readonly string[]>;
+
+// 每一欄「等同沒設定」的那個值。editor 端商家選到它就把整欄 delete 掉（少一欄存進 DB，
+// 也讓「有沒有自訂」這件事只看 key 在不在）。沒列在這裡的欄位（headingAlign / paddingScale
+// / headingScale / minHeight）沒有這種值，只有明確按重設才清掉。
+export const SECTION_STYLE_NEUTRAL_VALUES = {
+  divider: "none",
+  outline: "none",
+  shadow: "none",
+  borderRadius: "none",
+  entrance: "none",
+  fontFamily: "default",
+  letterSpacing: "normal",
+  lineHeight: "normal",
+  opacity: "default",
+  filter: "none",
+  sectionWidth: "full",
+  sectionGap: "none",
+  headingWeight: "normal",
+  texture: "none",
+} as const satisfies Partial<{
+  [K in keyof typeof SECTION_STYLE_ENUMS]: (typeof SECTION_STYLE_ENUMS)[K][number];
+}>;
 
 // `-readonly`：欄位表是 as const（整份唯讀），若不脫掉，推出來的型別每一欄都變唯讀，
 // 編輯器那邊 `next.sectionGap = ...` / `delete next.opacity` 這種改法會整排編譯不過。
@@ -63,6 +88,36 @@ type SectionStyleEnums = {
 export interface SectionStyle extends SectionStyleEnums {
   bgColor?: string | null; // null = 用 theme.bg；hex = 覆寫
   textColor?: string | null; // null = 用 theme.text；hex = 覆寫（深底配淺字常用）
+}
+
+// 編輯器改某一段樣式時送的 patch：沒提到的欄位不動，給合法值就設，給 null 就清掉這一欄。
+export type SectionStylePatch = Partial<{
+  [K in keyof typeof SECTION_STYLE_ENUMS]: (typeof SECTION_STYLE_ENUMS)[K][number] | null;
+}> & {
+  bgColor?: string | null;
+  textColor?: string | null;
+};
+
+// 把 patch 疊到現有樣式上，回一份新的（不改原物件——編輯器的 undo history 靠每步一份新值）。
+// 選到「等同沒設定」的那個值（見 SECTION_STYLE_NEUTRAL_VALUES）跟給 null 一樣清掉整欄。
+// 顏色兩欄照舊：null 是「清掉覆寫回 theme 預設」這個有意義的狀態，要留著存回去。
+export function applySectionStylePatch(
+  current: SectionStyle,
+  patch: SectionStylePatch
+): SectionStyle {
+  const next: SectionStyle = { ...current };
+  const neutral = SECTION_STYLE_NEUTRAL_VALUES as Partial<Record<string, string>>;
+
+  for (const field of Object.keys(SECTION_STYLE_ENUMS) as (keyof typeof SECTION_STYLE_ENUMS)[]) {
+    const v = patch[field];
+    if (v === undefined) continue;
+    if (v === null || v === neutral[field]) delete next[field];
+    else (next as Record<string, unknown>)[field] = v;
+  }
+
+  if (patch.bgColor !== undefined) next.bgColor = patch.bgColor;
+  if (patch.textColor !== undefined) next.textColor = patch.textColor;
+  return next;
 }
 
 // section key 的長度上限。存檔那層本來就擋（避免有人塞一串垃圾當 key 把 theme jsonb 撐爆），

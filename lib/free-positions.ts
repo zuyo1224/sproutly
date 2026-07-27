@@ -17,6 +17,8 @@ export const FREE_POS_KEYS = {
   heroSubtitle: "hero-subtitle",
   // CTA 按鈕跟副標同期之後才開拖動，同理不用 -v2 換代。
   heroCta: "hero-cta",
+  // Eyebrow 小標是 full-image 版補渲染（e9cf28b）之後才開拖動的，同理不用 -v2。
+  heroEyebrow: "hero-eyebrow",
   collectionIntro: "collection-intro-v2",
   featuredTitle: "featured-title-v2",
   journalIntro: "journal-intro-v2",
