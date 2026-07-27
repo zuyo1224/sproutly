@@ -120,9 +120,10 @@ export default async function StoreHomePage({
   const minHeightToVal = (s: "auto" | "tall" | "fullscreen" | undefined) =>
     s === "tall" ? "80vh" : s === "fullscreen" ? "100vh" : undefined;
   // 外框：用 outline 不用 border 避免跟 divider borderTop/Bottom 衝突；outline-offset 設 negative 內凹
+  // 只回粗細，顏色交給 mergeSectionStyle 算（見下面 lineColorFor：自訂文字色的段落線要跟著換）
   const outlineToVal = (s: "none" | "subtle" | "strong" | undefined) => {
-    if (s === "subtle") return { outline: `1px solid ${theme.border}`, outlineOffset: "-1px" };
-    if (s === "strong") return { outline: `2px solid ${theme.border}`, outlineOffset: "-2px" };
+    if (s === "subtle") return { width: "1px", offset: "-1px" };
+    if (s === "strong") return { width: "2px", offset: "-2px" };
     return undefined;
   };
   // 陰影：soft 淺浮起 / deep 深浮起，雙層 box-shadow 模擬 elev 系統
@@ -302,15 +303,24 @@ export default async function StoreHomePage({
     if (s.padOverride !== undefined) out["--store-section-pad"] = String(s.padOverride);
     if (s.headingOverride !== undefined) out["--store-heading-scale"] = String(s.headingOverride);
     if (s.minHeightOverride !== undefined) out.minHeight = s.minHeightOverride;
+    // 線的顏色：沒設自訂文字色就照舊用全站 theme.border（既有店家一條線都不會變）。
+    // 設了文字色的段落改從那個色算——theme.border 是配著全站底色挑的淺灰，商家把某段做成
+    // 深綠底白字的卡片時，那條淺灰線壓在深底上幾乎等於不存在：外框選了「明顯」也看不出來、
+    // 分隔線選了上下都有也毫無動靜，看起來就是這兩個控制壞了（跟底紋一樣的毛病，那邊已經
+    // 用 currentColor 收掉，這裡還寫死）。不另開一個「線條顏色」控制讓商家自己配——多一個
+    // 要挑的值，而且挑錯（挑到跟底色同色）就又是看不見。
+    const lineColor = s.text
+      ? `color-mix(in srgb, ${s.text} 28%, transparent)`
+      : theme.border;
     if (s.divider === "top" || s.divider === "both") {
-      out.borderTop = `1px solid ${theme.border}`;
+      out.borderTop = `1px solid ${lineColor}`;
     }
     if (s.divider === "bottom" || s.divider === "both") {
-      out.borderBottom = `1px solid ${theme.border}`;
+      out.borderBottom = `1px solid ${lineColor}`;
     }
     if (s.outlineOverride) {
-      out.outline = s.outlineOverride.outline;
-      out.outlineOffset = s.outlineOverride.outlineOffset;
+      out.outline = `${s.outlineOverride.width} solid ${lineColor}`;
+      out.outlineOffset = s.outlineOverride.offset;
     }
     if (s.shadowOverride) {
       out.boxShadow = s.shadowOverride;
