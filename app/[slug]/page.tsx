@@ -264,6 +264,9 @@ export default async function StoreHomePage({
       s?.headingWeight === "light" || s?.headingWeight === "bold"
         ? s.headingWeight
         : undefined;
+    // 標題底線：同樣走 data attribute（線畫在 h2::after，只有 CSS 生得出偽元素）。
+    const headingRuleVal: "short" | "full" | undefined =
+      s?.headingRule === "short" || s?.headingRule === "full" ? s.headingRule : undefined;
     return {
       bg: s?.bgColor ?? undefined,
       text: s?.textColor ?? undefined,
@@ -286,6 +289,7 @@ export default async function StoreHomePage({
       bgGradientOverride: bgGradient,
       entranceVal,
       headingWeightVal,
+      headingRuleVal,
     };
     // 這裡本來手抄一份 `as { ... }`（整份欄位再列一次）。它推不出比 TS 自己推更精確的型別，
     // 卻是第三份要跟著欄位表同步改的清單——加控制忘了補就編不過（好），改錯就悄悄放寬（不好）。
@@ -347,6 +351,15 @@ export default async function StoreHomePage({
     if (s.outlineOverride) {
       out.outline = `${s.outlineOverride.width} solid ${lineColor}`;
       out.outlineOffset = s.outlineOverride.offset;
+    }
+    // 標題底線：線本身在 layout.tsx 的 h2::after 畫，這裡只餵它兩件 CSS 沒辦法自己知道的事。
+    // 一是顏色，跟外框／分隔線共用上面同一個 lineColor（自訂文字色算出來的淡色），三種線在
+    // 同一段裡才會是同一個顏色。二是左右外距——::after 是 block，父層的 text-align 管不到它，
+    // 對齊選了靠右、線還是留在左邊。所以把對齊翻成 margin 的 auto 給 CSS 用。
+    if (s.headingRuleVal) {
+      out["--store-rule-color"] = lineColor;
+      out["--store-rule-ml"] = s.align === "left" ? "0" : "auto";
+      out["--store-rule-mr"] = s.align === "right" ? "0" : "auto";
     }
     if (s.shadowOverride) {
       out.boxShadow = s.shadowOverride;
@@ -1035,6 +1048,7 @@ export default async function StoreHomePage({
             data-edit-label="選物提案"
             data-anim={collStyle.entranceVal}
             data-heading-weight={collStyle.headingWeightVal}
+            data-heading-rule={collStyle.headingRuleVal}
             style={mergeSectionStyle(collStyle)}
           >
             <div className="max-w-5xl mx-auto px-8 sm:px-12" style={{ textAlign: collStyle.align }}>
@@ -1177,6 +1191,7 @@ export default async function StoreHomePage({
             data-edit-label="本月選物"
             data-anim={featuredStyle.entranceVal}
             data-heading-weight={featuredStyle.headingWeightVal}
+            data-heading-rule={featuredStyle.headingRuleVal}
           >
             <div className="max-w-5xl mx-auto px-8 sm:px-12" style={{ textAlign: featuredStyle.align }}>
               {featuredFree ? (
@@ -1356,6 +1371,7 @@ export default async function StoreHomePage({
             data-edit-label="Journal 區段"
             data-anim={journalStyle.entranceVal}
             data-heading-weight={journalStyle.headingWeightVal}
+            data-heading-rule={journalStyle.headingRuleVal}
           >
           <div className="max-w-5xl mx-auto px-8 sm:px-12" style={{ textAlign: journalStyle.align }}>
             {journalFree ? (
@@ -1537,6 +1553,7 @@ export default async function StoreHomePage({
             data-edit-label="Promise 區段"
             data-anim={promiseStyle.entranceVal}
             data-heading-weight={promiseStyle.headingWeightVal}
+            data-heading-rule={promiseStyle.headingRuleVal}
           >
             <div
               className={
@@ -1673,6 +1690,7 @@ export default async function StoreHomePage({
               data-edit-label="顧客評語"
               data-anim={testimonialsStyle.entranceVal}
               data-heading-weight={testimonialsStyle.headingWeightVal}
+              data-heading-rule={testimonialsStyle.headingRuleVal}
             >
               <div
                 className="max-w-5xl mx-auto px-8 sm:px-12"
@@ -1860,6 +1878,7 @@ export default async function StoreHomePage({
               data-edit-label="常見問題"
               data-anim={faqStyle.entranceVal}
               data-heading-weight={faqStyle.headingWeightVal}
+              data-heading-rule={faqStyle.headingRuleVal}
             >
               <div
                 className="max-w-2xl mx-auto px-6 sm:px-12"
@@ -2022,6 +2041,7 @@ export default async function StoreHomePage({
               data-edit-label="數字 / 成就"
               data-anim={statsStyle.entranceVal}
               data-heading-weight={statsStyle.headingWeightVal}
+              data-heading-rule={statsStyle.headingRuleVal}
             >
               <div
                 className="max-w-5xl mx-auto px-8 sm:px-12"
@@ -2185,6 +2205,7 @@ export default async function StoreHomePage({
               data-edit-label="合作夥伴"
               data-anim={partnersStyle.entranceVal}
               data-heading-weight={partnersStyle.headingWeightVal}
+              data-heading-rule={partnersStyle.headingRuleVal}
             >
               <div
                 className="max-w-5xl mx-auto px-8 sm:px-12"
@@ -2276,6 +2297,7 @@ export default async function StoreHomePage({
               data-edit-label="圖片相簿"
               data-anim={galleryStyle.entranceVal}
               data-heading-weight={galleryStyle.headingWeightVal}
+              data-heading-rule={galleryStyle.headingRuleVal}
             >
               <div
                 className="max-w-6xl mx-auto px-6 sm:px-10"
@@ -2425,6 +2447,7 @@ export default async function StoreHomePage({
             data-edit-label="來訪資訊"
             data-anim={visitStyle.entranceVal}
             data-heading-weight={visitStyle.headingWeightVal}
+            data-heading-rule={visitStyle.headingRuleVal}
           >
             <div
               data-edit-drag={FREE_POS_KEYS.visitCard}

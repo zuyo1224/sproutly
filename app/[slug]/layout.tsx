@@ -702,6 +702,29 @@ export default async function PublicStoreLayout({
           font-weight: 700;
         }
 
+        /* 區段標題底線：editor 各 section panel「標題底線」三按鈕（無 / 短線 / 整條）。
+           畫成 h2::after 而不是 h2 的 border-bottom —— h2 是 block、寬度撐滿整欄，border
+           畫出來一律是整條，做不出雜誌感的那截短線。走 data attribute 同樣是為了「沒設就
+           整條規則不存在」。顏色與左右外距由 page.tsx 用 inline CSS variable 餵進來：顏色
+           跟外框／分隔線共用同一個口徑（有自訂文字色就從它算，沒有就全站 border 色），
+           外距是因為 ::after 是 block，父層的 text-align 管不到它，對齊靠右時線會留在左邊。
+           排除 hero — hero 主標自成一組控制。 */
+        section[data-edit-target]:not([data-edit-target="hero"])[data-heading-rule] h2::after {
+          content: "";
+          display: block;
+          height: 2px;
+          margin-top: 0.7em;
+          margin-left: var(--store-rule-ml, auto);
+          margin-right: var(--store-rule-mr, auto);
+          background: var(--store-rule-color, currentColor);
+        }
+        section[data-edit-target]:not([data-edit-target="hero"])[data-heading-rule="short"] h2::after {
+          width: 56px;
+        }
+        section[data-edit-target]:not([data-edit-target="hero"])[data-heading-rule="full"] h2::after {
+          width: 100%;
+        }
+
         /* 區段進場動畫：editor 各 section panel「進場動畫」三按鈕（無 / 淡入 / 上滑）
            靠 data-anim attribute + CSS scroll-driven animation（animation-timeline: view()）觸發。
            沒設定 = 無 attr = 不動畫；fade = opacity 0→1；slide-up = opacity + translateY 上滑。

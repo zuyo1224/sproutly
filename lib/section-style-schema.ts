@@ -56,6 +56,9 @@ export const SECTION_STYLE_ENUMS = {
   // 底色明暗變化（top 上緣加重 / bottom 下緣加重 / vignette 四周暈影），跟底紋同樣走
   // currentColor：淺底深字的段落疊出來是變暗，深底淺字的段落疊出來是提亮，不用另挑顏色。
   bgGradient: ["none", "top", "bottom", "vignette"],
+  // 標題底線（short 短線 / full 整條），畫在該段 h2 底下。顏色跟外框、分隔線同一個口徑
+  // （自訂文字色算出來的淡色），所以深底淺字的段落自動變成淺色線、不用另挑一次顏色。
+  headingRule: ["none", "short", "full"],
 } as const satisfies Record<string, readonly string[]>;
 
 // 每一欄「等同沒設定」的那個值。editor 端商家選到它就把整欄 delete 掉（少一欄存進 DB，
@@ -77,6 +80,7 @@ export const SECTION_STYLE_NEUTRAL_VALUES = {
   headingWeight: "normal",
   texture: "none",
   bgGradient: "none",
+  headingRule: "none",
 } as const satisfies Partial<{
   [K in keyof typeof SECTION_STYLE_ENUMS]: (typeof SECTION_STYLE_ENUMS)[K][number];
 }>;
