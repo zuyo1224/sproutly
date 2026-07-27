@@ -25,6 +25,7 @@ import {
 // 分轉整數元的 CSV 金額欄跟客人匯出共用同一份（見檔內說明）。
 import { centsToYuan } from "@/lib/format-price";
 import { fetchAllRows } from "@/lib/fetch-all-rows";
+import { fetchOrderItems } from "@/lib/fetch-order-items";
 
 type Params = Promise<{ slug: string }>;
 
@@ -106,34 +107,22 @@ export async function GET(
   // 品項只查「這次要匯出的訂單」的，不是全店歷史全部——原本用 merchant_id join
   // 撈整家店的品項，Supabase 一次最多回約 1000 列，店累積品項超過之後，落在
   // 上限外的訂單在 CSV 裡「商品」欄空白、「件數」變 0，畫面上明明看得到品項。
-  // 訂單編號一批可能上千筆，in() 塞太多會讓查詢網址過長，分批各查一次再合併。
+  // 撈法（分批 in() 顧網址長度、每批再翻頁顧 1000 列上限）收在 lib/fetch-order-items，
+  // 跟客人的訂單紀錄共用同一份——同一件事兩處各抄一份的時候，1000 列那半也兩處一起漏。
   const itemsByOrder = new Map<
     string,
     { name: string; qty: number; price: number }[]
   >();
-  type ItemRow = {
-    order_id: string;
-    name_snapshot: string;
-    quantity: number;
-    price_cents_snapshot: number;
-  };
   const orderIds = (orders ?? []).map((o) => o.id as string);
-  const CHUNK = 100;
-  for (let i = 0; i < orderIds.length; i += CHUNK) {
-    const { data: chunkItems } = await supabase
-      .from("sproutly_order_items")
-      .select("order_id, name_snapshot, quantity, price_cents_snapshot")
-      .in("order_id", orderIds.slice(i, i + CHUNK));
-    (chunkItems as ItemRow[] | null)?.forEach((it) => {
-      const arr = itemsByOrder.get(it.order_id) ?? [];
-      arr.push({
-        name: it.name_snapshot,
-        qty: it.quantity,
-        price: it.price_cents_snapshot,
-      });
-      itemsByOrder.set(it.order_id, arr);
+  (await fetchOrderItems(supabase, orderIds)).forEach((it) => {
+    const arr = itemsByOrder.get(it.order_id) ?? [];
+    arr.push({
+      name: it.name_snapshot,
+      qty: it.quantity,
+      price: it.price_cents_snapshot,
     });
-  }
+    itemsByOrder.set(it.order_id, arr);
+  });
 
   const headers = [
     "訂單編號",

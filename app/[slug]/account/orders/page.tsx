@@ -13,6 +13,7 @@ import {
 import { RecentlyViewed } from "@/app/_components/recently-viewed";
 import { StoreEmptyState } from "@/app/_components/store-empty-state";
 import { fetchAllRows } from "@/lib/fetch-all-rows";
+import { fetchOrderItems } from "@/lib/fetch-order-items";
 
 // 蓋掉父層 account/layout 的「會員中心」，訂單列表分頁顯示「訂單紀錄」。
 export const metadata: Metadata = { title: "訂單紀錄" };
@@ -82,13 +83,6 @@ export default async function CustomerOrdersPage({
     currency: string;
     created_at: string;
   };
-  type OrderItem = {
-    order_id: string;
-    name_snapshot: string;
-    quantity: number;
-    price_cents_snapshot: number;
-  };
-
   // 整批一次 select 會吃 Supabase 1000 列上限：常客訂單破千後，尾端的舊單
   // 默默不見、上方「共 N 筆」也算少。改走 fetch-all-rows 翻頁撈齊，排序在
   // created_at 之外補 id tiebreaker，每頁切點才穩定不漏不重。
@@ -104,21 +98,13 @@ export default async function CustomerOrdersPage({
       .order("id", { ascending: true })
       .range(from, to)
   );
-  let items: OrderItem[] = [];
-  if (orderList.length > 0) {
-    // 品項不能把幾千個 order id 塞進同一個 .in()（回列數一樣吃 1000 上限，
-    // 超出的品項整列消失、卡片變空白；網址也會過長）。比照訂單匯出
-    // 每 100 筆訂單一批撈。
-    const ids = orderList.map((o) => o.id);
-    const CHUNK = 100;
-    for (let i = 0; i < ids.length; i += CHUNK) {
-      const { data: it } = await supabase
-        .from("sproutly_order_items")
-        .select("order_id, name_snapshot, quantity, price_cents_snapshot")
-        .in("order_id", ids.slice(i, i + CHUNK));
-      items.push(...((it as OrderItem[] | null) ?? []));
-    }
-  }
+  // 品項不能把幾千個 order id 塞進同一個 .in()（網址會過長），也不能一批只發一次
+  // select（回列數吃 Supabase 1000 上限，超出的品項整列消失、卡片變空白）。
+  // 這兩件事的撈法收在 lib/fetch-order-items，跟後台訂單匯出共用同一份。
+  const items = await fetchOrderItems(
+    supabase,
+    orderList.map((o) => o.id)
+  );
 
   const totalCount = orderList.length;
   // 「在追蹤」只算真的還在跑的單。卡片 pill 已把進行中（accent）跟已結案（灰）分開，
