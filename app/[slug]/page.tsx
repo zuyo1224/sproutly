@@ -211,6 +211,30 @@ export default async function StoreHomePage({
       };
     return undefined;
   };
+  // 底色明暗變化：跟底紋同樣是疊在底色上的一層 gradient，顏色一樣走 currentColor——
+  // 淺底深字的段落疊出來是往暗走、深底淺字的段落疊出來是提亮，商家不用再挑一次顏色，
+  // 也不會挑出一個在自己底色上看不見（或整段變髒）的值。
+  // 回傳跟 textureToVal 同一個形狀（backgroundImage + backgroundSize），下面合併時當成
+  // 一層 layer 疊上去，跟底紋可以同時存在。
+  const gradientToVal = (s: "none" | "top" | "bottom" | "vignette" | undefined) => {
+    const heavy = "color-mix(in srgb, currentColor 12%, transparent)";
+    if (s === "top")
+      return {
+        backgroundImage: `linear-gradient(to bottom, ${heavy} 0%, transparent 55%)`,
+        backgroundSize: "auto",
+      };
+    if (s === "bottom")
+      return {
+        backgroundImage: `linear-gradient(to top, ${heavy} 0%, transparent 55%)`,
+        backgroundSize: "auto",
+      };
+    if (s === "vignette")
+      return {
+        backgroundImage: `radial-gradient(ellipse at center, transparent 45%, ${heavy} 100%)`,
+        backgroundSize: "auto",
+      };
+    return undefined;
+  };
   const sectionStyleFor = (key: string) => {
     const s = theme.layout.sectionStyles[key];
     const padVar = padScaleToVar(s?.paddingScale);
@@ -227,6 +251,7 @@ export default async function StoreHomePage({
     const width = widthToVal(s?.sectionWidth);
     const gap = gapToVal(s?.sectionGap);
     const texture = textureToVal(s?.texture);
+    const bgGradient = gradientToVal(s?.bgGradient);
     // 進場動畫：只回 "fade" / "slide-up" 給 wrapper 設 data-anim attr；
     // 實際 CSS keyframes + scroll-timeline 在 layout.tsx 注入；edit mode 內 disable
     const entranceVal: "fade" | "slide-up" | undefined =
@@ -258,6 +283,7 @@ export default async function StoreHomePage({
       widthOverride: width,
       gapOverride: gap,
       textureOverride: texture,
+      bgGradientOverride: bgGradient,
       entranceVal,
       headingWeightVal,
     };
@@ -354,10 +380,17 @@ export default async function StoreHomePage({
       out.marginTop = s.gapOverride;
       out.marginBottom = s.gapOverride;
     }
-    // 底紋疊在底色之上：backgroundImage 跟 backgroundColor 是兩個屬性，底色照舊看得到
-    if (s.textureOverride) {
-      out.backgroundImage = s.textureOverride.backgroundImage;
-      out.backgroundSize = s.textureOverride.backgroundSize;
+    // 底紋與明暗變化都疊在底色之上：backgroundImage 跟 backgroundColor 是兩個屬性，
+    // 底色照舊看得到。兩者共用同一個 backgroundImage，所以收成一個 layer 陣列用逗號串
+    // ——直接各寫一次會後面那個把前面那個整層蓋掉，變成「兩個控制都點得動、一起用就有
+    // 一個沒反應」。backgroundSize 也照同樣順序給，逗號分隔的第 n 個對到第 n 層。
+    // 明暗變化排在前面（＝疊在上層），紋路在它底下，看起來才像光打在有紋路的紙上。
+    const bgLayers = [s.bgGradientOverride, s.textureOverride].filter(
+      (l): l is { backgroundImage: string; backgroundSize: string } => Boolean(l)
+    );
+    if (bgLayers.length > 0) {
+      out.backgroundImage = bgLayers.map((l) => l.backgroundImage).join(", ");
+      out.backgroundSize = bgLayers.map((l) => l.backgroundSize).join(", ");
     }
     return Object.keys(out).length > 0 ? (out as React.CSSProperties) : undefined;
   };

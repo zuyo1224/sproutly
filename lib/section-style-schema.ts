@@ -53,6 +53,9 @@ export const SECTION_STYLE_ENUMS = {
   // 底紋（grid 細格線 / dots 點陣 / lines 斜紋），純 CSS gradient 疊在底色上，不吃圖檔。
   // 線的顏色走 currentColor，所以深底淺字的 section 換成淺色紋、不用另外設一組顏色。
   texture: ["none", "grid", "dots", "lines"],
+  // 底色明暗變化（top 上緣加重 / bottom 下緣加重 / vignette 四周暈影），跟底紋同樣走
+  // currentColor：淺底深字的段落疊出來是變暗，深底淺字的段落疊出來是提亮，不用另挑顏色。
+  bgGradient: ["none", "top", "bottom", "vignette"],
 } as const satisfies Record<string, readonly string[]>;
 
 // 每一欄「等同沒設定」的那個值。editor 端商家選到它就把整欄 delete 掉（少一欄存進 DB，
@@ -73,6 +76,7 @@ export const SECTION_STYLE_NEUTRAL_VALUES = {
   sectionGap: "none",
   headingWeight: "normal",
   texture: "none",
+  bgGradient: "none",
 } as const satisfies Partial<{
   [K in keyof typeof SECTION_STYLE_ENUMS]: (typeof SECTION_STYLE_ENUMS)[K][number];
 }>;
