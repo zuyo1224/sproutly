@@ -808,6 +808,26 @@ export default async function PublicStoreLayout({
           text-align: right;
         }
 
+        /* 區段內文一行字數：editor 各 section panel「一行字數」三按鈕（不限制 / 約 34 字 / 約 24 字）。
+           滿版區段的長段落，一行會拉到整個螢幕寬——眼睛掃到行尾再回來時找不到下一行的行首，
+           讀起來一直在跳行。報紙與雜誌都是把內文收成窄欄解這件事，Sproutly 原本沒有這個控制：
+           「區段寬度」收的是整段（標題、卡片、照片一起變窄），做不出「標題滿版、內文窄欄」
+           這個最常見的排法；商家想讓長描述好讀，只能整段縮掉。
+           寬度用 em 不用 ch：ch 是「0」這個字的寬度，中文字大約是它的兩倍，用 ch 算出來的
+           欄寬會比商家看到的字數少一半。em 等於元素自己的字級，也就是一個中文字的寬度，
+           所以 34em 約等於一行 34 個中文字，小字級的段落也會按自己的大小收窄。
+           只套段落（含引言、定義），不套 li 與圖說：li 常在 flex / grid 裡排成一列，下面那兩條
+           auto 外距在 flex 裡的意思是「把自己推到中間」，會改到版面；圖說本來就短，收窄沒意義。
+           左右外距靠 page.tsx 餵變數，不寫死 auto——窄欄的外距要跟著這一段的內文對齊走
+           （置中就兩邊 auto、靠左就左邊 0），CSS 這裡讀不到那個值（對齊是 inline text-align，
+           選擇器選不到），跟標題底線那條 ::after 同一個處境、同一個解法。
+           沒設（或選「不限制」）就沒 attribute、整條規則不存在，既有店家的段落寬度一律不動。 */
+        section[data-edit-target][data-body-measure] :is(p, blockquote, dd) {
+          max-width: var(--store-measure-max);
+          margin-left: var(--store-measure-ml, auto);
+          margin-right: var(--store-measure-mr, auto);
+        }
+
         /* 區段濾鏡：editor 各 section panel「濾鏡」三按鈕（無 / 黑白 / 復古）。
            只套這一段裡的照片。原本是 page.tsx 直接在 section 上設 filter，整個子樹一起被洗
            ——這一段的自訂底色、文字色、用主色畫的小標與短線全部跟著變灰或染成褐調，等於把

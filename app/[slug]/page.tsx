@@ -174,6 +174,16 @@ export default async function StoreHomePage({
     if (s === "relaxed") return 2.0;
     return undefined;
   };
+  // 內文一行字數：normal 約 34 字 / narrow 約 24 字 / auto 不限制（不套）
+  // 用 em 而不是 ch：ch 是「0」的寬度，中文字大約是它的兩倍，34ch 排出來只有 17 個中文字，
+  // 跟商家在按鈕上看到的字數對不上。em 等於元素自己的字級 = 一個中文字的寬度，所以段落
+  // 小一級的字也會按自己的大小收窄，而不是全部收成同一個絕對寬度。
+  // 實際畫寬度的是 layout.tsx 那條針對段落的規則（見那裡），這裡只餵值。
+  const measureToVal = (s: "auto" | "normal" | "narrow" | undefined) => {
+    if (s === "normal") return "34em";
+    if (s === "narrow") return "24em";
+    return undefined;
+  };
   // 淡化：muted 0.85 / faint 0.7 / default 不套
   // 純 inline opacity，整段 section 都變淡（含 children）
   // 適合 partners / stats / faq 這種次要 section 變灰階感，襯托 hero / featured 跳出
@@ -310,6 +320,11 @@ export default async function StoreHomePage({
       s?.bodyAlign === "left" || s?.bodyAlign === "center" || s?.bodyAlign === "right"
         ? s.bodyAlign
         : undefined;
+    // 內文一行字數：attribute 當開關（CSS 判斷不了變數有沒有設，用 var() fallback 那條
+    // max-width 會落在每一段的每個段落上），寬度本身走 --store-measure-max。
+    const bodyMeasureVal: "normal" | "narrow" | undefined =
+      s?.bodyMeasure === "normal" || s?.bodyMeasure === "narrow" ? s.bodyMeasure : undefined;
+    const bodyMeasureMax = measureToVal(s?.bodyMeasure);
     // 濾鏡：值走 --store-media-filter（見 mergeSectionStyle），但還要一個 attribute 當開關
     // ——CSS 沒有「這個變數有沒有設」的判斷式，只能靠 attribute selector 做到「沒設就整條
     // 規則不存在」，否則那條 img 規則會落在每一段的每張照片上，蓋掉圖片自己的 filter。
@@ -342,6 +357,8 @@ export default async function StoreHomePage({
       lineHeightVal,
       filterVal,
       bodyAlignVal,
+      bodyMeasureVal,
+      bodyMeasureMax,
     };
     // 這裡本來手抄一份 `as { ... }`（整份欄位再列一次）。它推不出比 TS 自己推更精確的型別，
     // 卻是第三份要跟著欄位表同步改的清單——加控制忘了補就編不過（好），改錯就悄悄放寬（不好）。
@@ -428,6 +445,17 @@ export default async function StoreHomePage({
       out["--store-rule-color"] = lineColor;
       out["--store-rule-ml"] = s.align === "left" ? "0" : "auto";
       out["--store-rule-mr"] = s.align === "right" ? "0" : "auto";
+    }
+    // 內文一行字數：寬度本身餵給 layout.tsx 那條規則，另外把「窄欄往哪邊靠」也一起翻成
+    // margin 的 auto。收窄之後段落就不再撐滿整欄，靠 text-align 決定不了那個窄框自己站哪裡
+    // ——不餵的話一律置中，商家把內文設成靠左（報紙那種標題置中、內文靠左）就會看到一段
+    // 靠左的字浮在畫面正中間。跟標題底線那條 ::after 一樣，對齊是 inline text-align，CSS
+    // 選擇器讀不到，只能從這裡算好。沒單獨設內文對齊就跟著這一段的標題對齊走。
+    if (s.bodyMeasureVal) {
+      out["--store-measure-max"] = s.bodyMeasureMax;
+      const bodyAlign = s.bodyAlignVal ?? s.align;
+      out["--store-measure-ml"] = bodyAlign === "left" ? "0" : "auto";
+      out["--store-measure-mr"] = bodyAlign === "right" ? "0" : "auto";
     }
     // 側邊色條：報紙／雜誌標示重點段落（引言、公告）那條粗色條。整段外框太重、分隔線
     // 太輕，中間這一級原本做不出來。畫在 borderLeft / borderRight——分隔線佔的是上下兩邊、
@@ -1171,6 +1199,7 @@ export default async function StoreHomePage({
             data-line-height={collStyle.lineHeightVal}
             data-section-filter={collStyle.filterVal}
             data-body-align={collStyle.bodyAlignVal}
+            data-body-measure={collStyle.bodyMeasureVal}
             style={mergeSectionStyle(collStyle)}
           >
             <div className="max-w-5xl mx-auto px-8 sm:px-12" style={{ textAlign: collStyle.align }}>
@@ -1318,6 +1347,7 @@ export default async function StoreHomePage({
             data-line-height={featuredStyle.lineHeightVal}
             data-section-filter={featuredStyle.filterVal}
             data-body-align={featuredStyle.bodyAlignVal}
+            data-body-measure={featuredStyle.bodyMeasureVal}
           >
             <div className="max-w-5xl mx-auto px-8 sm:px-12" style={{ textAlign: featuredStyle.align }}>
               {featuredFree ? (
@@ -1502,6 +1532,7 @@ export default async function StoreHomePage({
             data-line-height={journalStyle.lineHeightVal}
             data-section-filter={journalStyle.filterVal}
             data-body-align={journalStyle.bodyAlignVal}
+            data-body-measure={journalStyle.bodyMeasureVal}
           >
           <div className="max-w-5xl mx-auto px-8 sm:px-12" style={{ textAlign: journalStyle.align }}>
             {journalFree ? (
@@ -1688,6 +1719,7 @@ export default async function StoreHomePage({
             data-line-height={promiseStyle.lineHeightVal}
             data-section-filter={promiseStyle.filterVal}
             data-body-align={promiseStyle.bodyAlignVal}
+            data-body-measure={promiseStyle.bodyMeasureVal}
           >
             <div
               className={
@@ -1829,6 +1861,7 @@ export default async function StoreHomePage({
               data-line-height={testimonialsStyle.lineHeightVal}
               data-section-filter={testimonialsStyle.filterVal}
               data-body-align={testimonialsStyle.bodyAlignVal}
+              data-body-measure={testimonialsStyle.bodyMeasureVal}
             >
               <div
                 className="max-w-5xl mx-auto px-8 sm:px-12"
@@ -2021,6 +2054,7 @@ export default async function StoreHomePage({
               data-line-height={faqStyle.lineHeightVal}
               data-section-filter={faqStyle.filterVal}
               data-body-align={faqStyle.bodyAlignVal}
+              data-body-measure={faqStyle.bodyMeasureVal}
             >
               <div
                 className="max-w-2xl mx-auto px-6 sm:px-12"
@@ -2188,6 +2222,7 @@ export default async function StoreHomePage({
               data-line-height={statsStyle.lineHeightVal}
               data-section-filter={statsStyle.filterVal}
               data-body-align={statsStyle.bodyAlignVal}
+              data-body-measure={statsStyle.bodyMeasureVal}
             >
               <div
                 className="max-w-5xl mx-auto px-8 sm:px-12"
@@ -2356,6 +2391,7 @@ export default async function StoreHomePage({
               data-line-height={partnersStyle.lineHeightVal}
               data-section-filter={partnersStyle.filterVal}
               data-body-align={partnersStyle.bodyAlignVal}
+              data-body-measure={partnersStyle.bodyMeasureVal}
             >
               <div
                 className="max-w-5xl mx-auto px-8 sm:px-12"
@@ -2456,6 +2492,7 @@ export default async function StoreHomePage({
               data-line-height={galleryStyle.lineHeightVal}
               data-section-filter={galleryStyle.filterVal}
               data-body-align={galleryStyle.bodyAlignVal}
+              data-body-measure={galleryStyle.bodyMeasureVal}
             >
               <div
                 className="max-w-6xl mx-auto px-6 sm:px-10"
@@ -2610,6 +2647,7 @@ export default async function StoreHomePage({
             data-line-height={visitStyle.lineHeightVal}
             data-section-filter={visitStyle.filterVal}
             data-body-align={visitStyle.bodyAlignVal}
+            data-body-measure={visitStyle.bodyMeasureVal}
           >
             <div
               data-edit-drag={FREE_POS_KEYS.visitCard}

@@ -21,6 +21,11 @@ export const SECTION_STYLE_ENUMS = {
   // headingAlign 設的是整段容器的 text-align，段落是繼承來的，所以標題與內文一直只能同進退；
   // 報紙與雜誌最常見的「標題置中、內文靠左」在 Sproutly 做不出來。這一欄只管內文元素。
   bodyAlign: ["auto", "left", "center", "right"],
+  // 內文一行字數（auto 不限制 / normal 約 34 字 / narrow 約 24 字）。滿版區段的長段落一行
+  // 會拉到整個螢幕寬，眼睛換行時找不到下一行的行首，讀起來一直在跳行；報紙與雜誌都是把
+  // 內文收成窄欄解這件事。限制的是段落自己的寬度，不是整段區段（sectionWidth 收的是整段，
+  // 連標題、卡片、照片一起變窄，做不出「標題滿版、內文窄欄」）。
+  bodyMeasure: ["auto", "normal", "narrow"],
   // 該 section 獨立上下空白（覆寫全網站值）
   paddingScale: ["compact", "default", "spacious"],
   // 分隔線（上 / 下 / 上下都有 / 沒有）
@@ -74,6 +79,7 @@ export const SECTION_STYLE_ENUMS = {
 // / headingScale / minHeight）沒有這種值，只有明確按重設才清掉。
 export const SECTION_STYLE_NEUTRAL_VALUES = {
   bodyAlign: "auto",
+  bodyMeasure: "auto",
   divider: "none",
   outline: "none",
   shadow: "none",

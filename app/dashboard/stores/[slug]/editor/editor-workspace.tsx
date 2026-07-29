@@ -2848,6 +2848,7 @@ export function EditorWorkspace({
           const cur = theme.layout.sectionStyles[selectedSection] ?? {};
           const align = cur.headingAlign ?? "center";
           const bodyAlign = cur.bodyAlign ?? null;
+          const bodyMeasure = cur.bodyMeasure ?? null;
           const bg = cur.bgColor ?? null;
           const textCol = cur.textColor ?? null;
           const pad = cur.paddingScale ?? null;
@@ -3277,6 +3278,41 @@ export function EditorWorkspace({
                     <button
                       type="button"
                       onClick={() => patch({ bodyAlign: null })}
+                      className="text-stone-500 hover:text-stone-800 underline"
+                    >
+                      清除
+                    </button>
+                  )}
+                </div>
+              </Field>
+              <Field label="一行字數">
+                <div className="grid grid-cols-3 gap-1.5">
+                  {([
+                    { v: "auto", label: "不限制" },
+                    { v: "normal", label: "約 34 字" },
+                    { v: "narrow", label: "約 24 字" },
+                  ] as const).map((opt) => (
+                    <button
+                      key={opt.v}
+                      type="button"
+                      onClick={() => patch({ bodyMeasure: opt.v })}
+                      aria-pressed={(bodyMeasure ?? "auto") === opt.v}
+                      className={`rounded-lg border py-2 text-xs transition ${
+                        (bodyMeasure ?? "auto") === opt.v
+                          ? "border-emerald-500 bg-emerald-50 text-emerald-900"
+                          : "border-stone-200 text-stone-600 hover:border-stone-400"
+                      }`}
+                    >
+                      {opt.label}
+                    </button>
+                  ))}
+                </div>
+                <div className="mt-1.5 flex items-center justify-between text-[11px] text-stone-500">
+                  <span>長段落收成窄欄好讀，標題與照片不跟著變窄</span>
+                  {bodyMeasure && (
+                    <button
+                      type="button"
+                      onClick={() => patch({ bodyMeasure: null })}
                       className="text-stone-500 hover:text-stone-800 underline"
                     >
                       清除
