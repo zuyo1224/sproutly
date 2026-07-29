@@ -681,12 +681,55 @@ export default async function PublicStoreLayout({
           }
         }
 
-        /* 區段標題字級：editor 各 section panel「標題大小」三按鈕（小 0.85 / 預設 1 / 大 1.25）
-           透過 inline --store-heading-scale CSS variable 套到該 section 的 h2 上。
-           用 em 倍率（相對於 Tailwind 已套的 text-3xl 等 base），不寫 inline class 才能保留各 section
-           原本的字級層級。排除 hero — hero 主標另有 heroTaglineFontScale 控制（避免雙重縮放）。 */
-        section[data-edit-target]:not([data-edit-target="hero"]) h2 {
-          font-size: calc(1em * var(--store-heading-scale, 1));
+        /* 區段標題字級：editor 各 section panel「標題大小」三按鈕（小 0.85 / 預設 1 / 大 1.25）。
+           這條規則以前是「所有 section h2 一律 font-size: calc(1em * var(--store-heading-scale, 1))」
+           ——沒設定的店家也吃得到，而 1em 是相對「上一層」的字級，不是 h2 自己的。這個 <style>
+           沒有包在 @layer 裡，Tailwind v4 的工具類全在 @layer utilities，沒分層的一律贏有分層的，
+           所以 h2 上的 text-3xl / text-4xl 全被蓋掉：每間店的區段標題都縮成內文大小（實測該是
+           30px 的標題渲染出來 16px），標題跟內文分不出來；設了「大」也只是內文的 1.25 倍。
+           改成跟標題粗細、標題底線同一招 data attribute：沒設就整條規則不存在，Tailwind 的字級
+           原封不動；有設才用下面這份基準字級乘上去，倍率乘的才是標題本身。
+           基準字級跟 page.tsx 各 h2 的 text-* class 對齊（三種：選物提案／本月選物 text-xl
+           sm:text-2xl、慢讀區 text-3xl sm:text-4xl lg:text-[2.5rem]、其餘 text-2xl sm:text-3xl
+           md:text-4xl）——那邊改字級這裡要跟著改，只有商家真的用了「標題大小」才看得出差別。
+           排除 hero — hero 主標另有 heroTaglineFontScale 控制（避免雙重縮放）。 */
+        section[data-edit-target] {
+          --store-h2-base: 1.5rem;
+        }
+        section[data-edit-target="collections"],
+        section[data-edit-target="featured"] {
+          --store-h2-base: 1.25rem;
+        }
+        section[data-edit-target="journal"] {
+          --store-h2-base: 1.875rem;
+        }
+        @media (min-width: 640px) {
+          section[data-edit-target] {
+            --store-h2-base: 1.875rem;
+          }
+          section[data-edit-target="collections"],
+          section[data-edit-target="featured"] {
+            --store-h2-base: 1.5rem;
+          }
+          section[data-edit-target="journal"] {
+            --store-h2-base: 2.25rem;
+          }
+        }
+        @media (min-width: 768px) {
+          section[data-edit-target]:not([data-edit-target="collections"]):not([data-edit-target="featured"]):not([data-edit-target="journal"]) {
+            --store-h2-base: 2.25rem;
+          }
+        }
+        @media (min-width: 1024px) {
+          section[data-edit-target="journal"] {
+            --store-h2-base: 2.5rem;
+          }
+        }
+        section[data-edit-target]:not([data-edit-target="hero"])[data-heading-scale="small"] h2 {
+          font-size: calc(var(--store-h2-base, 1.5rem) * 0.85);
+        }
+        section[data-edit-target]:not([data-edit-target="hero"])[data-heading-scale="large"] h2 {
+          font-size: calc(var(--store-h2-base, 1.5rem) * 1.25);
         }
 
         /* 區段標題粗細：editor 各 section panel「標題粗細」三按鈕（細 / 預設 / 粗）。

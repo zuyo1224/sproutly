@@ -114,8 +114,14 @@ export default async function StoreHomePage({
   // 沒設定 = 跟著全網站 sectionPaddingScale（透過 layout.tsx 的 attribute selector 套用）
   const padScaleToVar = (s: "compact" | "default" | "spacious" | undefined) =>
     s === "compact" ? 0.6 : s === "spacious" ? 1.4 : s === "default" ? 1 : undefined;
-  const headingScaleToVar = (s: "small" | "default" | "large" | undefined) =>
-    s === "small" ? 0.85 : s === "large" ? 1.25 : s === "default" ? 1 : undefined;
+  // 標題字級：只回 "small" / "large" 給 wrapper 設 data-heading-scale，倍率在 layout.tsx 算。
+  // 本來是回一個倍率、走 inline --store-heading-scale，配一條「所有 section h2 一律
+  // font-size: calc(1em * var(--store-heading-scale, 1))」的 CSS。那條規則沒設也一直在，
+  // 而它寫在 layout.tsx 的 <style>（不在 @layer 裡）、Tailwind v4 的工具類全在 @layer utilities
+  // ——沒分層的贏有分層的，所以它把每一段 h2 的 text-3xl / text-4xl 全部蓋掉，標題一律縮成
+  // 上層繼承的內文大小（實測 30px 的標題渲染出來 16px），而且倍率乘的是內文而不是標題本身。
+  // 改成跟標題粗細、標題底線同一招 data attribute：沒設就整條規則不存在，Tailwind 的字級原封
+  // 不動；有設才套 layout.tsx 那份基準字級 × 倍率。
   // 最小高度：auto 不設定 / tall 80vh / fullscreen 100vh
   const minHeightToVal = (s: "auto" | "tall" | "fullscreen" | undefined) =>
     s === "tall" ? "80vh" : s === "fullscreen" ? "100vh" : undefined;
@@ -238,7 +244,8 @@ export default async function StoreHomePage({
   const sectionStyleFor = (key: string) => {
     const s = theme.layout.sectionStyles[key];
     const padVar = padScaleToVar(s?.paddingScale);
-    const headingVar = headingScaleToVar(s?.headingScale);
+    const headingScaleVal: "small" | "large" | undefined =
+      s?.headingScale === "small" || s?.headingScale === "large" ? s.headingScale : undefined;
     const minH = minHeightToVal(s?.minHeight);
     const outline = outlineToVal(s?.outline);
     const shadow = shadowToVal(s?.shadow);
@@ -277,7 +284,7 @@ export default async function StoreHomePage({
       align: s?.headingAlign ?? "center",
       padOverride: padVar,
       divider: s?.divider ?? "none",
-      headingOverride: headingVar,
+      headingScaleVal,
       minHeightOverride: minH,
       outlineOverride: outline,
       shadowOverride: shadow,
@@ -309,7 +316,7 @@ export default async function StoreHomePage({
   // 約定：直接坐在區段底色上的文字，inline color 要寫 var(--store-text)/var(--store-text-muted)
   // 而不是 theme.text/theme.textMuted —— 寫死 theme 值會把這裡的覆寫蓋掉，商家設了文字色沒反應。
   // 例外是有自己底色的容器（promise 卡 / 客人好評卡 / No Image 佔位）：底色不跟區段換，字也維持 theme 值。
-  // 標題字級 --store-heading-scale 由 layout.tsx 的 attribute selector 套到 h2 上（em 相對倍率）
+  // 標題字級走 data-heading-scale attribute（見上面 headingScaleVal），不從這裡輸出 inline style
   // muted 文字色（副題 / eyebrow）= 自訂文字色加 ~70% 透明。原本只會「字串接 B3」，
   // 那只在文字色剛好是 6 碼 hex 才成立；商家在文字色框打 rgb() / 顏色名 / 3 碼 #abc 時，
   // 接出來是無效 CSS，muted 色靜默失效 —— 在自訂深底上副題就看不見（對比防呆只認 hex，也不會警告）。
@@ -336,7 +343,6 @@ export default async function StoreHomePage({
       out["--store-text-muted"] = mutedFromText(s.text); // 加 ~70% alpha 給 muted 用（容任何合法顏色）
     }
     if (s.padOverride !== undefined) out["--store-section-pad"] = String(s.padOverride);
-    if (s.headingOverride !== undefined) out["--store-heading-scale"] = String(s.headingOverride);
     if (s.minHeightOverride !== undefined) out.minHeight = s.minHeightOverride;
     // 線的顏色：沒設自訂文字色就照舊用全站 theme.border（既有店家一條線都不會變）。
     // 設了文字色的段落改從那個色算——theme.border 是配著全站底色挑的淺灰，商家把某段做成
@@ -1066,6 +1072,7 @@ export default async function StoreHomePage({
             data-edit-target="collections"
             data-edit-label="選物提案"
             data-anim={collStyle.entranceVal}
+            data-heading-scale={collStyle.headingScaleVal}
             data-heading-weight={collStyle.headingWeightVal}
             data-heading-rule={collStyle.headingRuleVal}
             style={mergeSectionStyle(collStyle)}
@@ -1209,6 +1216,7 @@ export default async function StoreHomePage({
             data-edit-target="featured"
             data-edit-label="本月選物"
             data-anim={featuredStyle.entranceVal}
+            data-heading-scale={featuredStyle.headingScaleVal}
             data-heading-weight={featuredStyle.headingWeightVal}
             data-heading-rule={featuredStyle.headingRuleVal}
           >
@@ -1389,6 +1397,7 @@ export default async function StoreHomePage({
             data-edit-target="journal"
             data-edit-label="Journal 區段"
             data-anim={journalStyle.entranceVal}
+            data-heading-scale={journalStyle.headingScaleVal}
             data-heading-weight={journalStyle.headingWeightVal}
             data-heading-rule={journalStyle.headingRuleVal}
           >
@@ -1571,6 +1580,7 @@ export default async function StoreHomePage({
             data-edit-target="promise"
             data-edit-label="Promise 區段"
             data-anim={promiseStyle.entranceVal}
+            data-heading-scale={promiseStyle.headingScaleVal}
             data-heading-weight={promiseStyle.headingWeightVal}
             data-heading-rule={promiseStyle.headingRuleVal}
           >
@@ -1708,6 +1718,7 @@ export default async function StoreHomePage({
               data-edit-target="testimonials"
               data-edit-label="顧客評語"
               data-anim={testimonialsStyle.entranceVal}
+              data-heading-scale={testimonialsStyle.headingScaleVal}
               data-heading-weight={testimonialsStyle.headingWeightVal}
               data-heading-rule={testimonialsStyle.headingRuleVal}
             >
@@ -1896,6 +1907,7 @@ export default async function StoreHomePage({
               data-edit-target="faq"
               data-edit-label="常見問題"
               data-anim={faqStyle.entranceVal}
+              data-heading-scale={faqStyle.headingScaleVal}
               data-heading-weight={faqStyle.headingWeightVal}
               data-heading-rule={faqStyle.headingRuleVal}
             >
@@ -2059,6 +2071,7 @@ export default async function StoreHomePage({
               data-edit-target="stats"
               data-edit-label="數字 / 成就"
               data-anim={statsStyle.entranceVal}
+              data-heading-scale={statsStyle.headingScaleVal}
               data-heading-weight={statsStyle.headingWeightVal}
               data-heading-rule={statsStyle.headingRuleVal}
             >
@@ -2223,6 +2236,7 @@ export default async function StoreHomePage({
               data-edit-target="partners"
               data-edit-label="合作夥伴"
               data-anim={partnersStyle.entranceVal}
+              data-heading-scale={partnersStyle.headingScaleVal}
               data-heading-weight={partnersStyle.headingWeightVal}
               data-heading-rule={partnersStyle.headingRuleVal}
             >
@@ -2315,6 +2329,7 @@ export default async function StoreHomePage({
               data-edit-target="gallery"
               data-edit-label="圖片相簿"
               data-anim={galleryStyle.entranceVal}
+              data-heading-scale={galleryStyle.headingScaleVal}
               data-heading-weight={galleryStyle.headingWeightVal}
               data-heading-rule={galleryStyle.headingRuleVal}
             >
@@ -2465,6 +2480,7 @@ export default async function StoreHomePage({
             data-edit-target="visit"
             data-edit-label="來訪資訊"
             data-anim={visitStyle.entranceVal}
+            data-heading-scale={visitStyle.headingScaleVal}
             data-heading-weight={visitStyle.headingWeightVal}
             data-heading-rule={visitStyle.headingRuleVal}
           >
