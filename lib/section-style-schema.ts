@@ -26,6 +26,12 @@ export const SECTION_STYLE_ENUMS = {
   // 內文收成窄欄解這件事。限制的是段落自己的寬度，不是整段區段（sectionWidth 收的是整段，
   // 連標題、卡片、照片一起變窄，做不出「標題滿版、內文窄欄」）。
   bodyMeasure: ["auto", "normal", "narrow"],
+  // 內文字級（default 不套 / small 縮小一成 / large 放大一成多）。標題已經有 headingScale
+  // 可以各段獨立調大小，內文一直只能跟著全網站走：長描述在手機上偏小、想讓某一段的短文
+  // 當引言放大也做不到，商家唯一的辦法是把整段的字體設定改掉、連標題一起變。
+  // 這一欄只縮放內文自己，而且是等比縮放——同一段裡描述、圖說、引言原本的大小差距照原樣
+  // 保留，不會被壓成同一級（見 layout.tsx 那條規則裡為什麼不能用 font-size 的說明）。
+  bodyScale: ["small", "default", "large"],
   // 該 section 獨立上下空白（覆寫全網站值）
   paddingScale: ["compact", "default", "spacious"],
   // 分隔線（上 / 下 / 上下都有 / 沒有）
@@ -80,6 +86,7 @@ export const SECTION_STYLE_ENUMS = {
 export const SECTION_STYLE_NEUTRAL_VALUES = {
   bodyAlign: "auto",
   bodyMeasure: "auto",
+  bodyScale: "default",
   divider: "none",
   outline: "none",
   shadow: "none",

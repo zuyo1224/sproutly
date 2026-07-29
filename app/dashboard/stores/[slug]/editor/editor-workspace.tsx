@@ -2849,6 +2849,7 @@ export function EditorWorkspace({
           const align = cur.headingAlign ?? "center";
           const bodyAlign = cur.bodyAlign ?? null;
           const bodyMeasure = cur.bodyMeasure ?? null;
+          const bodyScale = cur.bodyScale ?? null;
           const bg = cur.bgColor ?? null;
           const textCol = cur.textColor ?? null;
           const pad = cur.paddingScale ?? null;
@@ -3313,6 +3314,41 @@ export function EditorWorkspace({
                     <button
                       type="button"
                       onClick={() => patch({ bodyMeasure: null })}
+                      className="text-stone-500 hover:text-stone-800 underline"
+                    >
+                      清除
+                    </button>
+                  )}
+                </div>
+              </Field>
+              <Field label="內文大小">
+                <div className="grid grid-cols-3 gap-1.5">
+                  {([
+                    { v: "small", label: "小" },
+                    { v: "default", label: "預設" },
+                    { v: "large", label: "大" },
+                  ] as const).map((opt) => (
+                    <button
+                      key={opt.v}
+                      type="button"
+                      onClick={() => patch({ bodyScale: opt.v })}
+                      aria-pressed={(bodyScale ?? "default") === opt.v}
+                      className={`rounded-lg border py-2 text-xs transition ${
+                        (bodyScale ?? "default") === opt.v
+                          ? "border-emerald-500 bg-emerald-50 text-emerald-900"
+                          : "border-stone-200 text-stone-600 hover:border-stone-400"
+                      }`}
+                    >
+                      {opt.label}
+                    </button>
+                  ))}
+                </div>
+                <div className="mt-1.5 flex items-center justify-between text-[11px] text-stone-500">
+                  <span>只縮放段落文字，標題另有「標題大小」那一組</span>
+                  {bodyScale && (
+                    <button
+                      type="button"
+                      onClick={() => patch({ bodyScale: null })}
                       className="text-stone-500 hover:text-stone-800 underline"
                     >
                       清除

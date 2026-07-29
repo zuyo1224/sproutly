@@ -828,6 +828,28 @@ export default async function PublicStoreLayout({
           margin-right: var(--store-measure-mr, auto);
         }
 
+        /* 區段內文字級：editor 各 section panel「內文大小」三按鈕（小 / 預設 / 大）。
+           標題早就能各段獨立調大小（「標題大小」那組），內文一直只能跟著全網站的字體設定走
+           ——長描述在手機上偏小、想把某一段的短文當引言放大，商家唯一的辦法是改整段的字體
+           設定、標題跟著一起變，等於做不到。
+           不用 font-size：CSS 沒有「拿這個元素自己現在的字級再乘一個倍數」的寫法，em 是對
+           父層算的。同一段裡的內文本來大小不同（描述 1rem、圖說 0.75rem、引言 1.25rem 是設計
+           上的層級），寫 font-size: 1.12em 會讓它們全部變成父層的 1.12 倍，也就是三種字一起
+           被壓成同一級——那不是放大內文，是把這一段的層級抹平。
+           zoom 縮放的是元素自己算出來的大小，所以三種字各自按原本的比例變大變小，層級原封
+           不動；連帶段落的外距也等比縮放（放大的字距離也該跟著開），比只動字級自然。
+           不套 li：站上唯一的 li 是常見問題那一排（帶上下框線的整列），縮放整列會連問題與
+           那條線一起動；答案本身是 p，已經被這條規則收進來了。
+           跟一行字數同一個處境：em 的最大寬度是對元素自己的字級算，所以窄欄會跟著字一起縮
+           放，兩個控制同時開也還是商家看到的那個字數。
+           沒設（或選「預設」）就沒 attribute、整條規則不存在，既有店家一個字都不會變。 */
+        section[data-edit-target][data-body-scale="small"] :is(p, blockquote, dd, figcaption) {
+          zoom: 0.9;
+        }
+        section[data-edit-target][data-body-scale="large"] :is(p, blockquote, dd, figcaption) {
+          zoom: 1.12;
+        }
+
         /* 區段濾鏡：editor 各 section panel「濾鏡」三按鈕（無 / 黑白 / 復古）。
            只套這一段裡的照片。原本是 page.tsx 直接在 section 上設 filter，整個子樹一起被洗
            ——這一段的自訂底色、文字色、用主色畫的小標與短線全部跟著變灰或染成褐調，等於把
