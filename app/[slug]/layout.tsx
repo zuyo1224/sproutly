@@ -803,19 +803,24 @@ export default async function PublicStoreLayout({
           animation-timeline: view();
           animation-range: entry 0% entry 35%;
         }
+        /* 收尾的 opacity 讀 --store-section-opacity（區段「淡化」控制設的，見 page.tsx
+           mergeSectionStyle）：動畫宣告在階層上壓過 inline style，寫死 1 會讓「淡化」跟
+           「進場動畫」兩個控制湊在一起時前者完全沒作用。沒設變數就是 1，原本行為不變。 */
         @keyframes sproutly-section-anim-fade {
           from { opacity: 0; }
-          to { opacity: 1; }
+          to { opacity: var(--store-section-opacity, 1); }
         }
         @keyframes sproutly-section-anim-slide {
           from { opacity: 0; transform: translateY(40px); }
-          to { opacity: 1; transform: translateY(0); }
+          to { opacity: var(--store-section-opacity, 1); transform: translateY(0); }
         }
         @media (prefers-reduced-motion: reduce) {
           section[data-edit-target][data-anim="fade"],
           section[data-edit-target][data-anim="slide-up"] {
             animation: none !important;
-            opacity: 1 !important;
+            /* 同上：這裡的 !important 連 inline opacity 都壓得過，寫死 1 等於在「不要動畫」
+               的偏好下把淡化一起關掉。 */
+            opacity: var(--store-section-opacity, 1) !important;
             transform: none !important;
           }
         }

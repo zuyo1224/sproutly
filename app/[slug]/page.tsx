@@ -455,8 +455,17 @@ export default async function StoreHomePage({
     if (s.lineHeightOverride !== undefined) {
       out.lineHeight = s.lineHeightOverride;
     }
+    // 淡化：除了 section 自己的 opacity，還要一起餵 --store-section-opacity。
+    // 光設 inline opacity 這個控制對幾乎每一間店都是沒作用的——每個區段都掛著進場淡入
+    // （全站「動畫」開關預設就是開的），再加上各段自己的「進場動畫」，而動畫的最後一格
+    // 寫死 `to { opacity: 1 }` 配 fill both：動畫宣告在階層上壓過 inline style，所以那個
+    // 1 會一路蓋著、商家設的 0.85 / 0.7 從頭到尾沒機會出現。商家點得動也存得進去，畫面
+    // 就是沒變（要關掉全站動畫才看得到，但沒人會知道要去關那個）。跟區段字體（693459c）、
+    // 字距（55ca20c）同一個毛病同一個解法：動畫的收尾值改讀變數，這裡覆寫變數，沒設就
+    // 退回 1、既有店家零變化。動畫的起點仍是 0（淡入照舊從全透明開始）。
     if (s.opacityOverride !== undefined) {
       out.opacity = s.opacityOverride;
+      out["--store-section-opacity"] = String(s.opacityOverride);
     }
     if (s.filterOverride) {
       out.filter = s.filterOverride;
@@ -574,9 +583,12 @@ export default async function StoreHomePage({
         />
       )}
       <style>{`
+        /* 收尾的 opacity 讀 --store-section-opacity（區段「淡化」控制設的，見 mergeSectionStyle）：
+           動畫宣告壓過 inline style，寫死 1 會讓淡化在每一間開著動畫的店裡完全沒作用。
+           沒設變數就是 1，跟原本一模一樣。 */
         @keyframes sproutly-subtle-fade {
           from { opacity: 0; transform: translateY(24px); }
-          to { opacity: 1; transform: translateY(0); }
+          to { opacity: var(--store-section-opacity, 1); transform: translateY(0); }
         }
         .sproutly-subtle-fade {
           animation: sproutly-subtle-fade 1.2s cubic-bezier(0.22, 1, 0.36, 1) both;
