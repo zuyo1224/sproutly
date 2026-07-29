@@ -157,8 +157,11 @@ export default async function StoreHomePage({
     return undefined;
   };
   // 行高：tight 緊湊（1.4，標題密集感）/ relaxed 舒展（2.0，長段落呼吸感）/ normal 預設不套
-  // line-height 是 CSS inherited 屬性，套到 section 後內文 / 副題 / 描述會自動繼承；
-  // 大標自己 inline 設的 lineHeight 1.2 不受影響（直接 override 繼承值）
+  // line-height 是 CSS inherited 屬性，套到 section 後沒有自己行高的文字會自動繼承；
+  // 大標自己 inline 設的 lineHeight 1.2 不受影響（直接 override 繼承值）。
+  // 但真正的內文（描述、卡片說明、常見問題答案）幾乎每一段都掛著 Tailwind 的
+  // leading-[1.9] 之類 class，元素自己的 class 一樣蓋掉繼承值 —— 那些才是商家調行高
+  // 想調的字，所以另外走 data-line-height attribute 由 layout.tsx 補一條規則（見那裡）。
   const lineHeightToVal = (s: "tight" | "normal" | "relaxed" | undefined) => {
     if (s === "tight") return 1.4;
     if (s === "relaxed") return 2.0;
@@ -278,6 +281,11 @@ export default async function StoreHomePage({
     // 分隔線同一份口徑，分開算就會出現同一段裡三種線各一個顏色）。
     const accentBarVal: "left" | "right" | undefined =
       s?.accentBar === "left" || s?.accentBar === "right" ? s.accentBar : undefined;
+    // 行高：section 上的 inline lineHeight 只管得到沒有自己行高的文字，內文段落都帶
+    // leading-* class（元素自己的 class 蓋掉繼承值），所以同一個值也走一份 data attribute
+    // 讓 layout.tsx 針對內文元素補規則。沒設就沒 attribute、整條規則不存在。
+    const lineHeightVal: "tight" | "relaxed" | undefined =
+      s?.lineHeight === "tight" || s?.lineHeight === "relaxed" ? s.lineHeight : undefined;
     return {
       bg: s?.bgColor ?? undefined,
       text: s?.textColor ?? undefined,
@@ -302,6 +310,7 @@ export default async function StoreHomePage({
       headingWeightVal,
       headingRuleVal,
       accentBarVal,
+      lineHeightVal,
     };
     // 這裡本來手抄一份 `as { ... }`（整份欄位再列一次）。它推不出比 TS 自己推更精確的型別，
     // 卻是第三份要跟著欄位表同步改的清單——加控制忘了補就編不過（好），改錯就悄悄放寬（不好）。
@@ -1083,6 +1092,7 @@ export default async function StoreHomePage({
             data-heading-scale={collStyle.headingScaleVal}
             data-heading-weight={collStyle.headingWeightVal}
             data-heading-rule={collStyle.headingRuleVal}
+            data-line-height={collStyle.lineHeightVal}
             style={mergeSectionStyle(collStyle)}
           >
             <div className="max-w-5xl mx-auto px-8 sm:px-12" style={{ textAlign: collStyle.align }}>
@@ -1227,6 +1237,7 @@ export default async function StoreHomePage({
             data-heading-scale={featuredStyle.headingScaleVal}
             data-heading-weight={featuredStyle.headingWeightVal}
             data-heading-rule={featuredStyle.headingRuleVal}
+            data-line-height={featuredStyle.lineHeightVal}
           >
             <div className="max-w-5xl mx-auto px-8 sm:px-12" style={{ textAlign: featuredStyle.align }}>
               {featuredFree ? (
@@ -1408,6 +1419,7 @@ export default async function StoreHomePage({
             data-heading-scale={journalStyle.headingScaleVal}
             data-heading-weight={journalStyle.headingWeightVal}
             data-heading-rule={journalStyle.headingRuleVal}
+            data-line-height={journalStyle.lineHeightVal}
           >
           <div className="max-w-5xl mx-auto px-8 sm:px-12" style={{ textAlign: journalStyle.align }}>
             {journalFree ? (
@@ -1591,6 +1603,7 @@ export default async function StoreHomePage({
             data-heading-scale={promiseStyle.headingScaleVal}
             data-heading-weight={promiseStyle.headingWeightVal}
             data-heading-rule={promiseStyle.headingRuleVal}
+            data-line-height={promiseStyle.lineHeightVal}
           >
             <div
               className={
@@ -1729,6 +1742,7 @@ export default async function StoreHomePage({
               data-heading-scale={testimonialsStyle.headingScaleVal}
               data-heading-weight={testimonialsStyle.headingWeightVal}
               data-heading-rule={testimonialsStyle.headingRuleVal}
+              data-line-height={testimonialsStyle.lineHeightVal}
             >
               <div
                 className="max-w-5xl mx-auto px-8 sm:px-12"
@@ -1918,6 +1932,7 @@ export default async function StoreHomePage({
               data-heading-scale={faqStyle.headingScaleVal}
               data-heading-weight={faqStyle.headingWeightVal}
               data-heading-rule={faqStyle.headingRuleVal}
+              data-line-height={faqStyle.lineHeightVal}
             >
               <div
                 className="max-w-2xl mx-auto px-6 sm:px-12"
@@ -2082,6 +2097,7 @@ export default async function StoreHomePage({
               data-heading-scale={statsStyle.headingScaleVal}
               data-heading-weight={statsStyle.headingWeightVal}
               data-heading-rule={statsStyle.headingRuleVal}
+              data-line-height={statsStyle.lineHeightVal}
             >
               <div
                 className="max-w-5xl mx-auto px-8 sm:px-12"
@@ -2247,6 +2263,7 @@ export default async function StoreHomePage({
               data-heading-scale={partnersStyle.headingScaleVal}
               data-heading-weight={partnersStyle.headingWeightVal}
               data-heading-rule={partnersStyle.headingRuleVal}
+              data-line-height={partnersStyle.lineHeightVal}
             >
               <div
                 className="max-w-5xl mx-auto px-8 sm:px-12"
@@ -2340,6 +2357,7 @@ export default async function StoreHomePage({
               data-heading-scale={galleryStyle.headingScaleVal}
               data-heading-weight={galleryStyle.headingWeightVal}
               data-heading-rule={galleryStyle.headingRuleVal}
+              data-line-height={galleryStyle.lineHeightVal}
             >
               <div
                 className="max-w-6xl mx-auto px-6 sm:px-10"
@@ -2491,6 +2509,7 @@ export default async function StoreHomePage({
             data-heading-scale={visitStyle.headingScaleVal}
             data-heading-weight={visitStyle.headingWeightVal}
             data-heading-rule={visitStyle.headingRuleVal}
+            data-line-height={visitStyle.lineHeightVal}
           >
             <div
               data-edit-drag={FREE_POS_KEYS.visitCard}

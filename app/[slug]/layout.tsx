@@ -768,6 +768,25 @@ export default async function PublicStoreLayout({
           width: 100%;
         }
 
+        /* 區段內文行高：editor 各 section panel「行高」三按鈕（緊湊 / 預設 / 舒展）。
+           page.tsx 已經在 section 上設 inline line-height，但那是繼承值，而真正的內文
+           ——描述、卡片說明、引言、常見問題答案——每一段都掛著 leading-[1.9] / leading-[1.95]
+           之類 Tailwind class，元素自己的 class 一律蓋掉繼承值。結果商家把行高調成舒展，
+           畫面上會動的只有極少數沒帶 leading class 的字，段落本身紋風不動；這控制點得動、
+           存得進去，看起來就是壞的（跟區段字體 693459c、標題大小 5f18af9 同一個毛病）。
+           這份 <style> 沒包在 @layer，Tailwind v4 的工具類全在 @layer utilities，沒分層的
+           一律贏有分層的，所以這幾條規則蓋得過 leading-* class。
+           只套內文元素（段落 / 條列 / 引言 / 圖說），不碰 h1-h3 —— 標題的行高是設計上跟
+           字級綁在一起的（大標 1.05、卡片標題 1.4），跟著內文一起拉開會散掉；商家要調
+           標題另有字級 / 粗細 / 底線那一組控制。數值跟 page.tsx 的 lineHeightToVal 對齊。
+           沒設就沒 attribute、整條規則不存在，既有店家一行字都不會變。 */
+        section[data-edit-target][data-line-height="tight"] :is(p, li, blockquote, figcaption, dd) {
+          line-height: 1.4;
+        }
+        section[data-edit-target][data-line-height="relaxed"] :is(p, li, blockquote, figcaption, dd) {
+          line-height: 2;
+        }
+
         /* 區段進場動畫：editor 各 section panel「進場動畫」三按鈕（無 / 淡入 / 上滑）
            靠 data-anim attribute + CSS scroll-driven animation（animation-timeline: view()）觸發。
            沒設定 = 無 attr = 不動畫；fade = opacity 0→1；slide-up = opacity + translateY 上滑。
