@@ -392,8 +392,16 @@ export default async function StoreHomePage({
     if (s.borderRadiusOverride) {
       out.borderRadius = s.borderRadiusOverride;
     }
+    // 字體：除了 section 自己的 fontFamily，還要一起改寫 --store-font。
+    // 光設 fontFamily 這個控制等於沒作用——字體是繼承來的，但這一段裡幾乎每個字
+    // （eyebrow、h2、描述、卡片標題）都在自己的 inline style 寫死 fontFamily:
+    // var(--store-font)，元素自己寫的一律蓋掉繼承值。商家在某段選了「宋體」，
+    // 存得進去、重整還在，畫面上一個字都沒變。跟文字色那條同一個毛病、同一個解法
+    // （見上面 --store-text 的約定）：覆寫變數，所有讀變數的字自然跟著換。
+    // 變數只設在這個 section 上，全站字體與其他段落不受影響。
     if (s.fontFamilyOverride) {
       out.fontFamily = s.fontFamilyOverride;
+      out["--store-font"] = s.fontFamilyOverride;
     }
     if (s.letterSpacingOverride) {
       out.letterSpacing = s.letterSpacingOverride;
