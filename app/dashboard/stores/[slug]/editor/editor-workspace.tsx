@@ -4070,7 +4070,7 @@ export function EditorWorkspace({
                   ))}
                 </div>
                 <div className="mt-1.5 flex items-center justify-between text-[11px] text-stone-500">
-                  <span>整段 section 套濾鏡，合作 / 相簿黑白做雜誌感、journal 復古做懷舊感</span>
+                  <span>套在這段的照片上（文字與配色不動），合作 / 相簿黑白做雜誌感、慢讀區復古做懷舊感</span>
                   {filter && (
                     <button
                       type="button"

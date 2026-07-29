@@ -183,8 +183,16 @@ export default async function StoreHomePage({
     return undefined;
   };
   // 濾鏡：grayscale 黑白（partners / gallery 雜誌感）/ sepia 復古褐（journal 懷舊感）/ none 不套
-  // CSS filter 套整段 section，所有 children（含圖片 / 文字 / icon）自動繼承視覺效果
-  // sepia 加 brightness(1.02) 補回變暗的亮度，避免整段沉下去
+  // 只套這一段裡的照片，不套整段 section。本來是直接把 filter 設在 section 上，所有 children
+  // 一起被洗——那會把商家在同一個面板裡剛挑好的顏色全部作廢：這一段的自訂底色、文字色、
+  // 還有用主色畫的小標與短線，選了黑白就全變灰、選了復古就一起染成褐調（連底色的色相都
+  // 位移）。而 filter 是把整個子樹先畫成一張圖再處理，子元素再寫 filter: none 也救不回來，
+  // 商家沒有任何辦法只讓照片變黑白而留住自己配的色。兩個控制湊在一起互相毀掉，跟淡化
+  // ×進場動畫（a2428d8）、主色×自訂底色（29140d6）是同一類毛病。
+  // 這控制要做的本來就是照片的事——編輯器的說明寫的是「合作 / 相簿黑白做雜誌感、journal
+  // 復古做懷舊感」，那幾段畫面上的重量全在照片；文字跟著洗只是副作用。所以值改成餵
+  // --store-media-filter，由 layout.tsx 對這一段裡的 img / video 套（見那份 <style>）。
+  // sepia 加 brightness(1.02) 補回變暗的亮度，避免照片沉下去
   const filterToVal = (s: "none" | "grayscale" | "sepia" | undefined) => {
     if (s === "grayscale") return "grayscale(1)";
     if (s === "sepia") return "sepia(0.6) brightness(1.02)";
@@ -293,6 +301,11 @@ export default async function StoreHomePage({
     // 讓 layout.tsx 針對內文元素補規則。沒設就沒 attribute、整條規則不存在。
     const lineHeightVal: "tight" | "relaxed" | undefined =
       s?.lineHeight === "tight" || s?.lineHeight === "relaxed" ? s.lineHeight : undefined;
+    // 濾鏡：值走 --store-media-filter（見 mergeSectionStyle），但還要一個 attribute 當開關
+    // ——CSS 沒有「這個變數有沒有設」的判斷式，只能靠 attribute selector 做到「沒設就整條
+    // 規則不存在」，否則那條 img 規則會落在每一段的每張照片上，蓋掉圖片自己的 filter。
+    const filterVal: "grayscale" | "sepia" | undefined =
+      s?.filter === "grayscale" || s?.filter === "sepia" ? s.filter : undefined;
     return {
       bg: s?.bgColor ?? undefined,
       text: s?.textColor ?? undefined,
@@ -318,6 +331,7 @@ export default async function StoreHomePage({
       headingRuleVal,
       accentBarVal,
       lineHeightVal,
+      filterVal,
     };
     // 這裡本來手抄一份 `as { ... }`（整份欄位再列一次）。它推不出比 TS 自己推更精確的型別，
     // 卻是第三份要跟著欄位表同步改的清單——加控制忘了補就編不過（好），改錯就悄悄放寬（不好）。
@@ -467,8 +481,11 @@ export default async function StoreHomePage({
       out.opacity = s.opacityOverride;
       out["--store-section-opacity"] = String(s.opacityOverride);
     }
+    // 濾鏡：只餵變數，不在 section 上設 filter（見上面 filterToVal 那段——設在 section 上會
+    // 把這一段的自訂底色、文字色、主色一起洗掉，而且救不回來）。真正畫的是 layout.tsx 那條
+    // 針對 img / video 的規則，開關是下面各 section 的 data-section-filter。
     if (s.filterOverride) {
-      out.filter = s.filterOverride;
+      out["--store-media-filter"] = s.filterOverride;
     }
     // 區段寬度：限制 maxWidth 並置中，讓 section 變成置中的窄band / 卡片
     if (s.widthOverride) {
@@ -1142,6 +1159,7 @@ export default async function StoreHomePage({
             data-heading-weight={collStyle.headingWeightVal}
             data-heading-rule={collStyle.headingRuleVal}
             data-line-height={collStyle.lineHeightVal}
+            data-section-filter={collStyle.filterVal}
             style={mergeSectionStyle(collStyle)}
           >
             <div className="max-w-5xl mx-auto px-8 sm:px-12" style={{ textAlign: collStyle.align }}>
@@ -1287,6 +1305,7 @@ export default async function StoreHomePage({
             data-heading-weight={featuredStyle.headingWeightVal}
             data-heading-rule={featuredStyle.headingRuleVal}
             data-line-height={featuredStyle.lineHeightVal}
+            data-section-filter={featuredStyle.filterVal}
           >
             <div className="max-w-5xl mx-auto px-8 sm:px-12" style={{ textAlign: featuredStyle.align }}>
               {featuredFree ? (
@@ -1469,6 +1488,7 @@ export default async function StoreHomePage({
             data-heading-weight={journalStyle.headingWeightVal}
             data-heading-rule={journalStyle.headingRuleVal}
             data-line-height={journalStyle.lineHeightVal}
+            data-section-filter={journalStyle.filterVal}
           >
           <div className="max-w-5xl mx-auto px-8 sm:px-12" style={{ textAlign: journalStyle.align }}>
             {journalFree ? (
@@ -1653,6 +1673,7 @@ export default async function StoreHomePage({
             data-heading-weight={promiseStyle.headingWeightVal}
             data-heading-rule={promiseStyle.headingRuleVal}
             data-line-height={promiseStyle.lineHeightVal}
+            data-section-filter={promiseStyle.filterVal}
           >
             <div
               className={
@@ -1792,6 +1813,7 @@ export default async function StoreHomePage({
               data-heading-weight={testimonialsStyle.headingWeightVal}
               data-heading-rule={testimonialsStyle.headingRuleVal}
               data-line-height={testimonialsStyle.lineHeightVal}
+              data-section-filter={testimonialsStyle.filterVal}
             >
               <div
                 className="max-w-5xl mx-auto px-8 sm:px-12"
@@ -1982,6 +2004,7 @@ export default async function StoreHomePage({
               data-heading-weight={faqStyle.headingWeightVal}
               data-heading-rule={faqStyle.headingRuleVal}
               data-line-height={faqStyle.lineHeightVal}
+              data-section-filter={faqStyle.filterVal}
             >
               <div
                 className="max-w-2xl mx-auto px-6 sm:px-12"
@@ -2147,6 +2170,7 @@ export default async function StoreHomePage({
               data-heading-weight={statsStyle.headingWeightVal}
               data-heading-rule={statsStyle.headingRuleVal}
               data-line-height={statsStyle.lineHeightVal}
+              data-section-filter={statsStyle.filterVal}
             >
               <div
                 className="max-w-5xl mx-auto px-8 sm:px-12"
@@ -2313,6 +2337,7 @@ export default async function StoreHomePage({
               data-heading-weight={partnersStyle.headingWeightVal}
               data-heading-rule={partnersStyle.headingRuleVal}
               data-line-height={partnersStyle.lineHeightVal}
+              data-section-filter={partnersStyle.filterVal}
             >
               <div
                 className="max-w-5xl mx-auto px-8 sm:px-12"
@@ -2355,7 +2380,11 @@ export default async function StoreHomePage({
                         loading="lazy"
                         decoding="async"
                         className="h-8 sm:h-10 md:h-12 w-auto opacity-50 hover:opacity-100 transition duration-500"
-                        style={{ filter: "grayscale(100%)" }}
+                        // 合作 logo 本來就一律轉黑白（設計上要它們安靜地排一列，不跟主
+                        // 畫面搶色）。這個 inline 值蓋得過 layout.tsx 那條 img 規則，所以
+                        // 商家把這段設成「復古」時只有它不跟著變；改讀同一個變數，沒設
+                        // 濾鏡就退回原本的黑白，既有店家一張 logo 都不會變。
+                        style={{ filter: "var(--store-media-filter, grayscale(100%))" }}
                       />
                     );
                     return p.href ? (
@@ -2407,6 +2436,7 @@ export default async function StoreHomePage({
               data-heading-weight={galleryStyle.headingWeightVal}
               data-heading-rule={galleryStyle.headingRuleVal}
               data-line-height={galleryStyle.lineHeightVal}
+              data-section-filter={galleryStyle.filterVal}
             >
               <div
                 className="max-w-6xl mx-auto px-6 sm:px-10"
@@ -2559,6 +2589,7 @@ export default async function StoreHomePage({
             data-heading-weight={visitStyle.headingWeightVal}
             data-heading-rule={visitStyle.headingRuleVal}
             data-line-height={visitStyle.lineHeightVal}
+            data-section-filter={visitStyle.filterVal}
           >
             <div
               data-edit-drag={FREE_POS_KEYS.visitCard}

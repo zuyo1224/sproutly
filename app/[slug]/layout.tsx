@@ -787,6 +787,19 @@ export default async function PublicStoreLayout({
           line-height: 2;
         }
 
+        /* 區段濾鏡：editor 各 section panel「濾鏡」三按鈕（無 / 黑白 / 復古）。
+           只套這一段裡的照片。原本是 page.tsx 直接在 section 上設 filter，整個子樹一起被洗
+           ——這一段的自訂底色、文字色、用主色畫的小標與短線全部跟著變灰或染成褐調，等於把
+           商家在同一個面板裡剛挑好的顏色作廢；而 filter 是先把子樹畫成一張圖再處理，子元素
+           寫 filter: none 也救不回來，沒有辦法只讓照片變黑白而留住配色。兩個控制湊在一起
+           互相毀掉（同類：淡化×進場動畫 a2428d8、主色×自訂底色 29140d6）。
+           值由 page.tsx 餵 --store-media-filter，這裡只負責畫；attribute 是開關，沒設就整條
+           規則不存在（CSS 判斷不了變數有沒有設，靠 var() fallback 會讓這條規則落在每一段的
+           每張照片上，蓋掉圖片自己的 filter）。合作 logo 那張自己 inline 讀同一個變數。 */
+        section[data-edit-target][data-section-filter] :is(img, video) {
+          filter: var(--store-media-filter, none);
+        }
+
         /* 區段進場動畫：editor 各 section panel「進場動畫」三按鈕（無 / 淡入 / 上滑）
            靠 data-anim attribute + CSS scroll-driven animation（animation-timeline: view()）觸發。
            沒設定 = 無 attr = 不動畫；fade = opacity 0→1；slide-up = opacity + translateY 上滑。

@@ -41,7 +41,7 @@ export const SECTION_STYLE_ENUMS = {
   lineHeight: ["tight", "normal", "relaxed"],
   // 淡化（default 不套 / muted 0.85 / faint 0.7），讓次要 section 變淡襯托主角
   opacity: ["default", "muted", "faint"],
-  // 濾鏡（grayscale 黑白 / sepia 復古褐），套整段含 children
+  // 濾鏡（grayscale 黑白 / sepia 復古褐），只套這段裡的照片，文字與配色不動
   filter: ["none", "grayscale", "sepia"],
   // 寬度（full 滿版預設 / boxed 置中 1100px / narrow 窄欄 760px）
   sectionWidth: ["full", "boxed", "narrow"],
