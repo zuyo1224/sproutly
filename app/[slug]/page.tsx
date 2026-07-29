@@ -9,6 +9,7 @@ import { buildStoreJsonLd, buildFaqJsonLd, siteBaseUrl, storeSchemaId } from "@/
 import { telHref, mailHref, telDigits, cleanEmail, mapsHref } from "@/lib/contact-href";
 import { isSoldOut, isLowStock, bySoldOutLast, stockAriaSuffix } from "@/lib/product-stock";
 import { FREE_POS_KEYS } from "@/lib/free-positions";
+import { contrastRatio, NON_TEXT_CONTRAST_MIN } from "@/lib/color-contrast";
 import HeroAdaptiveBanner from "./HeroAdaptiveBanner";
 
 type Params = Promise<{ slug: string }>;
@@ -108,6 +109,12 @@ export default async function StoreHomePage({
     .filter(Boolean);
 
   const animClass = theme.homepage.enableAnimation ? "sproutly-subtle-fade" : "";
+
+  // 區段裡用全站主色畫的東西（小標 eyebrow、標題底下那截短線、常見問題的＋、數字底下
+  // 的短線）一律走這個值，不再直接寫 theme.accent。--store-accent 只有在該段的自訂底色
+  // 把主色吃掉時才由 mergeSectionStyle 設（見那裡），沒設就退回全站主色、畫面完全不變。
+  // 有自己底色的容器（提案卡、好評卡）不在此列，它們的底色不跟區段換，主色照舊。
+  const accentColor = `var(--store-accent, ${theme.accent})`;
 
   // 各 section 樣式 helper：背景色 + 標題對齊 + 上下空白覆寫（北極星：超越 Wix 元素級控制覆蓋率）
   // padOverride 用 CSS variable 覆寫該 section 的 --store-section-pad，
@@ -352,6 +359,23 @@ export default async function StoreHomePage({
       out["--store-text-muted"] = mutedFromText(s.text); // 加 ~70% alpha 給 muted 用（容任何合法顏色）
     }
     if (s.padOverride !== undefined) out["--store-section-pad"] = String(s.padOverride);
+    // 全站主色壓在這一段的自訂底色上還看不看得見。主色是配著全站底色挑的一個要跳出來的
+    // 顏色，商家把某一段換成別的底色（做成深底卡片、或換一塊跟主色相近的色塊）時，這一段
+    // 裡所有用主色畫的東西——小標 eyebrow、標題底下那截短線、常見問題的＋、數字底下的短
+    // 線——會一起淡進底色裡。不是壞掉，是看不見；商家不會知道是哪個設定造成的，只會覺得
+    // 這段怪怪的然後把底色改回來，而換底色正是底色／外框／陰影／圓角那批控制要做出來的事。
+    // 判斷交給算的（見 lib/color-contrast），不另開「重點色」控制讓商家再挑一次——多一個
+    // 要挑的值，挑錯就又回到看不見。低於非文字元素的對比下限才換成該段的文字色（那個色是
+    // 配著這段底色挑的，一定看得見）；夠的段落不設變數、一個像素都不動。
+    // 只看該段自訂的底色：沒設自訂底色的段落坐的是全站底色，主色本來就是配它挑的。
+    let sectionAccent = theme.accent;
+    if (s.bg) {
+      const ratio = contrastRatio(theme.accent, s.bg);
+      if (ratio !== null && ratio < NON_TEXT_CONTRAST_MIN) {
+        sectionAccent = s.text ?? theme.text;
+        out["--store-accent"] = sectionAccent;
+      }
+    }
     if (s.minHeightOverride !== undefined) out.minHeight = s.minHeightOverride;
     // 線的顏色：沒設自訂文字色就照舊用全站 theme.border（既有店家一條線都不會變）。
     // 設了文字色的段落改從那個色算——theme.border 是配著全站底色挑的淺灰，商家把某段做成
@@ -387,10 +411,12 @@ export default async function StoreHomePage({
     // 顏色比照外框與分隔線那條線（70c8177）：該段設了自訂文字色就從它算，深底淺字的段落
     // 自動變成淺色條、不會挑出一個壓在自己底色上看不見的值；沒設就用全站主色 accent
     // ——它本來就是配著全站底色挑來跳出的顏色，一條 4px 的實心條要的正是這種存在感，
-    // 用 28% 那條細線的淡色會淡到跟沒開一樣。
+    // 用 28% 那條細線的淡色會淡到跟沒開一樣。沒設文字色時用的是上面算過的 sectionAccent
+    // 而不是 theme.accent：底色剛好把主色吃掉的那一段，色條跟該段其他主色元素一起換，
+    // 不會出現「同一段裡小標換了、色條還是那個看不見的顏色」。
     if (s.accentBarVal) {
       const bar = `4px solid ${
-        s.text ? `color-mix(in srgb, ${s.text} 60%, transparent)` : theme.accent
+        s.text ? `color-mix(in srgb, ${s.text} 60%, transparent)` : sectionAccent
       }`;
       if (s.accentBarVal === "left") out.borderLeft = bar;
       else out.borderRight = bar;
@@ -1140,7 +1166,7 @@ export default async function StoreHomePage({
                       data-edit-field="collectionsEyebrow"
                       className="text-[0.6875rem] uppercase mb-4"
                       style={{
-                        color: theme.accent,
+                        color: accentColor,
                         fontFamily: "var(--store-font)",
                         fontWeight: 500,
                         letterSpacing: "0.4em",
@@ -1221,7 +1247,7 @@ export default async function StoreHomePage({
                       data-edit-text
                       data-edit-field="collectionsCardCta"
                       className="sproutly-card-action inline-block text-[10px] tracking-[0.3em] uppercase"
-                      style={{ color: theme.accent }}
+                      style={{ color: accentColor }}
                     >
                       {collectionsCardCta}
                     </span>
@@ -1277,7 +1303,7 @@ export default async function StoreHomePage({
                       data-edit-field="featuredEyebrow"
                       className="text-[0.6875rem] uppercase mb-4"
                       style={{
-                        color: theme.accent,
+                        color: accentColor,
                         fontFamily: "var(--store-font)",
                         fontWeight: 500,
                         letterSpacing: "0.4em",
@@ -1449,7 +1475,7 @@ export default async function StoreHomePage({
                   data-edit-text
                   data-edit-field="journalEyebrow"
                   className="text-[10px] tracking-[0.4em] uppercase mb-5"
-                  style={{ color: theme.accent }}
+                  style={{ color: accentColor }}
                 >
                   {journalEyebrow}
                 </p>
@@ -1482,7 +1508,7 @@ export default async function StoreHomePage({
                   data-edit-text
                   data-edit-field="journalEyebrow"
                   className="text-[10px] tracking-[0.4em] uppercase mb-5"
-                  style={{ color: theme.accent }}
+                  style={{ color: accentColor }}
                 >
                   {journalEyebrow}
                 </p>
@@ -1550,7 +1576,7 @@ export default async function StoreHomePage({
                       data-edit-field="journalCardEyebrow"
                       data-edit-index={i}
                       className="mt-6 text-[10px] tracking-[0.4em] uppercase"
-                      style={{ color: theme.accent }}
+                      style={{ color: accentColor }}
                     >
                       {entry.eyebrow}
                     </p>
@@ -1775,7 +1801,7 @@ export default async function StoreHomePage({
                       data-edit-text
                       data-edit-field="testimonialsEyebrow"
                       className="text-[10px] tracking-[0.4em] uppercase mb-5"
-                      style={{ color: theme.accent }}
+                      style={{ color: accentColor }}
                     >
                       {testimonialsEyebrow}
                     </p>
@@ -1798,7 +1824,7 @@ export default async function StoreHomePage({
                       style={{
                         width: "32px",
                         height: "1px",
-                        background: theme.accent,
+                        background: accentColor,
                         opacity: 0.5,
                       }}
                     />
@@ -1812,7 +1838,7 @@ export default async function StoreHomePage({
                       data-edit-text
                       data-edit-field="testimonialsEyebrow"
                       className="text-[10px] tracking-[0.4em] uppercase mb-5"
-                      style={{ color: theme.accent }}
+                      style={{ color: accentColor }}
                     >
                       {testimonialsEyebrow}
                     </p>
@@ -1835,7 +1861,7 @@ export default async function StoreHomePage({
                       style={{
                         width: "32px",
                         height: "1px",
-                        background: theme.accent,
+                        background: accentColor,
                         opacity: 0.5,
                       }}
                     />
@@ -1963,7 +1989,7 @@ export default async function StoreHomePage({
                   >
                     <p
                       className="text-[10px] tracking-[0.4em] uppercase mb-5"
-                      style={{ color: theme.accent }}
+                      style={{ color: accentColor }}
                     >
                       {faqEyebrow}
                     </p>
@@ -1984,7 +2010,7 @@ export default async function StoreHomePage({
                       style={{
                         width: "32px",
                         height: "1px",
-                        background: theme.accent,
+                        background: accentColor,
                         opacity: 0.5,
                       }}
                     />
@@ -1995,7 +2021,7 @@ export default async function StoreHomePage({
                     data-edit-text
                     data-edit-field="faqEyebrow"
                     className="text-[10px] tracking-[0.4em] uppercase mb-5"
-                    style={{ color: theme.accent }}
+                    style={{ color: accentColor }}
                   >
                     {faqEyebrow}
                   </p>
@@ -2018,7 +2044,7 @@ export default async function StoreHomePage({
                     style={{
                       width: "32px",
                       height: "1px",
-                      background: theme.accent,
+                      background: accentColor,
                       opacity: 0.5,
                     }}
                   />
@@ -2052,7 +2078,7 @@ export default async function StoreHomePage({
                           </span>
                           <span
                             className="text-2xl leading-none flex-shrink-0 transition-transform duration-500 group-open:rotate-45"
-                            style={{ color: theme.accent }}
+                            style={{ color: accentColor }}
                             aria-hidden="true"
                           >
                             +
@@ -2131,7 +2157,7 @@ export default async function StoreHomePage({
                         data-edit-text
                         data-edit-field="statsEyebrow"
                         className="text-[0.6875rem] tracking-[0.4em] uppercase mb-5"
-                        style={{ color: theme.accent }}
+                        style={{ color: accentColor }}
                       >
                         {statsEyebrow}
                       </p>
@@ -2157,7 +2183,7 @@ export default async function StoreHomePage({
                       style={{
                         width: "32px",
                         height: "1px",
-                        background: theme.accent,
+                        background: accentColor,
                         opacity: 0.6,
                       }}
                     />
@@ -2170,7 +2196,7 @@ export default async function StoreHomePage({
                         data-edit-text
                         data-edit-field="statsEyebrow"
                         className="text-[0.6875rem] tracking-[0.4em] uppercase mb-5"
-                        style={{ color: theme.accent }}
+                        style={{ color: accentColor }}
                       >
                         {statsEyebrow}
                       </p>
@@ -2196,7 +2222,7 @@ export default async function StoreHomePage({
                       style={{
                         width: "32px",
                         height: "1px",
-                        background: theme.accent,
+                        background: accentColor,
                         opacity: 0.6,
                       }}
                     />
@@ -2229,7 +2255,7 @@ export default async function StoreHomePage({
                         style={{
                           width: "20px",
                           height: "1px",
-                          background: theme.accent,
+                          background: accentColor,
                           opacity: 0.6,
                         }}
                       />
@@ -2390,7 +2416,7 @@ export default async function StoreHomePage({
                       data-edit-text
                       data-edit-field="galleryEyebrow"
                       className="text-[10px] tracking-[0.4em] uppercase mb-5"
-                      style={{ color: theme.accent }}
+                      style={{ color: accentColor }}
                     >
                       {galleryEyebrow}
                     </p>
@@ -2413,7 +2439,7 @@ export default async function StoreHomePage({
                       style={{
                         width: "32px",
                         height: "1px",
-                        background: theme.accent,
+                        background: accentColor,
                         opacity: 0.5,
                       }}
                     />
@@ -2424,7 +2450,7 @@ export default async function StoreHomePage({
                     data-edit-text
                     data-edit-field="galleryEyebrow"
                     className="text-[10px] tracking-[0.4em] uppercase mb-5"
-                    style={{ color: theme.accent }}
+                    style={{ color: accentColor }}
                   >
                     {galleryEyebrow}
                   </p>
@@ -2447,7 +2473,7 @@ export default async function StoreHomePage({
                     style={{
                       width: "32px",
                       height: "1px",
-                      background: theme.accent,
+                      background: accentColor,
                       opacity: 0.5,
                     }}
                   />
@@ -2547,7 +2573,7 @@ export default async function StoreHomePage({
                 data-edit-text
                 data-edit-field="visitEyebrow"
                 className="text-[10px] tracking-[0.4em] uppercase mb-5"
-                style={{ color: theme.accent }}
+                style={{ color: accentColor }}
               >
                 {visitEyebrow}
               </p>
@@ -2570,7 +2596,7 @@ export default async function StoreHomePage({
                 style={{
                   width: "32px",
                   height: "1px",
-                  background: theme.accent,
+                  background: accentColor,
                   opacity: 0.5,
                 }}
               />
@@ -2591,7 +2617,7 @@ export default async function StoreHomePage({
                   </span>
                   <span
                     className="block mt-3 text-[10px] tracking-[0.3em] uppercase"
-                    style={{ color: theme.accent }}
+                    style={{ color: accentColor }}
                   >
                     開啟地圖導航 →
                   </span>
