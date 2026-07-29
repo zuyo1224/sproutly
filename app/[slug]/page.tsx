@@ -301,6 +301,15 @@ export default async function StoreHomePage({
     // 讓 layout.tsx 針對內文元素補規則。沒設就沒 attribute、整條規則不存在。
     const lineHeightVal: "tight" | "relaxed" | undefined =
       s?.lineHeight === "tight" || s?.lineHeight === "relaxed" ? s.lineHeight : undefined;
+    // 內文對齊：同樣走 data attribute。headingAlign 設的是整段容器的 text-align，段落靠繼承
+    // 拿到同一個值，所以標題與內文一直只能同進退——商家想做報紙那種「標題置中、內文靠左」
+    // 只能整段改對齊，標題跟著跑掉。inline style 在這裡幫不上忙：要蓋掉的是段落自己的
+    // text-* class（元素自己的 class 一律蓋掉繼承值），得靠一條落在段落上的規則。
+    // 沒設（或選「跟標題一致」）就沒 attribute、整條規則不存在，既有店家一個字都不會動。
+    const bodyAlignVal: "left" | "center" | "right" | undefined =
+      s?.bodyAlign === "left" || s?.bodyAlign === "center" || s?.bodyAlign === "right"
+        ? s.bodyAlign
+        : undefined;
     // 濾鏡：值走 --store-media-filter（見 mergeSectionStyle），但還要一個 attribute 當開關
     // ——CSS 沒有「這個變數有沒有設」的判斷式，只能靠 attribute selector 做到「沒設就整條
     // 規則不存在」，否則那條 img 規則會落在每一段的每張照片上，蓋掉圖片自己的 filter。
@@ -332,6 +341,7 @@ export default async function StoreHomePage({
       accentBarVal,
       lineHeightVal,
       filterVal,
+      bodyAlignVal,
     };
     // 這裡本來手抄一份 `as { ... }`（整份欄位再列一次）。它推不出比 TS 自己推更精確的型別，
     // 卻是第三份要跟著欄位表同步改的清單——加控制忘了補就編不過（好），改錯就悄悄放寬（不好）。
@@ -1160,6 +1170,7 @@ export default async function StoreHomePage({
             data-heading-rule={collStyle.headingRuleVal}
             data-line-height={collStyle.lineHeightVal}
             data-section-filter={collStyle.filterVal}
+            data-body-align={collStyle.bodyAlignVal}
             style={mergeSectionStyle(collStyle)}
           >
             <div className="max-w-5xl mx-auto px-8 sm:px-12" style={{ textAlign: collStyle.align }}>
@@ -1306,6 +1317,7 @@ export default async function StoreHomePage({
             data-heading-rule={featuredStyle.headingRuleVal}
             data-line-height={featuredStyle.lineHeightVal}
             data-section-filter={featuredStyle.filterVal}
+            data-body-align={featuredStyle.bodyAlignVal}
           >
             <div className="max-w-5xl mx-auto px-8 sm:px-12" style={{ textAlign: featuredStyle.align }}>
               {featuredFree ? (
@@ -1489,6 +1501,7 @@ export default async function StoreHomePage({
             data-heading-rule={journalStyle.headingRuleVal}
             data-line-height={journalStyle.lineHeightVal}
             data-section-filter={journalStyle.filterVal}
+            data-body-align={journalStyle.bodyAlignVal}
           >
           <div className="max-w-5xl mx-auto px-8 sm:px-12" style={{ textAlign: journalStyle.align }}>
             {journalFree ? (
@@ -1674,6 +1687,7 @@ export default async function StoreHomePage({
             data-heading-rule={promiseStyle.headingRuleVal}
             data-line-height={promiseStyle.lineHeightVal}
             data-section-filter={promiseStyle.filterVal}
+            data-body-align={promiseStyle.bodyAlignVal}
           >
             <div
               className={
@@ -1814,6 +1828,7 @@ export default async function StoreHomePage({
               data-heading-rule={testimonialsStyle.headingRuleVal}
               data-line-height={testimonialsStyle.lineHeightVal}
               data-section-filter={testimonialsStyle.filterVal}
+              data-body-align={testimonialsStyle.bodyAlignVal}
             >
               <div
                 className="max-w-5xl mx-auto px-8 sm:px-12"
@@ -2005,6 +2020,7 @@ export default async function StoreHomePage({
               data-heading-rule={faqStyle.headingRuleVal}
               data-line-height={faqStyle.lineHeightVal}
               data-section-filter={faqStyle.filterVal}
+              data-body-align={faqStyle.bodyAlignVal}
             >
               <div
                 className="max-w-2xl mx-auto px-6 sm:px-12"
@@ -2171,6 +2187,7 @@ export default async function StoreHomePage({
               data-heading-rule={statsStyle.headingRuleVal}
               data-line-height={statsStyle.lineHeightVal}
               data-section-filter={statsStyle.filterVal}
+              data-body-align={statsStyle.bodyAlignVal}
             >
               <div
                 className="max-w-5xl mx-auto px-8 sm:px-12"
@@ -2338,6 +2355,7 @@ export default async function StoreHomePage({
               data-heading-rule={partnersStyle.headingRuleVal}
               data-line-height={partnersStyle.lineHeightVal}
               data-section-filter={partnersStyle.filterVal}
+              data-body-align={partnersStyle.bodyAlignVal}
             >
               <div
                 className="max-w-5xl mx-auto px-8 sm:px-12"
@@ -2437,6 +2455,7 @@ export default async function StoreHomePage({
               data-heading-rule={galleryStyle.headingRuleVal}
               data-line-height={galleryStyle.lineHeightVal}
               data-section-filter={galleryStyle.filterVal}
+              data-body-align={galleryStyle.bodyAlignVal}
             >
               <div
                 className="max-w-6xl mx-auto px-6 sm:px-10"
@@ -2590,6 +2609,7 @@ export default async function StoreHomePage({
             data-heading-rule={visitStyle.headingRuleVal}
             data-line-height={visitStyle.lineHeightVal}
             data-section-filter={visitStyle.filterVal}
+            data-body-align={visitStyle.bodyAlignVal}
           >
             <div
               data-edit-drag={FREE_POS_KEYS.visitCard}

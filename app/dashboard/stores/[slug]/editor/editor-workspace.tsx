@@ -2847,6 +2847,7 @@ export function EditorWorkspace({
         {activeTab === "section" && selectedSection && selectedSection !== "hero" && (() => {
           const cur = theme.layout.sectionStyles[selectedSection] ?? {};
           const align = cur.headingAlign ?? "center";
+          const bodyAlign = cur.bodyAlign ?? null;
           const bg = cur.bgColor ?? null;
           const textCol = cur.textColor ?? null;
           const pad = cur.paddingScale ?? null;
@@ -3245,6 +3246,42 @@ export function EditorWorkspace({
                       {opt.label}
                     </button>
                   ))}
+                </div>
+              </Field>
+              <Field label="內文對齊">
+                <div className="grid grid-cols-4 gap-1.5">
+                  {([
+                    { v: "auto", label: "同標題" },
+                    { v: "left", label: "左" },
+                    { v: "center", label: "置中" },
+                    { v: "right", label: "右" },
+                  ] as const).map((opt) => (
+                    <button
+                      key={opt.v}
+                      type="button"
+                      onClick={() => patch({ bodyAlign: opt.v })}
+                      aria-pressed={(bodyAlign ?? "auto") === opt.v}
+                      className={`rounded-lg border py-2 text-xs transition ${
+                        (bodyAlign ?? "auto") === opt.v
+                          ? "border-emerald-500 bg-emerald-50 text-emerald-900"
+                          : "border-stone-200 text-stone-600 hover:border-stone-400"
+                      }`}
+                    >
+                      {opt.label}
+                    </button>
+                  ))}
+                </div>
+                <div className="mt-1.5 flex items-center justify-between text-[11px] text-stone-500">
+                  <span>只管段落文字，標題另外走上面那條</span>
+                  {bodyAlign && (
+                    <button
+                      type="button"
+                      onClick={() => patch({ bodyAlign: null })}
+                      className="text-stone-500 hover:text-stone-800 underline"
+                    >
+                      清除
+                    </button>
+                  )}
                 </div>
               </Field>
               <Field label="背景色">

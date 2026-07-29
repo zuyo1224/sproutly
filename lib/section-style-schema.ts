@@ -17,6 +17,10 @@ import { normalizeHexColor } from "./hex-color";
 // 不是某個特定值（editor 端把等同預設的選擇 delete 掉，公開頁沒讀到就整條樣式不套）。
 export const SECTION_STYLE_ENUMS = {
   headingAlign: ["left", "center", "right"],
+  // 內文對齊（auto 跟著上面那條區段對齊走 / left 靠左 / center 置中 / right 靠右）。
+  // headingAlign 設的是整段容器的 text-align，段落是繼承來的，所以標題與內文一直只能同進退；
+  // 報紙與雜誌最常見的「標題置中、內文靠左」在 Sproutly 做不出來。這一欄只管內文元素。
+  bodyAlign: ["auto", "left", "center", "right"],
   // 該 section 獨立上下空白（覆寫全網站值）
   paddingScale: ["compact", "default", "spacious"],
   // 分隔線（上 / 下 / 上下都有 / 沒有）
@@ -69,6 +73,7 @@ export const SECTION_STYLE_ENUMS = {
 // 也讓「有沒有自訂」這件事只看 key 在不在）。沒列在這裡的欄位（headingAlign / paddingScale
 // / headingScale / minHeight）沒有這種值，只有明確按重設才清掉。
 export const SECTION_STYLE_NEUTRAL_VALUES = {
+  bodyAlign: "auto",
   divider: "none",
   outline: "none",
   shadow: "none",

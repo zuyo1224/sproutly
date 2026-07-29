@@ -787,6 +787,27 @@ export default async function PublicStoreLayout({
           line-height: 2;
         }
 
+        /* 區段內文對齊：editor 各 section panel「內文對齊」四按鈕（跟標題一致 / 左 / 中 / 右）。
+           「標題對齊」設的是整段容器的 text-align，段落是繼承來的，所以標題與內文一直只能
+           同進退：商家想做報紙與雜誌最常見的「標題置中、內文靠左」（長段落靠左才好讀，
+           置中的長文每行起點都在跳），只能整段改對齊、標題跟著跑掉，等於做不到。
+           改不了的原因跟行高那組一樣：段落自己帶 text-center / text-left class，元素自己的
+           class 一律蓋掉繼承來的值，光在容器上換 inline text-align 動不了它們。這份 <style>
+           沒包在 @layer，Tailwind v4 的工具類全在 @layer utilities，沒分層的贏有分層的，所以
+           這幾條規則蓋得過 text-* class。
+           只套內文元素（段落 / 條列 / 引言 / 圖說），跟行高那組同一份選擇器：標題留給
+           「標題對齊」管，兩個控制各管一半才做得出上面那個排法。
+           沒設（或選「跟標題一致」）就沒 attribute、整條規則不存在，既有店家一個字都不會動。 */
+        section[data-edit-target][data-body-align="left"] :is(p, li, blockquote, figcaption, dd) {
+          text-align: left;
+        }
+        section[data-edit-target][data-body-align="center"] :is(p, li, blockquote, figcaption, dd) {
+          text-align: center;
+        }
+        section[data-edit-target][data-body-align="right"] :is(p, li, blockquote, figcaption, dd) {
+          text-align: right;
+        }
+
         /* 區段濾鏡：editor 各 section panel「濾鏡」三按鈕（無 / 黑白 / 復古）。
            只套這一段裡的照片。原本是 page.tsx 直接在 section 上設 filter，整個子樹一起被洗
            ——這一段的自訂底色、文字色、用主色畫的小標與短線全部跟著變灰或染成褐調，等於把
