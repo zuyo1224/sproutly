@@ -937,6 +937,27 @@ export default async function PublicStoreLayout({
           --store-media-radius: 28px;
         }
 
+        /* 照片比例：editor 各 section panel「照片比例」四按鈕（各段預設 / 正方 / 直式 / 橫式）。
+           每段的圖框比例是寫死的一個值（選物 3:4、精選商品 1:1、慢讀 5:3、照片牆 1:1），
+           照片放進框一律鋪滿再裁（object-cover）——賣水壺、高盆栽這類直式商品的店，商品照
+           在正方形的框裡被裁頭去尾，商家沒有一格動得到；反過來拍橫幅生活照的店想讓照片牆
+           寬一點也一樣。換的是框的比例（換裁法），不是把圖壓扁。
+           規則只落在 .sproutly-card-image（卡片格線裡的圖框）——慢讀區沒放圖時那個框裡是
+           純底色，比例一樣生效，不會變成有圖的卡高、沒圖的卡塌掉。attribute 只掛在有這種
+           圖框的四段上，門市那張地圖、hero 的大圖都不吃這條（hero 的比例是版型的一部分，
+           split 左右分欄靠它撐高度）。直式用 3:4 跟選物的預設同一個口徑；橫式 3:2 比慢讀的
+           5:3 略高，商品照橫著裁太扁會只剩瓶身中段。沒設（或選「各段預設」）就沒 attribute、
+           整條規則不存在，各段維持自己原本的比例。 */
+        section[data-edit-target][data-media-aspect="square"] .sproutly-card-image {
+          aspect-ratio: 1 / 1;
+        }
+        section[data-edit-target][data-media-aspect="portrait"] .sproutly-card-image {
+          aspect-ratio: 3 / 4;
+        }
+        section[data-edit-target][data-media-aspect="landscape"] .sproutly-card-image {
+          aspect-ratio: 3 / 2;
+        }
+
         /* 卡片間距：editor 各 section panel「卡片間距」三按鈕（緊湊 / 預設 / 寬鬆）。
            商品卡、照片牆、合作 logo 彼此的距離是每段寫死的一組值，商家動得到間距的只有
            「區段空白」跟「上下外距」——那兩欄調的是段落外圍，卡片之間一動也不動：欄數

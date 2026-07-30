@@ -365,6 +365,14 @@ export default async function StoreHomePage({
     // 一條落在那個框上的規則。沒設就沒 attribute、整條規則不存在，照片維持原本的形狀。
     const mediaRadiusVal: "soft" | "round" | undefined =
       s?.mediaRadius === "soft" || s?.mediaRadius === "round" ? s.mediaRadius : undefined;
+    // 照片比例：要動的是卡片格線裡那個圖框（.sproutly-card-image）的 aspect-ratio，各段
+    // 寫死一個值（選物 3:4、精選 1:1、慢讀 5:3、照片牆 1:1）——跟照片圓角同一個處境同一個
+    // 解法，attribute 讓 layout.tsx 補規則。只掛在有卡片圖框的那四段；hero 那張的比例是
+    // 版型的一部分（split 左右分欄靠它撐高度），不歸這一欄管。
+    const mediaAspectVal: "square" | "portrait" | "landscape" | undefined =
+      s?.mediaAspect === "square" || s?.mediaAspect === "portrait" || s?.mediaAspect === "landscape"
+        ? s.mediaAspect
+        : undefined;
     // 卡片間距：要動的是這一段裡那個卡片格線容器的 gap，不是段落自己——跟照片圓角同一個
     // 處境同一個解法，attribute 讓 layout.tsx 補規則。規則只落在 .sproutly-card-grid 上
     // （各段的卡片格線容器都掛了這個 class），不能寫成落在所有 .grid 上——hero 的左右
@@ -407,6 +415,7 @@ export default async function StoreHomePage({
       contentAlignVal,
       hideOnVal,
       mediaRadiusVal,
+      mediaAspectVal,
       gridGapVal,
     };
     // 這裡本來手抄一份 `as { ... }`（整份欄位再列一次）。它推不出比 TS 自己推更精確的型別，
@@ -1279,6 +1288,7 @@ export default async function StoreHomePage({
             data-content-align={collStyle.contentAlignVal}
             data-hide-on={collStyle.hideOnVal}
             data-media-radius={collStyle.mediaRadiusVal}
+            data-media-aspect={collStyle.mediaAspectVal}
             data-grid-gap={collStyle.gridGapVal}
             style={mergeSectionStyle(collStyle)}
           >
@@ -1432,6 +1442,7 @@ export default async function StoreHomePage({
             data-content-align={featuredStyle.contentAlignVal}
             data-hide-on={featuredStyle.hideOnVal}
             data-media-radius={featuredStyle.mediaRadiusVal}
+            data-media-aspect={featuredStyle.mediaAspectVal}
             data-grid-gap={featuredStyle.gridGapVal}
           >
             <div className="max-w-5xl mx-auto px-8 sm:px-12" style={{ textAlign: featuredStyle.align }}>
@@ -1622,6 +1633,7 @@ export default async function StoreHomePage({
             data-content-align={journalStyle.contentAlignVal}
             data-hide-on={journalStyle.hideOnVal}
             data-media-radius={journalStyle.mediaRadiusVal}
+            data-media-aspect={journalStyle.mediaAspectVal}
             data-grid-gap={journalStyle.gridGapVal}
           >
           <div className="max-w-5xl mx-auto px-8 sm:px-12" style={{ textAlign: journalStyle.align }}>
@@ -2610,6 +2622,7 @@ export default async function StoreHomePage({
               data-content-align={galleryStyle.contentAlignVal}
               data-hide-on={galleryStyle.hideOnVal}
               data-media-radius={galleryStyle.mediaRadiusVal}
+              data-media-aspect={galleryStyle.mediaAspectVal}
               data-grid-gap={galleryStyle.gridGapVal}
             >
               <div

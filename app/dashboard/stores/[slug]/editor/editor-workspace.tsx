@@ -2864,6 +2864,7 @@ export function EditorWorkspace({
           const shadow = cur.shadow ?? null;
           const borderRadius = cur.borderRadius ?? null;
           const mediaRadius = cur.mediaRadius ?? null;
+          const mediaAspect = cur.mediaAspect ?? null;
           const gridGap = cur.gridGap ?? null;
           const entrance = cur.entrance ?? null;
           const fontFamily = cur.fontFamily ?? null;
@@ -4058,6 +4059,42 @@ export function EditorWorkspace({
                     <button
                       type="button"
                       onClick={() => patch({ mediaRadius: null })}
+                      className="text-stone-500 hover:text-stone-800 underline"
+                    >
+                      清除
+                    </button>
+                  )}
+                </div>
+              </Field>
+              <Field label="照片比例">
+                <div className="grid grid-cols-4 gap-1.5">
+                  {([
+                    { v: "auto", label: "預設" },
+                    { v: "square", label: "正方" },
+                    { v: "portrait", label: "直式" },
+                    { v: "landscape", label: "橫式" },
+                  ] as const).map((opt) => (
+                    <button
+                      key={opt.v}
+                      type="button"
+                      onClick={() => patch({ mediaAspect: opt.v })}
+                      aria-pressed={(mediaAspect ?? "auto") === opt.v}
+                      className={`rounded-lg border py-2 text-xs transition ${
+                        (mediaAspect ?? "auto") === opt.v
+                          ? "border-emerald-500 bg-emerald-50 text-emerald-900"
+                          : "border-stone-200 text-stone-600 hover:border-stone-400"
+                      }`}
+                    >
+                      {opt.label}
+                    </button>
+                  ))}
+                </div>
+                <div className="mt-1.5 flex items-center justify-between text-[11px] text-stone-500">
+                  <span>換這一段照片框的裁法（直式商品選「直式」不會被裁頭去尾）</span>
+                  {mediaAspect && (
+                    <button
+                      type="button"
+                      onClick={() => patch({ mediaAspect: null })}
                       className="text-stone-500 hover:text-stone-800 underline"
                     >
                       清除

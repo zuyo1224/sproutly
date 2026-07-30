@@ -69,6 +69,12 @@ export const SECTION_STYLE_ENUMS = {
   // 圓了、裡面的照片還是方的，兩個圓角對不起來反而更像沒做完；反過來想讓某一段的照片
   // 柔一點（人像、生活情境照），現有的「圓角」那欄動的是整段的外框，照片一點都不會變。
   mediaRadius: ["none", "soft", "round"],
+  // 照片比例（square 正方 / portrait 直式 3:4 / landscape 橫式 3:2），只套這一段卡片格線
+  // 裡的圖框。每一段的圖框比例是寫死的：選物 3:4、精選商品 1:1、慢讀 5:3、照片牆 1:1，
+  // 照片放進去一律照那個框裁——賣水壺、高盆栽這類直式商品的店，商品照在正方形的框裡
+  // 被裁頭去尾，商家沒有一格動得到；反過來拍橫幅生活照的店想讓照片牆寬一點也一樣。
+  // 圖都是鋪滿框再裁（fill + object-cover），所以換比例是換裁法、不是把圖壓扁。
+  mediaAspect: ["auto", "square", "portrait", "landscape"],
   // 卡片間距（tight 收緊 / loose 放寬），只套這一段排成格子的卡片與照片之間的距離。
   // 商品卡、照片牆、合作 logo 的間距是每段寫死的一組值：商家把欄數調成 4 之後卡片黏在
   // 一起、或想把照片牆做成緊貼的拼貼、把精選商品攤成鬆一點的畫廊感，全都沒有一格動得到
@@ -128,6 +134,7 @@ export const SECTION_STYLE_NEUTRAL_VALUES = {
   hideOn: "none",
   divider: "none",
   mediaRadius: "none",
+  mediaAspect: "auto",
   gridGap: "normal",
   outline: "none",
   shadow: "none",
