@@ -2862,6 +2862,7 @@ export function EditorWorkspace({
           const outline = cur.outline ?? null;
           const shadow = cur.shadow ?? null;
           const borderRadius = cur.borderRadius ?? null;
+          const mediaRadius = cur.mediaRadius ?? null;
           const entrance = cur.entrance ?? null;
           const fontFamily = cur.fontFamily ?? null;
           const letterSpacing = cur.letterSpacing ?? null;
@@ -3985,6 +3986,41 @@ export function EditorWorkspace({
                     <button
                       type="button"
                       onClick={() => patch({ borderRadius: null })}
+                      className="text-stone-500 hover:text-stone-800 underline"
+                    >
+                      清除
+                    </button>
+                  )}
+                </div>
+              </Field>
+              <Field label="照片圓角">
+                <div className="grid grid-cols-3 gap-1.5">
+                  {([
+                    { v: "none", label: "直角" },
+                    { v: "soft", label: "微圓" },
+                    { v: "round", label: "圓潤" },
+                  ] as const).map((opt) => (
+                    <button
+                      key={opt.v}
+                      type="button"
+                      onClick={() => patch({ mediaRadius: opt.v })}
+                      aria-pressed={(mediaRadius ?? "none") === opt.v}
+                      className={`rounded-lg border py-2 text-xs transition ${
+                        (mediaRadius ?? "none") === opt.v
+                          ? "border-emerald-500 bg-emerald-50 text-emerald-900"
+                          : "border-stone-200 text-stone-600 hover:border-stone-400"
+                      }`}
+                    >
+                      {opt.label}
+                    </button>
+                  ))}
+                </div>
+                <div className="mt-1.5 flex items-center justify-between text-[11px] text-stone-500">
+                  <span>只圓這一段裡的照片（上面那欄圓的是整段的框）</span>
+                  {mediaRadius && (
+                    <button
+                      type="button"
+                      onClick={() => patch({ mediaRadius: null })}
                       className="text-stone-500 hover:text-stone-800 underline"
                     >
                       清除

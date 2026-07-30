@@ -57,6 +57,12 @@ export const SECTION_STYLE_ENUMS = {
   // 平板一律顯示：只有一欄，選了「手機不顯示」還要決定平板算不算手機，切在中間最好解釋
   // ——手機是 640 以下、桌機是 1024 以上，中間那段兩邊都不碰。
   hideOn: ["none", "mobile", "desktop"],
+  // 照片圓角（soft 14px / round 28px），只套這一段裡的照片，不動段落自己的框。
+  // 站上的照片一律是接近直角的（商品卡的圖框固定 4px），這是全站寫死的一個值：
+  // 商家把某一段設成圓角卡片（bgColor + borderRadius + shadow 那三件套）之後，段落的四角
+  // 圓了、裡面的照片還是方的，兩個圓角對不起來反而更像沒做完；反過來想讓某一段的照片
+  // 柔一點（人像、生活情境照），現有的「圓角」那欄動的是整段的外框，照片一點都不會變。
+  mediaRadius: ["none", "soft", "round"],
   // 外框（subtle 1px / strong 2px，用 outline 避免跟 divider 的 borderTop/Bottom 打架）
   outline: ["none", "subtle", "strong"],
   // 陰影（soft 淺 / deep 深），讓有 bgColor 的 section 像卡片浮起
@@ -108,6 +114,7 @@ export const SECTION_STYLE_NEUTRAL_VALUES = {
   contentAlign: "top",
   hideOn: "none",
   divider: "none",
+  mediaRadius: "none",
   outline: "none",
   shadow: "none",
   borderRadius: "none",

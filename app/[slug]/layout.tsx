@@ -909,6 +909,34 @@ export default async function PublicStoreLayout({
           filter: var(--store-media-filter, none);
         }
 
+        /* 區段照片圓角：editor 各 section panel「照片圓角」三按鈕（直角 / 微圓 / 圓潤）。
+           站上的照片一律接近直角——商品卡的圖框寫死 4px（見上面 .sproutly-card-image），
+           其餘的圖連圓角都沒有。這是全站一個值，商家動不了：把某一段做成圓角卡片
+           （底色 + 圓角 + 陰影那三件套）之後，段落四角圓了、裡面的照片還是方的，兩種圓角
+           對不起來反而更像沒做完；而「圓角」那欄動的是段落自己的外框，傳不下去給裡面的圖。
+           圓角要畫在圖框（.sproutly-card-image）上，不是只畫在 img 上：那個框是
+           overflow: hidden + 自己的陰影，只圓 img 的話圖被框裁成直角、圓角看不出來，
+           而框的陰影仍是直角的四個邊。同一段裡沒有圖框的照片（合作 logo、慢讀區那張、
+           照片牆）才直接圓在 img 身上，所以第二條把圖框裡的圖排除掉，避免同一張圖被圓
+           兩次（圖自己縮了一圈，框的邊角會露出一線底色）。
+           不套 iframe：站上唯一的 iframe 是門市那張地圖，它自己已經有一組圓角與外框。
+           沒設（或選「直角」）就沒 attribute、整條規則不存在，既有店家的照片一律不動。 */
+        section[data-edit-target][data-media-radius] .sproutly-card-image {
+          border-radius: var(--store-media-radius);
+        }
+        /* 這一條跟上一條分開寫（不併成一份逗號清單）：:not() 裡放後代選擇器是比較新的寫法，
+           萬一有瀏覽器認不得，整份清單會一起被丟掉、連圖框那條也失效。分開就最多只少這一條。 */
+        section[data-edit-target][data-media-radius] :is(img, video):not(.sproutly-card-image *) {
+          border-radius: var(--store-media-radius);
+          overflow: hidden;
+        }
+        section[data-edit-target][data-media-radius="soft"] {
+          --store-media-radius: 14px;
+        }
+        section[data-edit-target][data-media-radius="round"] {
+          --store-media-radius: 28px;
+        }
+
         /* 區段進場動畫：editor 各 section panel「進場動畫」三按鈕（無 / 淡入 / 上滑）
            靠 data-anim attribute + CSS scroll-driven animation（animation-timeline: view()）觸發。
            沒設定 = 無 attr = 不動畫；fade = opacity 0→1；slide-up = opacity + translateY 上滑。

@@ -352,6 +352,12 @@ export default async function StoreHomePage({
     // 規則不存在」，否則那條 img 規則會落在每一段的每張照片上，蓋掉圖片自己的 filter。
     const filterVal: "grayscale" | "sepia" | undefined =
       s?.filter === "grayscale" || s?.filter === "sepia" ? s.filter : undefined;
+    // 照片圓角：跟濾鏡同一個處境（要落在這一段裡的照片上，不是段落自己），所以同樣走
+    // attribute 讓 layout.tsx 補規則。不寫 inline style —— 段落上的 borderRadius 是段落
+    // 自己的框，傳不下去給裡面的圖；商品卡的圖框還帶著全站寫死的 4px，要蓋掉它也得靠
+    // 一條落在那個框上的規則。沒設就沒 attribute、整條規則不存在，照片維持原本的形狀。
+    const mediaRadiusVal: "soft" | "round" | undefined =
+      s?.mediaRadius === "soft" || s?.mediaRadius === "round" ? s.mediaRadius : undefined;
     return {
       bg: s?.bgColor ?? undefined,
       text: s?.textColor ?? undefined,
@@ -385,6 +391,7 @@ export default async function StoreHomePage({
       bodyToneVal,
       contentAlignVal,
       hideOnVal,
+      mediaRadiusVal,
     };
     // 這裡本來手抄一份 `as { ... }`（整份欄位再列一次）。它推不出比 TS 自己推更精確的型別，
     // 卻是第三份要跟著欄位表同步改的清單——加控制忘了補就編不過（好），改錯就悄悄放寬（不好）。
@@ -1244,6 +1251,7 @@ export default async function StoreHomePage({
             data-body-scale={collStyle.bodyScaleVal}
             data-content-align={collStyle.contentAlignVal}
             data-hide-on={collStyle.hideOnVal}
+            data-media-radius={collStyle.mediaRadiusVal}
             style={mergeSectionStyle(collStyle)}
           >
             <div className="max-w-5xl mx-auto px-8 sm:px-12" style={{ textAlign: collStyle.align }}>
@@ -1395,6 +1403,7 @@ export default async function StoreHomePage({
             data-body-scale={featuredStyle.bodyScaleVal}
             data-content-align={featuredStyle.contentAlignVal}
             data-hide-on={featuredStyle.hideOnVal}
+            data-media-radius={featuredStyle.mediaRadiusVal}
           >
             <div className="max-w-5xl mx-auto px-8 sm:px-12" style={{ textAlign: featuredStyle.align }}>
               {featuredFree ? (
@@ -1583,6 +1592,7 @@ export default async function StoreHomePage({
             data-body-scale={journalStyle.bodyScaleVal}
             data-content-align={journalStyle.contentAlignVal}
             data-hide-on={journalStyle.hideOnVal}
+            data-media-radius={journalStyle.mediaRadiusVal}
           >
           <div className="max-w-5xl mx-auto px-8 sm:px-12" style={{ textAlign: journalStyle.align }}>
             {journalFree ? (
@@ -1773,6 +1783,7 @@ export default async function StoreHomePage({
             data-body-scale={promiseStyle.bodyScaleVal}
             data-content-align={promiseStyle.contentAlignVal}
             data-hide-on={promiseStyle.hideOnVal}
+            data-media-radius={promiseStyle.mediaRadiusVal}
           >
             <div
               className={
@@ -1918,6 +1929,7 @@ export default async function StoreHomePage({
               data-body-scale={testimonialsStyle.bodyScaleVal}
               data-content-align={testimonialsStyle.contentAlignVal}
               data-hide-on={testimonialsStyle.hideOnVal}
+              data-media-radius={testimonialsStyle.mediaRadiusVal}
             >
               <div
                 className="max-w-5xl mx-auto px-8 sm:px-12"
@@ -2114,6 +2126,7 @@ export default async function StoreHomePage({
               data-body-scale={faqStyle.bodyScaleVal}
               data-content-align={faqStyle.contentAlignVal}
               data-hide-on={faqStyle.hideOnVal}
+              data-media-radius={faqStyle.mediaRadiusVal}
             >
               <div
                 className="max-w-2xl mx-auto px-6 sm:px-12"
@@ -2285,6 +2298,7 @@ export default async function StoreHomePage({
               data-body-scale={statsStyle.bodyScaleVal}
               data-content-align={statsStyle.contentAlignVal}
               data-hide-on={statsStyle.hideOnVal}
+              data-media-radius={statsStyle.mediaRadiusVal}
             >
               <div
                 className="max-w-5xl mx-auto px-8 sm:px-12"
@@ -2457,6 +2471,7 @@ export default async function StoreHomePage({
               data-body-scale={partnersStyle.bodyScaleVal}
               data-content-align={partnersStyle.contentAlignVal}
               data-hide-on={partnersStyle.hideOnVal}
+              data-media-radius={partnersStyle.mediaRadiusVal}
             >
               <div
                 className="max-w-5xl mx-auto px-8 sm:px-12"
@@ -2561,6 +2576,7 @@ export default async function StoreHomePage({
               data-body-scale={galleryStyle.bodyScaleVal}
               data-content-align={galleryStyle.contentAlignVal}
               data-hide-on={galleryStyle.hideOnVal}
+              data-media-radius={galleryStyle.mediaRadiusVal}
             >
               <div
                 className="max-w-6xl mx-auto px-6 sm:px-10"
@@ -2719,6 +2735,7 @@ export default async function StoreHomePage({
             data-body-scale={visitStyle.bodyScaleVal}
             data-content-align={visitStyle.contentAlignVal}
             data-hide-on={visitStyle.hideOnVal}
+            data-media-radius={visitStyle.mediaRadiusVal}
           >
             <div
               data-edit-drag={FREE_POS_KEYS.visitCard}
