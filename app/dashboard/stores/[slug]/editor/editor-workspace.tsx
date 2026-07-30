@@ -2858,6 +2858,7 @@ export function EditorWorkspace({
           const headingScale = cur.headingScale ?? null;
           const minHeight = cur.minHeight ?? null;
           const contentAlign = cur.contentAlign ?? null;
+          const hideOn = cur.hideOn ?? null;
           const outline = cur.outline ?? null;
           const shadow = cur.shadow ?? null;
           const borderRadius = cur.borderRadius ?? null;
@@ -3771,6 +3772,32 @@ export function EditorWorkspace({
                 </div>
                 <p className="mt-1.5 text-[11px] text-stone-500 leading-snug">
                   這一段比內容高的時候，多出來的空白留在哪邊。要先把上面的「最小高度」設成高或滿屏才看得出差別
+                </p>
+              </Field>
+              <Field label="在這台裝置隱藏">
+                <div className="grid grid-cols-3 gap-1.5">
+                  {([
+                    { v: "none", label: "都顯示" },
+                    { v: "mobile", label: "手機" },
+                    { v: "desktop", label: "桌機" },
+                  ] as const).map((opt) => (
+                    <button
+                      key={opt.v}
+                      type="button"
+                      onClick={() => patch({ hideOn: opt.v })}
+                      aria-pressed={(hideOn ?? "none") === opt.v}
+                      className={`rounded-lg border py-2 text-xs transition ${
+                        (hideOn ?? "none") === opt.v
+                          ? "border-emerald-500 bg-emerald-50 text-emerald-900"
+                          : "border-stone-200 text-stone-600 hover:border-stone-400"
+                      }`}
+                    >
+                      {opt.label}
+                    </button>
+                  ))}
+                </div>
+                <p className="mt-1.5 text-[11px] text-stone-500 leading-snug">
+                  橫著排的段落（合作品牌、照片牆）到手機上會擠成一長條，這裡可以只讓它在手機不出現，桌機照舊。平板一律顯示。編輯畫布上會留在原地淡掉、框一圈虛線，客人那邊是真的看不到
                 </p>
               </Field>
               <Field label="區段寬度">

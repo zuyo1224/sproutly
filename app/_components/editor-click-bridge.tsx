@@ -89,6 +89,28 @@ export function EditorClickBridge() {
         transform: none !important;
         opacity: 1 !important;
       }
+      /* 設了「在這台裝置隱藏」的段落，在編輯畫布上不要真的消失（公開頁那兩條 media query
+         見 layout.tsx）。商家一按下去段落就整個不見，等於連要點回去改回來都找不到——
+         同一顆按鈕既是開也是關，關掉之後卻沒有東西可以按。
+         改成留在原地、淡掉並框一圈虛線：位置還在、點得到、面板上那顆按鈕也還是亮的，
+         而「這段在這台裝置不顯示」這件事看一眼就知道。只在 ?edit=1 生效，客人看到的是
+         真的不顯示。 */
+      @media (max-width: 639.98px) {
+        section[data-edit-target][data-hide-on="mobile"] {
+          display: block !important;
+          opacity: 0.35;
+          outline: 2px dashed #94a3b8 !important;
+          outline-offset: -4px;
+        }
+      }
+      @media (min-width: 1024px) {
+        section[data-edit-target][data-hide-on="desktop"] {
+          display: block !important;
+          opacity: 0.35;
+          outline: 2px dashed #94a3b8 !important;
+          outline-offset: -4px;
+        }
+      }
     `;
     document.head.appendChild(style);
 

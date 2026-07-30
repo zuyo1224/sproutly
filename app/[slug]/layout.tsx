@@ -871,6 +871,31 @@ export default async function PublicStoreLayout({
           align-content: end;
         }
 
+        /* 區段裝置顯示：editor 各 section panel「在這台裝置隱藏」三按鈕（都顯示 / 手機 / 桌機）。
+           同一段內容在兩台裝置上不會一樣好看：合作 logo 那排、照片牆這種橫著排的段落到手機上
+           會擠成一長條，商家原本只能整段關掉——那個開關是全站的，桌機也跟著沒了；反過來手機
+           專用的「直接打電話」那類段落，在桌機上是多餘的。這一欄補的是「只在某一台不顯示」。
+           手機 = 640 以下、桌機 = 1024 以上，中間那段（平板）兩邊都不碰：只有一欄可選，切在
+           中間最好跟商家解釋，也對得上編輯器上面那三個預覽寬度（375 / 768 / 1280）。
+           用 media query 而不是在伺服器上判斷裝置：公開頁同一份 HTML 會被 CDN 快取給所有人，
+           伺服器那層根本不知道下一個客人拿什麼在看；而且編輯器的預覽就是同一份頁面塞進不同
+           寬度的 iframe，靠 CSS 判斷寬度，商家切到手機預覽才看得到「這段真的消失了」。
+           display: none 而不是 visibility / opacity：藏起來的段落不能還佔著那塊高度，不然
+           手機上換成一大片空白，比原本擠在一起更難看。
+           編輯模式（?edit=1）內另有一條把它還原成半透明虛線框（見 editor-click-bridge）——
+           不然商家一設「手機隱藏」，段落在畫布上整個消失，連要點回去改都找不到。
+           沒設（或選「都顯示」）就沒 attribute、整條規則不存在，既有店家一段都不會消失。 */
+        @media (max-width: 639.98px) {
+          section[data-edit-target][data-hide-on="mobile"] {
+            display: none;
+          }
+        }
+        @media (min-width: 1024px) {
+          section[data-edit-target][data-hide-on="desktop"] {
+            display: none;
+          }
+        }
+
         /* 區段濾鏡：editor 各 section panel「濾鏡」三按鈕（無 / 黑白 / 復古）。
            只套這一段裡的照片。原本是 page.tsx 直接在 section 上設 filter，整個子樹一起被洗
            ——這一段的自訂底色、文字色、用主色畫的小標與短線全部跟著變灰或染成褐調，等於把

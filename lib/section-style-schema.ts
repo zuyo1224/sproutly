@@ -50,6 +50,13 @@ export const SECTION_STYLE_ENUMS = {
   // 差別，也就是設了上面那條「最低高度」之後——原本撐出來的空高一律留在內容下面，商家選了
   // 滿屏是想要一整螢幕的段落，拿到的是一小塊內容黏在上緣、下面一大片空白。
   contentAlign: ["top", "middle", "bottom"],
+  // 這一段在哪台裝置不顯示（none 都顯示 / mobile 手機不顯示 / desktop 桌機不顯示）。
+  // 同一份內容在手機與桌機不會一樣好看：橫排的合作 logo、6 張一列的照片牆在手機上會擠成
+  // 一長條，商家只能整段關掉（那條開關是全站的，桌機也跟著沒了）；反過來手機專用的「直接
+  // 打電話」那類段落在桌機上是多餘的。原本沒有「只在某台裝置不顯示」這一格。
+  // 平板一律顯示：只有一欄，選了「手機不顯示」還要決定平板算不算手機，切在中間最好解釋
+  // ——手機是 640 以下、桌機是 1024 以上，中間那段兩邊都不碰。
+  hideOn: ["none", "mobile", "desktop"],
   // 外框（subtle 1px / strong 2px，用 outline 避免跟 divider 的 borderTop/Bottom 打架）
   outline: ["none", "subtle", "strong"],
   // 陰影（soft 淺 / deep 深），讓有 bgColor 的 section 像卡片浮起
@@ -99,6 +106,7 @@ export const SECTION_STYLE_NEUTRAL_VALUES = {
   bodyScale: "default",
   bodyTone: "default",
   contentAlign: "top",
+  hideOn: "none",
   divider: "none",
   outline: "none",
   shadow: "none",
