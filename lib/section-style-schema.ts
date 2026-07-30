@@ -40,6 +40,10 @@ export const SECTION_STYLE_ENUMS = {
   headingScale: ["small", "default", "large"],
   // 該 section 最低高度（auto 不限制 / tall 80vh / fullscreen 100vh）
   minHeight: ["auto", "tall", "fullscreen"],
+  // 內容垂直位置（top 靠上 / middle 置中 / bottom 靠下）。只有在這一段比內容高的時候才看得出
+  // 差別，也就是設了上面那條「最低高度」之後——原本撐出來的空高一律留在內容下面，商家選了
+  // 滿屏是想要一整螢幕的段落，拿到的是一小塊內容黏在上緣、下面一大片空白。
+  contentAlign: ["top", "middle", "bottom"],
   // 外框（subtle 1px / strong 2px，用 outline 避免跟 divider 的 borderTop/Bottom 打架）
   outline: ["none", "subtle", "strong"],
   // 陰影（soft 淺 / deep 深），讓有 bgColor 的 section 像卡片浮起
@@ -87,6 +91,7 @@ export const SECTION_STYLE_NEUTRAL_VALUES = {
   bodyAlign: "auto",
   bodyMeasure: "auto",
   bodyScale: "default",
+  contentAlign: "top",
   divider: "none",
   outline: "none",
   shadow: "none",

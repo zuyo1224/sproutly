@@ -329,6 +329,10 @@ export default async function StoreHomePage({
     // ——那會把同一段裡本來大小不同的內文壓成同一級，見那裡的說明）。
     const bodyScaleVal: "small" | "large" | undefined =
       s?.bodyScale === "small" || s?.bodyScale === "large" ? s.bodyScale : undefined;
+    // 內容垂直位置：同樣走 attribute（沒設就整條規則不存在，內容照舊從上緣排）。
+    // 實際怎麼推由 layout.tsx 那條規則做，見那裡為什麼不是把 section 改成 flex。
+    const contentAlignVal: "middle" | "bottom" | undefined =
+      s?.contentAlign === "middle" || s?.contentAlign === "bottom" ? s.contentAlign : undefined;
     // 濾鏡：值走 --store-media-filter（見 mergeSectionStyle），但還要一個 attribute 當開關
     // ——CSS 沒有「這個變數有沒有設」的判斷式，只能靠 attribute selector 做到「沒設就整條
     // 規則不存在」，否則那條 img 規則會落在每一段的每張照片上，蓋掉圖片自己的 filter。
@@ -364,6 +368,7 @@ export default async function StoreHomePage({
       bodyMeasureVal,
       bodyMeasureMax,
       bodyScaleVal,
+      contentAlignVal,
     };
     // 這裡本來手抄一份 `as { ... }`（整份欄位再列一次）。它推不出比 TS 自己推更精確的型別，
     // 卻是第三份要跟著欄位表同步改的清單——加控制忘了補就編不過（好），改錯就悄悄放寬（不好）。
@@ -1206,6 +1211,7 @@ export default async function StoreHomePage({
             data-body-align={collStyle.bodyAlignVal}
             data-body-measure={collStyle.bodyMeasureVal}
             data-body-scale={collStyle.bodyScaleVal}
+            data-content-align={collStyle.contentAlignVal}
             style={mergeSectionStyle(collStyle)}
           >
             <div className="max-w-5xl mx-auto px-8 sm:px-12" style={{ textAlign: collStyle.align }}>
@@ -1355,6 +1361,7 @@ export default async function StoreHomePage({
             data-body-align={featuredStyle.bodyAlignVal}
             data-body-measure={featuredStyle.bodyMeasureVal}
             data-body-scale={featuredStyle.bodyScaleVal}
+            data-content-align={featuredStyle.contentAlignVal}
           >
             <div className="max-w-5xl mx-auto px-8 sm:px-12" style={{ textAlign: featuredStyle.align }}>
               {featuredFree ? (
@@ -1541,6 +1548,7 @@ export default async function StoreHomePage({
             data-body-align={journalStyle.bodyAlignVal}
             data-body-measure={journalStyle.bodyMeasureVal}
             data-body-scale={journalStyle.bodyScaleVal}
+            data-content-align={journalStyle.contentAlignVal}
           >
           <div className="max-w-5xl mx-auto px-8 sm:px-12" style={{ textAlign: journalStyle.align }}>
             {journalFree ? (
@@ -1729,6 +1737,7 @@ export default async function StoreHomePage({
             data-body-align={promiseStyle.bodyAlignVal}
             data-body-measure={promiseStyle.bodyMeasureVal}
             data-body-scale={promiseStyle.bodyScaleVal}
+            data-content-align={promiseStyle.contentAlignVal}
           >
             <div
               className={
@@ -1872,6 +1881,7 @@ export default async function StoreHomePage({
               data-body-align={testimonialsStyle.bodyAlignVal}
               data-body-measure={testimonialsStyle.bodyMeasureVal}
               data-body-scale={testimonialsStyle.bodyScaleVal}
+              data-content-align={testimonialsStyle.contentAlignVal}
             >
               <div
                 className="max-w-5xl mx-auto px-8 sm:px-12"
@@ -2066,6 +2076,7 @@ export default async function StoreHomePage({
               data-body-align={faqStyle.bodyAlignVal}
               data-body-measure={faqStyle.bodyMeasureVal}
               data-body-scale={faqStyle.bodyScaleVal}
+              data-content-align={faqStyle.contentAlignVal}
             >
               <div
                 className="max-w-2xl mx-auto px-6 sm:px-12"
@@ -2235,6 +2246,7 @@ export default async function StoreHomePage({
               data-body-align={statsStyle.bodyAlignVal}
               data-body-measure={statsStyle.bodyMeasureVal}
               data-body-scale={statsStyle.bodyScaleVal}
+              data-content-align={statsStyle.contentAlignVal}
             >
               <div
                 className="max-w-5xl mx-auto px-8 sm:px-12"
@@ -2405,6 +2417,7 @@ export default async function StoreHomePage({
               data-body-align={partnersStyle.bodyAlignVal}
               data-body-measure={partnersStyle.bodyMeasureVal}
               data-body-scale={partnersStyle.bodyScaleVal}
+              data-content-align={partnersStyle.contentAlignVal}
             >
               <div
                 className="max-w-5xl mx-auto px-8 sm:px-12"
@@ -2507,6 +2520,7 @@ export default async function StoreHomePage({
               data-body-align={galleryStyle.bodyAlignVal}
               data-body-measure={galleryStyle.bodyMeasureVal}
               data-body-scale={galleryStyle.bodyScaleVal}
+              data-content-align={galleryStyle.contentAlignVal}
             >
               <div
                 className="max-w-6xl mx-auto px-6 sm:px-10"
@@ -2663,6 +2677,7 @@ export default async function StoreHomePage({
             data-body-align={visitStyle.bodyAlignVal}
             data-body-measure={visitStyle.bodyMeasureVal}
             data-body-scale={visitStyle.bodyScaleVal}
+            data-content-align={visitStyle.contentAlignVal}
           >
             <div
               data-edit-drag={FREE_POS_KEYS.visitCard}

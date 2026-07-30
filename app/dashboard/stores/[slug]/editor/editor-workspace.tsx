@@ -2856,6 +2856,7 @@ export function EditorWorkspace({
           const divider = cur.divider ?? "none";
           const headingScale = cur.headingScale ?? null;
           const minHeight = cur.minHeight ?? null;
+          const contentAlign = cur.contentAlign ?? null;
           const outline = cur.outline ?? null;
           const shadow = cur.shadow ?? null;
           const borderRadius = cur.borderRadius ?? null;
@@ -2937,6 +2938,9 @@ export function EditorWorkspace({
               hint: "滿屏 + 大標 + 深陰影 + 上滑進場",
               fields: {
                 minHeight: "fullscreen",
+                // 滿屏撐出來的空高原本一律留在內容下面，套完是一小塊內容黏在上緣、下面一大片
+                // 空白，看起來像沒排完。這個 preset 要的就是一整螢幕的段落，內容置中才成立。
+                contentAlign: "middle",
                 headingScale: "large",
                 paddingScale: "spacious",
                 shadow: "deep",
@@ -3706,6 +3710,32 @@ export function EditorWorkspace({
                     </button>
                   )}
                 </div>
+              </Field>
+              <Field label="內容垂直位置">
+                <div className="grid grid-cols-3 gap-1.5">
+                  {([
+                    { v: "top", label: "靠上" },
+                    { v: "middle", label: "置中" },
+                    { v: "bottom", label: "靠下" },
+                  ] as const).map((opt) => (
+                    <button
+                      key={opt.v}
+                      type="button"
+                      onClick={() => patch({ contentAlign: opt.v })}
+                      aria-pressed={(contentAlign ?? "top") === opt.v}
+                      className={`rounded-lg border py-2 text-xs transition ${
+                        (contentAlign ?? "top") === opt.v
+                          ? "border-emerald-500 bg-emerald-50 text-emerald-900"
+                          : "border-stone-200 text-stone-600 hover:border-stone-400"
+                      }`}
+                    >
+                      {opt.label}
+                    </button>
+                  ))}
+                </div>
+                <p className="mt-1.5 text-[11px] text-stone-500 leading-snug">
+                  這一段比內容高的時候，多出來的空白留在哪邊。要先把上面的「最小高度」設成高或滿屏才看得出差別
+                </p>
               </Field>
               <Field label="區段寬度">
                 <div className="grid grid-cols-3 gap-1.5">

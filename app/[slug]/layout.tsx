@@ -850,6 +850,27 @@ export default async function PublicStoreLayout({
           zoom: 1.12;
         }
 
+        /* 區段內容垂直位置：editor 各 section panel「內容垂直位置」三按鈕（靠上 / 置中 / 靠下）。
+           只有這一段比內容高的時候才看得出差別，也就是設了「最小高度」（高 80vh / 滿屏 100vh）
+           之後——而那正是這個控制要補的洞：撐出來的空高一律留在內容下面，商家選了滿屏想要一
+           整螢幕的段落，拿到的是一小塊內容黏在上緣、下面一大片空白。要把內容推下來，原本唯一
+           的辦法是把「區段上下空白」一路調到寬鬆去硬塞，那同時也把左右與其他段落的節奏一起改了，
+           而且高度是 vh、空白是 rem，換一台裝置就對不上。內建的「戲劇感」快速風格（滿屏＋大標
+           ＋深陰影）就是這樣，套完看起來像沒排完。
+           用 align-content 而不是把 section 改成 flex：那是這裡唯一「只動剩餘空高怎麼分」的
+           寫法。改 display: flex 會讓每個直接子層變成 flex item，這些段落的子層帶著 mx-auto、
+           max-w-*、absolute（自由定位的元素）與各自的上下外距，換一套排版模型就是把整段的版面
+           重算一次，為了推一段空白不值得。align-content 在一般區塊容器上是 2024 年才全面支援
+           （Chrome 123 / Safari 17.6 / Firefox 125）；認不得的舊瀏覽器整條當沒看到，內容照舊
+           留在上緣，也就是這個控制沒設的樣子——跟進場動畫那組一樣，看不到效果但畫面不會壞。
+           沒設（或選「靠上」）就沒 attribute、整條規則不存在，既有店家的版面一律不動。 */
+        section[data-edit-target][data-content-align="middle"] {
+          align-content: center;
+        }
+        section[data-edit-target][data-content-align="bottom"] {
+          align-content: end;
+        }
+
         /* 區段濾鏡：editor 各 section panel「濾鏡」三按鈕（無 / 黑白 / 復古）。
            只套這一段裡的照片。原本是 page.tsx 直接在 section 上設 filter，整個子樹一起被洗
            ——這一段的自訂底色、文字色、用主色畫的小標與短線全部跟著變灰或染成褐調，等於把
