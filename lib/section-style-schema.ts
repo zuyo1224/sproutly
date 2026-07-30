@@ -32,6 +32,12 @@ export const SECTION_STYLE_ENUMS = {
   // 這一欄只縮放內文自己，而且是等比縮放——同一段裡描述、圖說、引言原本的大小差距照原樣
   // 保留，不會被壓成同一級（見 layout.tsx 那條規則裡為什麼不能用 font-size 的說明）。
   bodyScale: ["small", "default", "large"],
+  // 內文濃淡（default 不套 / muted 更淡 / strong 跟標題同深）。描述、說明、圖說這類次要文字
+  // 一律用比標題淡的那個顏色（--store-text-muted，約七成濃度）——那是排版上的層級設計，
+  // 但同一個濃度不是每間店都讀得動：淺灰底配淺灰字、或客人年紀偏大時，商品描述整段是糊的。
+  // 商家原本能動的只有兩個極端：「文字顏色」把整段（含標題）一起換掉，或「淡化」把整段
+  // 連照片一起變透明——沒有一個只調次要文字的。這一欄補的就是那一格。
+  bodyTone: ["muted", "default", "strong"],
   // 該 section 獨立上下空白（覆寫全網站值）
   paddingScale: ["compact", "default", "spacious"],
   // 分隔線（上 / 下 / 上下都有 / 沒有）
@@ -91,6 +97,7 @@ export const SECTION_STYLE_NEUTRAL_VALUES = {
   bodyAlign: "auto",
   bodyMeasure: "auto",
   bodyScale: "default",
+  bodyTone: "default",
   contentAlign: "top",
   divider: "none",
   outline: "none",

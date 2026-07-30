@@ -329,6 +329,14 @@ export default async function StoreHomePage({
     // ——那會把同一段裡本來大小不同的內文壓成同一級，見那裡的說明）。
     const bodyScaleVal: "small" | "large" | undefined =
       s?.bodyScale === "small" || s?.bodyScale === "large" ? s.bodyScale : undefined;
+    // 內文濃淡：這一欄不走 attribute 也不走 layout.tsx 的規則，改覆寫 --store-text-muted。
+    // 描述、說明、圖說這類次要文字都是 inline style 寫 color: var(--store-text-muted)（見
+    // mergeSectionStyle 上面那條約定），inline 的優先度連 CSS 規則都蓋不過——內文對齊、
+    // 一行字數那組「補一條規則」的招在這裡沒用，只能比照區段字體（693459c）與字距
+    // （55ca20c）：那些字既然都讀同一個變數，覆寫變數它們自然全部跟著換。
+    // 值本身在 mergeSectionStyle 算（要用到該段的文字色，沒設才退回全站的）。
+    const bodyToneVal: "muted" | "strong" | undefined =
+      s?.bodyTone === "muted" || s?.bodyTone === "strong" ? s.bodyTone : undefined;
     // 內容垂直位置：同樣走 attribute（沒設就整條規則不存在，內容照舊從上緣排）。
     // 實際怎麼推由 layout.tsx 那條規則做，見那裡為什麼不是把 section 改成 flex。
     const contentAlignVal: "middle" | "bottom" | undefined =
@@ -368,6 +376,7 @@ export default async function StoreHomePage({
       bodyMeasureVal,
       bodyMeasureMax,
       bodyScaleVal,
+      bodyToneVal,
       contentAlignVal,
     };
     // 這裡本來手抄一份 `as { ... }`（整份欄位再列一次）。它推不出比 TS 自己推更精確的型別，
@@ -408,6 +417,21 @@ export default async function StoreHomePage({
       out.color = s.text;
       out["--store-text"] = s.text;
       out["--store-text-muted"] = mutedFromText(s.text); // 加 ~70% alpha 給 muted 用（容任何合法顏色）
+    }
+    // 內文濃淡：接著上面那條再改一次 --store-text-muted（順序不能反，這一欄就是要蓋過
+    // 「文字色算出來的七成」那個預設濃度）。描述、說明、圖說用的都是這個變數，商家挑的是
+    // 這些次要文字要多濃，不是整段的顏色（那是「文字顏色」）、也不是整段連照片一起透明
+    // （那是「淡化」）——原本這兩個極端中間沒有東西，商品描述在淺底上讀不動就只能整段改色。
+    // 濃：直接用該段的文字色，次要文字跟標題一樣深，長描述最好讀（年紀大的客人也看得清）。
+    // 淡：55%，比預設的七成再退一階，給只想留個註腳、不要搶戲的段落。
+    // 基準色跟著該段的文字色走，沒設才退回全站的——深底淺字的段落選「濃」拿到的是那個
+    // 淺字色，不會挑出一個壓在自己底色上看不見的值（同 70c8177 那條線的口徑）。
+    if (s.bodyToneVal) {
+      const toneBase = s.text ?? theme.text;
+      out["--store-text-muted"] =
+        s.bodyToneVal === "strong"
+          ? toneBase
+          : `color-mix(in srgb, ${toneBase} 55%, transparent)`;
     }
     if (s.padOverride !== undefined) out["--store-section-pad"] = String(s.padOverride);
     // 全站主色壓在這一段的自訂底色上還看不看得見。主色是配著全站底色挑的一個要跳出來的

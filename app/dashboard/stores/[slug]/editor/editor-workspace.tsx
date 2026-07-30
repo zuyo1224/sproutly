@@ -2850,6 +2850,7 @@ export function EditorWorkspace({
           const bodyAlign = cur.bodyAlign ?? null;
           const bodyMeasure = cur.bodyMeasure ?? null;
           const bodyScale = cur.bodyScale ?? null;
+          const bodyTone = cur.bodyTone ?? null;
           const bg = cur.bgColor ?? null;
           const textCol = cur.textColor ?? null;
           const pad = cur.paddingScale ?? null;
@@ -3353,6 +3354,41 @@ export function EditorWorkspace({
                     <button
                       type="button"
                       onClick={() => patch({ bodyScale: null })}
+                      className="text-stone-500 hover:text-stone-800 underline"
+                    >
+                      清除
+                    </button>
+                  )}
+                </div>
+              </Field>
+              <Field label="內文濃淡">
+                <div className="grid grid-cols-3 gap-1.5">
+                  {([
+                    { v: "muted", label: "淡" },
+                    { v: "default", label: "預設" },
+                    { v: "strong", label: "濃" },
+                  ] as const).map((opt) => (
+                    <button
+                      key={opt.v}
+                      type="button"
+                      onClick={() => patch({ bodyTone: opt.v })}
+                      aria-pressed={(bodyTone ?? "default") === opt.v}
+                      className={`rounded-lg border py-2 text-xs transition ${
+                        (bodyTone ?? "default") === opt.v
+                          ? "border-emerald-500 bg-emerald-50 text-emerald-900"
+                          : "border-stone-200 text-stone-600 hover:border-stone-400"
+                      }`}
+                    >
+                      {opt.label}
+                    </button>
+                  ))}
+                </div>
+                <div className="mt-1.5 flex items-center justify-between text-[11px] text-stone-500">
+                  <span>描述、說明這類次要文字的深淺，選「濃」跟標題一樣深、長描述最好讀</span>
+                  {bodyTone && (
+                    <button
+                      type="button"
+                      onClick={() => patch({ bodyTone: null })}
                       className="text-stone-500 hover:text-stone-800 underline"
                     >
                       清除
