@@ -2851,6 +2851,7 @@ export function EditorWorkspace({
           const bodyMeasure = cur.bodyMeasure ?? null;
           const bodyScale = cur.bodyScale ?? null;
           const bodyTone = cur.bodyTone ?? null;
+          const headingTone = cur.headingTone ?? null;
           const bg = cur.bgColor ?? null;
           const textCol = cur.textColor ?? null;
           const pad = cur.paddingScale ?? null;
@@ -3672,6 +3673,41 @@ export function EditorWorkspace({
                     <button
                       type="button"
                       onClick={() => patch({ headingWeight: null })}
+                      className="text-stone-500 hover:text-stone-800 underline"
+                    >
+                      清除
+                    </button>
+                  )}
+                </div>
+              </Field>
+              <Field label="標題用色">
+                <div className="grid grid-cols-3 gap-1.5">
+                  {([
+                    { v: "default", label: "預設" },
+                    { v: "accent", label: "主色" },
+                    { v: "muted", label: "柔和" },
+                  ] as const).map((opt) => (
+                    <button
+                      key={opt.v}
+                      type="button"
+                      onClick={() => patch({ headingTone: opt.v })}
+                      aria-pressed={(headingTone ?? "default") === opt.v}
+                      className={`rounded-lg border py-2 text-xs transition ${
+                        (headingTone ?? "default") === opt.v
+                          ? "border-emerald-500 bg-emerald-50 text-emerald-900"
+                          : "border-stone-200 text-stone-600 hover:border-stone-400"
+                      }`}
+                    >
+                      {opt.label}
+                    </button>
+                  ))}
+                </div>
+                <div className="mt-1.5 flex items-center justify-between text-[11px] text-stone-500">
+                  <span>只動標題：主色跟小標同色、柔和跟次要文字同深淺</span>
+                  {headingTone && (
+                    <button
+                      type="button"
+                      onClick={() => patch({ headingTone: null })}
                       className="text-stone-500 hover:text-stone-800 underline"
                     >
                       清除

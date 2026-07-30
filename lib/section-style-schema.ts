@@ -38,6 +38,12 @@ export const SECTION_STYLE_ENUMS = {
   // 商家原本能動的只有兩個極端：「文字顏色」把整段（含標題）一起換掉，或「淡化」把整段
   // 連照片一起變透明——沒有一個只調次要文字的。這一欄補的就是那一格。
   bodyTone: ["muted", "default", "strong"],
+  // 標題用色（default 跟整段文字色 / accent 全站主色 / muted 跟次要文字同深淺）。
+  // 區段裡用主色畫的一直只有配件——小標 eyebrow、標題底下那截短線、常見問題的＋——標題
+  // 本身固定用文字色，商家想讓某一段的標題帶品牌色（最常見的「標題用主色、內文用黑」），
+  // 唯一動得到標題顏色的是「文字顏色」，但那欄換的是整段：內文、圖說全部跟著變，等於
+  // 做不到。這一欄只動標題；muted 給想讓標題退後一步、把重量讓給照片的段落（相簿、合作）。
+  headingTone: ["default", "accent", "muted"],
   // 該 section 獨立上下空白（覆寫全網站值）
   paddingScale: ["compact", "default", "spacious"],
   // 分隔線（上 / 下 / 上下都有 / 沒有）
@@ -111,6 +117,7 @@ export const SECTION_STYLE_NEUTRAL_VALUES = {
   bodyMeasure: "auto",
   bodyScale: "default",
   bodyTone: "default",
+  headingTone: "default",
   contentAlign: "top",
   hideOn: "none",
   divider: "none",

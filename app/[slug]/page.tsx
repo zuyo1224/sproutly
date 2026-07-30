@@ -337,6 +337,13 @@ export default async function StoreHomePage({
     // 值本身在 mergeSectionStyle 算（要用到該段的文字色，沒設才退回全站的）。
     const bodyToneVal: "muted" | "strong" | undefined =
       s?.bodyTone === "muted" || s?.bodyTone === "strong" ? s.bodyTone : undefined;
+    // 標題用色：跟內文濃淡同一個處境同一個解法。標題的顏色是 inline style（規則蓋不過
+    // inline），但每個 h2 讀的都是同一個變數——inline color 改讀 --store-heading-color、
+    // fallback 回 --store-text，商家沒設就跟原本一模一樣，設了就只有標題換色。
+    // 值在 mergeSectionStyle 算：accent 要走那裡算好的 sectionAccent（主色壓在自訂底色上
+    // 看不見時已經換成該段文字色的那個），在這裡自己拿 theme.accent 會繞過那道防呆。
+    const headingToneVal: "accent" | "muted" | undefined =
+      s?.headingTone === "accent" || s?.headingTone === "muted" ? s.headingTone : undefined;
     // 內容垂直位置：同樣走 attribute（沒設就整條規則不存在，內容照舊從上緣排）。
     // 實際怎麼推由 layout.tsx 那條規則做，見那裡為什麼不是把 section 改成 flex。
     const contentAlignVal: "middle" | "bottom" | undefined =
@@ -389,6 +396,7 @@ export default async function StoreHomePage({
       bodyMeasureMax,
       bodyScaleVal,
       bodyToneVal,
+      headingToneVal,
       contentAlignVal,
       hideOnVal,
       mediaRadiusVal,
@@ -464,6 +472,17 @@ export default async function StoreHomePage({
         sectionAccent = s.text ?? theme.text;
         out["--store-accent"] = sectionAccent;
       }
+    }
+    // 標題用色：每個 h2 的 inline color 都讀 --store-heading-color、fallback 回文字色，
+    // 這裡有設值才會生效。accent 用上面算好的 sectionAccent，不直接拿 theme.accent——
+    // 商家把這一段換成跟主色相近的底色時，那裡已經把主色換成該段的文字色（配著這段底色
+    // 挑的、一定看得見），標題跟小標、短線走同一道防呆，不會單獨淡進底色裡。
+    // muted 跟次要文字同一個口徑（文字色的七成），標題退到跟描述同一層，讓照片當主角。
+    if (s.headingToneVal) {
+      out["--store-heading-color"] =
+        s.headingToneVal === "accent"
+          ? sectionAccent
+          : mutedFromText(s.text ?? theme.text);
     }
     if (s.minHeightOverride !== undefined) out.minHeight = s.minHeightOverride;
     // 線的顏色：沒設自訂文字色就照舊用全站 theme.border（既有店家一條線都不會變）。
@@ -1267,7 +1286,7 @@ export default async function StoreHomePage({
                     transform: "translate(-50%, -50%)",
                     maxWidth: "min(560px, 80vw)",
                     width: "100%",
-                    color: "var(--store-text)",
+                    color: "var(--store-heading-color, var(--store-text))",
                     fontFamily: "var(--store-font)",
                     fontWeight: 400,
                     wordBreak: "keep-all",
@@ -1303,7 +1322,7 @@ export default async function StoreHomePage({
                   data-edit-drag={FREE_POS_KEYS.collectionIntro}
                   className={`text-xl sm:text-2xl max-w-xl ${collStyle.align === "center" ? "mx-auto" : collStyle.align === "right" ? "ml-auto" : ""} mb-32 leading-[1.9]`}
                   style={{
-                    color: "var(--store-text)",
+                    color: "var(--store-heading-color, var(--store-text))",
                     fontFamily: "var(--store-font)",
                     fontWeight: 400,
                     wordBreak: "keep-all",
@@ -1416,7 +1435,7 @@ export default async function StoreHomePage({
                     left: `${featuredPos!.x * 100}%`,
                     top: `${featuredPos!.y * 100}%`,
                     transform: "translate(-50%, -50%)",
-                    color: "var(--store-text)",
+                    color: "var(--store-heading-color, var(--store-text))",
                     fontFamily: "var(--store-font)",
                     fontWeight: 400,
                     whiteSpace: "nowrap",
@@ -1447,7 +1466,7 @@ export default async function StoreHomePage({
                     data-edit-field="featuredTitle"
                     className="text-xl sm:text-2xl mb-20 sm:mb-28"
                     style={{
-                      color: "var(--store-text)",
+                      color: "var(--store-heading-color, var(--store-text))",
                       fontFamily: "var(--store-font)",
                       fontWeight: 400,
                     }}
@@ -1620,7 +1639,7 @@ export default async function StoreHomePage({
                   data-edit-field="journalTitle"
                   className="text-3xl sm:text-4xl lg:text-[2.5rem]"
                   style={{
-                    color: "var(--store-text)",
+                    color: "var(--store-heading-color, var(--store-text))",
                     fontFamily: "var(--store-font)",
                     fontWeight: 400,
                     letterSpacing: "var(--store-track, -0.01em)",
@@ -1653,7 +1672,7 @@ export default async function StoreHomePage({
                   data-edit-field="journalTitle"
                   className="text-3xl sm:text-4xl lg:text-[2.5rem]"
                   style={{
-                    color: "var(--store-text)",
+                    color: "var(--store-heading-color, var(--store-text))",
                     fontFamily: "var(--store-font)",
                     fontWeight: 400,
                     letterSpacing: "var(--store-track, -0.01em)",
@@ -1960,7 +1979,7 @@ export default async function StoreHomePage({
                       data-edit-field="testimonialsTitle"
                       className="text-2xl sm:text-3xl md:text-4xl"
                       style={{
-                        color: "var(--store-text)",
+                        color: "var(--store-heading-color, var(--store-text))",
                         fontFamily: "var(--store-font)",
                         fontWeight: 400,
                         letterSpacing: "var(--store-track, -0.01em)",
@@ -1997,7 +2016,7 @@ export default async function StoreHomePage({
                       data-edit-field="testimonialsTitle"
                       className="text-2xl sm:text-3xl md:text-4xl"
                       style={{
-                        color: "var(--store-text)",
+                        color: "var(--store-heading-color, var(--store-text))",
                         fontFamily: "var(--store-font)",
                         fontWeight: 400,
                         letterSpacing: "var(--store-track, -0.01em)",
@@ -2153,7 +2172,7 @@ export default async function StoreHomePage({
                     <h2
                       className="text-2xl sm:text-3xl md:text-4xl"
                       style={{
-                        color: "var(--store-text)",
+                        color: "var(--store-heading-color, var(--store-text))",
                         fontFamily: "var(--store-font)",
                         fontWeight: 400,
                         letterSpacing: "var(--store-track, -0.01em)",
@@ -2187,7 +2206,7 @@ export default async function StoreHomePage({
                     data-edit-field="faqTitle"
                     className="text-2xl sm:text-3xl md:text-4xl"
                     style={{
-                      color: "var(--store-text)",
+                      color: "var(--store-heading-color, var(--store-text))",
                       fontFamily: "var(--store-font)",
                       fontWeight: 400,
                       letterSpacing: "var(--store-track, -0.01em)",
@@ -2332,7 +2351,7 @@ export default async function StoreHomePage({
                         data-edit-field="statsTitle"
                         className="text-2xl sm:text-3xl md:text-4xl"
                         style={{
-                          color: "var(--store-text)",
+                          color: "var(--store-heading-color, var(--store-text))",
                           fontFamily: "var(--store-font)",
                           fontWeight: 500,
                           letterSpacing: "var(--store-track, -0.01em)",
@@ -2371,7 +2390,7 @@ export default async function StoreHomePage({
                         data-edit-field="statsTitle"
                         className="text-2xl sm:text-3xl md:text-4xl"
                         style={{
-                          color: "var(--store-text)",
+                          color: "var(--store-heading-color, var(--store-text))",
                           fontFamily: "var(--store-font)",
                           fontWeight: 500,
                           letterSpacing: "var(--store-track, -0.01em)",
@@ -2607,7 +2626,7 @@ export default async function StoreHomePage({
                       data-edit-field="galleryTitle"
                       className="text-2xl sm:text-3xl md:text-4xl"
                       style={{
-                        color: "var(--store-text)",
+                        color: "var(--store-heading-color, var(--store-text))",
                         fontFamily: "var(--store-font)",
                         fontWeight: 400,
                         letterSpacing: "var(--store-track, -0.01em)",
@@ -2641,7 +2660,7 @@ export default async function StoreHomePage({
                     data-edit-field="galleryTitle"
                     className="text-2xl sm:text-3xl md:text-4xl"
                     style={{
-                      color: "var(--store-text)",
+                      color: "var(--store-heading-color, var(--store-text))",
                       fontFamily: "var(--store-font)",
                       fontWeight: 400,
                       letterSpacing: "var(--store-track, -0.01em)",
@@ -2771,7 +2790,7 @@ export default async function StoreHomePage({
                 data-edit-field="visitTitle"
                 className="text-2xl sm:text-3xl md:text-4xl mb-4"
                 style={{
-                  color: "var(--store-text)",
+                  color: "var(--store-heading-color, var(--store-text))",
                   fontFamily: "var(--store-font)",
                   fontWeight: 400,
                   letterSpacing: "var(--store-track, -0.01em)",
