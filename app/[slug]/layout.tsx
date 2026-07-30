@@ -937,6 +937,26 @@ export default async function PublicStoreLayout({
           --store-media-radius: 28px;
         }
 
+        /* 卡片間距：editor 各 section panel「卡片間距」三按鈕（緊湊 / 預設 / 寬鬆）。
+           商品卡、照片牆、合作 logo 彼此的距離是每段寫死的一組值，商家動得到間距的只有
+           「區段空白」跟「上下外距」——那兩欄調的是段落外圍，卡片之間一動也不動：欄數
+           調成 4 卡片就黏在一起、想做緊貼的照片拼貼或鬆一點的畫廊感都沒有格子可按。
+           規則只落在 .sproutly-card-grid（各段的卡片格線容器都掛了這個 class），不能寫
+           落在所有 .grid 上——hero 的左右分欄、切版用的 grid 也是 grid，蓋到會拆版型。
+           直的（列距）與橫的（欄距）分開給：卡片下面帶著品名價錢，列距本來就該比欄距大，
+           一個值兩邊通用會把文字跟下一張卡黏在一起。寬鬆用 clamp 跟著螢幕寬縮——手機上
+           兩欄格線塞 64px 的欄距，卡片自己就沒剩多少寬度。合作 logo 那排是 flex，gap
+           一樣吃這兩個值。沒設（或選「預設」）就沒 attribute、整條規則不存在，各段維持
+           自己原本那組間距。 */
+        section[data-edit-target][data-grid-gap="tight"] .sproutly-card-grid {
+          column-gap: 12px;
+          row-gap: 28px;
+        }
+        section[data-edit-target][data-grid-gap="loose"] .sproutly-card-grid {
+          column-gap: clamp(24px, 4.5vw, 64px);
+          row-gap: clamp(56px, 8vw, 112px);
+        }
+
         /* 區段進場動畫：editor 各 section panel「進場動畫」三按鈕（無 / 淡入 / 上滑）
            靠 data-anim attribute + CSS scroll-driven animation（animation-timeline: view()）觸發。
            沒設定 = 無 attr = 不動畫；fade = opacity 0→1；slide-up = opacity + translateY 上滑。

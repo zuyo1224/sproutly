@@ -69,6 +69,12 @@ export const SECTION_STYLE_ENUMS = {
   // 圓了、裡面的照片還是方的，兩個圓角對不起來反而更像沒做完；反過來想讓某一段的照片
   // 柔一點（人像、生活情境照），現有的「圓角」那欄動的是整段的外框，照片一點都不會變。
   mediaRadius: ["none", "soft", "round"],
+  // 卡片間距（tight 收緊 / loose 放寬），只套這一段排成格子的卡片與照片之間的距離。
+  // 商品卡、照片牆、合作 logo 的間距是每段寫死的一組值：商家把欄數調成 4 之後卡片黏在
+  // 一起、或想把照片牆做成緊貼的拼貼、把精選商品攤成鬆一點的畫廊感，全都沒有一格動得到
+  // ——動得到間距的只有「區段空白」跟「上下外距」，那兩欄調的是段落外圍，卡片彼此之間
+  // 一動也不動。收緊 / 放寬蓋掉該段自己的那組值，不跟原值等比（CSS 蓋不掉又乘不了）。
+  gridGap: ["tight", "normal", "loose"],
   // 外框（subtle 1px / strong 2px，用 outline 避免跟 divider 的 borderTop/Bottom 打架）
   outline: ["none", "subtle", "strong"],
   // 陰影（soft 淺 / deep 深），讓有 bgColor 的 section 像卡片浮起
@@ -122,6 +128,7 @@ export const SECTION_STYLE_NEUTRAL_VALUES = {
   hideOn: "none",
   divider: "none",
   mediaRadius: "none",
+  gridGap: "normal",
   outline: "none",
   shadow: "none",
   borderRadius: "none",

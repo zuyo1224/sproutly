@@ -365,6 +365,13 @@ export default async function StoreHomePage({
     // 一條落在那個框上的規則。沒設就沒 attribute、整條規則不存在，照片維持原本的形狀。
     const mediaRadiusVal: "soft" | "round" | undefined =
       s?.mediaRadius === "soft" || s?.mediaRadius === "round" ? s.mediaRadius : undefined;
+    // 卡片間距：要動的是這一段裡那個卡片格線容器的 gap，不是段落自己——跟照片圓角同一個
+    // 處境同一個解法，attribute 讓 layout.tsx 補規則。規則只落在 .sproutly-card-grid 上
+    // （各段的卡片格線容器都掛了這個 class），不能寫成落在所有 .grid 上——hero 的左右
+    // 分欄、切版用的 grid 也是 grid，蓋到那些會把版型拆掉。沒設就沒 attribute、整條規則
+    // 不存在，各段的間距維持自己原本那組值。
+    const gridGapVal: "tight" | "loose" | undefined =
+      s?.gridGap === "tight" || s?.gridGap === "loose" ? s.gridGap : undefined;
     return {
       bg: s?.bgColor ?? undefined,
       text: s?.textColor ?? undefined,
@@ -400,6 +407,7 @@ export default async function StoreHomePage({
       contentAlignVal,
       hideOnVal,
       mediaRadiusVal,
+      gridGapVal,
     };
     // 這裡本來手抄一份 `as { ... }`（整份欄位再列一次）。它推不出比 TS 自己推更精確的型別，
     // 卻是第三份要跟著欄位表同步改的清單——加控制忘了補就編不過（好），改錯就悄悄放寬（不好）。
@@ -1271,6 +1279,7 @@ export default async function StoreHomePage({
             data-content-align={collStyle.contentAlignVal}
             data-hide-on={collStyle.hideOnVal}
             data-media-radius={collStyle.mediaRadiusVal}
+            data-grid-gap={collStyle.gridGapVal}
             style={mergeSectionStyle(collStyle)}
           >
             <div className="max-w-5xl mx-auto px-8 sm:px-12" style={{ textAlign: collStyle.align }}>
@@ -1338,7 +1347,7 @@ export default async function StoreHomePage({
                 </>
               )}
 
-              <div className={`sproutly-stagger grid grid-cols-2 gap-x-6 sm:gap-x-12 gap-y-20 sm:gap-y-24 ${
+              <div className={`sproutly-card-grid sproutly-stagger grid grid-cols-2 gap-x-6 sm:gap-x-12 gap-y-20 sm:gap-y-24 ${
                 theme.layout.collectionsColumns === 2 ? "sm:grid-cols-2"
                 : theme.layout.collectionsColumns === 4 ? "sm:grid-cols-4"
                 : "sm:grid-cols-3"
@@ -1423,6 +1432,7 @@ export default async function StoreHomePage({
             data-content-align={featuredStyle.contentAlignVal}
             data-hide-on={featuredStyle.hideOnVal}
             data-media-radius={featuredStyle.mediaRadiusVal}
+            data-grid-gap={featuredStyle.gridGapVal}
           >
             <div className="max-w-5xl mx-auto px-8 sm:px-12" style={{ textAlign: featuredStyle.align }}>
               {featuredFree ? (
@@ -1475,7 +1485,7 @@ export default async function StoreHomePage({
                   </h2>
                 </>
               )}
-              <div className={`sproutly-stagger grid grid-cols-2 gap-x-6 sm:gap-x-10 gap-y-16 ${
+              <div className={`sproutly-card-grid sproutly-stagger grid grid-cols-2 gap-x-6 sm:gap-x-10 gap-y-16 ${
                 theme.layout.featuredColumns === 2 ? "md:grid-cols-2"
                 : theme.layout.featuredColumns === 4 ? "md:grid-cols-4"
                 : "md:grid-cols-3"
@@ -1612,6 +1622,7 @@ export default async function StoreHomePage({
             data-content-align={journalStyle.contentAlignVal}
             data-hide-on={journalStyle.hideOnVal}
             data-media-radius={journalStyle.mediaRadiusVal}
+            data-grid-gap={journalStyle.gridGapVal}
           >
           <div className="max-w-5xl mx-auto px-8 sm:px-12" style={{ textAlign: journalStyle.align }}>
             {journalFree ? (
@@ -1692,7 +1703,7 @@ export default async function StoreHomePage({
               </div>
             )}
 
-            <div className={`sproutly-stagger grid grid-cols-1 gap-x-8 sm:gap-x-10 gap-y-16 ${
+            <div className={`sproutly-card-grid sproutly-stagger grid grid-cols-1 gap-x-8 sm:gap-x-10 gap-y-16 ${
               theme.layout.journalColumns === 2 ? "sm:grid-cols-2" : "sm:grid-cols-3"
             }`}>
               {(theme.homepage.journalCards.length > 0
@@ -1949,6 +1960,7 @@ export default async function StoreHomePage({
               data-content-align={testimonialsStyle.contentAlignVal}
               data-hide-on={testimonialsStyle.hideOnVal}
               data-media-radius={testimonialsStyle.mediaRadiusVal}
+              data-grid-gap={testimonialsStyle.gridGapVal}
             >
               <div
                 className="max-w-5xl mx-auto px-8 sm:px-12"
@@ -2037,7 +2049,7 @@ export default async function StoreHomePage({
                   </div>
                 )}
 
-                <div className={`grid grid-cols-1 gap-6 md:gap-8 ${
+                <div className={`sproutly-card-grid grid grid-cols-1 gap-6 md:gap-8 ${
                   theme.layout.testimonialsColumns === 2 ? "md:grid-cols-2"
                   : theme.layout.testimonialsColumns === 4 ? "md:grid-cols-4"
                   : "md:grid-cols-3"
@@ -2318,6 +2330,7 @@ export default async function StoreHomePage({
               data-content-align={statsStyle.contentAlignVal}
               data-hide-on={statsStyle.hideOnVal}
               data-media-radius={statsStyle.mediaRadiusVal}
+              data-grid-gap={statsStyle.gridGapVal}
             >
               <div
                 className="max-w-5xl mx-auto px-8 sm:px-12"
@@ -2411,7 +2424,7 @@ export default async function StoreHomePage({
                     />
                   </div>
                 )}
-                <div className={`grid grid-cols-2 gap-y-12 gap-x-8 ${
+                <div className={`sproutly-card-grid grid grid-cols-2 gap-y-12 gap-x-8 ${
                   theme.layout.statsColumns === 2 ? "md:grid-cols-2"
                   : theme.layout.statsColumns === 3 ? "md:grid-cols-3"
                   : "md:grid-cols-4"
@@ -2491,6 +2504,7 @@ export default async function StoreHomePage({
               data-content-align={partnersStyle.contentAlignVal}
               data-hide-on={partnersStyle.hideOnVal}
               data-media-radius={partnersStyle.mediaRadiusVal}
+              data-grid-gap={partnersStyle.gridGapVal}
             >
               <div
                 className="max-w-5xl mx-auto px-8 sm:px-12"
@@ -2523,7 +2537,7 @@ export default async function StoreHomePage({
                   {partnersEyebrow}
                 </p>
                 )}
-                <div className={`flex flex-wrap items-center ${partnersJustify} gap-8 sm:gap-12 md:gap-16`}>
+                <div className={`sproutly-card-grid flex flex-wrap items-center ${partnersJustify} gap-8 sm:gap-12 md:gap-16`}>
                   {theme.layout.partners.slice(0, 12).map((p, i) => {
                     const inner = (
                       // eslint-disable-next-line @next/next/no-img-element
@@ -2596,6 +2610,7 @@ export default async function StoreHomePage({
               data-content-align={galleryStyle.contentAlignVal}
               data-hide-on={galleryStyle.hideOnVal}
               data-media-radius={galleryStyle.mediaRadiusVal}
+              data-grid-gap={galleryStyle.gridGapVal}
             >
               <div
                 className="max-w-6xl mx-auto px-6 sm:px-10"
@@ -2681,7 +2696,7 @@ export default async function StoreHomePage({
                 </div>
                 )}
 
-                <div className={`sproutly-stagger grid grid-cols-2 gap-3 sm:gap-5 ${
+                <div className={`sproutly-card-grid sproutly-stagger grid grid-cols-2 gap-3 sm:gap-5 ${
                   theme.layout.galleryColumns === 2 ? "md:grid-cols-2"
                   : theme.layout.galleryColumns === 4 ? "md:grid-cols-4"
                   : "md:grid-cols-3"
