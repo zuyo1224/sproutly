@@ -75,6 +75,13 @@ export const SECTION_STYLE_ENUMS = {
   // 被裁頭去尾，商家沒有一格動得到；反過來拍橫幅生活照的店想讓照片牆寬一點也一樣。
   // 圖都是鋪滿框再裁（fill + object-cover），所以換比例是換裁法、不是把圖壓扁。
   mediaAspect: ["auto", "square", "portrait", "landscape"],
+  // 照片取景（auto 置中 / top 保留上緣 / bottom 保留下緣），只套這一段卡片圖框裡的照片。
+  // 照片鋪滿框再裁的時候一律從正中間取——直式商品照放進正方或橫式的框，被裁掉的是上下
+  // 兩頭，而盆栽的葉冠、水壺的瓶口偏偏都在上面，裁掉的剛好是重點；上一欄「照片比例」
+  // 換的是框的形狀，救不了「同一個框裡該留哪一端」這件事，商家原本沒有一格能選。
+  // 只給上下兩檔不給左右：卡片圖框永遠比照片窄邊裁長邊，直式照片在框裡被裁的是上下，
+  // 左右那組要等到有橫式照片配直式框的實際案例再說，先不擺一排按了沒反應的按鈕。
+  mediaFocus: ["auto", "top", "bottom"],
   // 卡片間距（tight 收緊 / loose 放寬），只套這一段排成格子的卡片與照片之間的距離。
   // 商品卡、照片牆、合作 logo 的間距是每段寫死的一組值：商家把欄數調成 4 之後卡片黏在
   // 一起、或想把照片牆做成緊貼的拼貼、把精選商品攤成鬆一點的畫廊感，全都沒有一格動得到
@@ -135,6 +142,7 @@ export const SECTION_STYLE_NEUTRAL_VALUES = {
   divider: "none",
   mediaRadius: "none",
   mediaAspect: "auto",
+  mediaFocus: "auto",
   gridGap: "normal",
   outline: "none",
   shadow: "none",

@@ -958,6 +958,22 @@ export default async function PublicStoreLayout({
           aspect-ratio: 3 / 2;
         }
 
+        /* 照片取景：editor 各 section panel「照片取景」三按鈕（置中 / 靠上 / 靠下）。
+           照片鋪滿框再裁（object-cover）的時候一律從正中間取，這是 object-position 的
+           預設值——直式商品照放進正方或橫式的框，被裁的是上下兩頭，而盆栽的葉冠、水壺的
+           瓶口偏偏都在上面，裁掉的剛好是重點。上面那條「照片比例」換的是框的形狀，
+           救不了「同一個框裡該留哪一端」。規則落在 .sproutly-card-image 裡的 img——
+           四段的卡片圖都是鋪滿圖框的 img（next/image fill），沒有一張帶 inline 的
+           object-position，這條規則落得下去。只有上下兩檔：卡片圖框永遠比照片窄邊裁
+           長邊，直式照片被裁的是上下；沒設（或選「置中」）就沒 attribute、整條規則
+           不存在，照片維持置中裁。 */
+        section[data-edit-target][data-media-focus="top"] .sproutly-card-image img {
+          object-position: 50% 0%;
+        }
+        section[data-edit-target][data-media-focus="bottom"] .sproutly-card-image img {
+          object-position: 50% 100%;
+        }
+
         /* 卡片間距：editor 各 section panel「卡片間距」三按鈕（緊湊 / 預設 / 寬鬆）。
            商品卡、照片牆、合作 logo 彼此的距離是每段寫死的一組值，商家動得到間距的只有
            「區段空白」跟「上下外距」——那兩欄調的是段落外圍，卡片之間一動也不動：欄數

@@ -373,6 +373,12 @@ export default async function StoreHomePage({
       s?.mediaAspect === "square" || s?.mediaAspect === "portrait" || s?.mediaAspect === "landscape"
         ? s.mediaAspect
         : undefined;
+    // 照片取景：照片鋪滿框再裁時預設從正中間取，直式商品照被裁掉的上緣（葉冠、瓶口）
+    // 剛好是重點——這一欄選被裁時保留哪一端。要動的是圖框裡那張 img 的 object-position，
+    // 跟照片比例同一個處境同一個解法：attribute 讓 layout.tsx 補規則，只掛在有卡片圖框
+    // 的四段。沒設就沒 attribute、整條規則不存在，照片維持置中裁。
+    const mediaFocusVal: "top" | "bottom" | undefined =
+      s?.mediaFocus === "top" || s?.mediaFocus === "bottom" ? s.mediaFocus : undefined;
     // 卡片間距：要動的是這一段裡那個卡片格線容器的 gap，不是段落自己——跟照片圓角同一個
     // 處境同一個解法，attribute 讓 layout.tsx 補規則。規則只落在 .sproutly-card-grid 上
     // （各段的卡片格線容器都掛了這個 class），不能寫成落在所有 .grid 上——hero 的左右
@@ -416,6 +422,7 @@ export default async function StoreHomePage({
       hideOnVal,
       mediaRadiusVal,
       mediaAspectVal,
+      mediaFocusVal,
       gridGapVal,
     };
     // 這裡本來手抄一份 `as { ... }`（整份欄位再列一次）。它推不出比 TS 自己推更精確的型別，
@@ -1289,6 +1296,7 @@ export default async function StoreHomePage({
             data-hide-on={collStyle.hideOnVal}
             data-media-radius={collStyle.mediaRadiusVal}
             data-media-aspect={collStyle.mediaAspectVal}
+            data-media-focus={collStyle.mediaFocusVal}
             data-grid-gap={collStyle.gridGapVal}
             style={mergeSectionStyle(collStyle)}
           >
@@ -1443,6 +1451,7 @@ export default async function StoreHomePage({
             data-hide-on={featuredStyle.hideOnVal}
             data-media-radius={featuredStyle.mediaRadiusVal}
             data-media-aspect={featuredStyle.mediaAspectVal}
+            data-media-focus={featuredStyle.mediaFocusVal}
             data-grid-gap={featuredStyle.gridGapVal}
           >
             <div className="max-w-5xl mx-auto px-8 sm:px-12" style={{ textAlign: featuredStyle.align }}>
@@ -1634,6 +1643,7 @@ export default async function StoreHomePage({
             data-hide-on={journalStyle.hideOnVal}
             data-media-radius={journalStyle.mediaRadiusVal}
             data-media-aspect={journalStyle.mediaAspectVal}
+            data-media-focus={journalStyle.mediaFocusVal}
             data-grid-gap={journalStyle.gridGapVal}
           >
           <div className="max-w-5xl mx-auto px-8 sm:px-12" style={{ textAlign: journalStyle.align }}>
@@ -2623,6 +2633,7 @@ export default async function StoreHomePage({
               data-hide-on={galleryStyle.hideOnVal}
               data-media-radius={galleryStyle.mediaRadiusVal}
               data-media-aspect={galleryStyle.mediaAspectVal}
+              data-media-focus={galleryStyle.mediaFocusVal}
               data-grid-gap={galleryStyle.gridGapVal}
             >
               <div

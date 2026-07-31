@@ -2865,6 +2865,7 @@ export function EditorWorkspace({
           const borderRadius = cur.borderRadius ?? null;
           const mediaRadius = cur.mediaRadius ?? null;
           const mediaAspect = cur.mediaAspect ?? null;
+          const mediaFocus = cur.mediaFocus ?? null;
           const gridGap = cur.gridGap ?? null;
           const entrance = cur.entrance ?? null;
           const fontFamily = cur.fontFamily ?? null;
@@ -4095,6 +4096,41 @@ export function EditorWorkspace({
                     <button
                       type="button"
                       onClick={() => patch({ mediaAspect: null })}
+                      className="text-stone-500 hover:text-stone-800 underline"
+                    >
+                      清除
+                    </button>
+                  )}
+                </div>
+              </Field>
+              <Field label="照片取景">
+                <div className="grid grid-cols-3 gap-1.5">
+                  {([
+                    { v: "auto", label: "置中" },
+                    { v: "top", label: "靠上" },
+                    { v: "bottom", label: "靠下" },
+                  ] as const).map((opt) => (
+                    <button
+                      key={opt.v}
+                      type="button"
+                      onClick={() => patch({ mediaFocus: opt.v })}
+                      aria-pressed={(mediaFocus ?? "auto") === opt.v}
+                      className={`rounded-lg border py-2 text-xs transition ${
+                        (mediaFocus ?? "auto") === opt.v
+                          ? "border-emerald-500 bg-emerald-50 text-emerald-900"
+                          : "border-stone-200 text-stone-600 hover:border-stone-400"
+                      }`}
+                    >
+                      {opt.label}
+                    </button>
+                  ))}
+                </div>
+                <div className="mt-1.5 flex items-center justify-between text-[11px] text-stone-500">
+                  <span>照片被框裁掉時保留哪一端（直式商品照選「靠上」保住瓶口、葉冠）</span>
+                  {mediaFocus && (
+                    <button
+                      type="button"
+                      onClick={() => patch({ mediaFocus: null })}
                       className="text-stone-500 hover:text-stone-800 underline"
                     >
                       清除
