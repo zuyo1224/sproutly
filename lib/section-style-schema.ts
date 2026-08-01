@@ -88,6 +88,13 @@ export const SECTION_STYLE_ENUMS = {
   // ——動得到間距的只有「區段空白」跟「上下外距」，那兩欄調的是段落外圍，卡片彼此之間
   // 一動也不動。收緊 / 放寬蓋掉該段自己的那組值，不跟原值等比（CSS 蓋不掉又乘不了）。
   gridGap: ["tight", "normal", "loose"],
+  // 滑過卡片的動作（default 原樣 / calm 只留輕輕浮起 / none 完全不動），只套這一段的卡片。
+  // 滑鼠移到商品卡上，站上一律做四件事：卡片浮起、照片放大一成、照片壓一層暗、標題字距
+  // 撐開——那是全站寫死的一組動作，每一段都一樣。密集排的照片牆滑過去整片在動、慢讀區
+  // 的文章卡被當商品卡放大、拍好構圖的商品照被放大裁掉邊，商家沒有一格關得掉；原本
+  // 動得到「動」的只有「進場動畫」，那是整段進場時做一次的事，跟滑過卡片無關。
+  // 觸控裝置本來就沒有滑過這件事，這一欄調的是桌機（與平板外接滑鼠）的手感。
+  cardHover: ["default", "calm", "none"],
   // 外框（subtle 1px / strong 2px，用 outline 避免跟 divider 的 borderTop/Bottom 打架）
   outline: ["none", "subtle", "strong"],
   // 陰影（soft 淺 / deep 深），讓有 bgColor 的 section 像卡片浮起
@@ -144,6 +151,7 @@ export const SECTION_STYLE_NEUTRAL_VALUES = {
   mediaAspect: "auto",
   mediaFocus: "auto",
   gridGap: "normal",
+  cardHover: "default",
   outline: "none",
   shadow: "none",
   borderRadius: "none",

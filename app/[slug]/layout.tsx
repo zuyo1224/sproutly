@@ -994,6 +994,43 @@ export default async function PublicStoreLayout({
           row-gap: clamp(56px, 8vw, 112px);
         }
 
+        /* 滑過卡片的動作：editor 各 section panel「滑過卡片」三按鈕（預設 / 輕微 / 不動）。
+           滑鼠移到商品卡上，站上一律做四件事（見上面 .sproutly-card:hover 那組）：卡片浮起
+           6px、照片放大一成、照片上壓一層暗、標題字距撐開——那是全站寫死的一組動作，每一段
+           都吃同一份。密集排的照片牆滑過去整片在動、慢讀區的文章卡被當商品卡放大、構圖抓好
+           的商品照被放大裁掉邊，商家原本沒有一格關得掉（「進場動畫」是整段進場時做一次的
+           事，跟滑過卡片無關）。
+           要蓋掉的是 hover 狀態與卡片裡面那幾層，段落上的 inline style 兩者都碰不到——跟
+           卡片間距、照片取景同一個處境同一個解法：attribute 讓這裡補一組更精確的規則壓過去。
+           輕微＝只留浮起（縮到 2px），照片不放大、不壓暗、標題字距不動；不動＝四件全關。
+           兩檔都把卡片下面那顆原本要滑過才浮現的按鈕改成一直看得見——關掉滑過的動作之後
+           它永遠不會出現，等於把「看更多」這個入口一起關掉了，那不是商家按這一格的意思。
+           沒設（或選「預設」）就沒 attribute、整條規則不存在，卡片維持原本那組動作。 */
+        section[data-edit-target][data-card-hover="calm"] .sproutly-card:hover .sproutly-card-image {
+          transform: translateY(-2px);
+        }
+        section[data-edit-target][data-card-hover="none"] .sproutly-card:hover .sproutly-card-image {
+          transform: none;
+          box-shadow: var(--sproutly-elev-2);
+        }
+        section[data-edit-target]:is([data-card-hover="calm"], [data-card-hover="none"])
+          .sproutly-card:hover .sproutly-card-image img {
+          transform: none;
+        }
+        section[data-edit-target]:is([data-card-hover="calm"], [data-card-hover="none"])
+          .sproutly-card:hover .sproutly-card-image::after {
+          background: rgba(0, 0, 0, 0);
+        }
+        section[data-edit-target]:is([data-card-hover="calm"], [data-card-hover="none"])
+          .sproutly-card:hover .sproutly-card-title {
+          letter-spacing: inherit;
+        }
+        section[data-edit-target]:is([data-card-hover="calm"], [data-card-hover="none"])
+          .sproutly-card .sproutly-card-action {
+          opacity: 1;
+          transform: none;
+        }
+
         /* 區段進場動畫：editor 各 section panel「進場動畫」三按鈕（無 / 淡入 / 上滑）
            靠 data-anim attribute + CSS scroll-driven animation（animation-timeline: view()）觸發。
            沒設定 = 無 attr = 不動畫；fade = opacity 0→1；slide-up = opacity + translateY 上滑。

@@ -386,6 +386,13 @@ export default async function StoreHomePage({
     // 不存在，各段的間距維持自己原本那組值。
     const gridGapVal: "tight" | "loose" | undefined =
       s?.gridGap === "tight" || s?.gridGap === "loose" ? s.gridGap : undefined;
+    // 滑過卡片的動作：要蓋掉的是 layout.tsx 裡 .sproutly-card:hover 那組全站寫死的動作
+    // （浮起 + 照片放大 + 壓暗 + 標題字距），段落上的 inline style 蓋不到 hover 狀態，
+    // 也蓋不到卡片裡面那幾層——跟卡片間距同一個處境同一個解法，attribute 讓 layout.tsx
+    // 補一組更精確的規則壓過原本那組。只掛在有卡片的四段。沒設就沒 attribute、整條規則
+    // 不存在，卡片維持原本的動作。
+    const cardHoverVal: "calm" | "none" | undefined =
+      s?.cardHover === "calm" || s?.cardHover === "none" ? s.cardHover : undefined;
     return {
       bg: s?.bgColor ?? undefined,
       text: s?.textColor ?? undefined,
@@ -424,6 +431,7 @@ export default async function StoreHomePage({
       mediaAspectVal,
       mediaFocusVal,
       gridGapVal,
+      cardHoverVal,
     };
     // 這裡本來手抄一份 `as { ... }`（整份欄位再列一次）。它推不出比 TS 自己推更精確的型別，
     // 卻是第三份要跟著欄位表同步改的清單——加控制忘了補就編不過（好），改錯就悄悄放寬（不好）。
@@ -1298,6 +1306,7 @@ export default async function StoreHomePage({
             data-media-aspect={collStyle.mediaAspectVal}
             data-media-focus={collStyle.mediaFocusVal}
             data-grid-gap={collStyle.gridGapVal}
+            data-card-hover={collStyle.cardHoverVal}
             style={mergeSectionStyle(collStyle)}
           >
             <div className="max-w-5xl mx-auto px-8 sm:px-12" style={{ textAlign: collStyle.align }}>
@@ -1453,6 +1462,7 @@ export default async function StoreHomePage({
             data-media-aspect={featuredStyle.mediaAspectVal}
             data-media-focus={featuredStyle.mediaFocusVal}
             data-grid-gap={featuredStyle.gridGapVal}
+            data-card-hover={featuredStyle.cardHoverVal}
           >
             <div className="max-w-5xl mx-auto px-8 sm:px-12" style={{ textAlign: featuredStyle.align }}>
               {featuredFree ? (
@@ -1645,6 +1655,7 @@ export default async function StoreHomePage({
             data-media-aspect={journalStyle.mediaAspectVal}
             data-media-focus={journalStyle.mediaFocusVal}
             data-grid-gap={journalStyle.gridGapVal}
+            data-card-hover={journalStyle.cardHoverVal}
           >
           <div className="max-w-5xl mx-auto px-8 sm:px-12" style={{ textAlign: journalStyle.align }}>
             {journalFree ? (
@@ -2635,6 +2646,7 @@ export default async function StoreHomePage({
               data-media-aspect={galleryStyle.mediaAspectVal}
               data-media-focus={galleryStyle.mediaFocusVal}
               data-grid-gap={galleryStyle.gridGapVal}
+              data-card-hover={galleryStyle.cardHoverVal}
             >
               <div
                 className="max-w-6xl mx-auto px-6 sm:px-10"

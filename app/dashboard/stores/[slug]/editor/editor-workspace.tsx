@@ -2867,6 +2867,7 @@ export function EditorWorkspace({
           const mediaAspect = cur.mediaAspect ?? null;
           const mediaFocus = cur.mediaFocus ?? null;
           const gridGap = cur.gridGap ?? null;
+          const cardHover = cur.cardHover ?? null;
           const entrance = cur.entrance ?? null;
           const fontFamily = cur.fontFamily ?? null;
           const letterSpacing = cur.letterSpacing ?? null;
@@ -4166,6 +4167,41 @@ export function EditorWorkspace({
                     <button
                       type="button"
                       onClick={() => patch({ gridGap: null })}
+                      className="text-stone-500 hover:text-stone-800 underline"
+                    >
+                      清除
+                    </button>
+                  )}
+                </div>
+              </Field>
+              <Field label="滑過卡片">
+                <div className="grid grid-cols-3 gap-1.5">
+                  {([
+                    { v: "default", label: "預設" },
+                    { v: "calm", label: "輕微" },
+                    { v: "none", label: "不動" },
+                  ] as const).map((opt) => (
+                    <button
+                      key={opt.v}
+                      type="button"
+                      onClick={() => patch({ cardHover: opt.v })}
+                      aria-pressed={(cardHover ?? "default") === opt.v}
+                      className={`rounded-lg border py-2 text-xs transition ${
+                        (cardHover ?? "default") === opt.v
+                          ? "border-emerald-500 bg-emerald-50 text-emerald-900"
+                          : "border-stone-200 text-stone-600 hover:border-stone-400"
+                      }`}
+                    >
+                      {opt.label}
+                    </button>
+                  ))}
+                </div>
+                <div className="mt-1.5 flex items-center justify-between text-[11px] text-stone-500">
+                  <span>滑鼠移到卡片上要不要動（照片放大、浮起、壓暗；手機沒有這件事）</span>
+                  {cardHover && (
+                    <button
+                      type="button"
+                      onClick={() => patch({ cardHover: null })}
                       className="text-stone-500 hover:text-stone-800 underline"
                     >
                       清除
