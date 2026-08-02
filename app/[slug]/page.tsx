@@ -379,6 +379,11 @@ export default async function StoreHomePage({
     // 的四段。沒設就沒 attribute、整條規則不存在，照片維持置中裁。
     const mediaFocusVal: "top" | "bottom" | undefined =
       s?.mediaFocus === "top" || s?.mediaFocus === "bottom" ? s.mediaFocus : undefined;
+    // 照片放不放得下整張：上面兩欄都還在「一定會裁」的前提裡（框的比例固定、每張照片的
+    // 比例不同，鋪滿就一定切掉一邊），這一欄是那個前提本身。同樣走 attribute 讓 layout.tsx
+    // 補規則——要蓋掉的是圖自己帶的 object-cover class，段落上的 inline style 傳不下去。
+    const mediaFitVal: "contain" | undefined =
+      s?.mediaFit === "contain" ? "contain" : undefined;
     // 卡片間距：要動的是這一段裡那個卡片格線容器的 gap，不是段落自己——跟照片圓角同一個
     // 處境同一個解法，attribute 讓 layout.tsx 補規則。規則只落在 .sproutly-card-grid 上
     // （各段的卡片格線容器都掛了這個 class），不能寫成落在所有 .grid 上——hero 的左右
@@ -430,6 +435,7 @@ export default async function StoreHomePage({
       mediaRadiusVal,
       mediaAspectVal,
       mediaFocusVal,
+      mediaFitVal,
       gridGapVal,
       cardHoverVal,
     };
@@ -1305,6 +1311,7 @@ export default async function StoreHomePage({
             data-media-radius={collStyle.mediaRadiusVal}
             data-media-aspect={collStyle.mediaAspectVal}
             data-media-focus={collStyle.mediaFocusVal}
+            data-media-fit={collStyle.mediaFitVal}
             data-grid-gap={collStyle.gridGapVal}
             data-card-hover={collStyle.cardHoverVal}
             style={mergeSectionStyle(collStyle)}
@@ -1461,6 +1468,7 @@ export default async function StoreHomePage({
             data-media-radius={featuredStyle.mediaRadiusVal}
             data-media-aspect={featuredStyle.mediaAspectVal}
             data-media-focus={featuredStyle.mediaFocusVal}
+            data-media-fit={featuredStyle.mediaFitVal}
             data-grid-gap={featuredStyle.gridGapVal}
             data-card-hover={featuredStyle.cardHoverVal}
           >
@@ -1654,6 +1662,7 @@ export default async function StoreHomePage({
             data-media-radius={journalStyle.mediaRadiusVal}
             data-media-aspect={journalStyle.mediaAspectVal}
             data-media-focus={journalStyle.mediaFocusVal}
+            data-media-fit={journalStyle.mediaFitVal}
             data-grid-gap={journalStyle.gridGapVal}
             data-card-hover={journalStyle.cardHoverVal}
           >
@@ -2645,6 +2654,7 @@ export default async function StoreHomePage({
               data-media-radius={galleryStyle.mediaRadiusVal}
               data-media-aspect={galleryStyle.mediaAspectVal}
               data-media-focus={galleryStyle.mediaFocusVal}
+              data-media-fit={galleryStyle.mediaFitVal}
               data-grid-gap={galleryStyle.gridGapVal}
               data-card-hover={galleryStyle.cardHoverVal}
             >

@@ -974,6 +974,27 @@ export default async function PublicStoreLayout({
           object-position: 50% 100%;
         }
 
+        /* 照片放不放得下整張：editor 各 section panel「照片完整度」兩按鈕（鋪滿 / 整張）。
+           上面那兩欄（照片比例、照片取景）一個換框的形狀、一個選被裁時保留哪一端，但兩欄
+           都還在「一定會裁」這個前提裡——框的比例是固定的、每張照片的比例不同，鋪滿就一定
+           有一邊被切掉。商家最在意的那幾張（整株盆栽的全貌、水壺連把手的側面、本來就帶留白
+           或邊框構圖的商品圖）要的不是裁得準一點，是一點都不要裁，原本沒有一格做得到。
+           規則落在圖框裡那張 img（跟照片取景同一個位置）：要蓋掉的是圖自己帶的 object-cover
+           class，段落上的 inline style 傳不下去給裡面的圖。框的比例不動——照片比原本的框窄
+           或矮時，多出來的地方露出框自己的底（＝這一段的底色），看起來像照片裱在框裡，而不是
+           讓卡片高度隨每張照片跳來跳去（同一列的卡片會參差不齊）。
+           第二條把滑過時的放大一起關掉：那個放大會把照片撐出框外再被框裁掉，等於剛留住的
+           邊又切一次，跟商家按這一格的意思相反。卡片浮起、標題字距那些照舊（那是滑鼠回饋，
+           不動到照片），要一起關有「滑過卡片」那一欄。
+           沒設（或選「鋪滿」）就沒 attribute、整條規則不存在，照片維持原本的鋪滿裁法。 */
+        section[data-edit-target][data-media-fit="contain"] .sproutly-card-image img {
+          object-fit: contain;
+        }
+        section[data-edit-target][data-media-fit="contain"]
+          .sproutly-card:hover .sproutly-card-image img {
+          transform: none;
+        }
+
         /* 卡片間距：editor 各 section panel「卡片間距」三按鈕（緊湊 / 預設 / 寬鬆）。
            商品卡、照片牆、合作 logo 彼此的距離是每段寫死的一組值，商家動得到間距的只有
            「區段空白」跟「上下外距」——那兩欄調的是段落外圍，卡片之間一動也不動：欄數
