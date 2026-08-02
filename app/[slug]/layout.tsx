@@ -1052,6 +1052,40 @@ export default async function PublicStoreLayout({
           transform: none;
         }
 
+        /* 卡片文字位置：editor 各 section panel「卡片文字」四按鈕（跟著整段 / 左 / 中 / 右）。
+           卡片下面那幾行（品名、價錢、副標、摘要、日期）自己沒有帶對齊，一律繼承整段容器
+           的 text-align——站上預設是置中，所以每張卡的字都置中；而商品列表最常見的排法是
+           「段落大標置中、卡片文字靠左」（文字左緣對齊照片左緣，一整列掃下來每張卡的字才
+           從同一個位置開始），商家原本沒有一格做得到：唯一動得到的「標題對齊」設的是整段
+           容器，改了大標跟著跑掉。
+           順帶收掉一個更難解釋的狀態：上面「內文對齊」那組規則落在段落上，卡片裡的價錢、
+           副標、摘要剛好都是段落，會被一起拉走，而品名是 h3、不在那份選擇器裡，留在原地
+           ——同一張卡上下兩行各自對齊。這一欄的規則把卡片裡的標題與段落一起指定，設了就
+           兩行一起走。
+           要直接命中卡片裡的每個文字元素，不能只在 .sproutly-card 上設一次 text-align：
+           那是繼承值，而「內文對齊」那條是直接落在段落上的規則，繼承一律輸給直接命中的
+           規則，只設外層的話價錢那行還是會被拉走。外層那條仍然留著，接住沒被列進來的
+           元素（卡片下面那顆按鈕是 inline-flex，靠外層的 text-align 決定站哪）。
+           範圍限在 .sproutly-card 裡：同一段的大標、引言不歸這一欄管（那是「標題對齊」與
+           「內文對齊」的事），三個控制各管一塊才組得出上面那個排法。
+           沒設（或選「跟著整段」）就沒 attribute、整條規則不存在，既有店家的卡片一個字都
+           不會動。 */
+        section[data-edit-target][data-card-text="left"] .sproutly-card,
+        section[data-edit-target][data-card-text="left"]
+          .sproutly-card :is(h3, h4, p, span, time, div) {
+          text-align: left;
+        }
+        section[data-edit-target][data-card-text="center"] .sproutly-card,
+        section[data-edit-target][data-card-text="center"]
+          .sproutly-card :is(h3, h4, p, span, time, div) {
+          text-align: center;
+        }
+        section[data-edit-target][data-card-text="right"] .sproutly-card,
+        section[data-edit-target][data-card-text="right"]
+          .sproutly-card :is(h3, h4, p, span, time, div) {
+          text-align: right;
+        }
+
         /* 區段進場動畫：editor 各 section panel「進場動畫」三按鈕（無 / 淡入 / 上滑）
            靠 data-anim attribute + CSS scroll-driven animation（animation-timeline: view()）觸發。
            沒設定 = 無 attr = 不動畫；fade = opacity 0→1；slide-up = opacity + translateY 上滑。

@@ -2869,6 +2869,7 @@ export function EditorWorkspace({
           const mediaFit = cur.mediaFit ?? null;
           const gridGap = cur.gridGap ?? null;
           const cardHover = cur.cardHover ?? null;
+          const cardText = cur.cardText ?? null;
           const entrance = cur.entrance ?? null;
           const fontFamily = cur.fontFamily ?? null;
           const letterSpacing = cur.letterSpacing ?? null;
@@ -4237,6 +4238,42 @@ export function EditorWorkspace({
                     <button
                       type="button"
                       onClick={() => patch({ cardHover: null })}
+                      className="text-stone-500 hover:text-stone-800 underline"
+                    >
+                      清除
+                    </button>
+                  )}
+                </div>
+              </Field>
+              <Field label="卡片文字">
+                <div className="grid grid-cols-4 gap-1.5">
+                  {([
+                    { v: "auto", label: "跟著整段" },
+                    { v: "left", label: "靠左" },
+                    { v: "center", label: "置中" },
+                    { v: "right", label: "靠右" },
+                  ] as const).map((opt) => (
+                    <button
+                      key={opt.v}
+                      type="button"
+                      onClick={() => patch({ cardText: opt.v })}
+                      aria-pressed={(cardText ?? "auto") === opt.v}
+                      className={`rounded-lg border py-2 text-xs transition ${
+                        (cardText ?? "auto") === opt.v
+                          ? "border-emerald-500 bg-emerald-50 text-emerald-900"
+                          : "border-stone-200 text-stone-600 hover:border-stone-400"
+                      }`}
+                    >
+                      {opt.label}
+                    </button>
+                  ))}
+                </div>
+                <div className="mt-1.5 flex items-center justify-between text-[11px] text-stone-500">
+                  <span>卡片下面的品名、價錢站哪（大標置中、卡片文字靠左最常見）</span>
+                  {cardText && (
+                    <button
+                      type="button"
+                      onClick={() => patch({ cardText: null })}
                       className="text-stone-500 hover:text-stone-800 underline"
                     >
                       清除

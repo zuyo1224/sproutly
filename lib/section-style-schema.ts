@@ -102,6 +102,16 @@ export const SECTION_STYLE_ENUMS = {
   // 動得到「動」的只有「進場動畫」，那是整段進場時做一次的事，跟滑過卡片無關。
   // 觸控裝置本來就沒有滑過這件事，這一欄調的是桌機（與平板外接滑鼠）的手感。
   cardHover: ["default", "calm", "none"],
+  // 卡片文字位置（auto 跟著整段 / left 靠左 / center 置中 / right 靠右），只套卡片裡
+  // 品名、價錢、副標、摘要那幾行。卡片下面的文字自己沒有帶對齊，一律繼承整段容器的
+  // 對齊——商家把「標題對齊」設成置中（站上預設就是置中），每張卡的品名與價錢跟著置中，
+  // 而商品列表最常見的排法是「段落大標置中、卡片文字靠左」（文字左緣對齊照片左緣，
+  // 一整列掃下來才不會每張卡的字都從不同位置開始），原本沒有一格做得到。
+  // 還有一個更難解釋的：「內文對齊」那欄的規則落在段落上，卡片裡的價錢、副標、摘要
+  // 剛好都是段落，會被一起拉走，品名（h3）不是段落、留在原地——同一張卡上下兩行各自
+  // 對齊，商家只是想調段落內文，卡片就先散了。這一欄設的是整張卡（含品名），設了就
+  // 兩行一起走，也就把那個散掉的狀態收回來。
+  cardText: ["auto", "left", "center", "right"],
   // 外框（subtle 1px / strong 2px，用 outline 避免跟 divider 的 borderTop/Bottom 打架）
   outline: ["none", "subtle", "strong"],
   // 陰影（soft 淺 / deep 深），讓有 bgColor 的 section 像卡片浮起
@@ -160,6 +170,7 @@ export const SECTION_STYLE_NEUTRAL_VALUES = {
   mediaFit: "cover",
   gridGap: "normal",
   cardHover: "default",
+  cardText: "auto",
   outline: "none",
   shadow: "none",
   borderRadius: "none",
