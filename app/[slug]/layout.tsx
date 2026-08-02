@@ -1185,6 +1185,30 @@ export default async function PublicStoreLayout({
           .sproutly-card > *:not(.sproutly-card-image) {
           grid-column: 1;
         }
+        /* 照片佔寬：editor 各 section panel「照片佔寬」三按鈕（跟預設 / 小張 / 大張）。
+           上面那組橫排規則把左右兩欄寫死成 38% 對 1fr，那個比例是照站上目前的內容挑的：
+           慢讀那種一段文字配一張圖的段落嫌照片太小（配橫幅生活照時只剩縮圖大），只列品名
+           跟價錢的商品清單又嫌字那欄太寬（右邊空一大片）。商家原本沒有一格動得到——欄數
+           調的是一列排幾張、卡片間距調的是卡片之間的距離、照片比例調的是照片自己是方是長。
+           要兩個 attribute 一起命中才成立（沒設成橫排的段落按了不會亂動版面），照片在右
+           那檔左右兩欄的寬度是對調的，所以兩檔各寫一條。
+           手機不用管：640 以下卡片已經被下面那條收成上下排，沒有左右兩欄可分。 */
+        section[data-edit-target][data-card-layout="side"][data-card-media-width="narrow"]
+          .sproutly-card {
+          grid-template-columns: minmax(0, 25%) minmax(0, 1fr);
+        }
+        section[data-edit-target][data-card-layout="side"][data-card-media-width="wide"]
+          .sproutly-card {
+          grid-template-columns: minmax(0, 50%) minmax(0, 1fr);
+        }
+        section[data-edit-target][data-card-layout="side-reverse"][data-card-media-width="narrow"]
+          .sproutly-card {
+          grid-template-columns: minmax(0, 1fr) minmax(0, 25%);
+        }
+        section[data-edit-target][data-card-layout="side-reverse"][data-card-media-width="wide"]
+          .sproutly-card {
+          grid-template-columns: minmax(0, 1fr) minmax(0, 50%);
+        }
         @media (max-width: 639px) {
           section[data-edit-target][data-card-layout^="side"] .sproutly-card-grid {
             grid-template-columns: minmax(0, 1fr);

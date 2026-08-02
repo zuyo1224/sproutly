@@ -2872,6 +2872,7 @@ export function EditorWorkspace({
           const cardText = cur.cardText ?? null;
           const cardSurface = cur.cardSurface ?? null;
           const cardLayout = cur.cardLayout ?? null;
+          const cardMediaWidth = cur.cardMediaWidth ?? null;
           const mobileColumns = cur.mobileColumns ?? null;
           const cardTitleLines = cur.cardTitleLines ?? null;
           const cardDescLines = cur.cardDescLines ?? null;
@@ -4385,6 +4386,45 @@ export function EditorWorkspace({
                   )}
                 </div>
               </Field>
+              {/* 照片佔寬只在橫著排的時候有東西可分，照片在上那檔按了不會有任何反應——
+                  與其擺一格按下去沒事發生的選項，設成橫排才長出來。 */}
+              {(cardLayout === "side" || cardLayout === "side-reverse") && (
+                <Field label="照片佔寬">
+                  <div className="grid grid-cols-3 gap-1.5">
+                    {([
+                      { v: "auto", label: "跟預設" },
+                      { v: "narrow", label: "小張" },
+                      { v: "wide", label: "大張" },
+                    ] as const).map((opt) => (
+                      <button
+                        key={opt.v}
+                        type="button"
+                        onClick={() => patch({ cardMediaWidth: opt.v })}
+                        aria-pressed={(cardMediaWidth ?? "auto") === opt.v}
+                        className={`rounded-lg border py-2 text-xs transition ${
+                          (cardMediaWidth ?? "auto") === opt.v
+                            ? "border-emerald-500 bg-emerald-50 text-emerald-900"
+                            : "border-stone-200 text-stone-600 hover:border-stone-400"
+                        }`}
+                      >
+                        {opt.label}
+                      </button>
+                    ))}
+                  </div>
+                  <div className="mt-1.5 flex items-center justify-between text-[11px] text-stone-500">
+                    <span>橫著排時照片佔一張卡的幾成寬（跟預設約四成）。字多的段落用小張讓文字有寬度寫完整，配橫幅生活照的段落用大張</span>
+                    {cardMediaWidth && (
+                      <button
+                        type="button"
+                        onClick={() => patch({ cardMediaWidth: null })}
+                        className="text-stone-500 hover:text-stone-800 underline"
+                      >
+                        清除
+                      </button>
+                    )}
+                  </div>
+                </Field>
+              )}
               <Field label="手機一列幾張">
                 <div className="grid grid-cols-3 gap-1.5">
                   {([

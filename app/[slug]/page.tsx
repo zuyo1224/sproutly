@@ -421,6 +421,14 @@ export default async function StoreHomePage({
     // 把圖推到左邊右邊會空著，那一格按了等於把版面弄壞，不給比給了沒用好。
     const cardLayoutVal: "side" | "side-reverse" | undefined =
       s?.cardLayout === "side" || s?.cardLayout === "side-reverse" ? s.cardLayout : undefined;
+    // 照片佔寬：橫著排時左右兩欄怎麼分，寫在 layout.tsx 那條 grid-template-columns 上
+    // （38% 對 1fr），段落上的 inline style 一樣到不了卡片自己那層——同一個處境同一個解法。
+    // 跟卡片排法掛同樣的三段，沒設成橫排的段落掛了也不會有反應（那條規則要兩個 attribute
+    // 一起命中才成立）。
+    const cardMediaWidthVal: "narrow" | "wide" | undefined =
+      s?.cardMediaWidth === "narrow" || s?.cardMediaWidth === "wide"
+        ? s.cardMediaWidth
+        : undefined;
     // 手機一列幾張：每一段格線的手機欄數寫死在 Tailwind class 裡（選物、精選、照片牆、
     // 數字兩張，慢讀、客人的話一張），要換只能在 640 以下再蓋一次 grid-template-columns
     // ——段落上的 inline style 到不了裡面那層格線，也沒辦法只在某個寬度生效，跟卡片間距
@@ -492,6 +500,7 @@ export default async function StoreHomePage({
       cardTextVal,
       cardSurfaceVal,
       cardLayoutVal,
+      cardMediaWidthVal,
       mobileColumnsVal,
       cardTitleLinesVal,
       cardDescLinesVal,
@@ -1375,6 +1384,7 @@ export default async function StoreHomePage({
             data-card-text={collStyle.cardTextVal}
             data-card-surface={collStyle.cardSurfaceVal}
             data-card-layout={collStyle.cardLayoutVal}
+            data-card-media-width={collStyle.cardMediaWidthVal}
             data-card-title-lines={collStyle.cardTitleLinesVal}
             data-card-desc-lines={collStyle.cardDescLinesVal}
             style={mergeSectionStyle(collStyle)}
@@ -1538,6 +1548,7 @@ export default async function StoreHomePage({
             data-card-text={featuredStyle.cardTextVal}
             data-card-surface={featuredStyle.cardSurfaceVal}
             data-card-layout={featuredStyle.cardLayoutVal}
+            data-card-media-width={featuredStyle.cardMediaWidthVal}
             data-card-title-lines={featuredStyle.cardTitleLinesVal}
           >
             <div className="max-w-5xl mx-auto px-8 sm:px-12" style={{ textAlign: featuredStyle.align }}>
@@ -1737,6 +1748,7 @@ export default async function StoreHomePage({
             data-card-text={journalStyle.cardTextVal}
             data-card-surface={journalStyle.cardSurfaceVal}
             data-card-layout={journalStyle.cardLayoutVal}
+            data-card-media-width={journalStyle.cardMediaWidthVal}
             data-card-title-lines={journalStyle.cardTitleLinesVal}
             data-card-desc-lines={journalStyle.cardDescLinesVal}
           >
