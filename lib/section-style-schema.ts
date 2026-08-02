@@ -145,6 +145,15 @@ export const SECTION_STYLE_ENUMS = {
   // 跟「卡片排法」的手機規則衝突時以這一欄為準——那邊收成一列一張是沒人選過的自動處理，
   // 這邊是商家自己按的，明確的選擇蓋過自動的預設。
   mobileColumns: ["auto", "one", "two"],
+  // 卡片標題行數（auto 照這一段原本的 / one 一行 / two 兩行 / full 完整顯示），只套卡片裡
+  // 那行品名或文章標題。精選商品那段的品名寫死只顯示一行、超過就切掉接刪節號（逛街頁、
+  // 收藏頁同一套），品名長一點的店（「保溫瓶 500ml 木紋款」這種帶規格的）在首頁只看得到
+  // 前半段，客人分不出兩個同系列商品差在哪，商家沒有一格解得開；反過來選物、慢讀那兩段
+  // 的標題完全不截，商家自己打了長標題就把那張卡撐高，同一列其他卡片下面空一截。
+  // 「卡片文字」設的是那幾行站哪、「卡片外觀」給的是邊界，兩個都不管一行字寫不寫得完。
+  // 只管標題不管底下的描述：描述本來就是次要資訊，截掉不影響客人認得出商品，而品名被截
+  // 是真的看不懂——先把最痛的那一格補上，描述那格等有店家真的被長描述卡到再說。
+  cardTitleLines: ["auto", "one", "two", "full"],
   // 外框（subtle 1px / strong 2px，用 outline 避免跟 divider 的 borderTop/Bottom 打架）
   outline: ["none", "subtle", "strong"],
   // 陰影（soft 淺 / deep 深），讓有 bgColor 的 section 像卡片浮起
@@ -207,6 +216,7 @@ export const SECTION_STYLE_NEUTRAL_VALUES = {
   cardSurface: "none",
   cardLayout: "stack",
   mobileColumns: "auto",
+  cardTitleLines: "auto",
   outline: "none",
   shadow: "none",
   borderRadius: "none",

@@ -2873,6 +2873,7 @@ export function EditorWorkspace({
           const cardSurface = cur.cardSurface ?? null;
           const cardLayout = cur.cardLayout ?? null;
           const mobileColumns = cur.mobileColumns ?? null;
+          const cardTitleLines = cur.cardTitleLines ?? null;
           const entrance = cur.entrance ?? null;
           const fontFamily = cur.fontFamily ?? null;
           const letterSpacing = cur.letterSpacing ?? null;
@@ -4381,6 +4382,42 @@ export function EditorWorkspace({
                     <button
                       type="button"
                       onClick={() => patch({ mobileColumns: null })}
+                      className="text-stone-500 hover:text-stone-800 underline"
+                    >
+                      清除
+                    </button>
+                  )}
+                </div>
+              </Field>
+              <Field label="卡片標題行數">
+                <div className="grid grid-cols-4 gap-1.5">
+                  {([
+                    { v: "auto", label: "跟預設" },
+                    { v: "one", label: "一行" },
+                    { v: "two", label: "兩行" },
+                    { v: "full", label: "完整" },
+                  ] as const).map((opt) => (
+                    <button
+                      key={opt.v}
+                      type="button"
+                      onClick={() => patch({ cardTitleLines: opt.v })}
+                      aria-pressed={(cardTitleLines ?? "auto") === opt.v}
+                      className={`rounded-lg border py-2 text-xs transition ${
+                        (cardTitleLines ?? "auto") === opt.v
+                          ? "border-emerald-500 bg-emerald-50 text-emerald-900"
+                          : "border-stone-200 text-stone-600 hover:border-stone-400"
+                      }`}
+                    >
+                      {opt.label}
+                    </button>
+                  ))}
+                </div>
+                <div className="mt-1.5 flex items-center justify-between text-[11px] text-stone-500">
+                  <span>卡片上那行品名（或文章標題）最多顯示幾行。精選商品原本只顯示一行，品名帶規格的選「完整」才看得完；標題長短不一撐得卡片高低不齊時選固定行數</span>
+                  {cardTitleLines && (
+                    <button
+                      type="button"
+                      onClick={() => patch({ cardTitleLines: null })}
                       className="text-stone-500 hover:text-stone-800 underline"
                     >
                       清除

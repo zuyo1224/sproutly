@@ -429,6 +429,15 @@ export default async function StoreHomePage({
     // 掛了也不會有反應，所以不掛）。
     const mobileColumnsVal: "one" | "two" | undefined =
       s?.mobileColumns === "one" || s?.mobileColumns === "two" ? s.mobileColumns : undefined;
+    // 卡片標題行數：要蓋掉的是品名那行自己帶的 line-clamp-1（精選那段寫死一行），或反過來
+    // 幫沒截的段落補上截斷——兩件事都落在卡片裡那個 h3 上，段落上的 inline style 傳不下去，
+    // 跟卡片文字、卡片外觀同一個處境同一個解法，attribute 讓 layout.tsx 補規則。
+    // 只掛在卡片底下真的有標題的三段（選物 / 精選 / 慢讀）：照片牆的卡片裡只有一張圖，
+    // 掛了不會有反應。
+    const cardTitleLinesVal: "one" | "two" | "full" | undefined =
+      s?.cardTitleLines === "one" || s?.cardTitleLines === "two" || s?.cardTitleLines === "full"
+        ? s.cardTitleLines
+        : undefined;
     return {
       bg: s?.bgColor ?? undefined,
       text: s?.textColor ?? undefined,
@@ -473,6 +482,7 @@ export default async function StoreHomePage({
       cardSurfaceVal,
       cardLayoutVal,
       mobileColumnsVal,
+      cardTitleLinesVal,
     };
     // 這裡本來手抄一份 `as { ... }`（整份欄位再列一次）。它推不出比 TS 自己推更精確的型別，
     // 卻是第三份要跟著欄位表同步改的清單——加控制忘了補就編不過（好），改錯就悄悄放寬（不好）。
@@ -1353,6 +1363,7 @@ export default async function StoreHomePage({
             data-card-text={collStyle.cardTextVal}
             data-card-surface={collStyle.cardSurfaceVal}
             data-card-layout={collStyle.cardLayoutVal}
+            data-card-title-lines={collStyle.cardTitleLinesVal}
             style={mergeSectionStyle(collStyle)}
           >
             <div className="max-w-5xl mx-auto px-8 sm:px-12" style={{ textAlign: collStyle.align }}>
@@ -1514,6 +1525,7 @@ export default async function StoreHomePage({
             data-card-text={featuredStyle.cardTextVal}
             data-card-surface={featuredStyle.cardSurfaceVal}
             data-card-layout={featuredStyle.cardLayoutVal}
+            data-card-title-lines={featuredStyle.cardTitleLinesVal}
           >
             <div className="max-w-5xl mx-auto px-8 sm:px-12" style={{ textAlign: featuredStyle.align }}>
               {featuredFree ? (
@@ -1712,6 +1724,7 @@ export default async function StoreHomePage({
             data-card-text={journalStyle.cardTextVal}
             data-card-surface={journalStyle.cardSurfaceVal}
             data-card-layout={journalStyle.cardLayoutVal}
+            data-card-title-lines={journalStyle.cardTitleLinesVal}
           >
           <div className="max-w-5xl mx-auto px-8 sm:px-12" style={{ textAlign: journalStyle.align }}>
             {journalFree ? (

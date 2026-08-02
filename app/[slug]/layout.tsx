@@ -1198,6 +1198,48 @@ export default async function PublicStoreLayout({
           }
         }
 
+        /* 卡片標題行數：editor 各 section panel「卡片標題行數」四按鈕（跟預設 / 一行 / 兩行 / 完整）。
+           精選商品那段的品名寫死只顯示一行（Tailwind 的 line-clamp-1，超過就切掉接刪節號，
+           逛街頁、收藏頁同一套），品名帶規格的店在首頁只看得到前半段，客人分不出同系列的
+           兩樣商品差在哪；反過來選物、慢讀那兩段的標題完全不截，商家自己打了長標題就把那張
+           卡撐高、同一列其他卡片下面空一截。兩邊都是寫死的，商家原本沒有一格動得到：
+           「卡片文字」設的是那幾行站哪、「卡片外觀」給的是邊界，都不管一行字寫不寫得完。
+           要蓋掉的是品名自己帶的 class，段落上的 inline style 傳不下去——跟卡片文字、卡片
+           外觀同一個處境同一個解法，attribute 讓這裡補一組更精確的規則壓過去。
+           截斷要四個屬性一起才成立（-webkit-box + 直向排列 + 行數 + 藏掉溢出），少一個就完全
+           沒反應；完整那一檔則要把四個逐一還原，只清行數的話 display 還是 -webkit-box、
+           溢出照樣被藏。line-clamp 標準版與 -webkit- 前綴版都寫，前者是規格、後者是目前
+           瀏覽器實際吃的那個。
+           正在改字的那行（雙擊進入 inline 編輯、帶 contenteditable）暫時解開截斷：商家打
+           到第二行以後看不到自己在打什麼，那時候讓他看得完整比預覽準確重要，放開手就收回。 */
+        section[data-edit-target]:is([data-card-title-lines="one"], [data-card-title-lines="two"])
+          .sproutly-card-title {
+          display: -webkit-box;
+          -webkit-box-orient: vertical;
+          overflow: hidden;
+        }
+        section[data-edit-target][data-card-title-lines="one"] .sproutly-card-title {
+          -webkit-line-clamp: 1;
+          line-clamp: 1;
+        }
+        section[data-edit-target][data-card-title-lines="two"] .sproutly-card-title {
+          -webkit-line-clamp: 2;
+          line-clamp: 2;
+        }
+        section[data-edit-target][data-card-title-lines="full"] .sproutly-card-title {
+          display: block;
+          overflow: visible;
+          -webkit-line-clamp: unset;
+          line-clamp: unset;
+        }
+        section[data-edit-target][data-card-title-lines]
+          .sproutly-card-title[contenteditable="true"] {
+          display: block;
+          overflow: visible;
+          -webkit-line-clamp: unset;
+          line-clamp: unset;
+        }
+
         /* 區段進場動畫：editor 各 section panel「進場動畫」三按鈕（無 / 淡入 / 上滑）
            靠 data-anim attribute + CSS scroll-driven animation（animation-timeline: view()）觸發。
            沒設定 = 無 attr = 不動畫；fade = opacity 0→1；slide-up = opacity + translateY 上滑。
