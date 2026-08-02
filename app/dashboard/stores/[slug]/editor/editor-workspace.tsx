@@ -2874,6 +2874,7 @@ export function EditorWorkspace({
           const cardLayout = cur.cardLayout ?? null;
           const mobileColumns = cur.mobileColumns ?? null;
           const cardTitleLines = cur.cardTitleLines ?? null;
+          const cardDescLines = cur.cardDescLines ?? null;
           const entrance = cur.entrance ?? null;
           const fontFamily = cur.fontFamily ?? null;
           const letterSpacing = cur.letterSpacing ?? null;
@@ -4418,6 +4419,43 @@ export function EditorWorkspace({
                     <button
                       type="button"
                       onClick={() => patch({ cardTitleLines: null })}
+                      className="text-stone-500 hover:text-stone-800 underline"
+                    >
+                      清除
+                    </button>
+                  )}
+                </div>
+              </Field>
+              <Field label="卡片描述行數">
+                <div className="grid grid-cols-5 gap-1.5">
+                  {([
+                    { v: "auto", label: "跟預設" },
+                    { v: "one", label: "一行" },
+                    { v: "two", label: "兩行" },
+                    { v: "three", label: "三行" },
+                    { v: "full", label: "完整" },
+                  ] as const).map((opt) => (
+                    <button
+                      key={opt.v}
+                      type="button"
+                      onClick={() => patch({ cardDescLines: opt.v })}
+                      aria-pressed={(cardDescLines ?? "auto") === opt.v}
+                      className={`rounded-lg border py-2 text-xs transition ${
+                        (cardDescLines ?? "auto") === opt.v
+                          ? "border-emerald-500 bg-emerald-50 text-emerald-900"
+                          : "border-stone-200 text-stone-600 hover:border-stone-400"
+                      }`}
+                    >
+                      {opt.label}
+                    </button>
+                  ))}
+                </div>
+                <div className="mt-1.5 flex items-center justify-between text-[11px] text-stone-500">
+                  <span>品名底下那段描述最多顯示幾行（選物的副標、慢讀的摘要）。描述長短不一撐得同一列卡片高低不齊時選固定行數；精選商品那段底下是價錢，不受這格影響</span>
+                  {cardDescLines && (
+                    <button
+                      type="button"
+                      onClick={() => patch({ cardDescLines: null })}
                       className="text-stone-500 hover:text-stone-800 underline"
                     >
                       清除

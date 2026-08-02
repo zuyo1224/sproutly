@@ -438,6 +438,17 @@ export default async function StoreHomePage({
       s?.cardTitleLines === "one" || s?.cardTitleLines === "two" || s?.cardTitleLines === "full"
         ? s.cardTitleLines
         : undefined;
+    // 卡片描述行數：跟上面那格同一個處境同一個解法（要動的是卡片裡那個 p，段落上的
+    // inline style 傳不下去），attribute 讓 layout.tsx 補規則。
+    // 只掛在品名底下那行真的是描述的兩段（選物的副標 / 慢讀的摘要）：精選那段同一個位置
+    // 放的是價錢，照片牆的卡片裡只有圖，兩段掛了不是沒反應就是把價錢截掉。
+    const cardDescLinesVal: "one" | "two" | "three" | "full" | undefined =
+      s?.cardDescLines === "one" ||
+      s?.cardDescLines === "two" ||
+      s?.cardDescLines === "three" ||
+      s?.cardDescLines === "full"
+        ? s.cardDescLines
+        : undefined;
     return {
       bg: s?.bgColor ?? undefined,
       text: s?.textColor ?? undefined,
@@ -483,6 +494,7 @@ export default async function StoreHomePage({
       cardLayoutVal,
       mobileColumnsVal,
       cardTitleLinesVal,
+      cardDescLinesVal,
     };
     // 這裡本來手抄一份 `as { ... }`（整份欄位再列一次）。它推不出比 TS 自己推更精確的型別，
     // 卻是第三份要跟著欄位表同步改的清單——加控制忘了補就編不過（好），改錯就悄悄放寬（不好）。
@@ -1364,6 +1376,7 @@ export default async function StoreHomePage({
             data-card-surface={collStyle.cardSurfaceVal}
             data-card-layout={collStyle.cardLayoutVal}
             data-card-title-lines={collStyle.cardTitleLinesVal}
+            data-card-desc-lines={collStyle.cardDescLinesVal}
             style={mergeSectionStyle(collStyle)}
           >
             <div className="max-w-5xl mx-auto px-8 sm:px-12" style={{ textAlign: collStyle.align }}>
@@ -1471,7 +1484,7 @@ export default async function StoreHomePage({
                         data-edit-text
                         data-edit-field="collectionCardSubtitle"
                         data-edit-index={c.index}
-                        className="sproutly-card-meta mt-1 text-sm"
+                        className="sproutly-card-meta sproutly-card-desc mt-1 text-sm"
                         style={{ color: "var(--store-text-muted)" }}
                       >
                         {c.subtitle}
@@ -1725,6 +1738,7 @@ export default async function StoreHomePage({
             data-card-surface={journalStyle.cardSurfaceVal}
             data-card-layout={journalStyle.cardLayoutVal}
             data-card-title-lines={journalStyle.cardTitleLinesVal}
+            data-card-desc-lines={journalStyle.cardDescLinesVal}
           >
           <div className="max-w-5xl mx-auto px-8 sm:px-12" style={{ textAlign: journalStyle.align }}>
             {journalFree ? (
@@ -1866,7 +1880,7 @@ export default async function StoreHomePage({
                       data-edit-text
                       data-edit-field="journalCardExcerpt"
                       data-edit-index={i}
-                      className="mt-3 text-sm leading-[1.85]"
+                      className="sproutly-card-desc mt-3 text-sm leading-[1.85]"
                       style={{ color: "var(--store-text-muted)" }}
                     >
                       {entry.excerpt}

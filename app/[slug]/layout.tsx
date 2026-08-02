@@ -1240,6 +1240,52 @@ export default async function PublicStoreLayout({
           line-clamp: unset;
         }
 
+        /* 卡片描述行數：editor 各 section panel「卡片描述行數」五按鈕（跟預設 / 一行 / 兩行 /
+           三行 / 完整）。品名底下那段描述完全不截，商家自己打多長就佔多高——選物那段的副標、
+           慢讀那段的摘要，一張卡兩行、隔壁五行的話同一列卡片下緣參差不齊，卡片外觀設成面板
+           或框的時候尤其明顯（一個框矮一個框高）。上一格「卡片標題行數」只管品名那行，管不到
+           這裡。要蓋的是描述那行自己帶的 class，段落上的 inline style 傳不下去，一樣靠
+           attribute 補一組更精確的規則。
+           規則落在 .sproutly-card-desc，只掛在真的是描述的那些行（選物副標、慢讀摘要）：
+           精選那段同一個位置放的是價錢，截價錢對客人沒有意義，所以不掛。
+           截斷同樣要四個屬性一起才成立（-webkit-box + 直向排列 + 行數 + 藏掉溢出），完整那
+           一檔要逐一還原；正在改字那行（contenteditable）暫時解開，理由同標題那組。 */
+        section[data-edit-target]:is(
+            [data-card-desc-lines="one"],
+            [data-card-desc-lines="two"],
+            [data-card-desc-lines="three"]
+          )
+          .sproutly-card-desc {
+          display: -webkit-box;
+          -webkit-box-orient: vertical;
+          overflow: hidden;
+        }
+        section[data-edit-target][data-card-desc-lines="one"] .sproutly-card-desc {
+          -webkit-line-clamp: 1;
+          line-clamp: 1;
+        }
+        section[data-edit-target][data-card-desc-lines="two"] .sproutly-card-desc {
+          -webkit-line-clamp: 2;
+          line-clamp: 2;
+        }
+        section[data-edit-target][data-card-desc-lines="three"] .sproutly-card-desc {
+          -webkit-line-clamp: 3;
+          line-clamp: 3;
+        }
+        section[data-edit-target][data-card-desc-lines="full"] .sproutly-card-desc {
+          display: block;
+          overflow: visible;
+          -webkit-line-clamp: unset;
+          line-clamp: unset;
+        }
+        section[data-edit-target][data-card-desc-lines]
+          .sproutly-card-desc[contenteditable="true"] {
+          display: block;
+          overflow: visible;
+          -webkit-line-clamp: unset;
+          line-clamp: unset;
+        }
+
         /* 區段進場動畫：editor 各 section panel「進場動畫」三按鈕（無 / 淡入 / 上滑）
            靠 data-anim attribute + CSS scroll-driven animation（animation-timeline: view()）觸發。
            沒設定 = 無 attr = 不動畫；fade = opacity 0→1；slide-up = opacity + translateY 上滑。
