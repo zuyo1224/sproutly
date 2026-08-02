@@ -419,8 +419,8 @@ export default async function StoreHomePage({
     // 都碰不到，跟卡片外觀、卡片文字同一個處境同一個解法，attribute 讓 layout.tsx 補規則。
     // 只掛在照片底下真的有字的三段（選物 / 精選 / 慢讀）：照片牆的卡片裡只有一張圖，
     // 把圖推到左邊右邊會空著，那一格按了等於把版面弄壞，不給比給了沒用好。
-    const cardLayoutVal: "side" | undefined =
-      s?.cardLayout === "side" ? "side" : undefined;
+    const cardLayoutVal: "side" | "side-reverse" | undefined =
+      s?.cardLayout === "side" || s?.cardLayout === "side-reverse" ? s.cardLayout : undefined;
     // 手機一列幾張：每一段格線的手機欄數寫死在 Tailwind class 裡（選物、精選、照片牆、
     // 數字兩張，慢讀、客人的話一張），要換只能在 640 以下再蓋一次 grid-template-columns
     // ——段落上的 inline style 到不了裡面那層格線，也沒辦法只在某個寬度生效，跟卡片間距

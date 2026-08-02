@@ -1148,30 +1148,45 @@ export default async function PublicStoreLayout({
            手機自動收成一列一張：半個螢幕寬的卡片再切成左圖右字，照片只剩一小格，那不是
            商家按這一格想要的東西。收的是卡片格線的欄數，要壓過格線上 Tailwind 那個
            grid-cols-2（屬性選擇器的權重高過單一 class，蓋得掉）。
-           沒設（或選「照片在上」）就沒 attribute、整組規則不存在，卡片維持原本的排法。 */
-        section[data-edit-target][data-card-layout="side"] .sproutly-card {
+           沒設（或選「照片在上」）就沒 attribute、整組規則不存在，卡片維持原本的排法。
+           照片在右（side-reverse）走同一組規則，只換左右兩欄的寬度與各自放誰——選擇器用
+           開頭比對（^="side"）一次接住兩檔，下面再單獨蓋照片在右那檔要換的三行。 */
+        section[data-edit-target][data-card-layout^="side"] .sproutly-card {
           display: grid;
           grid-template-columns: minmax(0, 38%) minmax(0, 1fr);
           column-gap: clamp(12px, 2vw, 24px);
           row-gap: 0;
         }
-        section[data-edit-target][data-card-layout="side"]
+        section[data-edit-target][data-card-layout^="side"]
           .sproutly-card > .sproutly-card-image {
           grid-column: 1;
           grid-row: 1 / span 12;
           align-self: start;
         }
-        section[data-edit-target][data-card-layout="side"]
+        section[data-edit-target][data-card-layout^="side"]
           .sproutly-card > *:not(.sproutly-card-image) {
           grid-column: 2;
           min-width: 0;
         }
-        section[data-edit-target][data-card-layout="side"]
+        section[data-edit-target][data-card-layout^="side"]
           .sproutly-card > .sproutly-card-image + * {
           margin-top: 0;
         }
+        /* 照片在右：寬的那欄換到左邊、圖框指到右欄、其餘子元素指到左欄。不用 direction 或
+           order 反轉——圖框是跨 12 列的那格，靠明確指定欄位最不會跟其他規則打架。 */
+        section[data-edit-target][data-card-layout="side-reverse"] .sproutly-card {
+          grid-template-columns: minmax(0, 1fr) minmax(0, 38%);
+        }
+        section[data-edit-target][data-card-layout="side-reverse"]
+          .sproutly-card > .sproutly-card-image {
+          grid-column: 2;
+        }
+        section[data-edit-target][data-card-layout="side-reverse"]
+          .sproutly-card > *:not(.sproutly-card-image) {
+          grid-column: 1;
+        }
         @media (max-width: 639px) {
-          section[data-edit-target][data-card-layout="side"] .sproutly-card-grid {
+          section[data-edit-target][data-card-layout^="side"] .sproutly-card-grid {
             grid-template-columns: minmax(0, 1fr);
           }
         }

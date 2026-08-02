@@ -4351,10 +4351,11 @@ export function EditorWorkspace({
                 </div>
               </Field>
               <Field label="卡片排法">
-                <div className="grid grid-cols-2 gap-1.5">
+                <div className="grid grid-cols-3 gap-1.5">
                   {([
                     { v: "stack", label: "照片在上" },
                     { v: "side", label: "照片在左" },
+                    { v: "side-reverse", label: "照片在右" },
                   ] as const).map((opt) => (
                     <button
                       key={opt.v}
@@ -4372,7 +4373,7 @@ export function EditorWorkspace({
                   ))}
                 </div>
                 <div className="mt-1.5 flex items-center justify-between text-[11px] text-stone-500">
-                  <span>照片在左＝一般網購站的清單模式，一個螢幕看得到的品項多很多（手機自動收成一列一張）</span>
+                  <span>照片在左＝一般網購站的清單模式，一個螢幕看得到的品項多很多；照片在右先讀到字，適合先講故事的段落（兩者手機都自動收成一列一張）</span>
                   {cardLayout && (
                     <button
                       type="button"
