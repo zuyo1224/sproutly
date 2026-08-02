@@ -391,6 +391,15 @@ export default async function StoreHomePage({
     // 定位的，本來就沒有外距可調，那個分支不掛 class，規則自然不會命中。
     const headingGapVal: "tight" | "loose" | undefined =
       s?.headingGap === "tight" || s?.headingGap === "loose" ? s.headingGap : undefined;
+    // 標題塊裡面的距離：上面那欄調的是那塊對外的下緣，這欄調的是那塊裡面——小標跟大標之間
+    // （小標自己帶的 mb-*）、大標跟底下引言或那截短線之間（那行自己帶的 mt-*）。同樣蓋不到
+    // 的是各元素自己的 class，所以同一招走 attribute 讓 layout.tsx 補規則，落在小標的
+    // .sproutly-section-eyebrow 與底下那行的 .sproutly-section-sub 上。自由定位那個分支
+    // 也掛（那塊整個被搬走，但裡面三行的相對距離還是照原本的 class 走，一樣該調得到）。
+    const headingInnerGapVal: "tight" | "loose" | undefined =
+      s?.headingInnerGap === "tight" || s?.headingInnerGap === "loose"
+        ? s.headingInnerGap
+        : undefined;
     // 卡片間距：要動的是這一段裡那個卡片格線容器的 gap，不是段落自己——跟照片圓角同一個
     // 處境同一個解法，attribute 讓 layout.tsx 補規則。規則只落在 .sproutly-card-grid 上
     // （各段的卡片格線容器都掛了這個 class），不能寫成落在所有 .grid 上——hero 的左右
@@ -498,6 +507,7 @@ export default async function StoreHomePage({
       headingToneVal,
       contentAlignVal,
       headingGapVal,
+      headingInnerGapVal,
       hideOnVal,
       mediaRadiusVal,
       mediaAspectVal,
@@ -1376,6 +1386,7 @@ export default async function StoreHomePage({
             data-heading-weight={collStyle.headingWeightVal}
             data-heading-rule={collStyle.headingRuleVal}
             data-heading-gap={collStyle.headingGapVal}
+              data-heading-inner={collStyle.headingInnerGapVal}
             data-line-height={collStyle.lineHeightVal}
             data-section-filter={collStyle.filterVal}
             data-body-align={collStyle.bodyAlignVal}
@@ -1430,7 +1441,7 @@ export default async function StoreHomePage({
                     <p
                       data-edit-text
                       data-edit-field="collectionsEyebrow"
-                      className="text-[0.6875rem] uppercase mb-4"
+                      className="sproutly-section-eyebrow text-[0.6875rem] uppercase mb-4"
                       style={{
                         color: accentColor,
                         fontFamily: "var(--store-font)",
@@ -1541,6 +1552,7 @@ export default async function StoreHomePage({
             data-heading-weight={featuredStyle.headingWeightVal}
             data-heading-rule={featuredStyle.headingRuleVal}
             data-heading-gap={featuredStyle.headingGapVal}
+              data-heading-inner={featuredStyle.headingInnerGapVal}
             data-line-height={featuredStyle.lineHeightVal}
             data-section-filter={featuredStyle.filterVal}
             data-body-align={featuredStyle.bodyAlignVal}
@@ -1586,7 +1598,7 @@ export default async function StoreHomePage({
                     <p
                       data-edit-text
                       data-edit-field="featuredEyebrow"
-                      className="text-[0.6875rem] uppercase mb-4"
+                      className="sproutly-section-eyebrow text-[0.6875rem] uppercase mb-4"
                       style={{
                         color: accentColor,
                         fontFamily: "var(--store-font)",
@@ -1742,6 +1754,7 @@ export default async function StoreHomePage({
             data-heading-weight={journalStyle.headingWeightVal}
             data-heading-rule={journalStyle.headingRuleVal}
             data-heading-gap={journalStyle.headingGapVal}
+              data-heading-inner={journalStyle.headingInnerGapVal}
             data-line-height={journalStyle.lineHeightVal}
             data-section-filter={journalStyle.filterVal}
             data-body-align={journalStyle.bodyAlignVal}
@@ -1779,7 +1792,7 @@ export default async function StoreHomePage({
                 <p
                   data-edit-text
                   data-edit-field="journalEyebrow"
-                  className="text-[10px] tracking-[0.4em] uppercase mb-5"
+                  className="sproutly-section-eyebrow text-[10px] tracking-[0.4em] uppercase mb-5"
                   style={{ color: accentColor }}
                 >
                   {journalEyebrow}
@@ -1801,7 +1814,7 @@ export default async function StoreHomePage({
                 <p
                   data-edit-text
                   data-edit-field="journalSubtitle"
-                  className="mt-6 text-sm sm:text-base leading-[1.9]"
+                  className="sproutly-section-sub mt-6 text-sm sm:text-base leading-[1.9]"
                   style={{ color: "var(--store-text-muted)" }}
                 >
                   {journalSubtitle}
@@ -1812,7 +1825,7 @@ export default async function StoreHomePage({
                 <p
                   data-edit-text
                   data-edit-field="journalEyebrow"
-                  className="text-[10px] tracking-[0.4em] uppercase mb-5"
+                  className="sproutly-section-eyebrow text-[10px] tracking-[0.4em] uppercase mb-5"
                   style={{ color: accentColor }}
                 >
                   {journalEyebrow}
@@ -1834,7 +1847,7 @@ export default async function StoreHomePage({
                 <p
                   data-edit-text
                   data-edit-field="journalSubtitle"
-                  className="mt-6 text-sm sm:text-base max-w-xl leading-[1.9]"
+                  className="sproutly-section-sub mt-6 text-sm sm:text-base max-w-xl leading-[1.9]"
                   style={{ color: "var(--store-text-muted)" }}
                 >
                   {journalSubtitle}
@@ -2092,6 +2105,7 @@ export default async function StoreHomePage({
               data-heading-weight={testimonialsStyle.headingWeightVal}
               data-heading-rule={testimonialsStyle.headingRuleVal}
               data-heading-gap={testimonialsStyle.headingGapVal}
+              data-heading-inner={testimonialsStyle.headingInnerGapVal}
               data-line-height={testimonialsStyle.lineHeightVal}
               data-section-filter={testimonialsStyle.filterVal}
               data-body-align={testimonialsStyle.bodyAlignVal}
@@ -2122,7 +2136,7 @@ export default async function StoreHomePage({
                     <p
                       data-edit-text
                       data-edit-field="testimonialsEyebrow"
-                      className="text-[10px] tracking-[0.4em] uppercase mb-5"
+                      className="sproutly-section-eyebrow text-[10px] tracking-[0.4em] uppercase mb-5"
                       style={{ color: accentColor }}
                     >
                       {testimonialsEyebrow}
@@ -2142,7 +2156,7 @@ export default async function StoreHomePage({
                       {testimonialsTitle}
                     </h2>
                     <div
-                      className="mt-6"
+                      className="sproutly-section-sub mt-6"
                       style={{
                         width: "32px",
                         height: "1px",
@@ -2159,7 +2173,7 @@ export default async function StoreHomePage({
                     <p
                       data-edit-text
                       data-edit-field="testimonialsEyebrow"
-                      className="text-[10px] tracking-[0.4em] uppercase mb-5"
+                      className="sproutly-section-eyebrow text-[10px] tracking-[0.4em] uppercase mb-5"
                       style={{ color: accentColor }}
                     >
                       {testimonialsEyebrow}
@@ -2179,7 +2193,7 @@ export default async function StoreHomePage({
                       {testimonialsTitle}
                     </h2>
                     <div
-                      className={`${testimonialsDivider} mt-6`}
+                      className={`sproutly-section-sub ${testimonialsDivider} mt-6`}
                       style={{
                         width: "32px",
                         height: "1px",
@@ -2292,6 +2306,7 @@ export default async function StoreHomePage({
               data-heading-weight={faqStyle.headingWeightVal}
               data-heading-rule={faqStyle.headingRuleVal}
               data-heading-gap={faqStyle.headingGapVal}
+              data-heading-inner={faqStyle.headingInnerGapVal}
               data-line-height={faqStyle.lineHeightVal}
               data-section-filter={faqStyle.filterVal}
               data-body-align={faqStyle.bodyAlignVal}
@@ -2318,7 +2333,7 @@ export default async function StoreHomePage({
                     }}
                   >
                     <p
-                      className="text-[10px] tracking-[0.4em] uppercase mb-5"
+                      className="sproutly-section-eyebrow text-[10px] tracking-[0.4em] uppercase mb-5"
                       style={{ color: accentColor }}
                     >
                       {faqEyebrow}
@@ -2336,7 +2351,7 @@ export default async function StoreHomePage({
                       {faqTitle}
                     </h2>
                     <div
-                      className="mt-6"
+                      className="sproutly-section-sub mt-6"
                       style={{
                         width: "32px",
                         height: "1px",
@@ -2350,7 +2365,7 @@ export default async function StoreHomePage({
                   <p
                     data-edit-text
                     data-edit-field="faqEyebrow"
-                    className="text-[10px] tracking-[0.4em] uppercase mb-5"
+                    className="sproutly-section-eyebrow text-[10px] tracking-[0.4em] uppercase mb-5"
                     style={{ color: accentColor }}
                   >
                     {faqEyebrow}
@@ -2370,7 +2385,7 @@ export default async function StoreHomePage({
                     {faqTitle}
                   </h2>
                   <div
-                    className={`${faqDivider} mt-6`}
+                    className={`sproutly-section-sub ${faqDivider} mt-6`}
                     style={{
                       width: "32px",
                       height: "1px",
@@ -2465,6 +2480,7 @@ export default async function StoreHomePage({
               data-heading-weight={statsStyle.headingWeightVal}
               data-heading-rule={statsStyle.headingRuleVal}
               data-heading-gap={statsStyle.headingGapVal}
+              data-heading-inner={statsStyle.headingInnerGapVal}
               data-line-height={statsStyle.lineHeightVal}
               data-section-filter={statsStyle.filterVal}
               data-body-align={statsStyle.bodyAlignVal}
@@ -2496,7 +2512,7 @@ export default async function StoreHomePage({
                       <p
                         data-edit-text
                         data-edit-field="statsEyebrow"
-                        className="text-[0.6875rem] tracking-[0.4em] uppercase mb-5"
+                        className="sproutly-section-eyebrow text-[0.6875rem] tracking-[0.4em] uppercase mb-5"
                         style={{ color: accentColor }}
                       >
                         {statsEyebrow}
@@ -2519,7 +2535,7 @@ export default async function StoreHomePage({
                       </h2>
                     )}
                     <div
-                      className="mt-6"
+                      className="sproutly-section-sub mt-6"
                       style={{
                         width: "32px",
                         height: "1px",
@@ -2535,7 +2551,7 @@ export default async function StoreHomePage({
                       <p
                         data-edit-text
                         data-edit-field="statsEyebrow"
-                        className="text-[0.6875rem] tracking-[0.4em] uppercase mb-5"
+                        className="sproutly-section-eyebrow text-[0.6875rem] tracking-[0.4em] uppercase mb-5"
                         style={{ color: accentColor }}
                       >
                         {statsEyebrow}
@@ -2558,7 +2574,7 @@ export default async function StoreHomePage({
                       </h2>
                     )}
                     <div
-                      className={`${statsDivider} mt-6`}
+                      className={`sproutly-section-sub ${statsDivider} mt-6`}
                       style={{
                         width: "32px",
                         height: "1px",
@@ -2748,6 +2764,7 @@ export default async function StoreHomePage({
               data-heading-weight={galleryStyle.headingWeightVal}
               data-heading-rule={galleryStyle.headingRuleVal}
               data-heading-gap={galleryStyle.headingGapVal}
+              data-heading-inner={galleryStyle.headingInnerGapVal}
               data-line-height={galleryStyle.lineHeightVal}
               data-section-filter={galleryStyle.filterVal}
               data-body-align={galleryStyle.bodyAlignVal}
@@ -2784,7 +2801,7 @@ export default async function StoreHomePage({
                     <p
                       data-edit-text
                       data-edit-field="galleryEyebrow"
-                      className="text-[10px] tracking-[0.4em] uppercase mb-5"
+                      className="sproutly-section-eyebrow text-[10px] tracking-[0.4em] uppercase mb-5"
                       style={{ color: accentColor }}
                     >
                       {galleryEyebrow}
@@ -2804,7 +2821,7 @@ export default async function StoreHomePage({
                       {galleryTitle}
                     </h2>
                     <div
-                      className="mt-6"
+                      className="sproutly-section-sub mt-6"
                       style={{
                         width: "32px",
                         height: "1px",
@@ -2818,7 +2835,7 @@ export default async function StoreHomePage({
                   <p
                     data-edit-text
                     data-edit-field="galleryEyebrow"
-                    className="text-[10px] tracking-[0.4em] uppercase mb-5"
+                    className="sproutly-section-eyebrow text-[10px] tracking-[0.4em] uppercase mb-5"
                     style={{ color: accentColor }}
                   >
                     {galleryEyebrow}
@@ -2838,7 +2855,7 @@ export default async function StoreHomePage({
                     {galleryTitle}
                   </h2>
                   <div
-                    className={`${galleryDivider} mt-6`}
+                    className={`sproutly-section-sub ${galleryDivider} mt-6`}
                     style={{
                       width: "32px",
                       height: "1px",

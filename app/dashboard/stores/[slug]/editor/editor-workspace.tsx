@@ -2860,6 +2860,7 @@ export function EditorWorkspace({
           const minHeight = cur.minHeight ?? null;
           const contentAlign = cur.contentAlign ?? null;
           const headingGap = cur.headingGap ?? null;
+          const headingInnerGap = cur.headingInnerGap ?? null;
           const hideOn = cur.hideOn ?? null;
           const outline = cur.outline ?? null;
           const shadow = cur.shadow ?? null;
@@ -3664,6 +3665,41 @@ export function EditorWorkspace({
                     <button
                       type="button"
                       onClick={() => patch({ headingGap: null })}
+                      className="text-stone-500 hover:text-stone-800 underline"
+                    >
+                      清除
+                    </button>
+                  )}
+                </div>
+              </Field>
+              <Field label="標題塊裡面">
+                <div className="grid grid-cols-3 gap-1.5">
+                  {([
+                    { v: "tight", label: "收緊" },
+                    { v: "normal", label: "跟預設" },
+                    { v: "loose", label: "放寬" },
+                  ] as const).map((opt) => (
+                    <button
+                      key={opt.v}
+                      type="button"
+                      onClick={() => patch({ headingInnerGap: opt.v })}
+                      aria-pressed={(headingInnerGap ?? "normal") === opt.v}
+                      className={`rounded-lg border py-2 text-xs transition ${
+                        (headingInnerGap ?? "normal") === opt.v
+                          ? "border-emerald-500 bg-emerald-50 text-emerald-900"
+                          : "border-stone-200 text-stone-600 hover:border-stone-400"
+                      }`}
+                    >
+                      {opt.label}
+                    </button>
+                  ))}
+                </div>
+                <div className="mt-1.5 flex items-center justify-between text-[11px] text-stone-500">
+                  <span>上面那格調的是這塊標題跟底下卡片之間；這格調的是這塊裡面——小標跟大標之間、大標跟底下那行引言或短線之間。小標寫得長、大標又是兩行時選「收緊」讓三行看起來是同一塊；標題只有兩三個字時選「放寬」</span>
+                  {headingInnerGap && (
+                    <button
+                      type="button"
+                      onClick={() => patch({ headingInnerGap: null })}
                       className="text-stone-500 hover:text-stone-800 underline"
                     >
                       清除

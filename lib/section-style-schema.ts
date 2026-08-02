@@ -56,6 +56,16 @@ export const SECTION_STYLE_ENUMS = {
   // 也不動；「卡片間距」調的是卡片彼此之間；「一行字數」「內文對齊」動的是文字自己。
   // 沒設就沒 attribute、整條規則不存在，各段維持自己原本那個值。
   headingGap: ["tight", "normal", "loose"],
+  // 標題塊裡面的距離（tight 收緊 / normal 照這一段原本的 / loose 放寬）。上面那欄調的是整塊
+  // 標題「對外」跟卡片之間的距離，這欄調的是那塊「裡面」——小標跟大標之間、大標跟底下引言
+  // （慢讀那段）或那截短線（客人的話 / 常見問題 / 數字 / 相簿）之間。這兩段距離同樣是寫死的
+  // （小標底下 16-20px、大標底下 24px），照站上預設那種一行小標配一行大標挑的。
+  // 商家換成自己的字之後常常不對：小標寫「PLANTAE MARKET / 本月選物」那種長字串、大標又是
+  // 兩行的段落，三行字黏成一團分不出誰是標題；反過來只有兩三個字的短標題，中間空著反而讓
+  // 小標飄在上面像跟這段沒關係。原本沒有一格動得到——「標題與內容」調的是這塊對外那一段、
+  // 「標題大小」換的是字級（字大了間距不會跟著長）、「這段的上下空白」調的是段落外圍。
+  // 沒設就沒 attribute、整條規則不存在，各段維持自己原本那兩個值。
+  headingInnerGap: ["tight", "normal", "loose"],
   // 分隔線（上 / 下 / 上下都有 / 沒有）
   divider: ["none", "top", "bottom", "both"],
   // 該 section 標題字級（small 0.85x / default 1x / large 1.25x）
@@ -238,6 +248,7 @@ export const SECTION_STYLE_NEUTRAL_VALUES = {
   headingTone: "default",
   contentAlign: "top",
   headingGap: "normal",
+  headingInnerGap: "normal",
   hideOn: "none",
   divider: "none",
   mediaRadius: "none",

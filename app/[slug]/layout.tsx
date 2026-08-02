@@ -1345,6 +1345,30 @@ export default async function PublicStoreLayout({
           margin-bottom: clamp(4.5rem, 10vw, 9rem);
         }
 
+        /* 標題塊裡面的距離：editor 各 section panel「標題塊裡面」三按鈕（收緊 / 跟預設 / 放寬）。
+           上面那條調的是整塊標題對外、跟底下卡片之間那一段；這條調的是那塊裡面——小標跟大標
+           之間（小標自己帶的 mb-4 / mb-5，16-20px）、大標跟底下那行之間（引言或那截短線自己
+           帶的 mt-6，24px）。兩個值同樣是照站上預設那種一行小標配一行大標挑的：商家換成長字
+           串小標、兩行大標之後三行黏成一團，分不出誰是標題；反過來只有兩三個字的短標題，中間
+           空著會讓小標飄在上面像跟這段沒關係。
+           要蓋掉的是那兩行自己帶的 mb-* / mt-* class，段落上的 inline style 傳不下去，改容器
+           也動不了它們——跟卡片那幾組同一個處境同一個解法。這份 <style> 沒包在 @layer，
+           Tailwind v4 的工具類全在 @layer utilities，沒分層的贏有分層的，所以蓋得過。
+           一樣用 clamp 不寫死：原本那些 mb/mt 在手機上就已經偏擠，收緊寫死會黏成一塊。
+           規則只落在小標與大標底下那行，大標自己不動（它的位置由上下兩段距離決定）。 */
+        section[data-edit-target][data-heading-inner="tight"] .sproutly-section-eyebrow {
+          margin-bottom: clamp(0.25rem, 1vw, 0.5rem);
+        }
+        section[data-edit-target][data-heading-inner="tight"] .sproutly-section-sub {
+          margin-top: clamp(0.5rem, 1.6vw, 0.875rem);
+        }
+        section[data-edit-target][data-heading-inner="loose"] .sproutly-section-eyebrow {
+          margin-bottom: clamp(1.25rem, 3.2vw, 2rem);
+        }
+        section[data-edit-target][data-heading-inner="loose"] .sproutly-section-sub {
+          margin-top: clamp(1.75rem, 4.5vw, 2.75rem);
+        }
+
         /* 區段進場動畫：editor 各 section panel「進場動畫」三按鈕（無 / 淡入 / 上滑）
            靠 data-anim attribute + CSS scroll-driven animation（animation-timeline: view()）觸發。
            沒設定 = 無 attr = 不動畫；fade = opacity 0→1；slide-up = opacity + translateY 上滑。
