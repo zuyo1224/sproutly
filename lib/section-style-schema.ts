@@ -231,6 +231,16 @@ export const SECTION_STYLE_ENUMS = {
   // 標題底線（short 短線 / full 整條），畫在該段 h2 底下。顏色跟外框、分隔線同一個口徑
   // （自訂文字色算出來的淡色），所以深底淺字的段落自動變成淺色線、不用另挑一次顏色。
   headingRule: ["none", "short", "full"],
+  // 標題底線的粗細（thin 1px / normal 照原本的 2px / thick 4px），只在上面那欄設了線之後
+  // 才有東西可調。線的長度有短線與整條兩檔可選，粗細一直是全站寫死的一個 2px——那個值配
+  // 站上預設那種中等字級的大標剛好，但商家把某一段的標題大小調成大之後，2px 的線在放大的
+  // 字底下細得像沒畫；反過來標題設成小、或整段只是照片牆的一行小標題時，同樣一條 2px 橫過
+  // 整個螢幕寬（整條那檔）比標題本身還搶眼。
+  // 商家原本沒有一格動得到——「標題底線」只換長度、「標題大小」與「標題粗細」動的是字自己，
+  // 線不會跟著長。
+  // 只給三檔不給滑桿：線是配著標題看的東西，1 / 2 / 4px 之間的差一眼看得出來，中間那些
+  // 半格的差別在螢幕上根本畫不出來（非整數的線會被瀏覽器抹成灰邊）。
+  headingRuleWeight: ["thin", "normal", "thick"],
   // 側邊色條（left 左緣 / right 右緣），畫在該段的左或右邊緣，4px 粗。分隔線佔的是
   // borderTop/Bottom、外框走 outline，三者不互相蓋。顏色比照外框與分隔線：該段設了
   // 文字色就從它算（深底淺字自動變淺色條），沒設就用全站主色 accent。
@@ -279,6 +289,7 @@ export const SECTION_STYLE_NEUTRAL_VALUES = {
   texture: "none",
   bgGradient: "none",
   headingRule: "none",
+  headingRuleWeight: "normal",
   accentBar: "none",
 } as const satisfies Partial<{
   [K in keyof typeof SECTION_STYLE_ENUMS]: (typeof SECTION_STYLE_ENUMS)[K][number];

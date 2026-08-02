@@ -302,6 +302,13 @@ export default async function StoreHomePage({
     // 標題底線：同樣走 data attribute（線畫在 h2::after，只有 CSS 生得出偽元素）。
     const headingRuleVal: "short" | "full" | undefined =
       s?.headingRule === "short" || s?.headingRule === "full" ? s.headingRule : undefined;
+    // 底線粗細：跟長度分成兩個 attribute，粗細那條規則才能只寫 height 一行、長度那兩條
+    // 只寫 width，不用把「短線細 / 短線粗 / 整條細 / 整條粗」四種組合各寫一條。
+    // 沒設線就不掛（線都不存在，掛了是死 attribute）。
+    const headingRuleWeightVal: "thin" | "thick" | undefined =
+      headingRuleVal && (s?.headingRuleWeight === "thin" || s?.headingRuleWeight === "thick")
+        ? s.headingRuleWeight
+        : undefined;
     // 側邊色條：只回哪一邊，粗細與顏色在 mergeSectionStyle 一起算（顏色要跟外框、
     // 分隔線同一份口徑，分開算就會出現同一段裡三種線各一個顏色）。
     const accentBarVal: "left" | "right" | undefined =
@@ -496,6 +503,7 @@ export default async function StoreHomePage({
       entranceVal,
       headingWeightVal,
       headingRuleVal,
+      headingRuleWeightVal,
       accentBarVal,
       lineHeightVal,
       filterVal,
@@ -1385,6 +1393,7 @@ export default async function StoreHomePage({
             data-heading-scale={collStyle.headingScaleVal}
             data-heading-weight={collStyle.headingWeightVal}
             data-heading-rule={collStyle.headingRuleVal}
+            data-heading-rule-weight={collStyle.headingRuleWeightVal}
             data-heading-gap={collStyle.headingGapVal}
               data-heading-inner={collStyle.headingInnerGapVal}
             data-line-height={collStyle.lineHeightVal}
@@ -1551,6 +1560,7 @@ export default async function StoreHomePage({
             data-heading-scale={featuredStyle.headingScaleVal}
             data-heading-weight={featuredStyle.headingWeightVal}
             data-heading-rule={featuredStyle.headingRuleVal}
+            data-heading-rule-weight={featuredStyle.headingRuleWeightVal}
             data-heading-gap={featuredStyle.headingGapVal}
               data-heading-inner={featuredStyle.headingInnerGapVal}
             data-line-height={featuredStyle.lineHeightVal}
@@ -1753,6 +1763,7 @@ export default async function StoreHomePage({
             data-heading-scale={journalStyle.headingScaleVal}
             data-heading-weight={journalStyle.headingWeightVal}
             data-heading-rule={journalStyle.headingRuleVal}
+            data-heading-rule-weight={journalStyle.headingRuleWeightVal}
             data-heading-gap={journalStyle.headingGapVal}
               data-heading-inner={journalStyle.headingInnerGapVal}
             data-line-height={journalStyle.lineHeightVal}
@@ -1958,6 +1969,7 @@ export default async function StoreHomePage({
             data-heading-scale={promiseStyle.headingScaleVal}
             data-heading-weight={promiseStyle.headingWeightVal}
             data-heading-rule={promiseStyle.headingRuleVal}
+            data-heading-rule-weight={promiseStyle.headingRuleWeightVal}
             data-line-height={promiseStyle.lineHeightVal}
             data-section-filter={promiseStyle.filterVal}
             data-body-align={promiseStyle.bodyAlignVal}
@@ -2104,6 +2116,7 @@ export default async function StoreHomePage({
               data-heading-scale={testimonialsStyle.headingScaleVal}
               data-heading-weight={testimonialsStyle.headingWeightVal}
               data-heading-rule={testimonialsStyle.headingRuleVal}
+              data-heading-rule-weight={testimonialsStyle.headingRuleWeightVal}
               data-heading-gap={testimonialsStyle.headingGapVal}
               data-heading-inner={testimonialsStyle.headingInnerGapVal}
               data-line-height={testimonialsStyle.lineHeightVal}
@@ -2305,6 +2318,7 @@ export default async function StoreHomePage({
               data-heading-scale={faqStyle.headingScaleVal}
               data-heading-weight={faqStyle.headingWeightVal}
               data-heading-rule={faqStyle.headingRuleVal}
+              data-heading-rule-weight={faqStyle.headingRuleWeightVal}
               data-heading-gap={faqStyle.headingGapVal}
               data-heading-inner={faqStyle.headingInnerGapVal}
               data-line-height={faqStyle.lineHeightVal}
@@ -2479,6 +2493,7 @@ export default async function StoreHomePage({
               data-heading-scale={statsStyle.headingScaleVal}
               data-heading-weight={statsStyle.headingWeightVal}
               data-heading-rule={statsStyle.headingRuleVal}
+              data-heading-rule-weight={statsStyle.headingRuleWeightVal}
               data-heading-gap={statsStyle.headingGapVal}
               data-heading-inner={statsStyle.headingInnerGapVal}
               data-line-height={statsStyle.lineHeightVal}
@@ -2656,6 +2671,7 @@ export default async function StoreHomePage({
               data-heading-scale={partnersStyle.headingScaleVal}
               data-heading-weight={partnersStyle.headingWeightVal}
               data-heading-rule={partnersStyle.headingRuleVal}
+              data-heading-rule-weight={partnersStyle.headingRuleWeightVal}
               data-heading-gap={partnersStyle.headingGapVal}
               data-line-height={partnersStyle.lineHeightVal}
               data-section-filter={partnersStyle.filterVal}
@@ -2763,6 +2779,7 @@ export default async function StoreHomePage({
               data-heading-scale={galleryStyle.headingScaleVal}
               data-heading-weight={galleryStyle.headingWeightVal}
               data-heading-rule={galleryStyle.headingRuleVal}
+              data-heading-rule-weight={galleryStyle.headingRuleWeightVal}
               data-heading-gap={galleryStyle.headingGapVal}
               data-heading-inner={galleryStyle.headingInnerGapVal}
               data-line-height={galleryStyle.lineHeightVal}
@@ -2932,6 +2949,7 @@ export default async function StoreHomePage({
             data-heading-scale={visitStyle.headingScaleVal}
             data-heading-weight={visitStyle.headingWeightVal}
             data-heading-rule={visitStyle.headingRuleVal}
+            data-heading-rule-weight={visitStyle.headingRuleWeightVal}
             data-line-height={visitStyle.lineHeightVal}
             data-section-filter={visitStyle.filterVal}
             data-body-align={visitStyle.bodyAlignVal}

@@ -767,6 +767,15 @@ export default async function PublicStoreLayout({
         section[data-edit-target]:not([data-edit-target="hero"])[data-heading-rule="full"] h2::after {
           width: 100%;
         }
+        /* 底線粗細：editor 同一格底下的三按鈕（細 / 預設 / 粗）。跟長度分開兩個 attribute，
+           不用把長短 × 粗細四種組合各寫一條規則。只有 1 / 2 / 4px 這種整數值——中間的
+           半格瀏覽器畫不出來，會抹成一條灰邊。沒設就沒 attribute，維持上面那條的 2px。 */
+        section[data-edit-target]:not([data-edit-target="hero"])[data-heading-rule-weight="thin"] h2::after {
+          height: 1px;
+        }
+        section[data-edit-target]:not([data-edit-target="hero"])[data-heading-rule-weight="thick"] h2::after {
+          height: 4px;
+        }
 
         /* 區段內文行高：editor 各 section panel「行高」三按鈕（緊湊 / 預設 / 舒展）。
            page.tsx 已經在 section 上設 inline line-height，但那是繼承值，而真正的內文

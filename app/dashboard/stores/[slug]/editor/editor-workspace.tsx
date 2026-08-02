@@ -2888,6 +2888,7 @@ export function EditorWorkspace({
           const sectionGap = cur.sectionGap ?? null;
           const headingWeight = cur.headingWeight ?? null;
           const headingRule = cur.headingRule ?? null;
+          const headingRuleWeight = cur.headingRuleWeight ?? null;
           const accentBar = cur.accentBar ?? null;
           const texture = cur.texture ?? null;
           const bgGradient = cur.bgGradient ?? null;
@@ -3883,6 +3884,45 @@ export function EditorWorkspace({
                   )}
                 </div>
               </Field>
+              {/* 粗細只在真的畫了線之後才有東西可調，設成無的段落按了不會有任何反應——
+                  跟照片佔寬同一個處理，設了線才長出來。 */}
+              {headingRule && (
+                <Field label="底線粗細">
+                  <div className="grid grid-cols-3 gap-1.5">
+                    {([
+                      { v: "thin", label: "細" },
+                      { v: "normal", label: "跟預設" },
+                      { v: "thick", label: "粗" },
+                    ] as const).map((opt) => (
+                      <button
+                        key={opt.v}
+                        type="button"
+                        onClick={() => patch({ headingRuleWeight: opt.v })}
+                        aria-pressed={(headingRuleWeight ?? "normal") === opt.v}
+                        className={`rounded-lg border py-2 text-xs transition ${
+                          (headingRuleWeight ?? "normal") === opt.v
+                            ? "border-emerald-500 bg-emerald-50 text-emerald-900"
+                            : "border-stone-200 text-stone-600 hover:border-stone-400"
+                        }`}
+                      >
+                        {opt.label}
+                      </button>
+                    ))}
+                  </div>
+                  <div className="mt-1.5 flex items-center justify-between text-[11px] text-stone-500">
+                    <span>標題調大的段落用粗一點才配得上，整條橫過整個螢幕時用細的才不會比標題還搶眼</span>
+                    {headingRuleWeight && (
+                      <button
+                        type="button"
+                        onClick={() => patch({ headingRuleWeight: null })}
+                        className="text-stone-500 hover:text-stone-800 underline"
+                      >
+                        清除
+                      </button>
+                    )}
+                  </div>
+                </Field>
+              )}
               <Field label="最小高度">
                 <div className="grid grid-cols-3 gap-1.5">
                   {([
