@@ -133,6 +133,18 @@ export const SECTION_STYLE_ENUMS = {
   // 設成照片在左之後，手機自動收成一列一張——半個螢幕寬的卡片再切成左圖右字，照片只剩
   // 一小格，那不是商家按這一格想要的東西。
   cardLayout: ["stack", "side"],
+  // 手機一列幾張（auto 照這一段原本的 / one 一列一張 / two 一列兩張），只套 640 以下。
+  // 每一段在手機上一列幾張是寫死的：選物、精選、照片牆、數字一律兩張，慢讀、客人的話
+  // 一律一張。那組值是照「站上目前的預設內容」挑的，換成商家自己的東西就不一定對——
+  // 賣小盆栽、配件的店，一列兩張在手機上每張只剩半個螢幕寬，商品照小到看不出差別；
+  // 反過來照片牆放的是橫幅生活照、精選只有兩三樣主打商品時，一列一張才看得清楚。
+  // 商家原本沒有一格動得到：「一列幾張」那些欄位（選物 / 精選 / 相簿 columns）調的是
+  // 桌機（md 以上）那組，手機那組不跟著動；「卡片間距」只縮距離，張數一樣。
+  // 只給一張 / 兩張：手機寬度就那樣，三張以上每張不到三分之一個螢幕，擺了也是給商家
+  // 一個按下去必然難看的選項。
+  // 跟「卡片排法」的手機規則衝突時以這一欄為準——那邊收成一列一張是沒人選過的自動處理，
+  // 這邊是商家自己按的，明確的選擇蓋過自動的預設。
+  mobileColumns: ["auto", "one", "two"],
   // 外框（subtle 1px / strong 2px，用 outline 避免跟 divider 的 borderTop/Bottom 打架）
   outline: ["none", "subtle", "strong"],
   // 陰影（soft 淺 / deep 深），讓有 bgColor 的 section 像卡片浮起
@@ -194,6 +206,7 @@ export const SECTION_STYLE_NEUTRAL_VALUES = {
   cardText: "auto",
   cardSurface: "none",
   cardLayout: "stack",
+  mobileColumns: "auto",
   outline: "none",
   shadow: "none",
   borderRadius: "none",

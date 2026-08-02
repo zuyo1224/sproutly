@@ -2872,6 +2872,7 @@ export function EditorWorkspace({
           const cardText = cur.cardText ?? null;
           const cardSurface = cur.cardSurface ?? null;
           const cardLayout = cur.cardLayout ?? null;
+          const mobileColumns = cur.mobileColumns ?? null;
           const entrance = cur.entrance ?? null;
           const fontFamily = cur.fontFamily ?? null;
           const letterSpacing = cur.letterSpacing ?? null;
@@ -4345,6 +4346,41 @@ export function EditorWorkspace({
                     <button
                       type="button"
                       onClick={() => patch({ cardLayout: null })}
+                      className="text-stone-500 hover:text-stone-800 underline"
+                    >
+                      清除
+                    </button>
+                  )}
+                </div>
+              </Field>
+              <Field label="手機一列幾張">
+                <div className="grid grid-cols-3 gap-1.5">
+                  {([
+                    { v: "auto", label: "跟預設" },
+                    { v: "one", label: "一張" },
+                    { v: "two", label: "兩張" },
+                  ] as const).map((opt) => (
+                    <button
+                      key={opt.v}
+                      type="button"
+                      onClick={() => patch({ mobileColumns: opt.v })}
+                      aria-pressed={(mobileColumns ?? "auto") === opt.v}
+                      className={`rounded-lg border py-2 text-xs transition ${
+                        (mobileColumns ?? "auto") === opt.v
+                          ? "border-emerald-500 bg-emerald-50 text-emerald-900"
+                          : "border-stone-200 text-stone-600 hover:border-stone-400"
+                      }`}
+                    >
+                      {opt.label}
+                    </button>
+                  ))}
+                </div>
+                <div className="mt-1.5 flex items-center justify-between text-[11px] text-stone-500">
+                  <span>只管手機畫面（上面那個「一列幾張」調的是桌機）。小商品用兩張一次看得多，主打商品、橫幅照片用一張看得清楚</span>
+                  {mobileColumns && (
+                    <button
+                      type="button"
+                      onClick={() => patch({ mobileColumns: null })}
                       className="text-stone-500 hover:text-stone-800 underline"
                     >
                       清除

@@ -421,6 +421,14 @@ export default async function StoreHomePage({
     // 把圖推到左邊右邊會空著，那一格按了等於把版面弄壞，不給比給了沒用好。
     const cardLayoutVal: "side" | undefined =
       s?.cardLayout === "side" ? "side" : undefined;
+    // 手機一列幾張：每一段格線的手機欄數寫死在 Tailwind class 裡（選物、精選、照片牆、
+    // 數字兩張，慢讀、客人的話一張），要換只能在 640 以下再蓋一次 grid-template-columns
+    // ——段落上的 inline style 到不了裡面那層格線，也沒辦法只在某個寬度生效，跟卡片間距
+    // 同一個處境同一個解法，attribute 讓 layout.tsx 補規則。
+    // 掛在所有排成格線的段落（合作 logo 那段是 flex 排到滿自動換行，沒有欄數這回事，
+    // 掛了也不會有反應，所以不掛）。
+    const mobileColumnsVal: "one" | "two" | undefined =
+      s?.mobileColumns === "one" || s?.mobileColumns === "two" ? s.mobileColumns : undefined;
     return {
       bg: s?.bgColor ?? undefined,
       text: s?.textColor ?? undefined,
@@ -464,6 +472,7 @@ export default async function StoreHomePage({
       cardTextVal,
       cardSurfaceVal,
       cardLayoutVal,
+      mobileColumnsVal,
     };
     // 這裡本來手抄一份 `as { ... }`（整份欄位再列一次）。它推不出比 TS 自己推更精確的型別，
     // 卻是第三份要跟著欄位表同步改的清單——加控制忘了補就編不過（好），改錯就悄悄放寬（不好）。
@@ -1339,6 +1348,7 @@ export default async function StoreHomePage({
             data-media-focus={collStyle.mediaFocusVal}
             data-media-fit={collStyle.mediaFitVal}
             data-grid-gap={collStyle.gridGapVal}
+            data-mobile-cols={collStyle.mobileColumnsVal}
             data-card-hover={collStyle.cardHoverVal}
             data-card-text={collStyle.cardTextVal}
             data-card-surface={collStyle.cardSurfaceVal}
@@ -1499,6 +1509,7 @@ export default async function StoreHomePage({
             data-media-focus={featuredStyle.mediaFocusVal}
             data-media-fit={featuredStyle.mediaFitVal}
             data-grid-gap={featuredStyle.gridGapVal}
+            data-mobile-cols={featuredStyle.mobileColumnsVal}
             data-card-hover={featuredStyle.cardHoverVal}
             data-card-text={featuredStyle.cardTextVal}
             data-card-surface={featuredStyle.cardSurfaceVal}
@@ -1696,6 +1707,7 @@ export default async function StoreHomePage({
             data-media-focus={journalStyle.mediaFocusVal}
             data-media-fit={journalStyle.mediaFitVal}
             data-grid-gap={journalStyle.gridGapVal}
+            data-mobile-cols={journalStyle.mobileColumnsVal}
             data-card-hover={journalStyle.cardHoverVal}
             data-card-text={journalStyle.cardTextVal}
             data-card-surface={journalStyle.cardSurfaceVal}
@@ -2038,6 +2050,7 @@ export default async function StoreHomePage({
               data-hide-on={testimonialsStyle.hideOnVal}
               data-media-radius={testimonialsStyle.mediaRadiusVal}
               data-grid-gap={testimonialsStyle.gridGapVal}
+              data-mobile-cols={testimonialsStyle.mobileColumnsVal}
             >
               <div
                 className="max-w-5xl mx-auto px-8 sm:px-12"
@@ -2408,6 +2421,7 @@ export default async function StoreHomePage({
               data-hide-on={statsStyle.hideOnVal}
               data-media-radius={statsStyle.mediaRadiusVal}
               data-grid-gap={statsStyle.gridGapVal}
+              data-mobile-cols={statsStyle.mobileColumnsVal}
             >
               <div
                 className="max-w-5xl mx-auto px-8 sm:px-12"
@@ -2691,6 +2705,7 @@ export default async function StoreHomePage({
               data-media-focus={galleryStyle.mediaFocusVal}
               data-media-fit={galleryStyle.mediaFitVal}
               data-grid-gap={galleryStyle.gridGapVal}
+              data-mobile-cols={galleryStyle.mobileColumnsVal}
               data-card-hover={galleryStyle.cardHoverVal}
               data-card-text={galleryStyle.cardTextVal}
               data-card-surface={galleryStyle.cardSurfaceVal}

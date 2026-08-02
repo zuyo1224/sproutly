@@ -1176,6 +1176,28 @@ export default async function PublicStoreLayout({
           }
         }
 
+        /* 手機一列幾張：editor 各 section panel「手機一列幾張」三按鈕（跟預設 / 一張 / 兩張）。
+           每一段在手機上一列幾張是寫死在該段格線 class 裡的：選物、精選、照片牆、數字一律
+           兩張，慢讀、客人的話一律一張。那組值是照站上目前的預設內容挑的，換成商家自己的
+           東西就不一定對——賣小盆栽、配件的店，一列兩張在手機上每張只剩半個螢幕寬，商品照
+           小到看不出差別；反過來照片牆放的是橫幅生活照、精選只有兩三樣主打商品時，一列一張
+           才看得清楚。商家原本沒有一格動得到：「一列幾張」那幾個欄位調的是 md 以上那組，
+           手機那組不跟著動；「卡片間距」只縮距離，張數一樣。
+           規則只落在 .sproutly-card-grid（跟卡片間距同一個掛點），所以合作 logo 那段的
+           flex-wrap 排法不受影響——那一段本來就是一排排到滿自動換行，沒有欄數這回事。
+           要壓過格線上 Tailwind 的 grid-cols-1 / grid-cols-2，屬性選擇器的權重夠高蓋得掉。
+           放在上面那條「卡片排法」的手機規則後面是刻意的：兩條選擇器權重一樣，後面的贏，
+           也就是商家自己按的張數蓋過照片在左時自動收成一列一張那個預設。
+           沒設（或選「跟預設」）就沒 attribute、整組規則不存在。 */
+        @media (max-width: 639px) {
+          section[data-edit-target][data-mobile-cols="one"] .sproutly-card-grid {
+            grid-template-columns: minmax(0, 1fr);
+          }
+          section[data-edit-target][data-mobile-cols="two"] .sproutly-card-grid {
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+          }
+        }
+
         /* 區段進場動畫：editor 各 section panel「進場動畫」三按鈕（無 / 淡入 / 上滑）
            靠 data-anim attribute + CSS scroll-driven animation（animation-timeline: view()）觸發。
            沒設定 = 無 attr = 不動畫；fade = opacity 0→1；slide-up = opacity + translateY 上滑。
