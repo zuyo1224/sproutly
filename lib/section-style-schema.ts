@@ -79,6 +79,19 @@ export const SECTION_STYLE_ENUMS = {
   // 收緊給的是 0.12em 不是 0：小標的樣式標誌就是那個比內文寬的字距，收到 0 會變成一行
   // 普通的小字，看起來像漏排版而不是刻意的。
   eyebrowTracking: ["tight", "normal", "wide"],
+  // 小標字級（small 縮一成 / default 照原本的 / large 放大三成），只套段落最上面那行小標。
+  // 上一欄調的是那行字彼此之間空多少，這欄調的是那行字本身多大——那行一律是 10px（有兩段
+  // 是 11px），跟上一欄的 0.4em 一樣是照英文全大寫短詞挑的：大寫字母沒有下伸部、整排等高，
+  // 10px 還讀得出 NEW ARRIVALS；中文在 10px 是另一回事，「本月選物」那種筆畫多的字擠在
+  // 10px 裡糊成一團灰塊，客人在手機上看到的是一行看不清楚的東西，而那行偏偏是商家用來
+  // 標段落名字的。反過來想把小標當成這段的主標（照片牆、合作那種大標只有兩個字、真正在
+  // 說明的是小標的段落），10px 也小得撐不起來。
+  // 商家原本沒有一格動得到——「標題大小」換的是大標的字級（小標自己帶著 10px 不跟著動）、
+  // 「全網站字體大小」動的是內文那一層、「小標字距」調的是字與字之間的距離。
+  // 用 zoom 不用 font-size：那行的 10px 與 11px 是各段自己挑的，寫死一個 font-size 會把
+  // 兩種拉成同一級（跟內文字級那欄同一個理由），zoom 是等比放大，各段原本的差別照原樣留著，
+  // 底下那截 margin 也跟著縮放，不會出現字變大了、跟大標的距離還停在原位的狀況。
+  eyebrowScale: ["small", "default", "large"],
   // 分隔線（上 / 下 / 上下都有 / 沒有）
   divider: ["none", "top", "bottom", "both"],
   // 該 section 標題字級（small 0.85x / default 1x / large 1.25x）
@@ -284,6 +297,7 @@ export const SECTION_STYLE_NEUTRAL_VALUES = {
   headingGap: "normal",
   headingInnerGap: "normal",
   eyebrowTracking: "normal",
+  eyebrowScale: "default",
   hideOn: "none",
   divider: "none",
   mediaRadius: "none",

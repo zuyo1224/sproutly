@@ -2862,6 +2862,7 @@ export function EditorWorkspace({
           const headingGap = cur.headingGap ?? null;
           const headingInnerGap = cur.headingInnerGap ?? null;
           const eyebrowTracking = cur.eyebrowTracking ?? null;
+          const eyebrowScale = cur.eyebrowScale ?? null;
           const hideOn = cur.hideOn ?? null;
           const outline = cur.outline ?? null;
           const shadow = cur.shadow ?? null;
@@ -3738,6 +3739,41 @@ export function EditorWorkspace({
                     <button
                       type="button"
                       onClick={() => patch({ eyebrowTracking: null })}
+                      className="text-stone-500 hover:text-stone-800 underline"
+                    >
+                      清除
+                    </button>
+                  )}
+                </div>
+              </Field>
+              <Field label="小標字級">
+                <div className="grid grid-cols-3 gap-1.5">
+                  {([
+                    { v: "small", label: "小" },
+                    { v: "default", label: "跟預設" },
+                    { v: "large", label: "大" },
+                  ] as const).map((opt) => (
+                    <button
+                      key={opt.v}
+                      type="button"
+                      onClick={() => patch({ eyebrowScale: opt.v })}
+                      aria-pressed={(eyebrowScale ?? "default") === opt.v}
+                      className={`rounded-lg border py-2 text-xs transition ${
+                        (eyebrowScale ?? "default") === opt.v
+                          ? "border-emerald-500 bg-emerald-50 text-emerald-900"
+                          : "border-stone-200 text-stone-600 hover:border-stone-400"
+                      }`}
+                    >
+                      {opt.label}
+                    </button>
+                  ))}
+                </div>
+                <div className="mt-1.5 flex items-center justify-between text-[11px] text-stone-500">
+                  <span>上面那格調的是那行小標的字距，這格調的是那行字本身多大。小標打中文、在手機上糊成一團看不清楚時選「大」；把小標當這段主標用（大標只有兩個字）也選「大」（「標題大小」動的是大標，這行不跟著動）</span>
+                  {eyebrowScale && (
+                    <button
+                      type="button"
+                      onClick={() => patch({ eyebrowScale: null })}
                       className="text-stone-500 hover:text-stone-800 underline"
                     >
                       清除

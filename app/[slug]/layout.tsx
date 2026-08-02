@@ -1417,6 +1417,27 @@ export default async function PublicStoreLayout({
           letter-spacing: 0.6em;
         }
 
+        /* 小標字級：editor 各 section panel「小標字級」三按鈕（小 / 跟預設 / 大）。
+           上面那組調的是那行字彼此之間空多少，這組調的是那行字本身多大。那行一律 10px
+           （選物與精選那兩段是 11px），跟 0.4em 的字距一樣是照英文全大寫短詞挑的——大寫
+           字母沒有下伸部、整排等高，10px 還讀得出 NEW ARRIVALS；中文在 10px 是另一回事，
+           「本月選物」那種筆畫多的字擠在 10px 裡糊成一團灰塊，而那行偏偏是商家用來標段落
+           名字的。反過來把小標當這段主標用的段落（大標只有兩個字、真正在說明的是小標），
+           10px 也撐不起來。
+           要蓋掉的是那行自己帶的 text-[10px] class：段落上調字級的那幾欄，「標題大小」動的
+           是大標、「全網站字體大小」動的是內文那一層，都到不了它——跟上面那組同一個處境
+           同一個解法，attribute 讓這裡補一條更精確的規則（這份 <style> 沒包在 @layer，
+           贏在 @layer utilities 的 Tailwind 工具類）。
+           用 zoom 不用 font-size：10px 與 11px 是各段自己挑的差別，寫死一個 font-size 會把
+           兩種拉成同一級（跟內文字級那組同一個理由）。zoom 連著底下那截 margin 一起縮放，
+           字放大了跟大標的距離也跟著長，不會出現字變大、間距停在原位的擠感。 */
+        section[data-edit-target][data-eyebrow-scale="small"] .sproutly-section-eyebrow {
+          zoom: 0.9;
+        }
+        section[data-edit-target][data-eyebrow-scale="large"] .sproutly-section-eyebrow {
+          zoom: 1.3;
+        }
+
         /* 區段進場動畫：editor 各 section panel「進場動畫」三按鈕（無 / 淡入 / 上滑）
            靠 data-anim attribute + CSS scroll-driven animation（animation-timeline: view()）觸發。
            沒設定 = 無 attr = 不動畫；fade = opacity 0→1；slide-up = opacity + translateY 上滑。

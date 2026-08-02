@@ -416,6 +416,14 @@ export default async function StoreHomePage({
       s?.eyebrowTracking === "tight" || s?.eyebrowTracking === "wide"
         ? s.eyebrowTracking
         : undefined;
+    // 小標字級：上面那欄調字與字之間，這欄調那行字本身多大。那行的 10px（有兩段 11px）
+    // 同樣寫在它自己的 text-[10px] class 上，段落上調字級的那幾欄（標題大小動大標、全網站
+    // 字體大小動內文）都到不了它——一樣走 attribute，規則落在 .sproutly-section-eyebrow
+    // 上。跟上面那欄掛在同一批段落（最上面那行真的是小標的那幾段）。
+    const eyebrowScaleVal: "small" | "large" | undefined =
+      s?.eyebrowScale === "small" || s?.eyebrowScale === "large"
+        ? s.eyebrowScale
+        : undefined;
     // 卡片間距：要動的是這一段裡那個卡片格線容器的 gap，不是段落自己——跟照片圓角同一個
     // 處境同一個解法，attribute 讓 layout.tsx 補規則。規則只落在 .sproutly-card-grid 上
     // （各段的卡片格線容器都掛了這個 class），不能寫成落在所有 .grid 上——hero 的左右
@@ -533,6 +541,7 @@ export default async function StoreHomePage({
       headingGapVal,
       headingInnerGapVal,
       eyebrowTrackingVal,
+      eyebrowScaleVal,
       hideOnVal,
       mediaRadiusVal,
       mediaAspectVal,
@@ -1413,6 +1422,7 @@ export default async function StoreHomePage({
             data-heading-rule={collStyle.headingRuleVal}
             data-heading-rule-weight={collStyle.headingRuleWeightVal}
             data-eyebrow-tracking={collStyle.eyebrowTrackingVal}
+            data-eyebrow-scale={collStyle.eyebrowScaleVal}
             data-heading-gap={collStyle.headingGapVal}
               data-heading-inner={collStyle.headingInnerGapVal}
             data-line-height={collStyle.lineHeightVal}
@@ -1581,6 +1591,7 @@ export default async function StoreHomePage({
             data-heading-rule={featuredStyle.headingRuleVal}
             data-heading-rule-weight={featuredStyle.headingRuleWeightVal}
             data-eyebrow-tracking={featuredStyle.eyebrowTrackingVal}
+            data-eyebrow-scale={featuredStyle.eyebrowScaleVal}
             data-heading-gap={featuredStyle.headingGapVal}
               data-heading-inner={featuredStyle.headingInnerGapVal}
             data-line-height={featuredStyle.lineHeightVal}
@@ -1785,6 +1796,7 @@ export default async function StoreHomePage({
             data-heading-rule={journalStyle.headingRuleVal}
             data-heading-rule-weight={journalStyle.headingRuleWeightVal}
             data-eyebrow-tracking={journalStyle.eyebrowTrackingVal}
+            data-eyebrow-scale={journalStyle.eyebrowScaleVal}
             data-heading-gap={journalStyle.headingGapVal}
               data-heading-inner={journalStyle.headingInnerGapVal}
             data-line-height={journalStyle.lineHeightVal}
@@ -1993,6 +2005,7 @@ export default async function StoreHomePage({
             data-heading-rule={promiseStyle.headingRuleVal}
             data-heading-rule-weight={promiseStyle.headingRuleWeightVal}
             data-eyebrow-tracking={promiseStyle.eyebrowTrackingVal}
+            data-eyebrow-scale={promiseStyle.eyebrowScaleVal}
             data-line-height={promiseStyle.lineHeightVal}
             data-section-filter={promiseStyle.filterVal}
             data-body-align={promiseStyle.bodyAlignVal}
@@ -2141,6 +2154,7 @@ export default async function StoreHomePage({
               data-heading-rule={testimonialsStyle.headingRuleVal}
               data-heading-rule-weight={testimonialsStyle.headingRuleWeightVal}
               data-eyebrow-tracking={testimonialsStyle.eyebrowTrackingVal}
+              data-eyebrow-scale={testimonialsStyle.eyebrowScaleVal}
               data-heading-gap={testimonialsStyle.headingGapVal}
               data-heading-inner={testimonialsStyle.headingInnerGapVal}
               data-line-height={testimonialsStyle.lineHeightVal}
@@ -2344,6 +2358,7 @@ export default async function StoreHomePage({
               data-heading-rule={faqStyle.headingRuleVal}
               data-heading-rule-weight={faqStyle.headingRuleWeightVal}
               data-eyebrow-tracking={faqStyle.eyebrowTrackingVal}
+              data-eyebrow-scale={faqStyle.eyebrowScaleVal}
               data-heading-gap={faqStyle.headingGapVal}
               data-heading-inner={faqStyle.headingInnerGapVal}
               data-line-height={faqStyle.lineHeightVal}
@@ -2520,6 +2535,7 @@ export default async function StoreHomePage({
               data-heading-rule={statsStyle.headingRuleVal}
               data-heading-rule-weight={statsStyle.headingRuleWeightVal}
               data-eyebrow-tracking={statsStyle.eyebrowTrackingVal}
+              data-eyebrow-scale={statsStyle.eyebrowScaleVal}
               data-heading-gap={statsStyle.headingGapVal}
               data-heading-inner={statsStyle.headingInnerGapVal}
               data-line-height={statsStyle.lineHeightVal}
@@ -2699,6 +2715,7 @@ export default async function StoreHomePage({
               data-heading-rule={partnersStyle.headingRuleVal}
               data-heading-rule-weight={partnersStyle.headingRuleWeightVal}
               data-eyebrow-tracking={partnersStyle.eyebrowTrackingVal}
+              data-eyebrow-scale={partnersStyle.eyebrowScaleVal}
               data-heading-gap={partnersStyle.headingGapVal}
               data-line-height={partnersStyle.lineHeightVal}
               data-section-filter={partnersStyle.filterVal}
@@ -2808,6 +2825,7 @@ export default async function StoreHomePage({
               data-heading-rule={galleryStyle.headingRuleVal}
               data-heading-rule-weight={galleryStyle.headingRuleWeightVal}
               data-eyebrow-tracking={galleryStyle.eyebrowTrackingVal}
+              data-eyebrow-scale={galleryStyle.eyebrowScaleVal}
               data-heading-gap={galleryStyle.headingGapVal}
               data-heading-inner={galleryStyle.headingInnerGapVal}
               data-line-height={galleryStyle.lineHeightVal}
@@ -2980,6 +2998,7 @@ export default async function StoreHomePage({
             data-heading-rule={visitStyle.headingRuleVal}
             data-heading-rule-weight={visitStyle.headingRuleWeightVal}
             data-eyebrow-tracking={visitStyle.eyebrowTrackingVal}
+            data-eyebrow-scale={visitStyle.eyebrowScaleVal}
             data-line-height={visitStyle.lineHeightVal}
             data-section-filter={visitStyle.filterVal}
             data-body-align={visitStyle.bodyAlignVal}
