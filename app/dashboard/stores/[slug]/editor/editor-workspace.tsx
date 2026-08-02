@@ -2870,6 +2870,7 @@ export function EditorWorkspace({
           const gridGap = cur.gridGap ?? null;
           const cardHover = cur.cardHover ?? null;
           const cardText = cur.cardText ?? null;
+          const cardSurface = cur.cardSurface ?? null;
           const entrance = cur.entrance ?? null;
           const fontFamily = cur.fontFamily ?? null;
           const letterSpacing = cur.letterSpacing ?? null;
@@ -4274,6 +4275,41 @@ export function EditorWorkspace({
                     <button
                       type="button"
                       onClick={() => patch({ cardText: null })}
+                      className="text-stone-500 hover:text-stone-800 underline"
+                    >
+                      清除
+                    </button>
+                  )}
+                </div>
+              </Field>
+              <Field label="卡片外觀">
+                <div className="grid grid-cols-3 gap-1.5">
+                  {([
+                    { v: "none", label: "原樣" },
+                    { v: "panel", label: "淡底色" },
+                    { v: "outline", label: "細框" },
+                  ] as const).map((opt) => (
+                    <button
+                      key={opt.v}
+                      type="button"
+                      onClick={() => patch({ cardSurface: opt.v })}
+                      aria-pressed={(cardSurface ?? "none") === opt.v}
+                      className={`rounded-lg border py-2 text-xs transition ${
+                        (cardSurface ?? "none") === opt.v
+                          ? "border-emerald-500 bg-emerald-50 text-emerald-900"
+                          : "border-stone-200 text-stone-600 hover:border-stone-400"
+                      }`}
+                    >
+                      {opt.label}
+                    </button>
+                  ))}
+                </div>
+                <div className="mt-1.5 flex items-center justify-between text-[11px] text-stone-500">
+                  <span>每張卡片有沒有自己的邊界（欄數多、品名長短不一時，有底或有框才分得出哪行字配哪張照片）</span>
+                  {cardSurface && (
+                    <button
+                      type="button"
+                      onClick={() => patch({ cardSurface: null })}
                       className="text-stone-500 hover:text-stone-800 underline"
                     >
                       清除

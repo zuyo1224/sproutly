@@ -1086,6 +1086,51 @@ export default async function PublicStoreLayout({
           text-align: right;
         }
 
+        /* 卡片外觀：editor 各 section panel「卡片外觀」三按鈕（原樣 / 面板 / 外框）。
+           站上的卡片一律是「照片 + 底下裸著的幾行字」直接浮在段落底色上，卡片自己沒有
+           邊界——那是雜誌感的排法，商品少、留白多的時候好看；但欄數調到 3、4 欄之後，
+           或每張卡的品名長短不一，一整列看起來就是一堆散字，客人分不出哪行字屬於哪張
+           照片（網購站的商品卡幾乎都有底或有框就是為了這個）。商家原本沒有一格做得到：
+           段落自己的「底色 / 外框 / 圓角 / 陰影」畫的是整段的外圍，一段一個框，分不到
+           每張卡身上；「卡片間距」調的是卡片之間的距離，卡片本身還是裸的。
+           底與框的顏色走 currentColor 的淡色（跟底紋 texture、底色明暗 bgGradient 同一個
+           口徑）：深底淺字的段落自動變成淺色面板與淺色框，商家不用再挑一次顏色。
+           照片自己那圈陰影一起收掉（連 hover 那一段）——卡片已經有邊界，照片再浮一次
+           會變成框裡還有框；浮起改由整張卡做，不然照片會浮出卡片的內距、看起來像要
+           掉出來。商家已經把「滑過卡片」設成不動的那一檔不補這個浮起（那正是他按掉的
+           東西），設成輕微的沿用它那 2px。
+           沒設（或選「原樣」）就沒 attribute、整組規則不存在，既有店家的卡片一動不動。 */
+        section[data-edit-target][data-card-surface] .sproutly-card {
+          padding: 14px;
+          border-radius: 14px;
+          transition: box-shadow 0.7s cubic-bezier(0.22, 1, 0.36, 1),
+                      transform 0.7s cubic-bezier(0.22, 1, 0.36, 1);
+        }
+        section[data-edit-target][data-card-surface="panel"] .sproutly-card {
+          background: color-mix(in srgb, currentColor 6%, transparent);
+        }
+        section[data-edit-target][data-card-surface="outline"] .sproutly-card {
+          border: 1px solid color-mix(in srgb, currentColor 16%, transparent);
+        }
+        section[data-edit-target][data-card-surface] .sproutly-card .sproutly-card-image,
+        section[data-edit-target][data-card-surface] .sproutly-card:hover .sproutly-card-image {
+          box-shadow: none;
+        }
+        section[data-edit-target][data-card-surface]:not([data-card-hover="none"])
+          .sproutly-card:hover .sproutly-card-image {
+          transform: none;
+        }
+        section[data-edit-target][data-card-surface]:not([data-card-hover="none"])
+          .sproutly-card:hover {
+          transform: translateY(-6px);
+          box-shadow: var(--sproutly-elev-3);
+        }
+        section[data-edit-target][data-card-surface][data-card-hover="calm"]
+          .sproutly-card:hover {
+          transform: translateY(-2px);
+          box-shadow: none;
+        }
+
         /* 區段進場動畫：editor 各 section panel「進場動畫」三按鈕（無 / 淡入 / 上滑）
            靠 data-anim attribute + CSS scroll-driven animation（animation-timeline: view()）觸發。
            沒設定 = 無 attr = 不動畫；fade = opacity 0→1；slide-up = opacity + translateY 上滑。

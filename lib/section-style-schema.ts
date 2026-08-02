@@ -112,6 +112,17 @@ export const SECTION_STYLE_ENUMS = {
   // 對齊，商家只是想調段落內文，卡片就先散了。這一欄設的是整張卡（含品名），設了就
   // 兩行一起走，也就把那個散掉的狀態收回來。
   cardText: ["auto", "left", "center", "right"],
+  // 卡片外觀（none 原樣 / panel 淡底色的面板 / outline 一圈細框），只套這一段的卡片。
+  // 站上的卡片一律是「照片 + 底下裸著的幾行字」直接浮在段落底色上，卡片自己沒有邊界——
+  // 那是雜誌感的排法，商品少、留白多的時候好看，但商家把欄數調到 3、4 欄、或每張卡的
+  // 品名長短不一之後，一整列看起來就是一堆散字，客人分不出哪行字屬於哪張照片（這也是
+  // 網購站的商品卡幾乎都有底或有框的原因）。原本動得到「卡片有沒有邊界」的一格都沒有：
+  // 段落自己的「底色 / 外框 / 圓角 / 陰影」那四欄畫的是整段的外圍，一段一個框，不會分到
+  // 每張卡身上；「卡片間距」調的是卡片之間的距離，卡片本身還是裸的。
+  // 底與框的顏色都從該段的文字色算（currentColor 的淡色），所以深底淺字的段落自動變成
+  // 淺色的面板與框，商家不用再挑一次顏色——跟底紋、側邊色條同一個口徑。
+  // 設了之後照片自己那圈陰影收掉：卡片已經有邊界了，照片再浮一次會變成框裡還有框。
+  cardSurface: ["none", "panel", "outline"],
   // 外框（subtle 1px / strong 2px，用 outline 避免跟 divider 的 borderTop/Bottom 打架）
   outline: ["none", "subtle", "strong"],
   // 陰影（soft 淺 / deep 深），讓有 bgColor 的 section 像卡片浮起
@@ -171,6 +182,7 @@ export const SECTION_STYLE_NEUTRAL_VALUES = {
   gridGap: "normal",
   cardHover: "default",
   cardText: "auto",
+  cardSurface: "none",
   outline: "none",
   shadow: "none",
   borderRadius: "none",

@@ -407,6 +407,13 @@ export default async function StoreHomePage({
       s?.cardText === "left" || s?.cardText === "center" || s?.cardText === "right"
         ? s.cardText
         : undefined;
+    // 卡片外觀：要畫的是每張卡片自己的底與框，段落上的 inline style 只到段落那一層
+    // （「底色 / 外框 / 圓角 / 陰影」那四欄畫的是整段的外圍，分不到裡面每張卡身上）——
+    // 跟卡片間距、卡片文字同一個處境同一個解法，attribute 讓 layout.tsx 補規則。
+    // 顏色不在這裡算：底與框都走 currentColor 的淡色（見 layout.tsx），深底淺字的段落
+    // 自動變成淺色，不用再挑一次。只掛在有卡片的四段。
+    const cardSurfaceVal: "panel" | "outline" | undefined =
+      s?.cardSurface === "panel" || s?.cardSurface === "outline" ? s.cardSurface : undefined;
     return {
       bg: s?.bgColor ?? undefined,
       text: s?.textColor ?? undefined,
@@ -448,6 +455,7 @@ export default async function StoreHomePage({
       gridGapVal,
       cardHoverVal,
       cardTextVal,
+      cardSurfaceVal,
     };
     // 這裡本來手抄一份 `as { ... }`（整份欄位再列一次）。它推不出比 TS 自己推更精確的型別，
     // 卻是第三份要跟著欄位表同步改的清單——加控制忘了補就編不過（好），改錯就悄悄放寬（不好）。
@@ -1325,6 +1333,7 @@ export default async function StoreHomePage({
             data-grid-gap={collStyle.gridGapVal}
             data-card-hover={collStyle.cardHoverVal}
             data-card-text={collStyle.cardTextVal}
+            data-card-surface={collStyle.cardSurfaceVal}
             style={mergeSectionStyle(collStyle)}
           >
             <div className="max-w-5xl mx-auto px-8 sm:px-12" style={{ textAlign: collStyle.align }}>
@@ -1483,6 +1492,7 @@ export default async function StoreHomePage({
             data-grid-gap={featuredStyle.gridGapVal}
             data-card-hover={featuredStyle.cardHoverVal}
             data-card-text={featuredStyle.cardTextVal}
+            data-card-surface={featuredStyle.cardSurfaceVal}
           >
             <div className="max-w-5xl mx-auto px-8 sm:px-12" style={{ textAlign: featuredStyle.align }}>
               {featuredFree ? (
@@ -1678,6 +1688,7 @@ export default async function StoreHomePage({
             data-grid-gap={journalStyle.gridGapVal}
             data-card-hover={journalStyle.cardHoverVal}
             data-card-text={journalStyle.cardTextVal}
+            data-card-surface={journalStyle.cardSurfaceVal}
           >
           <div className="max-w-5xl mx-auto px-8 sm:px-12" style={{ textAlign: journalStyle.align }}>
             {journalFree ? (
@@ -2671,6 +2682,7 @@ export default async function StoreHomePage({
               data-grid-gap={galleryStyle.gridGapVal}
               data-card-hover={galleryStyle.cardHoverVal}
               data-card-text={galleryStyle.cardTextVal}
+              data-card-surface={galleryStyle.cardSurfaceVal}
             >
               <div
                 className="max-w-6xl mx-auto px-6 sm:px-10"
