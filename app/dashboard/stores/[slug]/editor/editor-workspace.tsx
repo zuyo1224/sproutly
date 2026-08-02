@@ -3022,6 +3022,35 @@ export function EditorWorkspace({
                 sectionWidth: "narrow",
               },
             },
+            // 下面兩個動的是卡片自己，上面八個動的都是段落外圍（字體、呼吸、底色、外框）。
+            // 分開列是因為這一批卡片級的控制（卡片排法 / 卡片外觀 / 卡片文字 / 標題與描述
+            // 行數 / 手機一列幾張）是後來一格一格補上的，快速風格一直停在只設段落那層——
+            // 商家想要「網購站那種清單」或「邊界清楚的格子牆」，得自己在六七個控制之間
+            // 一格一格按對，那正是快速風格本來要省掉的事。
+            {
+              key: "product-list",
+              label: "商品清單",
+              hint: "照片在左 + 卡片文字靠左 + 品名兩行 + 描述兩行 + 手機一列一張（一般網購站的清單模式，同一個螢幕看得到的品項多；適合 選物 / 精選 / 慢讀）",
+              fields: {
+                cardLayout: "side",
+                cardText: "left",
+                cardTitleLines: "two",
+                cardDescLines: "two",
+                mobileColumns: "one",
+              },
+            },
+            {
+              key: "tidy-grid",
+              label: "整齊格子",
+              hint: "卡片加淡底 + 文字靠左 + 品名兩行 + 描述兩行 + 照片正方（每張卡有自己的邊界、同一列下緣切齊；適合欄數調到 3、4 欄的 選物 / 精選）",
+              fields: {
+                cardSurface: "panel",
+                cardText: "left",
+                cardTitleLines: "two",
+                cardDescLines: "two",
+                mediaAspect: "square",
+              },
+            },
           ];
           // 判斷目前這段是不是還套著某個快速風格（套完後又微調過就不算）。
           // 一個 preset 算「套用中」= 它的每個欄位都還在這段樣式裡、值也相同。
