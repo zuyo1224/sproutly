@@ -2881,6 +2881,7 @@ export function EditorWorkspace({
           const mobileColumns = cur.mobileColumns ?? null;
           const cardTitleLines = cur.cardTitleLines ?? null;
           const cardDescLines = cur.cardDescLines ?? null;
+          const cardTitleScale = cur.cardTitleScale ?? null;
           const entrance = cur.entrance ?? null;
           const fontFamily = cur.fontFamily ?? null;
           const letterSpacing = cur.letterSpacing ?? null;
@@ -4770,6 +4771,41 @@ export function EditorWorkspace({
                     <button
                       type="button"
                       onClick={() => patch({ cardDescLines: null })}
+                      className="text-stone-500 hover:text-stone-800 underline"
+                    >
+                      清除
+                    </button>
+                  )}
+                </div>
+              </Field>
+              <Field label="卡片標題字級">
+                <div className="grid grid-cols-3 gap-1.5">
+                  {([
+                    { v: "small", label: "小" },
+                    { v: "default", label: "跟預設" },
+                    { v: "large", label: "大" },
+                  ] as const).map((opt) => (
+                    <button
+                      key={opt.v}
+                      type="button"
+                      onClick={() => patch({ cardTitleScale: opt.v })}
+                      aria-pressed={(cardTitleScale ?? "default") === opt.v}
+                      className={`rounded-lg border py-2 text-xs transition ${
+                        (cardTitleScale ?? "default") === opt.v
+                          ? "border-emerald-500 bg-emerald-50 text-emerald-900"
+                          : "border-stone-200 text-stone-600 hover:border-stone-400"
+                      }`}
+                    >
+                      {opt.label}
+                    </button>
+                  ))}
+                </div>
+                <div className="mt-1.5 flex items-center justify-between text-[11px] text-stone-500">
+                  <span>卡片上那行品名（或文章標題）本身多大，上面兩格管的是它佔幾行。卡片變寬（欄數少、照片在左）時選大，一列四張的小卡選小</span>
+                  {cardTitleScale && (
+                    <button
+                      type="button"
+                      onClick={() => patch({ cardTitleScale: null })}
                       className="text-stone-500 hover:text-stone-800 underline"
                     >
                       清除

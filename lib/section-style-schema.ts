@@ -234,6 +234,19 @@ export const SECTION_STYLE_ENUMS = {
   // 比標題多一檔三行：描述本來就是可以讀幾句的地方，一兩行常常斷在句子中間。
   // 只落在真的是描述的那些行——精選商品品名底下那行是價錢，截掉價錢對客人沒有意義。
   cardDescLines: ["auto", "one", "two", "three", "full"],
+  // 卡片標題字級（small 縮一成 / default 照原本的 / large 放大兩成半），只套卡片裡那行品名
+  // 或文章標題。上面兩格管的是那行字佔幾行、被不被截，這格管的是那行字本身多大——各段是
+  // 寫死的：選物與慢讀 18px（桌機 20px）、精選商品 16px。那組值是照站上預設那種一列三張、
+  // 品名兩三個字的卡挑的，換成商家自己的東西常常不對：把欄數調成 2、或卡片排法設成照片在
+  // 左的清單模式之後，卡片寬了一倍，16px 的品名在那麼大一張卡上小得像圖說，客人一眼掃過去
+  // 先看到的是價錢不是商品；反過來一列四張的小卡、品名又長的店，18px 佔掉卡片下半整整兩行，
+  // 照片被擠小。慢讀那種文章卡想讓標題像標題（現在跟商品品名同一級）也一樣沒得調。
+  // 商家原本沒有一格動得到——「標題大小」換的是段落大標的字級、「全網站字體大小」動的是
+  // 內文那一層、「小標字級」動的是段落最上面那行小標，三個都到不了卡片裡的品名。
+  // 用 zoom 不用 font-size：三段的 16 / 18 / 20px 是各段自己挑的差別，寫死一個 font-size 會
+  // 把三種拉成同一級（跟內文字級、小標字級那兩欄同一個理由）；zoom 連著行高與底下那截
+  // margin 一起縮放，字放大了跟價錢的距離也跟著長，不會出現字變大、間距停在原位的擠感。
+  cardTitleScale: ["small", "default", "large"],
   // 外框（subtle 1px / strong 2px，用 outline 避免跟 divider 的 borderTop/Bottom 打架）
   outline: ["none", "subtle", "strong"],
   // 陰影（soft 淺 / deep 深），讓有 bgColor 的 section 像卡片浮起
@@ -314,6 +327,7 @@ export const SECTION_STYLE_NEUTRAL_VALUES = {
   mobileColumns: "auto",
   cardTitleLines: "auto",
   cardDescLines: "auto",
+  cardTitleScale: "default",
   outline: "none",
   shadow: "none",
   borderRadius: "none",

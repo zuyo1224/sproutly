@@ -504,6 +504,14 @@ export default async function StoreHomePage({
       s?.cardDescLines === "full"
         ? s.cardDescLines
         : undefined;
+    // 卡片標題字級：要蓋掉的是品名那行自己帶的 text-base / text-lg class，段落上調字級的
+    // 那幾欄（標題大小動大標、全網站字體大小動內文、小標字級動 eyebrow）都到不了卡片裡
+    // 那個 h3——跟卡片標題行數同一個處境同一個解法，attribute 讓 layout.tsx 補規則。
+    // 掛在卡片底下真的有標題的三段（選物 / 精選 / 慢讀），跟行數那格同樣三段。
+    const cardTitleScaleVal: "small" | "large" | undefined =
+      s?.cardTitleScale === "small" || s?.cardTitleScale === "large"
+        ? s.cardTitleScale
+        : undefined;
     return {
       bg: s?.bgColor ?? undefined,
       text: s?.textColor ?? undefined,
@@ -557,6 +565,7 @@ export default async function StoreHomePage({
       mobileColumnsVal,
       cardTitleLinesVal,
       cardDescLinesVal,
+      cardTitleScaleVal,
     };
     // 這裡本來手抄一份 `as { ... }`（整份欄位再列一次）。它推不出比 TS 自己推更精確的型別，
     // 卻是第三份要跟著欄位表同步改的清單——加控制忘了補就編不過（好），改錯就悄悄放寬（不好）。
@@ -1446,6 +1455,7 @@ export default async function StoreHomePage({
             data-card-media-width={collStyle.cardMediaWidthVal}
             data-card-title-lines={collStyle.cardTitleLinesVal}
             data-card-desc-lines={collStyle.cardDescLinesVal}
+            data-card-title-scale={collStyle.cardTitleScaleVal}
             style={mergeSectionStyle(collStyle)}
           >
             <div className="max-w-5xl mx-auto px-8 sm:px-12" style={{ textAlign: collStyle.align }}>
@@ -1614,6 +1624,7 @@ export default async function StoreHomePage({
             data-card-layout={featuredStyle.cardLayoutVal}
             data-card-media-width={featuredStyle.cardMediaWidthVal}
             data-card-title-lines={featuredStyle.cardTitleLinesVal}
+            data-card-title-scale={featuredStyle.cardTitleScaleVal}
           >
             <div className="max-w-5xl mx-auto px-8 sm:px-12" style={{ textAlign: featuredStyle.align }}>
               {featuredFree ? (
@@ -1820,6 +1831,7 @@ export default async function StoreHomePage({
             data-card-media-width={journalStyle.cardMediaWidthVal}
             data-card-title-lines={journalStyle.cardTitleLinesVal}
             data-card-desc-lines={journalStyle.cardDescLinesVal}
+            data-card-title-scale={journalStyle.cardTitleScaleVal}
           >
           <div className="max-w-5xl mx-auto px-8 sm:px-12" style={{ textAlign: journalStyle.align }}>
             {journalFree ? (

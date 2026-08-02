@@ -1353,6 +1353,29 @@ export default async function PublicStoreLayout({
           line-clamp: unset;
         }
 
+        /* 卡片標題字級：editor 各 section panel「卡片標題字級」三按鈕（小 / 跟預設 / 大）。
+           上面兩組管的是品名佔幾行、被不被截，這組管的是那行字本身多大。各段是寫死的：
+           選物與慢讀 18px（桌機 20px）、精選商品 16px，照站上預設那種一列三張、品名兩三個
+           字的卡挑的。商家把欄數調成 2、或卡片排法設成照片在左的清單模式之後，卡片寬了一倍，
+           16px 的品名在那麼大一張卡上小得像圖說，客人一眼掃過去先看到價錢不是商品；反過來
+           一列四張的小卡配長品名，18px 佔掉卡片下半兩行、把照片擠小。慢讀那種文章卡想讓
+           標題像標題（現在跟商品品名同一級）也一樣沒得調。
+           要蓋掉的是品名那行自己帶的 text-base / text-lg class：段落上調字級的那幾欄，
+           「標題大小」動的是大標、「全網站字體大小」動的是內文那一層、「小標字級」動的是
+           eyebrow，都到不了卡片裡的 h3——跟小標字級那組同一個處境同一個解法，attribute 讓
+           這裡補一條更精確的規則（這份 <style> 沒包在 @layer，贏在 @layer utilities 的
+           Tailwind 工具類）。
+           用 zoom 不用 font-size：三段的 16 / 18 / 20px 是各段自己挑的差別，寫死一個
+           font-size 會把三種拉成同一級（跟小標字級那組同一個理由）。zoom 連著行高與底下
+           那截 margin 一起縮放，字放大了跟價錢的距離也跟著長，不會出現字變大、間距停在
+           原位的擠感；上面兩組的行數截斷也照樣成立（line-clamp 數的是行，不是絕對高度）。 */
+        section[data-edit-target][data-card-title-scale="small"] .sproutly-card-title {
+          zoom: 0.9;
+        }
+        section[data-edit-target][data-card-title-scale="large"] .sproutly-card-title {
+          zoom: 1.25;
+        }
+
         /* 標題與內容的距離：editor 各 section panel「標題與內容」三按鈕（收緊 / 跟預設 / 放寬）。
            段落最上面那塊（小標 + 大標 + 引言）跟底下卡片、照片、問答之間空多少，是每一段
            寫死的一個值，而且各段差很多——選物 128px、精選與慢讀 112px、常見問題 64px、
