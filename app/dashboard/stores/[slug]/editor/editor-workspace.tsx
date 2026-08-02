@@ -3023,7 +3023,7 @@ export function EditorWorkspace({
                 sectionWidth: "narrow",
               },
             },
-            // 下面兩個動的是卡片自己，上面八個動的都是段落外圍（字體、呼吸、底色、外框）。
+            // 下面三個動的是卡片自己，上面八個動的都是段落外圍（字體、呼吸、底色、外框）。
             // 分開列是因為這一批卡片級的控制（卡片排法 / 卡片外觀 / 卡片文字 / 標題與描述
             // 行數 / 手機一列幾張）是後來一格一格補上的，快速風格一直停在只設段落那層——
             // 商家想要「網購站那種清單」或「邊界清楚的格子牆」，得自己在六七個控制之間
@@ -3031,9 +3031,12 @@ export function EditorWorkspace({
             {
               key: "product-list",
               label: "商品清單",
-              hint: "照片在左 + 卡片文字靠左 + 品名兩行 + 描述兩行 + 手機一列一張（一般網購站的清單模式，同一個螢幕看得到的品項多；適合 選物 / 精選 / 慢讀）",
+              hint: "照片在左（佔窄）+ 卡片文字靠左 + 品名兩行 + 描述兩行 + 手機一列一張（一般網購站的清單模式，同一個螢幕看得到的品項多；適合 選物 / 精選 / 慢讀）",
               fields: {
                 cardLayout: "side",
+                // 橫排的照片佔寬預設是 38%，清單這種一行只有品名跟價錢的內容，字沒幾個
+                // 卻分到快四成寬。收到 narrow（25%）才是網購站清單的樣子。
+                cardMediaWidth: "narrow",
                 cardText: "left",
                 cardTitleLines: "two",
                 cardDescLines: "two",
@@ -3050,6 +3053,23 @@ export function EditorWorkspace({
                 cardTitleLines: "two",
                 cardDescLines: "two",
                 mediaAspect: "square",
+              },
+            },
+            {
+              key: "story-right",
+              label: "圖右敘事",
+              hint: "照片在右（佔寬）+ 卡片文字靠左 + 品名兩行 + 描述不截 + 宋體寬行高 + 手機一列一張（先讀到字再看照片，適合 慢讀 / 品牌故事）",
+              fields: {
+                cardLayout: "side-reverse",
+                cardMediaWidth: "wide",
+                cardText: "left",
+                cardTitleLines: "two",
+                // 敘事段落的重點就是那段字，截行等於把要講的話砍掉；上面兩組是清單、
+                // 要的是同一列下緣切齊，這組反過來。
+                cardDescLines: "full",
+                fontFamily: "serif",
+                lineHeight: "relaxed",
+                mobileColumns: "one",
               },
             },
           ];
