@@ -414,6 +414,13 @@ export default async function StoreHomePage({
     // 自動變成淺色，不用再挑一次。只掛在有卡片的四段。
     const cardSurfaceVal: "panel" | "outline" | undefined =
       s?.cardSurface === "panel" || s?.cardSurface === "outline" ? s.cardSurface : undefined;
+    // 卡片排法：照片從卡片上面搬到左邊，要重排的是卡片自己那幾層子元素（圖框、品名、
+    // 價錢是平的一疊 block），還要順手把手機收成一列一張——兩件事段落上的 inline style
+    // 都碰不到，跟卡片外觀、卡片文字同一個處境同一個解法，attribute 讓 layout.tsx 補規則。
+    // 只掛在照片底下真的有字的三段（選物 / 精選 / 慢讀）：照片牆的卡片裡只有一張圖，
+    // 把圖推到左邊右邊會空著，那一格按了等於把版面弄壞，不給比給了沒用好。
+    const cardLayoutVal: "side" | undefined =
+      s?.cardLayout === "side" ? "side" : undefined;
     return {
       bg: s?.bgColor ?? undefined,
       text: s?.textColor ?? undefined,
@@ -456,6 +463,7 @@ export default async function StoreHomePage({
       cardHoverVal,
       cardTextVal,
       cardSurfaceVal,
+      cardLayoutVal,
     };
     // 這裡本來手抄一份 `as { ... }`（整份欄位再列一次）。它推不出比 TS 自己推更精確的型別，
     // 卻是第三份要跟著欄位表同步改的清單——加控制忘了補就編不過（好），改錯就悄悄放寬（不好）。
@@ -1334,6 +1342,7 @@ export default async function StoreHomePage({
             data-card-hover={collStyle.cardHoverVal}
             data-card-text={collStyle.cardTextVal}
             data-card-surface={collStyle.cardSurfaceVal}
+            data-card-layout={collStyle.cardLayoutVal}
             style={mergeSectionStyle(collStyle)}
           >
             <div className="max-w-5xl mx-auto px-8 sm:px-12" style={{ textAlign: collStyle.align }}>
@@ -1493,6 +1502,7 @@ export default async function StoreHomePage({
             data-card-hover={featuredStyle.cardHoverVal}
             data-card-text={featuredStyle.cardTextVal}
             data-card-surface={featuredStyle.cardSurfaceVal}
+            data-card-layout={featuredStyle.cardLayoutVal}
           >
             <div className="max-w-5xl mx-auto px-8 sm:px-12" style={{ textAlign: featuredStyle.align }}>
               {featuredFree ? (
@@ -1689,6 +1699,7 @@ export default async function StoreHomePage({
             data-card-hover={journalStyle.cardHoverVal}
             data-card-text={journalStyle.cardTextVal}
             data-card-surface={journalStyle.cardSurfaceVal}
+            data-card-layout={journalStyle.cardLayoutVal}
           >
           <div className="max-w-5xl mx-auto px-8 sm:px-12" style={{ textAlign: journalStyle.align }}>
             {journalFree ? (

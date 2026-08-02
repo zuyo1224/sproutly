@@ -2871,6 +2871,7 @@ export function EditorWorkspace({
           const cardHover = cur.cardHover ?? null;
           const cardText = cur.cardText ?? null;
           const cardSurface = cur.cardSurface ?? null;
+          const cardLayout = cur.cardLayout ?? null;
           const entrance = cur.entrance ?? null;
           const fontFamily = cur.fontFamily ?? null;
           const letterSpacing = cur.letterSpacing ?? null;
@@ -4310,6 +4311,40 @@ export function EditorWorkspace({
                     <button
                       type="button"
                       onClick={() => patch({ cardSurface: null })}
+                      className="text-stone-500 hover:text-stone-800 underline"
+                    >
+                      清除
+                    </button>
+                  )}
+                </div>
+              </Field>
+              <Field label="卡片排法">
+                <div className="grid grid-cols-2 gap-1.5">
+                  {([
+                    { v: "stack", label: "照片在上" },
+                    { v: "side", label: "照片在左" },
+                  ] as const).map((opt) => (
+                    <button
+                      key={opt.v}
+                      type="button"
+                      onClick={() => patch({ cardLayout: opt.v })}
+                      aria-pressed={(cardLayout ?? "stack") === opt.v}
+                      className={`rounded-lg border py-2 text-xs transition ${
+                        (cardLayout ?? "stack") === opt.v
+                          ? "border-emerald-500 bg-emerald-50 text-emerald-900"
+                          : "border-stone-200 text-stone-600 hover:border-stone-400"
+                      }`}
+                    >
+                      {opt.label}
+                    </button>
+                  ))}
+                </div>
+                <div className="mt-1.5 flex items-center justify-between text-[11px] text-stone-500">
+                  <span>照片在左＝一般網購站的清單模式，一個螢幕看得到的品項多很多（手機自動收成一列一張）</span>
+                  {cardLayout && (
+                    <button
+                      type="button"
+                      onClick={() => patch({ cardLayout: null })}
                       className="text-stone-500 hover:text-stone-800 underline"
                     >
                       清除

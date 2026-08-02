@@ -123,6 +123,16 @@ export const SECTION_STYLE_ENUMS = {
   // 淺色的面板與框，商家不用再挑一次顏色——跟底紋、側邊色條同一個口徑。
   // 設了之後照片自己那圈陰影收掉：卡片已經有邊界了，照片再浮一次會變成框裡還有框。
   cardSurface: ["none", "panel", "outline"],
+  // 卡片排法（stack 照片在上 / side 照片在左），只套這一段的卡片。
+  // 站上每一段的卡片都是同一種排法：照片在上、品名價錢在下面一疊——那是格子牆的排法，
+  // 適合客人一眼掃過整片照片。但同一批商品換成「一列一張、照片在左、字在右」（也就是
+  // 一般網購站的清單模式）時，同一個螢幕高度裡看得到的品項多得多、品名與描述也有寬度
+  // 寫得完整，慢讀區那種一段文字配一張圖的卡片更是本來就該橫著排。商家原本沒有一格
+  // 做得到：「卡片外觀」給的是邊界、「卡片文字」給的是字站哪、「欄數」調的是一列幾張，
+  // 三個都不會把照片從上面搬到左邊。
+  // 設成照片在左之後，手機自動收成一列一張——半個螢幕寬的卡片再切成左圖右字，照片只剩
+  // 一小格，那不是商家按這一格想要的東西。
+  cardLayout: ["stack", "side"],
   // 外框（subtle 1px / strong 2px，用 outline 避免跟 divider 的 borderTop/Bottom 打架）
   outline: ["none", "subtle", "strong"],
   // 陰影（soft 淺 / deep 深），讓有 bgColor 的 section 像卡片浮起
@@ -183,6 +193,7 @@ export const SECTION_STYLE_NEUTRAL_VALUES = {
   cardHover: "default",
   cardText: "auto",
   cardSurface: "none",
+  cardLayout: "stack",
   outline: "none",
   shadow: "none",
   borderRadius: "none",

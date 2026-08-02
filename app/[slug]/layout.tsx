@@ -1131,6 +1131,51 @@ export default async function PublicStoreLayout({
           box-shadow: none;
         }
 
+        /* 卡片排法：editor 各 section panel「卡片排法」兩按鈕（照片在上 / 照片在左）。
+           站上每一段的卡片都是同一種排法——照片在上，品名、價錢、摘要在下面疊成一落。
+           那是格子牆的排法，客人一眼掃過整片照片；但同一批商品換成「一列一張、照片在左、
+           字在右」（一般網購站的清單模式）之後，同一個螢幕高度看得到的品項多得多、品名
+           與描述也有寬度寫得完整，慢讀區那種一段文字配一張圖的卡片更是本來就該橫著排。
+           商家原本沒有一格做得到：「卡片外觀」給的是邊界、「卡片文字」給的是字站哪、
+           「欄數」調的是一列幾張，三個都不會把照片從上面搬到左邊。
+           卡片裡是平的一疊（圖框、品名、價錢各自是卡片的直接子元素，中間沒有包一層文字
+           容器），所以不能只把卡片改成兩欄——那樣每個元素會各占一格。改成格線之後把圖框
+           釘在左欄、跨滿右邊那疊文字的高度（span 12 是留寬一點的上限，用不到的列是 0 高，
+           列距設 0 才不會多出空隙），其餘子元素一律指到右欄，順著原本的順序往下排。
+           圖框設 align-self: start 讓它照自己的比例決定高度（不然會被拉成跟文字一樣高，
+           「照片比例」那一欄就失效了）；右欄第一行的上留白清掉——那是照片在上時用來跟
+           照片隔開的距離，橫著排之後變成把字整片往下推。
+           手機自動收成一列一張：半個螢幕寬的卡片再切成左圖右字，照片只剩一小格，那不是
+           商家按這一格想要的東西。收的是卡片格線的欄數，要壓過格線上 Tailwind 那個
+           grid-cols-2（屬性選擇器的權重高過單一 class，蓋得掉）。
+           沒設（或選「照片在上」）就沒 attribute、整組規則不存在，卡片維持原本的排法。 */
+        section[data-edit-target][data-card-layout="side"] .sproutly-card {
+          display: grid;
+          grid-template-columns: minmax(0, 38%) minmax(0, 1fr);
+          column-gap: clamp(12px, 2vw, 24px);
+          row-gap: 0;
+        }
+        section[data-edit-target][data-card-layout="side"]
+          .sproutly-card > .sproutly-card-image {
+          grid-column: 1;
+          grid-row: 1 / span 12;
+          align-self: start;
+        }
+        section[data-edit-target][data-card-layout="side"]
+          .sproutly-card > *:not(.sproutly-card-image) {
+          grid-column: 2;
+          min-width: 0;
+        }
+        section[data-edit-target][data-card-layout="side"]
+          .sproutly-card > .sproutly-card-image + * {
+          margin-top: 0;
+        }
+        @media (max-width: 639px) {
+          section[data-edit-target][data-card-layout="side"] .sproutly-card-grid {
+            grid-template-columns: minmax(0, 1fr);
+          }
+        }
+
         /* 區段進場動畫：editor 各 section panel「進場動畫」三按鈕（無 / 淡入 / 上滑）
            靠 data-anim attribute + CSS scroll-driven animation（animation-timeline: view()）觸發。
            沒設定 = 無 attr = 不動畫；fade = opacity 0→1；slide-up = opacity + translateY 上滑。
