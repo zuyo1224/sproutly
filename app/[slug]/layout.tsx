@@ -1121,6 +1121,25 @@ export default async function PublicStoreLayout({
         section[data-edit-target][data-card-surface="outline"] .sproutly-card {
           border: 1px solid color-mix(in srgb, currentColor 16%, transparent);
         }
+
+        /* 卡片內距：editor 各 section panel「卡片內距」三按鈕（收緊 / 跟預設 / 放寬），
+           設了上面那個底或框之後才長出來。卡片裡的東西跟框之間留多少，上面那條寫死 14px
+           ——那個值配站上預設那種一列三張、品名兩三個字的卡剛好，換成商家自己的東西常常
+           不對：一列一張、照片在左的清單模式，14px 貼著照片邊緣像沒留白；一列四張的小卡
+           只有品名跟價錢兩行，同樣 14px 佔的比例大得多，照片被框擠小。
+           商家原本沒有一格動得到——「卡片間距」調的是卡片彼此之間、「區段空白」與
+           「上下外距」調的是段落外圍，卡片裡面那圈一動也不動。
+           圓角跟著等比走（8 / 14 / 22px）：內距收緊還留 14px 的圓角，框的四角會比裡面的
+           照片圓得多，變成兩個對不上的形狀。
+           沒設（或選「跟預設」）就沒 attribute，維持上面那組 14px。 */
+        section[data-edit-target][data-card-surface][data-card-padding="tight"] .sproutly-card {
+          padding: 8px;
+          border-radius: 8px;
+        }
+        section[data-edit-target][data-card-surface][data-card-padding="loose"] .sproutly-card {
+          padding: 22px;
+          border-radius: 22px;
+        }
         section[data-edit-target][data-card-surface] .sproutly-card .sproutly-card-image,
         section[data-edit-target][data-card-surface] .sproutly-card:hover .sproutly-card-image {
           box-shadow: none;

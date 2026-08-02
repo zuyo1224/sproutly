@@ -2873,6 +2873,7 @@ export function EditorWorkspace({
           const cardHover = cur.cardHover ?? null;
           const cardText = cur.cardText ?? null;
           const cardSurface = cur.cardSurface ?? null;
+          const cardPadding = cur.cardPadding ?? null;
           const cardLayout = cur.cardLayout ?? null;
           const cardMediaWidth = cur.cardMediaWidth ?? null;
           const mobileColumns = cur.mobileColumns ?? null;
@@ -4483,6 +4484,45 @@ export function EditorWorkspace({
                   )}
                 </div>
               </Field>
+              {/* 內距只在卡片真的有底或有框之後才看得出來（沒邊界的話那圈是看不見的空白），
+                  跟底線粗細同一個處理，設了外觀才長出來。 */}
+              {cardSurface && (
+                <Field label="卡片內距">
+                  <div className="grid grid-cols-3 gap-1.5">
+                    {([
+                      { v: "tight", label: "收緊" },
+                      { v: "normal", label: "跟預設" },
+                      { v: "loose", label: "放寬" },
+                    ] as const).map((opt) => (
+                      <button
+                        key={opt.v}
+                        type="button"
+                        onClick={() => patch({ cardPadding: opt.v })}
+                        aria-pressed={(cardPadding ?? "normal") === opt.v}
+                        className={`rounded-lg border py-2 text-xs transition ${
+                          (cardPadding ?? "normal") === opt.v
+                            ? "border-emerald-500 bg-emerald-50 text-emerald-900"
+                            : "border-stone-200 text-stone-600 hover:border-stone-400"
+                        }`}
+                      >
+                        {opt.label}
+                      </button>
+                    ))}
+                  </div>
+                  <div className="mt-1.5 flex items-center justify-between text-[11px] text-stone-500">
+                    <span>卡片裡的東西跟框之間留多少（一列四張的小卡收緊、一列一張的大卡放寬，圓角跟著一起走）</span>
+                    {cardPadding && (
+                      <button
+                        type="button"
+                        onClick={() => patch({ cardPadding: null })}
+                        className="text-stone-500 hover:text-stone-800 underline"
+                      >
+                        清除
+                      </button>
+                    )}
+                  </div>
+                </Field>
+              )}
               <Field label="卡片排法">
                 <div className="grid grid-cols-3 gap-1.5">
                   {([

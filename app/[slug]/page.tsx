@@ -437,6 +437,13 @@ export default async function StoreHomePage({
     // 自動變成淺色，不用再挑一次。只掛在有卡片的四段。
     const cardSurfaceVal: "panel" | "outline" | undefined =
       s?.cardSurface === "panel" || s?.cardSurface === "outline" ? s.cardSurface : undefined;
+    // 卡片內距：卡片裡的東西跟框之間留多少，那條 padding 寫在 layout.tsx 的卡片外觀規則裡
+    // （寫死 14px），段落上的 inline style 一樣到不了卡片自己那層——同一個處境同一個解法。
+    // 沒設底或框就不掛：卡片沒有邊界時內距是看不見的空白，掛了是死 attribute。
+    const cardPaddingVal: "tight" | "loose" | undefined =
+      cardSurfaceVal && (s?.cardPadding === "tight" || s?.cardPadding === "loose")
+        ? s.cardPadding
+        : undefined;
     // 卡片排法：照片從卡片上面搬到左邊，要重排的是卡片自己那幾層子元素（圖框、品名、
     // 價錢是平的一疊 block），還要順手把手機收成一列一張——兩件事段落上的 inline style
     // 都碰不到，跟卡片外觀、卡片文字同一個處境同一個解法，attribute 讓 layout.tsx 補規則。
@@ -525,6 +532,7 @@ export default async function StoreHomePage({
       cardHoverVal,
       cardTextVal,
       cardSurfaceVal,
+      cardPaddingVal,
       cardLayoutVal,
       cardMediaWidthVal,
       mobileColumnsVal,
@@ -1412,6 +1420,7 @@ export default async function StoreHomePage({
             data-card-hover={collStyle.cardHoverVal}
             data-card-text={collStyle.cardTextVal}
             data-card-surface={collStyle.cardSurfaceVal}
+            data-card-padding={collStyle.cardPaddingVal}
             data-card-layout={collStyle.cardLayoutVal}
             data-card-media-width={collStyle.cardMediaWidthVal}
             data-card-title-lines={collStyle.cardTitleLinesVal}
@@ -1579,6 +1588,7 @@ export default async function StoreHomePage({
             data-card-hover={featuredStyle.cardHoverVal}
             data-card-text={featuredStyle.cardTextVal}
             data-card-surface={featuredStyle.cardSurfaceVal}
+            data-card-padding={featuredStyle.cardPaddingVal}
             data-card-layout={featuredStyle.cardLayoutVal}
             data-card-media-width={featuredStyle.cardMediaWidthVal}
             data-card-title-lines={featuredStyle.cardTitleLinesVal}
@@ -1782,6 +1792,7 @@ export default async function StoreHomePage({
             data-card-hover={journalStyle.cardHoverVal}
             data-card-text={journalStyle.cardTextVal}
             data-card-surface={journalStyle.cardSurfaceVal}
+            data-card-padding={journalStyle.cardPaddingVal}
             data-card-layout={journalStyle.cardLayoutVal}
             data-card-media-width={journalStyle.cardMediaWidthVal}
             data-card-title-lines={journalStyle.cardTitleLinesVal}
@@ -2798,6 +2809,7 @@ export default async function StoreHomePage({
               data-card-hover={galleryStyle.cardHoverVal}
               data-card-text={galleryStyle.cardTextVal}
               data-card-surface={galleryStyle.cardSurfaceVal}
+              data-card-padding={galleryStyle.cardPaddingVal}
             >
               <div
                 className="max-w-6xl mx-auto px-6 sm:px-10"
