@@ -1397,6 +1397,26 @@ export default async function PublicStoreLayout({
           margin-top: clamp(1.75rem, 4.5vw, 2.75rem);
         }
 
+        /* 小標字距：editor 各 section panel「小標字距」三按鈕（收緊 / 跟預設 / 撐開）。
+           段落最上面那行小標一律撐開 0.4em，那是照英文全大寫短詞挑的（字母之間本來就有
+           空隙，撐開才有雜誌感）。商家打的是中文：「本月選物」四個字每個之間硬塞進 0.4 個
+           字寬，看起來不是一個詞是四個各自站著的字；小標長一點的在手機上直接被撐到換行，
+           一行變兩行跟大標黏成一團。
+           要蓋掉的是那行自己帶的 tracking-[0.4em] class——段落上的「字距」那欄設的是整段的
+           inline letter-spacing，元素自己的 class 一律蓋掉繼承來的值，所以整段調字距時小標
+           是唯一動都不動的那行。跟標題塊裡面那組同一個處境同一個解法，attribute 讓這裡補
+           一條更精確的規則壓過去（這份 <style> 沒包在 @layer，贏在 @layer utilities 的
+           Tailwind 工具類）。
+           收緊給 0.12em 不給 0：小標的樣式標誌就是那個比內文寬的字距，收到 0 會像漏排版。
+           不用 clamp：字距的單位是 em，本來就跟著字級走，手機上字小、撐開的絕對值自然跟著
+           小，不像 margin 那樣需要按螢幕寬另外算一組。 */
+        section[data-edit-target][data-eyebrow-tracking="tight"] .sproutly-section-eyebrow {
+          letter-spacing: 0.12em;
+        }
+        section[data-edit-target][data-eyebrow-tracking="wide"] .sproutly-section-eyebrow {
+          letter-spacing: 0.6em;
+        }
+
         /* 區段進場動畫：editor 各 section panel「進場動畫」三按鈕（無 / 淡入 / 上滑）
            靠 data-anim attribute + CSS scroll-driven animation（animation-timeline: view()）觸發。
            沒設定 = 無 attr = 不動畫；fade = opacity 0→1；slide-up = opacity + translateY 上滑。

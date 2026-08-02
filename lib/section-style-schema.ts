@@ -66,6 +66,19 @@ export const SECTION_STYLE_ENUMS = {
   // 「標題大小」換的是字級（字大了間距不會跟著長）、「這段的上下空白」調的是段落外圍。
   // 沒設就沒 attribute、整條規則不存在，各段維持自己原本那兩個值。
   headingInnerGap: ["tight", "normal", "loose"],
+  // 小標字距（tight 收緊 / normal 照原本的 0.4em / wide 再撐開），只套段落最上面那行小標
+  // （eyebrow），不動大標與內文。那行字一律撐開 0.4em，是照英文短詞（NEW ARRIVALS、
+  // OUR STORY）挑的——英文全大寫撐開字距是雜誌上的標準做法，字母之間本來就有空隙。
+  // 但商家打的是中文：「本月選物」四個字每個之間硬塞進 0.4 個字寬，看起來不是一個詞，
+  // 是四個各自站著的單字；小標寫得長一點（「來自南投的手作盆器」）在手機上直接被撐到
+  // 換行，一行小標變兩行，跟底下的大標黏成一團分不出層級。反過來只有兩三個字的英文
+  // 小標，撐得更開一點才有那個雜誌感，現在也停在同一個值。
+  // 商家原本沒有一格動得到——「字距」那欄設的是整段（大標、內文一起變，小標反而因為
+  // 自己帶著 0.4em 動都不動）、「標題塊裡面」調的是小標跟大標之間的上下距離、「標題大小」
+  // 換的是大標的字級。
+  // 收緊給的是 0.12em 不是 0：小標的樣式標誌就是那個比內文寬的字距，收到 0 會變成一行
+  // 普通的小字，看起來像漏排版而不是刻意的。
+  eyebrowTracking: ["tight", "normal", "wide"],
   // 分隔線（上 / 下 / 上下都有 / 沒有）
   divider: ["none", "top", "bottom", "both"],
   // 該 section 標題字級（small 0.85x / default 1x / large 1.25x）
@@ -270,6 +283,7 @@ export const SECTION_STYLE_NEUTRAL_VALUES = {
   contentAlign: "top",
   headingGap: "normal",
   headingInnerGap: "normal",
+  eyebrowTracking: "normal",
   hideOn: "none",
   divider: "none",
   mediaRadius: "none",

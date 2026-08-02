@@ -2861,6 +2861,7 @@ export function EditorWorkspace({
           const contentAlign = cur.contentAlign ?? null;
           const headingGap = cur.headingGap ?? null;
           const headingInnerGap = cur.headingInnerGap ?? null;
+          const eyebrowTracking = cur.eyebrowTracking ?? null;
           const hideOn = cur.hideOn ?? null;
           const outline = cur.outline ?? null;
           const shadow = cur.shadow ?? null;
@@ -3702,6 +3703,41 @@ export function EditorWorkspace({
                     <button
                       type="button"
                       onClick={() => patch({ headingInnerGap: null })}
+                      className="text-stone-500 hover:text-stone-800 underline"
+                    >
+                      清除
+                    </button>
+                  )}
+                </div>
+              </Field>
+              <Field label="小標字距">
+                <div className="grid grid-cols-3 gap-1.5">
+                  {([
+                    { v: "tight", label: "收緊" },
+                    { v: "normal", label: "跟預設" },
+                    { v: "wide", label: "撐開" },
+                  ] as const).map((opt) => (
+                    <button
+                      key={opt.v}
+                      type="button"
+                      onClick={() => patch({ eyebrowTracking: opt.v })}
+                      aria-pressed={(eyebrowTracking ?? "normal") === opt.v}
+                      className={`rounded-lg border py-2 text-xs transition ${
+                        (eyebrowTracking ?? "normal") === opt.v
+                          ? "border-emerald-500 bg-emerald-50 text-emerald-900"
+                          : "border-stone-200 text-stone-600 hover:border-stone-400"
+                      }`}
+                    >
+                      {opt.label}
+                    </button>
+                  ))}
+                </div>
+                <div className="mt-1.5 flex items-center justify-between text-[11px] text-stone-500">
+                  <span>這段最上面那行小標（大標上面那行小字）每個字之間空多少。中文小標、或字多一點被撐到換行時選「收緊」；英文短詞想要雜誌那種一字一字排開的感覺選「撐開」（整段的「字距」動不到這行，它自己帶著一個值）</span>
+                  {eyebrowTracking && (
+                    <button
+                      type="button"
+                      onClick={() => patch({ eyebrowTracking: null })}
                       className="text-stone-500 hover:text-stone-800 underline"
                     >
                       清除
