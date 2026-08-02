@@ -1325,6 +1325,26 @@ export default async function PublicStoreLayout({
           line-clamp: unset;
         }
 
+        /* 標題與內容的距離：editor 各 section panel「標題與內容」三按鈕（收緊 / 跟預設 / 放寬）。
+           段落最上面那塊（小標 + 大標 + 引言）跟底下卡片、照片、問答之間空多少，是每一段
+           寫死的一個值，而且各段差很多——選物 128px、精選與慢讀 112px、常見問題 64px、
+           合作 48px。那組值照站上預設內容挑的，換成商家自己的東西常常不對：標題只有兩個字
+           的段落中間空一大片，看起來像兩段沒關係的東西；標題底下還有兩三行引言時距離太近，
+           引言又跟卡片黏在一起。商家原本沒有一格動得到——「區段空白」「上下外距」調的是
+           段落外圍的上下，段落裡面一動也不動。
+           要蓋掉的是那塊自己帶的 mb-* class，段落上的 inline style 傳不下去——跟卡片那幾組
+           同一個處境同一個解法，attribute 讓這裡補一條更精確的規則壓過去。
+           兩檔都用 clamp 而不是寫死一個值：原本那些 mb-* 全是手機一個值、桌機一個值的，
+           寫死會讓手機上收緊過頭或放寬到要滑半天。
+           標題被拖成自由定位的段落不掛這個 class（那塊是絕對定位的，本來就沒有外距），
+           規則自然不會命中。 */
+        section[data-edit-target][data-heading-gap="tight"] .sproutly-section-head {
+          margin-bottom: clamp(1.75rem, 4vw, 2.5rem);
+        }
+        section[data-edit-target][data-heading-gap="loose"] .sproutly-section-head {
+          margin-bottom: clamp(4.5rem, 10vw, 9rem);
+        }
+
         /* 區段進場動畫：editor 各 section panel「進場動畫」三按鈕（無 / 淡入 / 上滑）
            靠 data-anim attribute + CSS scroll-driven animation（animation-timeline: view()）觸發。
            沒設定 = 無 attr = 不動畫；fade = opacity 0→1；slide-up = opacity + translateY 上滑。

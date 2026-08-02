@@ -384,6 +384,13 @@ export default async function StoreHomePage({
     // 補規則——要蓋掉的是圖自己帶的 object-cover class，段落上的 inline style 傳不下去。
     const mediaFitVal: "contain" | undefined =
       s?.mediaFit === "contain" ? "contain" : undefined;
+    // 標題與內容的距離：要動的是段落最上面那塊（小標 + 大標 + 引言）自己帶的 mb-* class，
+    // 段落上的 inline style 到不了它——跟卡片間距同一個處境同一個解法，attribute 讓
+    // layout.tsx 補規則落在 .sproutly-section-head 上（各段那塊都掛了這個 class）。
+    // 掛在最上面真的有一塊標題、底下真的有內容的那幾段；標題被拖成自由定位時那塊是絕對
+    // 定位的，本來就沒有外距可調，那個分支不掛 class，規則自然不會命中。
+    const headingGapVal: "tight" | "loose" | undefined =
+      s?.headingGap === "tight" || s?.headingGap === "loose" ? s.headingGap : undefined;
     // 卡片間距：要動的是這一段裡那個卡片格線容器的 gap，不是段落自己——跟照片圓角同一個
     // 處境同一個解法，attribute 讓 layout.tsx 補規則。規則只落在 .sproutly-card-grid 上
     // （各段的卡片格線容器都掛了這個 class），不能寫成落在所有 .grid 上——hero 的左右
@@ -490,6 +497,7 @@ export default async function StoreHomePage({
       bodyToneVal,
       headingToneVal,
       contentAlignVal,
+      headingGapVal,
       hideOnVal,
       mediaRadiusVal,
       mediaAspectVal,
@@ -1367,6 +1375,7 @@ export default async function StoreHomePage({
             data-heading-scale={collStyle.headingScaleVal}
             data-heading-weight={collStyle.headingWeightVal}
             data-heading-rule={collStyle.headingRuleVal}
+            data-heading-gap={collStyle.headingGapVal}
             data-line-height={collStyle.lineHeightVal}
             data-section-filter={collStyle.filterVal}
             data-body-align={collStyle.bodyAlignVal}
@@ -1436,7 +1445,7 @@ export default async function StoreHomePage({
                   data-edit-text
                   data-edit-field="collectionsIntro"
                   data-edit-drag={FREE_POS_KEYS.collectionIntro}
-                  className={`text-xl sm:text-2xl max-w-xl ${collStyle.align === "center" ? "mx-auto" : collStyle.align === "right" ? "ml-auto" : ""} mb-32 leading-[1.9]`}
+                  className={`sproutly-section-head text-xl sm:text-2xl max-w-xl ${collStyle.align === "center" ? "mx-auto" : collStyle.align === "right" ? "ml-auto" : ""} mb-32 leading-[1.9]`}
                   style={{
                     color: "var(--store-heading-color, var(--store-text))",
                     fontFamily: "var(--store-font)",
@@ -1531,6 +1540,7 @@ export default async function StoreHomePage({
             data-heading-scale={featuredStyle.headingScaleVal}
             data-heading-weight={featuredStyle.headingWeightVal}
             data-heading-rule={featuredStyle.headingRuleVal}
+            data-heading-gap={featuredStyle.headingGapVal}
             data-line-height={featuredStyle.lineHeightVal}
             data-section-filter={featuredStyle.filterVal}
             data-body-align={featuredStyle.bodyAlignVal}
@@ -1591,7 +1601,7 @@ export default async function StoreHomePage({
                     data-edit-drag={FREE_POS_KEYS.featuredTitle}
                     data-edit-text
                     data-edit-field="featuredTitle"
-                    className="text-xl sm:text-2xl mb-20 sm:mb-28"
+                    className="sproutly-section-head text-xl sm:text-2xl mb-20 sm:mb-28"
                     style={{
                       color: "var(--store-heading-color, var(--store-text))",
                       fontFamily: "var(--store-font)",
@@ -1731,6 +1741,7 @@ export default async function StoreHomePage({
             data-heading-scale={journalStyle.headingScaleVal}
             data-heading-weight={journalStyle.headingWeightVal}
             data-heading-rule={journalStyle.headingRuleVal}
+            data-heading-gap={journalStyle.headingGapVal}
             data-line-height={journalStyle.lineHeightVal}
             data-section-filter={journalStyle.filterVal}
             data-body-align={journalStyle.bodyAlignVal}
@@ -1797,7 +1808,7 @@ export default async function StoreHomePage({
                 </p>
               </div>
             ) : (
-              <div className="mb-20 sm:mb-28" data-edit-drag={FREE_POS_KEYS.journalIntro}>
+              <div className="sproutly-section-head mb-20 sm:mb-28" data-edit-drag={FREE_POS_KEYS.journalIntro}>
                 <p
                   data-edit-text
                   data-edit-field="journalEyebrow"
@@ -2080,6 +2091,7 @@ export default async function StoreHomePage({
               data-heading-scale={testimonialsStyle.headingScaleVal}
               data-heading-weight={testimonialsStyle.headingWeightVal}
               data-heading-rule={testimonialsStyle.headingRuleVal}
+              data-heading-gap={testimonialsStyle.headingGapVal}
               data-line-height={testimonialsStyle.lineHeightVal}
               data-section-filter={testimonialsStyle.filterVal}
               data-body-align={testimonialsStyle.bodyAlignVal}
@@ -2141,7 +2153,7 @@ export default async function StoreHomePage({
                   </div>
                 ) : (
                   <div
-                    className="mb-20 sm:mb-28"
+                    className="sproutly-section-head mb-20 sm:mb-28"
                     data-edit-drag={FREE_POS_KEYS.testimonialsTitle}
                   >
                     <p
@@ -2279,6 +2291,7 @@ export default async function StoreHomePage({
               data-heading-scale={faqStyle.headingScaleVal}
               data-heading-weight={faqStyle.headingWeightVal}
               data-heading-rule={faqStyle.headingRuleVal}
+              data-heading-gap={faqStyle.headingGapVal}
               data-line-height={faqStyle.lineHeightVal}
               data-section-filter={faqStyle.filterVal}
               data-body-align={faqStyle.bodyAlignVal}
@@ -2333,7 +2346,7 @@ export default async function StoreHomePage({
                     />
                   </div>
                 ) : (
-                <div className="mb-16" data-edit-drag={FREE_POS_KEYS.faqIntro}>
+                <div className="sproutly-section-head mb-16" data-edit-drag={FREE_POS_KEYS.faqIntro}>
                   <p
                     data-edit-text
                     data-edit-field="faqEyebrow"
@@ -2451,6 +2464,7 @@ export default async function StoreHomePage({
               data-heading-scale={statsStyle.headingScaleVal}
               data-heading-weight={statsStyle.headingWeightVal}
               data-heading-rule={statsStyle.headingRuleVal}
+              data-heading-gap={statsStyle.headingGapVal}
               data-line-height={statsStyle.lineHeightVal}
               data-section-filter={statsStyle.filterVal}
               data-body-align={statsStyle.bodyAlignVal}
@@ -2516,7 +2530,7 @@ export default async function StoreHomePage({
                   </div>
                 )}
                 {statsHasHeading && !statsFree && (
-                  <div className="mb-16 sm:mb-20" data-edit-drag={FREE_POS_KEYS.statsIntro}>
+                  <div className="sproutly-section-head mb-16 sm:mb-20" data-edit-drag={FREE_POS_KEYS.statsIntro}>
                     {statsEyebrow && (
                       <p
                         data-edit-text
@@ -2626,6 +2640,7 @@ export default async function StoreHomePage({
               data-heading-scale={partnersStyle.headingScaleVal}
               data-heading-weight={partnersStyle.headingWeightVal}
               data-heading-rule={partnersStyle.headingRuleVal}
+              data-heading-gap={partnersStyle.headingGapVal}
               data-line-height={partnersStyle.lineHeightVal}
               data-section-filter={partnersStyle.filterVal}
               data-body-align={partnersStyle.bodyAlignVal}
@@ -2661,7 +2676,7 @@ export default async function StoreHomePage({
                   data-edit-drag={FREE_POS_KEYS.partnersEyebrow}
                   data-edit-text
                   data-edit-field="partnersEyebrow"
-                  className="text-[10px] tracking-[0.4em] uppercase mb-12"
+                  className="sproutly-section-head text-[10px] tracking-[0.4em] uppercase mb-12"
                   style={{ color: "var(--store-text-muted)" }}
                 >
                   {partnersEyebrow}
@@ -2732,6 +2747,7 @@ export default async function StoreHomePage({
               data-heading-scale={galleryStyle.headingScaleVal}
               data-heading-weight={galleryStyle.headingWeightVal}
               data-heading-rule={galleryStyle.headingRuleVal}
+              data-heading-gap={galleryStyle.headingGapVal}
               data-line-height={galleryStyle.lineHeightVal}
               data-section-filter={galleryStyle.filterVal}
               data-body-align={galleryStyle.bodyAlignVal}
@@ -2798,7 +2814,7 @@ export default async function StoreHomePage({
                     />
                   </div>
                 ) : (
-                <div className="mb-16 sm:mb-20" data-edit-drag={FREE_POS_KEYS.galleryIntro}>
+                <div className="sproutly-section-head mb-16 sm:mb-20" data-edit-drag={FREE_POS_KEYS.galleryIntro}>
                   <p
                     data-edit-text
                     data-edit-field="galleryEyebrow"

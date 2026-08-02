@@ -2859,6 +2859,7 @@ export function EditorWorkspace({
           const headingScale = cur.headingScale ?? null;
           const minHeight = cur.minHeight ?? null;
           const contentAlign = cur.contentAlign ?? null;
+          const headingGap = cur.headingGap ?? null;
           const hideOn = cur.hideOn ?? null;
           const outline = cur.outline ?? null;
           const shadow = cur.shadow ?? null;
@@ -3628,6 +3629,41 @@ export function EditorWorkspace({
                     <button
                       type="button"
                       onClick={() => patch({ paddingScale: null })}
+                      className="text-stone-500 hover:text-stone-800 underline"
+                    >
+                      清除
+                    </button>
+                  )}
+                </div>
+              </Field>
+              <Field label="標題與內容">
+                <div className="grid grid-cols-3 gap-1.5">
+                  {([
+                    { v: "tight", label: "收緊" },
+                    { v: "normal", label: "跟預設" },
+                    { v: "loose", label: "放寬" },
+                  ] as const).map((opt) => (
+                    <button
+                      key={opt.v}
+                      type="button"
+                      onClick={() => patch({ headingGap: opt.v })}
+                      aria-pressed={(headingGap ?? "normal") === opt.v}
+                      className={`rounded-lg border py-2 text-xs transition ${
+                        (headingGap ?? "normal") === opt.v
+                          ? "border-emerald-500 bg-emerald-50 text-emerald-900"
+                          : "border-stone-200 text-stone-600 hover:border-stone-400"
+                      }`}
+                    >
+                      {opt.label}
+                    </button>
+                  ))}
+                </div>
+                <div className="mt-1.5 flex items-center justify-between text-[11px] text-stone-500">
+                  <span>這段最上面那塊標題跟底下內容之間空多少。標題只有幾個字時中間空太多會像兩段沒關係的東西，選「收緊」；標題底下還有引言、想讓底下的卡片獨立一點時選「放寬」（上面那格調的是整段外圍的上下）</span>
+                  {headingGap && (
+                    <button
+                      type="button"
+                      onClick={() => patch({ headingGap: null })}
                       className="text-stone-500 hover:text-stone-800 underline"
                     >
                       清除

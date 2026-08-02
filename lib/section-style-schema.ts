@@ -46,6 +46,16 @@ export const SECTION_STYLE_ENUMS = {
   headingTone: ["default", "accent", "muted"],
   // 該 section 獨立上下空白（覆寫全網站值）
   paddingScale: ["compact", "default", "spacious"],
+  // 標題與內容的距離（tight 收緊 / normal 照這一段原本的 / loose 放寬），指的是段落最上面
+  // 那塊（小標 + 大標 + 引言）跟底下卡片、照片、問答之間空多少。每一段的那個距離是寫死的
+  // 一個值，而且各段差很多：選物 128px、精選與慢讀 112px、常見問題 64px、合作 48px——那組
+  // 值是照站上預設內容挑的，換成商家自己的東西常常不對。標題只有兩個字、底下四張卡的段落，
+  // 中間空一大片會看起來像兩段沒關係的東西；反過來標題底下還有兩三行引言的段落，距離太近時
+  // 引言跟卡片黏在一起，客人分不出哪句話在說明什麼。
+  // 商家原本沒有一格動得到：「區段空白」跟「上下外距」調的是段落外圍的上下，段落裡面一動
+  // 也不動；「卡片間距」調的是卡片彼此之間；「一行字數」「內文對齊」動的是文字自己。
+  // 沒設就沒 attribute、整條規則不存在，各段維持自己原本那個值。
+  headingGap: ["tight", "normal", "loose"],
   // 分隔線（上 / 下 / 上下都有 / 沒有）
   divider: ["none", "top", "bottom", "both"],
   // 該 section 標題字級（small 0.85x / default 1x / large 1.25x）
@@ -227,6 +237,7 @@ export const SECTION_STYLE_NEUTRAL_VALUES = {
   bodyTone: "default",
   headingTone: "default",
   contentAlign: "top",
+  headingGap: "normal",
   hideOn: "none",
   divider: "none",
   mediaRadius: "none",
