@@ -247,6 +247,21 @@ export const SECTION_STYLE_ENUMS = {
   // 把三種拉成同一級（跟內文字級、小標字級那兩欄同一個理由）；zoom 連著行高與底下那截
   // margin 一起縮放，字放大了跟價錢的距離也跟著長，不會出現字變大、間距停在原位的擠感。
   cardTitleScale: ["small", "default", "large"],
+  // 卡片描述字級（small 縮一成 / default 照原本的 / large 放大兩成），只套卡片裡品名底下
+  // 那段描述（選物的副標、慢讀的摘要）。上一格把品名那行的大小補起來之後，描述這行還是
+  // 寫死的 14px——那個值是照站上預設那種一句話的副標挑的，換成商家自己的東西就不對：
+  // 慢讀那種一整段摘要的卡片，14px 在寬卡上讀起來像圖說，商家想讓那段真的被讀完就得
+  // 整段換字體；反過來一列四張的小卡，品名字級調大之後 14px 的描述跟品名擠在一起分不出
+  // 主次，想把描述收小讓品名站出來也沒得調。
+  // 商家原本沒有一格動得到——「卡片標題字級」動的是品名那行、「內文字級」那欄的規則落在
+  // 段落自己的容器上（管的是段落區塊裡的內文，到不了卡片裡）、「全網站字體大小」動的是
+  // 整站那一層，三個都不會只動卡片裡的描述。
+  // 用 zoom 不用 font-size（跟上一格同一個理由）：選物那行還同時掛著 sproutly-card-meta
+  // （字級與顏色另有一層在管），寫死 font-size 等於跟那層搶；zoom 連著上面那截 mt-1 /
+  // mt-3 一起縮放，字放大了跟品名的距離也跟著長，不會出現字變大、間距停在原位的擠感，
+  // 卡片描述行數那格的截斷也照樣成立（line-clamp 數的是行，不是絕對高度）。
+  // 放大只到兩成不跟品名那格一樣到兩成半：描述比品名大就反過來了，留一階差距。
+  cardDescScale: ["small", "default", "large"],
   // 外框（subtle 1px / strong 2px，用 outline 避免跟 divider 的 borderTop/Bottom 打架）
   outline: ["none", "subtle", "strong"],
   // 陰影（soft 淺 / deep 深），讓有 bgColor 的 section 像卡片浮起
@@ -328,6 +343,7 @@ export const SECTION_STYLE_NEUTRAL_VALUES = {
   cardTitleLines: "auto",
   cardDescLines: "auto",
   cardTitleScale: "default",
+  cardDescScale: "default",
   outline: "none",
   shadow: "none",
   borderRadius: "none",

@@ -1376,6 +1376,24 @@ export default async function PublicStoreLayout({
           zoom: 1.25;
         }
 
+        /* 卡片描述字級：editor 各 section panel「卡片描述字級」三按鈕（小 / 跟預設 / 大）。
+           上一組管的是品名那行多大，這組管的是品名底下那段描述——選物的副標、慢讀的摘要，
+           兩段都寫死 14px，照站上預設那種一句話的副標挑的。慢讀那種一整段摘要的卡片，14px
+           在寬卡上讀起來像圖說；反過來一列四張的小卡把品名調大之後，14px 的描述跟品名擠在
+           一起分不出主次，想把描述收小讓品名站出來也沒得調。
+           規則落在 .sproutly-card-desc，跟卡片描述行數那組同一個範圍：精選那段同一個位置放
+           的是價錢，不掛這個 class，所以不受影響。
+           用 zoom 不用 font-size：選物那行還同時掛著 sproutly-card-meta（字級與顏色另有一層
+           在管），寫死 font-size 等於跟那層搶；zoom 連著上面那截 mt-1 / mt-3 一起縮放，字
+           放大了跟品名的距離也跟著長，行數截斷也照樣成立（line-clamp 數的是行，不是高度）。
+           放大只到兩成、比品名那組的兩成半少一階：描述比品名大就主次顛倒了。 */
+        section[data-edit-target][data-card-desc-scale="small"] .sproutly-card-desc {
+          zoom: 0.9;
+        }
+        section[data-edit-target][data-card-desc-scale="large"] .sproutly-card-desc {
+          zoom: 1.2;
+        }
+
         /* 標題與內容的距離：editor 各 section panel「標題與內容」三按鈕（收緊 / 跟預設 / 放寬）。
            段落最上面那塊（小標 + 大標 + 引言）跟底下卡片、照片、問答之間空多少，是每一段
            寫死的一個值，而且各段差很多——選物 128px、精選與慢讀 112px、常見問題 64px、

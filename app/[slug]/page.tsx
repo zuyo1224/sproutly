@@ -512,6 +512,14 @@ export default async function StoreHomePage({
       s?.cardTitleScale === "small" || s?.cardTitleScale === "large"
         ? s.cardTitleScale
         : undefined;
+    // 卡片描述字級：上一格動的是品名那行，這格動的是它底下那段描述（寫死 14px）。同樣是
+    // 段落上的 inline style 傳不下去，attribute 讓 layout.tsx 補規則。
+    // 掛的範圍跟卡片描述行數那格一樣是兩段（選物副標 / 慢讀摘要）：精選那段同一個位置放
+    // 的是價錢，不該被這格縮放。
+    const cardDescScaleVal: "small" | "large" | undefined =
+      s?.cardDescScale === "small" || s?.cardDescScale === "large"
+        ? s.cardDescScale
+        : undefined;
     return {
       bg: s?.bgColor ?? undefined,
       text: s?.textColor ?? undefined,
@@ -566,6 +574,7 @@ export default async function StoreHomePage({
       cardTitleLinesVal,
       cardDescLinesVal,
       cardTitleScaleVal,
+      cardDescScaleVal,
     };
     // 這裡本來手抄一份 `as { ... }`（整份欄位再列一次）。它推不出比 TS 自己推更精確的型別，
     // 卻是第三份要跟著欄位表同步改的清單——加控制忘了補就編不過（好），改錯就悄悄放寬（不好）。
@@ -1456,6 +1465,7 @@ export default async function StoreHomePage({
             data-card-title-lines={collStyle.cardTitleLinesVal}
             data-card-desc-lines={collStyle.cardDescLinesVal}
             data-card-title-scale={collStyle.cardTitleScaleVal}
+            data-card-desc-scale={collStyle.cardDescScaleVal}
             style={mergeSectionStyle(collStyle)}
           >
             <div className="max-w-5xl mx-auto px-8 sm:px-12" style={{ textAlign: collStyle.align }}>
@@ -1832,6 +1842,7 @@ export default async function StoreHomePage({
             data-card-title-lines={journalStyle.cardTitleLinesVal}
             data-card-desc-lines={journalStyle.cardDescLinesVal}
             data-card-title-scale={journalStyle.cardTitleScaleVal}
+            data-card-desc-scale={journalStyle.cardDescScaleVal}
           >
           <div className="max-w-5xl mx-auto px-8 sm:px-12" style={{ textAlign: journalStyle.align }}>
             {journalFree ? (

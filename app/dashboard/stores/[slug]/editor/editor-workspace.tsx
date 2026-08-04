@@ -2882,6 +2882,7 @@ export function EditorWorkspace({
           const cardTitleLines = cur.cardTitleLines ?? null;
           const cardDescLines = cur.cardDescLines ?? null;
           const cardTitleScale = cur.cardTitleScale ?? null;
+          const cardDescScale = cur.cardDescScale ?? null;
           const entrance = cur.entrance ?? null;
           const fontFamily = cur.fontFamily ?? null;
           const letterSpacing = cur.letterSpacing ?? null;
@@ -4806,6 +4807,41 @@ export function EditorWorkspace({
                     <button
                       type="button"
                       onClick={() => patch({ cardTitleScale: null })}
+                      className="text-stone-500 hover:text-stone-800 underline"
+                    >
+                      清除
+                    </button>
+                  )}
+                </div>
+              </Field>
+              <Field label="卡片描述字級">
+                <div className="grid grid-cols-3 gap-1.5">
+                  {([
+                    { v: "small", label: "小" },
+                    { v: "default", label: "跟預設" },
+                    { v: "large", label: "大" },
+                  ] as const).map((opt) => (
+                    <button
+                      key={opt.v}
+                      type="button"
+                      onClick={() => patch({ cardDescScale: opt.v })}
+                      aria-pressed={(cardDescScale ?? "default") === opt.v}
+                      className={`rounded-lg border py-2 text-xs transition ${
+                        (cardDescScale ?? "default") === opt.v
+                          ? "border-emerald-500 bg-emerald-50 text-emerald-900"
+                          : "border-stone-200 text-stone-600 hover:border-stone-400"
+                      }`}
+                    >
+                      {opt.label}
+                    </button>
+                  ))}
+                </div>
+                <div className="mt-1.5 flex items-center justify-between text-[11px] text-stone-500">
+                  <span>品名底下那段描述本身多大（選物的副標、慢讀的摘要）。想讓摘要真的被讀完選大，品名調大之後想讓描述退一步選小；精選商品那段底下是價錢，不受這格影響</span>
+                  {cardDescScale && (
+                    <button
+                      type="button"
+                      onClick={() => patch({ cardDescScale: null })}
                       className="text-stone-500 hover:text-stone-800 underline"
                     >
                       清除
