@@ -528,6 +528,13 @@ export default async function StoreHomePage({
       s?.cardMicroScale === "small" || s?.cardMicroScale === "large"
         ? s.cardMicroScale
         : undefined;
+    // 卡片價錢字級：上面三格動的是品名、描述、全大寫小字，這格動的是精選商品卡片上那行
+    // 價錢（寫死 14px，比品名還小）。同樣是段落上的 inline style 傳不下去，attribute 讓
+    // layout.tsx 補規則。只掛精選那一段：卡片上有價錢的只有它。
+    const cardPriceScaleVal: "small" | "large" | undefined =
+      s?.cardPriceScale === "small" || s?.cardPriceScale === "large"
+        ? s.cardPriceScale
+        : undefined;
     return {
       bg: s?.bgColor ?? undefined,
       text: s?.textColor ?? undefined,
@@ -584,6 +591,7 @@ export default async function StoreHomePage({
       cardTitleScaleVal,
       cardDescScaleVal,
       cardMicroScaleVal,
+      cardPriceScaleVal,
     };
     // 這裡本來手抄一份 `as { ... }`（整份欄位再列一次）。它推不出比 TS 自己推更精確的型別，
     // 卻是第三份要跟著欄位表同步改的清單——加控制忘了補就編不過（好），改錯就悄悄放寬（不好）。
@@ -1645,6 +1653,7 @@ export default async function StoreHomePage({
             data-card-media-width={featuredStyle.cardMediaWidthVal}
             data-card-title-lines={featuredStyle.cardTitleLinesVal}
             data-card-title-scale={featuredStyle.cardTitleScaleVal}
+            data-card-price-scale={featuredStyle.cardPriceScaleVal}
           >
             <div className="max-w-5xl mx-auto px-8 sm:px-12" style={{ textAlign: featuredStyle.align }}>
               {featuredFree ? (
@@ -1766,7 +1775,7 @@ export default async function StoreHomePage({
                       {p.name}
                     </h3>
                     <p
-                      className="sproutly-card-meta mt-1 text-sm"
+                      className="sproutly-card-meta sproutly-card-price mt-1 text-sm"
                       style={{ color: "var(--store-text-muted)" }}
                     >
                       {formatPrice(p.price_cents, p.currency)}

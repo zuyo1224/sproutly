@@ -1417,6 +1417,26 @@ export default async function PublicStoreLayout({
           zoom: 1.4;
         }
 
+        /* 卡片價錢字級：editor 精選商品 panel「卡片價錢字級」三按鈕（小 / 跟預設 / 大）。
+           上面三組把卡片裡的品名、描述、全大寫小字都補起來之後，價錢是這一組最後一行沒得
+           動的——它寫死 14px，比品名的 16px 還小一級。那個安排是照「先看商品再看價錢」的
+           順序挑的，可是不是每家店都這樣：一株盆栽賣多少，常常正是客人在首頁掃過去唯一在
+           找的東西，14px 的淡灰字壓在照片底下幾乎讀不到；反過來把品名調大之後，價錢還停在
+           14px，同一張卡上兩行字的重量差太多，價錢看起來像附註。
+           規則落在 .sproutly-card-price，只有精選那段的卡片有這一行（選物那段同一個位置放
+           的是副標、慢讀放的是摘要，都歸卡片描述字級那組管）。
+           用 zoom 不用 font-size：這行還同時掛著 sproutly-card-meta（字級與顏色另有一層在
+           管），寫死 font-size 等於跟那層搶；zoom 連著上面那截 mt-1 一起縮放，字放大了跟
+           品名的距離也跟著長。
+           放大放到三成（14px → 18px）比品名那組的兩成半多一階：這格存在的意義就是讓商家
+           能把價錢放到比品名重，卡在跟品名同一級等於沒得選。 */
+        section[data-edit-target][data-card-price-scale="small"] .sproutly-card-price {
+          zoom: 0.9;
+        }
+        section[data-edit-target][data-card-price-scale="large"] .sproutly-card-price {
+          zoom: 1.3;
+        }
+
         /* 標題與內容的距離：editor 各 section panel「標題與內容」三按鈕（收緊 / 跟預設 / 放寬）。
            段落最上面那塊（小標 + 大標 + 引言）跟底下卡片、照片、問答之間空多少，是每一段
            寫死的一個值，而且各段差很多——選物 128px、精選與慢讀 112px、常見問題 64px、

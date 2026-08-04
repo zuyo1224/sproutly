@@ -2884,6 +2884,7 @@ export function EditorWorkspace({
           const cardTitleScale = cur.cardTitleScale ?? null;
           const cardDescScale = cur.cardDescScale ?? null;
           const cardMicroScale = cur.cardMicroScale ?? null;
+          const cardPriceScale = cur.cardPriceScale ?? null;
           const entrance = cur.entrance ?? null;
           const fontFamily = cur.fontFamily ?? null;
           const letterSpacing = cur.letterSpacing ?? null;
@@ -4878,6 +4879,41 @@ export function EditorWorkspace({
                     <button
                       type="button"
                       onClick={() => patch({ cardMicroScale: null })}
+                      className="text-stone-500 hover:text-stone-800 underline"
+                    >
+                      清除
+                    </button>
+                  )}
+                </div>
+              </Field>
+              <Field label="卡片價錢字級">
+                <div className="grid grid-cols-3 gap-1.5">
+                  {([
+                    { v: "small", label: "小" },
+                    { v: "default", label: "跟預設" },
+                    { v: "large", label: "大" },
+                  ] as const).map((opt) => (
+                    <button
+                      key={opt.v}
+                      type="button"
+                      onClick={() => patch({ cardPriceScale: opt.v })}
+                      aria-pressed={(cardPriceScale ?? "default") === opt.v}
+                      className={`rounded-lg border py-2 text-xs transition ${
+                        (cardPriceScale ?? "default") === opt.v
+                          ? "border-emerald-500 bg-emerald-50 text-emerald-900"
+                          : "border-stone-200 text-stone-600 hover:border-stone-400"
+                      }`}
+                    >
+                      {opt.label}
+                    </button>
+                  ))}
+                </div>
+                <div className="mt-1.5 flex items-center justify-between text-[11px] text-stone-500">
+                  <span>精選商品卡片上那行價錢多大。價錢只有 14px、比品名還小一級，客人在首頁掃過去常常正是在找它；品名調大之後想讓價錢跟上也是這格。只有精選商品那段的卡片有價錢，其他段不受影響</span>
+                  {cardPriceScale && (
+                    <button
+                      type="button"
+                      onClick={() => patch({ cardPriceScale: null })}
                       className="text-stone-500 hover:text-stone-800 underline"
                     >
                       清除

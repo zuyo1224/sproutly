@@ -277,6 +277,21 @@ export const SECTION_STYLE_ENUMS = {
   // 放大放到四成（10px → 14px）比上面兩格都大：起點只有 10px，兩成才 12px，中文在 12px
   // 還是糊的，這格要能真的把那行救成讀得出來的字才有意義。
   cardMicroScale: ["small", "default", "large"],
+  // 卡片價錢字級（small 縮一成 / default 照原本的 / large 放大三成），只套精選商品那段卡片
+  // 上品名底下那行價錢。上面三格把品名、描述、小字都補起來之後，價錢是這一組最後一行沒得
+  // 動的——它寫死 14px，比品名的 16px 還小，跟選物段的副標同一級。那個安排是照「先看商品
+  // 再看價錢」的順序挑的，可是不是每家店都這樣：一株盆栽賣多少常常正是客人在首頁掃過去
+  // 唯一在找的東西，14px 的灰字在照片底下幾乎讀不到；反過來把品名字級調大之後，價錢還停
+  // 在 14px，一張卡上兩行字重量差太多，價錢看起來像附註。
+  // 商家原本沒有一格動得到——「卡片標題字級」動的是品名那行、「卡片描述字級」那組刻意跳過
+  // 精選段（同一個位置放的是價錢，不掛 sproutly-card-desc）、「卡片小字字級」動的是全大寫
+  // 那幾行、「全網站字體大小」動的是整站內文那一層。
+  // 用 zoom 不用 font-size（跟上面三格同一個理由）：價錢那行還同時掛著 sproutly-card-meta
+  // （字級與顏色另有一層在管），寫死 font-size 等於跟那層搶；zoom 連著上面那截 mt-1 一起
+  // 縮放，字放大了跟品名的距離也跟著長。
+  // 放大放到三成（14px → 18px）比品名那格的兩成半多一階：這格存在的意義就是讓商家能把價錢
+  // 放到比品名重，卡在跟品名同一級就等於沒得選。
+  cardPriceScale: ["small", "default", "large"],
   // 外框（subtle 1px / strong 2px，用 outline 避免跟 divider 的 borderTop/Bottom 打架）
   outline: ["none", "subtle", "strong"],
   // 陰影（soft 淺 / deep 深），讓有 bgColor 的 section 像卡片浮起
@@ -360,6 +375,7 @@ export const SECTION_STYLE_NEUTRAL_VALUES = {
   cardTitleScale: "default",
   cardDescScale: "default",
   cardMicroScale: "default",
+  cardPriceScale: "default",
   outline: "none",
   shadow: "none",
   borderRadius: "none",
