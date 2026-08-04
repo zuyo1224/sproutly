@@ -1394,6 +1394,29 @@ export default async function PublicStoreLayout({
           zoom: 1.2;
         }
 
+        /* 卡片小字字級：editor 各 section panel「卡片小字字級」三按鈕（小 / 跟預設 / 大）。
+           上面兩組管的是卡片裡的品名與描述，這組管的是卡片上剩下那幾行——全大寫、字距撐
+           很開的小字：選物卡片底下的「看更多」、慢讀卡片上面的分類、慢讀卡片底下的標籤，
+           三行都寫死 10px。那個值是照英文那種 VIEW ALL / JOURNAL 挑的，全大寫又筆畫少，
+           10px 還讀得出來；中文不行——「看更多」「盆栽照顧」在 10px 裡筆畫糊成一團灰，
+           客人看到的是一條裝飾線不是一行字，而那行常常正是卡片上唯一告訴客人「這裡可以
+           點」的東西。
+           商家原本沒有一格動得到：「小標字級」那組的規則落在段落自己的 eyebrow 上（大標
+           上面那行），到不了卡片裡；卡片標題 / 卡片描述那兩組各自只管品名與描述。
+           規則落在 .sproutly-card-micro，只掛在真的是這種小字的那幾行——精選那段同一個
+           位置放的是「剩 N」庫存提示，那是狀態不是導覽文字，不掛。
+           用 zoom 不用 font-size：這幾行的字距是 0.3em / 0.4em 這種跟著字級走的相對值，
+           寫死 font-size 會讓字變大、字距跟著散開成一排各自站著的字；zoom 連著字距與上面
+           那截 margin 一起縮放，比例維持原樣。
+           放大放到四成（10px → 14px）比上面兩組都大：起點只有 10px，兩成才 12px，中文在
+           12px 還是糊的，這格要能真的把那行救成讀得出來的字才有意義。 */
+        section[data-edit-target][data-card-micro-scale="small"] .sproutly-card-micro {
+          zoom: 0.9;
+        }
+        section[data-edit-target][data-card-micro-scale="large"] .sproutly-card-micro {
+          zoom: 1.4;
+        }
+
         /* 標題與內容的距離：editor 各 section panel「標題與內容」三按鈕（收緊 / 跟預設 / 放寬）。
            段落最上面那塊（小標 + 大標 + 引言）跟底下卡片、照片、問答之間空多少，是每一段
            寫死的一個值，而且各段差很多——選物 128px、精選與慢讀 112px、常見問題 64px、

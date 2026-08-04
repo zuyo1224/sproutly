@@ -2883,6 +2883,7 @@ export function EditorWorkspace({
           const cardDescLines = cur.cardDescLines ?? null;
           const cardTitleScale = cur.cardTitleScale ?? null;
           const cardDescScale = cur.cardDescScale ?? null;
+          const cardMicroScale = cur.cardMicroScale ?? null;
           const entrance = cur.entrance ?? null;
           const fontFamily = cur.fontFamily ?? null;
           const letterSpacing = cur.letterSpacing ?? null;
@@ -4842,6 +4843,41 @@ export function EditorWorkspace({
                     <button
                       type="button"
                       onClick={() => patch({ cardDescScale: null })}
+                      className="text-stone-500 hover:text-stone-800 underline"
+                    >
+                      清除
+                    </button>
+                  )}
+                </div>
+              </Field>
+              <Field label="卡片小字字級">
+                <div className="grid grid-cols-3 gap-1.5">
+                  {([
+                    { v: "small", label: "小" },
+                    { v: "default", label: "跟預設" },
+                    { v: "large", label: "大" },
+                  ] as const).map((opt) => (
+                    <button
+                      key={opt.v}
+                      type="button"
+                      onClick={() => patch({ cardMicroScale: opt.v })}
+                      aria-pressed={(cardMicroScale ?? "default") === opt.v}
+                      className={`rounded-lg border py-2 text-xs transition ${
+                        (cardMicroScale ?? "default") === opt.v
+                          ? "border-emerald-500 bg-emerald-50 text-emerald-900"
+                          : "border-stone-200 text-stone-600 hover:border-stone-400"
+                      }`}
+                    >
+                      {opt.label}
+                    </button>
+                  ))}
+                </div>
+                <div className="mt-1.5 flex items-center justify-between text-[11px] text-stone-500">
+                  <span>卡片上那幾行全大寫的小字多大（選物卡片底下的「看更多」、慢讀卡片的分類與標籤）。那行只有 10px，是照英文挑的，中文擠在裡面會糊成一條灰線看不出是字，選大能救回來；精選商品那段底下的「剩 N」不受這格影響</span>
+                  {cardMicroScale && (
+                    <button
+                      type="button"
+                      onClick={() => patch({ cardMicroScale: null })}
                       className="text-stone-500 hover:text-stone-800 underline"
                     >
                       清除

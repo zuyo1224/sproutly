@@ -262,6 +262,21 @@ export const SECTION_STYLE_ENUMS = {
   // 卡片描述行數那格的截斷也照樣成立（line-clamp 數的是行，不是絕對高度）。
   // 放大只到兩成不跟品名那格一樣到兩成半：描述比品名大就反過來了，留一階差距。
   cardDescScale: ["small", "default", "large"],
+  // 卡片小字字級（small 縮一成 / default 照原本的 / large 放大四成），只套卡片裡那幾行
+  // 全大寫、字距撐很開的小字——選物卡片底下的「看更多」、慢讀卡片上面的分類、慢讀卡片
+  // 底下的標籤。三行都寫死 10px。10px 這個值是照英文那種 VIEW ALL / JOURNAL 挑的，那
+  // 種字全大寫、筆畫少，10px 還讀得出來；換成中文就不行——「看更多」「盆栽照顧」在
+  // 10px 裡筆畫糊成一團灰，客人看到的是一條裝飾線不是一行字，而那行常常正是卡片上唯一
+  // 告訴客人「這裡可以點」的東西。
+  // 商家原本沒有一格動得到——「小標字級」動的是段落大標上面那行（規則落在段落自己的
+  // eyebrow 上，到不了卡片裡）、「卡片標題字級」動的是品名、「卡片描述字級」動的是品名
+  // 底下那段描述、「全網站字體大小」動的是整站內文那一層，四個都繞過卡片裡的小字。
+  // 用 zoom 不用 font-size（跟上面兩格同一個理由）：這幾行的字距是 0.3em / 0.4em 這種
+  // 相對值，寫死 font-size 會讓字變大、字距跟著放大到散開；zoom 連著字距與上面那截
+  // margin 一起縮放，比例維持原樣。
+  // 放大放到四成（10px → 14px）比上面兩格都大：起點只有 10px，兩成才 12px，中文在 12px
+  // 還是糊的，這格要能真的把那行救成讀得出來的字才有意義。
+  cardMicroScale: ["small", "default", "large"],
   // 外框（subtle 1px / strong 2px，用 outline 避免跟 divider 的 borderTop/Bottom 打架）
   outline: ["none", "subtle", "strong"],
   // 陰影（soft 淺 / deep 深），讓有 bgColor 的 section 像卡片浮起
@@ -344,6 +359,7 @@ export const SECTION_STYLE_NEUTRAL_VALUES = {
   cardDescLines: "auto",
   cardTitleScale: "default",
   cardDescScale: "default",
+  cardMicroScale: "default",
   outline: "none",
   shadow: "none",
   borderRadius: "none",

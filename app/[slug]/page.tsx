@@ -520,6 +520,14 @@ export default async function StoreHomePage({
       s?.cardDescScale === "small" || s?.cardDescScale === "large"
         ? s.cardDescScale
         : undefined;
+    // 卡片小字字級：上兩格動的是品名與描述，這格動的是卡片上那幾行全大寫小字（寫死 10px
+    // 的「看更多」、分類、標籤）。同樣是段落上的 inline style 傳不下去，attribute 讓
+    // layout.tsx 補規則。掛的範圍是選物與慢讀兩段：精選那段同一個位置放的是「剩 N」庫存
+    // 提示，那是狀態不是導覽文字，不該被這格縮放。
+    const cardMicroScaleVal: "small" | "large" | undefined =
+      s?.cardMicroScale === "small" || s?.cardMicroScale === "large"
+        ? s.cardMicroScale
+        : undefined;
     return {
       bg: s?.bgColor ?? undefined,
       text: s?.textColor ?? undefined,
@@ -575,6 +583,7 @@ export default async function StoreHomePage({
       cardDescLinesVal,
       cardTitleScaleVal,
       cardDescScaleVal,
+      cardMicroScaleVal,
     };
     // 這裡本來手抄一份 `as { ... }`（整份欄位再列一次）。它推不出比 TS 自己推更精確的型別，
     // 卻是第三份要跟著欄位表同步改的清單——加控制忘了補就編不過（好），改錯就悄悄放寬（不好）。
@@ -1466,6 +1475,7 @@ export default async function StoreHomePage({
             data-card-desc-lines={collStyle.cardDescLinesVal}
             data-card-title-scale={collStyle.cardTitleScaleVal}
             data-card-desc-scale={collStyle.cardDescScaleVal}
+            data-card-micro-scale={collStyle.cardMicroScaleVal}
             style={mergeSectionStyle(collStyle)}
           >
             <div className="max-w-5xl mx-auto px-8 sm:px-12" style={{ textAlign: collStyle.align }}>
@@ -1581,7 +1591,7 @@ export default async function StoreHomePage({
                     <span
                       data-edit-text
                       data-edit-field="collectionsCardCta"
-                      className="sproutly-card-action inline-block text-[10px] tracking-[0.3em] uppercase"
+                      className="sproutly-card-action sproutly-card-micro inline-block text-[10px] tracking-[0.3em] uppercase"
                       style={{ color: accentColor }}
                     >
                       {collectionsCardCta}
@@ -1843,6 +1853,7 @@ export default async function StoreHomePage({
             data-card-desc-lines={journalStyle.cardDescLinesVal}
             data-card-title-scale={journalStyle.cardTitleScaleVal}
             data-card-desc-scale={journalStyle.cardDescScaleVal}
+            data-card-micro-scale={journalStyle.cardMicroScaleVal}
           >
           <div className="max-w-5xl mx-auto px-8 sm:px-12" style={{ textAlign: journalStyle.align }}>
             {journalFree ? (
@@ -1961,7 +1972,7 @@ export default async function StoreHomePage({
                       data-edit-text
                       data-edit-field="journalCardEyebrow"
                       data-edit-index={i}
-                      className="mt-6 text-[10px] tracking-[0.4em] uppercase"
+                      className="sproutly-card-micro mt-6 text-[10px] tracking-[0.4em] uppercase"
                       style={{ color: accentColor }}
                     >
                       {entry.eyebrow}
@@ -1992,7 +2003,7 @@ export default async function StoreHomePage({
                     <p
                       data-edit-text
                       data-edit-field="journalCardLabel"
-                      className="mt-5 text-[10px] tracking-[0.3em] uppercase"
+                      className="sproutly-card-micro mt-5 text-[10px] tracking-[0.3em] uppercase"
                       style={{ color: "var(--store-text-muted)", opacity: 0.65 }}
                     >
                       {journalCardLabel}
