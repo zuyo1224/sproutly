@@ -2886,6 +2886,7 @@ export function EditorWorkspace({
           const cardMicroScale = cur.cardMicroScale ?? null;
           const cardPriceScale = cur.cardPriceScale ?? null;
           const cardRowGap = cur.cardRowGap ?? null;
+          const cardMetaTone = cur.cardMetaTone ?? null;
           const entrance = cur.entrance ?? null;
           const fontFamily = cur.fontFamily ?? null;
           const letterSpacing = cur.letterSpacing ?? null;
@@ -4950,6 +4951,41 @@ export function EditorWorkspace({
                     <button
                       type="button"
                       onClick={() => patch({ cardRowGap: null })}
+                      className="text-stone-500 hover:text-stone-800 underline"
+                    >
+                      清除
+                    </button>
+                  )}
+                </div>
+              </Field>
+              <Field label="卡片副文字深淺">
+                <div className="grid grid-cols-3 gap-1.5">
+                  {([
+                    { v: "muted", label: "更淡" },
+                    { v: "default", label: "跟預設" },
+                    { v: "strong", label: "加深" },
+                  ] as const).map((opt) => (
+                    <button
+                      key={opt.v}
+                      type="button"
+                      onClick={() => patch({ cardMetaTone: opt.v })}
+                      aria-pressed={(cardMetaTone ?? "default") === opt.v}
+                      className={`rounded-lg border py-2 text-xs transition ${
+                        (cardMetaTone ?? "default") === opt.v
+                          ? "border-emerald-500 bg-emerald-50 text-emerald-900"
+                          : "border-stone-200 text-stone-600 hover:border-stone-400"
+                      }`}
+                    >
+                      {opt.label}
+                    </button>
+                  ))}
+                </div>
+                <div className="mt-1.5 flex items-center justify-between text-[11px] text-stone-500">
+                  <span>卡片上品名底下那行有多濃（選物的副標、精選商品的價錢）。那行現在被淡了兩次，實際只剩不到五成，字放大了還是一行讀不太到的淺灰——想讓客人在首頁一眼看到價錢就選加深；想讓卡片先講品名、價錢退到後面就選更淡。慢讀那段的摘要不受這格影響</span>
+                  {cardMetaTone && (
+                    <button
+                      type="button"
+                      onClick={() => patch({ cardMetaTone: null })}
                       className="text-stone-500 hover:text-stone-800 underline"
                     >
                       清除

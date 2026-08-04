@@ -306,6 +306,21 @@ export const SECTION_STYLE_ENUMS = {
   // 是一組」，品名離照片 24px 是「照片結束、文字開始」），全部拉成同一個數字等於把那層
   // 主次抹平——跟內文字級、卡片各字級那幾欄不能寫死 font-size 是同一個理由。
   cardRowGap: ["tight", "normal", "loose"],
+  // 卡片副文字深淺（muted 再退一階 / default 照原本的 / strong 跟品名一樣深），指的是卡片上
+  // 品名底下那行次要文字有多濃——選物卡片的副標、精選商品卡片的價錢。
+  // 那行現在被淡了兩次：顏色本身讀 --store-text-muted（已經是文字色的七成），外面又套一層
+  // 全站寫死的 .sproutly-card-meta { opacity: 0.7 }，兩層乘起來只剩不到五成。上一格才把價錢
+  // 的字級補成可調，可是價錢淡的主因不是小是淡——一株盆栽賣多少常常是客人在首頁掃過去唯一
+  // 在找的東西，字放大了還是一行淺灰，在淺色底或照片旁邊幾乎讀不到。反過來，賣得貴、想讓
+  // 首頁先講故事不要先講價的店，會想要它比現在更退一步。
+  // 商家原本沒有一格動得到這一層：「內文濃淡」改的是 --store-text-muted，卡片外面那層 0.7
+  // 照樣乘上去（選「濃」也只到七成，永遠追不上品名）；「淡化」透明的是整段連照片一起；
+  // 「文字顏色」換的是整段的色。
+  // 動的是 opacity 那一層不是顏色：那行的顏色是 inline style（規則蓋不過 inline），而且顏色
+  // 交給「內文濃淡」管、這格只管卡片上那層額外的淡化，兩格各自獨立、疊起來也講得通。
+  // 滑過卡片時那行本來會從 0.7 亮到 1（提示這張卡是活的），三檔都保留那個相對幅度，不會選了
+  // 「更淡」之後一滑過去就跳成全黑。
+  cardMetaTone: ["muted", "default", "strong"],
   // 外框（subtle 1px / strong 2px，用 outline 避免跟 divider 的 borderTop/Bottom 打架）
   outline: ["none", "subtle", "strong"],
   // 陰影（soft 淺 / deep 深），讓有 bgColor 的 section 像卡片浮起
@@ -391,6 +406,7 @@ export const SECTION_STYLE_NEUTRAL_VALUES = {
   cardMicroScale: "default",
   cardPriceScale: "default",
   cardRowGap: "normal",
+  cardMetaTone: "default",
   outline: "none",
   shadow: "none",
   borderRadius: "none",

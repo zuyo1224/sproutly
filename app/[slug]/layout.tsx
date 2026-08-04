@@ -479,13 +479,15 @@ export default async function PublicStoreLayout({
         .sproutly-card:hover .sproutly-card-title {
           letter-spacing: 0.06em;
         }
+        /* 這兩個數字（靜止 0.7、滑過 1）改由變數帶，好讓下面「卡片副文字深淺」那組換掉它們；
+           沒設那格的店拿到的還是 fallback 的 0.7 / 1，一個像素都不動。 */
         .sproutly-card .sproutly-card-meta {
-          opacity: 0.7;
+          opacity: var(--card-meta-opacity, 0.7);
           transform: translateY(0);
           transition: opacity 0.6s, transform 0.6s;
         }
         .sproutly-card:hover .sproutly-card-meta {
-          opacity: 1;
+          opacity: var(--card-meta-opacity-hover, 1);
         }
         .sproutly-card .sproutly-card-action {
           opacity: 0;
@@ -1493,6 +1495,30 @@ export default async function PublicStoreLayout({
         section[data-edit-target][data-card-row-gap="loose"] .sproutly-card-micro,
         section[data-edit-target][data-card-row-gap="loose"] .sproutly-card-action {
           margin-top: calc(var(--card-row-gap-base, 0.75rem) * 1.8);
+        }
+
+        /* 卡片副文字深淺：editor 各 section panel「卡片副文字深淺」三按鈕（更淡 / 跟預設 / 加深）。
+           指的是卡片上品名底下那行次要文字有多濃——選物卡片的副標、精選商品卡片的價錢，就是
+           上面那條 .sproutly-card-meta。那行現在被淡了兩次：顏色本身是 --store-text-muted（文字
+           色的七成），外面又套一層全站寫死的 opacity 0.7，乘起來只剩不到五成。上一格才把價錢的
+           字級補成可調，可是價錢淡的主因不是小是淡——字放大了還是一行淺灰，在淺底或照片旁邊
+           幾乎讀不到；而一株盆栽賣多少常常正是客人在首頁掃過去唯一在找的東西。
+           商家原本沒有一格動得到這一層：「內文濃淡」改的是 --store-text-muted，卡片外面這層 0.7
+           照樣乘上去（選「濃」也只到七成，永遠追不上品名）；「淡化」透明的是整段連照片一起；
+           「文字顏色」換的是整段的色。
+           動的是 opacity 這一層不是顏色：那行的顏色寫在 inline style 上（規則蓋不過 inline），而且
+           顏色歸「內文濃淡」管、這格只管卡片上這層額外的淡化，兩格各自獨立、疊起來也講得通。
+           滑過卡片會亮起來那段（0.7 → 1）三檔都保留相對幅度：更淡 0.45 → 0.65、加深本來就是 1
+           所以滑過去不動。不然商家選了更淡，滑鼠一過去那行就跳成全黑，比沒設還突兀。
+           規則寫在 .sproutly-card 上（不是 section）讓變數就近落在卡片裡，跟上面那兩條讀變數的
+           規則同一個範圍；沒設就沒 attribute，整組規則不存在。 */
+        section[data-edit-target][data-card-meta-tone="muted"] .sproutly-card {
+          --card-meta-opacity: 0.45;
+          --card-meta-opacity-hover: 0.65;
+        }
+        section[data-edit-target][data-card-meta-tone="strong"] .sproutly-card {
+          --card-meta-opacity: 1;
+          --card-meta-opacity-hover: 1;
         }
 
         /* 標題與內容的距離：editor 各 section panel「標題與內容」三按鈕（收緊 / 跟預設 / 放寬）。

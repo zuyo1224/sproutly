@@ -543,6 +543,16 @@ export default async function StoreHomePage({
       s?.cardRowGap === "tight" || s?.cardRowGap === "loose"
         ? s.cardRowGap
         : undefined;
+    // 卡片副文字深淺：上面那幾格動的是卡片每一行多大、隔多遠，這格動的是品名底下那行次要
+    // 文字有多濃（選物副標、精選價錢）。那行的顏色已經是 --store-text-muted，外面還被全站
+    // 寫死的 opacity 0.7 再淡一次，乘起來不到五成。同樣是段落上的 inline style 傳不進卡片，
+    // attribute 讓 layout.tsx 補規則。
+    // 只掛卡片裡真的有這種次要行的兩段（選物 / 精選）：慢讀的摘要跟照片牆的卡片不掛
+    // sproutly-card-meta，本來就沒有被多淡那一層。
+    const cardMetaToneVal: "muted" | "strong" | undefined =
+      s?.cardMetaTone === "muted" || s?.cardMetaTone === "strong"
+        ? s.cardMetaTone
+        : undefined;
     return {
       bg: s?.bgColor ?? undefined,
       text: s?.textColor ?? undefined,
@@ -601,6 +611,7 @@ export default async function StoreHomePage({
       cardMicroScaleVal,
       cardPriceScaleVal,
       cardRowGapVal,
+      cardMetaToneVal,
     };
     // 這裡本來手抄一份 `as { ... }`（整份欄位再列一次）。它推不出比 TS 自己推更精確的型別，
     // 卻是第三份要跟著欄位表同步改的清單——加控制忘了補就編不過（好），改錯就悄悄放寬（不好）。
@@ -1494,6 +1505,7 @@ export default async function StoreHomePage({
             data-card-desc-scale={collStyle.cardDescScaleVal}
             data-card-micro-scale={collStyle.cardMicroScaleVal}
             data-card-row-gap={collStyle.cardRowGapVal}
+            data-card-meta-tone={collStyle.cardMetaToneVal}
             style={mergeSectionStyle(collStyle)}
           >
             <div className="max-w-5xl mx-auto px-8 sm:px-12" style={{ textAlign: collStyle.align }}>
@@ -1665,6 +1677,7 @@ export default async function StoreHomePage({
             data-card-title-scale={featuredStyle.cardTitleScaleVal}
             data-card-price-scale={featuredStyle.cardPriceScaleVal}
             data-card-row-gap={featuredStyle.cardRowGapVal}
+            data-card-meta-tone={featuredStyle.cardMetaToneVal}
           >
             <div className="max-w-5xl mx-auto px-8 sm:px-12" style={{ textAlign: featuredStyle.align }}>
               {featuredFree ? (
