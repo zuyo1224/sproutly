@@ -292,6 +292,20 @@ export const SECTION_STYLE_ENUMS = {
   // 放大放到三成（14px → 18px）比品名那格的兩成半多一階：這格存在的意義就是讓商家能把價錢
   // 放到比品名重，卡在跟品名同一級就等於沒得選。
   cardPriceScale: ["small", "default", "large"],
+  // 卡片行距（tight 收成一半 / normal 照這一段原本的 / loose 拉開將近一倍），指的是同一張
+  // 卡片裡上下幾行之間的距離——照片到品名、品名到描述或價錢、描述到底下那行小字。
+  // 前面四格把卡片上每一行的大小都補完了，行與行之間空多少還是寫死的：選物的品名離照片
+  // 24px、描述貼著品名 4px、「看更多」再隔 12px；精選 20px / 4px；慢讀 24px / 12px / 12px /
+  // 20px。那組值是照站上預設那種一列三張、品名兩三個字的卡挑的，卡片一換樣就不對——
+  // 把欄數調成 2 或卡片排法設成照片在左之後，卡片寬了一倍，同一組距離看起來像四行字散在
+  // 一大片空白裡；反過來一列四張的小卡，或商家把品名與描述都調大之後，四行字黏成一團，
+  // 客人分不出哪行是品名哪行是說明。
+  // 商家原本沒有一格動得到——「卡片間距」調的是卡片與卡片之間、「卡片內距」調的是卡片
+  // 邊界到內容、「標題與內容」調的是段落大標跟底下那排卡片，三個都不進卡片裡面那幾行之間。
+  // 等比縮放不寫死一個值：同一張卡上那幾個距離本來就有主次（描述貼著品名 4px 是「這兩行
+  // 是一組」，品名離照片 24px 是「照片結束、文字開始」），全部拉成同一個數字等於把那層
+  // 主次抹平——跟內文字級、卡片各字級那幾欄不能寫死 font-size 是同一個理由。
+  cardRowGap: ["tight", "normal", "loose"],
   // 外框（subtle 1px / strong 2px，用 outline 避免跟 divider 的 borderTop/Bottom 打架）
   outline: ["none", "subtle", "strong"],
   // 陰影（soft 淺 / deep 深），讓有 bgColor 的 section 像卡片浮起
@@ -376,6 +390,7 @@ export const SECTION_STYLE_NEUTRAL_VALUES = {
   cardDescScale: "default",
   cardMicroScale: "default",
   cardPriceScale: "default",
+  cardRowGap: "normal",
   outline: "none",
   shadow: "none",
   borderRadius: "none",

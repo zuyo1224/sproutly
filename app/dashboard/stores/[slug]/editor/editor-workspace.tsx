@@ -2885,6 +2885,7 @@ export function EditorWorkspace({
           const cardDescScale = cur.cardDescScale ?? null;
           const cardMicroScale = cur.cardMicroScale ?? null;
           const cardPriceScale = cur.cardPriceScale ?? null;
+          const cardRowGap = cur.cardRowGap ?? null;
           const entrance = cur.entrance ?? null;
           const fontFamily = cur.fontFamily ?? null;
           const letterSpacing = cur.letterSpacing ?? null;
@@ -4914,6 +4915,41 @@ export function EditorWorkspace({
                     <button
                       type="button"
                       onClick={() => patch({ cardPriceScale: null })}
+                      className="text-stone-500 hover:text-stone-800 underline"
+                    >
+                      清除
+                    </button>
+                  )}
+                </div>
+              </Field>
+              <Field label="卡片行距">
+                <div className="grid grid-cols-3 gap-1.5">
+                  {([
+                    { v: "tight", label: "收緊" },
+                    { v: "normal", label: "跟預設" },
+                    { v: "loose", label: "放寬" },
+                  ] as const).map((opt) => (
+                    <button
+                      key={opt.v}
+                      type="button"
+                      onClick={() => patch({ cardRowGap: opt.v })}
+                      aria-pressed={(cardRowGap ?? "normal") === opt.v}
+                      className={`rounded-lg border py-2 text-xs transition ${
+                        (cardRowGap ?? "normal") === opt.v
+                          ? "border-emerald-500 bg-emerald-50 text-emerald-900"
+                          : "border-stone-200 text-stone-600 hover:border-stone-400"
+                      }`}
+                    >
+                      {opt.label}
+                    </button>
+                  ))}
+                </div>
+                <div className="mt-1.5 flex items-center justify-between text-[11px] text-stone-500">
+                  <span>同一張卡片裡上下幾行之間隔多遠（照片到品名、品名到描述或價錢、描述到底下那行小字）。卡片變寬、四行字散在一片空白裡就收緊，字調大之後幾行黏成一團就放寬；幾行之間原本的遠近會照比例保留，不會被拉成一樣</span>
+                  {cardRowGap && (
+                    <button
+                      type="button"
+                      onClick={() => patch({ cardRowGap: null })}
                       className="text-stone-500 hover:text-stone-800 underline"
                     >
                       清除

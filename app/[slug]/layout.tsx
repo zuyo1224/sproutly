@@ -1437,6 +1437,64 @@ export default async function PublicStoreLayout({
           zoom: 1.3;
         }
 
+        /* 卡片行距：editor 各 section panel「卡片行距」三按鈕（收緊 / 跟預設 / 放寬）。
+           上面四組把卡片裡每一行的大小都補完了，行與行之間隔多遠還是寫死的一組 mt-*：
+           選物的品名離照片 24px、描述貼著品名 4px、「看更多」再隔 12px；精選 20px / 4px；
+           慢讀 24px / 12px / 12px / 20px。那組值是照站上預設那種一列三張、品名兩三個字的
+           卡挑的，卡片一換樣就不對——欄數調成 2 或卡片排法設成照片在左之後，卡片寬了一倍，
+           同一組距離看起來像四行字散在一大片空白裡；反過來一列四張的小卡，或商家把品名與
+           描述都調大之後，四行字黏成一團，客人分不出哪行是品名哪行是說明。
+           商家原本沒有一格動得到：「卡片間距」調的是卡片與卡片之間、「卡片內距」調的是卡片
+           邊界到內容、「標題與內容」調的是段落大標跟底下那排卡片，三個都不進卡片裡面。
+           作法是等比縮放不是寫死一個值：同一張卡上那幾個距離本來就有主次（描述貼著品名
+           4px 是「這兩行是一組」，品名離照片 24px 是「照片結束、文字開始」），全部拉成同一
+           個數字等於把那層主次抹平——跟卡片各字級那幾組不能寫死 font-size 是同一個理由。
+           所以先把各段各行原本的那個距離宣告成 --card-row-gap-base，再用一條規則乘上去。
+           下面那份 base 表對應的是 page.tsx 卡片裡的 mt-* class，改那邊要記得改這邊；沒對到
+           的元素退回 0.75rem（一個中間值），至少不會整行的上留白掉成 0。
+           橫排（照片在左 / 在右）那組規則把右欄第一行的 margin-top 清成 0，權重比這組高，
+           所以橫排時第一行照樣貼齊照片頂端，不會被這格推下來。 */
+        section[data-edit-target="collections"] .sproutly-card-title {
+          --card-row-gap-base: 1.5rem;
+        }
+        section[data-edit-target="collections"] .sproutly-card-desc {
+          --card-row-gap-base: 0.25rem;
+        }
+        section[data-edit-target="collections"] .sproutly-card-action {
+          --card-row-gap-base: 0.75rem;
+        }
+        section[data-edit-target="featured"] .sproutly-card-title {
+          --card-row-gap-base: 1.25rem;
+        }
+        section[data-edit-target="featured"] .sproutly-card-price {
+          --card-row-gap-base: 0.25rem;
+        }
+        section[data-edit-target="journal"] .sproutly-card-micro {
+          --card-row-gap-base: 1.5rem;
+        }
+        section[data-edit-target="journal"] .sproutly-card-title,
+        section[data-edit-target="journal"] .sproutly-card-desc {
+          --card-row-gap-base: 0.75rem;
+        }
+        /* 慢讀卡片底下那行標籤（摘要後面那個）原本比上面那行分類窄一點，單獨接住 */
+        section[data-edit-target="journal"] .sproutly-card-desc + .sproutly-card-micro {
+          --card-row-gap-base: 1.25rem;
+        }
+        section[data-edit-target][data-card-row-gap="tight"] .sproutly-card-title,
+        section[data-edit-target][data-card-row-gap="tight"] .sproutly-card-desc,
+        section[data-edit-target][data-card-row-gap="tight"] .sproutly-card-price,
+        section[data-edit-target][data-card-row-gap="tight"] .sproutly-card-micro,
+        section[data-edit-target][data-card-row-gap="tight"] .sproutly-card-action {
+          margin-top: calc(var(--card-row-gap-base, 0.75rem) * 0.5);
+        }
+        section[data-edit-target][data-card-row-gap="loose"] .sproutly-card-title,
+        section[data-edit-target][data-card-row-gap="loose"] .sproutly-card-desc,
+        section[data-edit-target][data-card-row-gap="loose"] .sproutly-card-price,
+        section[data-edit-target][data-card-row-gap="loose"] .sproutly-card-micro,
+        section[data-edit-target][data-card-row-gap="loose"] .sproutly-card-action {
+          margin-top: calc(var(--card-row-gap-base, 0.75rem) * 1.8);
+        }
+
         /* 標題與內容的距離：editor 各 section panel「標題與內容」三按鈕（收緊 / 跟預設 / 放寬）。
            段落最上面那塊（小標 + 大標 + 引言）跟底下卡片、照片、問答之間空多少，是每一段
            寫死的一個值，而且各段差很多——選物 128px、精選與慢讀 112px、常見問題 64px、
