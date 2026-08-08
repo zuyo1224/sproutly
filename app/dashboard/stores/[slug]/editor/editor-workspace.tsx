@@ -3040,10 +3040,13 @@ export function EditorWorkspace({
             // 行數 / 手機一列幾張）是後來一格一格補上的，快速風格一直停在只設段落那層——
             // 商家想要「網購站那種清單」或「邊界清楚的格子牆」，得自己在六七個控制之間
             // 一格一格按對，那正是快速風格本來要省掉的事。
+            // 後來又補的那批（卡片標題 / 描述 / 價錢字級、卡片行距、副文字深淺）同樣要跟上：
+            // 三個版型改的是卡片的形狀（橫排、寬窄、加底），卡片裡那四行字的大小與距離卻
+            // 停在照直排小卡挑的值，套完風格還是得再手動調三四格才對得起來。
             {
               key: "product-list",
               label: "商品清單",
-              hint: "照片在左（佔窄）+ 卡片文字靠左 + 品名兩行 + 描述兩行 + 手機一列一張（一般網購站的清單模式，同一個螢幕看得到的品項多；適合 選物 / 精選 / 慢讀）",
+              hint: "照片在左（佔窄）+ 卡片文字靠左 + 品名兩行 + 描述兩行 + 行距收緊 + 價錢放大加深 + 手機一列一張（一般網購站的清單模式，同一個螢幕看得到的品項多；適合 選物 / 精選 / 慢讀）",
               fields: {
                 cardLayout: "side",
                 // 橫排的照片佔寬預設是 38%，清單這種一行只有品名跟價錢的內容，字沒幾個
@@ -3052,25 +3055,37 @@ export function EditorWorkspace({
                 cardText: "left",
                 cardTitleLines: "two",
                 cardDescLines: "two",
+                // 清單的重點是一個螢幕看得到幾個品項，行與行之間的距離是照直排卡片挑的
+                // （品名離照片 24px 那種），橫排之後四行字散在右邊一片空白裡。
+                cardRowGap: "tight",
+                // 清單模式下客人是一行一行掃過去比價，價錢寫死比品名還小一級、又被淡到
+                // 五成，正好是這種版型最該看得到的那行。
+                cardPriceScale: "large",
+                cardMetaTone: "strong",
                 mobileColumns: "one",
               },
             },
             {
               key: "tidy-grid",
               label: "整齊格子",
-              hint: "卡片加淡底 + 文字靠左 + 品名兩行 + 描述兩行 + 照片正方（每張卡有自己的邊界、同一列下緣切齊；適合欄數調到 3、4 欄的 選物 / 精選）",
+              hint: "卡片加淡底 + 文字靠左 + 品名兩行（收小）+ 描述兩行 + 行距收緊 + 照片正方（每張卡有自己的邊界、同一列下緣切齊；適合欄數調到 3、4 欄的 選物 / 精選）",
               fields: {
                 cardSurface: "panel",
                 cardText: "left",
                 cardTitleLines: "two",
                 cardDescLines: "two",
+                // 這個版型是給一列 3、4 張的小卡用的，品名寫死的 18px（桌機 20px）在那種
+                // 寬度上佔掉卡片下半整整兩行，照片被擠小；連著行距一起收，四行字才不會
+                // 把加了淡底的卡片撐得比照片還高。
+                cardTitleScale: "small",
+                cardRowGap: "tight",
                 mediaAspect: "square",
               },
             },
             {
               key: "story-right",
               label: "圖右敘事",
-              hint: "照片在右（佔寬）+ 卡片文字靠左 + 品名兩行 + 描述不截 + 宋體寬行高 + 手機一列一張（先讀到字再看照片，適合 慢讀 / 品牌故事）",
+              hint: "照片在右（佔寬）+ 卡片文字靠左 + 品名兩行（放大）+ 描述不截（放大）+ 行距放寬 + 宋體寬行高 + 手機一列一張（先讀到字再看照片，適合 慢讀 / 品牌故事）",
               fields: {
                 cardLayout: "side-reverse",
                 cardMediaWidth: "wide",
@@ -3079,6 +3094,12 @@ export function EditorWorkspace({
                 // 敘事段落的重點就是那段字，截行等於把要講的話砍掉；上面兩組是清單、
                 // 要的是同一列下緣切齊，這組反過來。
                 cardDescLines: "full",
+                // 字級與行距也跟著反過來：這種卡片一列只放一兩張、右邊那段是要被讀完的
+                // 文章，標題該像標題（現在跟商品品名同一級）、摘要 14px 在寬卡上像圖說，
+                // 行與行擠在一起也不像一段可以讀的文字。
+                cardTitleScale: "large",
+                cardDescScale: "large",
+                cardRowGap: "loose",
                 fontFamily: "serif",
                 lineHeight: "relaxed",
                 mobileColumns: "one",
