@@ -2937,6 +2937,15 @@ export function EditorWorkspace({
           }
           // group 分兩組：section = 動段落外圍（字體、呼吸、底色、外框），card = 動卡片自己。
           // 兩組各自獨立，一段可以同時套「雜誌風 + 整齊格子」；同組換另一個風格才會互相取代。
+          //
+          // 下面八個段落層風格原本只設六七個欄位（字體、標題大小、上下空白、字距、行高、
+          // 底色外框那幾件），那是這些風格剛做出來時面板上就只有那幾格。後來一格一格補上的
+          // 段落層控制——小標字距與字級、標題塊裡面的距離、標題與內容的距離、一行字數、
+          // 內文字級、照片圓角、卡片間距、滑過卡片的動作——沒有一個進到風格裡，結果是套完
+          // 「雜誌風」的段落，大標換成宋體放大了、上面那行小標還撐著照英文挑的 0.4em 與
+          // 10px，跟大標黏成一團；套完「現代簡潔」的段落字距收緊了，段落最上面那塊裡面的
+          // 距離還是原本那組寬鬆值，看起來不現代也不簡潔。商家得自己在四五格之間按對，
+          // 那正是快速風格本來要省掉的事（跟上一輪三個卡片版型補字級與行距同一個理由）。
           const presets: {
             key: string;
             group: "section" | "card";
@@ -2948,7 +2957,7 @@ export function EditorWorkspace({
               key: "editorial",
               group: "section",
               label: "雜誌風",
-              hint: "宋體 + 大標 + 寬呼吸（適合 promise / journal）",
+              hint: "宋體 + 大標 + 寬呼吸 + 小標撐開 + 標題各段拉開 + 內文收成窄欄（適合 promise / journal）",
               fields: {
                 fontFamily: "serif",
                 headingScale: "large",
@@ -2956,25 +2965,44 @@ export function EditorWorkspace({
                 letterSpacing: "wide",
                 lineHeight: "relaxed",
                 divider: "top",
+                // 「字距」那欄設的是整段，小標自己帶著 0.4em 反而動都不動——雜誌風的重點
+                // 就是那行小標，得單獨撐開才跟得上大標放大後的重量。
+                eyebrowTracking: "wide",
+                // 大標放大之後，小標與大標之間、大標與引言之間還是原本照一行小標配一行
+                // 大標挑的距離，三行字擠成一團；雜誌版面靠的就是那幾段留白。
+                headingInnerGap: "loose",
+                headingGap: "loose",
+                // 寬呼吸的段落內文一行會拉到整個螢幕寬，眼睛換行找不到行首。
+                bodyMeasure: "normal",
               },
             },
             {
               key: "modern",
               group: "section",
               label: "現代簡潔",
-              hint: "黑體 + 緊字距 + 微圓角（Stripe / Linear 風）",
+              hint: "黑體 + 緊字距 + 微圓角 + 小標收緊 + 標題貼近內容 + 照片跟著圓 + 滑過只輕輕浮起（Stripe / Linear 風）",
               fields: {
                 fontFamily: "sans",
                 paddingScale: "default",
                 letterSpacing: "tight",
                 borderRadius: "soft",
+                // 整段字距收緊了、小標還撐著 0.4em，那行字看起來像從別的風格剩下來的。
+                eyebrowTracking: "tight",
+                // 這類介面風格的特徵是資訊之間貼得近、靠字重與大小分層級，不是靠留白。
+                headingInnerGap: "tight",
+                headingGap: "tight",
+                // 段落的四角圓了、裡面的照片還是方的，兩個圓角對不起來反而像沒做完。
+                mediaRadius: "soft",
+                // 站上滑過卡片一次做四件事（浮起、照片放大、壓暗、標題撐開），在克制的
+                // 介面風格裡太吵。
+                cardHover: "calm",
               },
             },
             {
               key: "dramatic",
               group: "section",
               label: "戲劇感",
-              hint: "滿屏 + 大標 + 深陰影 + 上滑進場",
+              hint: "滿屏 + 大標（加粗）+ 深陰影 + 上滑進場 + 小標放大撐開 + 內文收成窄欄",
               fields: {
                 minHeight: "fullscreen",
                 // 滿屏撐出來的空高原本一律留在內容下面，套完是一小塊內容黏在上緣、下面一大片
@@ -2984,50 +3012,73 @@ export function EditorWorkspace({
                 paddingScale: "spacious",
                 shadow: "deep",
                 entrance: "slide-up",
+                // 一整螢幕高的段落裡只有一小塊內容，10px 的小標在那個尺度下等於不存在；
+                // 這個風格是要那塊內容撐得住整個畫面，小標與大標都得跟著長。
+                eyebrowScale: "large",
+                eyebrowTracking: "wide",
+                headingWeight: "bold",
+                // 滿屏段落的內文一行橫跨整個螢幕，是所有版型裡最難讀的一種。
+                bodyMeasure: "normal",
               },
             },
             {
               key: "floating",
               group: "section",
               label: "卡片浮起",
-              hint: "淺底 + 邊框 + 圓角 + 陰影（適合 testimonial）",
+              hint: "淺底 + 邊框 + 圓角 + 陰影 + 照片跟著圓 + 滑過只輕輕浮起（適合 testimonial）",
               fields: {
                 bgColor: "#fafaf9",
                 shadow: "soft",
                 borderRadius: "soft",
                 outline: "subtle",
                 paddingScale: "default",
+                // 整段變成一張浮起的卡片之後，裡面的照片還是直角的，兩層形狀對不起來。
+                mediaRadius: "soft",
+                // 段落自己已經浮起來了，裡面每張卡滑過去再浮一次是兩層在動。
+                cardHover: "calm",
               },
             },
             {
               key: "recede",
               group: "section",
               label: "低調襯底",
-              hint: "淡化 + 緊湊 + 小標（次要區段退到後面，襯托 hero / 選物。適合 partners / stats / faq）",
+              hint: "淡化 + 緊湊 + 小標（連同上面那行小標、內文一起縮）+ 卡片靠攏 + 滑過不動（次要區段退到後面，襯托 hero / 選物。適合 partners / stats / faq）",
               fields: {
                 opacity: "muted",
                 paddingScale: "compact",
                 headingScale: "small",
                 letterSpacing: "wide",
+                // 大標縮小了、上面那行小標還是 10px，兩行變成同一級，反而看不出誰是標題。
+                eyebrowScale: "small",
+                bodyScale: "small",
+                // 退到後面的段落還佔著跟主打段落一樣的格線間距，等於沒退。
+                gridGap: "tight",
+                // 這一段本來就不是要客人停下來的地方，滑過去整片在動會把注意力抓回來。
+                cardHover: "none",
               },
             },
             {
               key: "mono",
               group: "section",
               label: "黑白雜誌",
-              hint: "黑白濾鏡 + 宋體 + 寬字距 + 寬呼吸（攝影感雜誌調，適合 gallery / partners）",
+              hint: "黑白濾鏡 + 宋體 + 寬字距（小標也撐開）+ 寬呼吸 + 照片緊貼成一片 + 滑過只輕輕浮起（攝影感雜誌調，適合 gallery / partners）",
               fields: {
                 filter: "grayscale",
                 fontFamily: "serif",
                 letterSpacing: "wide",
                 paddingScale: "spacious",
+                eyebrowTracking: "wide",
+                // 攝影雜誌的整頁照片是緊貼成一片看的，中間留白會把那片拆回一張一張。
+                gridGap: "tight",
+                // 黑白照片滑過去被放大又壓暗，剛調好的灰階層次會糊掉。
+                cardHover: "calm",
               },
             },
             {
               key: "boxed-card",
               group: "section",
               label: "置中卡片",
-              hint: "窄版置中 + 上下拉開 + 淺底圓角陰影（整段縮成一張浮起的卡片，適合 promise / testimonial / faq）",
+              hint: "窄版置中 + 上下拉開 + 淺底圓角陰影 + 照片跟著圓 + 標題貼近內容 + 滑過只輕輕浮起（整段縮成一張浮起的卡片，適合 promise / testimonial / faq）",
               fields: {
                 sectionWidth: "boxed",
                 sectionGap: "large",
@@ -3036,19 +3087,29 @@ export function EditorWorkspace({
                 shadow: "soft",
                 outline: "subtle",
                 paddingScale: "default",
+                mediaRadius: "soft",
+                // 整段已經收成一張卡片，裡面還照原本滿版段落那個距離留白的話，卡片會被
+                // 撐得很高、內容散在中間。
+                headingGap: "tight",
+                cardHover: "calm",
               },
             },
             {
               key: "left-story",
               group: "section",
               label: "靠左敘事",
-              hint: "標題靠左 + 宋體 + 寬行高 + 寬呼吸（左對齊的雜誌敘事感，適合 about / story / journal）",
+              hint: "標題靠左 + 宋體 + 寬行高 + 寬呼吸 + 內文放大 + 小標撐開 + 標題各段拉開（左對齊的雜誌敘事感，適合 about / story / journal）",
               fields: {
                 headingAlign: "left",
                 fontFamily: "serif",
                 lineHeight: "relaxed",
                 paddingScale: "spacious",
                 sectionWidth: "narrow",
+                // 這個風格的主角是那段字，不是標題——段落收窄之後內文還停在原本的大小，
+                // 一整片留白中間一行小字，看起來像沒排完。
+                bodyScale: "large",
+                eyebrowTracking: "wide",
+                headingInnerGap: "loose",
               },
             },
             // 下面三個動的是卡片自己，上面八個動的都是段落外圍（字體、呼吸、底色、外框）。
