@@ -2935,9 +2935,18 @@ export function EditorWorkspace({
             delete nextStyles[selectedSection!];
             updateLayout({ sectionStyles: nextStyles });
           }
-          const presets: { key: string; label: string; hint: string; fields: typeof cur }[] = [
+          // group 分兩組：section = 動段落外圍（字體、呼吸、底色、外框），card = 動卡片自己。
+          // 兩組各自獨立，一段可以同時套「雜誌風 + 整齊格子」；同組換另一個風格才會互相取代。
+          const presets: {
+            key: string;
+            group: "section" | "card";
+            label: string;
+            hint: string;
+            fields: typeof cur;
+          }[] = [
             {
               key: "editorial",
+              group: "section",
               label: "雜誌風",
               hint: "宋體 + 大標 + 寬呼吸（適合 promise / journal）",
               fields: {
@@ -2951,6 +2960,7 @@ export function EditorWorkspace({
             },
             {
               key: "modern",
+              group: "section",
               label: "現代簡潔",
               hint: "黑體 + 緊字距 + 微圓角（Stripe / Linear 風）",
               fields: {
@@ -2962,6 +2972,7 @@ export function EditorWorkspace({
             },
             {
               key: "dramatic",
+              group: "section",
               label: "戲劇感",
               hint: "滿屏 + 大標 + 深陰影 + 上滑進場",
               fields: {
@@ -2977,6 +2988,7 @@ export function EditorWorkspace({
             },
             {
               key: "floating",
+              group: "section",
               label: "卡片浮起",
               hint: "淺底 + 邊框 + 圓角 + 陰影（適合 testimonial）",
               fields: {
@@ -2989,6 +3001,7 @@ export function EditorWorkspace({
             },
             {
               key: "recede",
+              group: "section",
               label: "低調襯底",
               hint: "淡化 + 緊湊 + 小標（次要區段退到後面，襯托 hero / 選物。適合 partners / stats / faq）",
               fields: {
@@ -3000,6 +3013,7 @@ export function EditorWorkspace({
             },
             {
               key: "mono",
+              group: "section",
               label: "黑白雜誌",
               hint: "黑白濾鏡 + 宋體 + 寬字距 + 寬呼吸（攝影感雜誌調，適合 gallery / partners）",
               fields: {
@@ -3011,6 +3025,7 @@ export function EditorWorkspace({
             },
             {
               key: "boxed-card",
+              group: "section",
               label: "置中卡片",
               hint: "窄版置中 + 上下拉開 + 淺底圓角陰影（整段縮成一張浮起的卡片，適合 promise / testimonial / faq）",
               fields: {
@@ -3025,6 +3040,7 @@ export function EditorWorkspace({
             },
             {
               key: "left-story",
+              group: "section",
               label: "靠左敘事",
               hint: "標題靠左 + 宋體 + 寬行高 + 寬呼吸（左對齊的雜誌敘事感，適合 about / story / journal）",
               fields: {
@@ -3045,6 +3061,7 @@ export function EditorWorkspace({
             // 停在照直排小卡挑的值，套完風格還是得再手動調三四格才對得起來。
             {
               key: "product-list",
+              group: "card",
               label: "商品清單",
               hint: "照片在左（佔窄）+ 卡片文字靠左 + 品名兩行 + 描述兩行 + 行距收緊 + 價錢放大加深 + 手機一列一張（一般網購站的清單模式，同一個螢幕看得到的品項多；適合 選物 / 精選 / 慢讀）",
               fields: {
@@ -3067,6 +3084,7 @@ export function EditorWorkspace({
             },
             {
               key: "tidy-grid",
+              group: "card",
               label: "整齊格子",
               hint: "卡片加淡底 + 文字靠左 + 品名兩行（收小）+ 描述兩行 + 行距收緊 + 照片正方（每張卡有自己的邊界、同一列下緣切齊；適合欄數調到 3、4 欄的 選物 / 精選）",
               fields: {
@@ -3084,6 +3102,7 @@ export function EditorWorkspace({
             },
             {
               key: "story-right",
+              group: "card",
               label: "圖右敘事",
               hint: "照片在右（佔寬）+ 卡片文字靠左 + 品名兩行（放大）+ 描述不截（放大）+ 行距放寬 + 宋體寬行高 + 手機一列一張（先讀到字再看照片，適合 慢讀 / 品牌故事）",
               fields: {
@@ -3120,19 +3139,41 @@ export function EditorWorkspace({
               return want === have;
             });
           }
-          let activePresetKey: string | null = null;
-          let activePresetFieldCount = 0;
+          // 兩組各自算一個「目前」：段落那組跟卡片那組本來就能疊著用，以前只標欄位最多的
+          // 那一個，套了「雜誌風 + 整齊格子」畫面上只有一顆亮著，看起來像另一個沒生效。
+          const activePresetByGroup: Record<"section" | "card", string | null> = {
+            section: null,
+            card: null,
+          };
+          const activeFieldCountByGroup: Record<"section" | "card", number> = {
+            section: 0,
+            card: 0,
+          };
           for (const p of presets) {
             if (presetMatches(p.fields)) {
               const n = Object.keys(p.fields).length;
-              if (n > activePresetFieldCount) {
-                activePresetFieldCount = n;
-                activePresetKey = p.key;
+              if (n > activeFieldCountByGroup[p.group]) {
+                activeFieldCountByGroup[p.group] = n;
+                activePresetByGroup[p.group] = p.key;
               }
             }
           }
-          function applyPreset(fields: typeof cur) {
-            const merged: typeof cur = { ...cur, ...fields };
+          // 換同組的另一個風格時，要先把上一個風格設過、而新風格沒設的欄位清掉。
+          // 不清的話會疊出四不像：「商品清單」換「整齊格子」，格子沒設 cardLayout，
+          // 清單的照片在左就留著，商家看到的是橫排卡片加淡底，不是他按的格子牆。
+          // 只在「上一個風格還完整套著」（沒被手動微調過）時才清——商家自己動過的值，
+          // 我們不知道他是想留還是想換，留著比清掉安全。
+          function applyPreset(p: (typeof presets)[number]) {
+            const merged: typeof cur = { ...cur, ...p.fields };
+            const prevKey = activePresetByGroup[p.group];
+            if (prevKey && prevKey !== p.key) {
+              const prev = presets.find((x) => x.key === prevKey);
+              if (prev) {
+                (Object.keys(prev.fields) as Array<keyof typeof cur>).forEach((k) => {
+                  if (!(k in p.fields)) delete merged[k];
+                });
+              }
+            }
             (Object.keys(merged) as Array<keyof typeof merged>).forEach((k) => {
               if (merged[k] === undefined) delete merged[k];
             });
@@ -3298,16 +3339,42 @@ export function EditorWorkspace({
               </Field>
               <Field label="快速風格">
                 <p className="-mt-1 mb-1.5 text-[11px] text-stone-500 leading-snug">
-                  一鍵套樣式組合，套完還能微調個別控制
+                  一鍵套樣式組合，套完還能微調個別控制。上下兩排各挑一個可以疊著用，
+                  同一排換另一個會取代掉前一個。
                 </p>
+                <p className="mb-1 text-[10px] text-stone-400">整段的樣子</p>
                 <div className="grid grid-cols-2 gap-1.5">
-                  {presets.map((p) => {
-                    const isActive = activePresetKey === p.key;
+                  {presets.filter((p) => p.group === "section").map((p) => {
+                    const isActive = activePresetByGroup.section === p.key;
                     return (
                       <button
                         key={p.key}
                         type="button"
-                        onClick={() => applyPreset(p.fields)}
+                        onClick={() => applyPreset(p)}
+                        title={p.hint}
+                        className={`rounded-lg border px-2 py-2 text-xs transition text-left leading-tight ${
+                          isActive
+                            ? "border-emerald-500 bg-emerald-50 text-emerald-900"
+                            : "border-stone-200 text-stone-700 hover:border-emerald-500 hover:bg-emerald-50 hover:text-emerald-900"
+                        }`}
+                      >
+                        {p.label}
+                        {isActive && (
+                          <span className="ml-1 text-[10px] font-normal text-emerald-600">· 目前</span>
+                        )}
+                      </button>
+                    );
+                  })}
+                </div>
+                <p className="mt-2 mb-1 text-[10px] text-stone-400">卡片的樣子</p>
+                <div className="grid grid-cols-2 gap-1.5">
+                  {presets.filter((p) => p.group === "card").map((p) => {
+                    const isActive = activePresetByGroup.card === p.key;
+                    return (
+                      <button
+                        key={p.key}
+                        type="button"
+                        onClick={() => applyPreset(p)}
                         title={p.hint}
                         className={`rounded-lg border px-2 py-2 text-xs transition text-left leading-tight ${
                           isActive
