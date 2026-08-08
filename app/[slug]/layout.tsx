@@ -1405,8 +1405,10 @@ export default async function PublicStoreLayout({
            點」的東西。
            商家原本沒有一格動得到：「小標字級」那組的規則落在段落自己的 eyebrow 上（大標
            上面那行），到不了卡片裡；卡片標題 / 卡片描述那兩組各自只管品名與描述。
-           規則落在 .sproutly-card-micro，只掛在真的是這種小字的那幾行——精選那段同一個
-           位置放的是「剩 N」庫存提示，那是狀態不是導覽文字，不掛。
+           規則落在 .sproutly-card-micro，掛在真的是這種小字的那幾行。精選那段價錢底下的
+           「剩 N」庫存提示原本因為「那是狀態不是導覽文字」沒掛，現在補上：糊掉的原因跟
+           那三行一模一樣（11px、字距 0.3em、中文），而且那行不是裝飾，是客人決定要不要
+           現在下單看的最後一句話；不掛的結果是精選那段整格「卡片小字字級」按了沒反應。
            用 zoom 不用 font-size：這幾行的字距是 0.3em / 0.4em 這種跟著字級走的相對值，
            寫死 font-size 會讓字變大、字距跟著散開成一排各自站著的字；zoom 連著字距與上面
            那截 margin 一起縮放，比例維持原樣。
@@ -1469,6 +1471,10 @@ export default async function PublicStoreLayout({
           --card-row-gap-base: 1.25rem;
         }
         section[data-edit-target="featured"] .sproutly-card-price {
+          --card-row-gap-base: 0.25rem;
+        }
+        /* 精選卡片價錢底下那行「剩 N」，跟價錢一樣貼著上一行 4px */
+        section[data-edit-target="featured"] .sproutly-card-micro {
           --card-row-gap-base: 0.25rem;
         }
         section[data-edit-target="journal"] .sproutly-card-micro {

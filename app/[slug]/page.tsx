@@ -1677,6 +1677,7 @@ export default async function StoreHomePage({
             data-card-title-scale={featuredStyle.cardTitleScaleVal}
             data-card-price-scale={featuredStyle.cardPriceScaleVal}
             data-card-row-gap={featuredStyle.cardRowGapVal}
+            data-card-micro-scale={featuredStyle.cardMicroScaleVal}
             data-card-meta-tone={featuredStyle.cardMetaToneVal}
           >
             <div className="max-w-5xl mx-auto px-8 sm:px-12" style={{ textAlign: featuredStyle.align }}>
@@ -1805,10 +1806,14 @@ export default async function StoreHomePage({
                       {formatPrice(p.price_cents, p.currency)}
                     </p>
                     {/* 售完已由圖片角標表達，這裡只留「剩 N」琥珀色提示，
-                        跟 shop 頁與商品詳情頁同一套語言。 */}
+                        跟 shop 頁與商品詳情頁同一套語言。
+                        掛 sproutly-card-micro：這行跟選物的「看更多」、慢讀的分類標籤是同一種
+                        全大寫小字，之前沒掛，商家在精選那段調「卡片行距」「卡片小字字級」兩格
+                        都跳過它——價錢跟它擠在一起、或整張卡放寬之後它自己貼著價錢不動。
+                        「剩 3 件」還是客人決定要不要現在下單的那行字，11px 的中文本來就糊。 */}
                     {isLowStock(p.stock) ? (
                       <p
-                        className="mt-1 text-[0.6875rem] uppercase font-medium"
+                        className="sproutly-card-micro mt-1 text-[0.6875rem] uppercase font-medium"
                         style={{ color: "#92400E", letterSpacing: "0.3em" }}
                       >
                         Low Stock · 剩 {p.stock}
