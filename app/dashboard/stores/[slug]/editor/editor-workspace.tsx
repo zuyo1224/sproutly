@@ -2882,6 +2882,7 @@ export function EditorWorkspace({
           const cardTitleLines = cur.cardTitleLines ?? null;
           const cardDescLines = cur.cardDescLines ?? null;
           const cardTitleScale = cur.cardTitleScale ?? null;
+          const cardTitleWeight = cur.cardTitleWeight ?? null;
           const cardDescScale = cur.cardDescScale ?? null;
           const cardMicroScale = cur.cardMicroScale ?? null;
           const cardPriceScale = cur.cardPriceScale ?? null;
@@ -4960,6 +4961,41 @@ export function EditorWorkspace({
                     <button
                       type="button"
                       onClick={() => patch({ cardTitleScale: null })}
+                      className="text-stone-500 hover:text-stone-800 underline"
+                    >
+                      清除
+                    </button>
+                  )}
+                </div>
+              </Field>
+              <Field label="卡片標題粗細">
+                <div className="grid grid-cols-3 gap-1.5">
+                  {([
+                    { v: "normal", label: "常規" },
+                    { v: "medium", label: "中黑" },
+                    { v: "bold", label: "粗" },
+                  ] as const).map((opt) => (
+                    <button
+                      key={opt.v}
+                      type="button"
+                      onClick={() => patch({ cardTitleWeight: opt.v })}
+                      aria-pressed={(cardTitleWeight ?? "normal") === opt.v}
+                      className={`rounded-lg border py-2 text-xs transition ${
+                        (cardTitleWeight ?? "normal") === opt.v
+                          ? "border-emerald-500 bg-emerald-50 text-emerald-900"
+                          : "border-stone-200 text-stone-600 hover:border-stone-400"
+                      }`}
+                    >
+                      {opt.label}
+                    </button>
+                  ))}
+                </div>
+                <div className="mt-1.5 flex items-center justify-between text-[11px] text-stone-500">
+                  <span>上一格管的是品名多大，這格管的是它多粗。品名跟底下的描述、價錢分不出主次時選中黑或粗（「標題粗細」那格動的是段落大標，不是卡片裡這行）</span>
+                  {cardTitleWeight && (
+                    <button
+                      type="button"
+                      onClick={() => patch({ cardTitleWeight: null })}
                       className="text-stone-500 hover:text-stone-800 underline"
                     >
                       清除

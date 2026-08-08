@@ -1378,6 +1378,28 @@ export default async function PublicStoreLayout({
           zoom: 1.25;
         }
 
+        /* 卡片標題粗細：editor 各 section panel「卡片標題粗細」三按鈕（常規 / 中黑 / 粗）。
+           上一組管的是品名那行多大，這組管的是它多粗。三段的品名都寫死 400 常規，跟底下
+           那行描述、價錢只差在字級與顏色淡一點——商家把欄數調成一列四張、或把描述字級
+           調大之後那點差別就不夠了，客人一眼掃過去分不出哪行是商品名；反過來慢讀那種
+           一整段摘要的寬卡，400 的標題撐不住底下那段文字的份量。原本沒有一格動得到：
+           「標題粗細」動的是段落大標（h2），「卡片標題字級」只換大小，「卡片副文字深淺」
+           動的是描述那層的透明度。
+           這一格跟上面那批 attribute 規則不同，走的是 CSS variable：粗細寫在 h3 自己的
+           inline style 上（跟顏色、字體同一包），stylesheet 的規則權重再高也蓋不過 inline
+           ——所以 page.tsx 那行改成 var(--card-title-weight, 400)，這裡只負責依 attribute
+           把變數換掉。沒設這格的段落沒有 attribute、變數沒人設，h3 拿到 fallback 400，
+           跟原本一模一樣。
+           400 / 500 / 700 都是這支 layout 已經載進來的字重（思源黑體與宋體都有），不給
+           300 那種細的——沒載的字重瀏覽器會拿常規去假變細，中文筆畫糊掉，跟段落大標那格
+           同一個理由。滑過卡片時標題撐開字距那段動的是 letter-spacing，兩者不打架。 */
+        section[data-edit-target][data-card-title-weight="medium"] {
+          --card-title-weight: 500;
+        }
+        section[data-edit-target][data-card-title-weight="bold"] {
+          --card-title-weight: 700;
+        }
+
         /* 卡片描述字級：editor 各 section panel「卡片描述字級」三按鈕（小 / 跟預設 / 大）。
            上一組管的是品名那行多大，這組管的是品名底下那段描述——選物的副標、慢讀的摘要，
            兩段都寫死 14px，照站上預設那種一句話的副標挑的。慢讀那種一整段摘要的卡片，14px

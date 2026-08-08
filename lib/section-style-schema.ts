@@ -247,6 +247,16 @@ export const SECTION_STYLE_ENUMS = {
   // 把三種拉成同一級（跟內文字級、小標字級那兩欄同一個理由）；zoom 連著行高與底下那截
   // margin 一起縮放，字放大了跟價錢的距離也跟著長，不會出現字變大、間距停在原位的擠感。
   cardTitleScale: ["small", "default", "large"],
+  // 卡片標題粗細（normal 照原本的 400 常規 / medium 500 中黑 / bold 700 粗）。卡片上那行
+  // 品名（與慢讀的文章標題）在三段裡都是寫死的 400，跟底下那行描述、價錢只差在字大小與
+  // 顏色淡一點——商家把卡片調成一列四張的小卡、或把描述字級調大之後，那點差別就不夠了，
+  // 客人掃過去分不出哪行是商品名。相反地，慢讀那種一整段摘要的寬卡，400 的標題撐不住
+  // 底下那段文字的份量。
+  // 商家原本沒有一格動得到：「標題粗細」動的是段落大標（h2），「卡片標題字級」只換大小、
+  // 「卡片副文字深淺」動的是描述那層的透明度，都不管品名這行的粗細。
+  // 只用有載進來的字重（400 / 500 / 700），不給 300 那種細的——沒載的字重瀏覽器會拿常規
+  // 去假變細，中文筆畫會糊掉，跟段落大標那格同一個理由。
+  cardTitleWeight: ["normal", "medium", "bold"],
   // 卡片描述字級（small 縮一成 / default 照原本的 / large 放大兩成），只套卡片裡品名底下
   // 那段描述（選物的副標、慢讀的摘要）。上一格把品名那行的大小補起來之後，描述這行還是
   // 寫死的 14px——那個值是照站上預設那種一句話的副標挑的，換成商家自己的東西就不對：
@@ -402,6 +412,7 @@ export const SECTION_STYLE_NEUTRAL_VALUES = {
   cardTitleLines: "auto",
   cardDescLines: "auto",
   cardTitleScale: "default",
+  cardTitleWeight: "normal",
   cardDescScale: "default",
   cardMicroScale: "default",
   cardPriceScale: "default",

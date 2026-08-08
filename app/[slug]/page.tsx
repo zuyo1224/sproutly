@@ -512,6 +512,16 @@ export default async function StoreHomePage({
       s?.cardTitleScale === "small" || s?.cardTitleScale === "large"
         ? s.cardTitleScale
         : undefined;
+    // 卡片標題粗細：上一格動的是品名那行多大，這格動的是它多粗。三段的品名都寫死 400，
+    // 跟底下的描述、價錢只差在字級與顏色淡一點，卡片一小、或描述一調大就分不出哪行是品名。
+    // 這行的粗細寫在 h3 自己的 inline style 上（跟顏色、字體同一包），CSS 規則蓋不過
+    // inline——所以下面改成由 --card-title-weight 這個變數帶，值在 layout.tsx 依這個
+    // attribute 給。沒設的店拿到的是 fallback 400，跟原本一模一樣。
+    // 掛在卡片底下真的有標題的三段（選物 / 精選 / 慢讀），跟字級那格同樣三段。
+    const cardTitleWeightVal: "medium" | "bold" | undefined =
+      s?.cardTitleWeight === "medium" || s?.cardTitleWeight === "bold"
+        ? s.cardTitleWeight
+        : undefined;
     // 卡片描述字級：上一格動的是品名那行，這格動的是它底下那段描述（寫死 14px）。同樣是
     // 段落上的 inline style 傳不下去，attribute 讓 layout.tsx 補規則。
     // 掛的範圍跟卡片描述行數那格一樣是兩段（選物副標 / 慢讀摘要）：精選那段同一個位置放
@@ -607,6 +617,7 @@ export default async function StoreHomePage({
       cardTitleLinesVal,
       cardDescLinesVal,
       cardTitleScaleVal,
+      cardTitleWeightVal,
       cardDescScaleVal,
       cardMicroScaleVal,
       cardPriceScaleVal,
@@ -1502,6 +1513,7 @@ export default async function StoreHomePage({
             data-card-title-lines={collStyle.cardTitleLinesVal}
             data-card-desc-lines={collStyle.cardDescLinesVal}
             data-card-title-scale={collStyle.cardTitleScaleVal}
+            data-card-title-weight={collStyle.cardTitleWeightVal}
             data-card-desc-scale={collStyle.cardDescScaleVal}
             data-card-micro-scale={collStyle.cardMicroScaleVal}
             data-card-row-gap={collStyle.cardRowGapVal}
@@ -1602,7 +1614,7 @@ export default async function StoreHomePage({
                       style={{
                         color: "var(--store-text)",
                         fontFamily: "var(--store-font)",
-                        fontWeight: 400,
+                        fontWeight: "var(--card-title-weight, 400)",
                       }}
                     >
                       {c.title}
@@ -1675,6 +1687,7 @@ export default async function StoreHomePage({
             data-card-media-width={featuredStyle.cardMediaWidthVal}
             data-card-title-lines={featuredStyle.cardTitleLinesVal}
             data-card-title-scale={featuredStyle.cardTitleScaleVal}
+            data-card-title-weight={featuredStyle.cardTitleWeightVal}
             data-card-price-scale={featuredStyle.cardPriceScaleVal}
             data-card-row-gap={featuredStyle.cardRowGapVal}
             data-card-micro-scale={featuredStyle.cardMicroScaleVal}
@@ -1794,7 +1807,7 @@ export default async function StoreHomePage({
                       style={{
                         color: "var(--store-text)",
                         fontFamily: "var(--store-font)",
-                        fontWeight: 400,
+                        fontWeight: "var(--card-title-weight, 400)",
                       }}
                     >
                       {p.name}
@@ -1890,6 +1903,7 @@ export default async function StoreHomePage({
             data-card-title-lines={journalStyle.cardTitleLinesVal}
             data-card-desc-lines={journalStyle.cardDescLinesVal}
             data-card-title-scale={journalStyle.cardTitleScaleVal}
+            data-card-title-weight={journalStyle.cardTitleWeightVal}
             data-card-desc-scale={journalStyle.cardDescScaleVal}
             data-card-micro-scale={journalStyle.cardMicroScaleVal}
             data-card-row-gap={journalStyle.cardRowGapVal}
@@ -2024,7 +2038,7 @@ export default async function StoreHomePage({
                       style={{
                         color: "var(--store-text)",
                         fontFamily: "var(--store-font)",
-                        fontWeight: 400,
+                        fontWeight: "var(--card-title-weight, 400)",
                         letterSpacing: "var(--store-track, -0.005em)",
                       }}
                     >
