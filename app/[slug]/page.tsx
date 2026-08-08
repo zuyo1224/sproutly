@@ -545,6 +545,14 @@ export default async function StoreHomePage({
       s?.cardPriceScale === "small" || s?.cardPriceScale === "large"
         ? s.cardPriceScale
         : undefined;
+    // 卡片價錢粗細：上一格動的是那行價錢多大，這格動的是它多粗。價錢在字級與深淺兩格都被
+    // 補過了，粗細是最後一個沒得動的，也是三個裡最省的——不佔空間、不換顏色就能讓那行字
+    // 站出來。這行沒有 inline 的 font-weight（品名那行有，所以那格得繞 CSS variable），
+    // attribute 讓 layout.tsx 補一條規則就蓋得過去。同樣只掛精選那一段。
+    const cardPriceWeightVal: "medium" | "bold" | undefined =
+      s?.cardPriceWeight === "medium" || s?.cardPriceWeight === "bold"
+        ? s.cardPriceWeight
+        : undefined;
     // 卡片行距：上面四格動的是卡片裡每一行「多大」，這格動的是行與行之間「隔多遠」（照片到
     // 品名、品名到描述或價錢、描述到底下那行小字，全是寫死的 mt-*）。同樣是段落上的 inline
     // style 傳不下去，attribute 讓 layout.tsx 補規則。
@@ -621,6 +629,7 @@ export default async function StoreHomePage({
       cardDescScaleVal,
       cardMicroScaleVal,
       cardPriceScaleVal,
+      cardPriceWeightVal,
       cardRowGapVal,
       cardMetaToneVal,
     };
@@ -1689,6 +1698,7 @@ export default async function StoreHomePage({
             data-card-title-scale={featuredStyle.cardTitleScaleVal}
             data-card-title-weight={featuredStyle.cardTitleWeightVal}
             data-card-price-scale={featuredStyle.cardPriceScaleVal}
+            data-card-price-weight={featuredStyle.cardPriceWeightVal}
             data-card-row-gap={featuredStyle.cardRowGapVal}
             data-card-micro-scale={featuredStyle.cardMicroScaleVal}
             data-card-meta-tone={featuredStyle.cardMetaToneVal}

@@ -1463,6 +1463,27 @@ export default async function PublicStoreLayout({
           zoom: 1.3;
         }
 
+        /* 卡片價錢粗細：editor 精選商品 panel「卡片價錢粗細」三按鈕（常規 / 中黑 / 粗）。
+           上一組管的是那行價錢多大，這組管的是它多粗。價錢這行到現在被補過兩次——字級與
+           副文字深淺——都是為了同一件事：讓客人在首頁掃過去找得到它。剩下沒補的是粗細，
+           而那是三個裡最有效也最省的一個：放大會把卡片下半撐開、調深會跟品名撞成同一層，
+           粗細不佔空間也不換顏色（網購站的價錢幾乎都是粗的）。反過來，賣得貴、想讓首頁
+           先講故事的店把品名設成粗之後，價錢留在 400 才對，這格讓兩種店各自調得到。
+           原本沒有一格動得到：「卡片標題粗細」動的是品名那行（h3）、「標題粗細」動的是
+           段落大標、「卡片價錢字級」只換大小、「卡片副文字深淺」動的是那層透明度。
+           跟卡片標題粗細那組不同，這行沒有 inline 的 font-weight（品名那行有，所以那組得
+           繞 --card-title-weight 變數），這份 <style> 沒包在 @layer、贏得過 Tailwind 的
+           工具類，一條規則就蓋得過去，不用再多一個變數。
+           400 / 500 / 700 都是這支 layout 已經載進來的字重，不給 300 那種細的——沒載的
+           字重瀏覽器會拿常規去假變細，中文筆畫糊掉，跟卡片標題粗細那組同一個理由。
+           沒設就沒 attribute、整條規則不存在，既有店家一個像素都不會動。 */
+        section[data-edit-target][data-card-price-weight="medium"] .sproutly-card-price {
+          font-weight: 500;
+        }
+        section[data-edit-target][data-card-price-weight="bold"] .sproutly-card-price {
+          font-weight: 700;
+        }
+
         /* 卡片行距：editor 各 section panel「卡片行距」三按鈕（收緊 / 跟預設 / 放寬）。
            上面四組把卡片裡每一行的大小都補完了，行與行之間隔多遠還是寫死的一組 mt-*：
            選物的品名離照片 24px、描述貼著品名 4px、「看更多」再隔 12px；精選 20px / 4px；

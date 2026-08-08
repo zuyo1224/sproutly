@@ -2886,6 +2886,7 @@ export function EditorWorkspace({
           const cardDescScale = cur.cardDescScale ?? null;
           const cardMicroScale = cur.cardMicroScale ?? null;
           const cardPriceScale = cur.cardPriceScale ?? null;
+          const cardPriceWeight = cur.cardPriceWeight ?? null;
           const cardRowGap = cur.cardRowGap ?? null;
           const cardMetaTone = cur.cardMetaTone ?? null;
           const entrance = cur.entrance ?? null;
@@ -5101,6 +5102,41 @@ export function EditorWorkspace({
                     <button
                       type="button"
                       onClick={() => patch({ cardPriceScale: null })}
+                      className="text-stone-500 hover:text-stone-800 underline"
+                    >
+                      清除
+                    </button>
+                  )}
+                </div>
+              </Field>
+              <Field label="卡片價錢粗細">
+                <div className="grid grid-cols-3 gap-1.5">
+                  {([
+                    { v: "normal", label: "常規" },
+                    { v: "medium", label: "中黑" },
+                    { v: "bold", label: "粗" },
+                  ] as const).map((opt) => (
+                    <button
+                      key={opt.v}
+                      type="button"
+                      onClick={() => patch({ cardPriceWeight: opt.v })}
+                      aria-pressed={(cardPriceWeight ?? "normal") === opt.v}
+                      className={`rounded-lg border py-2 text-xs transition ${
+                        (cardPriceWeight ?? "normal") === opt.v
+                          ? "border-emerald-500 bg-emerald-50 text-emerald-900"
+                          : "border-stone-200 text-stone-600 hover:border-stone-400"
+                      }`}
+                    >
+                      {opt.label}
+                    </button>
+                  ))}
+                </div>
+                <div className="mt-1.5 flex items-center justify-between text-[11px] text-stone-500">
+                  <span>上一格管的是價錢多大，這格管的是它多粗。想讓價錢一眼看得到，加粗比放大省——不會把卡片下半撐開，也不用改顏色；反過來想讓首頁先講商品不先講價，就留常規。同樣只有精選商品那段的卡片有價錢</span>
+                  {cardPriceWeight && (
+                    <button
+                      type="button"
+                      onClick={() => patch({ cardPriceWeight: null })}
                       className="text-stone-500 hover:text-stone-800 underline"
                     >
                       清除
