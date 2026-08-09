@@ -2886,6 +2886,7 @@ export function EditorWorkspace({
           const cardTitleLeading = cur.cardTitleLeading ?? null;
           const cardDescScale = cur.cardDescScale ?? null;
           const cardDescLeading = cur.cardDescLeading ?? null;
+          const cardDescWeight = cur.cardDescWeight ?? null;
           const cardMicroScale = cur.cardMicroScale ?? null;
           const cardMicroTracking = cur.cardMicroTracking ?? null;
           const cardPriceScale = cur.cardPriceScale ?? null;
@@ -5177,6 +5178,41 @@ export function EditorWorkspace({
                     <button
                       type="button"
                       onClick={() => patch({ cardDescLeading: null })}
+                      className="text-stone-500 hover:text-stone-800 underline"
+                    >
+                      清除
+                    </button>
+                  )}
+                </div>
+              </Field>
+              <Field label="卡片描述粗細">
+                <div className="grid grid-cols-3 gap-1.5">
+                  {([
+                    { v: "normal", label: "常規" },
+                    { v: "medium", label: "中黑" },
+                    { v: "bold", label: "粗" },
+                  ] as const).map((opt) => (
+                    <button
+                      key={opt.v}
+                      type="button"
+                      onClick={() => patch({ cardDescWeight: opt.v })}
+                      aria-pressed={(cardDescWeight ?? "normal") === opt.v}
+                      className={`rounded-lg border py-2 text-xs transition ${
+                        (cardDescWeight ?? "normal") === opt.v
+                          ? "border-emerald-500 bg-emerald-50 text-emerald-900"
+                          : "border-stone-200 text-stone-600 hover:border-stone-400"
+                      }`}
+                    >
+                      {opt.label}
+                    </button>
+                  ))}
+                </div>
+                <div className="mt-1.5 flex items-center justify-between text-[11px] text-stone-500">
+                  <span>那段描述的筆畫多粗。原本是最細的一級、又被「卡片副文字深淺」淡過一層，慢讀那種客人真的要讀的摘要在卡片上輕得像圖說，想讓它站出來選中黑或粗；小卡上描述只是一句副標、想讓品名獨大就留常規</span>
+                  {cardDescWeight && (
+                    <button
+                      type="button"
+                      onClick={() => patch({ cardDescWeight: null })}
                       className="text-stone-500 hover:text-stone-800 underline"
                     >
                       清除

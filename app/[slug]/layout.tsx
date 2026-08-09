@@ -1462,6 +1462,27 @@ export default async function PublicStoreLayout({
           line-height: 1.95;
         }
 
+        /* 卡片描述粗細：editor 各 section panel「卡片描述粗細」三按鈕（常規 / 中黑 / 粗）。
+           上面兩組管的是那段描述多大、行與行隔多遠，這組管的是它多粗。粗細前面只做過品名
+           與價錢，描述那段一直寫死 400——而它同時還被「卡片副文字深淺」淡到 0.7（選物那行
+           掛著 sproutly-card-meta），字級又比品名小，三個減法疊起來，那段話在卡片上淡到像
+           圖說。慢讀那種一整篇文章的摘要卡，摘要才是客人真的要讀的東西，卻是卡片上最輕的
+           一行；商家把品名調粗之後落差更大。反過來一列四張的小卡上描述只是一句副標，想讓
+           它再退一點也只能整段調深淺，沒辦法只動粗細。
+           規則落在 .sproutly-card-desc，跟字級、行距、行數那幾組同一個範圍：精選那段同一個
+           位置放的是價錢，不掛這個 class，而且價錢自己有一格粗細，不受影響。
+           這組不必繞 CSS variable（品名那組要繞，是因為粗細寫在 h3 自己的 inline style 上）
+           ——這兩段描述的 inline style 只有顏色，粗細是 class 那層的預設，這份 <style> 沒包
+           在 @layer，直接蓋得過去。
+           400 / 500 / 700 都是這支 layout 已經載進來的字重，不給 300 那種細的：沒載的字重
+           瀏覽器會拿常規去假變細，中文筆畫糊掉，跟品名、段落大標那兩格同一個理由。 */
+        section[data-edit-target][data-card-desc-weight="medium"] .sproutly-card-desc {
+          font-weight: 500;
+        }
+        section[data-edit-target][data-card-desc-weight="bold"] .sproutly-card-desc {
+          font-weight: 700;
+        }
+
         /* 卡片小字字級：editor 各 section panel「卡片小字字級」三按鈕（小 / 跟預設 / 大）。
            上面兩組管的是卡片裡的品名與描述，這組管的是卡片上剩下那幾行——全大寫、字距撐
            很開的小字：選物卡片底下的「看更多」、慢讀卡片上面的分類、慢讀卡片底下的標籤，

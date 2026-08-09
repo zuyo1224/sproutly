@@ -303,6 +303,24 @@ export const SECTION_STYLE_ENUMS = {
   // 各自的 class 附帶的，不是誰刻意設計的層次——商家按這一格要的是「收緊」或「拉開」，
   // 兩段一起落到同一個密度才是這格的用處。
   cardDescLeading: ["tight", "normal", "loose"],
+  // 卡片描述粗細（normal 照原本的 400 常規 / medium 500 中黑 / bold 700 粗），套的是品名底下
+  // 那段描述——選物的副標、慢讀的摘要。粗細這一格前面只做過品名（cardTitleWeight）與價錢
+  // （cardPriceWeight），描述那段一直是寫死的 400。
+  // 缺這格會怎樣：這兩段描述除了 400 常規，還同時被「卡片副文字深淺」那層淡到 0.7 的
+  // 透明度（選物那行掛著 sproutly-card-meta），字本來就比品名小——三個減法疊在一起，那段
+  // 話在卡片上淡到像圖說。慢讀那種一整篇文章的摘要卡，摘要才是客人真正要讀的東西，卻是
+  // 卡片上最輕的一行；反過來商家把品名調粗（上面那格）之後落差更大，描述整段退到背景裡。
+  // 另一邊也一樣沒得救：一列四張的小卡上描述只是一句副標，商家想讓它再退一點、讓品名獨
+  // 站出來，也只能整段調深淺，沒辦法只動粗細。
+  // 商家原本沒有一格動得到——「卡片標題粗細」動的是品名那行、「卡片描述字級」換的是字多
+  // 大（字大了跟粗細是兩回事，放大一段細字只是變成大的細字）、「卡片副文字深淺」動的是
+  // 透明度（整行連顏色一起變，淡的字調深會跟品名撞在一起）、段落層的「標題粗細」動的是
+  // 段落大標 h2，四個都到不了卡片裡的描述。
+  // 只用有載進來的字重（400 / 500 / 700），不給 300 那種細的，跟品名、大標那兩格同一個
+  // 理由：沒載的字重瀏覽器會拿常規去假變細，中文筆畫會糊掉。
+  // 掛的範圍跟卡片描述字級、行距、行數那幾格一樣是選物 / 慢讀兩段——精選那段同一個位置放
+  // 的是價錢，價錢自己有一格粗細（cardPriceWeight），本來就不掛 sproutly-card-desc。
+  cardDescWeight: ["normal", "medium", "bold"],
   // 卡片小字字級（small 縮一成 / default 照原本的 / large 放大四成），只套卡片裡那幾行
   // 全大寫、字距撐很開的小字——選物卡片底下的「看更多」、慢讀卡片上面的分類、慢讀卡片
   // 底下的標籤。三行都寫死 10px。10px 這個值是照英文那種 VIEW ALL / JOURNAL 挑的，那
@@ -477,6 +495,7 @@ export const SECTION_STYLE_NEUTRAL_VALUES = {
   cardTitleLeading: "normal",
   cardDescScale: "default",
   cardDescLeading: "normal",
+  cardDescWeight: "normal",
   cardMicroScale: "default",
   cardMicroTracking: "normal",
   cardPriceScale: "default",
