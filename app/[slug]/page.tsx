@@ -540,6 +540,15 @@ export default async function StoreHomePage({
       s?.cardDescScale === "small" || s?.cardDescScale === "large"
         ? s.cardDescScale
         : undefined;
+    // 卡片描述行距：上一格動的是那段描述多大，這格動的是它排到第二行以後，上下兩行之間隔
+    // 多遠。品名那行已經有一格，但描述才是卡片上一定會換行的那段，而兩段的行距各寫各的
+    // （選物副標只跟著 text-sm 走約 1.43、慢讀摘要寫死 1.85），一邊黏一邊散。段落上「行高」
+    // 那欄的規則只落在 p 那類元素，卡片裡的描述整組跳過，attribute 讓 layout.tsx 補規則。
+    // 掛的範圍跟字級那格一樣是兩段（選物副標 / 慢讀摘要）：精選那段同一個位置放的是價錢。
+    const cardDescLeadingVal: "tight" | "loose" | undefined =
+      s?.cardDescLeading === "tight" || s?.cardDescLeading === "loose"
+        ? s.cardDescLeading
+        : undefined;
     // 卡片小字字級：上兩格動的是品名與描述，這格動的是卡片上那幾行全大寫小字（寫死 10px
     // 的「看更多」、分類、標籤）。同樣是段落上的 inline style 傳不下去，attribute 讓
     // layout.tsx 補規則。掛的範圍是選物與慢讀兩段：精選那段同一個位置放的是「剩 N」庫存
@@ -648,6 +657,7 @@ export default async function StoreHomePage({
       cardTitleWeightVal,
       cardTitleLeadingVal,
       cardDescScaleVal,
+      cardDescLeadingVal,
       cardMicroScaleVal,
       cardMicroTrackingVal,
       cardPriceScaleVal,
@@ -1547,6 +1557,7 @@ export default async function StoreHomePage({
             data-card-title-weight={collStyle.cardTitleWeightVal}
             data-card-title-leading={collStyle.cardTitleLeadingVal}
             data-card-desc-scale={collStyle.cardDescScaleVal}
+            data-card-desc-leading={collStyle.cardDescLeadingVal}
             data-card-micro-scale={collStyle.cardMicroScaleVal}
             data-card-micro-tracking={collStyle.cardMicroTrackingVal}
             data-card-row-gap={collStyle.cardRowGapVal}
@@ -1942,6 +1953,7 @@ export default async function StoreHomePage({
             data-card-title-weight={journalStyle.cardTitleWeightVal}
             data-card-title-leading={journalStyle.cardTitleLeadingVal}
             data-card-desc-scale={journalStyle.cardDescScaleVal}
+            data-card-desc-leading={journalStyle.cardDescLeadingVal}
             data-card-micro-scale={journalStyle.cardMicroScaleVal}
             data-card-micro-tracking={journalStyle.cardMicroTrackingVal}
             data-card-row-gap={journalStyle.cardRowGapVal}

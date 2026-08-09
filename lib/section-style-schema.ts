@@ -288,6 +288,21 @@ export const SECTION_STYLE_ENUMS = {
   // 卡片描述行數那格的截斷也照樣成立（line-clamp 數的是行，不是絕對高度）。
   // 放大只到兩成不跟品名那格一樣到兩成半：描述比品名大就反過來了，留一階差距。
   cardDescScale: ["small", "default", "large"],
+  // 卡片描述行距（tight 收緊 / normal 照原本的 / loose 拉開），只套品名底下那段描述——
+  // 上一格動的是那段字多大，這格動的是它排到第二行以後，上下兩行之間隔多遠。
+  // 品名那行有這格（cardTitleLeading），描述沒有，但描述才是卡片上一定會換行的那段：
+  // 品名多半一行就結束，描述是整句甚至整段，一列三四張的窄卡上兩三行起跳。而現在兩段
+  // 描述的行距是各寫各的、都寫死——選物的副標只跟著 text-sm 走（約 1.43，那是英文短句
+  // 的密度），慢讀的摘要寫死 1.85。同一個控制在兩段裡落差這麼大，商家在選物那邊看到的
+  // 是兩行中文黏成一塊，在慢讀那邊反而是鬆到一段話散開，兩邊要的方向剛好相反。
+  // 商家原本沒有一格動得到——段落上「行高」那欄的規則只落在 p 那類元素上（卡片裡的描述
+  // 在自己的容器裡，整組跳過）、「卡片行距」動的是照片到品名、品名到描述那幾截 margin，
+  // 同一段字自己換行的距離不歸它管、「卡片描述字級」換的是字多大，行距是跟著字級走的
+  // 比例，字大了間隙也跟著大，密度沒變。
+  // 值寫死不等比（跟品名那格同一個理由）：行距本來就是個比例，1.43 與 1.85 的差是兩段
+  // 各自的 class 附帶的，不是誰刻意設計的層次——商家按這一格要的是「收緊」或「拉開」，
+  // 兩段一起落到同一個密度才是這格的用處。
+  cardDescLeading: ["tight", "normal", "loose"],
   // 卡片小字字級（small 縮一成 / default 照原本的 / large 放大四成），只套卡片裡那幾行
   // 全大寫、字距撐很開的小字——選物卡片底下的「看更多」、慢讀卡片上面的分類、慢讀卡片
   // 底下的標籤。三行都寫死 10px。10px 這個值是照英文那種 VIEW ALL / JOURNAL 挑的，那
@@ -461,6 +476,7 @@ export const SECTION_STYLE_NEUTRAL_VALUES = {
   cardTitleWeight: "normal",
   cardTitleLeading: "normal",
   cardDescScale: "default",
+  cardDescLeading: "normal",
   cardMicroScale: "default",
   cardMicroTracking: "normal",
   cardPriceScale: "default",

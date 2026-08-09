@@ -1444,6 +1444,24 @@ export default async function PublicStoreLayout({
           zoom: 1.2;
         }
 
+        /* 卡片描述行距：editor 各 section panel「卡片描述行距」三按鈕（收緊 / 跟預設 / 拉開）。
+           上一組管的是那段描述多大，這組管的是它排到第二行以後，上下兩行之間隔多遠。
+           品名那行已經有一組（data-card-title-leading），描述才是卡片上一定會換行的那段：
+           品名多半一行結束，描述是整句甚至整段，窄卡上兩三行起跳。而兩段描述的行距各寫各的
+           ——選物的副標只跟著 text-sm 走（約 1.43，英文短句的密度），慢讀的摘要寫死 1.85，
+           商家在選物那邊看到兩行中文黏成一塊，在慢讀那邊反而鬆到散開，方向剛好相反。
+           規則落在 .sproutly-card-desc，跟字級、行數那兩組同一個範圍：精選那段同一個位置放
+           的是價錢，不掛這個 class，不受影響。
+           寫死不等比（跟品名那組同一個理由）：1.43 與 1.85 的差是兩段各自的 class 附帶的，
+           不是刻意設計的層次，這格要的就是兩段一起落到同一個密度。leading-[1.85] 是 Tailwind
+           class，這份 <style> 沒包在 @layer，蓋得過去。 */
+        section[data-edit-target][data-card-desc-leading="tight"] .sproutly-card-desc {
+          line-height: 1.4;
+        }
+        section[data-edit-target][data-card-desc-leading="loose"] .sproutly-card-desc {
+          line-height: 1.95;
+        }
+
         /* 卡片小字字級：editor 各 section panel「卡片小字字級」三按鈕（小 / 跟預設 / 大）。
            上面兩組管的是卡片裡的品名與描述，這組管的是卡片上剩下那幾行——全大寫、字距撐
            很開的小字：選物卡片底下的「看更多」、慢讀卡片上面的分類、慢讀卡片底下的標籤，
