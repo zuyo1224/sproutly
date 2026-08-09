@@ -306,6 +306,18 @@ export default async function StoreHomePage({
       s?.headingLeading === "tight" || s?.headingLeading === "loose"
         ? s.headingLeading
         : undefined;
+    // 標題大標字距：不走 data attribute，走 CSS variable（--store-heading-track）。
+    // 行距那格能靠一條落在 h2 的規則蓋掉 class 附帶的值，字距蓋不掉——各段 h2 的字距是寫在
+    // 自己的 inline style 裡的（letterSpacing: var(--store-track, -0.01em)），inline 的優先度
+    // 連 CSS 規則都壓不過，補幾條 attribute selector 都不會生效。整段字距（--store-track）
+    // 當初就是為了同一個毛病改成讀變數的，大標這格接在它前面多一層：大標專屬 → 整段字距 →
+    // 各段原本的值，商家只調大標時內文不動，只調整段時大標照舊跟著整段走。
+    const headingTrackingVal: string | undefined =
+      s?.headingTracking === "tight"
+        ? "-0.05em"
+        : s?.headingTracking === "wide"
+          ? "0.08em"
+          : undefined;
     // 標題底線：同樣走 data attribute（線畫在 h2::after，只有 CSS 生得出偽元素）。
     const headingRuleVal: "short" | "full" | undefined =
       s?.headingRule === "short" || s?.headingRule === "full" ? s.headingRule : undefined;
@@ -649,6 +661,7 @@ export default async function StoreHomePage({
       entranceVal,
       headingWeightVal,
       headingLeadingVal,
+      headingTrackingVal,
       headingRuleVal,
       headingRuleWeightVal,
       accentBarVal,
@@ -863,6 +876,12 @@ export default async function StoreHomePage({
     if (s.letterSpacingOverride) {
       out.letterSpacing = s.letterSpacingOverride;
       out["--store-track"] = s.letterSpacingOverride;
+    }
+    // 大標字距：只餵變數、不設 section 自己的 letterSpacing——這格要動的就只有那一行大標，
+    // 設在 section 上會連整段繼承的字一起變（那是上面「字距」那格的事）。變數只設在這個
+    // section 上，其他段落的大標不受影響；沒設就整個 key 不出現，h2 退回讀 --store-track。
+    if (s.headingTrackingVal) {
+      out["--store-heading-track"] = s.headingTrackingVal;
     }
     if (s.lineHeightOverride !== undefined) {
       out.lineHeight = s.lineHeightOverride;
@@ -1611,6 +1630,7 @@ export default async function StoreHomePage({
                     width: "100%",
                     color: "var(--store-heading-color, var(--store-text))",
                     fontFamily: "var(--store-font)",
+                    letterSpacing: "var(--store-heading-track, inherit)",
                     fontWeight: 400,
                     wordBreak: "keep-all",
                     overflowWrap: "break-word",
@@ -1646,6 +1666,7 @@ export default async function StoreHomePage({
                   style={{
                     color: "var(--store-heading-color, var(--store-text))",
                     fontFamily: "var(--store-font)",
+                    letterSpacing: "var(--store-heading-track, inherit)",
                     fontWeight: 400,
                     wordBreak: "keep-all",
                     overflowWrap: "break-word",
@@ -1787,6 +1808,7 @@ export default async function StoreHomePage({
                     transform: "translate(-50%, -50%)",
                     color: "var(--store-heading-color, var(--store-text))",
                     fontFamily: "var(--store-font)",
+                    letterSpacing: "var(--store-heading-track, inherit)",
                     fontWeight: 400,
                     whiteSpace: "nowrap",
                   }}
@@ -1817,6 +1839,7 @@ export default async function StoreHomePage({
                     style={{
                       color: "var(--store-heading-color, var(--store-text))",
                       fontFamily: "var(--store-font)",
+                      letterSpacing: "var(--store-heading-track, inherit)",
                       fontWeight: 400,
                     }}
                   >
@@ -2024,7 +2047,7 @@ export default async function StoreHomePage({
                     color: "var(--store-heading-color, var(--store-text))",
                     fontFamily: "var(--store-font)",
                     fontWeight: 400,
-                    letterSpacing: "var(--store-track, -0.01em)",
+                    letterSpacing: "var(--store-heading-track, var(--store-track, -0.01em))",
                     lineHeight: 1.2,
                   }}
                 >
@@ -2057,7 +2080,7 @@ export default async function StoreHomePage({
                     color: "var(--store-heading-color, var(--store-text))",
                     fontFamily: "var(--store-font)",
                     fontWeight: 400,
-                    letterSpacing: "var(--store-track, -0.01em)",
+                    letterSpacing: "var(--store-heading-track, var(--store-track, -0.01em))",
                     lineHeight: 1.2,
                   }}
                 >
@@ -2378,7 +2401,7 @@ export default async function StoreHomePage({
                         color: "var(--store-heading-color, var(--store-text))",
                         fontFamily: "var(--store-font)",
                         fontWeight: 400,
-                        letterSpacing: "var(--store-track, -0.01em)",
+                        letterSpacing: "var(--store-heading-track, var(--store-track, -0.01em))",
                         lineHeight: 1.2,
                       }}
                     >
@@ -2415,7 +2438,7 @@ export default async function StoreHomePage({
                         color: "var(--store-heading-color, var(--store-text))",
                         fontFamily: "var(--store-font)",
                         fontWeight: 400,
-                        letterSpacing: "var(--store-track, -0.01em)",
+                        letterSpacing: "var(--store-heading-track, var(--store-track, -0.01em))",
                         lineHeight: 1.2,
                       }}
                     >
@@ -2578,7 +2601,7 @@ export default async function StoreHomePage({
                         color: "var(--store-heading-color, var(--store-text))",
                         fontFamily: "var(--store-font)",
                         fontWeight: 400,
-                        letterSpacing: "var(--store-track, -0.01em)",
+                        letterSpacing: "var(--store-heading-track, var(--store-track, -0.01em))",
                         lineHeight: 1.2,
                       }}
                     >
@@ -2612,7 +2635,7 @@ export default async function StoreHomePage({
                       color: "var(--store-heading-color, var(--store-text))",
                       fontFamily: "var(--store-font)",
                       fontWeight: 400,
-                      letterSpacing: "var(--store-track, -0.01em)",
+                      letterSpacing: "var(--store-heading-track, var(--store-track, -0.01em))",
                       lineHeight: 1.2,
                     }}
                   >
@@ -2766,7 +2789,7 @@ export default async function StoreHomePage({
                           color: "var(--store-heading-color, var(--store-text))",
                           fontFamily: "var(--store-font)",
                           fontWeight: 500,
-                          letterSpacing: "var(--store-track, -0.01em)",
+                          letterSpacing: "var(--store-heading-track, var(--store-track, -0.01em))",
                           lineHeight: 1.2,
                         }}
                       >
@@ -2805,7 +2828,7 @@ export default async function StoreHomePage({
                           color: "var(--store-heading-color, var(--store-text))",
                           fontFamily: "var(--store-font)",
                           fontWeight: 500,
-                          letterSpacing: "var(--store-track, -0.01em)",
+                          letterSpacing: "var(--store-heading-track, var(--store-track, -0.01em))",
                           lineHeight: 1.2,
                         }}
                       >
@@ -3064,7 +3087,7 @@ export default async function StoreHomePage({
                         color: "var(--store-heading-color, var(--store-text))",
                         fontFamily: "var(--store-font)",
                         fontWeight: 400,
-                        letterSpacing: "var(--store-track, -0.01em)",
+                        letterSpacing: "var(--store-heading-track, var(--store-track, -0.01em))",
                         lineHeight: 1.2,
                       }}
                     >
@@ -3098,7 +3121,7 @@ export default async function StoreHomePage({
                       color: "var(--store-heading-color, var(--store-text))",
                       fontFamily: "var(--store-font)",
                       fontWeight: 400,
-                      letterSpacing: "var(--store-track, -0.01em)",
+                      letterSpacing: "var(--store-heading-track, var(--store-track, -0.01em))",
                       lineHeight: 1.2,
                     }}
                   >
@@ -3233,7 +3256,7 @@ export default async function StoreHomePage({
                   color: "var(--store-heading-color, var(--store-text))",
                   fontFamily: "var(--store-font)",
                   fontWeight: 400,
-                  letterSpacing: "var(--store-track, -0.01em)",
+                  letterSpacing: "var(--store-heading-track, var(--store-track, -0.01em))",
                   lineHeight: 1.2,
                 }}
               >
