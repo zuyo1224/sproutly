@@ -2885,6 +2885,7 @@ export function EditorWorkspace({
           const cardTitleWeight = cur.cardTitleWeight ?? null;
           const cardDescScale = cur.cardDescScale ?? null;
           const cardMicroScale = cur.cardMicroScale ?? null;
+          const cardMicroTracking = cur.cardMicroTracking ?? null;
           const cardPriceScale = cur.cardPriceScale ?? null;
           const cardPriceWeight = cur.cardPriceWeight ?? null;
           const cardRowGap = cur.cardRowGap ?? null;
@@ -3151,6 +3152,9 @@ export function EditorWorkspace({
                 // 價錢一粗，400 的品名反而被壓過去，客人先看到的是數字不是商品；品名跟著
                 // 上一階（不到 700）才留得住「品名是主角、價錢是重點」的順序。
                 cardTitleWeight: "medium",
+                // 橫排之後右邊那欄本來就窄，「剩 3 件」「看更多」那行還帶著 0.3em 的字距
+                // （照英文短詞挑的），在窄欄裡直接被撐到換行，一行小字變兩行貼著價錢。
+                cardMicroTracking: "tight",
                 mobileColumns: "one",
               },
             },
@@ -3173,6 +3177,9 @@ export function EditorWorkspace({
                 // 每張卡上都認得出哪行是品名——收小之後補回來的只能是粗細（再放大就違背版型）。
                 cardTitleWeight: "medium",
                 cardRowGap: "tight",
+                // 一列 3、4 張的小卡上，「看更多」那行撐開的字距佔掉的比例比大卡大得多，
+                // 常常是那張卡上唯一換行的東西，同一列的下緣就是被它拉歪的。
+                cardMicroTracking: "tight",
                 mediaAspect: "square",
               },
             },
@@ -3197,6 +3204,9 @@ export function EditorWorkspace({
                 // 這組刻意不設粗細，另外兩組卡片版型都設了：那兩組是把字收小、靠粗細補回
                 // 層級，這組是宋體大標配一整段摘要，標題已經放大兩成半、又有寬行距撐著，
                 // 再加粗會變成賣場標題，把「先讀到字」的敘事感壓掉。想加粗的店自己按那一格。
+                // 卡片小字字距同理不設：另外兩組收緊是因為窄欄、小卡會被那行撐到換行，
+                // 這組的卡片一列只放一兩張、右邊那欄很寬，那行分類標籤撐開的字距正是這種
+                // 雜誌版型要的東西，收緊反而把它變成一行普通小字。
                 cardRowGap: "loose",
                 fontFamily: "serif",
                 lineHeight: "relaxed",
@@ -5098,6 +5108,41 @@ export function EditorWorkspace({
                     <button
                       type="button"
                       onClick={() => patch({ cardMicroScale: null })}
+                      className="text-stone-500 hover:text-stone-800 underline"
+                    >
+                      清除
+                    </button>
+                  )}
+                </div>
+              </Field>
+              <Field label="卡片小字字距">
+                <div className="grid grid-cols-3 gap-1.5">
+                  {([
+                    { v: "tight", label: "收緊" },
+                    { v: "normal", label: "跟預設" },
+                    { v: "wide", label: "撐開" },
+                  ] as const).map((opt) => (
+                    <button
+                      key={opt.v}
+                      type="button"
+                      onClick={() => patch({ cardMicroTracking: opt.v })}
+                      aria-pressed={(cardMicroTracking ?? "normal") === opt.v}
+                      className={`rounded-lg border py-2 text-xs transition ${
+                        (cardMicroTracking ?? "normal") === opt.v
+                          ? "border-emerald-500 bg-emerald-50 text-emerald-900"
+                          : "border-stone-200 text-stone-600 hover:border-stone-400"
+                      }`}
+                    >
+                      {opt.label}
+                    </button>
+                  ))}
+                </div>
+                <div className="mt-1.5 flex items-center justify-between text-[11px] text-stone-500">
+                  <span>上一格那幾行小字，字跟字之間空多少。那個間隙是照英文短詞挑的，中文放進去會變成一個個站開的單字、在手機上還會被撐到換行——中文小字選收緊，英文短詞想要雜誌感選撐開</span>
+                  {cardMicroTracking && (
+                    <button
+                      type="button"
+                      onClick={() => patch({ cardMicroTracking: null })}
                       className="text-stone-500 hover:text-stone-800 underline"
                     >
                       清除

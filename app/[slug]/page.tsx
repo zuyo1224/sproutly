@@ -538,6 +538,16 @@ export default async function StoreHomePage({
       s?.cardMicroScale === "small" || s?.cardMicroScale === "large"
         ? s.cardMicroScale
         : undefined;
+    // 卡片小字字距：上一格動的是那幾行小字多大，這格動的是字與字之間空多少（寫死的
+    // 0.3em / 0.4em，照英文全大寫短詞挑的，中文擠進去會散成一個個單字）。
+    // 那幾行的字距大多寫在 Tailwind class 上，這份 <style> 沒包在 @layer、規則蓋得過去；
+    // 只有精選那行「剩 N」的字距在 inline style 裡（跟顏色同一包），CSS 規則蓋不過
+    // inline，所以下面改成由 --card-micro-track 帶，值一樣在 layout.tsx 依這個 attribute 給。
+    // 掛的範圍跟字級那格一樣是三段（選物 / 精選 / 慢讀），卡片上有這種小字的就這三段。
+    const cardMicroTrackingVal: "tight" | "wide" | undefined =
+      s?.cardMicroTracking === "tight" || s?.cardMicroTracking === "wide"
+        ? s.cardMicroTracking
+        : undefined;
     // 卡片價錢字級：上面三格動的是品名、描述、全大寫小字，這格動的是精選商品卡片上那行
     // 價錢（寫死 14px，比品名還小）。同樣是段落上的 inline style 傳不下去，attribute 讓
     // layout.tsx 補規則。只掛精選那一段：卡片上有價錢的只有它。
@@ -628,6 +638,7 @@ export default async function StoreHomePage({
       cardTitleWeightVal,
       cardDescScaleVal,
       cardMicroScaleVal,
+      cardMicroTrackingVal,
       cardPriceScaleVal,
       cardPriceWeightVal,
       cardRowGapVal,
@@ -1525,6 +1536,7 @@ export default async function StoreHomePage({
             data-card-title-weight={collStyle.cardTitleWeightVal}
             data-card-desc-scale={collStyle.cardDescScaleVal}
             data-card-micro-scale={collStyle.cardMicroScaleVal}
+            data-card-micro-tracking={collStyle.cardMicroTrackingVal}
             data-card-row-gap={collStyle.cardRowGapVal}
             data-card-meta-tone={collStyle.cardMetaToneVal}
             style={mergeSectionStyle(collStyle)}
@@ -1701,6 +1713,7 @@ export default async function StoreHomePage({
             data-card-price-weight={featuredStyle.cardPriceWeightVal}
             data-card-row-gap={featuredStyle.cardRowGapVal}
             data-card-micro-scale={featuredStyle.cardMicroScaleVal}
+            data-card-micro-tracking={featuredStyle.cardMicroTrackingVal}
             data-card-meta-tone={featuredStyle.cardMetaToneVal}
           >
             <div className="max-w-5xl mx-auto px-8 sm:px-12" style={{ textAlign: featuredStyle.align }}>
@@ -1837,7 +1850,7 @@ export default async function StoreHomePage({
                     {isLowStock(p.stock) ? (
                       <p
                         className="sproutly-card-micro mt-1 text-[0.6875rem] uppercase font-medium"
-                        style={{ color: "#92400E", letterSpacing: "0.3em" }}
+                        style={{ color: "#92400E", letterSpacing: "var(--card-micro-track, 0.3em)" }}
                       >
                         Low Stock · 剩 {p.stock}
                       </p>
@@ -1916,6 +1929,7 @@ export default async function StoreHomePage({
             data-card-title-weight={journalStyle.cardTitleWeightVal}
             data-card-desc-scale={journalStyle.cardDescScaleVal}
             data-card-micro-scale={journalStyle.cardMicroScaleVal}
+            data-card-micro-tracking={journalStyle.cardMicroTrackingVal}
             data-card-row-gap={journalStyle.cardRowGapVal}
           >
           <div className="max-w-5xl mx-auto px-8 sm:px-12" style={{ textAlign: journalStyle.align }}>

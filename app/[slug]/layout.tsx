@@ -1443,6 +1443,34 @@ export default async function PublicStoreLayout({
           zoom: 1.4;
         }
 
+        /* 卡片小字字距：editor 各 section panel「卡片小字字距」三按鈕（收緊 / 跟預設 / 撐開）。
+           上一組管的是那幾行小字多大，這組管的是字與字之間空多少——選物的「看更多」、慢讀
+           的分類與標籤、精選的「剩 N」，寫死 0.3em / 0.4em。那組值跟段落小標那行的 0.4em
+           同一個出發點：照英文全大寫短詞挑的（VIEW ALL、JOURNAL 那種，字母間本來就有空隙，
+           撐開才有雜誌感）。中文放進去是另一回事——「看更多」三個字每個之間硬塞進 0.3 個
+           字寬，看起來不是一個詞是三個各自站著的字；上一組選了「大」之後更明顯，zoom 連
+           字距一起放大，那行在手機上直接被撐到換行黏在品名底下。
+           段落最上面那行小標早就有這一格（data-eyebrow-track），那條規則落在段落自己的
+           eyebrow 上，到不了卡片裡；「字距」那欄設的是整段，這幾行自己帶著 0.3em / 0.4em
+           動都不動。
+           兩條規則：一條蓋 class 上的字距（這份 <style> 沒包在 @layer，贏得過 Tailwind 的
+           tracking-[0.3em]），一條給 --card-micro-track 讓精選那行寫在 inline style 裡的
+           「剩 N」也跟著走（inline 蓋不過，只能繞變數，跟卡片標題粗細那組同一個作法）。
+           收緊給 0.12em 不給 0：這種小字的樣式標誌就是那個比內文寬的字距，收到 0 會變成
+           一行普通小字，看起來像漏排版不是刻意的。 */
+        section[data-edit-target][data-card-micro-tracking="tight"] {
+          --card-micro-track: 0.12em;
+        }
+        section[data-edit-target][data-card-micro-tracking="tight"] .sproutly-card-micro {
+          letter-spacing: 0.12em;
+        }
+        section[data-edit-target][data-card-micro-tracking="wide"] {
+          --card-micro-track: 0.55em;
+        }
+        section[data-edit-target][data-card-micro-tracking="wide"] .sproutly-card-micro {
+          letter-spacing: 0.55em;
+        }
+
         /* 卡片價錢字級：editor 精選商品 panel「卡片價錢字級」三按鈕（小 / 跟預設 / 大）。
            上面三組把卡片裡的品名、描述、全大寫小字都補起來之後，價錢是這一組最後一行沒得
            動的——它寫死 14px，比品名的 16px 還小一級。那個安排是照「先看商品再看價錢」的
