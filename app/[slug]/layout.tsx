@@ -1400,6 +1400,32 @@ export default async function PublicStoreLayout({
           --card-title-weight: 700;
         }
 
+        /* 卡片標題行距：editor 各 section panel「卡片標題行距」三按鈕（收緊 / 跟預設 / 拉開）。
+           上面兩組管的是品名那行多大、多粗，這組管的是它自己換行之後上下兩行隔多遠——只有
+           那行排到兩行以上才看得出差別，而「卡片標題行數」那格（讓品名顯示到兩行或完整）
+           正是把換行變成常態的那一格：精選商品原本寫死只顯示一行，商家為了讓帶規格的品名
+           看得完整選了完整之後，才第一次看到自己的品名換行長什麼樣。
+           各段的行距是跟著字級 class 附帶的（選物 text-lg 1.56 / sm:text-xl 1.4、精選
+           text-base 1.5、慢讀寫死 leading-[1.4]），照一行字的狀況挑的：中文換到第二行時
+           上下筆畫幾乎黏在一起；反過來把品名字級調大之後，同一個比例撐出來的間隙又大得
+           像兩行沒關係的字。
+           商家原本沒有一格動得到——「行高」那組的規則只落在 p / li / blockquote /
+           figcaption / dd 上（見上面那段），卡片裡的品名是 h3、整組跳過；「卡片行距」動的
+           是卡片裡不同行之間那截 margin（照片到品名、品名到價錢），同一行字自己換行不歸它
+           管；「卡片標題字級」換的是字多大，行距是跟著字級走的比例。
+           規則落在 .sproutly-card-title，這份 <style> 沒包在 @layer、贏得過 Tailwind 的
+           leading-[1.4] 與字級 class 自帶的行高，一條規則就蓋得過去。
+           寫死一個值不等比：行距本來就是 unitless 的比例，三段之間 1.4 與 1.56 的差是字級
+           class 附帶的、不是誰刻意設計的層次——跟卡片行距那格（同一張卡上幾截距離有主次，
+           要等比保留）不是同一種東西。
+           沒設就沒 attribute、整條規則不存在，既有店家一個像素都不會動。 */
+        section[data-edit-target][data-card-title-leading="tight"] .sproutly-card-title {
+          line-height: 1.15;
+        }
+        section[data-edit-target][data-card-title-leading="loose"] .sproutly-card-title {
+          line-height: 1.75;
+        }
+
         /* 卡片描述字級：editor 各 section panel「卡片描述字級」三按鈕（小 / 跟預設 / 大）。
            上一組管的是品名那行多大，這組管的是品名底下那段描述——選物的副標、慢讀的摘要，
            兩段都寫死 14px，照站上預設那種一句話的副標挑的。慢讀那種一整段摘要的卡片，14px

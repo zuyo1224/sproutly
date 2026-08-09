@@ -2883,6 +2883,7 @@ export function EditorWorkspace({
           const cardDescLines = cur.cardDescLines ?? null;
           const cardTitleScale = cur.cardTitleScale ?? null;
           const cardTitleWeight = cur.cardTitleWeight ?? null;
+          const cardTitleLeading = cur.cardTitleLeading ?? null;
           const cardDescScale = cur.cardDescScale ?? null;
           const cardMicroScale = cur.cardMicroScale ?? null;
           const cardMicroTracking = cur.cardMicroTracking ?? null;
@@ -3139,6 +3140,12 @@ export function EditorWorkspace({
                 cardMediaWidth: "narrow",
                 cardText: "left",
                 cardTitleLines: "two",
+                // 這個版型主動把品名放成兩行（上一欄），而兩行之間的距離是跟著字級 class
+                // 附帶的（1.5 那種，照一行字挑的）——照片收到 25% 之後右邊那欄本來就窄，
+                // 品名幾乎一定換行，兩行中間再空著就把一列的高度拉高，清單「一個螢幕看得到
+                // 幾個品項」的意義先被吃掉。行距那格收緊的是行與行之間，同一行字自己換行
+                // 不歸它管，這格才是。
+                cardTitleLeading: "tight",
                 cardDescLines: "two",
                 // 清單的重點是一個螢幕看得到幾個品項，行與行之間的距離是照直排卡片挑的
                 // （品名離照片 24px 那種），橫排之後四行字散在右邊一片空白裡。
@@ -3176,6 +3183,11 @@ export function EditorWorkspace({
                 // 小卡看起來是每張卡兩行灰字。這個版型的重點是「一列掃下來整齊」，靠的就是
                 // 每張卡上都認得出哪行是品名——收小之後補回來的只能是粗細（再放大就違背版型）。
                 cardTitleWeight: "medium",
+                // 品名收小了、也限成兩行，但兩行之間還照原本那個比例空著——這個版型要的是
+                // 同一列每張卡下緣切齊，而卡片高度就是被那截空隙一張一張撐得不一樣高的
+                // （一行的卡矮、兩行的卡高，差的正是這一截）。收緊之後兩行品名佔的高度接近
+                // 一行半，加了淡底的卡片才不會比照片還高。
+                cardTitleLeading: "tight",
                 cardRowGap: "tight",
                 // 一列 3、4 張的小卡上，「看更多」那行撐開的字距佔掉的比例比大卡大得多，
                 // 常常是那張卡上唯一換行的東西，同一列的下緣就是被它拉歪的。
@@ -3208,6 +3220,11 @@ export function EditorWorkspace({
                 // 這組的卡片一列只放一兩張、右邊那欄很寬，那行分類標籤撐開的字距正是這種
                 // 雜誌版型要的東西，收緊反而把它變成一行普通小字。
                 cardRowGap: "loose",
+                // 標題放大兩成半又限成兩行，換行是這個版型的常態；宋體大標兩行擠在照一行
+                // 字挑的 1.4 裡，看起來是兩行黏著的字不是一個標題。另外兩組卡片版型收緊是
+                // 為了同一列切齊、一個螢幕看得多，這組反過來——一列只放一兩張，右邊那段
+                // 本來就是要被讀完的文章，標題有呼吸才接得上底下那段寬行高的摘要。
+                cardTitleLeading: "loose",
                 fontFamily: "serif",
                 lineHeight: "relaxed",
                 mobileColumns: "one",
@@ -5038,6 +5055,41 @@ export function EditorWorkspace({
                     <button
                       type="button"
                       onClick={() => patch({ cardTitleWeight: null })}
+                      className="text-stone-500 hover:text-stone-800 underline"
+                    >
+                      清除
+                    </button>
+                  )}
+                </div>
+              </Field>
+              <Field label="卡片標題行距">
+                <div className="grid grid-cols-3 gap-1.5">
+                  {([
+                    { v: "tight", label: "收緊" },
+                    { v: "normal", label: "跟預設" },
+                    { v: "loose", label: "拉開" },
+                  ] as const).map((opt) => (
+                    <button
+                      key={opt.v}
+                      type="button"
+                      onClick={() => patch({ cardTitleLeading: opt.v })}
+                      aria-pressed={(cardTitleLeading ?? "normal") === opt.v}
+                      className={`rounded-lg border py-2 text-xs transition ${
+                        (cardTitleLeading ?? "normal") === opt.v
+                          ? "border-emerald-500 bg-emerald-50 text-emerald-900"
+                          : "border-stone-200 text-stone-600 hover:border-stone-400"
+                      }`}
+                    >
+                      {opt.label}
+                    </button>
+                  ))}
+                </div>
+                <div className="mt-1.5 flex items-center justify-between text-[11px] text-stone-500">
+                  <span>品名排到兩行以上時，上下兩行之間隔多遠（品名只有一行的話這格看不出差別）。「卡片標題行數」選了兩行或完整、或品名本來就長的段落才用得到：兩行中文黏在一起就拉開，字級調大之後間隙太空就收緊。「卡片行距」那格調的是品名跟照片、價錢之間，不是同一行字自己換行</span>
+                  {cardTitleLeading && (
+                    <button
+                      type="button"
+                      onClick={() => patch({ cardTitleLeading: null })}
                       className="text-stone-500 hover:text-stone-800 underline"
                     >
                       清除

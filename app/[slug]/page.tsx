@@ -522,6 +522,16 @@ export default async function StoreHomePage({
       s?.cardTitleWeight === "medium" || s?.cardTitleWeight === "bold"
         ? s.cardTitleWeight
         : undefined;
+    // 卡片標題行距：上兩格動的是品名那行多大、多粗，這格動的是它排到兩行以上時，上下兩行
+    // 之間隔多遠。那個值是跟著字級 class 來的（選物 1.4-1.56、精選 1.5、慢讀寫死 1.4），
+    // 照一行字的狀況挑的；卡片標題行數那格讓品名可以顯示到兩行甚至完整之後，換行才第一次
+    // 出現，中文上下兩行的筆畫幾乎黏在一起。段落上「行高」那欄的規則只落在 p 那類元素，
+    // 卡片裡的品名是 h3、整組跳過，attribute 讓 layout.tsx 補規則。
+    // 掛在卡片底下真的有標題的三段（選物 / 精選 / 慢讀），跟字級、粗細那兩格同樣三段。
+    const cardTitleLeadingVal: "tight" | "loose" | undefined =
+      s?.cardTitleLeading === "tight" || s?.cardTitleLeading === "loose"
+        ? s.cardTitleLeading
+        : undefined;
     // 卡片描述字級：上一格動的是品名那行，這格動的是它底下那段描述（寫死 14px）。同樣是
     // 段落上的 inline style 傳不下去，attribute 讓 layout.tsx 補規則。
     // 掛的範圍跟卡片描述行數那格一樣是兩段（選物副標 / 慢讀摘要）：精選那段同一個位置放
@@ -636,6 +646,7 @@ export default async function StoreHomePage({
       cardDescLinesVal,
       cardTitleScaleVal,
       cardTitleWeightVal,
+      cardTitleLeadingVal,
       cardDescScaleVal,
       cardMicroScaleVal,
       cardMicroTrackingVal,
@@ -1534,6 +1545,7 @@ export default async function StoreHomePage({
             data-card-desc-lines={collStyle.cardDescLinesVal}
             data-card-title-scale={collStyle.cardTitleScaleVal}
             data-card-title-weight={collStyle.cardTitleWeightVal}
+            data-card-title-leading={collStyle.cardTitleLeadingVal}
             data-card-desc-scale={collStyle.cardDescScaleVal}
             data-card-micro-scale={collStyle.cardMicroScaleVal}
             data-card-micro-tracking={collStyle.cardMicroTrackingVal}
@@ -1709,6 +1721,7 @@ export default async function StoreHomePage({
             data-card-title-lines={featuredStyle.cardTitleLinesVal}
             data-card-title-scale={featuredStyle.cardTitleScaleVal}
             data-card-title-weight={featuredStyle.cardTitleWeightVal}
+            data-card-title-leading={featuredStyle.cardTitleLeadingVal}
             data-card-price-scale={featuredStyle.cardPriceScaleVal}
             data-card-price-weight={featuredStyle.cardPriceWeightVal}
             data-card-row-gap={featuredStyle.cardRowGapVal}
@@ -1927,6 +1940,7 @@ export default async function StoreHomePage({
             data-card-desc-lines={journalStyle.cardDescLinesVal}
             data-card-title-scale={journalStyle.cardTitleScaleVal}
             data-card-title-weight={journalStyle.cardTitleWeightVal}
+            data-card-title-leading={journalStyle.cardTitleLeadingVal}
             data-card-desc-scale={journalStyle.cardDescScaleVal}
             data-card-micro-scale={journalStyle.cardMicroScaleVal}
             data-card-micro-tracking={journalStyle.cardMicroTrackingVal}
