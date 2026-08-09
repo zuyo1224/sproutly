@@ -2863,6 +2863,7 @@ export function EditorWorkspace({
           const headingInnerGap = cur.headingInnerGap ?? null;
           const eyebrowTracking = cur.eyebrowTracking ?? null;
           const eyebrowScale = cur.eyebrowScale ?? null;
+          const eyebrowLeading = cur.eyebrowLeading ?? null;
           const hideOn = cur.hideOn ?? null;
           const outline = cur.outline ?? null;
           const shadow = cur.shadow ?? null;
@@ -4008,6 +4009,41 @@ export function EditorWorkspace({
                     <button
                       type="button"
                       onClick={() => patch({ eyebrowScale: null })}
+                      className="text-stone-500 hover:text-stone-800 underline"
+                    >
+                      清除
+                    </button>
+                  )}
+                </div>
+              </Field>
+              <Field label="小標行距">
+                <div className="grid grid-cols-3 gap-1.5">
+                  {([
+                    { v: "tight", label: "收緊" },
+                    { v: "normal", label: "跟預設" },
+                    { v: "loose", label: "拉開" },
+                  ] as const).map((opt) => (
+                    <button
+                      key={opt.v}
+                      type="button"
+                      onClick={() => patch({ eyebrowLeading: opt.v })}
+                      aria-pressed={(eyebrowLeading ?? "normal") === opt.v}
+                      className={`rounded-lg border py-2 text-xs transition ${
+                        (eyebrowLeading ?? "normal") === opt.v
+                          ? "border-emerald-500 bg-emerald-50 text-emerald-900"
+                          : "border-stone-200 text-stone-600 hover:border-stone-400"
+                      }`}
+                    >
+                      {opt.label}
+                    </button>
+                  ))}
+                </div>
+                <div className="mt-1.5 flex items-center justify-between text-[11px] text-stone-500">
+                  <span>上兩格調的是那行小標的字距與大小，這格調的是它排到兩行時上下隔多遠。小標打長一點、或字級按到「大」之後在手機上換行，兩行散得像兩個小標時選「收緊」（整段的「行高」也動得到這行，但會把底下的描述、答案一起收緊）</span>
+                  {eyebrowLeading && (
+                    <button
+                      type="button"
+                      onClick={() => patch({ eyebrowLeading: null })}
                       className="text-stone-500 hover:text-stone-800 underline"
                     >
                       清除

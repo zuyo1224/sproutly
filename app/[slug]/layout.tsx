@@ -1765,6 +1765,26 @@ export default async function PublicStoreLayout({
           zoom: 1.3;
         }
 
+        /* 小標行距：editor 各 section panel「小標行距」三按鈕（收緊 / 跟預設 / 拉開）。
+           上兩組管的是那行字的橫向（字距）與大小，這組管的是它排到第二行之後上下隔多遠。
+           那行很容易換行——自己帶著 0.4em 的字距，四個中文字佔的寬度接近六個字，小標打長
+           一點、或「小標字級」按到大之後，手機上一行放不下是常態。
+           跟上兩組不同的是這裡要蓋的不是它自己的 class（那行沒帶 leading-*），是從段落那層
+           繼承下來的內文行高：站上預設 1.7 上下、商家把「行高」按到舒展就是 2，那個值是給
+           一整段要讀的字挑的，套在 10px 的標籤上兩行之間空得比字還高，看起來像上下兩個沒
+           關係的小標。唯一動得到它的是「行高」那一欄，但那條規則落在 :is(p, li, blockquote,
+           figcaption, dd) 上，收緊小標的同時整段的描述、引言、答案全部一起被收緊。
+           所以這兩條寫成 attribute + class：屬性數比行高那條多一個（那條是 section + 2 個
+           attribute + 元素），無論商家有沒有同時設行高都壓得過去。
+           收緊給 1.15 不給更小：中文的字在行框裡本來就佔滿，1.0 以下上下兩行會疊到筆畫。
+           沒設就沒 attribute、整條規則不存在，既有店家的小標一行字都不會動。 */
+        section[data-edit-target][data-eyebrow-leading="tight"] .sproutly-section-eyebrow {
+          line-height: 1.15;
+        }
+        section[data-edit-target][data-eyebrow-leading="loose"] .sproutly-section-eyebrow {
+          line-height: 2.2;
+        }
+
         /* 區段進場動畫：editor 各 section panel「進場動畫」三按鈕（無 / 淡入 / 上滑）
            靠 data-anim attribute + CSS scroll-driven animation（animation-timeline: view()）觸發。
            沒設定 = 無 attr = 不動畫；fade = opacity 0→1；slide-up = opacity + translateY 上滑。
