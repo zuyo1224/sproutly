@@ -747,6 +747,23 @@ export default async function PublicStoreLayout({
           font-weight: 700;
         }
 
+        /* 區段大標行距：editor 各 section panel「標題行距」三按鈕（收緊 / 預設 / 拉開）。
+           只有大標排到兩行以上才看得出差別，而大標偏偏是最容易換行的那一行——字級全段最大，
+           商家打的又常常是一整句中文，手機上一行放不下是常態。各段的行距是 Tailwind 字級
+           class 附帶的（text-2xl 那組約 1.33、text-3xl / text-4xl 那組壓到 1.1-1.2），照英文
+           標題挑的：中文換到第二行時上下兩行的筆畫幾乎貼在一起。
+           底下那條「區段內文行高」刻意跳過 h1-h3（標題行高跟字級綁在一起，跟內文一起拉開
+           會散掉），所以標題這邊要自己一條。同樣走 data attribute：沒設就整條規則不存在，
+           各段維持自己 class 附帶的那個值。這份 <style> 沒包在 @layer，蓋得過 leading-* class。
+           排除 hero — hero 主標自成一組控制，跟標題粗細、底線那幾條同一個範圍。
+           收緊給 1.1 不給更小：中文的字在行框裡本來就佔滿，1.0 以下上下兩行會疊到筆畫。 */
+        section[data-edit-target]:not([data-edit-target="hero"])[data-heading-leading="tight"] h2 {
+          line-height: 1.1;
+        }
+        section[data-edit-target]:not([data-edit-target="hero"])[data-heading-leading="loose"] h2 {
+          line-height: 1.5;
+        }
+
         /* 區段標題底線：editor 各 section panel「標題底線」三按鈕（無 / 短線 / 整條）。
            畫成 h2::after 而不是 h2 的 border-bottom —— h2 是 block、寬度撐滿整欄，border
            畫出來一律是整條，做不出雜誌感的那截短線。走 data attribute 同樣是為了「沒設就

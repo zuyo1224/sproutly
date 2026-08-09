@@ -435,6 +435,26 @@ export const SECTION_STYLE_ENUMS = {
   // 標題粗細（light 400 常規 / normal 不套維持原樣 / bold 700 粗）。只用思源黑體 / 宋體有
   // 載進來的字重（400 / 700），不挑 300 之類沒載的——瀏覽器會拿常規去假變細，中文筆畫糊掉。
   headingWeight: ["light", "normal", "bold"],
+  // 段落大標行距（tight 收緊 / normal 照原本的 / loose 拉開），指的是段落那行大標自己換行
+  // 之後，上下兩行之間隔多遠——只有標題排到兩行以上才看得出差別。
+  // 卡片上那行品名早就有這一格（cardTitleLeading），底下的描述也有（cardDescLeading），
+  // 段落自己的大標反而沒有，而大標才是最容易換行的那一行：字級本來就是全段最大的
+  // （慢讀那段桌機 2.5rem），商家打的又常常是一整句中文（「來自南投山區的手作陶盆」），
+  // 在手機上一行放不下是常態。而各段大標的行距是跟著 Tailwind 字級 class 附帶來的一個值
+  // （text-2xl 那組約 1.33、text-3xl / text-4xl 那組壓到 1.1-1.2），那組值是照英文標題挑的
+  // ——英文字母沒有上下伸得那麼滿的筆畫，1.1 倍看起來剛好；中文換到第二行時上下兩行的
+  // 筆畫幾乎貼在一起，整塊標題糊成一團。反過來把標題大小調成小之後，同一個比例撐出來的
+  // 間隙又鬆得像兩行沒關係的字。
+  // 商家原本沒有一格動得到——「行高」那欄的規則刻意只落在段落那類元素（p / li /
+  // blockquote / figcaption / dd）上、明講不碰 h1-h3；「標題大小」與「標題粗細」動的是字
+  // 自己（字大了行距是跟著字級走的比例，密度沒變）；「標題塊裡面」調的是小標跟大標之間、
+  // 大標跟引言之間那截 margin，同一行字自己換行的距離不歸它管。
+  // 值寫死不等比（跟卡片標題行距那格同一個理由）：行距本來就是個比例，各段 1.1 與 1.33
+  // 的差是字級 class 附帶的、不是誰刻意設計的層次，商家按這一格要的是「全部收緊」或
+  // 「全部拉開」，兩段一起落到同一個密度才是這格的用處。
+  // 收緊給 1.1 不給更小：中文的字在行框裡本來就佔滿，1.0 以下上下兩行會真的疊到筆畫。
+  // 不套 hero — hero 主標的字級 / 顏色 / 對齊自成一組控制，跟標題粗細、底線那幾格同一條線。
+  headingLeading: ["tight", "normal", "loose"],
   // 底紋（grid 細格線 / dots 點陣 / lines 斜紋），純 CSS gradient 疊在底色上，不吃圖檔。
   // 線的顏色走 currentColor，所以深底淺字的 section 換成淺色紋、不用另外設一組顏色。
   texture: ["none", "grid", "dots", "lines"],
@@ -514,6 +534,7 @@ export const SECTION_STYLE_NEUTRAL_VALUES = {
   sectionWidth: "full",
   sectionGap: "none",
   headingWeight: "normal",
+  headingLeading: "normal",
   texture: "none",
   bgGradient: "none",
   headingRule: "none",

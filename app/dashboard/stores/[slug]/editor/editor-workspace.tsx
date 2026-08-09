@@ -2902,6 +2902,7 @@ export function EditorWorkspace({
           const sectionWidth = cur.sectionWidth ?? null;
           const sectionGap = cur.sectionGap ?? null;
           const headingWeight = cur.headingWeight ?? null;
+          const headingLeading = cur.headingLeading ?? null;
           const headingRule = cur.headingRule ?? null;
           const headingRuleWeight = cur.headingRuleWeight ?? null;
           const accentBar = cur.accentBar ?? null;
@@ -4113,6 +4114,41 @@ export function EditorWorkspace({
                     <button
                       type="button"
                       onClick={() => patch({ headingWeight: null })}
+                      className="text-stone-500 hover:text-stone-800 underline"
+                    >
+                      清除
+                    </button>
+                  )}
+                </div>
+              </Field>
+              <Field label="標題行距">
+                <div className="grid grid-cols-3 gap-1.5">
+                  {([
+                    { v: "tight", label: "收緊" },
+                    { v: "normal", label: "預設" },
+                    { v: "loose", label: "拉開" },
+                  ] as const).map((opt) => (
+                    <button
+                      key={opt.v}
+                      type="button"
+                      onClick={() => patch({ headingLeading: opt.v })}
+                      aria-pressed={(headingLeading ?? "normal") === opt.v}
+                      className={`rounded-lg border py-2 text-xs transition ${
+                        (headingLeading ?? "normal") === opt.v
+                          ? "border-emerald-500 bg-emerald-50 text-emerald-900"
+                          : "border-stone-200 text-stone-600 hover:border-stone-400"
+                      }`}
+                    >
+                      {opt.label}
+                    </button>
+                  ))}
+                </div>
+                <div className="mt-1.5 flex items-center justify-between text-[11px] text-stone-500">
+                  <span>標題換行後兩行之間的距離</span>
+                  {headingLeading && (
+                    <button
+                      type="button"
+                      onClick={() => patch({ headingLeading: null })}
                       className="text-stone-500 hover:text-stone-800 underline"
                     >
                       清除
