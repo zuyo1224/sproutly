@@ -2982,7 +2982,7 @@ export function EditorWorkspace({
               key: "modern",
               group: "section",
               label: "現代簡潔",
-              hint: "黑體 + 緊字距 + 微圓角 + 小標收緊 + 標題貼近內容 + 照片跟著圓 + 滑過只輕輕浮起（Stripe / Linear 風）",
+              hint: "黑體 + 緊字距 + 微圓角 + 小標收緊 + 標題貼近內容 + 卡片品名加中黑 + 照片跟著圓 + 滑過只輕輕浮起（Stripe / Linear 風）",
               fields: {
                 fontFamily: "sans",
                 paddingScale: "default",
@@ -2995,6 +2995,10 @@ export function EditorWorkspace({
                 headingGap: "tight",
                 // 段落的四角圓了、裡面的照片還是方的，兩個圓角對不起來反而像沒做完。
                 mediaRadius: "soft",
+                // 這個風格靠字重分層級（上面那行註解就是這個意思），但卡片上的品名一直是
+                // 寫死的 400，跟底下的描述只差在顏色淡一點——整段字距收緊、留白也收掉之後，
+                // 那點差別撐不住，一張卡看起來是三行沒有主次的字。
+                cardTitleWeight: "medium",
                 // 站上滑過卡片一次做四件事（浮起、照片放大、壓暗、標題撐開），在克制的
                 // 介面風格裡太吵。
                 cardHover: "calm",
@@ -3126,7 +3130,7 @@ export function EditorWorkspace({
               key: "product-list",
               group: "card",
               label: "商品清單",
-              hint: "照片在左（佔窄）+ 卡片文字靠左 + 品名兩行 + 描述兩行 + 行距收緊 + 價錢放大加深 + 手機一列一張（一般網購站的清單模式，同一個螢幕看得到的品項多；適合 選物 / 精選 / 慢讀）",
+              hint: "照片在左（佔窄）+ 卡片文字靠左 + 品名兩行（中黑）+ 描述兩行 + 行距收緊 + 價錢放大加深加粗 + 手機一列一張（一般網購站的清單模式，同一個螢幕看得到的品項多；適合 選物 / 精選 / 慢讀）",
               fields: {
                 cardLayout: "side",
                 // 橫排的照片佔寬預設是 38%，清單這種一行只有品名跟價錢的內容，字沒幾個
@@ -3139,9 +3143,14 @@ export function EditorWorkspace({
                 // （品名離照片 24px 那種），橫排之後四行字散在右邊一片空白裡。
                 cardRowGap: "tight",
                 // 清單模式下客人是一行一行掃過去比價，價錢寫死比品名還小一級、又被淡到
-                // 五成，正好是這種版型最該看得到的那行。
+                // 五成，正好是這種版型最該看得到的那行。放大與調深都做過了還差粗細——
+                // 網購站的價錢幾乎都是粗的，而且粗不佔空間，橫排卡片右邊那欄本來就窄。
                 cardPriceScale: "large",
                 cardMetaTone: "strong",
+                cardPriceWeight: "bold",
+                // 價錢一粗，400 的品名反而被壓過去，客人先看到的是數字不是商品；品名跟著
+                // 上一階（不到 700）才留得住「品名是主角、價錢是重點」的順序。
+                cardTitleWeight: "medium",
                 mobileColumns: "one",
               },
             },
@@ -3149,7 +3158,7 @@ export function EditorWorkspace({
               key: "tidy-grid",
               group: "card",
               label: "整齊格子",
-              hint: "卡片加淡底 + 文字靠左 + 品名兩行（收小）+ 描述兩行 + 行距收緊 + 照片正方（每張卡有自己的邊界、同一列下緣切齊；適合欄數調到 3、4 欄的 選物 / 精選）",
+              hint: "卡片加淡底 + 文字靠左 + 品名兩行（收小加中黑）+ 描述兩行 + 行距收緊 + 照片正方（每張卡有自己的邊界、同一列下緣切齊；適合欄數調到 3、4 欄的 選物 / 精選）",
               fields: {
                 cardSurface: "panel",
                 cardText: "left",
@@ -3159,6 +3168,10 @@ export function EditorWorkspace({
                 // 寬度上佔掉卡片下半整整兩行，照片被擠小；連著行距一起收，四行字才不會
                 // 把加了淡底的卡片撐得比照片還高。
                 cardTitleScale: "small",
+                // 品名收小、行距也收緊之後，那行字跟底下的描述變成同一個大小級距，一整片
+                // 小卡看起來是每張卡兩行灰字。這個版型的重點是「一列掃下來整齊」，靠的就是
+                // 每張卡上都認得出哪行是品名——收小之後補回來的只能是粗細（再放大就違背版型）。
+                cardTitleWeight: "medium",
                 cardRowGap: "tight",
                 mediaAspect: "square",
               },
@@ -3181,6 +3194,9 @@ export function EditorWorkspace({
                 // 行與行擠在一起也不像一段可以讀的文字。
                 cardTitleScale: "large",
                 cardDescScale: "large",
+                // 這組刻意不設粗細，另外兩組卡片版型都設了：那兩組是把字收小、靠粗細補回
+                // 層級，這組是宋體大標配一整段摘要，標題已經放大兩成半、又有寬行距撐著，
+                // 再加粗會變成賣場標題，把「先讀到字」的敘事感壓掉。想加粗的店自己按那一格。
                 cardRowGap: "loose",
                 fontFamily: "serif",
                 lineHeight: "relaxed",
@@ -3224,18 +3240,33 @@ export function EditorWorkspace({
           // 換同組的另一個風格時，要先把上一個風格設過、而新風格沒設的欄位清掉。
           // 不清的話會疊出四不像：「商品清單」換「整齊格子」，格子沒設 cardLayout，
           // 清單的照片在左就留著，商家看到的是橫排卡片加淡底，不是他按的格子牆。
-          // 只在「上一個風格還完整套著」（沒被手動微調過）時才清——商家自己動過的值，
-          // 我們不知道他是想留還是想換，留著比清掉安全。
+          // 只清「這段的值就是那個風格設的值」的欄位——商家自己動過的值，我們不知道他是
+          // 想留還是想換，留著比清掉安全。
+          //
+          // 判斷「上一個是哪個風格」不能直接用上面那個嚴格的「目前」：風格本身會長大
+          // （這一輪就往三個風格裡各加了卡片粗細），去年套過舊版商品清單的段落少了新加的
+          // 那兩欄，嚴格比對算它沒套任何風格，切換時就一格都不清——照片在左會留下來，
+          // 正是這段註解開頭那個已經修過一次的四不像。所以這裡改成「值相同或這段根本沒設」
+          // 都算數，而且同組每個符合的風格都清一遍（不只挑一個）。沒設的欄位刪了是空操作，
+          // 值不一樣的風格一開始就不符合、碰不到，兩種情況都不會誤刪商家自己按的東西。
           function applyPreset(p: (typeof presets)[number]) {
             const merged: typeof cur = { ...cur, ...p.fields };
-            const prevKey = activePresetByGroup[p.group];
-            if (prevKey && prevKey !== p.key) {
-              const prev = presets.find((x) => x.key === prevKey);
-              if (prev) {
-                (Object.keys(prev.fields) as Array<keyof typeof cur>).forEach((k) => {
-                  if (!(k in p.fields)) delete merged[k];
-                });
-              }
+            for (const prev of presets) {
+              if (prev.group !== p.group || prev.key === p.key) continue;
+              const wasApplied = (Object.keys(prev.fields) as Array<keyof typeof cur>).every((k) => {
+                const want = prev.fields[k];
+                if (want === undefined) return true;
+                const have = cur[k];
+                if (have === undefined) return true;
+                if (typeof want === "string" && typeof have === "string" && want.startsWith("#")) {
+                  return want.toLowerCase() === have.toLowerCase();
+                }
+                return want === have;
+              });
+              if (!wasApplied) continue;
+              (Object.keys(prev.fields) as Array<keyof typeof cur>).forEach((k) => {
+                if (!(k in p.fields)) delete merged[k];
+              });
             }
             (Object.keys(merged) as Array<keyof typeof merged>).forEach((k) => {
               if (merged[k] === undefined) delete merged[k];
