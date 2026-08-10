@@ -2955,6 +2955,19 @@ export function EditorWorkspace({
           // 10px，跟大標黏成一團；套完「現代簡潔」的段落字距收緊了，段落最上面那塊裡面的
           // 距離還是原本那組寬鬆值，看起來不現代也不簡潔。商家得自己在四五格之間按對，
           // 那正是快速風格本來要省掉的事（跟上一輪三個卡片版型補字級與行距同一個理由）。
+          //
+          // 這一輪補的是最近三格「字自己怎麼排」的控制：段落大標的行距與字距、那行小標的
+          // 行距。三格都是在字被風格改大改小、字距被撐開之後才浮出來的問題，所以正好是
+          // 快速風格自己製造出來的——「雜誌風」把大標放大、小標撐開 0.4em，兩個都直接提高
+          // 換行的機率，而換行之後的行距還是各段從字級 class 附帶來的那個值（照英文標題挑
+          // 的 1.1-1.2，中文兩行的筆畫貼在一起）；「戲劇感」把小標放大三成又撐開，是所有
+          // 風格裡最會把那行擠成兩行的一組，而那兩行之間繼承的是整段內文的行高（1.7 到 2），
+          // 10px 的標籤上下空得比字本身還高，看起來是兩個沒關係的小標。商家套完風格看到的
+          // 是「字換對了、排版散了」，還是得自己再按三格。
+          // 沒有每一組都補：段落大標字距只補到整段字距沒設、大標會停在寫死 -0.01em 的那幾
+          // 組（設了整段字距的組，大標本來就跟著整段走，再設一次只是把 0.1em 換成 0.08em，
+          // 商家看不出差別、卻多一欄存進 DB）；「卡片浮起」那組動的是段落的底色與外框，
+          // 一個字的設定都沒有，硬塞三格排版進去會變成按了底色順便被改字。
           const presets: {
             key: string;
             group: "section" | "card";
@@ -2966,7 +2979,7 @@ export function EditorWorkspace({
               key: "editorial",
               group: "section",
               label: "雜誌風",
-              hint: "宋體 + 大標 + 寬呼吸 + 小標撐開 + 標題各段拉開 + 內文收成窄欄（適合 promise / journal）",
+              hint: "宋體 + 大標（行距拉開）+ 寬呼吸 + 小標撐開（行距收緊）+ 標題各段拉開 + 內文收成窄欄（適合 promise / journal）",
               fields: {
                 fontFamily: "serif",
                 headingScale: "large",
@@ -2977,6 +2990,18 @@ export function EditorWorkspace({
                 // 「字距」那欄設的是整段，小標自己帶著 0.4em 反而動都不動——雜誌風的重點
                 // 就是那行小標，得單獨撐開才跟得上大標放大後的重量。
                 eyebrowTracking: "wide",
+                // 上一欄把那行小標每個字之間塞進 0.4 個字寬，四個中文字佔的寬度接近六個字，
+                // 手機上一行放不下是常態。而它換行之後靠的是整段內文的行高，這組又剛好把
+                // 行高設成舒展（2.0）——那是給一整段要讀的字挑的值，套在 10px 的標籤上，
+                // 兩行之間空得比字還高，看起來不是一行換到第二行，是上下兩個小標。
+                eyebrowLeading: "tight",
+                // 大標放大（上面 headingScale）又是宋體，一整句中文在手機上換行是常態，
+                // 而各段大標的行距是字級 class 附帶的 1.1-1.2（照英文標題挑的，字母沒有
+                // 中文那種上下佔滿的筆畫）——雜誌版面的大標本來就是靠行與行之間的留白撐
+                // 起來的，收在 1.1 裡兩行會糊成一塊。
+                headingLeading: "loose",
+                // 大標字距這組不設：整段字距已經是撐開（上面 letterSpacing: wide），大標
+                // 繼承得到，再設一次只是把 0.1em 換成 0.08em。
                 // 大標放大之後，小標與大標之間、大標與引言之間還是原本照一行小標配一行
                 // 大標挑的距離，三行字擠成一團；雜誌版面靠的就是那幾段留白。
                 headingInnerGap: "loose",
@@ -2989,7 +3014,7 @@ export function EditorWorkspace({
               key: "modern",
               group: "section",
               label: "現代簡潔",
-              hint: "黑體 + 緊字距 + 微圓角 + 小標收緊 + 標題貼近內容 + 卡片品名加中黑 + 照片跟著圓 + 滑過只輕輕浮起（Stripe / Linear 風）",
+              hint: "黑體 + 緊字距 + 微圓角 + 小標收緊（行距一起收）+ 大標行距收緊 + 標題貼近內容 + 卡片品名加中黑 + 照片跟著圓 + 滑過只輕輕浮起（Stripe / Linear 風）",
               fields: {
                 fontFamily: "sans",
                 paddingScale: "default",
@@ -2997,6 +3022,17 @@ export function EditorWorkspace({
                 borderRadius: "soft",
                 // 整段字距收緊了、小標還撐著 0.4em，那行字看起來像從別的風格剩下來的。
                 eyebrowTracking: "tight",
+                // 那行小標的字距收緊了，換行之後上下兩行還是隔著整段內文的行高（1.7 上下），
+                // 一行 10px 的字上下留出將近兩行的空——這組把段落裡每一截距離都收掉了，
+                // 只剩那行小標自己散著，看起來像從別的風格剩下來的。
+                eyebrowLeading: "tight",
+                // 同一件事落在大標上：這組不放大標題、靠字重與距離分層級，而大標的行距是
+                // 字級 class 附帶的一個比例，商家打了長標題換行之後，兩行之間的空隙比這組
+                // 段落裡任何一截距離都大，整塊標題看起來不屬於這個版面。
+                headingLeading: "tight",
+                // 大標字距這組不設：整段字距已經收緊（上面 letterSpacing: tight），大標
+                // 繼承得到；大標專屬那格的收緊是 -0.05em，套在字級最大的一行中文上筆畫
+                // 會真的疊到隔壁，反而是這個風格最不能出的錯。
                 // 這類介面風格的特徵是資訊之間貼得近、靠字重與大小分層級，不是靠留白。
                 headingInnerGap: "tight",
                 headingGap: "tight",
@@ -3015,7 +3051,7 @@ export function EditorWorkspace({
               key: "dramatic",
               group: "section",
               label: "戲劇感",
-              hint: "滿屏 + 大標（加粗）+ 深陰影 + 上滑進場 + 小標放大撐開 + 內文收成窄欄",
+              hint: "滿屏 + 大標（加粗、行距收緊、字距撐開）+ 深陰影 + 上滑進場 + 小標放大撐開（行距收緊）+ 內文收成窄欄",
               fields: {
                 minHeight: "fullscreen",
                 // 滿屏撐出來的空高原本一律留在內容下面，套完是一小塊內容黏在上緣、下面一大片
@@ -3029,7 +3065,20 @@ export function EditorWorkspace({
                 // 這個風格是要那塊內容撐得住整個畫面，小標與大標都得跟著長。
                 eyebrowScale: "large",
                 eyebrowTracking: "wide",
+                // 放大三成又撐開 0.4em，是八組風格裡最會把那行小標擠成兩行的一組（兩個
+                // 設定都在往寬的方向推）。而它換行之後隔的是整段內文的行高，字放大之後
+                // 那個比例撐出來的空隙也跟著長——一整螢幕的段落上，那塊本來要當主角的
+                // 標題會先被一行拆成兩截的小標破掉。
+                eyebrowLeading: "tight",
                 headingWeight: "bold",
+                // 海報式的大標題行距本來就比內文緊，一整螢幕高的段落更是靠那塊字的份量
+                // 撐住畫面；大標放大又加粗之後，字級 class 附帶的那個比例撐出來的空隙會
+                // 讓兩行標題散成兩句沒關係的話。
+                headingLeading: "tight",
+                // 這組沒設整段字距，大標停在寫死的 -0.01em（照英文標題挑的：英文收一點
+                // 字距，單字之間的空格還在）。中文沒有那個空格，加粗之後筆畫更厚，往內
+                // 收 0.01 個字寬會黏在一起，而這組的大標是整頁最大最粗的一行。
+                headingTracking: "wide",
                 // 滿屏段落的內文一行橫跨整個螢幕，是所有版型裡最難讀的一種。
                 bodyMeasure: "normal",
               },
@@ -3055,7 +3104,7 @@ export function EditorWorkspace({
               key: "recede",
               group: "section",
               label: "低調襯底",
-              hint: "淡化 + 緊湊 + 小標（連同上面那行小標、內文一起縮）+ 卡片靠攏 + 滑過不動（次要區段退到後面，襯托 hero / 選物。適合 partners / stats / faq）",
+              hint: "淡化 + 緊湊 + 小標（連同上面那行小標、內文一起縮，行距也收）+ 卡片靠攏 + 滑過不動（次要區段退到後面，襯托 hero / 選物。適合 partners / stats / faq）",
               fields: {
                 opacity: "muted",
                 paddingScale: "compact",
@@ -3063,6 +3112,12 @@ export function EditorWorkspace({
                 letterSpacing: "wide",
                 // 大標縮小了、上面那行小標還是 10px，兩行變成同一級，反而看不出誰是標題。
                 eyebrowScale: "small",
+                // 縮小之後那行字更小，換行時上下之間隔的卻還是整段內文的行高（1.7 上下，
+                // 而這組又把整段字距設成撐開，那行小標更容易換行）——一段本來要退到後面
+                // 的區段，反而因為那行小標散成兩截而多佔一截高度，跟「緊湊」是反的。
+                eyebrowLeading: "tight",
+                // 大標行距這組不設：標題已經縮成小（上面 headingScale: small），一行放得
+                // 下是常態，收緊行距在畫面上看不出差別，卻會讓這組多一欄存進 DB。
                 bodyScale: "small",
                 // 退到後面的段落還佔著跟主打段落一樣的格線間距，等於沒退。
                 gridGap: "tight",
@@ -3074,13 +3129,21 @@ export function EditorWorkspace({
               key: "mono",
               group: "section",
               label: "黑白雜誌",
-              hint: "黑白濾鏡 + 宋體 + 寬字距（小標也撐開）+ 寬呼吸 + 照片緊貼成一片 + 滑過只輕輕浮起（攝影感雜誌調，適合 gallery / partners）",
+              hint: "黑白濾鏡 + 宋體 + 寬字距（小標也撐開、行距收緊）+ 大標行距拉開 + 寬呼吸 + 照片緊貼成一片 + 滑過只輕輕浮起（攝影感雜誌調，適合 gallery / partners）",
               fields: {
                 filter: "grayscale",
                 fontFamily: "serif",
                 letterSpacing: "wide",
                 paddingScale: "spacious",
                 eyebrowTracking: "wide",
+                // 跟雜誌風同一件事：撐開 0.4em 的小標在手機上很容易變兩行，而兩行之間繼承
+                // 的是整段內文的行高，10px 的標籤上下空得比字還高。
+                eyebrowLeading: "tight",
+                // 這組是宋體大標配一整片照片，標題是照片以外唯一的排版元素——字級 class
+                // 附帶的 1.1-1.2 是照英文標題挑的，中文兩行的筆畫會貼在一起，跟底下那片
+                // 留了寬呼吸的版面對不起來。
+                headingLeading: "loose",
+                // 大標字距不設，理由同雜誌風：整段字距已經撐開，大標繼承得到。
                 // 攝影雜誌的整頁照片是緊貼成一片看的，中間留白會把那片拆回一張一張。
                 gridGap: "tight",
                 // 黑白照片滑過去被放大又壓暗，剛調好的灰階層次會糊掉。
@@ -3091,7 +3154,7 @@ export function EditorWorkspace({
               key: "boxed-card",
               group: "section",
               label: "置中卡片",
-              hint: "窄版置中 + 上下拉開 + 淺底圓角陰影 + 照片跟著圓 + 標題貼近內容 + 滑過只輕輕浮起（整段縮成一張浮起的卡片，適合 promise / testimonial / faq）",
+              hint: "窄版置中 + 上下拉開 + 淺底圓角陰影 + 照片跟著圓 + 標題貼近內容（大標與小標行距一起收）+ 滑過只輕輕浮起（整段縮成一張浮起的卡片，適合 promise / testimonial / faq）",
               fields: {
                 sectionWidth: "boxed",
                 sectionGap: "large",
@@ -3104,6 +3167,13 @@ export function EditorWorkspace({
                 // 整段已經收成一張卡片，裡面還照原本滿版段落那個距離留白的話，卡片會被
                 // 撐得很高、內容散在中間。
                 headingGap: "tight",
+                // 同一個理由往裡面走一層：整段收成 1100px 的卡片之後，同一句大標比滿版時
+                // 更容易換行，而換行之後那截空隙是這張卡片被撐高的另一個來源——上一欄收的
+                // 是標題塊跟內容之間，這欄收的是標題自己兩行之間。
+                headingLeading: "tight",
+                // 那行小標同理，而且它自己還帶著 0.4em 的字距（等於每個字後面多塞半個字寬），
+                // 在收窄的卡片裡是最先換行的一行，換行後隔的又是整段內文的行高。
+                eyebrowLeading: "tight",
                 cardHover: "calm",
               },
             },
@@ -3111,7 +3181,7 @@ export function EditorWorkspace({
               key: "left-story",
               group: "section",
               label: "靠左敘事",
-              hint: "標題靠左 + 宋體 + 寬行高 + 寬呼吸 + 內文放大 + 小標撐開 + 標題各段拉開（左對齊的雜誌敘事感，適合 about / story / journal）",
+              hint: "標題靠左 + 宋體 + 寬行高 + 寬呼吸 + 內文放大 + 小標撐開（行距收緊）+ 大標行距與字距一起拉開 + 標題各段拉開（左對齊的雜誌敘事感，適合 about / story / journal）",
               fields: {
                 headingAlign: "left",
                 fontFamily: "serif",
@@ -3122,6 +3192,17 @@ export function EditorWorkspace({
                 // 一整片留白中間一行小字，看起來像沒排完。
                 bodyScale: "large",
                 eyebrowTracking: "wide",
+                // 這組把整段收成 760px 的窄欄，是八組裡最窄的一個——撐開 0.4em 的小標在
+                // 那個寬度上幾乎一定換行，而換行之後隔的是整段內文的行高，這組又設成舒展
+                // （2.0）：一行 10px 的小標會拉出兩行之間空一整行的樣子。
+                eyebrowLeading: "tight",
+                // 大標也一樣，窄欄裡一句中文標題換行是常態，而字級 class 附帶的行距是照
+                // 英文標題挑的 1.1-1.2。這組整段的行高已經設成舒展，內文有呼吸、標題卻
+                // 貼成一塊，兩者對不起來——標題那格的規則不碰 h2，得靠這一欄。
+                headingLeading: "loose",
+                // 這組沒設整段字距，大標停在寫死的 -0.01em；靠左的宋體敘事標題撐開一點才
+                // 有雜誌那種留白，而中文每個字本來就佔滿方框，往內收只會讓筆畫多的字黏住。
+                headingTracking: "wide",
                 headingInnerGap: "loose",
               },
             },
