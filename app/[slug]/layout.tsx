@@ -878,6 +878,27 @@ export default async function PublicStoreLayout({
           zoom: 1.12;
         }
 
+        /* 區段內文粗細：editor 各 section panel「內文粗細」三按鈕（常規 / 中黑 / 粗）。
+           粗細這一格前面補過段落大標、卡片品名、卡片描述、卡片價錢，段落自己的內文是最後
+           一個沒得動的——而那幾行是每一段字最多、客人真的會讀完的地方。它們一律 400，又多半
+           同時讀 --store-text-muted（文字色的七成），兩個減法疊起來，引言與常見問題的答案在
+           淺色底上是一片糊的灰。商家原本只能繞：調濃會跟標題撞成同一層、放大會把整段撐高、
+           換黑體是連標題一起換，沒有一個是「只讓這幾行重一點」。
+           選擇器跟行高、內文對齊那兩組同一份（段落 / 條列 / 引言 / 圖說），三格管的是同一批
+           字。不碰 h1-h3：標題的粗細另有「標題粗細」那一格，兩邊各管一半才做得出「標題常規、
+           內文中黑」這種排法。
+           卡片裡那幾行不歸這條管：卡片描述與價錢的規則帶 class（.sproutly-card-desc /
+           .sproutly-card-price），特異度比這條高，商家兩邊都設時卡片照樣聽卡片那格的。
+           只用 400 / 500 / 700 這三個有載進來的字重，不給 300：沒載的字重瀏覽器會拿常規去
+           假變細，中文筆畫糊成一團——跟大標與卡片那三格同一個理由。
+           沒設（或選「常規」）就沒 attribute、整條規則不存在，既有店家一個字都不會變。 */
+        section[data-edit-target][data-body-weight="medium"] :is(p, li, blockquote, figcaption, dd) {
+          font-weight: 500;
+        }
+        section[data-edit-target][data-body-weight="bold"] :is(p, li, blockquote, figcaption, dd) {
+          font-weight: 700;
+        }
+
         /* 區段內容垂直位置：editor 各 section panel「內容垂直位置」三按鈕（靠上 / 置中 / 靠下）。
            只有這一段比內容高的時候才看得出差別，也就是設了「最小高度」（高 80vh / 滿屏 100vh）
            之後——而那正是這個控制要補的洞：撐出來的空高一律留在內容下面，商家選了滿屏想要一

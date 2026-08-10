@@ -38,6 +38,24 @@ export const SECTION_STYLE_ENUMS = {
   // 商家原本能動的只有兩個極端：「文字顏色」把整段（含標題）一起換掉，或「淡化」把整段
   // 連照片一起變透明——沒有一個只調次要文字的。這一欄補的就是那一格。
   bodyTone: ["muted", "default", "strong"],
+  // 內文粗細（normal 照原本的 400 常規 / medium 500 中黑 / bold 700 粗），只套段落自己的
+  // 內文（描述、引言、圖說、常見問題的答案），不動標題也不動卡片裡那幾行。
+  // 粗細這一格前面補過四個位置：段落大標（headingWeight）、卡片品名（cardTitleWeight）、
+  // 卡片描述（cardDescWeight）、卡片價錢（cardPriceWeight）——段落自己的內文是這一組裡
+  // 最後一個沒得動的，偏偏是每一段字數最多、客人真的會讀完的那幾行。
+  // 缺這格會怎樣：那幾行一律 400，而且多半同時被淡成 --store-text-muted（文字色的七成），
+  // 兩個減法疊起來，段落引言與常見問題的答案在淺色底上是一片糊的灰。商家原本能救的只有
+  // 三個方向，每一個都連帶動到別的東西：「內文濃淡」調的是顏色深淺（調濃會跟標題撞成
+  // 同一層，本來的主次沒了）、「內文大小」把字放大（整段跟著變高，一列卡片的版面被撐開）、
+  // 「字體」換成黑體（整段連標題一起換）。粗細不佔空間、不換顏色，是讓一段字站出來最省的
+  // 作法，卻是唯一沒有的一格。反過來也一樣：把整段當襯底、想讓內文再退一步的段落
+  //（合作 logo、數字那種），現在也只能靠淡化整段連照片一起變透明。
+  // 規則落在跟「行高」「內文對齊」同一份選擇器上（p / li / blockquote / figcaption / dd），
+  // 三格管的是同一批字，一起調才講得通。卡片那三格的規則帶 class（.sproutly-card-desc /
+  // .sproutly-card-price），比這條精確，商家兩邊都設時卡片照樣聽卡片那格的。
+  // 只用有載進來的字重（400 / 500 / 700），不給 300 那種細的——沒載的字重瀏覽器會拿常規
+  // 去假變細，中文筆畫會糊掉，跟大標與卡片那三格同一個理由。
+  bodyWeight: ["normal", "medium", "bold"],
   // 標題用色（default 跟整段文字色 / accent 全站主色 / muted 跟次要文字同深淺）。
   // 區段裡用主色畫的一直只有配件——小標 eyebrow、標題底下那截短線、常見問題的＋——標題
   // 本身固定用文字色，商家想讓某一段的標題帶品牌色（最常見的「標題用主色、內文用黑」），
@@ -524,6 +542,7 @@ export const SECTION_STYLE_NEUTRAL_VALUES = {
   bodyMeasure: "auto",
   bodyScale: "default",
   bodyTone: "default",
+  bodyWeight: "normal",
   headingTone: "default",
   contentAlign: "top",
   headingGap: "normal",

@@ -2851,6 +2851,7 @@ export function EditorWorkspace({
           const bodyMeasure = cur.bodyMeasure ?? null;
           const bodyScale = cur.bodyScale ?? null;
           const bodyTone = cur.bodyTone ?? null;
+          const bodyWeight = cur.bodyWeight ?? null;
           const headingTone = cur.headingTone ?? null;
           const bg = cur.bgColor ?? null;
           const textCol = cur.textColor ?? null;
@@ -3776,6 +3777,41 @@ export function EditorWorkspace({
                     <button
                       type="button"
                       onClick={() => patch({ bodyTone: null })}
+                      className="text-stone-500 hover:text-stone-800 underline"
+                    >
+                      清除
+                    </button>
+                  )}
+                </div>
+              </Field>
+              <Field label="內文粗細">
+                <div className="grid grid-cols-3 gap-1.5">
+                  {([
+                    { v: "normal", label: "常規" },
+                    { v: "medium", label: "中黑" },
+                    { v: "bold", label: "粗" },
+                  ] as const).map((opt) => (
+                    <button
+                      key={opt.v}
+                      type="button"
+                      onClick={() => patch({ bodyWeight: opt.v })}
+                      aria-pressed={(bodyWeight ?? "normal") === opt.v}
+                      className={`rounded-lg border py-2 text-xs transition ${
+                        (bodyWeight ?? "normal") === opt.v
+                          ? "border-emerald-500 bg-emerald-50 text-emerald-900"
+                          : "border-stone-200 text-stone-600 hover:border-stone-400"
+                      }`}
+                    >
+                      {opt.label}
+                    </button>
+                  ))}
+                </div>
+                <div className="mt-1.5 flex items-center justify-between text-[11px] text-stone-500">
+                  <span>描述、引言、答案那幾行的粗細，不佔空間也不換顏色就讓字站出來</span>
+                  {bodyWeight && (
+                    <button
+                      type="button"
+                      onClick={() => patch({ bodyWeight: null })}
                       className="text-stone-500 hover:text-stone-800 underline"
                     >
                       清除
