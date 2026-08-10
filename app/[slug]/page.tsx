@@ -566,6 +566,15 @@ export default async function StoreHomePage({
       s?.cardTitleLeading === "tight" || s?.cardTitleLeading === "loose"
         ? s.cardTitleLeading
         : undefined;
+    // 卡片品名字距：上一格動的是品名換行之後上下隔多遠，這格動的是同一行裡字與字隔多遠。
+    // 選物與精選的品名沒設字距（跟著整段的 --store-track 走），慢讀那行寫死 -0.005em 在
+    // 自己的 inline style 裡——inline 蓋不過 CSS 規則，所以 layout.tsx 那組除了規則還設
+    // --card-title-track，那行改讀變數。
+    // 掛的三段跟字級、粗細、行距那幾格一樣（選物 / 精選 / 慢讀）。
+    const cardTitleTrackingVal: "tight" | "wide" | undefined =
+      s?.cardTitleTracking === "tight" || s?.cardTitleTracking === "wide"
+        ? s.cardTitleTracking
+        : undefined;
     // 卡片描述字級：上一格動的是品名那行，這格動的是它底下那段描述（寫死 14px）。同樣是
     // 段落上的 inline style 傳不下去，attribute 讓 layout.tsx 補規則。
     // 掛的範圍跟卡片描述行數那格一樣是兩段（選物副標 / 慢讀摘要）：精選那段同一個位置放
@@ -704,6 +713,7 @@ export default async function StoreHomePage({
       cardTitleScaleVal,
       cardTitleWeightVal,
       cardTitleLeadingVal,
+      cardTitleTrackingVal,
       cardDescScaleVal,
       cardDescLeadingVal,
       cardDescWeightVal,
@@ -1614,6 +1624,7 @@ export default async function StoreHomePage({
             data-card-title-scale={collStyle.cardTitleScaleVal}
             data-card-title-weight={collStyle.cardTitleWeightVal}
             data-card-title-leading={collStyle.cardTitleLeadingVal}
+            data-card-title-tracking={collStyle.cardTitleTrackingVal}
             data-card-desc-scale={collStyle.cardDescScaleVal}
             data-card-desc-leading={collStyle.cardDescLeadingVal}
             data-card-desc-weight={collStyle.cardDescWeightVal}
@@ -1797,6 +1808,7 @@ export default async function StoreHomePage({
             data-card-title-scale={featuredStyle.cardTitleScaleVal}
             data-card-title-weight={featuredStyle.cardTitleWeightVal}
             data-card-title-leading={featuredStyle.cardTitleLeadingVal}
+            data-card-title-tracking={featuredStyle.cardTitleTrackingVal}
             data-card-price-scale={featuredStyle.cardPriceScaleVal}
             data-card-price-weight={featuredStyle.cardPriceWeightVal}
             data-card-row-gap={featuredStyle.cardRowGapVal}
@@ -2021,6 +2033,7 @@ export default async function StoreHomePage({
             data-card-title-scale={journalStyle.cardTitleScaleVal}
             data-card-title-weight={journalStyle.cardTitleWeightVal}
             data-card-title-leading={journalStyle.cardTitleLeadingVal}
+            data-card-title-tracking={journalStyle.cardTitleTrackingVal}
             data-card-desc-scale={journalStyle.cardDescScaleVal}
             data-card-desc-leading={journalStyle.cardDescLeadingVal}
             data-card-desc-weight={journalStyle.cardDescWeightVal}
@@ -2159,7 +2172,11 @@ export default async function StoreHomePage({
                         color: "var(--store-text)",
                         fontFamily: "var(--store-font)",
                         fontWeight: "var(--card-title-weight, 400)",
-                        letterSpacing: "var(--store-track, -0.005em)",
+                        // 字距讀 --card-title-track（卡片品名字距那格由 layout.tsx 的規則設）
+                        // 再退回整段字距、再退回原本的值：inline 蓋不過 CSS 規則，那格只能
+                        // 靠變數傳進來。沒設時整條變數不存在，等同原本的寫法。
+                        letterSpacing:
+                          "var(--card-title-track, var(--store-track, -0.005em))",
                       }}
                     >
                       {entry.title}

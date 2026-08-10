@@ -1464,6 +1464,35 @@ export default async function PublicStoreLayout({
           line-height: 1.75;
         }
 
+        /* 卡片品名字距：editor 各 section panel「卡片品名字距」三按鈕（收緊 / 跟預設 / 撐開）。
+           上一組管的是品名換行之後上下兩行隔多遠，這組管的是同一行裡字與字之間隔多遠。
+           字距這一格前面補過三個位置：段落最上面那行小標（data-eyebrow-track）、段落大標
+           （--store-heading-track）、卡片上那幾行全大寫小字（data-card-micro-tracking）。
+           卡片上字級最大、客人在一排卡片裡拿來認商品的那一行反而一直沒有。
+           三段各寫各的：選物與精選的品名沒設字距（跟著整段的 --store-track 走），慢讀那張
+           寫死 -0.005em。往內收是照英文品名挑的——英文單字之間的空格還在，收一點是緊實；
+           中文品名每個字本來就佔滿方框，筆畫多的詞再往內收，字級一大就跟隔壁黏在一起。
+           反過來只有兩三個字的品名，撐開一點才有選物店那種留白感。
+           兩條規則（跟卡片小字字距同一個作法）：一條落在 .sproutly-card-title 蓋掉繼承來的
+           字距，一條給 --card-title-track 讓慢讀那行寫在 inline style 裡的字距也跟著走
+           ——inline 的優先度連 CSS 規則都壓不過，只能繞變數。
+           收緊給 -0.04em 不給更小：品名沒有段落大標那麼大，再收下去中文筆畫會疊到隔壁。
+           撐開給 0.14em 不給小字那種 0.55em：品名是一個詞要一眼認得出來，撐到那個程度會散
+           成幾個各自站著的字，窄卡上還會被撐到多換一行。
+           沒設就沒 attribute、整條規則不存在，既有店家一個字都不會動。 */
+        section[data-edit-target][data-card-title-tracking="tight"] {
+          --card-title-track: -0.04em;
+        }
+        section[data-edit-target][data-card-title-tracking="tight"] .sproutly-card-title {
+          letter-spacing: -0.04em;
+        }
+        section[data-edit-target][data-card-title-tracking="wide"] {
+          --card-title-track: 0.14em;
+        }
+        section[data-edit-target][data-card-title-tracking="wide"] .sproutly-card-title {
+          letter-spacing: 0.14em;
+        }
+
         /* 卡片描述字級：editor 各 section panel「卡片描述字級」三按鈕（小 / 跟預設 / 大）。
            上一組管的是品名那行多大，這組管的是品名底下那段描述——選物的副標、慢讀的摘要，
            兩段都寫死 14px，照站上預設那種一句話的副標挑的。慢讀那種一整段摘要的卡片，14px

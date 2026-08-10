@@ -2886,6 +2886,7 @@ export function EditorWorkspace({
           const cardTitleScale = cur.cardTitleScale ?? null;
           const cardTitleWeight = cur.cardTitleWeight ?? null;
           const cardTitleLeading = cur.cardTitleLeading ?? null;
+          const cardTitleTracking = cur.cardTitleTracking ?? null;
           const cardDescScale = cur.cardDescScale ?? null;
           const cardDescLeading = cur.cardDescLeading ?? null;
           const cardDescWeight = cur.cardDescWeight ?? null;
@@ -5340,6 +5341,41 @@ export function EditorWorkspace({
                     <button
                       type="button"
                       onClick={() => patch({ cardTitleLeading: null })}
+                      className="text-stone-500 hover:text-stone-800 underline"
+                    >
+                      清除
+                    </button>
+                  )}
+                </div>
+              </Field>
+              <Field label="卡片品名字距">
+                <div className="grid grid-cols-3 gap-1.5">
+                  {([
+                    { v: "tight", label: "收緊" },
+                    { v: "normal", label: "跟預設" },
+                    { v: "wide", label: "撐開" },
+                  ] as const).map((opt) => (
+                    <button
+                      key={opt.v}
+                      type="button"
+                      onClick={() => patch({ cardTitleTracking: opt.v })}
+                      aria-pressed={(cardTitleTracking ?? "normal") === opt.v}
+                      className={`rounded-lg border py-2 text-xs transition ${
+                        (cardTitleTracking ?? "normal") === opt.v
+                          ? "border-emerald-500 bg-emerald-50 text-emerald-900"
+                          : "border-stone-200 text-stone-600 hover:border-stone-400"
+                      }`}
+                    >
+                      {opt.label}
+                    </button>
+                  ))}
+                </div>
+                <div className="mt-1.5 flex items-center justify-between text-[11px] text-stone-500">
+                  <span>品名同一行裡，字與字之間空多少。筆畫多的中文品名（像「觀葉植物」）字級一大就會跟隔壁黏在一起，撐開一點看得清楚；只有兩三個字的短品名撐開會更像選物店。上一格「卡片標題行距」調的是換行之後上下隔多遠，這格是同一行左右之間。只動品名，描述、價錢與那幾行小字不跟著變</span>
+                  {cardTitleTracking && (
+                    <button
+                      type="button"
+                      onClick={() => patch({ cardTitleTracking: null })}
                       className="text-stone-500 hover:text-stone-800 underline"
                     >
                       清除
