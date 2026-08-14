@@ -2864,6 +2864,7 @@ export function EditorWorkspace({
           const headingInnerGap = cur.headingInnerGap ?? null;
           const eyebrowTracking = cur.eyebrowTracking ?? null;
           const eyebrowScale = cur.eyebrowScale ?? null;
+          const eyebrowWeight = cur.eyebrowWeight ?? null;
           const eyebrowLeading = cur.eyebrowLeading ?? null;
           const hideOn = cur.hideOn ?? null;
           const outline = cur.outline ?? null;
@@ -4128,6 +4129,42 @@ export function EditorWorkspace({
                     <button
                       type="button"
                       onClick={() => patch({ eyebrowScale: null })}
+                      className="text-stone-500 hover:text-stone-800 underline"
+                    >
+                      清除
+                    </button>
+                  )}
+                </div>
+              </Field>
+              <Field label="小標粗細">
+                <div className="grid grid-cols-4 gap-1.5">
+                  {([
+                    { v: "normal", label: "跟預設" },
+                    { v: "light", label: "常規" },
+                    { v: "medium", label: "中黑" },
+                    { v: "bold", label: "粗" },
+                  ] as const).map((opt) => (
+                    <button
+                      key={opt.v}
+                      type="button"
+                      onClick={() => patch({ eyebrowWeight: opt.v })}
+                      aria-pressed={(eyebrowWeight ?? "normal") === opt.v}
+                      className={`rounded-lg border py-2 text-xs transition ${
+                        (eyebrowWeight ?? "normal") === opt.v
+                          ? "border-emerald-500 bg-emerald-50 text-emerald-900"
+                          : "border-stone-200 text-stone-600 hover:border-stone-400"
+                      }`}
+                    >
+                      {opt.label}
+                    </button>
+                  ))}
+                </div>
+                <div className="mt-1.5 flex items-center justify-between text-[11px] text-stone-500">
+                  <span>那行小標的字本身多重。小標的字最小、又撐開字距，在淺色底上細到看不清楚時選「中黑」或「粗」；選物與精選那兩段的小標本來就比較重、又是用主色印的，想讓它退回配角選「常規」（「內文粗細」也會動到這行，但會把整段的描述、答案一起變粗）</span>
+                  {eyebrowWeight && (
+                    <button
+                      type="button"
+                      onClick={() => patch({ eyebrowWeight: null })}
                       className="text-stone-500 hover:text-stone-800 underline"
                     >
                       清除

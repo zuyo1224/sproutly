@@ -1815,6 +1815,41 @@ export default async function PublicStoreLayout({
           zoom: 1.3;
         }
 
+        /* 小標粗細：editor 各 section panel「小標粗細」四按鈕（跟預設 / 常規 / 中黑 / 粗）。
+           上兩組管的是那行小標的字距與大小，這組管的是那行字本身多重。各段的粗細是寫死的，
+           而且分兩種：選物與精選那兩段寫在 inline style 上的 500，其餘八段沒設、繼承下來的
+           400。400 那批在 10px 加 0.4em 字距之下筆畫細到在淺底上幾乎看不見；500 那批又是用
+           全站主色印的，在大標旁邊搶得比大標前面，退不回配角。
+           要蓋的東西兩段不一樣，所以兩條規則一組：一條落在 .sproutly-section-eyebrow 上蓋掉
+           繼承來的 400（這份 <style> 沒包在 @layer，贏得過 Tailwind 工具類），一條在 section
+           上設 --eyebrow-weight，讓那兩行寫在 inline style 裡的 500 跟著走——inline 的優先度
+           連 CSS 規則都壓不過，只能繞變數（跟卡片品名字距同一招）。那兩行的 fontWeight 改讀
+           var(--eyebrow-weight, 500)，沒設時變數不存在、fallback 就是原本的 500。
+           走 attribute 不走「一個變數配 fallback」：font-weight 的 var() fallback 只能填一個
+           固定值，等於沒設定的段落也被那個值一律蓋掉，兩種原本的粗細就被拉平了（跟標題粗細
+           同一個理由）。
+           給四個值：那兩段本來就是 500，少了「常規」它們沒有一顆按鈕退得回 400。
+           只用 400 / 500 / 700 這三個載進來的字重，不給 300——沒載的字重瀏覽器拿常規假變細，
+           10px 的中文會直接糊掉，比原本更看不清楚。 */
+        section[data-edit-target][data-eyebrow-weight="light"] {
+          --eyebrow-weight: 400;
+        }
+        section[data-edit-target][data-eyebrow-weight="light"] .sproutly-section-eyebrow {
+          font-weight: 400;
+        }
+        section[data-edit-target][data-eyebrow-weight="medium"] {
+          --eyebrow-weight: 500;
+        }
+        section[data-edit-target][data-eyebrow-weight="medium"] .sproutly-section-eyebrow {
+          font-weight: 500;
+        }
+        section[data-edit-target][data-eyebrow-weight="bold"] {
+          --eyebrow-weight: 700;
+        }
+        section[data-edit-target][data-eyebrow-weight="bold"] .sproutly-section-eyebrow {
+          font-weight: 700;
+        }
+
         /* 小標行距：editor 各 section panel「小標行距」三按鈕（收緊 / 跟預設 / 拉開）。
            上兩組管的是那行字的橫向（字距）與大小，這組管的是它排到第二行之後上下隔多遠。
            那行很容易換行——自己帶著 0.4em 的字距，四個中文字佔的寬度接近六個字，小標打長

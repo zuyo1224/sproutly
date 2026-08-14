@@ -449,6 +449,18 @@ export default async function StoreHomePage({
       s?.eyebrowScale === "small" || s?.eyebrowScale === "large"
         ? s.eyebrowScale
         : undefined;
+    // 小標粗細：上兩欄補的是那行字的字距與大小，這欄補的是那行字本身多重。各段寫死的粗細
+    // 分兩種——選物與精選那兩段的小標寫在 inline style 上是 500，其餘八段沒設、繼承下來
+    // 是 400。「內文粗細」那條規則的選擇器（p / li / ...）確實會命中這行 <p>，但一動就把
+    // 整段的描述、引言、答案一起變粗，做不到只動小標。所以一樣走 attribute，而且要兩條規則
+    // 才夠：一條蓋掉繼承來的 400，一條在 section 上設 --eyebrow-weight 給那兩行 inline 的
+    // 500 讀（inline 壓得過 CSS 規則，只能繞變數）。跟上兩欄掛在同一批段落。
+    const eyebrowWeightVal: "light" | "medium" | "bold" | undefined =
+      s?.eyebrowWeight === "light" ||
+      s?.eyebrowWeight === "medium" ||
+      s?.eyebrowWeight === "bold"
+        ? s.eyebrowWeight
+        : undefined;
     // 小標行距：上兩欄補的是那行字的橫向與大小，這欄補的是它換行之後上下兩行隔多遠。那行是
     // <p> 又沒帶 leading class，行距是從段落那層的內文行高整條繼承下來的——那個值是給一整段
     // 要讀的字挑的，套在 10px 的標籤上兩行會散開；而唯一動得到它的「行高」會把整段的描述、
@@ -694,6 +706,7 @@ export default async function StoreHomePage({
       headingInnerGapVal,
       eyebrowTrackingVal,
       eyebrowScaleVal,
+      eyebrowWeightVal,
       eyebrowLeadingVal,
       hideOnVal,
       mediaRadiusVal,
@@ -1596,6 +1609,7 @@ export default async function StoreHomePage({
             data-heading-rule-weight={collStyle.headingRuleWeightVal}
             data-eyebrow-tracking={collStyle.eyebrowTrackingVal}
             data-eyebrow-scale={collStyle.eyebrowScaleVal}
+            data-eyebrow-weight={collStyle.eyebrowWeightVal}
             data-eyebrow-leading={collStyle.eyebrowLeadingVal}
             data-heading-gap={collStyle.headingGapVal}
               data-heading-inner={collStyle.headingInnerGapVal}
@@ -1671,7 +1685,10 @@ export default async function StoreHomePage({
                       style={{
                         color: accentColor,
                         fontFamily: "var(--store-font)",
-                        fontWeight: 500,
+                        // 粗細讀 --eyebrow-weight（小標粗細那格由 layout.tsx 的規則設）：
+                        // 這行的 500 寫在 inline style 上，CSS 規則壓不過，只能繞變數。
+                        // 沒設時變數不存在、fallback 回原本的 500。
+                        fontWeight: "var(--eyebrow-weight, 500)",
                       }}
                     >
                       {collectionsEyebrow}
@@ -1781,6 +1798,7 @@ export default async function StoreHomePage({
             data-heading-rule-weight={featuredStyle.headingRuleWeightVal}
             data-eyebrow-tracking={featuredStyle.eyebrowTrackingVal}
             data-eyebrow-scale={featuredStyle.eyebrowScaleVal}
+            data-eyebrow-weight={featuredStyle.eyebrowWeightVal}
             data-eyebrow-leading={featuredStyle.eyebrowLeadingVal}
             data-heading-gap={featuredStyle.headingGapVal}
               data-heading-inner={featuredStyle.headingInnerGapVal}
@@ -1846,7 +1864,10 @@ export default async function StoreHomePage({
                       style={{
                         color: accentColor,
                         fontFamily: "var(--store-font)",
-                        fontWeight: 500,
+                        // 粗細讀 --eyebrow-weight（小標粗細那格由 layout.tsx 的規則設）：
+                        // 這行的 500 寫在 inline style 上，CSS 規則壓不過，只能繞變數。
+                        // 沒設時變數不存在、fallback 回原本的 500。
+                        fontWeight: "var(--eyebrow-weight, 500)",
                       }}
                     >
                       {featuredEyebrow}
@@ -2005,6 +2026,7 @@ export default async function StoreHomePage({
             data-heading-rule-weight={journalStyle.headingRuleWeightVal}
             data-eyebrow-tracking={journalStyle.eyebrowTrackingVal}
             data-eyebrow-scale={journalStyle.eyebrowScaleVal}
+            data-eyebrow-weight={journalStyle.eyebrowWeightVal}
             data-eyebrow-leading={journalStyle.eyebrowLeadingVal}
             data-heading-gap={journalStyle.headingGapVal}
               data-heading-inner={journalStyle.headingInnerGapVal}
@@ -2231,6 +2253,7 @@ export default async function StoreHomePage({
             data-heading-rule-weight={promiseStyle.headingRuleWeightVal}
             data-eyebrow-tracking={promiseStyle.eyebrowTrackingVal}
             data-eyebrow-scale={promiseStyle.eyebrowScaleVal}
+            data-eyebrow-weight={promiseStyle.eyebrowWeightVal}
             data-eyebrow-leading={promiseStyle.eyebrowLeadingVal}
             data-line-height={promiseStyle.lineHeightVal}
             data-section-filter={promiseStyle.filterVal}
@@ -2383,6 +2406,7 @@ export default async function StoreHomePage({
               data-heading-rule-weight={testimonialsStyle.headingRuleWeightVal}
               data-eyebrow-tracking={testimonialsStyle.eyebrowTrackingVal}
               data-eyebrow-scale={testimonialsStyle.eyebrowScaleVal}
+              data-eyebrow-weight={testimonialsStyle.eyebrowWeightVal}
               data-eyebrow-leading={testimonialsStyle.eyebrowLeadingVal}
               data-heading-gap={testimonialsStyle.headingGapVal}
               data-heading-inner={testimonialsStyle.headingInnerGapVal}
@@ -2590,6 +2614,7 @@ export default async function StoreHomePage({
               data-heading-rule-weight={faqStyle.headingRuleWeightVal}
               data-eyebrow-tracking={faqStyle.eyebrowTrackingVal}
               data-eyebrow-scale={faqStyle.eyebrowScaleVal}
+              data-eyebrow-weight={faqStyle.eyebrowWeightVal}
               data-eyebrow-leading={faqStyle.eyebrowLeadingVal}
               data-heading-gap={faqStyle.headingGapVal}
               data-heading-inner={faqStyle.headingInnerGapVal}
@@ -2770,6 +2795,7 @@ export default async function StoreHomePage({
               data-heading-rule-weight={statsStyle.headingRuleWeightVal}
               data-eyebrow-tracking={statsStyle.eyebrowTrackingVal}
               data-eyebrow-scale={statsStyle.eyebrowScaleVal}
+              data-eyebrow-weight={statsStyle.eyebrowWeightVal}
               data-eyebrow-leading={statsStyle.eyebrowLeadingVal}
               data-heading-gap={statsStyle.headingGapVal}
               data-heading-inner={statsStyle.headingInnerGapVal}
@@ -2953,6 +2979,7 @@ export default async function StoreHomePage({
               data-heading-rule-weight={partnersStyle.headingRuleWeightVal}
               data-eyebrow-tracking={partnersStyle.eyebrowTrackingVal}
               data-eyebrow-scale={partnersStyle.eyebrowScaleVal}
+              data-eyebrow-weight={partnersStyle.eyebrowWeightVal}
               data-eyebrow-leading={partnersStyle.eyebrowLeadingVal}
               data-heading-gap={partnersStyle.headingGapVal}
               data-line-height={partnersStyle.lineHeightVal}
@@ -3066,6 +3093,7 @@ export default async function StoreHomePage({
               data-heading-rule-weight={galleryStyle.headingRuleWeightVal}
               data-eyebrow-tracking={galleryStyle.eyebrowTrackingVal}
               data-eyebrow-scale={galleryStyle.eyebrowScaleVal}
+              data-eyebrow-weight={galleryStyle.eyebrowWeightVal}
               data-eyebrow-leading={galleryStyle.eyebrowLeadingVal}
               data-heading-gap={galleryStyle.headingGapVal}
               data-heading-inner={galleryStyle.headingInnerGapVal}
@@ -3242,6 +3270,7 @@ export default async function StoreHomePage({
             data-heading-rule-weight={visitStyle.headingRuleWeightVal}
             data-eyebrow-tracking={visitStyle.eyebrowTrackingVal}
             data-eyebrow-scale={visitStyle.eyebrowScaleVal}
+            data-eyebrow-weight={visitStyle.eyebrowWeightVal}
             data-eyebrow-leading={visitStyle.eyebrowLeadingVal}
             data-line-height={visitStyle.lineHeightVal}
             data-section-filter={visitStyle.filterVal}
