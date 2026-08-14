@@ -2852,6 +2852,7 @@ export function EditorWorkspace({
           const bodyScale = cur.bodyScale ?? null;
           const bodyTone = cur.bodyTone ?? null;
           const bodyWeight = cur.bodyWeight ?? null;
+          const bodyTracking = cur.bodyTracking ?? null;
           const headingTone = cur.headingTone ?? null;
           const bg = cur.bgColor ?? null;
           const textCol = cur.textColor ?? null;
@@ -3814,6 +3815,41 @@ export function EditorWorkspace({
                     <button
                       type="button"
                       onClick={() => patch({ bodyWeight: null })}
+                      className="text-stone-500 hover:text-stone-800 underline"
+                    >
+                      清除
+                    </button>
+                  )}
+                </div>
+              </Field>
+              <Field label="內文字距">
+                <div className="grid grid-cols-3 gap-1.5">
+                  {([
+                    { v: "tight", label: "收緊" },
+                    { v: "normal", label: "預設" },
+                    { v: "wide", label: "撐開" },
+                  ] as const).map((opt) => (
+                    <button
+                      key={opt.v}
+                      type="button"
+                      onClick={() => patch({ bodyTracking: opt.v })}
+                      aria-pressed={(bodyTracking ?? "normal") === opt.v}
+                      className={`rounded-lg border py-2 text-xs transition ${
+                        (bodyTracking ?? "normal") === opt.v
+                          ? "border-emerald-500 bg-emerald-50 text-emerald-900"
+                          : "border-stone-200 text-stone-600 hover:border-stone-400"
+                      }`}
+                    >
+                      {opt.label}
+                    </button>
+                  ))}
+                </div>
+                <div className="mt-1.5 flex items-center justify-between text-[11px] text-stone-500">
+                  <span>那幾行字與字之間的距離，只動內文不動大標（上面「字距」是整段一起走）</span>
+                  {bodyTracking && (
+                    <button
+                      type="button"
+                      onClick={() => patch({ bodyTracking: null })}
                       className="text-stone-500 hover:text-stone-800 underline"
                     >
                       清除

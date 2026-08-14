@@ -899,6 +899,25 @@ export default async function PublicStoreLayout({
           font-weight: 700;
         }
 
+        /* 區段內文字距：editor 各 section panel「內文字距」三按鈕（收緊 / 預設 / 撐開）。
+           字距這一格前面補過段落小標、段落大標、卡片全大寫小字、卡片品名，段落自己的內文
+           是最後一個沒得動的——而那幾行是每一段字最多、客人真的會讀完的地方。
+           商家原本只有整段那一欄「字距」，它同時寫 section 的 letterSpacing 與 --store-track，
+           大標、引言、數字、問句全部一起走。中文的大標與內文要的方向常常相反（大標字級大要
+           往外撐、整段內文撐開反而散成一個一個字），調哪一邊另一邊就壞。
+           選擇器跟內文粗細、行高、內文對齊那三組同一份（段落 / 條列 / 引言 / 圖說），四格
+           管的是同一批字。落在段落上是繼承值，元素自己 inline 寫死字距的那幾行（大標、
+           小標）本來就蓋得掉這條，剛好是這格不想動的。
+           卡片描述沒有自己的字距那格，會跟著這條走（卡片那邊只做過品名與全大寫小字）。
+           收緊 -0.02em / 撐開 0.06em，兩頭都比小標那種 0.4em 保守——內文要的是一整段讀得順。
+           沒設（或選「預設」）就沒 attribute、整條規則不存在，既有店家一個字都不會變。 */
+        section[data-edit-target][data-body-tracking="tight"] :is(p, li, blockquote, figcaption, dd) {
+          letter-spacing: -0.02em;
+        }
+        section[data-edit-target][data-body-tracking="wide"] :is(p, li, blockquote, figcaption, dd) {
+          letter-spacing: 0.06em;
+        }
+
         /* 區段內容垂直位置：editor 各 section panel「內容垂直位置」三按鈕（靠上 / 置中 / 靠下）。
            只有這一段比內容高的時候才看得出差別，也就是設了「最小高度」（高 80vh / 滿屏 100vh）
            之後——而那正是這個控制要補的洞：撐出來的空高一律留在內容下面，商家選了滿屏想要一

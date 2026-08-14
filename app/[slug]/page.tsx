@@ -369,6 +369,12 @@ export default async function StoreHomePage({
     // 濃淡那欄改的是顏色變數、這欄改的是字重，兩個各自獨立，疊起來也講得通。
     const bodyWeightVal: "medium" | "bold" | undefined =
       s?.bodyWeight === "medium" || s?.bodyWeight === "bold" ? s.bodyWeight : undefined;
+    // 內文字距：跟內文粗細、內文大小、內文對齊同一個處境同一個解法——只回 attribute，實際
+    // 的字距由 layout.tsx 那兩條規則落在段落那批元素上。不能走整段的 letterSpacing 或
+    // --store-track：那兩個是上面「字距」那格在寫的，會連大標、引言、數字、問句一起動，
+    // 而這格要動的就只有段落自己的內文（中文的大標與內文要的方向常常相反）。
+    const bodyTrackingVal: "tight" | "wide" | undefined =
+      s?.bodyTracking === "tight" || s?.bodyTracking === "wide" ? s.bodyTracking : undefined;
     // 標題用色：跟內文濃淡同一個處境同一個解法。標題的顏色是 inline style（規則蓋不過
     // inline），但每個 h2 讀的都是同一個變數——inline color 改讀 --store-heading-color、
     // fallback 回 --store-text，商家沒設就跟原本一模一樣，設了就只有標題換色。
@@ -700,6 +706,7 @@ export default async function StoreHomePage({
       bodyScaleVal,
       bodyToneVal,
       bodyWeightVal,
+      bodyTrackingVal,
       headingToneVal,
       contentAlignVal,
       headingGapVal,
@@ -1619,6 +1626,7 @@ export default async function StoreHomePage({
             data-body-measure={collStyle.bodyMeasureVal}
             data-body-scale={collStyle.bodyScaleVal}
             data-body-weight={collStyle.bodyWeightVal}
+            data-body-tracking={collStyle.bodyTrackingVal}
             data-content-align={collStyle.contentAlignVal}
             data-hide-on={collStyle.hideOnVal}
             data-media-radius={collStyle.mediaRadiusVal}
@@ -1808,6 +1816,7 @@ export default async function StoreHomePage({
             data-body-measure={featuredStyle.bodyMeasureVal}
             data-body-scale={featuredStyle.bodyScaleVal}
             data-body-weight={featuredStyle.bodyWeightVal}
+            data-body-tracking={featuredStyle.bodyTrackingVal}
             data-content-align={featuredStyle.contentAlignVal}
             data-hide-on={featuredStyle.hideOnVal}
             data-media-radius={featuredStyle.mediaRadiusVal}
@@ -2036,6 +2045,7 @@ export default async function StoreHomePage({
             data-body-measure={journalStyle.bodyMeasureVal}
             data-body-scale={journalStyle.bodyScaleVal}
             data-body-weight={journalStyle.bodyWeightVal}
+            data-body-tracking={journalStyle.bodyTrackingVal}
             data-content-align={journalStyle.contentAlignVal}
             data-hide-on={journalStyle.hideOnVal}
             data-media-radius={journalStyle.mediaRadiusVal}
@@ -2261,6 +2271,7 @@ export default async function StoreHomePage({
             data-body-measure={promiseStyle.bodyMeasureVal}
             data-body-scale={promiseStyle.bodyScaleVal}
             data-body-weight={promiseStyle.bodyWeightVal}
+            data-body-tracking={promiseStyle.bodyTrackingVal}
             data-content-align={promiseStyle.contentAlignVal}
             data-hide-on={promiseStyle.hideOnVal}
             data-media-radius={promiseStyle.mediaRadiusVal}
@@ -2416,6 +2427,7 @@ export default async function StoreHomePage({
               data-body-measure={testimonialsStyle.bodyMeasureVal}
               data-body-scale={testimonialsStyle.bodyScaleVal}
               data-body-weight={testimonialsStyle.bodyWeightVal}
+              data-body-tracking={testimonialsStyle.bodyTrackingVal}
               data-content-align={testimonialsStyle.contentAlignVal}
               data-hide-on={testimonialsStyle.hideOnVal}
               data-media-radius={testimonialsStyle.mediaRadiusVal}
@@ -2624,6 +2636,7 @@ export default async function StoreHomePage({
               data-body-measure={faqStyle.bodyMeasureVal}
               data-body-scale={faqStyle.bodyScaleVal}
               data-body-weight={faqStyle.bodyWeightVal}
+              data-body-tracking={faqStyle.bodyTrackingVal}
               data-content-align={faqStyle.contentAlignVal}
               data-hide-on={faqStyle.hideOnVal}
               data-media-radius={faqStyle.mediaRadiusVal}
@@ -2805,6 +2818,7 @@ export default async function StoreHomePage({
               data-body-measure={statsStyle.bodyMeasureVal}
               data-body-scale={statsStyle.bodyScaleVal}
               data-body-weight={statsStyle.bodyWeightVal}
+              data-body-tracking={statsStyle.bodyTrackingVal}
               data-content-align={statsStyle.contentAlignVal}
               data-hide-on={statsStyle.hideOnVal}
               data-media-radius={statsStyle.mediaRadiusVal}
@@ -2988,6 +3002,7 @@ export default async function StoreHomePage({
               data-body-measure={partnersStyle.bodyMeasureVal}
               data-body-scale={partnersStyle.bodyScaleVal}
               data-body-weight={partnersStyle.bodyWeightVal}
+              data-body-tracking={partnersStyle.bodyTrackingVal}
               data-content-align={partnersStyle.contentAlignVal}
               data-hide-on={partnersStyle.hideOnVal}
               data-media-radius={partnersStyle.mediaRadiusVal}
@@ -3103,6 +3118,7 @@ export default async function StoreHomePage({
               data-body-measure={galleryStyle.bodyMeasureVal}
               data-body-scale={galleryStyle.bodyScaleVal}
               data-body-weight={galleryStyle.bodyWeightVal}
+              data-body-tracking={galleryStyle.bodyTrackingVal}
               data-content-align={galleryStyle.contentAlignVal}
               data-hide-on={galleryStyle.hideOnVal}
               data-media-radius={galleryStyle.mediaRadiusVal}
@@ -3278,6 +3294,7 @@ export default async function StoreHomePage({
             data-body-measure={visitStyle.bodyMeasureVal}
             data-body-scale={visitStyle.bodyScaleVal}
             data-body-weight={visitStyle.bodyWeightVal}
+            data-body-tracking={visitStyle.bodyTrackingVal}
             data-content-align={visitStyle.contentAlignVal}
             data-hide-on={visitStyle.hideOnVal}
             data-media-radius={visitStyle.mediaRadiusVal}
