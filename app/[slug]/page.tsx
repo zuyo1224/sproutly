@@ -116,6 +116,13 @@ export default async function StoreHomePage({
   // 有自己底色的容器（提案卡、好評卡）不在此列，它們的底色不跟區段換，主色照舊。
   const accentColor = `var(--store-accent, ${theme.accent})`;
 
+  // 段落最上面那行小標的顏色。原本每一行各自寫死（十四段直接用主色、合作那兩行用次要文字
+  // 色），改成統一讀 --store-eyebrow-color、fallback 回它原本那個值——沒設變數時算出來
+  // 一模一樣，設了才換色（見 section-style-schema 的 eyebrowTone）。顏色是 inline style，
+  // 規則蓋不過去，只能繞變數，跟標題用色同一招。
+  const eyebrowColor = `var(--store-eyebrow-color, ${accentColor})`;
+  const eyebrowMutedColor = "var(--store-eyebrow-color, var(--store-text-muted))";
+
   // 各 section 樣式 helper：背景色 + 標題對齊 + 上下空白覆寫（北極星：超越 Wix 元素級控制覆蓋率）
   // padOverride 用 CSS variable 覆寫該 section 的 --store-section-pad，
   // 沒設定 = 跟著全網站 sectionPaddingScale（透過 layout.tsx 的 attribute selector 套用）
@@ -476,6 +483,15 @@ export default async function StoreHomePage({
       s?.eyebrowLeading === "tight" || s?.eyebrowLeading === "loose"
         ? s.eyebrowLeading
         : undefined;
+    // 小標用色：跟標題用色（headingTone）同一個處境同一個解法。那行的顏色是 inline style
+    // （規則蓋不過 inline），但每一行的 inline color 都改讀 --store-eyebrow-color、fallback
+    // 回它原本那個值（十四段是主色、合作那兩行是次要文字色），商家沒設就跟原本一模一樣。
+    // 值在 mergeSectionStyle 算：accent 要走那裡算好的 sectionAccent（主色壓在自訂底色上
+    // 看不見時已經換成該段文字色的那個），在這裡自己拿 theme.accent 會繞過那道防呆。
+    const eyebrowToneVal: "accent" | "muted" | "text" | undefined =
+      s?.eyebrowTone === "accent" || s?.eyebrowTone === "muted" || s?.eyebrowTone === "text"
+        ? s.eyebrowTone
+        : undefined;
     // 卡片間距：要動的是這一段裡那個卡片格線容器的 gap，不是段落自己——跟照片圓角同一個
     // 處境同一個解法，attribute 讓 layout.tsx 補規則。規則只落在 .sproutly-card-grid 上
     // （各段的卡片格線容器都掛了這個 class），不能寫成落在所有 .grid 上——hero 的左右
@@ -728,6 +744,7 @@ export default async function StoreHomePage({
       eyebrowScaleVal,
       eyebrowWeightVal,
       eyebrowLeadingVal,
+      eyebrowToneVal,
       hideOnVal,
       mediaRadiusVal,
       mediaAspectVal,
@@ -840,6 +857,19 @@ export default async function StoreHomePage({
         s.headingToneVal === "accent"
           ? sectionAccent
           : mutedFromText(s.text ?? theme.text);
+    }
+    // 小標用色：跟上面那格同一套（每行小標的 inline color 都讀 --store-eyebrow-color、
+    // fallback 回它原本那個值，這裡有設值才會生效）。accent 同樣用上面算好的 sectionAccent
+    // ——商家把這一段換成跟主色相近的底色時，那裡已經把主色換成該段的文字色，小標跟標題、
+    // 短線走同一道防呆，不會單獨淡進底色裡。muted 跟次要文字同一個口徑（文字色的七成），
+    // text 是跟內文同深，給那十四段主色小標一個「退回一般文字」的選擇。
+    if (s.eyebrowToneVal) {
+      out["--store-eyebrow-color"] =
+        s.eyebrowToneVal === "accent"
+          ? sectionAccent
+          : s.eyebrowToneVal === "text"
+            ? s.text ?? theme.text
+            : mutedFromText(s.text ?? theme.text);
     }
     if (s.minHeightOverride !== undefined) out.minHeight = s.minHeightOverride;
     // 線的顏色：沒設自訂文字色就照舊用全站 theme.border（既有店家一條線都不會變）。
@@ -1706,7 +1736,7 @@ export default async function StoreHomePage({
                       data-edit-field="collectionsEyebrow"
                       className="sproutly-section-eyebrow text-[0.6875rem] tracking-[0.4em] uppercase mb-4"
                       style={{
-                        color: accentColor,
+                        color: eyebrowColor,
                         fontFamily: "var(--store-font)",
                         // 粗細讀 --eyebrow-weight（小標粗細那格由 layout.tsx 的規則設）：
                         // 這行的 500 寫在 inline style 上，CSS 規則壓不過，只能繞變數。
@@ -1887,7 +1917,7 @@ export default async function StoreHomePage({
                       data-edit-field="featuredEyebrow"
                       className="sproutly-section-eyebrow text-[0.6875rem] tracking-[0.4em] uppercase mb-4"
                       style={{
-                        color: accentColor,
+                        color: eyebrowColor,
                         fontFamily: "var(--store-font)",
                         // 粗細讀 --eyebrow-weight（小標粗細那格由 layout.tsx 的規則設）：
                         // 這行的 500 寫在 inline style 上，CSS 規則壓不過，只能繞變數。
@@ -2107,7 +2137,7 @@ export default async function StoreHomePage({
                   data-edit-text
                   data-edit-field="journalEyebrow"
                   className="sproutly-section-eyebrow text-[10px] tracking-[0.4em] uppercase mb-5"
-                  style={{ color: accentColor }}
+                  style={{ color: eyebrowColor }}
                 >
                   {journalEyebrow}
                 </p>
@@ -2140,7 +2170,7 @@ export default async function StoreHomePage({
                   data-edit-text
                   data-edit-field="journalEyebrow"
                   className="sproutly-section-eyebrow text-[10px] tracking-[0.4em] uppercase mb-5"
-                  style={{ color: accentColor }}
+                  style={{ color: eyebrowColor }}
                 >
                   {journalEyebrow}
                 </p>
@@ -2360,7 +2390,7 @@ export default async function StoreHomePage({
                   data-edit-text
                   data-edit-field="promiseEyebrow"
                   className="sproutly-section-eyebrow text-[10px] tracking-[0.4em] uppercase mb-8 relative z-10"
-                  style={{ color: theme.accent }}
+                  style={{ color: eyebrowColor }}
                 >
                   {promiseEyebrow}
                 </p>
@@ -2471,7 +2501,7 @@ export default async function StoreHomePage({
                       data-edit-text
                       data-edit-field="testimonialsEyebrow"
                       className="sproutly-section-eyebrow text-[10px] tracking-[0.4em] uppercase mb-5"
-                      style={{ color: accentColor }}
+                      style={{ color: eyebrowColor }}
                     >
                       {testimonialsEyebrow}
                     </p>
@@ -2508,7 +2538,7 @@ export default async function StoreHomePage({
                       data-edit-text
                       data-edit-field="testimonialsEyebrow"
                       className="sproutly-section-eyebrow text-[10px] tracking-[0.4em] uppercase mb-5"
-                      style={{ color: accentColor }}
+                      style={{ color: eyebrowColor }}
                     >
                       {testimonialsEyebrow}
                     </p>
@@ -2676,7 +2706,7 @@ export default async function StoreHomePage({
                   >
                     <p
                       className="sproutly-section-eyebrow text-[10px] tracking-[0.4em] uppercase mb-5"
-                      style={{ color: accentColor }}
+                      style={{ color: eyebrowColor }}
                     >
                       {faqEyebrow}
                     </p>
@@ -2708,7 +2738,7 @@ export default async function StoreHomePage({
                     data-edit-text
                     data-edit-field="faqEyebrow"
                     className="sproutly-section-eyebrow text-[10px] tracking-[0.4em] uppercase mb-5"
-                    style={{ color: accentColor }}
+                    style={{ color: eyebrowColor }}
                   >
                     {faqEyebrow}
                   </p>
@@ -2863,7 +2893,7 @@ export default async function StoreHomePage({
                         data-edit-text
                         data-edit-field="statsEyebrow"
                         className="sproutly-section-eyebrow text-[0.6875rem] tracking-[0.4em] uppercase mb-5"
-                        style={{ color: accentColor }}
+                        style={{ color: eyebrowColor }}
                       >
                         {statsEyebrow}
                       </p>
@@ -2902,7 +2932,7 @@ export default async function StoreHomePage({
                         data-edit-text
                         data-edit-field="statsEyebrow"
                         className="sproutly-section-eyebrow text-[0.6875rem] tracking-[0.4em] uppercase mb-5"
-                        style={{ color: accentColor }}
+                        style={{ color: eyebrowColor }}
                       >
                         {statsEyebrow}
                       </p>
@@ -3040,7 +3070,7 @@ export default async function StoreHomePage({
                       top: `${partnersPos!.y * 100}%`,
                       transform: "translate(-50%, -50%)",
                       whiteSpace: "nowrap",
-                      color: "var(--store-text-muted)",
+                      color: eyebrowMutedColor,
                     }}
                   >
                     {partnersEyebrow}
@@ -3051,7 +3081,7 @@ export default async function StoreHomePage({
                   data-edit-text
                   data-edit-field="partnersEyebrow"
                   className="sproutly-section-head sproutly-section-eyebrow text-[10px] tracking-[0.4em] uppercase mb-12"
-                  style={{ color: "var(--store-text-muted)" }}
+                  style={{ color: eyebrowMutedColor }}
                 >
                   {partnersEyebrow}
                 </p>
@@ -3169,7 +3199,7 @@ export default async function StoreHomePage({
                       data-edit-text
                       data-edit-field="galleryEyebrow"
                       className="sproutly-section-eyebrow text-[10px] tracking-[0.4em] uppercase mb-5"
-                      style={{ color: accentColor }}
+                      style={{ color: eyebrowColor }}
                     >
                       {galleryEyebrow}
                     </p>
@@ -3203,7 +3233,7 @@ export default async function StoreHomePage({
                     data-edit-text
                     data-edit-field="galleryEyebrow"
                     className="sproutly-section-eyebrow text-[10px] tracking-[0.4em] uppercase mb-5"
-                    style={{ color: accentColor }}
+                    style={{ color: eyebrowColor }}
                   >
                     {galleryEyebrow}
                   </p>
@@ -3341,7 +3371,7 @@ export default async function StoreHomePage({
                 data-edit-text
                 data-edit-field="visitEyebrow"
                 className="sproutly-section-eyebrow text-[10px] tracking-[0.4em] uppercase mb-5"
-                style={{ color: accentColor }}
+                style={{ color: eyebrowColor }}
               >
                 {visitEyebrow}
               </p>

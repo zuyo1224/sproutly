@@ -2866,6 +2866,7 @@ export function EditorWorkspace({
           const eyebrowTracking = cur.eyebrowTracking ?? null;
           const eyebrowScale = cur.eyebrowScale ?? null;
           const eyebrowWeight = cur.eyebrowWeight ?? null;
+          const eyebrowTone = cur.eyebrowTone ?? null;
           const eyebrowLeading = cur.eyebrowLeading ?? null;
           const hideOn = cur.hideOn ?? null;
           const outline = cur.outline ?? null;
@@ -4237,6 +4238,42 @@ export function EditorWorkspace({
                     <button
                       type="button"
                       onClick={() => patch({ eyebrowLeading: null })}
+                      className="text-stone-500 hover:text-stone-800 underline"
+                    >
+                      清除
+                    </button>
+                  )}
+                </div>
+              </Field>
+              <Field label="小標用色">
+                <div className="grid grid-cols-4 gap-1.5">
+                  {([
+                    { v: "normal", label: "跟預設" },
+                    { v: "accent", label: "主色" },
+                    { v: "text", label: "內文色" },
+                    { v: "muted", label: "淡" },
+                  ] as const).map((opt) => (
+                    <button
+                      key={opt.v}
+                      type="button"
+                      onClick={() => patch({ eyebrowTone: opt.v })}
+                      aria-pressed={(eyebrowTone ?? "normal") === opt.v}
+                      className={`rounded-lg border py-2 text-xs transition ${
+                        (eyebrowTone ?? "normal") === opt.v
+                          ? "border-emerald-500 bg-emerald-50 text-emerald-900"
+                          : "border-stone-200 text-stone-600 hover:border-stone-400"
+                      }`}
+                    >
+                      {opt.label}
+                    </button>
+                  ))}
+                </div>
+                <div className="mt-1.5 flex items-center justify-between text-[11px] text-stone-500">
+                  <span>那行小標是什麼顏色。大部分段落的小標是用全站主色印的，主色深的時候跟底下的大標搶、亮的時候在淺底上糊掉，想讓它退回一般文字選「內文色」或「淡」；合作那段的小標本來就是淡的，想跟別段一致選「主色」（「文字顏色」換的是整段的色，小標帶著自己的顏色反而不會跟著動）</span>
+                  {eyebrowTone && (
+                    <button
+                      type="button"
+                      onClick={() => patch({ eyebrowTone: null })}
                       className="text-stone-500 hover:text-stone-800 underline"
                     >
                       清除

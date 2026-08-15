@@ -168,6 +168,31 @@ export const SECTION_STYLE_ENUMS = {
   // 同一行字自己換行的距離不歸它管、「段落大標行距」落在 h2 上，這行是 p。
   // 收緊給 1.15 不給更小：中文的字在行框裡本來就佔滿，1.0 以下上下兩行會真的疊到筆畫。
   eyebrowLeading: ["tight", "normal", "loose"],
+  // 小標用色（accent 全站主色 / muted 跟次要文字同深淺 / text 跟內文同深 / normal 照這一段
+  // 原本的），只套段落最上面那行小標。那行的字距、大小、粗細、行距都補過了，顏色是這一組
+  // 最後一個沒得動的。
+  // 用色這條線在別的位置已經補過三格：段落大標（headingTone）、段落內文（bodyTone）、
+  // 卡片上品名底下那行次要文字（cardMetaTone）——段落最上面那行小標是最後一個。
+  // 缺這格會怎樣：那行的顏色跟粗細一樣是各段自己寫死、而且分成兩種，兩種都有問題。十四段
+  // 的小標一律用全站主色印（選物、精選、慢讀、提案、客人的話、常見問題、數字、來店），那是
+  // 照「主色只拿來畫小配件」的設計挑的，可是主色一深（墨綠、深棕那種）就跟底下的大標撞成
+  // 同一個重量，商家看到的是兩行一樣搶眼的字疊在一起，分不出哪行是段落名字；主色一亮
+  //（芥黃、橘）反過來在淺底上糊掉，那行是客人往下捲時第一眼找的東西。合作那段的兩行小標
+  // 又是另一種，寫死次要文字色，整段照片牆上面那行淡到看不見，商家想讓它跟別段一致也沒
+  // 辦法——同一個控制在十六個位置上有兩種寫死值，商家一格都動不到。
+  // 商家原本沒有一格動得到——「文字顏色」換的是整段（大標、內文、圖說全部跟著變，小標
+  // 反而因為自己帶著主色動都不動）、「標題用色」落在大標 h2、「內文濃淡」改的是
+  // --store-text-muted（主色印的那十四行讀不到它）、「淡化」透明的是整段連照片一起、
+  //「小標粗細」與「小標字級」動的是字的重量與大小，都不換顏色。
+  // 給四個值不是三個，跟小標粗細那格同一個理由：那兩種寫死值要能互相切換——合作那兩行
+  // 只給「主色 / 次要 / 內文色」的話沒問題，但主色那十四行沒有一顆按鈕退得回原本的樣子，
+  // 所以留 normal 這一檔當「照這一段原本的」。
+  // 走 CSS variable 不走規則，跟標題用色（headingTone）同一招：那行的顏色是 inline style
+  //（規則蓋不過 inline），但每一行的 inline color 都改讀 --store-eyebrow-color、fallback
+  // 回它原本那個值，商家沒設就跟原本一模一樣，設了才換色。
+  // accent 走 mergeSectionStyle 算好的 sectionAccent（主色壓在自訂底色上看不見時已經換成
+  // 該段文字色的那個），不自己拿 theme.accent——跟標題用色、標題底線走同一道防呆。
+  eyebrowTone: ["normal", "accent", "muted", "text"],
   // 分隔線（上 / 下 / 上下都有 / 沒有）
   divider: ["none", "top", "bottom", "both"],
   // 該 section 標題字級（small 0.85x / default 1x / large 1.25x）
@@ -637,6 +662,7 @@ export const SECTION_STYLE_NEUTRAL_VALUES = {
   eyebrowScale: "default",
   eyebrowWeight: "normal",
   eyebrowLeading: "normal",
+  eyebrowTone: "normal",
   hideOn: "none",
   divider: "none",
   mediaRadius: "none",
