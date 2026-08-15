@@ -550,6 +550,30 @@ export const SECTION_STYLE_ENUMS = {
   // 這行沒有 inline 的 font-weight（品名那行有，所以那格得繞 CSS variable），一條規則就蓋
   // 得過去，不用再多一個變數。
   cardPriceWeight: ["normal", "medium", "bold"],
+  // 卡片價錢用色（default 照原本的、跟次要文字同深 / accent 全站主色 / text 跟品名同深），
+  // 只套精選商品那段卡片上品名底下那行價錢。那行的字級、粗細、額外那層淡化都補過了，
+  // 顏色是這一組最後一個沒得動的。
+  // 用色這條線在別的位置已經補過四格：段落大標（headingTone）、段落內文（bodyTone）、段落
+  // 最上面那行小標（eyebrowTone）、卡片品名（cardTitleTone）——卡片上這行是最後一個。
+  // 缺這格會怎樣：那行寫死 --store-text-muted（文字色的七成），外面還套著卡片那層 opacity
+  // 0.7，兩層乘起來不到五成。前面補過的兩格都繞著顏色走——字級放大只是把一行淺灰放大、
+  // 「卡片副文字深淺」動的是那層透明度（選「加深」也只是把 0.7 那層還原成 1，顏色本身還是
+  // 那個七成的灰，永遠追不上品名的深度）。而一株盆栽賣多少，常常正是客人在首頁掃過去唯一
+  // 在找的東西：網購站的價錢多半用品牌色或跟品名同深印，Sproutly 這行卻是整張卡上最淡的
+  // 一行。反過來，賣得貴、想讓首頁先講故事的店會想讓價錢再退一步，那格也只能動透明度，
+  // 一動整張卡的副標跟著走（同一個 .sproutly-card-meta）。
+  // 商家原本沒有一格動得到——「文字顏色」換的是整段（大標、內文、卡片上每一行一起變）、
+  //「卡片品名用色」落在品名那行 h3、「內文濃淡」改的是 --store-text-muted（改了整段所有
+  // 次要文字，連選物的副標一起）、「淡化」透明的是整段連照片一起。
+  // 走 CSS variable 不走規則，跟品名用色（cardTitleTone）同一招：那行的顏色是 inline style
+  //（規則蓋不過 inline，跟品名用色那格同一個處境），inline color 改讀 --card-price-color、
+  // fallback 回原本的 --store-text-muted，沒設變數時算出來一模一樣。
+  // accent 走 mergeSectionStyle 算好的 sectionAccent（主色壓在自訂底色上看不見時已經換成
+  // 該段文字色的那個），不自己拿 theme.accent——跟標題、小標、品名走同一道防呆。
+  // 第三檔給 text（跟品名同深）不給 muted：那行本來就是 muted，再給一顆「柔和」等於是空的；
+  // 商家在這行真正要的另一個方向是「別再比品名淡」，那是 --store-text。要更退一步的店還有
+  //「卡片副文字深淺」那格可以動透明度，兩格疊起來也講得通。
+  cardPriceTone: ["default", "accent", "text"],
   // 卡片行距（tight 收成一半 / normal 照這一段原本的 / loose 拉開將近一倍），指的是同一張
   // 卡片裡上下幾行之間的距離——照片到品名、品名到描述或價錢、描述到底下那行小字。
   // 前面四格把卡片上每一行的大小都補完了，行與行之間空多少還是寫死的：選物的品名離照片
@@ -716,6 +740,7 @@ export const SECTION_STYLE_NEUTRAL_VALUES = {
   cardMicroWeight: "normal",
   cardPriceScale: "default",
   cardPriceWeight: "normal",
+  cardPriceTone: "default",
   cardRowGap: "normal",
   cardMetaTone: "default",
   outline: "none",

@@ -693,6 +693,16 @@ export default async function StoreHomePage({
       s?.cardPriceWeight === "medium" || s?.cardPriceWeight === "bold"
         ? s.cardPriceWeight
         : undefined;
+    // 卡片價錢用色：上面兩格動的是那行價錢多大、多粗，這格動的是它什麼顏色。那行寫死
+    // --store-text-muted（文字色的七成）、外面還套著卡片那層 opacity 0.7，是整張卡上最淡的
+    // 一行，而它偏偏是客人在首頁掃過去在找的東西。跟品名用色（cardTitleTone）同一個處境
+    // 同一個解法：顏色寫在那行自己的 inline style 上（規則蓋不過 inline），改讀
+    // --card-price-color、fallback 回原本的值，變數在 mergeSectionStyle 算——accent 要走
+    // 那裡算好的 sectionAccent，在這裡自己拿 theme.accent 會繞過那道防呆。
+    const cardPriceToneVal: "accent" | "text" | undefined =
+      s?.cardPriceTone === "accent" || s?.cardPriceTone === "text"
+        ? s.cardPriceTone
+        : undefined;
     // 卡片行距：上面四格動的是卡片裡每一行「多大」，這格動的是行與行之間「隔多遠」（照片到
     // 品名、品名到描述或價錢、描述到底下那行小字，全是寫死的 mt-*）。同樣是段落上的 inline
     // style 傳不下去，attribute 讓 layout.tsx 補規則。
@@ -784,6 +794,7 @@ export default async function StoreHomePage({
       cardMicroWeightVal,
       cardPriceScaleVal,
       cardPriceWeightVal,
+      cardPriceToneVal,
       cardRowGapVal,
       cardMetaToneVal,
     };
@@ -893,6 +904,16 @@ export default async function StoreHomePage({
         s.cardTitleToneVal === "accent"
           ? sectionAccent
           : mutedFromText(s.text ?? theme.text);
+    }
+    // 卡片價錢用色：跟品名用色同一套（那行的 inline color 讀 --card-price-color、fallback 回
+    // 原本的 --store-text-muted，這裡有設值才會生效）。accent 同樣用上面算好的 sectionAccent，
+    // 商家把這一段換成跟主色相近的底色時那裡已經換成該段的文字色，價錢跟標題、小標、品名走
+    // 同一道防呆。text 是跟品名同深的那個（--store-text 的來源），選了它價錢就不再比品名淡，
+    // 是給「客人先看價錢」那種店用的；卡片外面那層 opacity 0.7 不歸這格管（那是「卡片副文字
+    // 深淺」那格的事），兩格各自獨立、疊起來也講得通。
+    if (s.cardPriceToneVal) {
+      out["--card-price-color"] =
+        s.cardPriceToneVal === "accent" ? sectionAccent : s.text ?? theme.text;
     }
     if (s.minHeightOverride !== undefined) out.minHeight = s.minHeightOverride;
     // 線的顏色：沒設自訂文字色就照舊用全站 theme.border（既有店家一條線都不會變）。
@@ -2038,7 +2059,9 @@ export default async function StoreHomePage({
                     </h3>
                     <p
                       className="sproutly-card-meta sproutly-card-price mt-1 text-sm"
-                      style={{ color: "var(--store-text-muted)" }}
+                      style={{
+                        color: "var(--card-price-color, var(--store-text-muted))",
+                      }}
                     >
                       {formatPrice(p.price_cents, p.currency)}
                     </p>

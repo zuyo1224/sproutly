@@ -2899,6 +2899,7 @@ export function EditorWorkspace({
           const cardMicroWeight = cur.cardMicroWeight ?? null;
           const cardPriceScale = cur.cardPriceScale ?? null;
           const cardPriceWeight = cur.cardPriceWeight ?? null;
+          const cardPriceTone = cur.cardPriceTone ?? null;
           const cardRowGap = cur.cardRowGap ?? null;
           const cardMetaTone = cur.cardMetaTone ?? null;
           const entrance = cur.entrance ?? null;
@@ -3255,6 +3256,10 @@ export function EditorWorkspace({
                 cardPriceScale: "large",
                 cardMetaTone: "strong",
                 cardPriceWeight: "bold",
+                // 深淺那格還原的只是卡片外面那層 0.7，顏色本身還是文字色的七成——放大、
+                // 加粗、還原透明度三件都做了，價錢在清單裡還是比品名淡一階。跟品名同深才
+                // 收得掉最後那點落差（不用主色：清單一行一個品項，一整排彩色數字太吵）。
+                cardPriceTone: "text",
                 // 價錢一粗，400 的品名反而被壓過去，客人先看到的是數字不是商品；品名跟著
                 // 上一階（不到 700）才留得住「品名是主角、價錢是重點」的順序。
                 cardTitleWeight: "medium",
@@ -5804,6 +5809,41 @@ export function EditorWorkspace({
                     <button
                       type="button"
                       onClick={() => patch({ cardPriceWeight: null })}
+                      className="text-stone-500 hover:text-stone-800 underline"
+                    >
+                      清除
+                    </button>
+                  )}
+                </div>
+              </Field>
+              <Field label="卡片價錢用色">
+                <div className="grid grid-cols-3 gap-1.5">
+                  {([
+                    { v: "default", label: "預設" },
+                    { v: "accent", label: "主色" },
+                    { v: "text", label: "跟品名同深" },
+                  ] as const).map((opt) => (
+                    <button
+                      key={opt.v}
+                      type="button"
+                      onClick={() => patch({ cardPriceTone: opt.v })}
+                      aria-pressed={(cardPriceTone ?? "default") === opt.v}
+                      className={`rounded-lg border py-2 text-xs transition ${
+                        (cardPriceTone ?? "default") === opt.v
+                          ? "border-emerald-500 bg-emerald-50 text-emerald-900"
+                          : "border-stone-200 text-stone-600 hover:border-stone-400"
+                      }`}
+                    >
+                      {opt.label}
+                    </button>
+                  ))}
+                </div>
+                <div className="mt-1.5 flex items-center justify-between text-[11px] text-stone-500">
+                  <span>前面兩格動的是價錢多大、多粗，這格動的是它什麼顏色。那行本來比品名淡一階，是整張卡上最淡的一行，可是一株賣多少常常正是客人在首頁在找的東西——換成主色或跟品名同深，掃過一列卡片時才看得到。「卡片副文字深淺」動的是那層透明度，跟這格是兩回事，可以疊著用。只有精選商品那段的卡片有價錢</span>
+                  {cardPriceTone && (
+                    <button
+                      type="button"
+                      onClick={() => patch({ cardPriceTone: null })}
                       className="text-stone-500 hover:text-stone-800 underline"
                     >
                       清除
