@@ -1622,6 +1622,35 @@ export default async function PublicStoreLayout({
           letter-spacing: 0.55em;
         }
 
+        /* 卡片小字粗細：editor 各 section panel「卡片小字粗細」四按鈕（常規 / 跟預設 /
+           中黑 / 粗）。上面兩組管的是那幾行小字多大、字與字之間空多少，這組管的是它們
+           多粗——選物卡片底下的「看更多」、慢讀卡片上面的分類與底下的標籤、精選卡片上的
+           「剩 N」。
+           那幾行的粗細各寫各的，而且分成兩種：選物與慢讀那三行沒設、繼承下來就是 400，
+           10px 的中文再加 0.3em 的字距，在淺色底上細成一條灰線，客人看到的不像一行字
+           ——而「看更多」常常是那張卡上唯一告訴客人「這裡可以點」的東西；精選那行反過來
+           是 class 上的 font-medium（500），又用琥珀色印，在一張只有品名與價錢的小卡上
+           搶得比價錢還前面，商家想讓它退成一句提示原本沒辦法。
+           商家原本沒有一格動得到：「小標粗細」那組落在段落自己的 eyebrow 上（大標上面那
+           行），到不了卡片裡；卡片標題 / 描述 / 價錢那三組的規則各帶自己的 class，全跳過
+           這幾行；「卡片小字字級」放大的是字（筆畫等比變粗，在淺底上一樣淡）。
+           給四個值不是三個，跟小標粗細那組同一個理由：精選那行本來就是 500，只給「跟預設
+           / 中黑 / 粗」的話它沒有一顆按鈕退得回 400，對最需要這格的那一段等於是壞的。
+           不必繞 CSS variable：這幾行的粗細寫在 class 上（inline style 只有顏色與字距），
+           這份 <style> 沒包在 @layer，一條規則就蓋得過去——跟卡片描述、卡片價錢那兩組同一
+           個處境，不像品名那組得靠變數傳。
+           400 / 500 / 700 都是這支 layout 已經載進來的字重，不給 300 那種細的：沒載的字重
+           瀏覽器會拿常規去假變細，10px 的中文筆畫直接糊成一團，比原本更看不清楚。 */
+        section[data-edit-target][data-card-micro-weight="light"] .sproutly-card-micro {
+          font-weight: 400;
+        }
+        section[data-edit-target][data-card-micro-weight="medium"] .sproutly-card-micro {
+          font-weight: 500;
+        }
+        section[data-edit-target][data-card-micro-weight="bold"] .sproutly-card-micro {
+          font-weight: 700;
+        }
+
         /* 卡片價錢字級：editor 精選商品 panel「卡片價錢字級」三按鈕（小 / 跟預設 / 大）。
            上面三組把卡片裡的品名、描述、全大寫小字都補起來之後，價錢是這一組最後一行沒得
            動的——它寫死 14px，比品名的 16px 還小一級。那個安排是照「先看商品再看價錢」的

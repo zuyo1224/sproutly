@@ -638,6 +638,19 @@ export default async function StoreHomePage({
       s?.cardMicroTracking === "tight" || s?.cardMicroTracking === "wide"
         ? s.cardMicroTracking
         : undefined;
+    // 卡片小字粗細：上兩格動的是那幾行小字多大、字與字之間空多少，這格動的是它們多粗。
+    // 那幾行的粗細各寫各的：選物的「看更多」、慢讀的分類與標籤沒設就是 400，10px 的中文
+    // 加上 0.3em 字距，在淺底上細成一條灰線；精選的「剩 N」是 class 上的 font-medium
+    // （500），用琥珀色印，在小卡上比價錢還搶。段落層的「小標粗細」規則落在自己的 eyebrow
+    // 上、卡片描述與價錢那兩格的規則各帶自己的 class，三組都到不了這幾行。
+    // 不必繞變數：這幾行的 inline style 只有顏色與字距，粗細在 class 那層，layout.tsx 的
+    // 規則蓋得過去。掛的範圍跟字距那格一樣是三段（選物 / 精選 / 慢讀）。
+    const cardMicroWeightVal: "light" | "medium" | "bold" | undefined =
+      s?.cardMicroWeight === "light" ||
+      s?.cardMicroWeight === "medium" ||
+      s?.cardMicroWeight === "bold"
+        ? s.cardMicroWeight
+        : undefined;
     // 卡片價錢字級：上面三格動的是品名、描述、全大寫小字，這格動的是精選商品卡片上那行
     // 價錢（寫死 14px，比品名還小）。同樣是段落上的 inline style 傳不下去，attribute 讓
     // layout.tsx 補規則。只掛精選那一段：卡片上有價錢的只有它。
@@ -739,6 +752,7 @@ export default async function StoreHomePage({
       cardDescWeightVal,
       cardMicroScaleVal,
       cardMicroTrackingVal,
+      cardMicroWeightVal,
       cardPriceScaleVal,
       cardPriceWeightVal,
       cardRowGapVal,
@@ -1652,6 +1666,7 @@ export default async function StoreHomePage({
             data-card-desc-weight={collStyle.cardDescWeightVal}
             data-card-micro-scale={collStyle.cardMicroScaleVal}
             data-card-micro-tracking={collStyle.cardMicroTrackingVal}
+            data-card-micro-weight={collStyle.cardMicroWeightVal}
             data-card-row-gap={collStyle.cardRowGapVal}
             data-card-meta-tone={collStyle.cardMetaToneVal}
             style={mergeSectionStyle(collStyle)}
@@ -1841,6 +1856,7 @@ export default async function StoreHomePage({
             data-card-row-gap={featuredStyle.cardRowGapVal}
             data-card-micro-scale={featuredStyle.cardMicroScaleVal}
             data-card-micro-tracking={featuredStyle.cardMicroTrackingVal}
+            data-card-micro-weight={featuredStyle.cardMicroWeightVal}
             data-card-meta-tone={featuredStyle.cardMetaToneVal}
           >
             <div className="max-w-5xl mx-auto px-8 sm:px-12" style={{ textAlign: featuredStyle.align }}>
@@ -2071,6 +2087,7 @@ export default async function StoreHomePage({
             data-card-desc-weight={journalStyle.cardDescWeightVal}
             data-card-micro-scale={journalStyle.cardMicroScaleVal}
             data-card-micro-tracking={journalStyle.cardMicroTrackingVal}
+            data-card-micro-weight={journalStyle.cardMicroWeightVal}
             data-card-row-gap={journalStyle.cardRowGapVal}
           >
           <div className="max-w-5xl mx-auto px-8 sm:px-12" style={{ textAlign: journalStyle.align }}>

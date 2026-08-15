@@ -2894,6 +2894,7 @@ export function EditorWorkspace({
           const cardDescWeight = cur.cardDescWeight ?? null;
           const cardMicroScale = cur.cardMicroScale ?? null;
           const cardMicroTracking = cur.cardMicroTracking ?? null;
+          const cardMicroWeight = cur.cardMicroWeight ?? null;
           const cardPriceScale = cur.cardPriceScale ?? null;
           const cardPriceWeight = cur.cardPriceWeight ?? null;
           const cardRowGap = cur.cardRowGap ?? null;
@@ -5624,6 +5625,42 @@ export function EditorWorkspace({
                     <button
                       type="button"
                       onClick={() => patch({ cardMicroTracking: null })}
+                      className="text-stone-500 hover:text-stone-800 underline"
+                    >
+                      清除
+                    </button>
+                  )}
+                </div>
+              </Field>
+              <Field label="卡片小字粗細">
+                <div className="grid grid-cols-4 gap-1.5">
+                  {([
+                    { v: "normal", label: "跟預設" },
+                    { v: "light", label: "常規" },
+                    { v: "medium", label: "中黑" },
+                    { v: "bold", label: "粗" },
+                  ] as const).map((opt) => (
+                    <button
+                      key={opt.v}
+                      type="button"
+                      onClick={() => patch({ cardMicroWeight: opt.v })}
+                      aria-pressed={(cardMicroWeight ?? "normal") === opt.v}
+                      className={`rounded-lg border py-2 text-xs transition ${
+                        (cardMicroWeight ?? "normal") === opt.v
+                          ? "border-emerald-500 bg-emerald-50 text-emerald-900"
+                          : "border-stone-200 text-stone-600 hover:border-stone-400"
+                      }`}
+                    >
+                      {opt.label}
+                    </button>
+                  ))}
+                </div>
+                <div className="mt-1.5 flex items-center justify-between text-[11px] text-stone-500">
+                  <span>同樣那幾行小字的筆畫多粗。「看更多」、分類、標籤那三行是最細的一級，10px 又撐開字距，在淺色底上看起來像一條灰線不像字，想讓客人看得出那裡可以點選「中黑」或「粗」；精選商品那行「剩 N」本來就比較重、又是琥珀色，想讓它退成一句提示選「常規」</span>
+                  {cardMicroWeight && (
+                    <button
+                      type="button"
+                      onClick={() => patch({ cardMicroWeight: null })}
                       className="text-stone-500 hover:text-stone-800 underline"
                     >
                       清除

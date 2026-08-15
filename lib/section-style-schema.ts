@@ -449,6 +449,30 @@ export const SECTION_STYLE_ENUMS = {
   // 一樣，字距沒有等比縮放的寫法（CSS 蓋得掉但乘不了），而商家按這一格就是明確要「全部
   // 收緊」或「全部撐開」，兩行差 0.1em 的原始差別本來就不是他在調的東西。
   cardMicroTracking: ["tight", "normal", "wide"],
+  // 卡片小字粗細（light 常規 400 / normal 照這一段原本的 / medium 中黑 500 / bold 粗 700），
+  // 套的是跟上面兩格同一批小字——選物卡片底下的「看更多」、慢讀卡片上面的分類與底下的標籤、
+  // 精選卡片上的「剩 N」。那幾行的大小與字距都補過了，粗細是這一組最後一個沒得動的。
+  // 粗細這條線在別的位置已經補過六格：段落大標（headingWeight）、段落內文（bodyWeight）、
+  // 段落最上面那行小標（eyebrowWeight）、卡片品名（cardTitleWeight）、卡片描述
+  //（cardDescWeight）、卡片價錢（cardPriceWeight）——卡片上這幾行小字是最後一個。
+  // 缺這格會怎樣：那幾行的粗細各寫各的，而且分成兩種。選物的「看更多」、慢讀的分類與標籤
+  // 沒設、繼承下來就是 400，10px 的中文再加上 0.3em 的字距，筆畫細到在淺底上看起來是一條
+  // 灰線不是一行字——而「看更多」常常是那張卡上唯一告訴客人「這裡可以點」的東西。精選那行
+  //「剩 N」反過來是 500（class 上的 font-medium），它用琥珀色印，在一張只有品名與價錢的
+  // 小卡上搶得比價錢還前面，商家想讓它退成一句提示完全沒辦法。
+  // 商家原本沒有一格動得到——「小標粗細」那條規則落在段落自己的 eyebrow 上（大標上面那行），
+  // 到不了卡片裡；「卡片標題粗細」只管品名（h3）、「卡片描述粗細」的規則帶
+  // .sproutly-card-desc、「卡片價錢粗細」帶 .sproutly-card-price，三組都跳過這幾行；
+  //「卡片小字字級」放大的是字（字大了筆畫是跟著等比粗，在淺底上還是一樣淡）、「卡片小字
+  // 字距」撐開的是字與字之間、「卡片副文字深淺」動的是選物副標與精選價錢那層透明度。
+  // 給四個值不是三個（跟小標粗細那格同一個理由）：精選那行本來就是 500，只給「跟預設 /
+  // 中黑 / 粗」的話它沒有一顆按鈕退得回 400，這格對最需要它的那一段等於是壞的。
+  // 不必繞 CSS variable：這幾行的粗細不是寫在 inline style 裡（精選那行的 font-medium 在
+  // class 上，inline 只有顏色與字距），layout.tsx 那份 <style> 沒包在 @layer，一條規則就
+  // 蓋得過去——跟卡片描述粗細、卡片價錢粗細同一個處境，不像品名那格得靠變數傳。
+  // 只用有載進來的字重（400 / 500 / 700），不給 300 那種細的：沒載的字重瀏覽器會拿常規去
+  // 假變細，10px 的中文筆畫直接糊成一團，比原本更看不清楚。
+  cardMicroWeight: ["light", "normal", "medium", "bold"],
   // 卡片價錢字級（small 縮一成 / default 照原本的 / large 放大三成），只套精選商品那段卡片
   // 上品名底下那行價錢。上面三格把品名、描述、小字都補起來之後，價錢是這一組最後一行沒得
   // 動的——它寫死 14px，比品名的 16px 還小，跟選物段的副標同一級。那個安排是照「先看商品
@@ -638,6 +662,7 @@ export const SECTION_STYLE_NEUTRAL_VALUES = {
   cardDescWeight: "normal",
   cardMicroScale: "default",
   cardMicroTracking: "normal",
+  cardMicroWeight: "normal",
   cardPriceScale: "default",
   cardPriceWeight: "normal",
   cardRowGap: "normal",
