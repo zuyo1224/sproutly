@@ -609,6 +609,17 @@ export default async function StoreHomePage({
       s?.cardTitleTracking === "tight" || s?.cardTitleTracking === "wide"
         ? s.cardTitleTracking
         : undefined;
+    // 卡片品名用色：前面四格動的是品名那行多大、多粗、換行隔多遠、字與字隔多遠，這格動的
+    // 是它什麼顏色。三段的品名都寫死 --store-text（跟段落內文同深），整張卡上沒有一個顏色
+    // 上的落點。跟標題用色（headingTone）、小標用色（eyebrowTone）同一個處境同一個解法：
+    // 顏色寫在 h3 自己的 inline style 上（規則蓋不過 inline），三個位置的 color 都改讀
+    // --card-title-color、fallback 回原本的 --store-text，值在 mergeSectionStyle 算——
+    // accent 要走那裡算好的 sectionAccent（主色壓在自訂底色上看不見時已經換成該段文字色
+    // 的那個），在這裡自己拿 theme.accent 會繞過那道防呆。
+    const cardTitleToneVal: "accent" | "muted" | undefined =
+      s?.cardTitleTone === "accent" || s?.cardTitleTone === "muted"
+        ? s.cardTitleTone
+        : undefined;
     // 卡片描述字級：上一格動的是品名那行，這格動的是它底下那段描述（寫死 14px）。同樣是
     // 段落上的 inline style 傳不下去，attribute 讓 layout.tsx 補規則。
     // 掛的範圍跟卡片描述行數那格一樣是兩段（選物副標 / 慢讀摘要）：精選那段同一個位置放
@@ -764,6 +775,7 @@ export default async function StoreHomePage({
       cardTitleWeightVal,
       cardTitleLeadingVal,
       cardTitleTrackingVal,
+      cardTitleToneVal,
       cardDescScaleVal,
       cardDescLeadingVal,
       cardDescWeightVal,
@@ -870,6 +882,17 @@ export default async function StoreHomePage({
           : s.eyebrowToneVal === "text"
             ? s.text ?? theme.text
             : mutedFromText(s.text ?? theme.text);
+    }
+    // 卡片品名用色：跟上面兩格同一套（三段品名的 inline color 都讀 --card-title-color、
+    // fallback 回原本的 --store-text，這裡有設值才會生效）。accent 同樣用上面算好的
+    // sectionAccent，商家把這一段換成跟主色相近的底色時那裡已經換成該段的文字色，品名跟
+    // 標題、小標、短線走同一道防呆，不會單獨淡進底色裡。muted 跟次要文字同一個口徑（文字色
+    // 的七成）——選了它品名會跟底下的描述同深，是給「讓照片當主角」那種段落用的。
+    if (s.cardTitleToneVal) {
+      out["--card-title-color"] =
+        s.cardTitleToneVal === "accent"
+          ? sectionAccent
+          : mutedFromText(s.text ?? theme.text);
     }
     if (s.minHeightOverride !== undefined) out.minHeight = s.minHeightOverride;
     // 線的顏色：沒設自訂文字色就照舊用全站 theme.border（既有店家一條線都不會變）。
@@ -1798,7 +1821,7 @@ export default async function StoreHomePage({
                       data-edit-index={c.index}
                       className="sproutly-card-title mt-6 text-lg sm:text-xl"
                       style={{
-                        color: "var(--store-text)",
+                        color: "var(--card-title-color, var(--store-text))",
                         fontFamily: "var(--store-font)",
                         fontWeight: "var(--card-title-weight, 400)",
                       }}
@@ -2006,7 +2029,7 @@ export default async function StoreHomePage({
                     <h3
                       className="sproutly-card-title mt-5 text-base line-clamp-1"
                       style={{
-                        color: "var(--store-text)",
+                        color: "var(--card-title-color, var(--store-text))",
                         fontFamily: "var(--store-font)",
                         fontWeight: "var(--card-title-weight, 400)",
                       }}
@@ -2248,7 +2271,7 @@ export default async function StoreHomePage({
                       data-edit-index={i}
                       className="sproutly-card-title mt-3 text-lg sm:text-xl leading-[1.4]"
                       style={{
-                        color: "var(--store-text)",
+                        color: "var(--card-title-color, var(--store-text))",
                         fontFamily: "var(--store-font)",
                         fontWeight: "var(--card-title-weight, 400)",
                         // 字距讀 --card-title-track（卡片品名字距那格由 layout.tsx 的規則設）

@@ -2890,6 +2890,7 @@ export function EditorWorkspace({
           const cardTitleWeight = cur.cardTitleWeight ?? null;
           const cardTitleLeading = cur.cardTitleLeading ?? null;
           const cardTitleTracking = cur.cardTitleTracking ?? null;
+          const cardTitleTone = cur.cardTitleTone ?? null;
           const cardDescScale = cur.cardDescScale ?? null;
           const cardDescLeading = cur.cardDescLeading ?? null;
           const cardDescWeight = cur.cardDescWeight ?? null;
@@ -5487,6 +5488,41 @@ export function EditorWorkspace({
                     <button
                       type="button"
                       onClick={() => patch({ cardTitleTracking: null })}
+                      className="text-stone-500 hover:text-stone-800 underline"
+                    >
+                      清除
+                    </button>
+                  )}
+                </div>
+              </Field>
+              <Field label="卡片品名用色">
+                <div className="grid grid-cols-3 gap-1.5">
+                  {([
+                    { v: "default", label: "預設" },
+                    { v: "accent", label: "主色" },
+                    { v: "muted", label: "柔和" },
+                  ] as const).map((opt) => (
+                    <button
+                      key={opt.v}
+                      type="button"
+                      onClick={() => patch({ cardTitleTone: opt.v })}
+                      aria-pressed={(cardTitleTone ?? "default") === opt.v}
+                      className={`rounded-lg border py-2 text-xs transition ${
+                        (cardTitleTone ?? "default") === opt.v
+                          ? "border-emerald-500 bg-emerald-50 text-emerald-900"
+                          : "border-stone-200 text-stone-600 hover:border-stone-400"
+                      }`}
+                    >
+                      {opt.label}
+                    </button>
+                  ))}
+                </div>
+                <div className="mt-1.5 flex items-center justify-between text-[11px] text-stone-500">
+                  <span>卡片上那行品名是什麼顏色。三段的品名本來都跟內文同深，整張卡上沒有一個顏色的落點，品名跟底下的描述、價錢只差在字大一點；換成主色能讓客人掃過一列卡片時先看到商品名，柔和則是讓品名退半階、把重量留給照片。上面幾格動的是字多大、多粗、隔多遠，都不換顏色。只動品名，描述、價錢與那幾行小字不跟著變</span>
+                  {cardTitleTone && (
+                    <button
+                      type="button"
+                      onClick={() => patch({ cardTitleTone: null })}
                       className="text-stone-500 hover:text-stone-800 underline"
                     >
                       清除

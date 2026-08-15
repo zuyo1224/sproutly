@@ -394,6 +394,30 @@ export const SECTION_STYLE_ENUMS = {
   // 撐開給 0.14em 不給小字那種 0.55em：品名是一個詞要一眼認得出來，撐到那個程度會散成幾個
   // 各自站著的字，而且在窄卡上直接被撐到多換一行（那是全大寫小字那種兩三個字才成立的樣式）。
   cardTitleTracking: ["tight", "normal", "wide"],
+  // 卡片品名用色（default 照原本的、跟內文同深 / accent 全站主色 / muted 跟次要文字同深淺），
+  // 只套卡片上那行品名（與慢讀的文章標題），不動描述、價錢與那幾行小字。品名的大小、粗細、
+  // 行距、字距都補過了，顏色是這一組最後一個沒得動的。
+  // 用色這條線在別的位置已經補過四格：段落大標（headingTone）、段落內文（bodyTone）、段落
+  // 最上面那行小標（eyebrowTone）、卡片上品名底下那行次要文字（cardMetaTone）——卡片上字級
+  // 最大、客人在一排卡片裡真正拿來認商品的那一行是最後一個。
+  // 缺這格會怎樣：三段的品名一律寫死 --store-text（跟段落內文同一個深度），整張卡上只有
+  // 「看更多」那行小字帶主色。商品照本來就佔掉整張卡的大半，品名跟底下的描述、價錢同深同色、
+  // 只差在字大一點，客人掃過一列卡片時沒有一個顏色上的落點——這也是為什麼品名那幾格
+  //（字級、粗細）補完之後商家還是覺得卡片「一片平」：能調的都是形，沒有一格能調色。
+  // 反過來也一樣：把整段做成深底淺字的段落，或照片旁邊字多的清單模式，商家想讓品名比描述
+  // 再退半階、讓照片當主角，也只能整段換文字色（描述、價錢、小字全部跟著走）。
+  // 商家原本沒有一格動得到——「文字顏色」換的是整段（大標、內文、卡片上每一行一起變）、
+  //「標題用色」落在段落大標 h2、「小標用色」落在段落最上面那行小標、「內文濃淡」改的是
+  // --store-text-muted（品名讀的是 --store-text，不受它影響）、「卡片副文字深淺」動的是
+  // 品名底下那行的透明度、「淡化」透明的是整段連照片一起，六個都到不了品名這行。
+  // 走 CSS variable 不走規則，跟標題用色、小標用色同一招：那行的顏色是 inline style
+  //（規則蓋不過 inline，跟品名粗細那格同一個處境），三個位置的 inline color 統一改讀
+  // --card-title-color、fallback 回原本的 --store-text，沒設變數時算出來一模一樣。
+  // accent 走 mergeSectionStyle 算好的 sectionAccent（主色壓在自訂底色上看不見時已經換成
+  // 該段文字色的那個），不自己拿 theme.accent——跟標題、小標、短線走同一道防呆。
+  // 三檔就夠不用像小標那格給四檔：三段的品名是同一個寫死值（--store-text），default 這檔
+  // 本身就是退得回去的那顆按鈕，不像小標那邊有主色與次要文字兩種寫死值要互相切換。
+  cardTitleTone: ["default", "accent", "muted"],
   // 卡片描述字級（small 縮一成 / default 照原本的 / large 放大兩成），只套卡片裡品名底下
   // 那段描述（選物的副標、慢讀的摘要）。上一格把品名那行的大小補起來之後，描述這行還是
   // 寫死的 14px——那個值是照站上預設那種一句話的副標挑的，換成商家自己的東西就不對：
@@ -683,6 +707,7 @@ export const SECTION_STYLE_NEUTRAL_VALUES = {
   cardTitleWeight: "normal",
   cardTitleLeading: "normal",
   cardTitleTracking: "normal",
+  cardTitleTone: "default",
   cardDescScale: "default",
   cardDescLeading: "normal",
   cardDescWeight: "normal",
