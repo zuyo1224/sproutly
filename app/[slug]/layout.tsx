@@ -1557,13 +1557,20 @@ export default async function PublicStoreLayout({
            它再退一點也只能整段調深淺，沒辦法只動粗細。
            規則落在 .sproutly-card-desc，跟字級、行距、行數那幾組同一個範圍：精選那段同一個
            位置放的是價錢，不掛這個 class，而且價錢自己有一格粗細，不受影響。
-           這組不必繞 CSS variable（品名那組要繞，是因為粗細寫在 h3 自己的 inline style 上）
-           ——這兩段描述的 inline style 只有顏色，粗細是 class 那層的預設，這份 <style> 沒包
-           在 @layer，直接蓋得過去。
+           選物與慢讀那兩段的 inline style 只有顏色，粗細是 class 那層的預設，這份 <style>
+           沒包在 @layer，直接蓋得過去；顧客評語那段的引言把 400 寫在自己的 inline style 上
+           （inline 壓得過任何 CSS 規則），所以跟品名那組一樣多給一條 --card-desc-weight，
+           讓寫在 inline 的那行也跟著這格走。沒設就沒變數，那行照樣讀 fallback 的 400。
            400 / 500 / 700 都是這支 layout 已經載進來的字重，不給 300 那種細的：沒載的字重
            瀏覽器會拿常規去假變細，中文筆畫糊掉，跟品名、段落大標那兩格同一個理由。 */
+        section[data-edit-target][data-card-desc-weight="medium"] {
+          --card-desc-weight: 500;
+        }
         section[data-edit-target][data-card-desc-weight="medium"] .sproutly-card-desc {
           font-weight: 500;
+        }
+        section[data-edit-target][data-card-desc-weight="bold"] {
+          --card-desc-weight: 700;
         }
         section[data-edit-target][data-card-desc-weight="bold"] .sproutly-card-desc {
           font-weight: 700;
@@ -1575,15 +1582,24 @@ export default async function PublicStoreLayout({
            那批元素上碰得到它們，但一調整段的引言、常見問題答案全部跟著動；商家把品名字距
            撐開之後，品名底下那句副標還是原本的密度，一鬆一緊疊在同一張卡上沒得救。
            規則落在 .sproutly-card-desc，跟字級、行距、粗細那幾組同一個範圍：精選那段同一個
-           位置放的是價錢，不掛這個 class，不受影響。兩段的 inline style 只有顏色，字距是
-           繼承來的，這條規則直接蓋得過去，不必像品名那組繞 CSS variable。
+           位置放的是價錢，不掛這個 class，不受影響。選物與慢讀那兩段的 inline style 只有
+           顏色，字距是繼承來的，帶 class 的規則直接蓋得過去；顧客評語那段的引言不一樣，
+           它的字距寫在 inline style 裡（跟著 --store-track 走），inline 的優先度連 CSS
+           規則都壓不過——所以跟品名、小字那兩組一樣多給一條 --card-desc-track，讓寫在
+           inline 的那行也跟著這格走。沒設就沒變數，那行照樣讀 fallback 的原值。
            帶 class 的這條比「內文字距」那條（attribute + 元素）精確，商家兩邊都設時卡片
            照樣聽這格的——跟描述粗細對 bodyWeight 的關係同一個安排。
            檔位跟內文那組同一對值不跟品名那組：描述是 14px 的整句話，品名的 -0.04em 會讓
            中文筆畫黏在一起、0.14em 會把一句話撐散成單字，那對值是照「一個詞」挑的。
            沒設就沒 attribute、整條規則不存在，既有店家一個字都不會動。 */
+        section[data-edit-target][data-card-desc-tracking="tight"] {
+          --card-desc-track: -0.02em;
+        }
         section[data-edit-target][data-card-desc-tracking="tight"] .sproutly-card-desc {
           letter-spacing: -0.02em;
+        }
+        section[data-edit-target][data-card-desc-tracking="wide"] {
+          --card-desc-track: 0.06em;
         }
         section[data-edit-target][data-card-desc-tracking="wide"] .sproutly-card-desc {
           letter-spacing: 0.06em;

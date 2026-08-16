@@ -2604,6 +2604,15 @@ export default async function StoreHomePage({
                 : testimonialsStyle.align === "left"
                 ? ""
                 : "mx-auto";
+            // 卡片上那三行字（引言 / 姓名 / 頭銜）接上編輯器既有的卡片文字控制。
+            // 這一段的卡片一直沒掛 sproutly-card-* 的 class、也沒發出任何 data-card-*，但
+            // 編輯器右邊那排「卡片標題 / 卡片描述 / 卡片小字」的格子每一段都照樣列出來——
+            // 商家在顧客評語這段按下去，畫面上一個字都不會動，等於十二格死的控制。
+            // 對應關係照那三行在卡片上的角色挑：引言是卡片上要讀的那段字（描述）、姓名是
+            // 一眼認人的那一行（品名）、頭銜是底下那行附註（小字）。
+            // 沒發的兩組是刻意的：行數（title-lines / desc-lines）會把引言裁掉尾巴，評語被
+            // 截在半句話比排得長還糟；卡片行距（row-gap）那條規則加的是 margin-top，這張卡
+            // 的間距寫在引言的下留白（mb-6）上，發了會多出一截上留白。
             return (
             <section
               className={`relative py-40 sm:py-56 ${animClass} ${testimonialsFree ? "min-h-[60vh]" : ""}`}
@@ -2634,6 +2643,18 @@ export default async function StoreHomePage({
               data-media-radius={testimonialsStyle.mediaRadiusVal}
               data-grid-gap={testimonialsStyle.gridGapVal}
               data-mobile-cols={testimonialsStyle.mobileColumnsVal}
+              data-card-title-scale={testimonialsStyle.cardTitleScaleVal}
+              data-card-title-weight={testimonialsStyle.cardTitleWeightVal}
+              data-card-title-leading={testimonialsStyle.cardTitleLeadingVal}
+              data-card-title-tracking={testimonialsStyle.cardTitleTrackingVal}
+              data-card-desc-scale={testimonialsStyle.cardDescScaleVal}
+              data-card-desc-leading={testimonialsStyle.cardDescLeadingVal}
+              data-card-desc-weight={testimonialsStyle.cardDescWeightVal}
+              data-card-desc-tracking={testimonialsStyle.cardDescTrackingVal}
+              data-card-micro-scale={testimonialsStyle.cardMicroScaleVal}
+              data-card-micro-tracking={testimonialsStyle.cardMicroTrackingVal}
+              data-card-micro-leading={testimonialsStyle.cardMicroLeadingVal}
+              data-card-micro-weight={testimonialsStyle.cardMicroWeightVal}
             >
               <div
                 className="max-w-5xl mx-auto px-8 sm:px-12"
@@ -2756,12 +2777,14 @@ export default async function StoreHomePage({
                         data-edit-text
                         data-edit-field="testimonialQuote"
                         data-edit-index={i}
-                        className="text-base leading-[1.95] relative z-10 mb-6"
+                        className="sproutly-card-desc text-base leading-[1.95] relative z-10 mb-6"
                         style={{
-                          color: theme.text,
+                          color: "var(--card-desc-color, var(--store-text))",
                           fontFamily: "var(--store-font)",
-                          fontWeight: 400,
-                          letterSpacing: "var(--store-track, 0.005em)",
+                          fontWeight: "var(--card-desc-weight, 400)",
+                          // 字距寫在 inline、優先度壓過帶 class 的規則，所以繞 --card-desc-track
+                          // （layout.tsx 依 attribute 給值），沒設就讀回原本的 --store-track
+                          letterSpacing: "var(--card-desc-track, var(--store-track, 0.005em))",
                           wordBreak: "keep-all",
                         }}
                       >
@@ -2772,8 +2795,13 @@ export default async function StoreHomePage({
                           data-edit-text
                           data-edit-field="testimonialAuthor"
                           data-edit-index={i}
-                          className="text-sm font-medium"
-                          style={{ color: theme.text }}
+                          className="sproutly-card-title text-sm"
+                          style={{
+                            color: "var(--card-title-color, var(--store-text))",
+                            // 原本是 font-medium 這個 class，改寫成 inline 的變數：
+                            // 「卡片標題粗細」那格給的就是 --card-title-weight，沒設讀回 500
+                            fontWeight: "var(--card-title-weight, 500)",
+                          }}
                         >
                           {t.author}
                         </p>
@@ -2782,8 +2810,8 @@ export default async function StoreHomePage({
                             data-edit-text
                             data-edit-field="testimonialRole"
                             data-edit-index={i}
-                            className="text-xs mt-1"
-                            style={{ color: theme.textMuted }}
+                            className="sproutly-card-micro text-xs mt-1"
+                            style={{ color: cardMicroMutedColor }}
                           >
                             {t.role}
                           </p>
