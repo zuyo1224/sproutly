@@ -1569,6 +1569,26 @@ export default async function PublicStoreLayout({
           font-weight: 700;
         }
 
+        /* 卡片描述字距：editor 各 section panel「卡片描述字距」三按鈕（收緊 / 跟預設 / 撐開）。
+           上面幾組管的是那段描述多大、行與行隔多遠、多粗，這組管的是同一行裡字與字之間隔
+           多遠。兩段描述都沒設自己的字距、跟著整段繼承走：「內文字距」那條規則落在 p / li
+           那批元素上碰得到它們，但一調整段的引言、常見問題答案全部跟著動；商家把品名字距
+           撐開之後，品名底下那句副標還是原本的密度，一鬆一緊疊在同一張卡上沒得救。
+           規則落在 .sproutly-card-desc，跟字級、行距、粗細那幾組同一個範圍：精選那段同一個
+           位置放的是價錢，不掛這個 class，不受影響。兩段的 inline style 只有顏色，字距是
+           繼承來的，這條規則直接蓋得過去，不必像品名那組繞 CSS variable。
+           帶 class 的這條比「內文字距」那條（attribute + 元素）精確，商家兩邊都設時卡片
+           照樣聽這格的——跟描述粗細對 bodyWeight 的關係同一個安排。
+           檔位跟內文那組同一對值不跟品名那組：描述是 14px 的整句話，品名的 -0.04em 會讓
+           中文筆畫黏在一起、0.14em 會把一句話撐散成單字，那對值是照「一個詞」挑的。
+           沒設就沒 attribute、整條規則不存在，既有店家一個字都不會動。 */
+        section[data-edit-target][data-card-desc-tracking="tight"] .sproutly-card-desc {
+          letter-spacing: -0.02em;
+        }
+        section[data-edit-target][data-card-desc-tracking="wide"] .sproutly-card-desc {
+          letter-spacing: 0.06em;
+        }
+
         /* 卡片小字字級：editor 各 section panel「卡片小字字級」三按鈕（小 / 跟預設 / 大）。
            上面兩組管的是卡片裡的品名與描述，這組管的是卡片上剩下那幾行——全大寫、字距撐
            很開的小字：選物卡片底下的「看更多」、慢讀卡片上面的分類、慢讀卡片底下的標籤，

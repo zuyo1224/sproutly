@@ -656,6 +656,16 @@ export default async function StoreHomePage({
       s?.cardDescWeight === "medium" || s?.cardDescWeight === "bold"
         ? s.cardDescWeight
         : undefined;
+    // 卡片描述字距：上面幾格動的是那段描述多大、行距多開、多粗，這格動的是同一行裡字與字
+    // 之間隔多遠。兩段描述都沒設自己的字距、跟著整段繼承走，「內文字距」那格碰得到它們但
+    // 一動整段的引言、答案全跟著動；品名字距撐開之後底下那句副標跟不上，一鬆一緊疊在同一
+    // 張卡上。attribute 讓 layout.tsx 補規則（描述的 inline style 只有顏色，字距蓋得過去）。
+    // 掛的範圍跟描述字級、行距、粗細那幾格一樣是兩段（選物副標 / 慢讀摘要）：精選那段同一
+    // 個位置放的是價錢，不掛 sproutly-card-desc。
+    const cardDescTrackingVal: "tight" | "wide" | undefined =
+      s?.cardDescTracking === "tight" || s?.cardDescTracking === "wide"
+        ? s.cardDescTracking
+        : undefined;
     // 卡片描述用色：上面三格動的是那段描述多大、行與行隔多遠、多粗，這格動的是它什麼顏色。
     // 兩段的描述都寫死 --store-text-muted（文字色的七成），選物那行外面還套著卡片那層
     // opacity 0.7，前面三格全都繞著顏色走，補完了慢讀那種摘要卡上客人真正要讀的一段還是
@@ -824,6 +834,7 @@ export default async function StoreHomePage({
       cardDescScaleVal,
       cardDescLeadingVal,
       cardDescWeightVal,
+      cardDescTrackingVal,
       cardDescToneVal,
       cardMicroScaleVal,
       cardMicroTrackingVal,
@@ -1798,6 +1809,7 @@ export default async function StoreHomePage({
             data-card-desc-scale={collStyle.cardDescScaleVal}
             data-card-desc-leading={collStyle.cardDescLeadingVal}
             data-card-desc-weight={collStyle.cardDescWeightVal}
+            data-card-desc-tracking={collStyle.cardDescTrackingVal}
             data-card-micro-scale={collStyle.cardMicroScaleVal}
             data-card-micro-tracking={collStyle.cardMicroTrackingVal}
             data-card-micro-weight={collStyle.cardMicroWeightVal}
@@ -2227,6 +2239,7 @@ export default async function StoreHomePage({
             data-card-desc-scale={journalStyle.cardDescScaleVal}
             data-card-desc-leading={journalStyle.cardDescLeadingVal}
             data-card-desc-weight={journalStyle.cardDescWeightVal}
+            data-card-desc-tracking={journalStyle.cardDescTrackingVal}
             data-card-micro-scale={journalStyle.cardMicroScaleVal}
             data-card-micro-tracking={journalStyle.cardMicroTrackingVal}
             data-card-micro-weight={journalStyle.cardMicroWeightVal}

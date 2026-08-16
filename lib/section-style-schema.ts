@@ -466,6 +466,25 @@ export const SECTION_STYLE_ENUMS = {
   // 掛的範圍跟卡片描述字級、行距、行數那幾格一樣是選物 / 慢讀兩段——精選那段同一個位置放
   // 的是價錢，價錢自己有一格粗細（cardPriceWeight），本來就不掛 sproutly-card-desc。
   cardDescWeight: ["normal", "medium", "bold"],
+  // 卡片描述字距（tight 收緊 / normal 照原本的 / wide 撐開），套的是品名底下那段描述——
+  // 選物的副標、慢讀的摘要。那段的字級、行距、粗細、行數、顏色都補過了，同一行裡字與字
+  // 之間隔多遠是這一組最後一個沒得動的。
+  // 字距這條線在別的位置已經補過五格：段落最上面那行小標（eyebrowTracking）、段落大標
+  // （headingTracking）、段落內文（bodyTracking）、卡片品名（cardTitleTracking）、卡片上
+  // 那幾行全大寫小字（cardMicroTracking）——卡片上這段是最後一個。
+  // 缺這格會怎樣：兩段描述都沒設字距、跟著整段繼承走，商家在「內文字距」那格調的值卻到
+  // 不了卡片裡——那條規則落在 p / li 那批選擇器上，兩段描述雖然也是 p，但商家一調整段的
+  // 引言、常見問題答案全部跟著動，做不到只動卡片這段。反方向更常見：商家把品名字距撐開
+  // 做選物店那種留白感之後，品名底下那句副標還是原本的密度，一鬆一緊疊在同一張卡上；
+  // 慢讀那種一整段摘要的卡片把字距收一點能多塞回半行，也一直沒得調。
+  // 規則落在 .sproutly-card-desc，跟描述字級、行距、粗細那幾格同一個範圍：精選那段同一個
+  // 位置放的是價錢，不掛這個 class，不受影響。兩段的 inline style 只有顏色，字距是繼承來
+  // 的，layout.tsx 的規則直接蓋得過去，不必像品名那格繞 CSS variable。
+  // 檔位跟內文那格同一對值（-0.02em / 0.06em）不跟品名（-0.04em / 0.14em）：描述是 14px
+  // 的整句話，收到 -0.04em 中文筆畫會黏、撐到 0.14em 一句話散成單字，品名那對值是照
+  // 「一個詞」挑的，套在整句上兩頭都過頭。
+  // 商家兩邊都設時卡片照樣聽這格的：這條規則帶 class，比內文那條（attribute + 元素）精確。
+  cardDescTracking: ["tight", "normal", "wide"],
   // 卡片描述用色（default 照原本的、跟次要文字同深 / accent 全站主色 / text 跟品名同深），
   // 套的是品名底下那段描述——選物的副標、慢讀的摘要。那段的字級、行距、粗細、行數都補過了，
   // 顏色是這一組最後一個沒得動的。
@@ -793,6 +812,8 @@ export const SECTION_STYLE_NEUTRAL_VALUES = {
   cardDescScale: "default",
   cardDescLeading: "normal",
   cardDescWeight: "normal",
+  cardDescTracking: "normal",
+  cardDescTone: "default",
   cardMicroScale: "default",
   cardMicroTracking: "normal",
   cardMicroWeight: "normal",

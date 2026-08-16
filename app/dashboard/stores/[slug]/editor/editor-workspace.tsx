@@ -2894,6 +2894,7 @@ export function EditorWorkspace({
           const cardDescScale = cur.cardDescScale ?? null;
           const cardDescLeading = cur.cardDescLeading ?? null;
           const cardDescWeight = cur.cardDescWeight ?? null;
+          const cardDescTracking = cur.cardDescTracking ?? null;
           const cardDescTone = cur.cardDescTone ?? null;
           const cardMicroScale = cur.cardMicroScale ?? null;
           const cardMicroTracking = cur.cardMicroTracking ?? null;
@@ -5635,6 +5636,41 @@ export function EditorWorkspace({
                     <button
                       type="button"
                       onClick={() => patch({ cardDescWeight: null })}
+                      className="text-stone-500 hover:text-stone-800 underline"
+                    >
+                      清除
+                    </button>
+                  )}
+                </div>
+              </Field>
+              <Field label="卡片描述字距">
+                <div className="grid grid-cols-3 gap-1.5">
+                  {([
+                    { v: "tight", label: "收緊" },
+                    { v: "normal", label: "跟預設" },
+                    { v: "wide", label: "撐開" },
+                  ] as const).map((opt) => (
+                    <button
+                      key={opt.v}
+                      type="button"
+                      onClick={() => patch({ cardDescTracking: opt.v })}
+                      aria-pressed={(cardDescTracking ?? "normal") === opt.v}
+                      className={`rounded-lg border py-2 text-xs transition ${
+                        (cardDescTracking ?? "normal") === opt.v
+                          ? "border-emerald-500 bg-emerald-50 text-emerald-900"
+                          : "border-stone-200 text-stone-600 hover:border-stone-400"
+                      }`}
+                    >
+                      {opt.label}
+                    </button>
+                  ))}
+                </div>
+                <div className="mt-1.5 flex items-center justify-between text-[11px] text-stone-500">
+                  <span>那段描述同一行裡，字與字之間空多少。把品名字距撐開之後，底下那句副標還是原本的密度，一鬆一緊疊在同一張卡上——這格讓描述跟得上；慢讀那種一整段的摘要收緊一點能多塞回半行。只動描述，品名、價錢與那幾行小字不跟著變</span>
+                  {cardDescTracking && (
+                    <button
+                      type="button"
+                      onClick={() => patch({ cardDescTracking: null })}
                       className="text-stone-500 hover:text-stone-800 underline"
                     >
                       清除
