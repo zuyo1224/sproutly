@@ -696,7 +696,19 @@ export default async function StoreHomePage({
       s?.cardMicroTracking === "tight" || s?.cardMicroTracking === "wide"
         ? s.cardMicroTracking
         : undefined;
-    // 卡片小字粗細：上兩格動的是那幾行小字多大、字與字之間空多少，這格動的是它們多粗。
+    // 卡片小字行距：上兩格動的是那幾行小字多大、同一行裡字與字之間空多少，這格動的是它們
+    // 排到第二行之後上下兩行隔多遠。那幾行換行的機率跟段落小標一樣高——自己帶著 0.3-0.4em
+    // 的字距，字級那格按到大之後 zoom 連字距一起放大，長一點的分類或標籤在手機的窄卡上
+    // 一行放不下是常態。慢讀那兩行是 <p>、沒帶 leading class，繼承的是段落那層的內文行高
+    // （預設 1.7、商家按到舒展就是 2），套在 10px 的標籤上兩行之間空得比字還高。
+    // 規則帶 class 落在 layout.tsx，行距在 class 那層、inline style 只有顏色與字距，蓋得過去。
+    // 掛的範圍跟字級、字距那兩格一樣是三段（選物 / 精選 / 慢讀）。
+    const cardMicroLeadingVal: "tight" | "loose" | undefined =
+      s?.cardMicroLeading === "tight" || s?.cardMicroLeading === "loose"
+        ? s.cardMicroLeading
+        : undefined;
+    // 卡片小字粗細：上三格動的是那幾行小字多大、字與字之間空多少、換行後上下隔多遠，這格
+    // 動的是它們多粗。
     // 那幾行的粗細各寫各的：選物的「看更多」、慢讀的分類與標籤沒設就是 400，10px 的中文
     // 加上 0.3em 字距，在淺底上細成一條灰線；精選的「剩 N」是 class 上的 font-medium
     // （500），用琥珀色印，在小卡上比價錢還搶。段落層的「小標粗細」規則落在自己的 eyebrow
@@ -847,6 +859,7 @@ export default async function StoreHomePage({
       cardDescToneVal,
       cardMicroScaleVal,
       cardMicroTrackingVal,
+      cardMicroLeadingVal,
       cardMicroWeightVal,
       cardMicroToneVal,
       cardPriceScaleVal,
@@ -1822,6 +1835,7 @@ export default async function StoreHomePage({
             data-card-desc-tracking={collStyle.cardDescTrackingVal}
             data-card-micro-scale={collStyle.cardMicroScaleVal}
             data-card-micro-tracking={collStyle.cardMicroTrackingVal}
+            data-card-micro-leading={collStyle.cardMicroLeadingVal}
             data-card-micro-weight={collStyle.cardMicroWeightVal}
             data-card-row-gap={collStyle.cardRowGapVal}
             data-card-meta-tone={collStyle.cardMetaToneVal}
@@ -2016,6 +2030,7 @@ export default async function StoreHomePage({
             data-card-row-gap={featuredStyle.cardRowGapVal}
             data-card-micro-scale={featuredStyle.cardMicroScaleVal}
             data-card-micro-tracking={featuredStyle.cardMicroTrackingVal}
+            data-card-micro-leading={featuredStyle.cardMicroLeadingVal}
             data-card-micro-weight={featuredStyle.cardMicroWeightVal}
             data-card-meta-tone={featuredStyle.cardMetaToneVal}
           >
@@ -2253,6 +2268,7 @@ export default async function StoreHomePage({
             data-card-desc-tracking={journalStyle.cardDescTrackingVal}
             data-card-micro-scale={journalStyle.cardMicroScaleVal}
             data-card-micro-tracking={journalStyle.cardMicroTrackingVal}
+            data-card-micro-leading={journalStyle.cardMicroLeadingVal}
             data-card-micro-weight={journalStyle.cardMicroWeightVal}
             data-card-row-gap={journalStyle.cardRowGapVal}
           >

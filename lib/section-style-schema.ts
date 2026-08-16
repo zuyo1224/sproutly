@@ -545,6 +545,27 @@ export const SECTION_STYLE_ENUMS = {
   // 一樣，字距沒有等比縮放的寫法（CSS 蓋得掉但乘不了），而商家按這一格就是明確要「全部
   // 收緊」或「全部撐開」，兩行差 0.1em 的原始差別本來就不是他在調的東西。
   cardMicroTracking: ["tight", "normal", "wide"],
+  // 卡片小字行距（tight 收緊 / normal 照原本的 / loose 拉開），套的是跟上兩格同一批小字——
+  // 選物卡片底下的「看更多」、慢讀卡片上面的分類與底下的標籤、精選卡片上的「剩 N」，指的
+  // 是那行排到兩行以上時，上下兩行之間隔多遠。
+  // 行距這條線在別的位置已經補完五格：段落大標（headingLeading）、段落內文（lineHeight）、
+  // 段落最上面那行小標（eyebrowLeading）、卡片品名（cardTitleLeading）、卡片描述
+  // （cardDescLeading）——卡片上這幾行小字是最後一個沒得動的。
+  // 而這幾行換行的機率跟段落小標一樣高、理由也一樣：自己帶著 0.3-0.4em 的字距（每個字後面
+  // 多塞三到四成個字寬），「小標字級」那格按到大之後 zoom 連字距一起放大——慢讀的分類打成
+  // 「盆栽照顧與換盆」那種長標籤、或精選的「剩 N」前面被商家改成一句話的段落，手機的窄卡上
+  // 一行放不下是常態。
+  // 換行之後的樣子跟小標那格出問題前一模一樣：慢讀那兩行是 <p>、沒帶 leading class，行距
+  // 整條繼承段落那層的內文行高（預設 1.7、商家把「行高」按到舒展就是 2）——那是給一整段要
+  // 讀的字挑的值，套在 10px 的標籤上兩行之間空得比字還高，看起來是上下兩行沒關係的小字；
+  // 反過來把「行高」按到緊湊雖然收得回來，整段的描述、引言、答案全部跟著一起被收緊。
+  // 商家原本沒有一格單獨動得到——「小標行距」那格的規則落在段落自己的 eyebrow 上，到不了
+  // 卡片裡；「卡片行距」（cardRowGap）調的是照片到品名、品名到描述那幾截 margin，同一行字
+  // 自己換行的距離不歸它管；「卡片小字字距」動的是同一行裡字與字之間；「卡片標題行距」與
+  // 「卡片描述行距」的規則各帶自己的 class，都跳過這幾行。
+  // 收緊給 1.15 不給更小，跟小標行距那格同一個理由：中文的字在行框裡本來就佔滿，1.0 以下
+  // 上下兩行會疊到筆畫。
+  cardMicroLeading: ["tight", "normal", "loose"],
   // 卡片小字粗細（light 常規 400 / normal 照這一段原本的 / medium 中黑 500 / bold 粗 700），
   // 套的是跟上面兩格同一批小字——選物卡片底下的「看更多」、慢讀卡片上面的分類與底下的標籤、
   // 精選卡片上的「剩 N」。那幾行的大小與字距都補過了，粗細是這一組最後一個沒得動的。
@@ -831,6 +852,7 @@ export const SECTION_STYLE_NEUTRAL_VALUES = {
   cardDescTone: "default",
   cardMicroScale: "default",
   cardMicroTracking: "normal",
+  cardMicroLeading: "normal",
   cardMicroWeight: "normal",
   cardMicroTone: "normal",
   cardPriceScale: "default",

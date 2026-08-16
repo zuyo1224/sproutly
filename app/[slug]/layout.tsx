@@ -1642,6 +1642,24 @@ export default async function PublicStoreLayout({
           letter-spacing: 0.55em;
         }
 
+        /* 卡片小字行距：editor 各 section panel「卡片小字行距」三按鈕（收緊 / 跟預設 / 拉開）。
+           上兩組管的是那幾行小字多大、字與字之間空多少，這組管的是它們排到第二行之後上下
+           隔多遠。這幾行換行的機率跟段落小標一樣高——自己帶著 0.3-0.4em 的字距、字級那格
+           按到大之後 zoom 連字距一起放大，長一點的分類或標籤在手機的窄卡上一行放不下是常態。
+           跟小標行距那組同一個處境：慢讀那兩行是 <p>、沒帶 leading class，行距整條繼承段落
+           那層的內文行高（預設 1.7、商家按到舒展就是 2），那個值套在 10px 的標籤上，兩行
+           之間空得比字還高；「行高」那條規則落在 :is(p, li, ...) 上，收這幾行的同時整段的
+           描述、引言、答案全部一起被收緊。這條帶 class（attribute 數也多一個），無論商家
+           有沒有同時設行高都壓得過去。
+           收緊給 1.15 不給更小，跟小標那組同一個理由：中文的字在行框裡本來就佔滿，1.0 以下
+           上下兩行會疊到筆畫。沒設就沒 attribute、整條規則不存在，既有店家一行字都不會動。 */
+        section[data-edit-target][data-card-micro-leading="tight"] .sproutly-card-micro {
+          line-height: 1.15;
+        }
+        section[data-edit-target][data-card-micro-leading="loose"] .sproutly-card-micro {
+          line-height: 2.2;
+        }
+
         /* 卡片小字粗細：editor 各 section panel「卡片小字粗細」四按鈕（常規 / 跟預設 /
            中黑 / 粗）。上面兩組管的是那幾行小字多大、字與字之間空多少，這組管的是它們
            多粗——選物卡片底下的「看更多」、慢讀卡片上面的分類與底下的標籤、精選卡片上的

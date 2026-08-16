@@ -2898,6 +2898,7 @@ export function EditorWorkspace({
           const cardDescTone = cur.cardDescTone ?? null;
           const cardMicroScale = cur.cardMicroScale ?? null;
           const cardMicroTracking = cur.cardMicroTracking ?? null;
+          const cardMicroLeading = cur.cardMicroLeading ?? null;
           const cardMicroWeight = cur.cardMicroWeight ?? null;
           const cardMicroTone = cur.cardMicroTone ?? null;
           const cardPriceScale = cur.cardPriceScale ?? null;
@@ -5777,6 +5778,41 @@ export function EditorWorkspace({
                     <button
                       type="button"
                       onClick={() => patch({ cardMicroTracking: null })}
+                      className="text-stone-500 hover:text-stone-800 underline"
+                    >
+                      清除
+                    </button>
+                  )}
+                </div>
+              </Field>
+              <Field label="卡片小字行距">
+                <div className="grid grid-cols-3 gap-1.5">
+                  {([
+                    { v: "tight", label: "收緊" },
+                    { v: "normal", label: "跟預設" },
+                    { v: "loose", label: "拉開" },
+                  ] as const).map((opt) => (
+                    <button
+                      key={opt.v}
+                      type="button"
+                      onClick={() => patch({ cardMicroLeading: opt.v })}
+                      aria-pressed={(cardMicroLeading ?? "normal") === opt.v}
+                      className={`rounded-lg border py-2 text-xs transition ${
+                        (cardMicroLeading ?? "normal") === opt.v
+                          ? "border-emerald-500 bg-emerald-50 text-emerald-900"
+                          : "border-stone-200 text-stone-600 hover:border-stone-400"
+                      }`}
+                    >
+                      {opt.label}
+                    </button>
+                  ))}
+                </div>
+                <div className="mt-1.5 flex items-center justify-between text-[11px] text-stone-500">
+                  <span>同樣那幾行小字排到第二行時，上下兩行隔多遠。它們沒有自己的行距、跟著整段內文走（那是給一整段文字挑的值），套在那麼小的字上兩行之間空得比字還高——分類、標籤打長一點就會換行，選收緊讓兩行貼回一組</span>
+                  {cardMicroLeading && (
+                    <button
+                      type="button"
+                      onClick={() => patch({ cardMicroLeading: null })}
                       className="text-stone-500 hover:text-stone-800 underline"
                     >
                       清除
