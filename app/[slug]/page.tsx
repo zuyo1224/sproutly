@@ -123,6 +123,15 @@ export default async function StoreHomePage({
   const eyebrowColor = `var(--store-eyebrow-color, ${accentColor})`;
   const eyebrowMutedColor = "var(--store-eyebrow-color, var(--store-text-muted))";
 
+  // 卡片上那幾行全大寫小字的顏色（選物的「看更多」、慢讀的分類與標籤、精選的「剩 N」）。
+  // 原本四行各自寫死三種值：兩行主色、一行次要文字色、一行琥珀色的庫存警示。改成統一讀
+  // --card-micro-color、fallback 回它原本那個值——沒設變數時算出來一模一樣，設了才換色
+  //（見 section-style-schema 的 cardMicroTone）。跟小標、品名、價錢那三格同一招：顏色寫在
+  // inline style 上，CSS 規則蓋不過去，只能繞變數。
+  const cardMicroColor = `var(--card-micro-color, ${accentColor})`;
+  const cardMicroMutedColor = "var(--card-micro-color, var(--store-text-muted))";
+  const cardMicroStockColor = "var(--card-micro-color, #92400E)";
+
   // 各 section 樣式 helper：背景色 + 標題對齊 + 上下空白覆寫（北極星：超越 Wix 元素級控制覆蓋率）
   // padOverride 用 CSS variable 覆寫該 section 的 --store-section-pad，
   // 沒設定 = 跟著全網站 sectionPaddingScale（透過 layout.tsx 的 attribute selector 套用）
@@ -678,6 +687,20 @@ export default async function StoreHomePage({
       s?.cardMicroWeight === "bold"
         ? s.cardMicroWeight
         : undefined;
+    // 卡片小字用色：上面三格動的是那幾行小字多大、字與字之間空多少、多粗，這格動的是它們
+    // 什麼顏色。那四行寫死三種值（選物「看更多」與慢讀分類是主色、慢讀標籤是次要文字色再
+    // 乘 0.65、精選「剩 N」是琥珀色 #92400E），商家一格都動不到。跟小標用色（eyebrowTone）、
+    // 品名用色（cardTitleTone）、價錢用色（cardPriceTone）同一個處境同一個解法：顏色寫在
+    // 那幾行自己的 inline style 上（規則蓋不過 inline），四個位置的 color 都改讀
+    // --card-micro-color、fallback 回原本的值，變數在 mergeSectionStyle 算——accent 要走
+    // 那裡算好的 sectionAccent，在這裡自己拿 theme.accent 會繞過那道防呆。
+    // 掛的範圍跟字距、粗細那兩格一樣是三段（選物 / 精選 / 慢讀）。
+    const cardMicroToneVal: "accent" | "muted" | "text" | undefined =
+      s?.cardMicroTone === "accent" ||
+      s?.cardMicroTone === "muted" ||
+      s?.cardMicroTone === "text"
+        ? s.cardMicroTone
+        : undefined;
     // 卡片價錢字級：上面三格動的是品名、描述、全大寫小字，這格動的是精選商品卡片上那行
     // 價錢（寫死 14px，比品名還小）。同樣是段落上的 inline style 傳不下去，attribute 讓
     // layout.tsx 補規則。只掛精選那一段：卡片上有價錢的只有它。
@@ -792,6 +815,7 @@ export default async function StoreHomePage({
       cardMicroScaleVal,
       cardMicroTrackingVal,
       cardMicroWeightVal,
+      cardMicroToneVal,
       cardPriceScaleVal,
       cardPriceWeightVal,
       cardPriceToneVal,
@@ -911,6 +935,19 @@ export default async function StoreHomePage({
     // 同一道防呆。text 是跟品名同深的那個（--store-text 的來源），選了它價錢就不再比品名淡，
     // 是給「客人先看價錢」那種店用的；卡片外面那層 opacity 0.7 不歸這格管（那是「卡片副文字
     // 深淺」那格的事），兩格各自獨立、疊起來也講得通。
+    // 卡片小字用色：跟上面那幾格同一套（那四行的 inline color 都讀 --card-micro-color、
+    // fallback 回原本的值，這裡有設值才會生效）。accent 同樣用上面算好的 sectionAccent，
+    // 商家把這一段換成跟主色相近的底色時那裡已經換成該段的文字色，這幾行跟標題、小標、
+    // 品名、價錢走同一道防呆。text 是跟品名同深，給那兩行主色小字（與那行琥珀色的庫存
+    // 提示）一個「退回一般文字」的選擇；muted 跟次要文字同一個口徑（文字色的七成）。
+    if (s.cardMicroToneVal) {
+      out["--card-micro-color"] =
+        s.cardMicroToneVal === "accent"
+          ? sectionAccent
+          : s.cardMicroToneVal === "text"
+            ? s.text ?? theme.text
+            : mutedFromText(s.text ?? theme.text);
+    }
     if (s.cardPriceToneVal) {
       out["--card-price-color"] =
         s.cardPriceToneVal === "accent" ? sectionAccent : s.text ?? theme.text;
@@ -1864,7 +1901,7 @@ export default async function StoreHomePage({
                       data-edit-text
                       data-edit-field="collectionsCardCta"
                       className="sproutly-card-action sproutly-card-micro inline-block text-[10px] tracking-[0.3em] uppercase"
-                      style={{ color: accentColor }}
+                      style={{ color: cardMicroColor }}
                     >
                       {collectionsCardCta}
                     </span>
@@ -2074,7 +2111,10 @@ export default async function StoreHomePage({
                     {isLowStock(p.stock) ? (
                       <p
                         className="sproutly-card-micro mt-1 text-[0.6875rem] uppercase font-medium"
-                        style={{ color: "#92400E", letterSpacing: "var(--card-micro-track, 0.3em)" }}
+                        style={{
+                          color: cardMicroStockColor,
+                          letterSpacing: "var(--card-micro-track, 0.3em)",
+                        }}
                       >
                         Low Stock · 剩 {p.stock}
                       </p>
@@ -2284,7 +2324,7 @@ export default async function StoreHomePage({
                       data-edit-field="journalCardEyebrow"
                       data-edit-index={i}
                       className="sproutly-card-micro mt-6 text-[10px] tracking-[0.4em] uppercase"
-                      style={{ color: accentColor }}
+                      style={{ color: cardMicroColor }}
                     >
                       {entry.eyebrow}
                     </p>
@@ -2319,7 +2359,7 @@ export default async function StoreHomePage({
                       data-edit-text
                       data-edit-field="journalCardLabel"
                       className="sproutly-card-micro mt-5 text-[10px] tracking-[0.3em] uppercase"
-                      style={{ color: "var(--store-text-muted)", opacity: 0.65 }}
+                      style={{ color: cardMicroMutedColor, opacity: 0.65 }}
                     >
                       {journalCardLabel}
                     </p>

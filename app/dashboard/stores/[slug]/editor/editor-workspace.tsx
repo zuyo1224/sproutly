@@ -2897,6 +2897,7 @@ export function EditorWorkspace({
           const cardMicroScale = cur.cardMicroScale ?? null;
           const cardMicroTracking = cur.cardMicroTracking ?? null;
           const cardMicroWeight = cur.cardMicroWeight ?? null;
+          const cardMicroTone = cur.cardMicroTone ?? null;
           const cardPriceScale = cur.cardPriceScale ?? null;
           const cardPriceWeight = cur.cardPriceWeight ?? null;
           const cardPriceTone = cur.cardPriceTone ?? null;
@@ -5739,6 +5740,42 @@ export function EditorWorkspace({
                     <button
                       type="button"
                       onClick={() => patch({ cardMicroWeight: null })}
+                      className="text-stone-500 hover:text-stone-800 underline"
+                    >
+                      清除
+                    </button>
+                  )}
+                </div>
+              </Field>
+              <Field label="卡片小字用色">
+                <div className="grid grid-cols-4 gap-1.5">
+                  {([
+                    { v: "normal", label: "跟預設" },
+                    { v: "accent", label: "主色" },
+                    { v: "text", label: "跟品名同深" },
+                    { v: "muted", label: "淡" },
+                  ] as const).map((opt) => (
+                    <button
+                      key={opt.v}
+                      type="button"
+                      onClick={() => patch({ cardMicroTone: opt.v })}
+                      aria-pressed={(cardMicroTone ?? "normal") === opt.v}
+                      className={`rounded-lg border py-2 text-xs transition ${
+                        (cardMicroTone ?? "normal") === opt.v
+                          ? "border-emerald-500 bg-emerald-50 text-emerald-900"
+                          : "border-stone-200 text-stone-600 hover:border-stone-400"
+                      }`}
+                    >
+                      {opt.label}
+                    </button>
+                  ))}
+                </div>
+                <div className="mt-1.5 flex items-center justify-between text-[11px] text-stone-500">
+                  <span>前面三格動的是那幾行小字多大、字距多開、多粗，這格動的是它們什麼顏色。那幾行現在各是各的顏色：「看更多」跟慢讀的分類用主色、慢讀底下的標籤是淡灰、精選那行「剩 N」是橘色的警示色（跟店的配色沒關係）。主色深就跟品名撞在一起、主色亮在淺底上看不見、橘色那行又比價錢還搶——想讓整張卡的小字統一，四個都會一起換</span>
+                  {cardMicroTone && (
+                    <button
+                      type="button"
+                      onClick={() => patch({ cardMicroTone: null })}
                       className="text-stone-500 hover:text-stone-800 underline"
                     >
                       清除
