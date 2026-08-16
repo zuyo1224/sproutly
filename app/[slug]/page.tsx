@@ -2841,6 +2841,14 @@ export default async function StoreHomePage({
               theme.homepage.faqEyebrow ?? HOMEPAGE_DEFAULTS.faqEyebrow;
             const faqTitle =
               theme.homepage.faqTitle ?? HOMEPAGE_DEFAULTS.faqTitle;
+            // 問句與答案接上編輯器既有的卡片文字控制。這一段沒有卡片格線，但編輯器右邊
+            // 那排「卡片標題 / 卡片描述」的格子每一段都照樣列出來——商家在常見問題這段按
+            // 下去，畫面上一個字都不會動，跟顧客評語那段補之前是同一種問題。
+            // 對應關係照那兩行的角色挑：問句是客人掃過去找自己那題的那一行（卡片標題）、
+            // 答案是真的要讀完的那段字（卡片描述）。
+            // 沒發的幾組是刻意的：行數（title-lines / desc-lines）會把答案裁在半句話，客
+            // 人來這一段就是要看完整回答；小字那組這段沒有對應的行；卡片行距那條規則加的
+            // 是 margin-top，這一列的間距寫在整列的上下 padding 上，發了會多出一截。
             return (
             <section
               className={`relative py-40 sm:py-56 ${animClass} ${faqFree ? "min-h-[60vh]" : ""}`}
@@ -2869,6 +2877,14 @@ export default async function StoreHomePage({
               data-content-align={faqStyle.contentAlignVal}
               data-hide-on={faqStyle.hideOnVal}
               data-media-radius={faqStyle.mediaRadiusVal}
+              data-card-title-scale={faqStyle.cardTitleScaleVal}
+              data-card-title-weight={faqStyle.cardTitleWeightVal}
+              data-card-title-leading={faqStyle.cardTitleLeadingVal}
+              data-card-title-tracking={faqStyle.cardTitleTrackingVal}
+              data-card-desc-scale={faqStyle.cardDescScaleVal}
+              data-card-desc-leading={faqStyle.cardDescLeadingVal}
+              data-card-desc-weight={faqStyle.cardDescWeightVal}
+              data-card-desc-tracking={faqStyle.cardDescTrackingVal}
             >
               <div
                 className="max-w-2xl mx-auto px-6 sm:px-12"
@@ -2966,11 +2982,16 @@ export default async function StoreHomePage({
                             data-edit-text
                             data-edit-field="faqQuestion"
                             data-edit-index={i}
-                            className="text-base sm:text-lg pr-4"
+                            className="sproutly-card-title text-base sm:text-lg pr-4"
                             style={{
                               fontFamily: "var(--store-font)",
-                              fontWeight: 400,
-                              letterSpacing: "var(--store-track, -0.005em)",
+                              // 顏色、粗細、字距三個都寫在 inline（inline 壓得過任何 CSS
+                              // 規則），所以繞變數讓「卡片標題」那三格帶得動；沒設就讀回
+                              // fallback 的原值，既有店家一個字都不會變
+                              color: "var(--card-title-color, var(--store-text))",
+                              fontWeight: "var(--card-title-weight, 400)",
+                              letterSpacing:
+                                "var(--card-title-track, var(--store-track, -0.005em))",
                             }}
                           >
                             {item.question}
@@ -2988,10 +3009,17 @@ export default async function StoreHomePage({
                           data-edit-field="faqAnswer"
                           data-edit-index={i}
                           className="pb-7 pr-8 text-sm sm:text-base leading-[1.95]"
-                          style={{ color: "var(--store-text-muted)" }}
+                          style={{ color: "var(--card-desc-color, var(--store-text-muted))" }}
                         >
+                          {/* class 掛在每個段落上、不掛外面這層：「內文粗細 / 字距 / 大小」
+                              那三條規則直接落在 p 上，掛外層的話那幾條會贏過繼承下來的值，
+                              商家兩邊都設時卡片這格就沒作用了。落在 p 上帶 class 的規則比
+                              那三條精確，卡片照樣聽卡片那格的 */}
                           {item.answer.split(/\n+/).map((line, idx) => (
-                            <p key={idx} className={idx > 0 ? "mt-3" : ""}>
+                            <p
+                              key={idx}
+                              className={`sproutly-card-desc ${idx > 0 ? "mt-3" : ""}`}
+                            >
                               {line}
                             </p>
                           ))}
@@ -3053,6 +3081,13 @@ export default async function StoreHomePage({
               data-media-radius={statsStyle.mediaRadiusVal}
               data-grid-gap={statsStyle.gridGapVal}
               data-mobile-cols={statsStyle.mobileColumnsVal}
+              data-card-title-scale={statsStyle.cardTitleScaleVal}
+              data-card-title-weight={statsStyle.cardTitleWeightVal}
+              data-card-title-tracking={statsStyle.cardTitleTrackingVal}
+              data-card-micro-scale={statsStyle.cardMicroScaleVal}
+              data-card-micro-tracking={statsStyle.cardMicroTrackingVal}
+              data-card-micro-leading={statsStyle.cardMicroLeadingVal}
+              data-card-micro-weight={statsStyle.cardMicroWeightVal}
             >
               <div
                 className="max-w-5xl mx-auto px-8 sm:px-12"
@@ -3157,12 +3192,17 @@ export default async function StoreHomePage({
                         data-edit-text
                         data-edit-field="statValue"
                         data-edit-index={i}
-                        className="text-4xl sm:text-5xl md:text-6xl tabular-nums"
+                        className="sproutly-card-title text-4xl sm:text-5xl md:text-6xl tabular-nums"
                         style={{
-                          color: "var(--store-text)",
+                          // 那個大數字是這一格上一眼看到的東西，角色對應卡片品名。顏色、
+                          // 粗細、字距寫在 inline（規則壓不過），改讀變數、fallback 原值。
+                          // 行距那格沒發：底下這個 lineHeight: 1 是為了讓數字貼齊，而數字
+                          // 本來就一行，換行才看得出差別的那格在這裡沒有意義
+                          color: "var(--card-title-color, var(--store-text))",
                           fontFamily: "var(--store-font)",
-                          fontWeight: 400,
-                          letterSpacing: "var(--store-track, -0.02em)",
+                          fontWeight: "var(--card-title-weight, 400)",
+                          letterSpacing:
+                            "var(--card-title-track, var(--store-track, -0.02em))",
                           lineHeight: 1,
                         }}
                       >
@@ -3181,8 +3221,10 @@ export default async function StoreHomePage({
                         data-edit-text
                         data-edit-field="statLabel"
                         data-edit-index={i}
-                        className="text-xs sm:text-sm tracking-[0.2em] uppercase"
-                        style={{ color: "var(--store-text-muted)" }}
+                        // 數字底下那行全大寫小字，跟選物的「看更多」、慢讀的分類標籤是
+                        // 同一種東西，接卡片小字那組
+                        className="sproutly-card-micro text-xs sm:text-sm tracking-[0.2em] uppercase"
+                        style={{ color: cardMicroMutedColor }}
                       >
                         {s.label}
                       </p>
@@ -3360,6 +3402,12 @@ export default async function StoreHomePage({
               data-card-text={galleryStyle.cardTextVal}
               data-card-surface={galleryStyle.cardSurfaceVal}
               data-card-padding={galleryStyle.cardPaddingVal}
+              data-card-desc-scale={galleryStyle.cardDescScaleVal}
+              data-card-desc-leading={galleryStyle.cardDescLeadingVal}
+              data-card-desc-weight={galleryStyle.cardDescWeightVal}
+              data-card-desc-tracking={galleryStyle.cardDescTrackingVal}
+              data-card-desc-lines={galleryStyle.cardDescLinesVal}
+              data-card-row-gap={galleryStyle.cardRowGapVal}
             >
               <div
                 className="max-w-6xl mx-auto px-6 sm:px-10"
@@ -3471,8 +3519,11 @@ export default async function StoreHomePage({
                           data-edit-text
                           data-edit-field="galleryCaption"
                           data-edit-index={i}
-                          className="mt-3 text-xs sm:text-sm leading-relaxed"
-                          style={{ color: "var(--store-text-muted)" }}
+                          // 相簿這張卡只有圖說這一行字，角色就是卡片描述。行數這格這裡
+                          // 留著（長短不一的圖說會把同一列的圖框推得高低不齊，正是那格
+                          // 要解的），卡片行距也留著——mt-3 剛好等於那條規則的 0.75rem 基準
+                          className="sproutly-card-desc mt-3 text-xs sm:text-sm leading-relaxed"
+                          style={{ color: "var(--card-desc-color, var(--store-text-muted))" }}
                         >
                           {g.caption}
                         </figcaption>
