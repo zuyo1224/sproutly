@@ -738,6 +738,15 @@ export default async function StoreHomePage({
       s?.cardPriceWeight === "medium" || s?.cardPriceWeight === "bold"
         ? s.cardPriceWeight
         : undefined;
+    // 卡片價錢字距：上面兩格動的是那行價錢多大、多粗，這格動的是同一行裡字與字之間隔多遠。
+    // 字距在卡片上已經補完品名、描述、小字三組，價錢是最後一行沒得動的——品名字距撐開之後
+    // 貼在底下的價錢還是原本的密度；「內文字距」那條規則落在 p / li，價錢這行是 div 也碰
+    // 不到。這行的 inline style 只有顏色，字距是繼承來的，attribute 讓 layout.tsx 補一條
+    // 規則就蓋得過去。同樣只掛精選那一段：卡片上有價錢的只有它。
+    const cardPriceTrackingVal: "tight" | "wide" | undefined =
+      s?.cardPriceTracking === "tight" || s?.cardPriceTracking === "wide"
+        ? s.cardPriceTracking
+        : undefined;
     // 卡片價錢用色：上面兩格動的是那行價錢多大、多粗，這格動的是它什麼顏色。那行寫死
     // --store-text-muted（文字色的七成）、外面還套著卡片那層 opacity 0.7，是整張卡上最淡的
     // 一行，而它偏偏是客人在首頁掃過去在找的東西。跟品名用色（cardTitleTone）同一個處境
@@ -842,6 +851,7 @@ export default async function StoreHomePage({
       cardMicroToneVal,
       cardPriceScaleVal,
       cardPriceWeightVal,
+      cardPriceTrackingVal,
       cardPriceToneVal,
       cardRowGapVal,
       cardMetaToneVal,
@@ -2002,6 +2012,7 @@ export default async function StoreHomePage({
             data-card-title-tracking={featuredStyle.cardTitleTrackingVal}
             data-card-price-scale={featuredStyle.cardPriceScaleVal}
             data-card-price-weight={featuredStyle.cardPriceWeightVal}
+            data-card-price-tracking={featuredStyle.cardPriceTrackingVal}
             data-card-row-gap={featuredStyle.cardRowGapVal}
             data-card-micro-scale={featuredStyle.cardMicroScaleVal}
             data-card-micro-tracking={featuredStyle.cardMicroTrackingVal}

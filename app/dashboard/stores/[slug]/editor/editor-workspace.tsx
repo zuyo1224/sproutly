@@ -2902,6 +2902,7 @@ export function EditorWorkspace({
           const cardMicroTone = cur.cardMicroTone ?? null;
           const cardPriceScale = cur.cardPriceScale ?? null;
           const cardPriceWeight = cur.cardPriceWeight ?? null;
+          const cardPriceTracking = cur.cardPriceTracking ?? null;
           const cardPriceTone = cur.cardPriceTone ?? null;
           const cardRowGap = cur.cardRowGap ?? null;
           const cardMetaTone = cur.cardMetaTone ?? null;
@@ -5918,6 +5919,41 @@ export function EditorWorkspace({
                     <button
                       type="button"
                       onClick={() => patch({ cardPriceWeight: null })}
+                      className="text-stone-500 hover:text-stone-800 underline"
+                    >
+                      清除
+                    </button>
+                  )}
+                </div>
+              </Field>
+              <Field label="卡片價錢字距">
+                <div className="grid grid-cols-3 gap-1.5">
+                  {([
+                    { v: "tight", label: "收緊" },
+                    { v: "normal", label: "跟預設" },
+                    { v: "wide", label: "撐開" },
+                  ] as const).map((opt) => (
+                    <button
+                      key={opt.v}
+                      type="button"
+                      onClick={() => patch({ cardPriceTracking: opt.v })}
+                      aria-pressed={(cardPriceTracking ?? "normal") === opt.v}
+                      className={`rounded-lg border py-2 text-xs transition ${
+                        (cardPriceTracking ?? "normal") === opt.v
+                          ? "border-emerald-500 bg-emerald-50 text-emerald-900"
+                          : "border-stone-200 text-stone-600 hover:border-stone-400"
+                      }`}
+                    >
+                      {opt.label}
+                    </button>
+                  ))}
+                </div>
+                <div className="mt-1.5 flex items-center justify-between text-[11px] text-stone-500">
+                  <span>那行價錢同一行裡，數字與數字之間空多少。把品名字距撐開之後，貼在底下的價錢還是原本的密度，一鬆一緊疊在同一張卡上——這格讓價錢跟得上；撐開一點也有實體標價牌那種數字隔開的味道。只動價錢，品名、描述與那幾行小字不跟著變</span>
+                  {cardPriceTracking && (
+                    <button
+                      type="button"
+                      onClick={() => patch({ cardPriceTracking: null })}
                       className="text-stone-500 hover:text-stone-800 underline"
                     >
                       清除

@@ -1712,6 +1712,26 @@ export default async function PublicStoreLayout({
           font-weight: 700;
         }
 
+        /* 卡片價錢字距：editor 精選商品 panel「卡片價錢字距」三按鈕（收緊 / 跟預設 / 撐開）。
+           上面兩組管的是那行價錢多大、多粗，這組管的是同一行裡字與字之間隔多遠。字距這條
+           線在卡片上已經補完品名、描述、小字三組，價錢是最後一行沒得動的：品名字距撐開做
+           留白感之後，貼在底下的價錢還是原本的密度，一鬆一緊疊在同一張卡上；「內文字距」
+           那條規則落在 p / li 那批元素，價錢這行是 div，也碰不到。
+           規則落在 .sproutly-card-price，跟字級、粗細那兩組同一個範圍：只有精選那段的卡片
+           有這一行（選物同一個位置放的是副標、慢讀放的是摘要，歸卡片描述字距那組管）。
+           這行的 inline style 只有顏色，字距是繼承來的，這條規則直接蓋得過去——跟價錢粗細
+           那組同一個處境，不用繞 CSS variable。
+           檔位不照抄別組：這行是「NT$ 1,200」那種一小串數字。收緊還是 -0.02em（再緊千分位
+           逗點會黏進數字裡）；撐開給 0.08em，比描述那組的 0.06em 多一階（實體標價牌那種
+           數字隔開的印法），但不到品名那組的 0.14em——那個值會把逗點孤立成懸在半空的點。
+           沒設就沒 attribute、整條規則不存在，既有店家一個字都不會動。 */
+        section[data-edit-target][data-card-price-tracking="tight"] .sproutly-card-price {
+          letter-spacing: -0.02em;
+        }
+        section[data-edit-target][data-card-price-tracking="wide"] .sproutly-card-price {
+          letter-spacing: 0.08em;
+        }
+
         /* 卡片行距：editor 各 section panel「卡片行距」三按鈕（收緊 / 跟預設 / 放寬）。
            上面四組把卡片裡每一行的大小都補完了，行與行之間隔多遠還是寫死的一組 mt-*：
            選物的品名離照片 24px、描述貼著品名 4px、「看更多」再隔 12px；精選 20px / 4px；

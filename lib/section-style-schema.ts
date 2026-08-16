@@ -627,6 +627,21 @@ export const SECTION_STYLE_ENUMS = {
   // 這行沒有 inline 的 font-weight（品名那行有，所以那格得繞 CSS variable），一條規則就蓋
   // 得過去，不用再多一個變數。
   cardPriceWeight: ["normal", "medium", "bold"],
+  // 卡片價錢字距（tight 收緊 / normal 照原樣 / wide 撐開），只套精選商品那段卡片上品名底下
+  // 那行價錢。字距這條線在別的位置已經補完五格：段落大標（headingTracking）、段落內文
+  // （bodyTracking）、卡片品名（cardTitleTracking）、卡片描述（cardDescTracking）、卡片上
+  // 那幾行全大寫小字（cardMicroTracking）——價錢是最後一行沒得動的。這行自己的字級、粗細、
+  // 額外那層淡化、顏色也全補過了，同一行裡字與字隔多遠是它最後一個沒得動的屬性。
+  // 缺這格會怎樣：品名字距撐開做選物店那種留白感之後，貼在品名底下的價錢還是原本的密度，
+  // 一鬆一緊疊在同一張卡上；「內文字距」那格也碰不到它（那條規則落在 p / li 那批元素，
+  // 價錢這行是 div）——品名、描述、小字都跟得上，唯獨價錢永遠原地不動。
+  // 檔位不跟品名那組（-0.04em / 0.14em）也不照抄描述那組（-0.02em / 0.06em）：這行是
+  // 「NT$ 1,200」那種一小串數字，收緊還是 -0.02em（再緊逗點會黏進數字裡），撐開給 0.08em
+  // ——比描述的整句話多一階（實體標價牌那種數字隔開的印法），但不到品名的 0.14em，那個值
+  // 會把千分位逗點孤立成一個懸在半空的點。
+  // 這行的 inline style 只有顏色，字距是繼承來的，一條規則直接蓋得過去——跟價錢粗細那格
+  // 同一個處境，不用繞 CSS variable。
+  cardPriceTracking: ["tight", "normal", "wide"],
   // 卡片價錢用色（default 照原本的、跟次要文字同深 / accent 全站主色 / text 跟品名同深），
   // 只套精選商品那段卡片上品名底下那行價錢。那行的字級、粗細、額外那層淡化都補過了，
   // 顏色是這一組最後一個沒得動的。
@@ -820,6 +835,7 @@ export const SECTION_STYLE_NEUTRAL_VALUES = {
   cardMicroTone: "normal",
   cardPriceScale: "default",
   cardPriceWeight: "normal",
+  cardPriceTracking: "normal",
   cardPriceTone: "default",
   cardRowGap: "normal",
   cardMetaTone: "default",
