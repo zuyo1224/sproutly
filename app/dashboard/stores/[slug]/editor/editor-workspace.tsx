@@ -2894,6 +2894,7 @@ export function EditorWorkspace({
           const cardDescScale = cur.cardDescScale ?? null;
           const cardDescLeading = cur.cardDescLeading ?? null;
           const cardDescWeight = cur.cardDescWeight ?? null;
+          const cardDescTone = cur.cardDescTone ?? null;
           const cardMicroScale = cur.cardMicroScale ?? null;
           const cardMicroTracking = cur.cardMicroTracking ?? null;
           const cardMicroWeight = cur.cardMicroWeight ?? null;
@@ -5634,6 +5635,41 @@ export function EditorWorkspace({
                     <button
                       type="button"
                       onClick={() => patch({ cardDescWeight: null })}
+                      className="text-stone-500 hover:text-stone-800 underline"
+                    >
+                      清除
+                    </button>
+                  )}
+                </div>
+              </Field>
+              <Field label="卡片描述用色">
+                <div className="grid grid-cols-3 gap-1.5">
+                  {([
+                    { v: "default", label: "跟預設" },
+                    { v: "accent", label: "主色" },
+                    { v: "text", label: "跟品名同深" },
+                  ] as const).map((opt) => (
+                    <button
+                      key={opt.v}
+                      type="button"
+                      onClick={() => patch({ cardDescTone: opt.v })}
+                      aria-pressed={(cardDescTone ?? "default") === opt.v}
+                      className={`rounded-lg border py-2 text-xs transition ${
+                        (cardDescTone ?? "default") === opt.v
+                          ? "border-emerald-500 bg-emerald-50 text-emerald-900"
+                          : "border-stone-200 text-stone-600 hover:border-stone-400"
+                      }`}
+                    >
+                      {opt.label}
+                    </button>
+                  ))}
+                </div>
+                <div className="mt-1.5 flex items-center justify-between text-[11px] text-stone-500">
+                  <span>前面三格動的是那段描述多大、行距多開、多粗，這格動的是它什麼顏色。描述現在固定比品名淡一階（選物那段外面還多淡一層），放大、加粗都追不上那個淺灰——慢讀那種摘要才是客人要讀完的段落，選「跟品名同深」就不再退在後面；想讓副標帶點品牌感選「主色」</span>
+                  {cardDescTone && (
+                    <button
+                      type="button"
+                      onClick={() => patch({ cardDescTone: null })}
                       className="text-stone-500 hover:text-stone-800 underline"
                     >
                       清除

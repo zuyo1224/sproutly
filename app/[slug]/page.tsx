@@ -656,6 +656,18 @@ export default async function StoreHomePage({
       s?.cardDescWeight === "medium" || s?.cardDescWeight === "bold"
         ? s.cardDescWeight
         : undefined;
+    // 卡片描述用色：上面三格動的是那段描述多大、行與行隔多遠、多粗，這格動的是它什麼顏色。
+    // 兩段的描述都寫死 --store-text-muted（文字色的七成），選物那行外面還套著卡片那層
+    // opacity 0.7，前面三格全都繞著顏色走，補完了慢讀那種摘要卡上客人真正要讀的一段還是
+    // 最輕的。跟品名用色（cardTitleTone）、價錢用色（cardPriceTone）同一個處境同一個解法：
+    // 顏色寫在那兩段自己的 inline style 上（規則蓋不過 inline），改讀 --card-desc-color、
+    // fallback 回原本的值，變數在 mergeSectionStyle 算——accent 要走那裡算好的 sectionAccent，
+    // 在這裡自己拿 theme.accent 會繞過那道防呆。
+    // 掛的範圍跟描述字級、行距、粗細那三格一樣是兩段（選物副標 / 慢讀摘要）。
+    const cardDescToneVal: "accent" | "text" | undefined =
+      s?.cardDescTone === "accent" || s?.cardDescTone === "text"
+        ? s.cardDescTone
+        : undefined;
     // 卡片小字字級：上兩格動的是品名與描述，這格動的是卡片上那幾行全大寫小字（寫死 10px
     // 的「看更多」、分類、標籤）。同樣是段落上的 inline style 傳不下去，attribute 讓
     // layout.tsx 補規則。掛的範圍是選物與慢讀兩段：精選那段同一個位置放的是「剩 N」庫存
@@ -812,6 +824,7 @@ export default async function StoreHomePage({
       cardDescScaleVal,
       cardDescLeadingVal,
       cardDescWeightVal,
+      cardDescToneVal,
       cardMicroScaleVal,
       cardMicroTrackingVal,
       cardMicroWeightVal,
@@ -951,6 +964,16 @@ export default async function StoreHomePage({
     if (s.cardPriceToneVal) {
       out["--card-price-color"] =
         s.cardPriceToneVal === "accent" ? sectionAccent : s.text ?? theme.text;
+    }
+    // 卡片描述用色：跟品名用色、價錢用色同一套（那兩段的 inline color 讀 --card-desc-color、
+    // fallback 回原本的 --store-text-muted，這裡有設值才會生效）。accent 同樣用上面算好的
+    // sectionAccent，商家把這一段換成跟主色相近的底色時那裡已經換成該段的文字色，描述跟
+    // 標題、小標、品名、價錢走同一道防呆。text 是跟品名同深的那個（--store-text 的來源），
+    // 選了它描述就不再比品名淡，是給慢讀那種「摘要才是主角」的卡片用的；選物那段外面那層
+    // opacity 0.7 不歸這格管（那是「卡片副文字深淺」那格的事），兩格各自獨立、疊起來也講得通。
+    if (s.cardDescToneVal) {
+      out["--card-desc-color"] =
+        s.cardDescToneVal === "accent" ? sectionAccent : s.text ?? theme.text;
     }
     if (s.minHeightOverride !== undefined) out.minHeight = s.minHeightOverride;
     // 線的顏色：沒設自訂文字色就照舊用全站 theme.border（既有店家一條線都不會變）。
@@ -1892,7 +1915,10 @@ export default async function StoreHomePage({
                         data-edit-field="collectionCardSubtitle"
                         data-edit-index={c.index}
                         className="sproutly-card-meta sproutly-card-desc mt-1 text-sm"
-                        style={{ color: "var(--store-text-muted)" }}
+                        style={{
+                          color:
+                            "var(--card-desc-color, var(--store-text-muted))",
+                        }}
                       >
                         {c.subtitle}
                       </p>
@@ -2351,7 +2377,9 @@ export default async function StoreHomePage({
                       data-edit-field="journalCardExcerpt"
                       data-edit-index={i}
                       className="sproutly-card-desc mt-3 text-sm leading-[1.85]"
-                      style={{ color: "var(--store-text-muted)" }}
+                      style={{
+                        color: "var(--card-desc-color, var(--store-text-muted))",
+                      }}
                     >
                       {entry.excerpt}
                     </p>
