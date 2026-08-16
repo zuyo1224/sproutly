@@ -236,6 +236,33 @@ export const SECTION_STYLE_ENUMS = {
   // 是一點都不要裁，原本沒有一格做得到。選了整張進框之後也一起關掉滑過時的放大——那個
   // 放大會把照片撐出框外再被框裁掉，等於剛留住的邊又切一次，跟商家按這一格的意思相反。
   mediaFit: ["cover", "contain"],
+  // 合作 logo 大小（small 小 / default 照原本的 / large 大），只有合作夥伴那一段用得到。
+  // 那一段整段只有兩樣東西：最上面一行小標、底下排成一列的 logo。小標的大小、字距、粗細、
+  // 行距、用色五格都補過了，logo 自己一格都沒有——高度寫死 h-8 / sm:h-10 / md:h-12
+  //（手機 32px、平板 40px、桌機 48px），那組值是照「Vogue、天下雜誌」那種橫式字標挑的，
+  // 寬扁、字少，48px 高就佔掉一大截寬度。實際商家貼上來的常常不是那種：方形的商圈標章、
+  // 上圖下字的兩層式 logo、圓形的品牌章，同樣 48px 高只有中間一小塊是字，客人根本認不出
+  // 是誰；反過來只放兩三個大廠 logo 想撐場面的店，48px 在一整排空白裡又小得像註腳。
+  // 商家原本沒有一格動得到——「照片圓角 / 比例 / 取景 / 放不放得下」那四欄的規則都落在卡片
+  // 格線裡的圖框（.sproutly-card-image）上，合作那段的 logo 不在圖框裡（是直接排在 flex
+  // 容器裡的 img）；「卡片間距」調的是 logo 與 logo 之間、「區段空白」調的是整段上下留白，
+  // 兩欄都不動 logo 本身多大。
+  // 走 attribute 讓 layout.tsx 補規則、不寫 inline style：段落上的 style 到不了裡面那張 img，
+  // 而且高度要跟著手機 / 平板 / 桌機三個寬度各給一個值（原本那三個 class 就是這樣寫的），
+  // 只有規則做得到。沒設就沒 attribute、整條規則不存在，既有店家的 logo 一張都不會變。
+  partnerLogoScale: ["small", "default", "large"],
+  // 合作 logo 濃淡（faint 更淡 / default 照原本的 / solid 清楚），跟上一格同一段、同一批 img。
+  // 那排 logo 一律印在 50% 透明度上（滑鼠移上去才回到 100%），跟一律轉黑白是同一組設計
+  // 決定：讓它們安靜地排一列，不跟主畫面搶顏色。問題是「安靜」跟「認得出來」在這一段是
+  // 同一件事的兩端——商家把媒體報導、合作品牌放上首頁，就是要客人認出那是誰，淺灰底上再
+  // 乘 0.5 的細字標，在手機上幾乎只剩一團形狀；而滑鼠移上去才變清楚這件事，手機上根本沒有。
+  // 反過來也有：把往來廠商的 logo 排一整列當背景紋理用的店，0.5 還是太顯眼。
+  // 商家原本沒有一格動得到——「淡化」（opacity）那欄透明的是整段（連小標一起淡），「濾鏡」
+  // 換的是黑白 / 復古 / 原色，都不是這層透明度；logo 自己那個 opacity-50 寫在 class 上，
+  // 段落上的 inline style 傳不下去。
+  // 規則要連 hover 一起寫：img 上帶著 hover:opacity-100，這格的規則選擇器比它精確，不補一條
+  // hover 的話會連「滑過去變清楚」一起蓋掉——選了更淡的商家最需要那個動作還在。
+  partnerLogoOpacity: ["faint", "default", "solid"],
   // 卡片間距（tight 收緊 / loose 放寬），只套這一段排成格子的卡片與照片之間的距離。
   // 商品卡、照片牆、合作 logo 的間距是每段寫死的一組值：商家把欄數調成 4 之後卡片黏在
   // 一起、或想把照片牆做成緊貼的拼貼、把精選商品攤成鬆一點的畫廊感，全都沒有一格動得到
@@ -830,6 +857,8 @@ export const SECTION_STYLE_NEUTRAL_VALUES = {
   mediaAspect: "auto",
   mediaFocus: "auto",
   mediaFit: "cover",
+  partnerLogoScale: "default",
+  partnerLogoOpacity: "default",
   gridGap: "normal",
   cardHover: "default",
   cardText: "auto",

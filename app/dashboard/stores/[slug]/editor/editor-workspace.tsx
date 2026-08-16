@@ -2876,6 +2876,8 @@ export function EditorWorkspace({
           const mediaAspect = cur.mediaAspect ?? null;
           const mediaFocus = cur.mediaFocus ?? null;
           const mediaFit = cur.mediaFit ?? null;
+          const partnerLogoScale = cur.partnerLogoScale ?? null;
+          const partnerLogoOpacity = cur.partnerLogoOpacity ?? null;
           const gridGap = cur.gridGap ?? null;
           const cardHover = cur.cardHover ?? null;
           const cardText = cur.cardText ?? null;
@@ -5003,6 +5005,82 @@ export function EditorWorkspace({
                   )}
                 </div>
               </Field>
+              {/* 這兩格只在合作夥伴那段列出來：規則落在那排 logo 上，別段沒有這種 img，
+                  擺出來會是按了畫面不動的死按鈕（其他段的卡片照片歸上面那四格管）。 */}
+              {selectedSection === "partners" && (
+                <>
+              <Field label="合作 logo 大小">
+                <div className="grid grid-cols-3 gap-1.5">
+                  {([
+                    { v: "small", label: "小" },
+                    { v: "default", label: "跟預設" },
+                    { v: "large", label: "大" },
+                  ] as const).map((opt) => (
+                    <button
+                      key={opt.v}
+                      type="button"
+                      onClick={() => patch({ partnerLogoScale: opt.v })}
+                      aria-pressed={(partnerLogoScale ?? "default") === opt.v}
+                      className={`rounded-lg border py-2 text-xs transition ${
+                        (partnerLogoScale ?? "default") === opt.v
+                          ? "border-emerald-500 bg-emerald-50 text-emerald-900"
+                          : "border-stone-200 text-stone-600 hover:border-stone-400"
+                      }`}
+                    >
+                      {opt.label}
+                    </button>
+                  ))}
+                </div>
+                <div className="mt-1.5 flex items-center justify-between text-[11px] text-stone-500">
+                  <span>那排 logo 本身多高（手機 / 平板 / 桌機一起跟著調）。預設值是照橫式字標挑的，方形的商圈標章、上圖下字的兩層式 logo 在裡面只剩一小塊是字，選大才認得出來；只放兩三個 logo 想排得安靜一點就選小。上面那幾格照片的設定管的是卡片裡的照片，動不到這排</span>
+                  {partnerLogoScale && (
+                    <button
+                      type="button"
+                      onClick={() => patch({ partnerLogoScale: null })}
+                      className="text-stone-500 hover:text-stone-800 underline"
+                    >
+                      清除
+                    </button>
+                  )}
+                </div>
+              </Field>
+              <Field label="合作 logo 濃淡">
+                <div className="grid grid-cols-3 gap-1.5">
+                  {([
+                    { v: "faint", label: "更淡" },
+                    { v: "default", label: "跟預設" },
+                    { v: "solid", label: "清楚" },
+                  ] as const).map((opt) => (
+                    <button
+                      key={opt.v}
+                      type="button"
+                      onClick={() => patch({ partnerLogoOpacity: opt.v })}
+                      aria-pressed={(partnerLogoOpacity ?? "default") === opt.v}
+                      className={`rounded-lg border py-2 text-xs transition ${
+                        (partnerLogoOpacity ?? "default") === opt.v
+                          ? "border-emerald-500 bg-emerald-50 text-emerald-900"
+                          : "border-stone-200 text-stone-600 hover:border-stone-400"
+                      }`}
+                    >
+                      {opt.label}
+                    </button>
+                  ))}
+                </div>
+                <div className="mt-1.5 flex items-center justify-between text-[11px] text-stone-500">
+                  <span>那排 logo 印得多淡。預設是半透明（滑鼠移上去才變清楚，手機沒有這個動作），要客人認出是哪家媒體、哪個品牌就選清楚；當背景紋理排一整列就選更淡。「淡化」那格淡的是整段連小標一起，「濾鏡」換的是黑白或復古，都不是這一層</span>
+                  {partnerLogoOpacity && (
+                    <button
+                      type="button"
+                      onClick={() => patch({ partnerLogoOpacity: null })}
+                      className="text-stone-500 hover:text-stone-800 underline"
+                    >
+                      清除
+                    </button>
+                  )}
+                </div>
+              </Field>
+                </>
+              )}
               <Field label="卡片間距">
                 <div className="grid grid-cols-3 gap-1.5">
                   {([

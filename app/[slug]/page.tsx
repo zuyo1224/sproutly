@@ -438,6 +438,23 @@ export default async function StoreHomePage({
     // 補規則——要蓋掉的是圖自己帶的 object-cover class，段落上的 inline style 傳不下去。
     const mediaFitVal: "contain" | undefined =
       s?.mediaFit === "contain" ? "contain" : undefined;
+    // 合作 logo 大小：上面那四欄的規則都落在卡片格線裡的圖框（.sproutly-card-image）上，
+    // 合作那段的 logo 不在圖框裡——它是直接排在 flex 容器裡的 img，高度寫死 h-8 / sm:h-10 /
+    // md:h-12。方形的商圈標章、上圖下字的兩層式 logo 在 48px 高裡只剩一小塊是字，客人認不
+    // 出是誰。同樣走 attribute 讓 layout.tsx 補規則：段落上的 inline style 到不了那張 img，
+    // 而且要跟著手機 / 平板 / 桌機各給一個高度，只有規則做得到。只掛合作那一段。
+    const partnerLogoScaleVal: "small" | "large" | undefined =
+      s?.partnerLogoScale === "small" || s?.partnerLogoScale === "large"
+        ? s.partnerLogoScale
+        : undefined;
+    // 合作 logo 濃淡：那排 logo 一律印在 50% 透明度上（滑鼠移上去才回到 100%，手機沒有這個
+    // 動作），淺灰底上再乘 0.5 的細字標幾乎只剩一團形狀。段落層的「淡化」透明的是整段連小標
+    // 一起、「濾鏡」換的是黑白或復古，都不是這層；logo 那個 opacity-50 寫在 class 上，段落上
+    // 的 inline style 傳不下去，同樣 attribute 讓 layout.tsx 補規則。只掛合作那一段。
+    const partnerLogoOpacityVal: "faint" | "solid" | undefined =
+      s?.partnerLogoOpacity === "faint" || s?.partnerLogoOpacity === "solid"
+        ? s.partnerLogoOpacity
+        : undefined;
     // 標題與內容的距離：要動的是段落最上面那塊（小標 + 大標 + 引言）自己帶的 mb-* class，
     // 段落上的 inline style 到不了它——跟卡片間距同一個處境同一個解法，attribute 讓
     // layout.tsx 補規則落在 .sproutly-section-head 上（各段那塊都掛了這個 class）。
@@ -837,6 +854,8 @@ export default async function StoreHomePage({
       mediaAspectVal,
       mediaFocusVal,
       mediaFitVal,
+      partnerLogoScaleVal,
+      partnerLogoOpacityVal,
       gridGapVal,
       cardHoverVal,
       cardTextVal,
@@ -3278,6 +3297,8 @@ export default async function StoreHomePage({
               data-hide-on={partnersStyle.hideOnVal}
               data-media-radius={partnersStyle.mediaRadiusVal}
               data-grid-gap={partnersStyle.gridGapVal}
+              data-partner-logo-scale={partnersStyle.partnerLogoScaleVal}
+              data-partner-logo-opacity={partnersStyle.partnerLogoOpacityVal}
             >
               <div
                 className="max-w-5xl mx-auto px-8 sm:px-12"
@@ -3319,7 +3340,10 @@ export default async function StoreHomePage({
                         alt={p.name}
                         loading="lazy"
                         decoding="async"
-                        className="h-8 sm:h-10 md:h-12 w-auto opacity-50 hover:opacity-100 transition duration-500"
+                        // 高度與透明度那兩組 class 留著當沒設時的樣子（既有店家一張都不會
+                        // 變），另外掛一個 class 讓「合作 logo 大小 / 濃淡」那兩格的規則抓得
+                        // 到——那兩條規則的選擇器比 class 精確，商家設了才蓋過去。
+                        className="sproutly-partner-logo h-8 sm:h-10 md:h-12 w-auto opacity-50 hover:opacity-100 transition duration-500"
                         // 合作 logo 本來就一律轉黑白（設計上要它們安靜地排一列，不跟主
                         // 畫面搶色）。這個 inline 值蓋得過 layout.tsx 那條 img 規則，所以
                         // 商家把這段設成「復古」時只有它不跟著變；改讀同一個變數，沒設

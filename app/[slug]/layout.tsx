@@ -1063,6 +1063,59 @@ export default async function PublicStoreLayout({
           transform: none;
         }
 
+        /* 合作 logo 大小：editor 合作夥伴 panel「合作 logo 大小」三按鈕（小 / 跟預設 / 大）。
+           上面那四欄（照片圓角 / 比例 / 取景 / 完整度）的規則都落在卡片格線裡的圖框
+           （.sproutly-card-image）上，合作那段的 logo 不在圖框裡——它是直接排在 flex 容器裡
+           的 img，高度寫死 h-8 / sm:h-10 / md:h-12（32 / 40 / 48px）。那組值是照橫式字標挑的
+           （寬扁、字少，48px 高就佔掉一大截寬度）；商家實際貼上來的常常是方形商圈標章、上圖
+           下字的兩層式 logo、圓形品牌章，同樣 48px 高只有中間一小塊是字，客人認不出是誰。
+           反過來只放兩三個大廠 logo 撐場面的店，48px 在一整排空白裡小得像註腳。
+           三個寬度各給一個值，跟原本那三個 class 一樣的斷點：只寫一個高度的話，手機上會直接
+           吃到桌機那個值，一排 logo 把窄螢幕擠到自動換行。這份 <style> 沒包在 @layer，選擇器
+           又比 class 精確，蓋得過 h-8 那組。沒設就沒 attribute、整條規則不存在。 */
+        section[data-edit-target][data-partner-logo-scale="small"] .sproutly-partner-logo {
+          height: 1.5rem;
+        }
+        section[data-edit-target][data-partner-logo-scale="large"] .sproutly-partner-logo {
+          height: 3rem;
+        }
+        @media (min-width: 640px) {
+          section[data-edit-target][data-partner-logo-scale="small"] .sproutly-partner-logo {
+            height: 1.75rem;
+          }
+          section[data-edit-target][data-partner-logo-scale="large"] .sproutly-partner-logo {
+            height: 4rem;
+          }
+        }
+        @media (min-width: 768px) {
+          section[data-edit-target][data-partner-logo-scale="small"] .sproutly-partner-logo {
+            height: 2rem;
+          }
+          section[data-edit-target][data-partner-logo-scale="large"] .sproutly-partner-logo {
+            height: 5rem;
+          }
+        }
+
+        /* 合作 logo 濃淡：editor 合作夥伴 panel「合作 logo 濃淡」三按鈕（更淡 / 跟預設 / 清楚）。
+           那排 logo 一律印在 opacity 0.5 上（class 上的 opacity-50），跟一律轉黑白是同一組
+           設計決定：讓它們安靜地排一列，不跟主畫面搶顏色。可是商家把媒體報導、合作品牌放上
+           首頁就是要客人認出那是誰——淺灰底上再乘 0.5 的細字標，在手機上幾乎只剩一團形狀，
+           而「滑鼠移上去變清楚」這件事手機根本沒有。段落層的「淡化」透明的是整段（連小標一起
+           淡）、「濾鏡」換的是黑白 / 復古，都不是這一層。
+           第二條 hover 一定要補：img 上帶著 hover:opacity-100，這格的規則比它精確，不補的話
+           會連「滑過去變清楚」一起蓋掉——選了更淡的商家最需要那個動作還在。
+           更淡給 0.3 不給更低：再低就看不出是誰的 logo，那等於把整段藏起來（要藏有「顯示 /
+           隱藏」與「在哪台裝置不顯示」兩欄）。沒設就沒 attribute、整條規則不存在。 */
+        section[data-edit-target][data-partner-logo-opacity="faint"] .sproutly-partner-logo {
+          opacity: 0.3;
+        }
+        section[data-edit-target][data-partner-logo-opacity="solid"] .sproutly-partner-logo {
+          opacity: 1;
+        }
+        section[data-edit-target][data-partner-logo-opacity="faint"] .sproutly-partner-logo:hover {
+          opacity: 1;
+        }
+
         /* 卡片間距：editor 各 section panel「卡片間距」三按鈕（緊湊 / 預設 / 寬鬆）。
            商品卡、照片牆、合作 logo 彼此的距離是每段寫死的一組值，商家動得到間距的只有
            「區段空白」跟「上下外距」——那兩欄調的是段落外圍，卡片之間一動也不動：欄數
