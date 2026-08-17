@@ -805,9 +805,30 @@ export default async function PublicStoreLayout({
            半格瀏覽器畫不出來，會抹成一條灰邊。沒設就沒 attribute，維持上面那條的 2px。 */
         section[data-edit-target]:not([data-edit-target="hero"])[data-heading-rule-weight="thin"] h2::after {
           height: 1px;
+          --store-rule-weight: 1px;
         }
         section[data-edit-target]:not([data-edit-target="hero"])[data-heading-rule-weight="thick"] h2::after {
           height: 4px;
+          --store-rule-weight: 4px;
+        }
+        /* 底線線型：editor 同一格底下的三按鈕（實線 / 虛線 / 點線）。線本來是 ::after 的
+           background 填色，background 畫不出虛線——選了虛線點線就把 background 收掉、改畫
+           border-top，粗細從上面那兩條規則寫出的 --store-rule-weight 轉餵 border 寬（變數不吃
+           規則順序，height 那兩條照舊管實線）。這兩條要排在粗細規則後面：同分量的選擇器誰
+           後寫誰贏，height 歸零才蓋得掉。顏色跟實線同一個變數，深淺那格照樣有效。
+           點線配粗檔會變一排圓點，那不是 bug 是這個線型本來的樣子（跟分隔線那格同一句話）。
+           沒設或選實線就沒 attribute，這兩條整條不存在，既有店家一條線都不會變。 */
+        section[data-edit-target]:not([data-edit-target="hero"])[data-heading-rule-style] h2::after {
+          height: 0;
+          background: none;
+          border-top-width: var(--store-rule-weight, 2px);
+          border-top-color: var(--store-rule-color, currentColor);
+        }
+        section[data-edit-target]:not([data-edit-target="hero"])[data-heading-rule-style="dashed"] h2::after {
+          border-top-style: dashed;
+        }
+        section[data-edit-target]:not([data-edit-target="hero"])[data-heading-rule-style="dotted"] h2::after {
+          border-top-style: dotted;
         }
 
         /* 區段內文行高：editor 各 section panel「行高」三按鈕（緊湊 / 預設 / 舒展）。

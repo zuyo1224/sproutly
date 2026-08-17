@@ -926,6 +926,16 @@ export const SECTION_STYLE_ENUMS = {
   // 商家按這格的意思是「這條要跳出來」，三條一起加深是把對比抹平。
   // 沒設就完全不覆寫，--store-rule-color 照舊餵 lineColor，既有店家一條線都不會變。
   headingRuleTone: ["normal", "strong", "accent"],
+  // 標題底線的線型（solid 照原本的實線 / dashed 虛線 / dotted 點線），同樣只在畫了線之後
+  // 才有東西可調。分隔線那組四格（位置 / 粗細 / 深淺 / 線型）補齊了，底線補到第三格又停在
+  // 同一個地方：位置、粗細、深淺調完，線仍然只有實線一種語氣。而底線比分隔線更常拿來當
+  // 裝飾——標題底下壓一截短線本來就是雜誌開章的手勢（深淺那格的主色就是為這個開的），
+  // 賣手作、盆栽這類調性軟的店，一截硬實線壓在標題下反而跟整站的氣質打架，商家原本沒有
+  // 一格動得到。三檔跟分隔線線型一字不差，同一段裡兩條線才配得起來。
+  // 底線畫在 h2::after 的 background 上，background 沒有虛線這種畫法——選了虛線點線的段落
+  // 改走 border-top（layout.tsx 那邊的規則把 background 收掉、粗細轉餵 border 寬），沒設或
+  // 選實線就不掛 attribute、整條規則不存在，既有店家一條線都不會變。
+  headingRuleStyle: ["solid", "dashed", "dotted"],
   // 側邊色條（left 左緣 / right 右緣），畫在該段的左或右邊緣，4px 粗。分隔線佔的是
   // borderTop/Bottom、外框走 outline，三者不互相蓋。顏色比照外框與分隔線：該段設了
   // 文字色就從它算（深底淺字自動變淺色條），沒設就用全站主色 accent。
@@ -1044,6 +1054,7 @@ export const SECTION_STYLE_NEUTRAL_VALUES = {
   headingRule: "none",
   headingRuleWeight: "normal",
   headingRuleTone: "normal",
+  headingRuleStyle: "solid",
   accentBar: "none",
   accentBarWeight: "normal",
   accentBarTone: "normal",

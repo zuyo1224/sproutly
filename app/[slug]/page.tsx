@@ -352,6 +352,13 @@ export default async function StoreHomePage({
       (s?.headingRuleTone === "strong" || s?.headingRuleTone === "accent")
         ? s.headingRuleTone
         : undefined;
+    // 底線線型：跟深淺同一個口徑——沒畫線就不回（線不存在，線型沒有東西可套），沒設或
+    // 選實線就 undefined、線照舊走 background 那條實線規則，既有店家一條線都不會變。
+    const headingRuleStyleVal: "dashed" | "dotted" | undefined =
+      headingRuleVal &&
+      (s?.headingRuleStyle === "dashed" || s?.headingRuleStyle === "dotted")
+        ? s.headingRuleStyle
+        : undefined;
     // 分隔線粗細：翻成實際的線寬直接餵給 inline style（線本身是 section 的 borderTop /
     // borderBottom，不是偽元素，所以不必像標題底線那樣繞 data attribute）。沒畫線的段落
     // 一律回預設值，算出來的 border 字串跟以前一模一樣，既有店家一條線都不會變。
@@ -912,6 +919,7 @@ export default async function StoreHomePage({
       headingRuleVal,
       headingRuleWeightVal,
       headingRuleToneVal,
+      headingRuleStyleVal,
       accentBarVal,
       accentBarWidth,
       accentBarToneVal,
@@ -2220,6 +2228,7 @@ export default async function StoreHomePage({
             data-heading-leading={collStyle.headingLeadingVal}
             data-heading-rule={collStyle.headingRuleVal}
             data-heading-rule-weight={collStyle.headingRuleWeightVal}
+            data-heading-rule-style={collStyle.headingRuleStyleVal}
             data-eyebrow-tracking={collStyle.eyebrowTrackingVal}
             data-eyebrow-scale={collStyle.eyebrowScaleVal}
             data-eyebrow-weight={collStyle.eyebrowWeightVal}
@@ -2423,6 +2432,7 @@ export default async function StoreHomePage({
             data-heading-leading={featuredStyle.headingLeadingVal}
             data-heading-rule={featuredStyle.headingRuleVal}
             data-heading-rule-weight={featuredStyle.headingRuleWeightVal}
+            data-heading-rule-style={featuredStyle.headingRuleStyleVal}
             data-eyebrow-tracking={featuredStyle.eyebrowTrackingVal}
             data-eyebrow-scale={featuredStyle.eyebrowScaleVal}
             data-eyebrow-weight={featuredStyle.eyebrowWeightVal}
@@ -2662,6 +2672,7 @@ export default async function StoreHomePage({
             data-heading-leading={journalStyle.headingLeadingVal}
             data-heading-rule={journalStyle.headingRuleVal}
             data-heading-rule-weight={journalStyle.headingRuleWeightVal}
+            data-heading-rule-style={journalStyle.headingRuleStyleVal}
             data-eyebrow-tracking={journalStyle.eyebrowTrackingVal}
             data-eyebrow-scale={journalStyle.eyebrowScaleVal}
             data-eyebrow-weight={journalStyle.eyebrowWeightVal}
@@ -2897,6 +2908,7 @@ export default async function StoreHomePage({
             data-heading-leading={promiseStyle.headingLeadingVal}
             data-heading-rule={promiseStyle.headingRuleVal}
             data-heading-rule-weight={promiseStyle.headingRuleWeightVal}
+            data-heading-rule-style={promiseStyle.headingRuleStyleVal}
             data-eyebrow-tracking={promiseStyle.eyebrowTrackingVal}
             data-eyebrow-scale={promiseStyle.eyebrowScaleVal}
             data-eyebrow-weight={promiseStyle.eyebrowWeightVal}
@@ -3067,6 +3079,7 @@ export default async function StoreHomePage({
               data-heading-leading={testimonialsStyle.headingLeadingVal}
               data-heading-rule={testimonialsStyle.headingRuleVal}
               data-heading-rule-weight={testimonialsStyle.headingRuleWeightVal}
+              data-heading-rule-style={testimonialsStyle.headingRuleStyleVal}
               data-eyebrow-tracking={testimonialsStyle.eyebrowTrackingVal}
               data-eyebrow-scale={testimonialsStyle.eyebrowScaleVal}
               data-eyebrow-weight={testimonialsStyle.eyebrowWeightVal}
@@ -3305,6 +3318,7 @@ export default async function StoreHomePage({
               data-heading-leading={faqStyle.headingLeadingVal}
               data-heading-rule={faqStyle.headingRuleVal}
               data-heading-rule-weight={faqStyle.headingRuleWeightVal}
+              data-heading-rule-style={faqStyle.headingRuleStyleVal}
               data-eyebrow-tracking={faqStyle.eyebrowTrackingVal}
               data-eyebrow-scale={faqStyle.eyebrowScaleVal}
               data-eyebrow-weight={faqStyle.eyebrowWeightVal}
@@ -3508,6 +3522,7 @@ export default async function StoreHomePage({
               data-heading-leading={statsStyle.headingLeadingVal}
               data-heading-rule={statsStyle.headingRuleVal}
               data-heading-rule-weight={statsStyle.headingRuleWeightVal}
+              data-heading-rule-style={statsStyle.headingRuleStyleVal}
               data-eyebrow-tracking={statsStyle.eyebrowTrackingVal}
               data-eyebrow-scale={statsStyle.eyebrowScaleVal}
               data-eyebrow-weight={statsStyle.eyebrowWeightVal}
@@ -3709,6 +3724,7 @@ export default async function StoreHomePage({
               data-heading-leading={partnersStyle.headingLeadingVal}
               data-heading-rule={partnersStyle.headingRuleVal}
               data-heading-rule-weight={partnersStyle.headingRuleWeightVal}
+              data-heading-rule-style={partnersStyle.headingRuleStyleVal}
               data-eyebrow-tracking={partnersStyle.eyebrowTrackingVal}
               data-eyebrow-scale={partnersStyle.eyebrowScaleVal}
               data-eyebrow-weight={partnersStyle.eyebrowWeightVal}
@@ -3830,6 +3846,7 @@ export default async function StoreHomePage({
               data-heading-leading={galleryStyle.headingLeadingVal}
               data-heading-rule={galleryStyle.headingRuleVal}
               data-heading-rule-weight={galleryStyle.headingRuleWeightVal}
+              data-heading-rule-style={galleryStyle.headingRuleStyleVal}
               data-eyebrow-tracking={galleryStyle.eyebrowTrackingVal}
               data-eyebrow-scale={galleryStyle.eyebrowScaleVal}
               data-eyebrow-weight={galleryStyle.eyebrowWeightVal}
@@ -4018,6 +4035,7 @@ export default async function StoreHomePage({
             data-heading-leading={visitStyle.headingLeadingVal}
             data-heading-rule={visitStyle.headingRuleVal}
             data-heading-rule-weight={visitStyle.headingRuleWeightVal}
+            data-heading-rule-style={visitStyle.headingRuleStyleVal}
             data-eyebrow-tracking={visitStyle.eyebrowTrackingVal}
             data-eyebrow-scale={visitStyle.eyebrowScaleVal}
             data-eyebrow-weight={visitStyle.eyebrowWeightVal}

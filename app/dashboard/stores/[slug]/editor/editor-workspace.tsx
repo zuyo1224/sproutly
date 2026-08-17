@@ -3442,6 +3442,7 @@ export function EditorWorkspace({
           const headingRule = cur.headingRule ?? null;
           const headingRuleWeight = cur.headingRuleWeight ?? null;
           const headingRuleTone = cur.headingRuleTone ?? null;
+          const headingRuleStyle = cur.headingRuleStyle ?? null;
           const accentBar = cur.accentBar ?? null;
           const accentBarWeight = cur.accentBarWeight ?? null;
           const accentBarTone = cur.accentBarTone ?? null;
@@ -5293,6 +5294,45 @@ export function EditorWorkspace({
                       <button
                         type="button"
                         onClick={() => patch({ headingRuleTone: null })}
+                        className="text-stone-500 hover:text-stone-800 underline"
+                      >
+                        清除
+                      </button>
+                    )}
+                  </div>
+                </Field>
+              )}
+              {/* 線型跟粗細、深淺同一個道理：沒畫線就沒東西可調。分隔線那格開了虛線點線
+                  之後，最常拿來當裝飾的這條線反而還是只有實線一種語氣。 */}
+              {headingRule && (
+                <Field label="底線線型">
+                  <div className="grid grid-cols-3 gap-1.5">
+                    {([
+                      { v: "solid", label: "實線" },
+                      { v: "dashed", label: "虛線" },
+                      { v: "dotted", label: "點線" },
+                    ] as const).map((opt) => (
+                      <button
+                        key={opt.v}
+                        type="button"
+                        onClick={() => patch({ headingRuleStyle: opt.v })}
+                        aria-pressed={(headingRuleStyle ?? "solid") === opt.v}
+                        className={`rounded-lg border py-2 text-xs transition ${
+                          (headingRuleStyle ?? "solid") === opt.v
+                            ? "border-emerald-500 bg-emerald-50 text-emerald-900"
+                            : "border-stone-200 text-stone-600 hover:border-stone-400"
+                        }`}
+                      >
+                        {opt.label}
+                      </button>
+                    ))}
+                  </div>
+                  <div className="mt-1.5 flex items-center justify-between text-[11px] text-stone-500">
+                    <span>實線像明確的收尾，虛線點線比較軟，標題底下壓裝飾線時用</span>
+                    {headingRuleStyle && (
+                      <button
+                        type="button"
+                        onClick={() => patch({ headingRuleStyle: null })}
                         className="text-stone-500 hover:text-stone-800 underline"
                       >
                         清除
