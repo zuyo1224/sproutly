@@ -913,6 +913,19 @@ export const SECTION_STYLE_ENUMS = {
   // 只給三檔不給滑桿：線是配著標題看的東西，1 / 2 / 4px 之間的差一眼看得出來，中間那些
   // 半格的差別在螢幕上根本畫不出來（非整數的線會被瀏覽器抹成灰邊）。
   headingRuleWeight: ["thin", "normal", "thick"],
+  // 標題底線的深淺（normal 照原本的淡色 / strong 同該段文字色 / accent 主色），同樣只在
+  // 畫了線之後才有東西可調。位置跟粗細補完之後，線的顏色仍然寫死在一個值：跟外框、分隔線
+  // 共用的那個 28% 淡色。淡色當預設是對的（三種線同一段裡是同一個顏色，整體感），但分隔線
+  // 那邊已經承認過這個值有兩個救不了的場景，底線一模一樣：一是深底淺字的段落，淡色線壓在
+  // 深底上幾乎等於不存在，商家選了「短線」看不到東西以為這格壞了；二是拿線當裝飾的——
+  // 標題底下壓一條主色短線是雜誌開章頁最常見的手勢，分隔線深淺的 accent 檔就是為這個開的，
+  // 結果畫在標題正下方、位置最像那個手勢的這條線反而沒有主色可選。
+  // 三檔跟分隔線深淺一字不差：strong 直接用該段文字色（跟字同深就一定看得見，深底淺字
+  // 自動變淺線，挑不壞）、accent 走 mergeSectionStyle 算好的 sectionAccent（主色壓在自訂
+  // 底色上看不見時那裡已經換成該段文字色，同一道防呆）。只動底線不動外框與分隔線——
+  // 商家按這格的意思是「這條要跳出來」，三條一起加深是把對比抹平。
+  // 沒設就完全不覆寫，--store-rule-color 照舊餵 lineColor，既有店家一條線都不會變。
+  headingRuleTone: ["normal", "strong", "accent"],
   // 側邊色條（left 左緣 / right 右緣），畫在該段的左或右邊緣，4px 粗。分隔線佔的是
   // borderTop/Bottom、外框走 outline，三者不互相蓋。顏色比照外框與分隔線：該段設了
   // 文字色就從它算（深底淺字自動變淺色條），沒設就用全站主色 accent。
@@ -1000,6 +1013,7 @@ export const SECTION_STYLE_NEUTRAL_VALUES = {
   bgGradient: "none",
   headingRule: "none",
   headingRuleWeight: "normal",
+  headingRuleTone: "normal",
   accentBar: "none",
 } as const satisfies Partial<{
   [K in keyof typeof SECTION_STYLE_ENUMS]: (typeof SECTION_STYLE_ENUMS)[K][number];

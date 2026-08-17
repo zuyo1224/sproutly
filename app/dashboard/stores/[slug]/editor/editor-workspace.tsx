@@ -3441,6 +3441,7 @@ export function EditorWorkspace({
           const headingTracking = cur.headingTracking ?? null;
           const headingRule = cur.headingRule ?? null;
           const headingRuleWeight = cur.headingRuleWeight ?? null;
+          const headingRuleTone = cur.headingRuleTone ?? null;
           const accentBar = cur.accentBar ?? null;
           const texture = cur.texture ?? null;
           const bgGradient = cur.bgGradient ?? null;
@@ -5250,6 +5251,46 @@ export function EditorWorkspace({
                       <button
                         type="button"
                         onClick={() => patch({ headingRuleWeight: null })}
+                        className="text-stone-500 hover:text-stone-800 underline"
+                      >
+                        清除
+                      </button>
+                    )}
+                  </div>
+                </Field>
+              )}
+              {/* 深淺跟粗細同一個道理：沒畫線就沒東西可調。分隔線那組三格都補齊了，
+                  這條畫在標題正下方、最像雜誌開章那個手勢的線反而沒有主色可選；
+                  深底淺字的段落淡色線更是直接看不見。 */}
+              {headingRule && (
+                <Field label="底線深淺">
+                  <div className="grid grid-cols-3 gap-1.5">
+                    {([
+                      { v: "normal", label: "跟預設" },
+                      { v: "strong", label: "同文字" },
+                      { v: "accent", label: "主色" },
+                    ] as const).map((opt) => (
+                      <button
+                        key={opt.v}
+                        type="button"
+                        onClick={() => patch({ headingRuleTone: opt.v })}
+                        aria-pressed={(headingRuleTone ?? "normal") === opt.v}
+                        className={`rounded-lg border py-2 text-xs transition ${
+                          (headingRuleTone ?? "normal") === opt.v
+                            ? "border-emerald-500 bg-emerald-50 text-emerald-900"
+                            : "border-stone-200 text-stone-600 hover:border-stone-400"
+                        }`}
+                      >
+                        {opt.label}
+                      </button>
+                    ))}
+                  </div>
+                  <div className="mt-1.5 flex items-center justify-between text-[11px] text-stone-500">
+                    <span>深底的段落看不到線就調深：同文字跟這段的字一樣深，主色是標題底下壓色線那種用法</span>
+                    {headingRuleTone && (
+                      <button
+                        type="button"
+                        onClick={() => patch({ headingRuleTone: null })}
                         className="text-stone-500 hover:text-stone-800 underline"
                       >
                         清除

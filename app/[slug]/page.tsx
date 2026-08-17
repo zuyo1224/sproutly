@@ -344,6 +344,14 @@ export default async function StoreHomePage({
       headingRuleVal && (s?.headingRuleWeight === "thin" || s?.headingRuleWeight === "thick")
         ? s.headingRuleWeight
         : undefined;
+    // 底線深淺：跟分隔線深淺同一個口徑——只回選了哪一檔，實際顏色在 mergeSectionStyle 算
+    //（strong 要該段文字色、accent 要那裡算好的 sectionAccent）。沒畫線就不回（線不存在，
+    // 深淺沒有東西可套），沒設就 undefined、變數照舊餵淡色，既有店家一條線都不會變。
+    const headingRuleToneVal: "strong" | "accent" | undefined =
+      headingRuleVal &&
+      (s?.headingRuleTone === "strong" || s?.headingRuleTone === "accent")
+        ? s.headingRuleTone
+        : undefined;
     // 分隔線粗細：翻成實際的線寬直接餵給 inline style（線本身是 section 的 borderTop /
     // borderBottom，不是偽元素，所以不必像標題底線那樣繞 data attribute）。沒畫線的段落
     // 一律回預設值，算出來的 border 字串跟以前一模一樣，既有店家一條線都不會變。
@@ -883,6 +891,7 @@ export default async function StoreHomePage({
       headingTrackingVal,
       headingRuleVal,
       headingRuleWeightVal,
+      headingRuleToneVal,
       accentBarVal,
       lineHeightVal,
       filterVal,
@@ -1124,7 +1133,15 @@ export default async function StoreHomePage({
     // 同一段裡才會是同一個顏色。二是左右外距——::after 是 block，父層的 text-align 管不到它，
     // 對齊選了靠右、線還是留在左邊。所以把對齊翻成 margin 的 auto 給 CSS 用。
     if (s.headingRuleVal) {
-      out["--store-rule-color"] = lineColor;
+      // 深淺讀「底線深淺」那格，三檔跟分隔線深淺一字不差：strong 用該段文字色（跟字同深
+      // 就一定看得見，深底淺字自動變淺線）、accent 用算好的 sectionAccent（主色被底色吃掉
+      // 時已換成該段文字色，同一道防呆）。沒設照舊餵淡色，三種線同一段裡還是同一個顏色。
+      out["--store-rule-color"] =
+        s.headingRuleToneVal === "strong"
+          ? s.text ?? theme.text
+          : s.headingRuleToneVal === "accent"
+            ? sectionAccent
+            : lineColor;
       out["--store-rule-ml"] = s.align === "left" ? "0" : "auto";
       out["--store-rule-mr"] = s.align === "right" ? "0" : "auto";
     }
