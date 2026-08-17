@@ -2067,6 +2067,29 @@ export default async function PublicStoreLayout({
           line-height: 2.2;
         }
 
+        /* 小標大小寫：editor 各 section panel「小標大小寫」三按鈕（全大寫 / 字首大寫 / 照原樣）。
+           上面幾組管的是那行小標的字距、大小、粗細、行距，這組管的是那行字被轉成什麼字形。
+           那行一律 uppercase，跟 10px 與 0.4em 是同一個設計決定的三個面向（全大寫的英文短詞
+           撐開字距，是雜誌上 eyebrow 的標準寫法）。中文沒有大小寫之分，這條對只打中文的段落
+           按了不會動；問題在英文與混排：商家把小標打成自己的英文店名（Plantae Market）會被拉成
+           PLANTAE MARKET，而店名的大小寫通常是 logo 的一部分，打「Est. 2019」變 EST. 2019，
+           「Journal 慢讀」只有前半被改。而且商家改字沒用——轉換發生在畫面上不在資料裡，輸入框
+           看到的還是自己打的小寫。
+           要蓋掉的是那行自己帶的 uppercase class（段落那層沒有一欄傳得下去），跟小標字距、字級
+           同一個處境同一個解法：attribute 讓這裡補一條更精確的規則壓過去（這份 <style> 沒包在
+           @layer，贏在 @layer utilities 的 Tailwind 工具類）。
+           三檔裡留「全大寫」是因為那十六行本來就是 uppercase，少了這一檔按過 capitalize 之後
+           沒有一顆按鈕退得回原本的樣子（跟小標粗細留「常規」同一個理由）。它是「照原本的」那一
+           檔，按下去等於把這一欄清掉，所以這裡只有另外兩檔有規則（跟小標粗細沒有 normal 那條
+           同一個道理）。
+           沒設就沒 attribute、整條規則不存在，既有店家的小標一個字都不會變。 */
+        section[data-edit-target][data-eyebrow-case="capitalize"] .sproutly-section-eyebrow {
+          text-transform: capitalize;
+        }
+        section[data-edit-target][data-eyebrow-case="none"] .sproutly-section-eyebrow {
+          text-transform: none;
+        }
+
         /* 區段進場動畫：editor 各 section panel「進場動畫」三按鈕（無 / 淡入 / 上滑）
            靠 data-anim attribute + CSS scroll-driven animation（animation-timeline: view()）觸發。
            沒設定 = 無 attr = 不動畫；fade = opacity 0→1；slide-up = opacity + translateY 上滑。

@@ -3320,6 +3320,7 @@ export function EditorWorkspace({
           const eyebrowWeight = cur.eyebrowWeight ?? null;
           const eyebrowTone = cur.eyebrowTone ?? null;
           const eyebrowLeading = cur.eyebrowLeading ?? null;
+          const eyebrowCase = cur.eyebrowCase ?? null;
           const hideOn = cur.hideOn ?? null;
           const outline = cur.outline ?? null;
           const shadow = cur.shadow ?? null;
@@ -4739,6 +4740,41 @@ export function EditorWorkspace({
                     <button
                       type="button"
                       onClick={() => patch({ eyebrowTone: null })}
+                      className="text-stone-500 hover:text-stone-800 underline"
+                    >
+                      清除
+                    </button>
+                  )}
+                </div>
+              </Field>
+              <Field label="小標大小寫">
+                <div className="grid grid-cols-3 gap-1.5">
+                  {([
+                    { v: "upper", label: "全大寫" },
+                    { v: "capitalize", label: "字首大寫" },
+                    { v: "none", label: "照原樣" },
+                  ] as const).map((opt) => (
+                    <button
+                      key={opt.v}
+                      type="button"
+                      onClick={() => patch({ eyebrowCase: opt.v })}
+                      aria-pressed={(eyebrowCase ?? "upper") === opt.v}
+                      className={`rounded-lg border py-2 text-xs transition ${
+                        (eyebrowCase ?? "upper") === opt.v
+                          ? "border-emerald-500 bg-emerald-50 text-emerald-900"
+                          : "border-stone-200 text-stone-600 hover:border-stone-400"
+                      }`}
+                    >
+                      {opt.label}
+                    </button>
+                  ))}
+                </div>
+                <div className="mt-1.5 flex items-center justify-between text-[11px] text-stone-500">
+                  <span>那行小標的英文字母要不要被轉成大寫。前面幾格調的是那行字的字距、大小、粗細、行距、顏色，這格調的是字形本身。小標一律轉全大寫，中文沒有大小寫、按了不會動；打英文的話會被整行拉成大寫——自己的英文店名（Plantae Market → PLANTAE MARKET）或「Est. 2019」想照自己打的樣子顯示選「照原樣」（改輸入框裡的字沒用，大寫是顯示的時候才轉的）</span>
+                  {eyebrowCase && (
+                    <button
+                      type="button"
+                      onClick={() => patch({ eyebrowCase: null })}
                       className="text-stone-500 hover:text-stone-800 underline"
                     >
                       清除

@@ -193,6 +193,26 @@ export const SECTION_STYLE_ENUMS = {
   // accent 走 mergeSectionStyle 算好的 sectionAccent（主色壓在自訂底色上看不見時已經換成
   // 該段文字色的那個），不自己拿 theme.accent——跟標題用色、標題底線走同一道防呆。
   eyebrowTone: ["normal", "accent", "muted", "text"],
+  // 小標大小寫（upper 照原本的全大寫 / capitalize 每個字首大寫 / none 完全照商家打的），只套
+  // 段落最上面那行小標。那行的字距、大小、粗細、行距、顏色都補過了，全大寫是最後一個沒得
+  // 動的——這五格加上 uppercase 本來是同一個設計決定的六個面向（極小 + 撐開字距 + 全大寫
+  // ＝編輯設計裡 eyebrow 的標準寫法），前五個商家都調得到，第六個沒有。
+  // hero 那行小標上一輪已經補過同一格（heroEyebrowCase），區段這十六行是同一個問題的另外
+  // 十六個位置：class 裡一律寫死 uppercase。
+  // 缺這格會怎樣：對中文完全無效（方塊字沒有大小寫之分，這格對只打中文的商家按了也不會動，
+  // 這是預期的），對英文則是寫死的一種選擇——商家把小標打成自己的英文店名（Plantae Market）
+  // 會被拉成 PLANTAE MARKET，而店名的大小寫通常是 logo 的一部分；打「Est. 2019」會變成
+  // EST. 2019。混排的（「Journal 慢讀」）只有前半被改，看起來像沒對齊的兩截。最麻煩的是
+  // 商家連改字都沒用：轉換發生在畫面上、不在資料裡，輸入框裡看到的還是自己打的小寫，
+  // 存了幾次以為是自己打錯。
+  // 商家原本沒有一格動得到——「小標字距」「小標字級」「小標粗細」「小標行距」「小標用色」
+  // 動的是那行字的間距、大小、重量、行間、顏色，沒有一個換字形；「字體」換的是字型家族。
+  // 規則跟字距、字級那兩組同一招落在 .sproutly-section-eyebrow 上（要蓋掉的是那行自己帶的
+  // uppercase class，段落那層傳不下去）。
+  // 預設是 upper「照原本的」不是把全大寫當中性值刪掉：那十六行本來就是 uppercase，少了這一
+  // 檔按了 capitalize 之後沒有一顆按鈕退得回原本的樣子（跟小標粗細、小標用色留 normal 同
+  // 一個理由）。沒設就沒 attribute、整條規則不存在，既有店家算出來一模一樣。
+  eyebrowCase: ["upper", "capitalize", "none"],
   // 分隔線（上 / 下 / 上下都有 / 沒有）
   divider: ["none", "top", "bottom", "both"],
   // 該 section 標題字級（small 0.85x / default 1x / large 1.25x）
@@ -851,6 +871,7 @@ export const SECTION_STYLE_NEUTRAL_VALUES = {
   eyebrowWeight: "normal",
   eyebrowLeading: "normal",
   eyebrowTone: "normal",
+  eyebrowCase: "upper",
   hideOn: "none",
   divider: "none",
   mediaRadius: "none",
