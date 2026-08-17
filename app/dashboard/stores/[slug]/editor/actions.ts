@@ -51,6 +51,8 @@ type EditorPayload = {
     heroSubtitleFontScale?: number;
     heroSubtitleColor?: string | null;
     heroSubtitleAlign?: string;
+    heroSubtitleWeight?: string;
+    heroSubtitleTracking?: string;
     heroHeight?: string;
     fontScale?: number;
     sectionPaddingScale?: string;
@@ -329,6 +331,18 @@ export async function saveEditorState(slug: string, payload: EditorPayload) {
       const v = payload.layout.heroSubtitleAlign;
       if (v === "inherit" || v === "left" || v === "center" || v === "right") {
         layoutPatch.heroSubtitleAlign = v;
+      }
+    }
+    if (payload.layout.heroSubtitleWeight !== undefined) {
+      const v = payload.layout.heroSubtitleWeight;
+      if (v === "normal" || v === "medium" || v === "bold") {
+        layoutPatch.heroSubtitleWeight = v;
+      }
+    }
+    if (payload.layout.heroSubtitleTracking !== undefined) {
+      const v = payload.layout.heroSubtitleTracking;
+      if (v === "tight" || v === "normal" || v === "wide") {
+        layoutPatch.heroSubtitleTracking = v;
       }
     }
     if (payload.layout.fontScale !== undefined) {

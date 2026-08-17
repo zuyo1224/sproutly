@@ -1374,6 +1374,26 @@ export default async function StoreHomePage({
             subtitleAlign !== "inherit"
               ? { textAlign: subtitleAlign as "left" | "center" | "right" }
               : {};
+          // 副標粗細 / 字距（五處共用）。這兩個以前沒有人寫過——inline style 只設顏色與
+          // 字級，粗細與字距都是繼承來的。各段內文那兩格的規則落在 section 的
+          // data-body-weight / data-body-tracking 上，hero 整段不發那兩個 attribute，
+          // 所以副標吃不到。沒設就回 {} 完全不覆寫，既有店家算出來一模一樣。
+          // 只給 400 / 500 / 700：layout 載進來的就這三個字重，其他的瀏覽器會拿常規去假造，
+          // 中文筆畫糊掉（跟主標粗細、卡片那幾格同一個理由）。
+          const subtitleWeightStyle =
+            theme.layout.heroSubtitleWeight === "bold"
+              ? { fontWeight: 700 }
+              : theme.layout.heroSubtitleWeight === "medium"
+              ? { fontWeight: 500 }
+              : {};
+          // 副標沒有寫死的 base 字距（繼承 normal），所以這裡存的是絕對值不是相對量——
+          // 跟各段內文字距同一組數字（收緊 -0.02em / 撐開 0.06em）。
+          const subtitleTrackStyle =
+            theme.layout.heroSubtitleTracking === "tight"
+              ? { letterSpacing: "-0.02em" }
+              : theme.layout.heroSubtitleTracking === "wide"
+              ? { letterSpacing: "0.06em" }
+              : {};
 
           // Variant 1: full-image — 自適應 banner（圖 + 文字段），手機 / 桌機 同一套
           if (heroStyle === "full-image" && theme.heroUrl) {
@@ -1515,6 +1535,8 @@ export default async function StoreHomePage({
                               fontFamily: "var(--store-font)",
                               ...subtitleSizeStyle,
                               ...subtitleAlignStyle,
+                              ...subtitleWeightStyle,
+                              ...subtitleTrackStyle,
                             }}
                           >
                             {theme.layout.heroSubtitle}
@@ -1544,6 +1566,8 @@ export default async function StoreHomePage({
                             ...blockAlign,
                             ...subtitleSizeStyle,
                             ...subtitleAlignStyle,
+                            ...subtitleWeightStyle,
+                            ...subtitleTrackStyle,
                           }}
                         >
                           {theme.layout.heroSubtitle}
@@ -1661,7 +1685,13 @@ export default async function StoreHomePage({
                       data-edit-text
                       data-edit-field="heroSubtitle"
                       className={`mt-6 text-base sm:text-lg leading-[1.9] max-w-md ${fade2}`}
-                      style={{ color: subtitleColor, ...subtitleSizeStyle, ...subtitleAlignStyle }}
+                      style={{
+                        color: subtitleColor,
+                        ...subtitleSizeStyle,
+                        ...subtitleAlignStyle,
+                        ...subtitleWeightStyle,
+                        ...subtitleTrackStyle,
+                      }}
                     >
                       {theme.layout.heroSubtitle}
                     </p>
@@ -1750,7 +1780,13 @@ export default async function StoreHomePage({
                       data-edit-text
                       data-edit-field="heroSubtitle"
                       className={`mt-8 text-base sm:text-lg italic max-w-xl mx-auto leading-[1.9] ${fade2}`}
-                      style={{ color: subtitleColor, ...subtitleSizeStyle, ...subtitleAlignStyle }}
+                      style={{
+                        color: subtitleColor,
+                        ...subtitleSizeStyle,
+                        ...subtitleAlignStyle,
+                        ...subtitleWeightStyle,
+                        ...subtitleTrackStyle,
+                      }}
                     >
                       {theme.layout.heroSubtitle}
                     </p>
@@ -1838,7 +1874,13 @@ export default async function StoreHomePage({
                   data-edit-text
                   data-edit-field="heroSubtitle"
                   className={`mt-8 text-base sm:text-lg max-w-xl mx-auto leading-[1.9] ${fade2}`}
-                  style={{ color: subtitleColor, ...subtitleSizeStyle, ...subtitleAlignStyle }}
+                  style={{
+                    color: subtitleColor,
+                    ...subtitleSizeStyle,
+                    ...subtitleAlignStyle,
+                    ...subtitleWeightStyle,
+                    ...subtitleTrackStyle,
+                  }}
                 >
                   {theme.layout.heroSubtitle}
                 </p>

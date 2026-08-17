@@ -270,6 +270,19 @@ export interface StoreTheme {
     heroSubtitleFontScale: number;     // 副標字體 multiplier，0.6-1.8（預設 1.0）
     heroSubtitleColor: string | null;  // 副標顏色，hex；null = 用 theme.textMuted
     heroSubtitleAlign: "inherit" | "left" | "center" | "right"; // 副標對齊（inherit = 跟版型預設走，不覆寫）
+    // 副標粗細與字距。副標已經有字級 / 顏色 / 對齊三格，但這兩個從頭到尾沒有人寫過——
+    // 五處 <p> 的 inline style 只設顏色與字級，class 只有 text-base sm:text-lg 與
+    // leading-[1.9]，粗細與字距都是繼承來的（body 的 400、瀏覽器的 normal）。
+    // 各段內文早就有「內文粗細」「內文字距」可以各段獨立調，但那兩條規則落在 section 的
+    // data-body-weight / data-body-tracking 上，hero 整段沒有發那兩個 attribute（hero 的
+    // 字自成一組，不吃 section style），所以副標兩格都不通。
+    // 為什麼需要：副標常是主標下面那兩三行說明，字級只有 1rem 上下，卻是照片上唯一一段
+    // 完整句子。壓在 hero 照片上時淡文字色 + 常規字重讀起來很吃力，商家原本只能把顏色
+    // 調深（整段一起變重）或字級放大（hero 整塊變高），沒有一格只加一點重量。
+    // 反過來雜誌 / 極簡版型的副標是斜體引文，撐開字距能讓它更像引文、更不像內文。
+    // 兩個都是沒設就完全不覆寫（回 {}），既有店家算出來一模一樣。
+    heroSubtitleWeight: "normal" | "medium" | "bold"; // 副標粗細（預設 normal = 不覆寫）
+    heroSubtitleTracking: "tight" | "normal" | "wide"; // 副標字距（預設 normal = 不覆寫）
     heroHeight: "auto" | "short" | "tall" | "full"; // 預設 auto（adaptive 比例）
     // 全網站
     fontScale: number;                 // 全網站字體 multiplier 0.8-1.3（預設 1.0）
@@ -698,6 +711,16 @@ function resolveLayout(raw: unknown): StoreTheme["layout"] {
       const v = l.heroSubtitleAlign;
       if (v === "left" || v === "center" || v === "right") return v;
       return "inherit" as const;
+    })(),
+    heroSubtitleWeight: (() => {
+      const v = l.heroSubtitleWeight;
+      if (v === "normal" || v === "medium" || v === "bold") return v;
+      return "normal" as const;
+    })(),
+    heroSubtitleTracking: (() => {
+      const v = l.heroSubtitleTracking;
+      if (v === "tight" || v === "normal" || v === "wide") return v;
+      return "normal" as const;
     })(),
     heroHeight: (() => {
       const v = l.heroHeight;

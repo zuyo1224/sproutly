@@ -100,6 +100,8 @@ type EditorTheme = {
     heroSubtitleFontScale: number;
     heroSubtitleColor: string | null;
     heroSubtitleAlign: "inherit" | "left" | "center" | "right";
+    heroSubtitleWeight: "normal" | "medium" | "bold";
+    heroSubtitleTracking: "tight" | "normal" | "wide";
     heroHeight: "auto" | "short" | "tall" | "full";
     fontScale: number;
     sectionPaddingScale: "compact" | "default" | "spacious";
@@ -939,6 +941,8 @@ export function EditorWorkspace({
           heroSubtitleFontScale: t.layout.heroSubtitleFontScale,
           heroSubtitleColor: t.layout.heroSubtitleColor,
           heroSubtitleAlign: t.layout.heroSubtitleAlign,
+          heroSubtitleWeight: t.layout.heroSubtitleWeight,
+          heroSubtitleTracking: t.layout.heroSubtitleTracking,
           heroHeight: t.layout.heroHeight,
           fontScale: t.layout.fontScale,
           sectionPaddingScale: t.layout.sectionPaddingScale,
@@ -1749,6 +1753,67 @@ export function EditorWorkspace({
                   </div>
                   <p className="text-[10px] text-stone-500 mt-1">
                     預設跟版型走（Split 靠左 / Magazine · Minimal 置中 / 滿版圖跟主標）
+                  </p>
+                </Field>
+                <Field label="副標粗細">
+                  <div className="grid grid-cols-3 gap-1.5">
+                    {([
+                      { v: "normal", label: "常規" },
+                      { v: "medium", label: "中黑" },
+                      { v: "bold", label: "粗" },
+                    ] as const).map((opt) => (
+                      <button
+                        key={opt.v}
+                        type="button"
+                        onClick={() => updateLayout({ heroSubtitleWeight: opt.v })}
+                        aria-pressed={theme.layout.heroSubtitleWeight === opt.v}
+                        className={`rounded-lg border py-2 text-xs transition ${
+                          theme.layout.heroSubtitleWeight === opt.v
+                            ? "border-emerald-500 bg-emerald-50 text-emerald-900"
+                            : "border-stone-200 text-stone-600 hover:border-stone-400"
+                        }`}
+                        style={{
+                          fontWeight:
+                            opt.v === "bold" ? 700 : opt.v === "medium" ? 500 : undefined,
+                        }}
+                      >
+                        {opt.label}
+                      </button>
+                    ))}
+                  </div>
+                  <p className="text-[10px] text-stone-500 mt-1">
+                    四種版型都會套用。副標壓在 hero 照片上時，淡文字色配常規字重讀起來很吃力，
+                    加一點重量比把顏色調深不傷版面
+                  </p>
+                </Field>
+                <Field label="副標字距">
+                  <div className="grid grid-cols-3 gap-1.5">
+                    {([
+                      { v: "tight", label: "收緊" },
+                      { v: "normal", label: "預設" },
+                      { v: "wide", label: "撐開" },
+                    ] as const).map((opt) => (
+                      <button
+                        key={opt.v}
+                        type="button"
+                        onClick={() => updateLayout({ heroSubtitleTracking: opt.v })}
+                        aria-pressed={theme.layout.heroSubtitleTracking === opt.v}
+                        className={`rounded-lg border py-2 text-xs transition ${
+                          theme.layout.heroSubtitleTracking === opt.v
+                            ? "border-emerald-500 bg-emerald-50 text-emerald-900"
+                            : "border-stone-200 text-stone-600 hover:border-stone-400"
+                        }`}
+                        style={{
+                          letterSpacing:
+                            opt.v === "tight" ? "-0.02em" : opt.v === "wide" ? "0.06em" : undefined,
+                        }}
+                      >
+                        {opt.label}
+                      </button>
+                    ))}
+                  </div>
+                  <p className="text-[10px] text-stone-500 mt-1">
+                    雜誌 / 極簡版型的副標是斜體引文，撐開字距會更像引文、更不像一般內文
                   </p>
                 </Field>
               </>
