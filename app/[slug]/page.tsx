@@ -392,6 +392,17 @@ export default async function StoreHomePage({
         : accentBarVal && s?.accentBarWeight === "thick"
           ? "8px"
           : "4px";
+    // 色條深淺：只回選了哪一檔，實際的顏色在 mergeSectionStyle 算——strong 要用該段文字色、
+    // accent 要走那裡算好的 sectionAccent、soft 要從「原本那個色」再淡，三個都是那裡才有的
+    // 值。跟分隔線深淺同一個口徑：沒畫色條就不回（條不存在，深淺沒有東西可套），沒設就
+    // undefined、顏色照舊走原本那兩種寫死值，既有店家一條色條都不會變。
+    const accentBarToneVal: "soft" | "strong" | "accent" | undefined =
+      accentBarVal &&
+      (s?.accentBarTone === "soft" ||
+        s?.accentBarTone === "strong" ||
+        s?.accentBarTone === "accent")
+        ? s.accentBarTone
+        : undefined;
     // 行高：section 上的 inline lineHeight 只管得到沒有自己行高的文字，內文段落都帶
     // leading-* class（元素自己的 class 蓋掉繼承值），所以同一個值也走一份 data attribute
     // 讓 layout.tsx 針對內文元素補規則。沒設就沒 attribute、整條規則不存在。
@@ -903,6 +914,7 @@ export default async function StoreHomePage({
       headingRuleToneVal,
       accentBarVal,
       accentBarWidth,
+      accentBarToneVal,
       lineHeightVal,
       filterVal,
       bodyAlignVal,
@@ -1176,10 +1188,21 @@ export default async function StoreHomePage({
     // 而不是 theme.accent：底色剛好把主色吃掉的那一段，色條跟該段其他主色元素一起換，
     // 不會出現「同一段裡小標換了、色條還是那個看不見的顏色」。
     if (s.accentBarVal) {
-      // 粗細讀「色條粗細」那格（2 / 4 / 8px，沒設就是原本的 4px）
-      const bar = `${s.accentBarWidth} solid ${
-        s.text ? `color-mix(in srgb, ${s.text} 60%, transparent)` : sectionAccent
-      }`;
+      // 粗細讀「色條粗細」那格（2 / 4 / 8px，沒設就是原本的 4px）。
+      // 深淺讀「色條深淺」那格：strong 用該段文字色實色（跟分隔線、底線的 strong 同一個
+      // 口徑，跟字同深就一定看得見）、accent 用算好的 sectionAccent（主色被底色吃掉時已
+      // 換成該段文字色，同一道防呆）、soft 從「原本那個色」取 35%——比文字色那批預設的
+      // 六成再退一半，主色那批也淡得下來。沒設照舊走原本那兩種寫死值。
+      const barBase = s.text ? `color-mix(in srgb, ${s.text} 60%, transparent)` : sectionAccent;
+      const barColor =
+        s.accentBarToneVal === "strong"
+          ? s.text ?? theme.text
+          : s.accentBarToneVal === "accent"
+            ? sectionAccent
+            : s.accentBarToneVal === "soft"
+              ? `color-mix(in srgb, ${s.text ?? sectionAccent} 35%, transparent)`
+              : barBase;
+      const bar = `${s.accentBarWidth} solid ${barColor}`;
       if (s.accentBarVal === "left") out.borderLeft = bar;
       else out.borderRight = bar;
     }

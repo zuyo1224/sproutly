@@ -3444,6 +3444,7 @@ export function EditorWorkspace({
           const headingRuleTone = cur.headingRuleTone ?? null;
           const accentBar = cur.accentBar ?? null;
           const accentBarWeight = cur.accentBarWeight ?? null;
+          const accentBarTone = cur.accentBarTone ?? null;
           const texture = cur.texture ?? null;
           const bgGradient = cur.bgGradient ?? null;
           // 色票快選：全站主色 + 中性白/奶油/淺灰/近黑，省得每次自己對色碼
@@ -5540,6 +5541,47 @@ export function EditorWorkspace({
                       <button
                         type="button"
                         onClick={() => patch({ accentBarWeight: null })}
+                        className="text-stone-500 hover:text-stone-800 underline"
+                      >
+                        清除
+                      </button>
+                    )}
+                  </div>
+                </Field>
+              )}
+              {/* 深淺跟粗細同一個處理：沒畫色條就沒東西可調。四檔不是三檔——色條的
+                  顏色有兩種寫死值（沒設文字色＝主色、設了＝文字色六成淡），跟小標用色
+                  一樣要讓兩種能互相切換。 */}
+              {accentBar && (
+                <Field label="色條深淺">
+                  <div className="grid grid-cols-4 gap-1.5">
+                    {([
+                      { v: "normal", label: "跟預設" },
+                      { v: "soft", label: "淡" },
+                      { v: "strong", label: "同文字" },
+                      { v: "accent", label: "主色" },
+                    ] as const).map((opt) => (
+                      <button
+                        key={opt.v}
+                        type="button"
+                        onClick={() => patch({ accentBarTone: opt.v })}
+                        aria-pressed={(accentBarTone ?? "normal") === opt.v}
+                        className={`rounded-lg border py-2 text-xs transition ${
+                          (accentBarTone ?? "normal") === opt.v
+                            ? "border-emerald-500 bg-emerald-50 text-emerald-900"
+                            : "border-stone-200 text-stone-600 hover:border-stone-400"
+                        }`}
+                      >
+                        {opt.label}
+                      </button>
+                    ))}
+                  </div>
+                  <div className="mt-1.5 flex items-center justify-between text-[11px] text-stone-500">
+                    <span>粗色條太搶就淡，退成裝飾；同文字跟這段的字一樣深，主色是品牌色實色</span>
+                    {accentBarTone && (
+                      <button
+                        type="button"
+                        onClick={() => patch({ accentBarTone: null })}
                         className="text-stone-500 hover:text-stone-800 underline"
                       >
                         清除

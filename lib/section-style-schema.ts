@@ -942,6 +942,24 @@ export const SECTION_STYLE_ENUMS = {
   // 色條是實心色塊不是細線，粗細要跳一倍視覺上才算換了一檔。
   // 沒設就完全不覆寫，border 字串照舊寫 4px，既有店家一條色條都不會變。
   accentBarWeight: ["thin", "normal", "thick"],
+  // 側邊色條的深淺（normal 照原本的 / soft 淡 / strong 同該段文字色 / accent 主色實色），
+  // 同樣只在畫了色條之後才有東西可調。位置跟粗細補完之後，色條的顏色仍然是兩種寫死值：
+  // 沒設文字色的段落用全站主色、設了文字色的段落用那個色的六成淡——跟小標用色補之前
+  // 一樣，同一個控制在不同段落有兩種寫死的樣子，商家一格都動不到。
+  // 兩種都有救不了的場景。主色那批：粗細那格剛開放 8px 的粗檔，一整條實心主色帶立在段落
+  // 邊上，主色亮的店（芥黃、橘）搶得比內文還前面，商家想讓它退成安靜的裝飾沒有辦法——
+  // 「淡化」透明的是整段連字帶照片。文字色六成那批反過來：深底淺字的卡片段落想要一條
+  // 品牌色的邊條（雜誌引言框最常見的手勢），色條卻被鎖在文字色上，同一站裡別段的色條
+  // 是主色、這段不是，商家以為自己哪裡設錯了。
+  // 給四檔不給三檔，跟小標用色同一個理由：兩種寫死值要能互相切換——設了文字色的段落
+  // 要有一顆按鈕拿得到主色（accent），反方向靠 strong / soft 補（同文字、或原本那個色
+  // 再淡）。沒設文字色的段落 accent 跟預設同色，那一檔等於「照原本的」，無害。
+  // strong 用該段文字色實色，跟分隔線、底線的 strong 同一個口徑：跟字同深就一定看得見，
+  // 深底淺字自動變淺條，商家挑不出壞值。accent 走 mergeSectionStyle 算好的 sectionAccent
+  //（主色壓在自訂底色上看不見時已經換成該段文字色，同一道防呆）。soft 是原本那個色的
+  // 35%——比文字色那批的六成再退一半，主色那批也淡得下來，兩批按同一顆按鈕都有反應。
+  // 沒設就完全不覆寫，border 字串照舊，既有店家一條色條都不會變。
+  accentBarTone: ["normal", "soft", "strong", "accent"],
 } as const satisfies Record<string, readonly string[]>;
 
 // 每一欄「等同沒設定」的那個值。editor 端商家選到它就把整欄 delete 掉（少一欄存進 DB，
@@ -1028,6 +1046,7 @@ export const SECTION_STYLE_NEUTRAL_VALUES = {
   headingRuleTone: "normal",
   accentBar: "none",
   accentBarWeight: "normal",
+  accentBarTone: "normal",
 } as const satisfies Partial<{
   [K in keyof typeof SECTION_STYLE_ENUMS]: (typeof SECTION_STYLE_ENUMS)[K][number];
 }>;
