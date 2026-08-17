@@ -45,6 +45,7 @@ type EditorPayload = {
     heroTaglineAlign?: string;
     heroTaglineWeight?: string;
     heroTaglineTracking?: string;
+    heroTaglineLeading?: string;
     heroEyebrowFontScale?: number;
     heroEyebrowTracking?: string;
     heroEyebrowColor?: string | null;
@@ -53,6 +54,7 @@ type EditorPayload = {
     heroSubtitleAlign?: string;
     heroSubtitleWeight?: string;
     heroSubtitleTracking?: string;
+    heroSubtitleLeading?: string;
     heroHeight?: string;
     fontScale?: number;
     sectionPaddingScale?: string;
@@ -291,6 +293,12 @@ export async function saveEditorState(slug: string, payload: EditorPayload) {
         layoutPatch.heroTaglineTracking = v;
       }
     }
+    if (payload.layout.heroTaglineLeading !== undefined) {
+      const v = payload.layout.heroTaglineLeading;
+      if (v === "tight" || v === "normal" || v === "relaxed") {
+        layoutPatch.heroTaglineLeading = v;
+      }
+    }
     if (payload.layout.heroEyebrowFontScale !== undefined) {
       const v = payload.layout.heroEyebrowFontScale;
       if (typeof v === "number" && Number.isFinite(v)) {
@@ -343,6 +351,12 @@ export async function saveEditorState(slug: string, payload: EditorPayload) {
       const v = payload.layout.heroSubtitleTracking;
       if (v === "tight" || v === "normal" || v === "wide") {
         layoutPatch.heroSubtitleTracking = v;
+      }
+    }
+    if (payload.layout.heroSubtitleLeading !== undefined) {
+      const v = payload.layout.heroSubtitleLeading;
+      if (v === "tight" || v === "normal" || v === "relaxed") {
+        layoutPatch.heroSubtitleLeading = v;
       }
     }
     if (payload.layout.fontScale !== undefined) {

@@ -94,6 +94,7 @@ type EditorTheme = {
     heroTaglineAlign: "left" | "center" | "right";
     heroTaglineWeight: "normal" | "medium" | "bold";
     heroTaglineTracking: "tight" | "normal" | "wide";
+    heroTaglineLeading: "tight" | "normal" | "relaxed";
     heroEyebrowFontScale: number;
     heroEyebrowTracking: "tight" | "normal" | "wide";
     heroEyebrowColor: string | null;
@@ -102,6 +103,7 @@ type EditorTheme = {
     heroSubtitleAlign: "inherit" | "left" | "center" | "right";
     heroSubtitleWeight: "normal" | "medium" | "bold";
     heroSubtitleTracking: "tight" | "normal" | "wide";
+    heroSubtitleLeading: "tight" | "normal" | "relaxed";
     heroHeight: "auto" | "short" | "tall" | "full";
     fontScale: number;
     sectionPaddingScale: "compact" | "default" | "spacious";
@@ -935,6 +937,7 @@ export function EditorWorkspace({
           heroTaglineAlign: t.layout.heroTaglineAlign,
           heroTaglineWeight: t.layout.heroTaglineWeight,
           heroTaglineTracking: t.layout.heroTaglineTracking,
+          heroTaglineLeading: t.layout.heroTaglineLeading,
           heroEyebrowFontScale: t.layout.heroEyebrowFontScale,
           heroEyebrowTracking: t.layout.heroEyebrowTracking,
           heroEyebrowColor: t.layout.heroEyebrowColor,
@@ -943,6 +946,7 @@ export function EditorWorkspace({
           heroSubtitleAlign: t.layout.heroSubtitleAlign,
           heroSubtitleWeight: t.layout.heroSubtitleWeight,
           heroSubtitleTracking: t.layout.heroSubtitleTracking,
+          heroSubtitleLeading: t.layout.heroSubtitleLeading,
           heroHeight: t.layout.heroHeight,
           fontScale: t.layout.fontScale,
           sectionPaddingScale: t.layout.sectionPaddingScale,
@@ -1816,6 +1820,33 @@ export function EditorWorkspace({
                     雜誌 / 極簡版型的副標是斜體引文，撐開字距會更像引文、更不像一般內文
                   </p>
                 </Field>
+                <Field label="副標行距">
+                  <div className="grid grid-cols-3 gap-1.5">
+                    {([
+                      { v: "tight", label: "收緊" },
+                      { v: "normal", label: "預設" },
+                      { v: "relaxed", label: "舒展" },
+                    ] as const).map((opt) => (
+                      <button
+                        key={opt.v}
+                        type="button"
+                        onClick={() => updateLayout({ heroSubtitleLeading: opt.v })}
+                        aria-pressed={theme.layout.heroSubtitleLeading === opt.v}
+                        className={`rounded-lg border py-2 text-xs transition ${
+                          theme.layout.heroSubtitleLeading === opt.v
+                            ? "border-emerald-500 bg-emerald-50 text-emerald-900"
+                            : "border-stone-200 text-stone-600 hover:border-stone-400"
+                        }`}
+                      >
+                        {opt.label}
+                      </button>
+                    ))}
+                  </div>
+                  <p className="text-[10px] text-stone-500 mt-1">
+                    四種版型的副標原本都用內文段落的行距，套在只有兩三行的副標上偏鬆，
+                    那幾行會散開成一整塊灰色反而搶了主標。收緊會讓副標更像主標底下的一句話
+                  </p>
+                </Field>
               </>
             )}
             <Field label="按鈕文字">
@@ -1986,6 +2017,34 @@ export function EditorWorkspace({
               <p className="text-[10px] text-stone-500 mt-1">
                 同一行裡字跟字之間的距離。四種版型原本的字距都是照英文主標調的，中文主標的
                 筆畫會黏在一起，選撐開拉開；主標只有四五個字時撐開也能把那一行拉滿版面
+              </p>
+            </Field>
+            <Field label="主標行距">
+              <div className="grid grid-cols-3 gap-1.5">
+                {([
+                  { v: "tight", label: "收緊" },
+                  { v: "normal", label: "預設" },
+                  { v: "relaxed", label: "舒展" },
+                ] as const).map((opt) => (
+                  <button
+                    key={opt.v}
+                    type="button"
+                    onClick={() => updateLayout({ heroTaglineLeading: opt.v })}
+                    aria-pressed={theme.layout.heroTaglineLeading === opt.v}
+                    className={`rounded-lg border py-2 text-xs transition ${
+                      theme.layout.heroTaglineLeading === opt.v
+                        ? "border-emerald-500 bg-emerald-50 text-emerald-900"
+                        : "border-stone-200 text-stone-600 hover:border-stone-400"
+                    }`}
+                  >
+                    {opt.label}
+                  </button>
+                ))}
+              </div>
+              <p className="text-[10px] text-stone-500 mt-1">
+                上下兩行之間隔多遠（字距是左右、行距是上下）。中文沒有空格，一句十幾個字的
+                標語在手機上會直接斷成三行；四種版型原本的行距是照英文主標挑的，中文方塊字
+                排起來上下容易貼太近，選舒展分開。收緊則是把換行的主標收成一整塊
               </p>
             </Field>
             <Field label="Hero 高度">

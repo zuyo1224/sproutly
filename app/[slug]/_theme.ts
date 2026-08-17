@@ -248,6 +248,16 @@ export interface StoreTheme {
     // 存的是相對量不是絕對值：收緊 -0.03em、撐開 +0.05em，各加在該版型原本那個數字上，
     // 四種版型的手感差異保留下來，預設值算出來跟現在一模一樣。
     heroTaglineTracking: "tight" | "normal" | "wide"; // 主標字距（預設 normal = 不加減）
+    // 主標行距（上下兩行之間隔多遠）。四種版型各在 class 上寫死一個 leading-[]：滿版圖
+    // 1.6、split 1.15、雜誌 1.05、極簡 1.2。那四個數字是照英文主標挑的——拉丁字母有大量
+    // 上下伸出的筆畫（b d f g p y），行距壓到 1.05 還看得出行與行的界線；中文是等高方塊字，
+    // 同樣的 1.05 排出來上下兩行幾乎貼在一起。反過來滿版圖那個 1.6 是為了讓字浮在照片上
+    // 好讀，但主標一旦換行成三四行，1.6 會把整塊文字撐得比照片還高。
+    // 而主標偏偏是最容易換行的一句：中文沒有空格，商家打一句十幾個字的標語，在手機上
+    // 直接斷成三行。字級、顏色、對齊、粗細、字距都給了，行與行之間的距離是最後一個沒得動的。
+    // 存的是相對倍率不是絕對值——四種版型原本的手感差異保留，收緊 ×0.85、舒展 ×1.25，
+    // 收緊那邊壓到 1.0 就不再往下（低於 1.0 中文的字會真的疊到上一行）。預設不覆寫。
+    heroTaglineLeading: "tight" | "normal" | "relaxed"; // 主標行距（預設 normal = 不覆寫）
     // Hero eyebrow 小標（主標上面那行全大寫小字）。四種版型都會渲染它，但它是 hero 這組
     // 控制裡唯一一個字級 / 字距 / 顏色全部寫死、商家一格都動不到的元素——主標有五格、
     // 副標有三格、照片有縮放與高度，小標零格。而它是客人由上往下讀到的第一行字。
@@ -283,6 +293,14 @@ export interface StoreTheme {
     // 兩個都是沒設就完全不覆寫（回 {}），既有店家算出來一模一樣。
     heroSubtitleWeight: "normal" | "medium" | "bold"; // 副標粗細（預設 normal = 不覆寫）
     heroSubtitleTracking: "tight" | "normal" | "wide"; // 副標字距（預設 normal = 不覆寫）
+    // 副標行距。五處副標的 class 一律 leading-[1.9]，跟主標不一樣的是這裡四種版型完全
+    // 沒有差別——1.9 是「內文段落」的行距，套在只有兩三行、字級 1rem 上下的副標上偏鬆，
+    // 那兩三行會散開成一整塊灰色，反而搶了主標的位置。雜誌 / 極簡版型的副標是斜體引文，
+    // 收緊一點會更像一句引文；反過來副標寫得長、壓在照片上時，1.9 還不夠鬆。
+    // 各段內文早就有「行距」可調，但那條規則走 section 的 data-line-height，hero 整段
+    // 不發那個 attribute（跟副標粗細 / 字距同一個原因），所以副標吃不到。
+    // base 只有 1.9 一個值，所以這裡存絕對值：收緊 1.55 / 舒展 2.2。預設不覆寫。
+    heroSubtitleLeading: "tight" | "normal" | "relaxed"; // 副標行距（預設 normal = 不覆寫）
     heroHeight: "auto" | "short" | "tall" | "full"; // 預設 auto（adaptive 比例）
     // 全網站
     fontScale: number;                 // 全網站字體 multiplier 0.8-1.3（預設 1.0）
@@ -690,6 +708,11 @@ function resolveLayout(raw: unknown): StoreTheme["layout"] {
       if (v === "tight" || v === "normal" || v === "wide") return v;
       return "normal" as const;
     })(),
+    heroTaglineLeading: (() => {
+      const v = l.heroTaglineLeading;
+      if (v === "tight" || v === "normal" || v === "relaxed") return v;
+      return "normal" as const;
+    })(),
     heroEyebrowFontScale: (() => {
       const v = l.heroEyebrowFontScale;
       if (typeof v !== "number" || !Number.isFinite(v)) return 1.0;
@@ -720,6 +743,11 @@ function resolveLayout(raw: unknown): StoreTheme["layout"] {
     heroSubtitleTracking: (() => {
       const v = l.heroSubtitleTracking;
       if (v === "tight" || v === "normal" || v === "wide") return v;
+      return "normal" as const;
+    })(),
+    heroSubtitleLeading: (() => {
+      const v = l.heroSubtitleLeading;
+      if (v === "tight" || v === "normal" || v === "relaxed") return v;
       return "normal" as const;
     })(),
     heroHeight: (() => {

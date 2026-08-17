@@ -1324,6 +1324,25 @@ export default async function StoreHomePage({
           // 0.019999999999999997em 這種字串塞進 inline style。
           const taglineTracking = (baseEm: number) =>
             `${Math.round((baseEm + taglineTrackDelta) * 1000) / 1000}em`;
+          // 主標行距（四個版型共用）。四處的 class 各寫死一個 leading-[]（1.6 / 1.15 /
+          // 1.05 / 1.2），那些數字是照英文主標挑的：拉丁字母有大量上下伸出的筆畫，壓到
+          // 1.05 還看得出行的界線；中文是等高方塊字，同樣的值排出來上下兩行幾乎貼在一起。
+          // 而中文沒有空格，一句十幾個字的標語在手機上直接斷三行——主標是最容易換行的一句。
+          // 跟字距一樣存相對倍率，各版型原本的差異保留；收緊那邊壓到 1.0 就不再往下。
+          const taglineLeadingRatio =
+            theme.layout.heroTaglineLeading === "tight"
+              ? 0.85
+              : theme.layout.heroTaglineLeading === "relaxed"
+              ? 1.25
+              : 1;
+          // base 是該版型 class 上原本那個值；倍率是 1 就回 {}，class 的行距原樣留著。
+          const taglineLeadingStyle = (base: number) =>
+            taglineLeadingRatio !== 1
+              ? {
+                  lineHeight:
+                    Math.round(Math.max(1, base * taglineLeadingRatio) * 1000) / 1000,
+                }
+              : {};
           // 各版型的預設字級是 Tailwind responsive class，只在 user 動過 slider
           // 時才用 inline clamp 蓋掉（1.0x 完全不覆寫，維持原本斷點行為）；
           // min / vw / max 各版型自己帶，對齊該版型原本 class 的字級範圍。
@@ -1393,6 +1412,16 @@ export default async function StoreHomePage({
               ? { letterSpacing: "-0.02em" }
               : theme.layout.heroSubtitleTracking === "wide"
               ? { letterSpacing: "0.06em" }
+              : {};
+          // 副標行距（五處共用）。五處 class 一律 leading-[1.9]——那是內文段落的行距，套在
+          // 只有兩三行的副標上偏鬆，整段會散開成一塊灰色反而搶主標。各段內文的「行距」走
+          // section 的 data-line-height，hero 不發那個 attribute，所以副標一直吃不到。
+          // base 只有 1.9 一個值，存絕對值就夠；沒設回 {} 完全不覆寫。
+          const subtitleLeadingStyle =
+            theme.layout.heroSubtitleLeading === "tight"
+              ? { lineHeight: 1.55 }
+              : theme.layout.heroSubtitleLeading === "relaxed"
+              ? { lineHeight: 2.2 }
               : {};
 
           // Variant 1: full-image — 自適應 banner（圖 + 文字段），手機 / 桌機 同一套
@@ -1495,6 +1524,7 @@ export default async function StoreHomePage({
                               wordBreak: "keep-all",
                               overflowWrap: "break-word",
                               fontSize: `clamp(${1.5 * taglineFontScale}rem, ${3 * taglineFontScale}vw, ${3 * taglineFontScale}rem)`,
+                              ...taglineLeadingStyle(1.6),
                             }
                           : {
                               color: taglineColor,
@@ -1504,6 +1534,7 @@ export default async function StoreHomePage({
                               wordBreak: "keep-all",
                               overflowWrap: "break-word",
                               fontSize: `clamp(${1.5 * taglineFontScale}rem, ${3 * taglineFontScale}vw, ${3 * taglineFontScale}rem)`,
+                              ...taglineLeadingStyle(1.6),
                             }
                       }
                       data-edit-text
@@ -1537,6 +1568,7 @@ export default async function StoreHomePage({
                               ...subtitleAlignStyle,
                               ...subtitleWeightStyle,
                               ...subtitleTrackStyle,
+                              ...subtitleLeadingStyle,
                             }}
                           >
                             {theme.layout.heroSubtitle}
@@ -1568,6 +1600,7 @@ export default async function StoreHomePage({
                             ...subtitleAlignStyle,
                             ...subtitleWeightStyle,
                             ...subtitleTrackStyle,
+                            ...subtitleLeadingStyle,
                           }}
                         >
                           {theme.layout.heroSubtitle}
@@ -1670,6 +1703,7 @@ export default async function StoreHomePage({
                       wordBreak: "keep-all",
                       overflowWrap: "break-word",
                       ...taglineSizeStyle(1.875, 5, 3.75),
+                      ...taglineLeadingStyle(1.15),
                     }}
                     data-edit-text
                     data-edit-field="tagline"
@@ -1691,6 +1725,7 @@ export default async function StoreHomePage({
                         ...subtitleAlignStyle,
                         ...subtitleWeightStyle,
                         ...subtitleTrackStyle,
+                        ...subtitleLeadingStyle,
                       }}
                     >
                       {theme.layout.heroSubtitle}
@@ -1765,6 +1800,7 @@ export default async function StoreHomePage({
                       wordBreak: "keep-all",
                       overflowWrap: "break-word",
                       ...taglineSizeStyle(2.25, 8, 6),
+                      ...taglineLeadingStyle(1.05),
                     }}
                     data-edit-text
                     data-edit-field="tagline"
@@ -1786,6 +1822,7 @@ export default async function StoreHomePage({
                         ...subtitleAlignStyle,
                         ...subtitleWeightStyle,
                         ...subtitleTrackStyle,
+                        ...subtitleLeadingStyle,
                       }}
                     >
                       {theme.layout.heroSubtitle}
@@ -1859,6 +1896,7 @@ export default async function StoreHomePage({
                   wordBreak: "keep-all",
                   overflowWrap: "break-word",
                   ...taglineSizeStyle(1.875, 6, 3.75),
+                  ...taglineLeadingStyle(1.2),
                 }}
                 data-edit-text
                 data-edit-field="tagline"
@@ -1880,6 +1918,7 @@ export default async function StoreHomePage({
                     ...subtitleAlignStyle,
                     ...subtitleWeightStyle,
                     ...subtitleTrackStyle,
+                    ...subtitleLeadingStyle,
                   }}
                 >
                   {theme.layout.heroSubtitle}
