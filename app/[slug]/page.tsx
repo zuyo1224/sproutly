@@ -2573,10 +2573,16 @@ export default async function StoreHomePage({
                   data-edit-field="promise"
                   className="text-lg sm:text-xl md:text-2xl leading-[2] relative z-10"
                   style={{
-                    color: theme.text,
+                    // 這一段從頭到尾只有這一句話，而它三個地方寫死：顏色抓全站 theme.text
+                    // （不是 --store-text，所以這一段的「文字顏色」換了它不跟）、粗細寫死
+                    // 400、字距只讀全站那條。inline 壓得過 layout.tsx 那幾條規則，等於
+                    // 「內文粗細」「內文字距」在這一段是死的按鈕。三個都改讀變數、fallback
+                    // 回原本的值，沒設等於原樣。
+                    color: "var(--store-text)",
                     fontFamily: "var(--store-font)",
-                    fontWeight: 400,
-                    letterSpacing: "var(--store-track, 0.01em)",
+                    fontWeight: "var(--body-weight, 400)",
+                    letterSpacing:
+                      "var(--body-track, var(--store-track, 0.01em))",
                     wordBreak: "keep-all",
                     overflowWrap: "break-word",
                   }}
