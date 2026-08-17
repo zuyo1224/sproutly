@@ -98,6 +98,7 @@ type EditorTheme = {
     heroEyebrowFontScale: number;
     heroEyebrowTracking: "tight" | "normal" | "wide";
     heroEyebrowColor: string | null;
+    heroEyebrowCase: "upper" | "capitalize" | "none";
     heroSubtitleFontScale: number;
     heroSubtitleColor: string | null;
     heroSubtitleAlign: "inherit" | "left" | "center" | "right";
@@ -941,6 +942,7 @@ export function EditorWorkspace({
           heroEyebrowFontScale: t.layout.heroEyebrowFontScale,
           heroEyebrowTracking: t.layout.heroEyebrowTracking,
           heroEyebrowColor: t.layout.heroEyebrowColor,
+          heroEyebrowCase: t.layout.heroEyebrowCase,
           heroSubtitleFontScale: t.layout.heroSubtitleFontScale,
           heroSubtitleColor: t.layout.heroSubtitleColor,
           heroSubtitleAlign: t.layout.heroSubtitleAlign,
@@ -1669,6 +1671,33 @@ export function EditorWorkspace({
               <p className="text-[10px] text-stone-500 mt-1">
                 原本用店的主色，那是整頁最搶眼的顏色押在最小的一行字上，壓在照片上容易糊；
                 雜誌版型原本用淡文字色，設了以後兩種版型一起走這個色
+              </p>
+            </Field>
+            <Field label="小標大小寫">
+              <div className="grid grid-cols-3 gap-1.5">
+                {([
+                  { v: "upper", label: "全大寫", tt: "uppercase" },
+                  { v: "capitalize", label: "字首大寫", tt: "capitalize" },
+                  { v: "none", label: "照原樣", tt: "none" },
+                ] as const).map((opt) => (
+                  <button
+                    key={opt.v}
+                    type="button"
+                    onClick={() => updateLayout({ heroEyebrowCase: opt.v })}
+                    aria-pressed={theme.layout.heroEyebrowCase === opt.v}
+                    className={`rounded-lg border py-2 text-xs transition ${
+                      theme.layout.heroEyebrowCase === opt.v
+                        ? "border-emerald-500 bg-emerald-50 text-emerald-900"
+                        : "border-stone-200 text-stone-600 hover:border-stone-400"
+                    }`}
+                  >
+                    {opt.label}
+                  </button>
+                ))}
+              </div>
+              <p className="text-[10px] text-stone-500 mt-1">
+                小標打中文的話這格沒有作用（中文沒有大小寫）。打英文才看得出來：原本一律轉成
+                全大寫，「Est. 2019」會變 EST. 2019、英文店名也會被拉大寫，選照原樣就照你打的顯示
               </p>
             </Field>
             <Field label="Tagline（主標）">

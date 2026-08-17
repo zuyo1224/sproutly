@@ -49,6 +49,7 @@ type EditorPayload = {
     heroEyebrowFontScale?: number;
     heroEyebrowTracking?: string;
     heroEyebrowColor?: string | null;
+    heroEyebrowCase?: string;
     heroSubtitleFontScale?: number;
     heroSubtitleColor?: string | null;
     heroSubtitleAlign?: string;
@@ -318,6 +319,12 @@ export async function saveEditorState(slug: string, payload: EditorPayload) {
       } else {
         const hex = normalizeHexColor(v);
         if (hex) layoutPatch.heroEyebrowColor = hex;
+      }
+    }
+    if (payload.layout.heroEyebrowCase !== undefined) {
+      const v = payload.layout.heroEyebrowCase;
+      if (v === "upper" || v === "capitalize" || v === "none") {
+        layoutPatch.heroEyebrowCase = v;
       }
     }
     if (payload.layout.heroSubtitleFontScale !== undefined) {

@@ -1377,6 +1377,15 @@ export default async function StoreHomePage({
           // 沒設就各自 fallback 回原本寫死的那個色（三處主色、雜誌那條 metadata 淡文字色）
           const eyebrowAccentColor = theme.layout.heroEyebrowColor ?? theme.accent;
           const eyebrowMutedColor = theme.layout.heroEyebrowColor ?? theme.textMuted;
+          // 小標大小寫。五處 class 一律 uppercase，對中文是空的（方塊字沒有大小寫），
+          // 對英文則是把商家打的字改掉：年份字樣、英文店名的大小寫通常是招牌的一部分。
+          // inline textTransform 壓得過 class；預設 upper 回 {}，class 原樣留著。
+          const eyebrowCaseStyle: { textTransform?: "none" | "capitalize" } =
+            theme.layout.heroEyebrowCase === "none"
+              ? { textTransform: "none" }
+              : theme.layout.heroEyebrowCase === "capitalize"
+              ? { textTransform: "capitalize" }
+              : {};
           // 副標自訂顏色 / 字級（split / magazine / minimal 共用）
           const subtitleColor =
             theme.layout.heroSubtitleColor ?? theme.textMuted;
@@ -1488,6 +1497,7 @@ export default async function StoreHomePage({
                           color: eyebrowAccentColor,
                           ...eyebrowSizeStyle,
                           ...eyebrowTrackStyle(0.4),
+                          ...eyebrowCaseStyle,
                         }}
                       >
                         {theme.layout.heroEyebrow}
@@ -1502,6 +1512,7 @@ export default async function StoreHomePage({
                           color: eyebrowAccentColor,
                           ...eyebrowSizeStyle,
                           ...eyebrowTrackStyle(0.4),
+                          ...eyebrowCaseStyle,
                         }}
                       >
                         {theme.layout.heroEyebrow}
@@ -1688,6 +1699,7 @@ export default async function StoreHomePage({
                         color: eyebrowAccentColor,
                         ...eyebrowSizeStyle,
                         ...eyebrowTrackStyle(0.4),
+                        ...eyebrowCaseStyle,
                       }}
                     >
                       {theme.layout.heroEyebrow}
@@ -1775,6 +1787,7 @@ export default async function StoreHomePage({
                       color: eyebrowMutedColor,
                       ...eyebrowSizeStyle,
                       ...eyebrowTrackStyle(0.32),
+                      ...eyebrowCaseStyle,
                     }}
                   >
                     <span data-edit-text data-edit-field="heroEyebrow">
@@ -1881,6 +1894,7 @@ export default async function StoreHomePage({
                     color: eyebrowAccentColor,
                     ...eyebrowSizeStyle,
                     ...eyebrowTrackStyle(0.4),
+                    ...eyebrowCaseStyle,
                   }}
                 >
                   {theme.layout.heroEyebrow}

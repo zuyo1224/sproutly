@@ -277,6 +277,14 @@ export interface StoreTheme {
     heroEyebrowFontScale: number;      // 小標字體 multiplier，0.6-1.8（預設 1.0 = 不覆寫）
     heroEyebrowTracking: "tight" | "normal" | "wide"; // 小標字距（預設 normal = 不加減）
     heroEyebrowColor: string | null;   // 小標顏色，hex；null = 各版型原本的值（主色 / 淡文字色）
+    // 4. 大小寫。五處 class 一律 uppercase，跟 10px、0.4em 是同一個設計決定的三個面向
+    //    （全大寫 + 極小 + 撐開字距 = 編輯設計裡的 eyebrow 標準寫法），但前面兩個都補了控制、
+    //    這個沒有。對中文完全無效（方塊字沒有大小寫，強制轉換不會有任何變化），對英文則是
+    //    寫死的一種選擇——商家打「Est. 2019」「Since 1998」這種年份字樣，全大寫會變成
+    //    「EST. 2019」；打自己的英文店名（Plantae Market）也會被拉成 PLANTAE MARKET，
+    //    而店名的大小寫通常是 logo 的一部分，被改掉等於招牌被改。商家原本沒有任何一格
+    //    能把它關掉——連改字都沒用，因為轉換發生在畫面上不在資料裡（輸入框裡還是小寫）。
+    heroEyebrowCase: "upper" | "capitalize" | "none"; // 小標大小寫（預設 upper = 原本的 uppercase）
     heroSubtitleFontScale: number;     // 副標字體 multiplier，0.6-1.8（預設 1.0）
     heroSubtitleColor: string | null;  // 副標顏色，hex；null = 用 theme.textMuted
     heroSubtitleAlign: "inherit" | "left" | "center" | "right"; // 副標對齊（inherit = 跟版型預設走，不覆寫）
@@ -724,6 +732,11 @@ function resolveLayout(raw: unknown): StoreTheme["layout"] {
       return "normal" as const;
     })(),
     heroEyebrowColor: normalizeHexColor(l.heroEyebrowColor),
+    heroEyebrowCase: (() => {
+      const v = l.heroEyebrowCase;
+      if (v === "upper" || v === "capitalize" || v === "none") return v;
+      return "upper" as const;
+    })(),
     heroSubtitleFontScale: (() => {
       const v = l.heroSubtitleFontScale;
       if (typeof v !== "number" || !Number.isFinite(v)) return 1.0;
