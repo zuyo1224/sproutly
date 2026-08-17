@@ -363,6 +363,14 @@ export default async function StoreHomePage({
       (s?.dividerTone === "strong" || s?.dividerTone === "accent")
         ? s.dividerTone
         : undefined;
+    // 分隔線線型：跟深淺同一個口徑——沒畫線就不回（線不存在，線型沒有東西可套），沒設或
+    // 選實線就 undefined、border 字串照舊寫 solid，既有店家一條線都不會變。
+    const dividerStyleVal: "dashed" | "dotted" | undefined =
+      s?.divider &&
+      s.divider !== "none" &&
+      (s?.dividerStyle === "dashed" || s?.dividerStyle === "dotted")
+        ? s.dividerStyle
+        : undefined;
     // 側邊色條：只回哪一邊，粗細與顏色在 mergeSectionStyle 一起算（顏色要跟外框、
     // 分隔線同一份口徑，分開算就會出現同一段裡三種線各一個顏色）。
     const accentBarVal: "left" | "right" | undefined =
@@ -854,6 +862,7 @@ export default async function StoreHomePage({
       divider: s?.divider ?? "none",
       dividerWidth,
       dividerToneVal,
+      dividerStyleVal,
       headingScaleVal,
       minHeightOverride: minH,
       outlineOverride: outline,
@@ -1097,11 +1106,14 @@ export default async function StoreHomePage({
         : s.dividerToneVal === "accent"
           ? sectionAccent
           : lineColor;
+    // 線型讀「分隔線線型」那格（沒設就是原本的實線）。虛線與點線是給拿這條線當裝飾的
+    // ——實線的語氣是硬斷點，調性軟的店（手作、盆栽）要的是有斷點但不打斷的那種線。
+    const dividerStyle = s.dividerStyleVal ?? "solid";
     if (s.divider === "top" || s.divider === "both") {
-      out.borderTop = `${dividerWidth} solid ${dividerColor}`;
+      out.borderTop = `${dividerWidth} ${dividerStyle} ${dividerColor}`;
     }
     if (s.divider === "bottom" || s.divider === "both") {
-      out.borderBottom = `${dividerWidth} solid ${dividerColor}`;
+      out.borderBottom = `${dividerWidth} ${dividerStyle} ${dividerColor}`;
     }
     if (s.outlineOverride) {
       out.outline = `${s.outlineOverride.width} solid ${lineColor}`;

@@ -3374,6 +3374,7 @@ export function EditorWorkspace({
           const divider = cur.divider ?? "none";
           const dividerWeight = cur.dividerWeight ?? null;
           const dividerTone = cur.dividerTone ?? null;
+          const dividerStyle = cur.dividerStyle ?? null;
           const headingScale = cur.headingScale ?? null;
           const minHeight = cur.minHeight ?? null;
           const contentAlign = cur.contentAlign ?? null;
@@ -4944,6 +4945,46 @@ export function EditorWorkspace({
                       <button
                         type="button"
                         onClick={() => patch({ dividerTone: null })}
+                        className="text-stone-500 hover:text-stone-800 underline"
+                      >
+                        清除
+                      </button>
+                    )}
+                  </div>
+                </Field>
+              )}
+              {/* 線型跟粗細、深淺同一個道理：沒畫線就沒東西可調。那三格調完線還是只有
+                  一種樣子——實線；拿線當裝飾的（深淺那格的主色就是為這個開的）要的是
+                  虛線點線那種軟一點的線。 */}
+              {divider !== "none" && (
+                <Field label="分隔線線型">
+                  <div className="grid grid-cols-3 gap-1.5">
+                    {([
+                      { v: "solid", label: "實線" },
+                      { v: "dashed", label: "虛線" },
+                      { v: "dotted", label: "點線" },
+                    ] as const).map((opt) => (
+                      <button
+                        key={opt.v}
+                        type="button"
+                        onClick={() => patch({ dividerStyle: opt.v })}
+                        aria-pressed={(dividerStyle ?? "solid") === opt.v}
+                        className={`rounded-lg border py-2 text-xs transition ${
+                          (dividerStyle ?? "solid") === opt.v
+                            ? "border-emerald-500 bg-emerald-50 text-emerald-900"
+                            : "border-stone-200 text-stone-600 hover:border-stone-400"
+                        }`}
+                      >
+                        {opt.label}
+                      </button>
+                    ))}
+                  </div>
+                  <div className="mt-1.5 flex items-center justify-between text-[11px] text-stone-500">
+                    <span>實線像明確的分界，虛線點線比較軟，拿線當裝飾時用</span>
+                    {dividerStyle && (
+                      <button
+                        type="button"
+                        onClick={() => patch({ dividerStyle: null })}
                         className="text-stone-500 hover:text-stone-800 underline"
                       >
                         清除

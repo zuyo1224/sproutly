@@ -242,6 +242,19 @@ export const SECTION_STYLE_ENUMS = {
   // 只動分隔線不動外框與標題底線：三種線共用同一個淡色是預設的整體感，商家按這一格的
   // 意思是「這條要跳出來」，把另外兩條一起加深反而是把對比又抹平。
   dividerTone: ["normal", "strong", "accent"],
+  // 分隔線的線型（solid 照原本的實線 / dashed 虛線 / dotted 點線），同樣只在畫了線之後
+  // 才有東西可調。位置、粗細、深淺都補過了，這三格調完的線仍然只有一種樣子：一條實線。
+  // 實線的語氣是「到此為止」——把商品區跟慢讀區隔開那種硬斷點用它是對的，但同一條線
+  // 商家也拿來做另一件事：段落開頭壓一條主色細線當裝飾（深淺那格的 accent 就是為這個
+  // 開的）。裝飾線用實線常常太硬，雜誌與手作感的網站慣用的是虛線、點線那種「有斷點但
+  // 不打斷」的線——賣手作、盆栽這類調性軟的店，一條硬實線壓在段落之間反而跟整站的
+  // 氣質打架，商家原本沒有一格動得到。
+  // 只給三檔：CSS 還有 double、groove 那幾種，但 double 要 3px 以上才畫得出來（1px 時
+  // 瀏覽器直接畫成實線，等於一顆按了沒反應的按鈕）、groove 那組是立體浮雕效果，跟站上
+  // 任何一段的語彙都不搭。dotted 配粗線會變成一排圓點，那不是 bug 是這個線型本來的樣子
+  //（配上主色就是手作感網站常見的圓點裝飾線）。
+  // 沒設就完全不覆寫，border 字串跟以前一字不差，既有店家一條線都不會變。
+  dividerStyle: ["solid", "dashed", "dotted"],
   // 該 section 標題字級（small 0.85x / default 1x / large 1.25x）
   headingScale: ["small", "default", "large"],
   // 該 section 最低高度（auto 不限制 / tall 80vh / fullscreen 100vh）
@@ -930,6 +943,7 @@ export const SECTION_STYLE_NEUTRAL_VALUES = {
   divider: "none",
   dividerWeight: "normal",
   dividerTone: "normal",
+  dividerStyle: "solid",
   mediaRadius: "none",
   mediaAspect: "auto",
   mediaFocus: "auto",
