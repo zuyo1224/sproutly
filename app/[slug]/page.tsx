@@ -344,6 +344,15 @@ export default async function StoreHomePage({
       headingRuleVal && (s?.headingRuleWeight === "thin" || s?.headingRuleWeight === "thick")
         ? s.headingRuleWeight
         : undefined;
+    // 分隔線粗細：翻成實際的線寬直接餵給 inline style（線本身是 section 的 borderTop /
+    // borderBottom，不是偽元素，所以不必像標題底線那樣繞 data attribute）。沒畫線的段落
+    // 一律回預設值，算出來的 border 字串跟以前一模一樣，既有店家一條線都不會變。
+    const dividerWidth =
+      s?.divider && s.divider !== "none" && s?.dividerWeight === "medium"
+        ? "2px"
+        : s?.divider && s.divider !== "none" && s?.dividerWeight === "thick"
+          ? "4px"
+          : "1px";
     // 側邊色條：只回哪一邊，粗細與顏色在 mergeSectionStyle 一起算（顏色要跟外框、
     // 分隔線同一份口徑，分開算就會出現同一段裡三種線各一個顏色）。
     const accentBarVal: "left" | "right" | undefined =
@@ -821,6 +830,7 @@ export default async function StoreHomePage({
       align: s?.headingAlign ?? "center",
       padOverride: padVar,
       divider: s?.divider ?? "none",
+      dividerWidth,
       headingScaleVal,
       minHeightOverride: minH,
       outlineOverride: outline,
@@ -1050,11 +1060,14 @@ export default async function StoreHomePage({
     const lineColor = s.text
       ? `color-mix(in srgb, ${s.text} 28%, transparent)`
       : theme.border;
+    // 線寬讀「分隔線粗細」那格算好的值（沒設就是原本的 1px）。外框與標題底線各有自己的
+    // 粗細來源，三種線刻意不共用一個值——同一段裡商家常常只想讓其中一條變明顯。
+    const dividerWidth = s.dividerWidth ?? "1px";
     if (s.divider === "top" || s.divider === "both") {
-      out.borderTop = `1px solid ${lineColor}`;
+      out.borderTop = `${dividerWidth} solid ${lineColor}`;
     }
     if (s.divider === "bottom" || s.divider === "both") {
-      out.borderBottom = `1px solid ${lineColor}`;
+      out.borderBottom = `${dividerWidth} solid ${lineColor}`;
     }
     if (s.outlineOverride) {
       out.outline = `${s.outlineOverride.width} solid ${lineColor}`;

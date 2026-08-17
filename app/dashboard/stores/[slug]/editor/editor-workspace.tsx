@@ -3310,6 +3310,7 @@ export function EditorWorkspace({
           const textCol = cur.textColor ?? null;
           const pad = cur.paddingScale ?? null;
           const divider = cur.divider ?? "none";
+          const dividerWeight = cur.dividerWeight ?? null;
           const headingScale = cur.headingScale ?? null;
           const minHeight = cur.minHeight ?? null;
           const contentAlign = cur.contentAlign ?? null;
@@ -4809,6 +4810,45 @@ export function EditorWorkspace({
                   在這段加細線分隔（顏色跟著全網站邊框色）
                 </p>
               </Field>
+              {/* 粗細只在真的畫了線之後才有東西可調，設成無的段落按了不會有任何反應——
+                  跟底線粗細同一個處理，設了線才長出來。 */}
+              {divider !== "none" && (
+                <Field label="分隔線粗細">
+                  <div className="grid grid-cols-3 gap-1.5">
+                    {([
+                      { v: "normal", label: "跟預設" },
+                      { v: "medium", label: "中" },
+                      { v: "thick", label: "粗" },
+                    ] as const).map((opt) => (
+                      <button
+                        key={opt.v}
+                        type="button"
+                        onClick={() => patch({ dividerWeight: opt.v })}
+                        aria-pressed={(dividerWeight ?? "normal") === opt.v}
+                        className={`rounded-lg border py-2 text-xs transition ${
+                          (dividerWeight ?? "normal") === opt.v
+                            ? "border-emerald-500 bg-emerald-50 text-emerald-900"
+                            : "border-stone-200 text-stone-600 hover:border-stone-400"
+                        }`}
+                      >
+                        {opt.label}
+                      </button>
+                    ))}
+                  </div>
+                  <div className="mt-1.5 flex items-center justify-between text-[11px] text-stone-500">
+                    <span>預設那條又細又淡，常常看起來像沒畫；段落之間要斷得明確就調粗</span>
+                    {dividerWeight && (
+                      <button
+                        type="button"
+                        onClick={() => patch({ dividerWeight: null })}
+                        className="text-stone-500 hover:text-stone-800 underline"
+                      >
+                        清除
+                      </button>
+                    )}
+                  </div>
+                </Field>
+              )}
               <div className="mt-3 pt-3 border-t border-stone-200">
                 <p className="text-[10px] font-medium tracking-[0.3em] uppercase text-stone-500">
                   進階

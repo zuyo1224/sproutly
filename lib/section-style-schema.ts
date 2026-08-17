@@ -215,6 +215,18 @@ export const SECTION_STYLE_ENUMS = {
   eyebrowCase: ["upper", "capitalize", "none"],
   // 分隔線（上 / 下 / 上下都有 / 沒有）
   divider: ["none", "top", "bottom", "both"],
+  // 分隔線的粗細（normal 照原本的 1px / medium 2px / thick 4px），只在上面那欄畫了線之後
+  // 才有東西可調。上一欄只決定線畫在哪一邊，粗細一直是全站寫死的一個 1px，顏色又是配著
+  // 全站底色挑的淺灰（或該段自訂文字色算出來的三成濃度）——細加上淡兩件事疊起來，那條線
+  // 在一般螢幕上就是一道幾乎看不見的痕跡，商家選了「上下都有」常常以為這個控制是壞的。
+  // 反過來也有：段落之間想做出明確的斷點（把慢讀區跟商品區隔開那種），1px 撐不起來。
+  // 商家原本沒有一格動得到——「外框」走的是 outline、「標題底線」畫在 h2 的偽元素上、
+  // 「側邊色條」是左右緣，三個都不是這條線；唯一能讓它變明顯的歪招是把整段的文字色改深，
+  // 那會連整段的字一起換掉。
+  // 只給三檔不給滑桿、且跟標題底線同一套值（1 / 2 / 4px）：線的粗細在螢幕上差半格根本畫
+  // 不出來（非整數的線會被瀏覽器抹成灰邊），而且同一段裡兩種線用同一組級距才配得起來。
+  // 最細的那檔就是現況 1px，所以三檔是 normal / medium / thick，沒有比預設更細的一檔。
+  dividerWeight: ["normal", "medium", "thick"],
   // 該 section 標題字級（small 0.85x / default 1x / large 1.25x）
   headingScale: ["small", "default", "large"],
   // 該 section 最低高度（auto 不限制 / tall 80vh / fullscreen 100vh）
@@ -874,6 +886,7 @@ export const SECTION_STYLE_NEUTRAL_VALUES = {
   eyebrowCase: "upper",
   hideOn: "none",
   divider: "none",
+  dividerWeight: "normal",
   mediaRadius: "none",
   mediaAspect: "auto",
   mediaFocus: "auto",
