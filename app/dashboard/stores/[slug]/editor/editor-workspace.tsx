@@ -3446,6 +3446,7 @@ export function EditorWorkspace({
           const accentBar = cur.accentBar ?? null;
           const accentBarWeight = cur.accentBarWeight ?? null;
           const accentBarTone = cur.accentBarTone ?? null;
+          const accentBarStyle = cur.accentBarStyle ?? null;
           const texture = cur.texture ?? null;
           const bgGradient = cur.bgGradient ?? null;
           // 色票快選：全站主色 + 中性白/奶油/淺灰/近黑，省得每次自己對色碼
@@ -5622,6 +5623,45 @@ export function EditorWorkspace({
                       <button
                         type="button"
                         onClick={() => patch({ accentBarTone: null })}
+                        className="text-stone-500 hover:text-stone-800 underline"
+                      >
+                        清除
+                      </button>
+                    )}
+                  </div>
+                </Field>
+              )}
+              {/* 線型跟粗細、深淺同一個處理：沒畫色條就沒東西可調。三條線的線型這格
+                  是最後補上的一條——色條偏偏最當裝飾用，實心帶再淡還是一塊面。 */}
+              {accentBar && (
+                <Field label="色條線型">
+                  <div className="grid grid-cols-3 gap-1.5">
+                    {([
+                      { v: "solid", label: "實線" },
+                      { v: "dashed", label: "虛線" },
+                      { v: "dotted", label: "點線" },
+                    ] as const).map((opt) => (
+                      <button
+                        key={opt.v}
+                        type="button"
+                        onClick={() => patch({ accentBarStyle: opt.v })}
+                        aria-pressed={(accentBarStyle ?? "solid") === opt.v}
+                        className={`rounded-lg border py-2 text-xs transition ${
+                          (accentBarStyle ?? "solid") === opt.v
+                            ? "border-emerald-500 bg-emerald-50 text-emerald-900"
+                            : "border-stone-200 text-stone-600 hover:border-stone-400"
+                        }`}
+                      >
+                        {opt.label}
+                      </button>
+                    ))}
+                  </div>
+                  <div className="mt-1.5 flex items-center justify-between text-[11px] text-stone-500">
+                    <span>實線是一塊面，虛線點線有孔隙、當裝飾更輕；粗的點線會變一排圓點</span>
+                    {accentBarStyle && (
+                      <button
+                        type="button"
+                        onClick={() => patch({ accentBarStyle: null })}
                         className="text-stone-500 hover:text-stone-800 underline"
                       >
                         清除

@@ -970,6 +970,17 @@ export const SECTION_STYLE_ENUMS = {
   // 35%——比文字色那批的六成再退一半，主色那批也淡得下來，兩批按同一顆按鈕都有反應。
   // 沒設就完全不覆寫，border 字串照舊，既有店家一條色條都不會變。
   accentBarTone: ["normal", "soft", "strong", "accent"],
+  // 側邊色條的線型（solid 照原本的實線 / dashed 虛線 / dotted 點線），同樣只在畫了色條
+  // 之後才有東西可調。三種線這下位置、粗細、深淺全都補齊了，線型卻只補到兩條：分隔線
+  // 與標題底線都開了虛線點線，色條還是只有實心一種。而色條偏偏是三條裡最當裝飾用的
+  // ——它本來就不隔開誰，畫在段落邊上就是雜誌引言框那個手勢，深淺那格特地開了「淡」
+  // 檔讓它退成裝飾，退了顏色卻退不了質地：一整條實心帶再淡還是一塊面，虛線點線那種
+  // 有孔隙的線才真的輕。粗細那格反方向也一樣卡：8px 的粗檔配上點線是一排圓珠、配上
+  // 虛線是一節一節的短棒——手作感網站拿來鑲頁緣的那種裝飾邊，實心檔做不出來。
+  // 三檔跟分隔線、底線的線型一字不差，同一段裡三條線才配得起來。色條本來就畫在
+  // borderLeft / borderRight 上，換線型只是 border 字串裡 solid 換個字，不用像底線那樣
+  // 從 background 改道 border。沒設就照舊寫 solid，既有店家一條色條都不會變。
+  accentBarStyle: ["solid", "dashed", "dotted"],
 } as const satisfies Record<string, readonly string[]>;
 
 // 每一欄「等同沒設定」的那個值。editor 端商家選到它就把整欄 delete 掉（少一欄存進 DB，
@@ -1058,6 +1069,7 @@ export const SECTION_STYLE_NEUTRAL_VALUES = {
   accentBar: "none",
   accentBarWeight: "normal",
   accentBarTone: "normal",
+  accentBarStyle: "solid",
 } as const satisfies Partial<{
   [K in keyof typeof SECTION_STYLE_ENUMS]: (typeof SECTION_STYLE_ENUMS)[K][number];
 }>;

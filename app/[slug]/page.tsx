@@ -410,6 +410,13 @@ export default async function StoreHomePage({
         s?.accentBarTone === "accent")
         ? s.accentBarTone
         : undefined;
+    // 色條線型：跟分隔線線型同一個口徑——沒畫色條就不回（條不存在，線型沒有東西可套），
+    // 沒設或選實線就 undefined、border 字串照舊寫 solid，既有店家一條色條都不會變。
+    const accentBarStyleVal: "dashed" | "dotted" | undefined =
+      accentBarVal &&
+      (s?.accentBarStyle === "dashed" || s?.accentBarStyle === "dotted")
+        ? s.accentBarStyle
+        : undefined;
     // 行高：section 上的 inline lineHeight 只管得到沒有自己行高的文字，內文段落都帶
     // leading-* class（元素自己的 class 蓋掉繼承值），所以同一個值也走一份 data attribute
     // 讓 layout.tsx 針對內文元素補規則。沒設就沒 attribute、整條規則不存在。
@@ -923,6 +930,7 @@ export default async function StoreHomePage({
       accentBarVal,
       accentBarWidth,
       accentBarToneVal,
+      accentBarStyleVal,
       lineHeightVal,
       filterVal,
       bodyAlignVal,
@@ -1210,7 +1218,10 @@ export default async function StoreHomePage({
             : s.accentBarToneVal === "soft"
               ? `color-mix(in srgb, ${s.text ?? sectionAccent} 35%, transparent)`
               : barBase;
-      const bar = `${s.accentBarWidth} solid ${barColor}`;
+      // 線型讀「色條線型」那格（沒設就是原本的實線）。虛線點線是給拿色條當裝飾的——
+      // 實心帶再淡還是一塊面，有孔隙的線才真的退得成裝飾；粗檔配點線就是一排圓珠，
+      // 那不是 bug，是手作感網站鑲頁緣那種裝飾邊本來的樣子。
+      const bar = `${s.accentBarWidth} ${s.accentBarStyleVal ?? "solid"} ${barColor}`;
       if (s.accentBarVal === "left") out.borderLeft = bar;
       else out.borderRight = bar;
     }
