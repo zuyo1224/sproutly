@@ -94,6 +94,9 @@ type EditorTheme = {
     heroTaglineAlign: "left" | "center" | "right";
     heroTaglineWeight: "normal" | "medium" | "bold";
     heroTaglineTracking: "tight" | "normal" | "wide";
+    heroEyebrowFontScale: number;
+    heroEyebrowTracking: "tight" | "normal" | "wide";
+    heroEyebrowColor: string | null;
     heroSubtitleFontScale: number;
     heroSubtitleColor: string | null;
     heroSubtitleAlign: "inherit" | "left" | "center" | "right";
@@ -930,6 +933,9 @@ export function EditorWorkspace({
           heroTaglineAlign: t.layout.heroTaglineAlign,
           heroTaglineWeight: t.layout.heroTaglineWeight,
           heroTaglineTracking: t.layout.heroTaglineTracking,
+          heroEyebrowFontScale: t.layout.heroEyebrowFontScale,
+          heroEyebrowTracking: t.layout.heroEyebrowTracking,
+          heroEyebrowColor: t.layout.heroEyebrowColor,
           heroSubtitleFontScale: t.layout.heroSubtitleFontScale,
           heroSubtitleColor: t.layout.heroSubtitleColor,
           heroSubtitleAlign: t.layout.heroSubtitleAlign,
@@ -1571,6 +1577,91 @@ export function EditorWorkspace({
                 placeholder="Est. 2019 / Issue 03..."
                 className="w-full rounded-lg border border-stone-200 px-3 py-2 text-sm"
               />
+            </Field>
+            <Field label={`小標字體大小（${theme.layout.heroEyebrowFontScale.toFixed(2)}x）`}>
+              <input
+                type="range"
+                min={HERO_FONT_SCALE_MIN}
+                max={HERO_FONT_SCALE_MAX}
+                step="0.05"
+                value={theme.layout.heroEyebrowFontScale}
+                onChange={(e) =>
+                  updateLayout({ heroEyebrowFontScale: parseFloat(e.target.value) })
+                }
+                className="w-full"
+              />
+              <div className="flex justify-between text-[10px] text-stone-500">
+                <span>小</span>
+                <span>標準 1.0x</span>
+                <span>大</span>
+              </div>
+              <p className="text-[10px] text-stone-500 mt-1">
+                四種版型都會套用。原本一律 10px，那是照英文大寫字挑的——中文小標在 10px
+                上只剩一團墨，手機看更明顯
+              </p>
+            </Field>
+            <Field label="小標字距">
+              <div className="grid grid-cols-3 gap-1.5">
+                {([
+                  { v: "tight", label: "收緊" },
+                  { v: "normal", label: "預設" },
+                  { v: "wide", label: "撐開" },
+                ] as const).map((opt) => (
+                  <button
+                    key={opt.v}
+                    type="button"
+                    onClick={() => updateLayout({ heroEyebrowTracking: opt.v })}
+                    aria-pressed={theme.layout.heroEyebrowTracking === opt.v}
+                    className={`rounded-lg border py-2 text-xs transition ${
+                      theme.layout.heroEyebrowTracking === opt.v
+                        ? "border-emerald-500 bg-emerald-50 text-emerald-900"
+                        : "border-stone-200 text-stone-600 hover:border-stone-400"
+                    }`}
+                    style={{
+                      letterSpacing:
+                        opt.v === "tight" ? "0.05em" : opt.v === "wide" ? "0.3em" : "0.18em",
+                    }}
+                  >
+                    {opt.label}
+                  </button>
+                ))}
+              </div>
+              <p className="text-[10px] text-stone-500 mt-1">
+                原本每個字之間空 0.4em，那是給英文全大寫用的；中文方塊字本來就自帶留白，
+                四個字的小標會散成四個不相干的字，選收緊會靠回來
+              </p>
+            </Field>
+            <Field label="小標顏色">
+              <div className="flex items-center gap-2">
+                <input
+                  type="color"
+                  value={theme.layout.heroEyebrowColor ?? theme.accent}
+                  onChange={(e) => updateLayout({ heroEyebrowColor: e.target.value })}
+                  className="h-8 w-12 rounded border border-stone-200"
+                />
+                <input
+                  type="text"
+                  value={theme.layout.heroEyebrowColor ?? ""}
+                  onChange={(e) =>
+                    updateLayout({ heroEyebrowColor: e.target.value || null })
+                  }
+                  placeholder="預設用主色"
+                  className="flex-1 rounded-lg border border-stone-200 px-3 py-2 text-sm font-mono"
+                />
+                {theme.layout.heroEyebrowColor && (
+                  <button
+                    type="button"
+                    onClick={() => updateLayout({ heroEyebrowColor: null })}
+                    className="text-xs text-stone-500 hover:text-stone-800 underline"
+                  >
+                    清除
+                  </button>
+                )}
+              </div>
+              <p className="text-[10px] text-stone-500 mt-1">
+                原本用店的主色，那是整頁最搶眼的顏色押在最小的一行字上，壓在照片上容易糊；
+                雜誌版型原本用淡文字色，設了以後兩種版型一起走這個色
+              </p>
             </Field>
             <Field label="Tagline（主標）">
               <textarea

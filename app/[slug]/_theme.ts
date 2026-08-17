@@ -248,6 +248,25 @@ export interface StoreTheme {
     // 存的是相對量不是絕對值：收緊 -0.03em、撐開 +0.05em，各加在該版型原本那個數字上，
     // 四種版型的手感差異保留下來，預設值算出來跟現在一模一樣。
     heroTaglineTracking: "tight" | "normal" | "wide"; // 主標字距（預設 normal = 不加減）
+    // Hero eyebrow 小標（主標上面那行全大寫小字）。四種版型都會渲染它，但它是 hero 這組
+    // 控制裡唯一一個字級 / 字距 / 顏色全部寫死、商家一格都動不到的元素——主標有五格、
+    // 副標有三格、照片有縮放與高度，小標零格。而它是客人由上往下讀到的第一行字。
+    // 三個寫死值各有各的問題：
+    // 1. 字級 10px（四處都是 text-[10px]）。那是照拉丁字母的大寫字挑的——大寫字母沒有
+    //    下伸部、筆畫少，10px 還讀得出來；中文方塊字在 10px 只剩一團墨，「本月選物」
+    //    這種四個字的小標在手機上等於一排灰點。全網站字級 slider 動的是別的地方，這行
+    //    的 10px 寫在 class 上，跟著誰都不動。
+    // 2. 字距 0.4em（雜誌版型 0.32em）。同樣是給大寫字母用的：拉丁字母 all-caps 不撐開
+    //    字距會擠成一塊，所以編輯設計裡一律加寬。中文方塊字本來就自帶字身框的留白，
+    //    再加 0.4em 等於每個字之間空掉快半個字，四個字的小標會散成四個不相干的字。
+    // 3. 顏色三處寫死 theme.accent、雜誌那條 metadata 寫死 theme.textMuted。主色是店裡
+    //    最搶眼的顏色，押在整頁最小的那行字上，在照片上的 hero 特別容易糊；反過來想讓
+    //    這行退成純裝飾也沒得退。
+    // 字級與字距存的是相對量：沒設定的店家算出來跟現在一模一樣（scale 1.0 不覆寫 class，
+    // 字距加減零也不覆寫），四種版型原本的手感差異（0.4 / 0.32em）保留下來。
+    heroEyebrowFontScale: number;      // 小標字體 multiplier，0.6-1.8（預設 1.0 = 不覆寫）
+    heroEyebrowTracking: "tight" | "normal" | "wide"; // 小標字距（預設 normal = 不加減）
+    heroEyebrowColor: string | null;   // 小標顏色，hex；null = 各版型原本的值（主色 / 淡文字色）
     heroSubtitleFontScale: number;     // 副標字體 multiplier，0.6-1.8（預設 1.0）
     heroSubtitleColor: string | null;  // 副標顏色，hex；null = 用 theme.textMuted
     heroSubtitleAlign: "inherit" | "left" | "center" | "right"; // 副標對齊（inherit = 跟版型預設走，不覆寫）
@@ -658,6 +677,17 @@ function resolveLayout(raw: unknown): StoreTheme["layout"] {
       if (v === "tight" || v === "normal" || v === "wide") return v;
       return "normal" as const;
     })(),
+    heroEyebrowFontScale: (() => {
+      const v = l.heroEyebrowFontScale;
+      if (typeof v !== "number" || !Number.isFinite(v)) return 1.0;
+      return clampHeroFontScale(v);
+    })(),
+    heroEyebrowTracking: (() => {
+      const v = l.heroEyebrowTracking;
+      if (v === "tight" || v === "normal" || v === "wide") return v;
+      return "normal" as const;
+    })(),
+    heroEyebrowColor: normalizeHexColor(l.heroEyebrowColor),
     heroSubtitleFontScale: (() => {
       const v = l.heroSubtitleFontScale;
       if (typeof v !== "number" || !Number.isFinite(v)) return 1.0;

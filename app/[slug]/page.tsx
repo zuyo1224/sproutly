@@ -1333,6 +1333,31 @@ export default async function StoreHomePage({
                   fontSize: `clamp(${minRem * taglineFontScale}rem, ${vw * taglineFontScale}vw, ${maxRem * taglineFontScale}rem)`,
                 }
               : {};
+          // Hero eyebrow 小標（四個版型共用）。字級 10px、字距 0.4em（雜誌 0.32em）、
+          // 顏色三處 accent 一處 textMuted，四個值全寫死——hero 這組控制裡唯一一格都動不到
+          // 的元素，而它是客人由上往下讀到的第一行字。10px 與 0.4em 都是照拉丁大寫字母調的，
+          // 套到中文方塊字上是「太小」加「散開」兩件事一起發生。存相對量：沒設定就完全不覆寫。
+          const eyebrowScale = theme.layout.heroEyebrowFontScale;
+          const eyebrowSizeStyle =
+            eyebrowScale !== 1
+              ? { fontSize: `${Math.round(10 * eyebrowScale * 10) / 10}px` }
+              : {};
+          const eyebrowTrackDelta =
+            theme.layout.heroEyebrowTracking === "tight"
+              ? -0.25
+              : theme.layout.heroEyebrowTracking === "wide"
+              ? 0.15
+              : 0;
+          // base 是該版型原本 class 上那個 em 值；加減零就回 {}，class 的字距原樣留著。
+          const eyebrowTrackStyle = (baseEm: number) =>
+            eyebrowTrackDelta !== 0
+              ? {
+                  letterSpacing: `${Math.round((baseEm + eyebrowTrackDelta) * 1000) / 1000}em`,
+                }
+              : {};
+          // 沒設就各自 fallback 回原本寫死的那個色（三處主色、雜誌那條 metadata 淡文字色）
+          const eyebrowAccentColor = theme.layout.heroEyebrowColor ?? theme.accent;
+          const eyebrowMutedColor = theme.layout.heroEyebrowColor ?? theme.textMuted;
           // 副標自訂顏色 / 字級（split / magazine / minimal 共用）
           const subtitleColor =
             theme.layout.heroSubtitleColor ?? theme.textMuted;
@@ -1411,7 +1436,9 @@ export default async function StoreHomePage({
                           top: `${eyebrowPos.y * 100}%`,
                           transform: "translate(-50%, -50%)",
                           maxWidth: "min(24rem, 90%)",
-                          color: theme.accent,
+                          color: eyebrowAccentColor,
+                          ...eyebrowSizeStyle,
+                          ...eyebrowTrackStyle(0.4),
                         }}
                       >
                         {theme.layout.heroEyebrow}
@@ -1422,7 +1449,11 @@ export default async function StoreHomePage({
                         data-edit-field="heroEyebrow"
                         data-edit-drag={FREE_POS_KEYS.heroEyebrow}
                         className={`text-[10px] tracking-[0.4em] uppercase mb-6 ${fade1}`}
-                        style={{ color: theme.accent }}
+                        style={{
+                          color: eyebrowAccentColor,
+                          ...eyebrowSizeStyle,
+                          ...eyebrowTrackStyle(0.4),
+                        }}
                       >
                         {theme.layout.heroEyebrow}
                       </p>
@@ -1596,7 +1627,11 @@ export default async function StoreHomePage({
                       data-edit-text
                       data-edit-field="heroEyebrow"
                       className={`text-[10px] tracking-[0.4em] uppercase mb-6 ${fade1}`}
-                      style={{ color: theme.accent }}
+                      style={{
+                        color: eyebrowAccentColor,
+                        ...eyebrowSizeStyle,
+                        ...eyebrowTrackStyle(0.4),
+                      }}
                     >
                       {theme.layout.heroEyebrow}
                     </p>
@@ -1665,11 +1700,17 @@ export default async function StoreHomePage({
                 data-edit-target="hero"
                 data-edit-label="Hero 區段"
               >
-                {/* 上方 metadata 條 */}
+                {/* 上方 metadata 條。小標三格套在外層這條 metadata 上、不是只套小標那個
+                    span：這一行左右兩端（小標與店名）在雜誌版型裡是成對的，只動一邊會變成
+                    一大一小。 */}
                 <div className="max-w-6xl mx-auto px-8 sm:px-12 w-full">
                   <div
                     className={`flex justify-between items-center text-[10px] tracking-[0.32em] uppercase ${fade1}`}
-                    style={{ color: theme.textMuted }}
+                    style={{
+                      color: eyebrowMutedColor,
+                      ...eyebrowSizeStyle,
+                      ...eyebrowTrackStyle(0.32),
+                    }}
                   >
                     <span data-edit-text data-edit-field="heroEyebrow">
                       {theme.layout.heroEyebrow || "Issue"}
@@ -1763,7 +1804,11 @@ export default async function StoreHomePage({
                   data-edit-text
                   data-edit-field="heroEyebrow"
                   className={`text-[10px] tracking-[0.4em] uppercase mb-8 ${fade1}`}
-                  style={{ color: theme.accent }}
+                  style={{
+                    color: eyebrowAccentColor,
+                    ...eyebrowSizeStyle,
+                    ...eyebrowTrackStyle(0.4),
+                  }}
                 >
                   {theme.layout.heroEyebrow}
                 </p>
