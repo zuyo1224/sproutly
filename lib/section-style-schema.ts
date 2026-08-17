@@ -930,6 +930,18 @@ export const SECTION_STYLE_ENUMS = {
   // borderTop/Bottom、外框走 outline，三者不互相蓋。顏色比照外框與分隔線：該段設了
   // 文字色就從它算（深底淺字自動變淺色條），沒設就用全站主色 accent。
   accentBar: ["none", "left", "right"],
+  // 側邊色條的粗細（thin 2px / normal 照原本的 4px / thick 8px），只在上面那欄畫了色條
+  // 之後才有東西可調。色條的粗細一直是寫死的 4px——那個值配站上預設那種滿版段落剛好，
+  // 但商家把段落收成窄欄（sectionWidth 選 boxed / narrow）之後，同樣 4px 貼在一個窄框
+  // 邊上就搶過內文；反過來滿屏高度（minHeight 選 fullscreen）的段落，一條 4px 立在整個
+  // 螢幕高的邊緣細得像掉了根頭髮，商家想要的是雜誌跨頁那種一整條粗色帶的存在感。
+  // 商家原本沒有一格動得到——「側邊色條」只挑左右邊、外框粗細管的是 outline 那一圈，
+  // 跟這條 border 各走各的。
+  // 只給三檔不給滑桿，跟底線粗細同一個理由：條是配著整段看的東西，2 / 4 / 8px 之間的差
+  // 一眼看得出來，中間那些半格的差別畫不出來。三檔的間距拉成兩倍一跳（不是 1/2/4 那組）：
+  // 色條是實心色塊不是細線，粗細要跳一倍視覺上才算換了一檔。
+  // 沒設就完全不覆寫，border 字串照舊寫 4px，既有店家一條色條都不會變。
+  accentBarWeight: ["thin", "normal", "thick"],
 } as const satisfies Record<string, readonly string[]>;
 
 // 每一欄「等同沒設定」的那個值。editor 端商家選到它就把整欄 delete 掉（少一欄存進 DB，
@@ -1015,6 +1027,7 @@ export const SECTION_STYLE_NEUTRAL_VALUES = {
   headingRuleWeight: "normal",
   headingRuleTone: "normal",
   accentBar: "none",
+  accentBarWeight: "normal",
 } as const satisfies Partial<{
   [K in keyof typeof SECTION_STYLE_ENUMS]: (typeof SECTION_STYLE_ENUMS)[K][number];
 }>;

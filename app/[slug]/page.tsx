@@ -383,6 +383,15 @@ export default async function StoreHomePage({
     // 分隔線同一份口徑，分開算就會出現同一段裡三種線各一個顏色）。
     const accentBarVal: "left" | "right" | undefined =
       s?.accentBar === "left" || s?.accentBar === "right" ? s.accentBar : undefined;
+    // 色條粗細：翻成實際的線寬直接餵 inline style（色條本身是 section 的 borderLeft /
+    // borderRight，不是偽元素，跟分隔線粗細同一個做法、不必繞 data attribute）。沒畫色條
+    // 的段落一律回預設值，算出來的 border 字串跟以前一模一樣，既有店家一條色條都不會變。
+    const accentBarWidth =
+      accentBarVal && s?.accentBarWeight === "thin"
+        ? "2px"
+        : accentBarVal && s?.accentBarWeight === "thick"
+          ? "8px"
+          : "4px";
     // 行高：section 上的 inline lineHeight 只管得到沒有自己行高的文字，內文段落都帶
     // leading-* class（元素自己的 class 蓋掉繼承值），所以同一個值也走一份 data attribute
     // 讓 layout.tsx 針對內文元素補規則。沒設就沒 attribute、整條規則不存在。
@@ -893,6 +902,7 @@ export default async function StoreHomePage({
       headingRuleWeightVal,
       headingRuleToneVal,
       accentBarVal,
+      accentBarWidth,
       lineHeightVal,
       filterVal,
       bodyAlignVal,
@@ -1166,7 +1176,8 @@ export default async function StoreHomePage({
     // 而不是 theme.accent：底色剛好把主色吃掉的那一段，色條跟該段其他主色元素一起換，
     // 不會出現「同一段裡小標換了、色條還是那個看不見的顏色」。
     if (s.accentBarVal) {
-      const bar = `4px solid ${
+      // 粗細讀「色條粗細」那格（2 / 4 / 8px，沒設就是原本的 4px）
+      const bar = `${s.accentBarWidth} solid ${
         s.text ? `color-mix(in srgb, ${s.text} 60%, transparent)` : sectionAccent
       }`;
       if (s.accentBarVal === "left") out.borderLeft = bar;

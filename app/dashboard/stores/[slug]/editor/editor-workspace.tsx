@@ -3443,6 +3443,7 @@ export function EditorWorkspace({
           const headingRuleWeight = cur.headingRuleWeight ?? null;
           const headingRuleTone = cur.headingRuleTone ?? null;
           const accentBar = cur.accentBar ?? null;
+          const accentBarWeight = cur.accentBarWeight ?? null;
           const texture = cur.texture ?? null;
           const bgGradient = cur.bgGradient ?? null;
           // 色票快選：全站主色 + 中性白/奶油/淺灰/近黑，省得每次自己對色碼
@@ -5508,6 +5509,45 @@ export function EditorWorkspace({
                   )}
                 </div>
               </Field>
+              {/* 粗細只在真的畫了色條之後才有東西可調——跟底線粗細同一個處理，
+                  設了色條才長出來。 */}
+              {accentBar && (
+                <Field label="色條粗細">
+                  <div className="grid grid-cols-3 gap-1.5">
+                    {([
+                      { v: "thin", label: "細" },
+                      { v: "normal", label: "跟預設" },
+                      { v: "thick", label: "粗" },
+                    ] as const).map((opt) => (
+                      <button
+                        key={opt.v}
+                        type="button"
+                        onClick={() => patch({ accentBarWeight: opt.v })}
+                        aria-pressed={(accentBarWeight ?? "normal") === opt.v}
+                        className={`rounded-lg border py-2 text-xs transition ${
+                          (accentBarWeight ?? "normal") === opt.v
+                            ? "border-emerald-500 bg-emerald-50 text-emerald-900"
+                            : "border-stone-200 text-stone-600 hover:border-stone-400"
+                        }`}
+                      >
+                        {opt.label}
+                      </button>
+                    ))}
+                  </div>
+                  <div className="mt-1.5 flex items-center justify-between text-[11px] text-stone-500">
+                    <span>窄欄的段落用細一點才不搶內文，滿屏的段落要粗才立得住</span>
+                    {accentBarWeight && (
+                      <button
+                        type="button"
+                        onClick={() => patch({ accentBarWeight: null })}
+                        className="text-stone-500 hover:text-stone-800 underline"
+                      >
+                        清除
+                      </button>
+                    )}
+                  </div>
+                </Field>
+              )}
               <Field label="陰影">
                 <div className="grid grid-cols-3 gap-1.5">
                   {([
