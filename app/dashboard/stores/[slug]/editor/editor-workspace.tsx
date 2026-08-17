@@ -3373,6 +3373,7 @@ export function EditorWorkspace({
           const pad = cur.paddingScale ?? null;
           const divider = cur.divider ?? "none";
           const dividerWeight = cur.dividerWeight ?? null;
+          const dividerTone = cur.dividerTone ?? null;
           const headingScale = cur.headingScale ?? null;
           const minHeight = cur.minHeight ?? null;
           const contentAlign = cur.contentAlign ?? null;
@@ -4904,6 +4905,45 @@ export function EditorWorkspace({
                       <button
                         type="button"
                         onClick={() => patch({ dividerWeight: null })}
+                        className="text-stone-500 hover:text-stone-800 underline"
+                      >
+                        清除
+                      </button>
+                    )}
+                  </div>
+                </Field>
+              )}
+              {/* 深淺跟粗細同一個道理：沒畫線就沒東西可調。粗細那格的說明自己講了
+                  「又細又淡」，粗細只救了細那一半，這格補淡那一半。 */}
+              {divider !== "none" && (
+                <Field label="分隔線深淺">
+                  <div className="grid grid-cols-3 gap-1.5">
+                    {([
+                      { v: "normal", label: "跟預設" },
+                      { v: "strong", label: "同文字" },
+                      { v: "accent", label: "主色" },
+                    ] as const).map((opt) => (
+                      <button
+                        key={opt.v}
+                        type="button"
+                        onClick={() => patch({ dividerTone: opt.v })}
+                        aria-pressed={(dividerTone ?? "normal") === opt.v}
+                        className={`rounded-lg border py-2 text-xs transition ${
+                          (dividerTone ?? "normal") === opt.v
+                            ? "border-emerald-500 bg-emerald-50 text-emerald-900"
+                            : "border-stone-200 text-stone-600 hover:border-stone-400"
+                        }`}
+                      >
+                        {opt.label}
+                      </button>
+                    ))}
+                  </div>
+                  <div className="mt-1.5 flex items-center justify-between text-[11px] text-stone-500">
+                    <span>調粗了還是看不清就調深：同文字跟這段的字一樣深，主色拿來當裝飾線</span>
+                    {dividerTone && (
+                      <button
+                        type="button"
+                        onClick={() => patch({ dividerTone: null })}
                         className="text-stone-500 hover:text-stone-800 underline"
                       >
                         清除

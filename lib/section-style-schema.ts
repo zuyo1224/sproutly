@@ -227,6 +227,21 @@ export const SECTION_STYLE_ENUMS = {
   // 不出來（非整數的線會被瀏覽器抹成灰邊），而且同一段裡兩種線用同一組級距才配得起來。
   // 最細的那檔就是現況 1px，所以三檔是 normal / medium / thick，沒有比預設更細的一檔。
   dividerWeight: ["normal", "medium", "thick"],
+  // 分隔線的深淺（normal 照原本的淡灰 / strong 跟這一段的文字同深 / accent 全站主色），
+  // 同樣只在畫了線之後才有東西可調。上一欄的說明自己講了「細加上淡兩件事疊起來，那條線
+  // 幾乎看不見」——結果只補了細那一半：商家把線調到最粗，得到的是一條 4px 的淡灰，在
+  // 一般筆電螢幕上還是像髒污不像分隔線。淡不是粗細救得回來的——線的顏色寫死是全站邊框色
+  //（配底色挑的淺灰），或該段自訂文字色算出來的 28% 濃度，兩種都是刻意調淡的值。
+  // 商家原本沒有一格動得到——「分隔線粗細」動的是線多寬、「文字顏色」會連整段的字一起
+  // 換掉（而且線只跟到 28%，字全黑線還是淡的）、外框與標題底線是另外兩條線。
+  // strong 用該段文字色不開色票：線跟字同深就一定看得見、也一定配得上這一段（深底淺字的
+  // 段落自動變淺線），商家不用再挑一次顏色、也挑不出跟底色同色的看不見值——跟線色本身
+  // 不開控制是同一個口徑。accent 是給拿這條線當裝飾的（雜誌那種主色細線壓在段落開頭），
+  // 走 mergeSectionStyle 算好的 sectionAccent，主色壓在自訂底色上看不見時那裡已經換成
+  // 該段文字色，跟標題用色、小標用色同一道防呆。
+  // 只動分隔線不動外框與標題底線：三種線共用同一個淡色是預設的整體感，商家按這一格的
+  // 意思是「這條要跳出來」，把另外兩條一起加深反而是把對比又抹平。
+  dividerTone: ["normal", "strong", "accent"],
   // 該 section 標題字級（small 0.85x / default 1x / large 1.25x）
   headingScale: ["small", "default", "large"],
   // 該 section 最低高度（auto 不限制 / tall 80vh / fullscreen 100vh）
@@ -914,6 +929,7 @@ export const SECTION_STYLE_NEUTRAL_VALUES = {
   hideOn: "none",
   divider: "none",
   dividerWeight: "normal",
+  dividerTone: "normal",
   mediaRadius: "none",
   mediaAspect: "auto",
   mediaFocus: "auto",

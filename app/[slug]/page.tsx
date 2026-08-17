@@ -353,6 +353,16 @@ export default async function StoreHomePage({
         : s?.divider && s.divider !== "none" && s?.dividerWeight === "thick"
           ? "4px"
           : "1px";
+    // 分隔線深淺：只回選了哪一檔，實際的顏色在 mergeSectionStyle 算——strong 要用該段的
+    // 文字色、accent 要走那裡算好的 sectionAccent（主色壓在自訂底色上看不見時已經換成該段
+    // 文字色），兩個值都是那裡才有的。跟粗細同一個口徑：沒畫線就不回（線不存在，深淺沒有
+    // 東西可套），沒設就 undefined、線照舊用原本的淡色，既有店家一條線都不會變。
+    const dividerToneVal: "strong" | "accent" | undefined =
+      s?.divider &&
+      s.divider !== "none" &&
+      (s?.dividerTone === "strong" || s?.dividerTone === "accent")
+        ? s.dividerTone
+        : undefined;
     // 側邊色條：只回哪一邊，粗細與顏色在 mergeSectionStyle 一起算（顏色要跟外框、
     // 分隔線同一份口徑，分開算就會出現同一段裡三種線各一個顏色）。
     const accentBarVal: "left" | "right" | undefined =
@@ -843,6 +853,7 @@ export default async function StoreHomePage({
       padOverride: padVar,
       divider: s?.divider ?? "none",
       dividerWidth,
+      dividerToneVal,
       headingScaleVal,
       minHeightOverride: minH,
       outlineOverride: outline,
@@ -1076,11 +1087,21 @@ export default async function StoreHomePage({
     // 線寬讀「分隔線粗細」那格算好的值（沒設就是原本的 1px）。外框與標題底線各有自己的
     // 粗細來源，三種線刻意不共用一個值——同一段裡商家常常只想讓其中一條變明顯。
     const dividerWidth = s.dividerWidth ?? "1px";
+    // 線的深淺讀「分隔線深淺」那格：strong 直接用該段文字色（跟字同深就一定看得見，深底
+    // 淺字的段落自動變淺線，商家不用挑色也挑不壞），accent 用上面算好的 sectionAccent
+    //（主色壓在自訂底色上看不見時已經換成該段文字色，跟標題用色同一道防呆）。只動分隔線
+    // 不動外框與標題底線——商家按這格的意思是「這條要跳出來」，三條一起加深是把對比抹平。
+    const dividerColor =
+      s.dividerToneVal === "strong"
+        ? s.text ?? theme.text
+        : s.dividerToneVal === "accent"
+          ? sectionAccent
+          : lineColor;
     if (s.divider === "top" || s.divider === "both") {
-      out.borderTop = `${dividerWidth} solid ${lineColor}`;
+      out.borderTop = `${dividerWidth} solid ${dividerColor}`;
     }
     if (s.divider === "bottom" || s.divider === "both") {
-      out.borderBottom = `${dividerWidth} solid ${lineColor}`;
+      out.borderBottom = `${dividerWidth} solid ${dividerColor}`;
     }
     if (s.outlineOverride) {
       out.outline = `${s.outlineOverride.width} solid ${lineColor}`;
