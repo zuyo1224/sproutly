@@ -772,6 +772,18 @@ export default async function StoreHomePage({
       s?.cardMicroTone === "text"
         ? s.cardMicroTone
         : undefined;
+    // 卡片小字大小寫：上面四格動的是那幾行小字多大、字距多開、換行後隔多遠、多粗，這格動的
+    // 是那幾行字被轉成什麼字形（六處裡五處 class 寫死 uppercase）。跟段落小標那格
+    //（eyebrowCase）同一件事的另外幾個位置：中文按了不會動，英文與混排會被整行拉大寫
+    //（Shop all → SHOP ALL、「Care 照顧」只有前半被改、好評那行的 IG 帳號也一樣），而改
+    // 輸入框的字沒用——轉換發生在畫面上不在資料裡。
+    // 不必繞變數：那幾行的 inline style 只有顏色與字距，uppercase 在 class 那層，layout.tsx
+    // 的規則蓋得過去（那份 <style> 沒包在 @layer）。掛的範圍跟字級、行距那幾格一樣是掛
+    // sproutly-card-micro 的那幾段。
+    const cardMicroCaseVal: "capitalize" | "none" | undefined =
+      s?.cardMicroCase === "capitalize" || s?.cardMicroCase === "none"
+        ? s.cardMicroCase
+        : undefined;
     // 卡片價錢字級：上面三格動的是品名、描述、全大寫小字，這格動的是精選商品卡片上那行
     // 價錢（寫死 14px，比品名還小）。同樣是段落上的 inline style 傳不下去，attribute 讓
     // layout.tsx 補規則。只掛精選那一段：卡片上有價錢的只有它。
@@ -903,6 +915,7 @@ export default async function StoreHomePage({
       cardMicroLeadingVal,
       cardMicroWeightVal,
       cardMicroToneVal,
+      cardMicroCaseVal,
       cardPriceScaleVal,
       cardPriceWeightVal,
       cardPriceTrackingVal,
@@ -2130,6 +2143,7 @@ export default async function StoreHomePage({
             data-card-micro-tracking={collStyle.cardMicroTrackingVal}
             data-card-micro-leading={collStyle.cardMicroLeadingVal}
             data-card-micro-weight={collStyle.cardMicroWeightVal}
+            data-card-micro-case={collStyle.cardMicroCaseVal}
             data-card-row-gap={collStyle.cardRowGapVal}
             data-card-meta-tone={collStyle.cardMetaToneVal}
             style={mergeSectionStyle(collStyle)}
@@ -2331,6 +2345,7 @@ export default async function StoreHomePage({
             data-card-micro-tracking={featuredStyle.cardMicroTrackingVal}
             data-card-micro-leading={featuredStyle.cardMicroLeadingVal}
             data-card-micro-weight={featuredStyle.cardMicroWeightVal}
+            data-card-micro-case={featuredStyle.cardMicroCaseVal}
             data-card-meta-tone={featuredStyle.cardMetaToneVal}
           >
             <div className="max-w-5xl mx-auto px-8 sm:px-12" style={{ textAlign: featuredStyle.align }}>
@@ -2570,6 +2585,7 @@ export default async function StoreHomePage({
             data-card-micro-tracking={journalStyle.cardMicroTrackingVal}
             data-card-micro-leading={journalStyle.cardMicroLeadingVal}
             data-card-micro-weight={journalStyle.cardMicroWeightVal}
+            data-card-micro-case={journalStyle.cardMicroCaseVal}
             data-card-row-gap={journalStyle.cardRowGapVal}
           >
           <div className="max-w-5xl mx-auto px-8 sm:px-12" style={{ textAlign: journalStyle.align }}>
@@ -2963,6 +2979,7 @@ export default async function StoreHomePage({
               data-card-micro-tracking={testimonialsStyle.cardMicroTrackingVal}
               data-card-micro-leading={testimonialsStyle.cardMicroLeadingVal}
               data-card-micro-weight={testimonialsStyle.cardMicroWeightVal}
+              data-card-micro-case={testimonialsStyle.cardMicroCaseVal}
             >
               <div
                 className="max-w-5xl mx-auto px-8 sm:px-12"
@@ -3398,6 +3415,7 @@ export default async function StoreHomePage({
               data-card-micro-tracking={statsStyle.cardMicroTrackingVal}
               data-card-micro-leading={statsStyle.cardMicroLeadingVal}
               data-card-micro-weight={statsStyle.cardMicroWeightVal}
+              data-card-micro-case={statsStyle.cardMicroCaseVal}
             >
               <div
                 className="max-w-5xl mx-auto px-8 sm:px-12"

@@ -1780,6 +1780,29 @@ export default async function PublicStoreLayout({
           font-weight: 700;
         }
 
+        /* 卡片小字大小寫：editor 各 section panel「卡片小字大小寫」三按鈕（全大寫 / 字首大寫 /
+           照原樣）。上面四組管的是那幾行小字多大、字與字之間空多少、換行後隔多遠、多粗，這組
+           管的是那幾行字被轉成什麼字形。那幾行一律 uppercase，跟 10px 與 0.3-0.4em 的字距是
+           同一個設計決定的三個面向（全大寫的英文短詞撐開字距，是雜誌上小標的標準寫法）。
+           中文沒有大小寫之分，這條對只打中文的卡片按了不會動；問題在英文與混排，而卡片上這
+           幾行打英文的機率比段落小標更高——選物那行常是「Shop all」「View more」（被拉成
+           SHOP ALL），慢讀的分類是商家自己訂的標籤（混排的「Care 照顧」只有前半被改，看起來
+           像沒對齊的兩截），好評的頭銜是客人的職稱或 IG 帳號（帳號的大小寫是它自己的一部分）。
+           而且商家改字沒用——轉換發生在畫面上不在資料裡，輸入框看到的還是自己打的小寫。
+           要蓋掉的是那幾行自己帶的 uppercase class（段落那層沒有一欄傳得下去），跟卡片小字
+           字級、字距、行距、粗細同一個處境同一個解法：attribute 讓這裡補一條更精確的規則壓
+           過去（這份 <style> 沒包在 @layer，贏在 @layer utilities 的 Tailwind 工具類）。
+           三檔裡留「全大寫」是因為那幾行本來就是 uppercase，少了這一檔按過 capitalize 之後
+           沒有一顆按鈕退得回原本的樣子（跟卡片小字粗細留「跟預設」同一個理由）。它是「照原本
+           的」那一檔，按下去等於把這一欄清掉，所以這裡只有另外兩檔有規則。
+           沒設就沒 attribute、整條規則不存在，既有店家的卡片小字一個字都不會變。 */
+        section[data-edit-target][data-card-micro-case="capitalize"] .sproutly-card-micro {
+          text-transform: capitalize;
+        }
+        section[data-edit-target][data-card-micro-case="none"] .sproutly-card-micro {
+          text-transform: none;
+        }
+
         /* 卡片價錢字級：editor 精選商品 panel「卡片價錢字級」三按鈕（小 / 跟預設 / 大）。
            上面三組把卡片裡的品名、描述、全大寫小字都補起來之後，價錢是這一組最後一行沒得
            動的——它寫死 14px，比品名的 16px 還小一級。那個安排是照「先看商品再看價錢」的

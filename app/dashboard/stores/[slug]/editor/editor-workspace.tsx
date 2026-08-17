@@ -3357,6 +3357,7 @@ export function EditorWorkspace({
           const cardMicroLeading = cur.cardMicroLeading ?? null;
           const cardMicroWeight = cur.cardMicroWeight ?? null;
           const cardMicroTone = cur.cardMicroTone ?? null;
+          const cardMicroCase = cur.cardMicroCase ?? null;
           const cardPriceScale = cur.cardPriceScale ?? null;
           const cardPriceWeight = cur.cardPriceWeight ?? null;
           const cardPriceTracking = cur.cardPriceTracking ?? null;
@@ -6491,6 +6492,41 @@ export function EditorWorkspace({
                     <button
                       type="button"
                       onClick={() => patch({ cardMicroTone: null })}
+                      className="text-stone-500 hover:text-stone-800 underline"
+                    >
+                      清除
+                    </button>
+                  )}
+                </div>
+              </Field>
+              <Field label="卡片小字大小寫">
+                <div className="grid grid-cols-3 gap-1.5">
+                  {([
+                    { v: "upper", label: "全大寫" },
+                    { v: "capitalize", label: "字首大寫" },
+                    { v: "none", label: "照原樣" },
+                  ] as const).map((opt) => (
+                    <button
+                      key={opt.v}
+                      type="button"
+                      onClick={() => patch({ cardMicroCase: opt.v })}
+                      aria-pressed={(cardMicroCase ?? "upper") === opt.v}
+                      className={`rounded-lg border py-2 text-xs transition ${
+                        (cardMicroCase ?? "upper") === opt.v
+                          ? "border-emerald-500 bg-emerald-50 text-emerald-900"
+                          : "border-stone-200 text-stone-600 hover:border-stone-400"
+                      }`}
+                    >
+                      {opt.label}
+                    </button>
+                  ))}
+                </div>
+                <div className="mt-1.5 flex items-center justify-between text-[11px] text-stone-500">
+                  <span>同樣那幾行小字的英文字母要不要被轉成大寫。前面五格調的是它們多大、字距多開、換行後隔多遠、多粗、什麼顏色，這格調的是字形本身。那幾行一律轉全大寫，中文沒有大小寫、按了不會動；打英文就會被整行拉大寫——「Shop all」變 SHOP ALL、自己訂的分類標籤（Care 照顧只有前半被改）、好評那行的職稱或 IG 帳號，想照自己打的樣子顯示選「照原樣」（改輸入框裡的字沒用，大寫是顯示的時候才轉的）</span>
+                  {cardMicroCase && (
+                    <button
+                      type="button"
+                      onClick={() => patch({ cardMicroCase: null })}
                       className="text-stone-500 hover:text-stone-800 underline"
                     >
                       清除

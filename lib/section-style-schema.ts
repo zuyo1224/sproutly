@@ -679,6 +679,33 @@ export const SECTION_STYLE_ENUMS = {
   // 慢讀那行標籤自己那層 opacity 0.65 留著不動：那是它跟同一張卡上的分類之間的主次，這格
   // 換的是顏色，兩件事各自獨立（跟卡片副文字深淺與價錢用色的關係一樣）。
   cardMicroTone: ["normal", "accent", "muted", "text"],
+  // 卡片小字大小寫（upper 照原本的全大寫 / capitalize 每個字首大寫 / none 完全照商家打的），
+  // 套的是跟上面五格同一批小字——選物卡片底下的「看更多」、慢讀卡片上面的分類與底下的標籤、
+  // 精選卡片上的「剩 N」、好評卡片上的頭銜、數字那段大數字底下那行說明。字級、字距、行距、
+  // 粗細、顏色都補過了，全大寫是這一組最後一個沒得動的。
+  // 這六格跟段落最上面那行小標（eyebrowScale / Tracking / Leading / Weight / Tone / Case）
+  // 是同一組六個面向，那邊上一輪已經補完第六格，卡片裡這一批是同一個問題的另外六個位置：
+  // page.tsx 裡六處 class 有五處寫死 uppercase。
+  // 缺這格會怎樣：跟小標那格同一件事——對中文完全無效是預期的（方塊字沒有大小寫之分），
+  // 問題在英文與混排，而卡片上這幾行打英文的機率比段落小標更高：選物那行常常是「Shop all」
+  // 「View more」（被拉成 SHOP ALL），慢讀的分類是商家自己訂的標籤（Care / Journal 那種，
+  // 混排的「Care 照顧」只有前半被改，看起來像沒對齊的兩截），好評的頭銜是客人的職稱或
+  // IG 帳號（@plantae_market → @PLANTAE_MARKET，帳號的大小寫是它自己的一部分），數字那段
+  // 底下那行是單位或說明。跟小標那格一樣最麻煩的是改字沒用：轉換發生在畫面上不在資料裡，
+  // 輸入框看到的還是自己打的小寫。
+  // 商家原本沒有一格動得到——上面那五格動的是那幾行字的大小、間距、行間、重量、顏色，沒有
+  // 一個換字形；「小標大小寫」落在段落自己的 eyebrow 上（規則到不了卡片裡）；「字體」換的
+  // 是字型家族。
+  // 規則跟字級、字距、行距、粗細那四組同一招落在 .sproutly-card-micro 上（段落那層沒有一欄
+  // 傳得下去），要蓋掉的是那幾行自己帶的 uppercase class——這份 <style> 沒包在 @layer，
+  // 贏得過在 @layer utilities 的 Tailwind 工具類。
+  // 預設是 upper「照原本的」不是把全大寫當中性值刪掉，跟小標大小寫、卡片小字粗細留一檔
+  //「跟預設」同一個理由：那幾行本來就是 uppercase，少了這一檔按過 capitalize 之後沒有一顆
+  // 按鈕退得回原本的樣子。它按下去等於把這一欄清掉，所以規則只有另外兩檔。
+  // 好評那行頭銜本來就沒有 uppercase class，按「全大寫」對它是沒作用的一檔（跟原本一樣），
+  // 不特別排除：那一行跟同一段別的卡片小字歸同一組，切開會變成同一個控制在同一段裡有兩種
+  // 行為。沒設就沒 attribute、整條規則不存在，既有店家一個字都不會變。
+  cardMicroCase: ["upper", "capitalize", "none"],
   // 卡片價錢字級（small 縮一成 / default 照原本的 / large 放大三成），只套精選商品那段卡片
   // 上品名底下那行價錢。上面三格把品名、描述、小字都補起來之後，價錢是這一組最後一行沒得
   // 動的——它寫死 14px，比品名的 16px 還小，跟選物段的副標同一級。那個安排是照「先看商品
@@ -918,6 +945,7 @@ export const SECTION_STYLE_NEUTRAL_VALUES = {
   cardMicroLeading: "normal",
   cardMicroWeight: "normal",
   cardMicroTone: "normal",
+  cardMicroCase: "upper",
   cardPriceScale: "default",
   cardPriceWeight: "normal",
   cardPriceTracking: "normal",
