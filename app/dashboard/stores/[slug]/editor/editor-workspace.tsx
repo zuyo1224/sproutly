@@ -106,6 +106,8 @@ type EditorTheme = {
     heroSubtitleTracking: "tight" | "normal" | "wide";
     heroSubtitleLeading: "tight" | "normal" | "relaxed";
     heroCtaFontScale: number;
+    heroCtaTracking: "tight" | "normal" | "wide";
+    heroCtaCase: "default" | "capitalize" | "none";
     heroHeight: "auto" | "short" | "tall" | "full";
     fontScale: number;
     sectionPaddingScale: "compact" | "default" | "spacious";
@@ -951,6 +953,8 @@ export function EditorWorkspace({
           heroSubtitleTracking: t.layout.heroSubtitleTracking,
           heroSubtitleLeading: t.layout.heroSubtitleLeading,
           heroCtaFontScale: t.layout.heroCtaFontScale,
+          heroCtaTracking: t.layout.heroCtaTracking,
+          heroCtaCase: t.layout.heroCtaCase,
           heroHeight: t.layout.heroHeight,
           fontScale: t.layout.fontScale,
           sectionPaddingScale: t.layout.sectionPaddingScale,
@@ -1930,6 +1934,62 @@ export function EditorWorkspace({
                 但原本的字級固定不動——主標拉大之後，按鈕會被主標壓成最不起眼的一行；
                 雜誌版型那條更小（跟下面 byline 同一個字級），手機上不容易看出來可以按。
                 放大時按鈕的內距會跟著長，形狀不會被字撐爆
+              </p>
+            </Field>
+            <Field label="按鈕字距">
+              <div className="grid grid-cols-3 gap-1.5">
+                {([
+                  { v: "tight", label: "收緊" },
+                  { v: "normal", label: "預設" },
+                  { v: "wide", label: "撐開" },
+                ] as const).map((opt) => (
+                  <button
+                    key={opt.v}
+                    type="button"
+                    onClick={() => updateLayout({ heroCtaTracking: opt.v })}
+                    aria-pressed={theme.layout.heroCtaTracking === opt.v}
+                    className={`rounded-lg border py-2 text-xs transition ${
+                      theme.layout.heroCtaTracking === opt.v
+                        ? "border-emerald-500 bg-emerald-50 text-emerald-900"
+                        : "border-stone-200 text-stone-600 hover:border-stone-400"
+                    }`}
+                  >
+                    {opt.label}
+                  </button>
+                ))}
+              </div>
+              <p className="text-[10px] text-stone-500 mt-1">
+                按鈕上每個字之間的空隙。原本空 0.18em，那是給英文全大寫用的；中文的
+                「立即選購」四個字會散開，而且上面那格把字放大以後空隙也跟著變大，散得更開。
+                選收緊會靠回來
+              </p>
+            </Field>
+            <Field label="按鈕大小寫">
+              <div className="grid grid-cols-3 gap-1.5">
+                {([
+                  { v: "default", label: "照版型預設" },
+                  { v: "capitalize", label: "字首大寫" },
+                  { v: "none", label: "照原樣" },
+                ] as const).map((opt) => (
+                  <button
+                    key={opt.v}
+                    type="button"
+                    onClick={() => updateLayout({ heroCtaCase: opt.v })}
+                    aria-pressed={theme.layout.heroCtaCase === opt.v}
+                    className={`rounded-lg border py-2 text-xs transition ${
+                      theme.layout.heroCtaCase === opt.v
+                        ? "border-emerald-500 bg-emerald-50 text-emerald-900"
+                        : "border-stone-200 text-stone-600 hover:border-stone-400"
+                    }`}
+                  >
+                    {opt.label}
+                  </button>
+                ))}
+              </div>
+              <p className="text-[10px] text-stone-500 mt-1">
+                按鈕打中文的話這格沒有作用（中文沒有大小寫）。打英文才看得出來：左右分割、
+                極簡、雜誌三種版型會把按鈕字一律轉成全大寫，「Shop Now」變 SHOP NOW，
+                選照原樣就照你打的顯示（全屏沉浸那顆本來就沒轉，維持原樣）
               </p>
             </Field>
             <Field label="雜誌版型下方 byline">

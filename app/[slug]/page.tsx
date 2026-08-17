@@ -1461,6 +1461,32 @@ export default async function StoreHomePage({
             ctaScale !== 1
               ? { fontSize: `${Math.round(10 * ctaScale * 10) / 10}px` }
               : {};
+          // 按鈕字距。字級那格只能讓「立即選購」四個字變大，散開的問題原封不動——0.18em 是
+          // 跟著字級等比例放大的，字愈大四個字散得愈開。三處 base 各不相同：滿版圖那兩處
+          // tracking-wider（0.05em）、split 與極簡吃 .sproutly-btn（0.18em）、雜誌那條繼承
+          // 上層 metadata（0.32em）。存相對量，三處原本的差異保留；沒設回 {} 完全不覆寫。
+          const ctaTrackDelta =
+            theme.layout.heroCtaTracking === "tight"
+              ? -0.12
+              : theme.layout.heroCtaTracking === "wide"
+              ? 0.1
+              : 0;
+          // 收緊壓到 0 就不再往下：負字距會讓中文筆畫互相咬住，而按鈕是最該一眼讀完的四個字。
+          const ctaTrackStyle = (baseEm: number) =>
+            ctaTrackDelta !== 0
+              ? {
+                  letterSpacing: `${Math.round(Math.max(0, baseEm + ctaTrackDelta) * 1000) / 1000}em`,
+                }
+              : {};
+          // 按鈕大小寫。預設是「照各版型原本」不是「全大寫」——三處的 base 本來就不一致
+          //（滿版圖那兩顆是底線連結，根本沒轉大寫），寫死一個 upper 當預設會在商家存檔的
+          // 當下把滿版圖那顆一起改掉。inline textTransform 壓得過 class 與繼承來的值。
+          const ctaCaseStyle: { textTransform?: "none" | "capitalize" } =
+            theme.layout.heroCtaCase === "none"
+              ? { textTransform: "none" }
+              : theme.layout.heroCtaCase === "capitalize"
+              ? { textTransform: "capitalize" }
+              : {};
 
           // Variant 1: full-image — 自適應 banner（圖 + 文字段），手機 / 桌機 同一套
           if (heroStyle === "full-image" && theme.heroUrl) {
@@ -1666,6 +1692,8 @@ export default async function StoreHomePage({
                           color: theme.text,
                           fontFamily: "var(--store-font)",
                           ...ctaLinkSizeStyle,
+                          ...ctaTrackStyle(0.05),
+                          ...ctaCaseStyle,
                         }}
                       >
                         {heroCta}
@@ -1682,6 +1710,8 @@ export default async function StoreHomePage({
                           color: theme.text,
                           fontFamily: "var(--store-font)",
                           ...ctaLinkSizeStyle,
+                          ...ctaTrackStyle(0.05),
+                          ...ctaCaseStyle,
                         }}
                       >
                         {heroCta}
@@ -1780,7 +1810,7 @@ export default async function StoreHomePage({
                       className="sproutly-btn sproutly-btn-primary sproutly-btn-lg"
                       data-edit-text
                       data-edit-field="heroCta"
-                      style={ctaBtnSizeStyle}
+                      style={{ ...ctaBtnSizeStyle, ...ctaTrackStyle(0.18), ...ctaCaseStyle }}
                     >
                       {heroCta}
                     </Link>
@@ -1790,7 +1820,7 @@ export default async function StoreHomePage({
                         className="sproutly-btn sproutly-btn-secondary sproutly-btn-lg"
                         data-edit-text
                         data-edit-field="heroSecondaryCta"
-                        style={ctaBtnSizeStyle}
+                        style={{ ...ctaBtnSizeStyle, ...ctaTrackStyle(0.18), ...ctaCaseStyle }}
                       >
                         {heroSecondaryCta}
                       </Link>
@@ -1896,7 +1926,14 @@ export default async function StoreHomePage({
                       href={`/${slug}/shop`}
                       className="sproutly-link"
                       data-default-line="true"
-                      style={{ color: theme.text, ...ctaMicroSizeStyle }}
+                      style={{
+                        color: theme.text,
+                        ...ctaMicroSizeStyle,
+                        // base 是上層 metadata 那條的 0.32em。刻意只套在 CTA 上不套整條——
+                        // 左邊的 byline 跟按鈕不是成對的（跟字級那格同一個理由）。
+                        ...ctaTrackStyle(0.32),
+                        ...ctaCaseStyle,
+                      }}
                     >
                       {/* 箭頭留在可編輯範圍外，雙擊改到的只有文字本體 */}
                       <span data-edit-text data-edit-field="heroCta">
@@ -1985,7 +2022,7 @@ export default async function StoreHomePage({
                 className={`sproutly-btn sproutly-btn-primary sproutly-btn-lg mt-12 ${fade3}`}
                 data-edit-text
                 data-edit-field="heroCta"
-                style={ctaBtnSizeStyle}
+                style={{ ...ctaBtnSizeStyle, ...ctaTrackStyle(0.18), ...ctaCaseStyle }}
               >
                 {heroCta}
               </Link>

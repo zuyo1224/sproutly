@@ -324,6 +324,27 @@ export interface StoreTheme {
     // 按鈕型那三顆的內距跟著字走（改成 em 表示，1.0x 算出來等於原本那組 rem），不然字放大
     // 會把兩側的留白吃光、變成一顆塞滿字的長方形。
     heroCtaFontScale: number;          // Hero 按鈕文字 multiplier，0.6-1.8（預設 1.0 = 不覆寫）
+    // Hero 按鈕的字距與大小寫。上一格補了按鈕文字大小，但那格的說明裡自己就寫了字放大以後
+    // 還有兩個東西沒解決：「.sproutly-btn 一律 uppercase + 0.18em 字距，中文的『立即選購』
+    // 在一顆大按鈕裡看起來又小又散」。字級那格只能讓那四個字變大，散開的問題原封不動——
+    // 字放愈大，0.18em 的間隔跟著等比例放大，四個字反而散得更開。
+    // 三處的 base 各不相同，而且都不是商家改得到的：滿版圖那兩處是 tracking-wider（0.05em，
+    // 不轉大寫）、split 兩顆與極簡那顆吃 .sproutly-btn（0.18em + uppercase，寫在 layout 的
+    // CSS 裡）、雜誌那條繼承上層 metadata 那條（0.32em + uppercase）。
+    // 字距為什麼要動：0.18em 跟 0.32em 都是給拉丁字母全大寫用的——大寫字母不撐開字距會擠成
+    // 一塊，所以編輯設計裡的按鈕一律加寬。中文方塊字自帶字身框留白，再加 0.18em 等於每個字
+    // 之間空掉快五分之一個字，「立即選購」四個字會散成四個不相干的字，愈是大按鈕愈明顯。
+    // 反過來英文短詞（Shop / Explore）撐開一點確實更像一顆按鈕，所以不是把預設砍掉、是給一格。
+    // 大小寫為什麼要動：跟小標那格同一件事，但發生在更要緊的地方——按鈕是客人唯一會按的東西。
+    // 商家打「Shop Now」會被拉成「SHOP NOW」，打自己的英文店名或商品名（Plantae Market）
+    // 也一樣。全大寫在中文完全無效（方塊字沒有大小寫），所以這格只有打英文的店會用到。
+    // 轉換發生在畫面上不在資料裡，改輸入框的字沒有用，商家原本沒有任何一格關得掉。
+    // 字距存的是相對量（收緊 -0.12em、撐開 +0.1em，加在各處原本那個值上），三處原本的手感
+    // 差異保留；收緊那邊壓到 0 就不再往下（負字距會讓中文筆畫互相咬住）。大小寫的預設是
+    // 「照版型原本」不是「全大寫」——三處的 base 本來就不一致（滿版圖那兩處根本沒轉大寫），
+    // 寫死一個 upper 當預設會在存檔的當下把滿版圖那顆改掉。兩格都是沒設就完全不覆寫。
+    heroCtaTracking: "tight" | "normal" | "wide"; // 按鈕字距（預設 normal = 不加減）
+    heroCtaCase: "default" | "capitalize" | "none"; // 按鈕大小寫（預設 default = 照各版型原本）
     heroHeight: "auto" | "short" | "tall" | "full"; // 預設 auto（adaptive 比例）
     // 全網站
     fontScale: number;                 // 全網站字體 multiplier 0.8-1.3（預設 1.0）
@@ -782,6 +803,16 @@ function resolveLayout(raw: unknown): StoreTheme["layout"] {
       const v = l.heroCtaFontScale;
       if (typeof v !== "number" || !Number.isFinite(v)) return 1.0;
       return clampHeroFontScale(v);
+    })(),
+    heroCtaTracking: (() => {
+      const v = l.heroCtaTracking;
+      if (v === "tight" || v === "normal" || v === "wide") return v;
+      return "normal" as const;
+    })(),
+    heroCtaCase: (() => {
+      const v = l.heroCtaCase;
+      if (v === "default" || v === "capitalize" || v === "none") return v;
+      return "default" as const;
     })(),
     heroHeight: (() => {
       const v = l.heroHeight;
