@@ -236,6 +236,18 @@ export interface StoreTheme {
     // 四種版型一起套（不像對齊只在 full-image 生效）：粗細不動位置，split / magazine /
     // minimal 的版面配置一格都不會被翻掉，沒設定的店家照樣算出 400、跟現在一模一樣。
     heroTaglineWeight: "normal" | "medium" | "bold"; // 主標粗細（預設 normal = 400）
+    // 主標字距（tight 收緊 / normal 預設 / wide 撐開）。四種版型的主標各自寫死一個
+    // letterSpacing：整版圖片 0.02em、左右分割 -0.01em、雜誌 -0.02em、極簡 -0.015em。
+    // 那四個值是照英文主標調的——負字距把字往內收，拉丁字母本來就有側邊空隙，收一點更緊實；
+    // 中文方塊字沒有那個空隙，負字距等於直接讓筆畫互相咬住，字級愈大咬得愈明顯，而這一句
+    // 正好是全站字級最大的那一句。台灣商家十家有九家主標打中文，等於預設值站在他們的反面。
+    // 反過來也有：主標只有四五個字的短句，撐開字距能把那一行拉滿版面、看起來不像沒寫完。
+    // 商家原本要救只能換字體（整站的字一起換）或改字級（hero 整塊高度跟著變），沒有一格
+    // 只動這一行的字與字間隔。各段大標早就有「標題字距」可以各段獨立調，但那條規則餵的是
+    // --store-heading-track 變數，hero 主標的字距寫在自己的 inline style 裡，變數餵不進去。
+    // 存的是相對量不是絕對值：收緊 -0.03em、撐開 +0.05em，各加在該版型原本那個數字上，
+    // 四種版型的手感差異保留下來，預設值算出來跟現在一模一樣。
+    heroTaglineTracking: "tight" | "normal" | "wide"; // 主標字距（預設 normal = 不加減）
     heroSubtitleFontScale: number;     // 副標字體 multiplier，0.6-1.8（預設 1.0）
     heroSubtitleColor: string | null;  // 副標顏色，hex；null = 用 theme.textMuted
     heroSubtitleAlign: "inherit" | "left" | "center" | "right"; // 副標對齊（inherit = 跟版型預設走，不覆寫）
@@ -639,6 +651,11 @@ function resolveLayout(raw: unknown): StoreTheme["layout"] {
     heroTaglineWeight: (() => {
       const v = l.heroTaglineWeight;
       if (v === "normal" || v === "medium" || v === "bold") return v;
+      return "normal" as const;
+    })(),
+    heroTaglineTracking: (() => {
+      const v = l.heroTaglineTracking;
+      if (v === "tight" || v === "normal" || v === "wide") return v;
       return "normal" as const;
     })(),
     heroSubtitleFontScale: (() => {

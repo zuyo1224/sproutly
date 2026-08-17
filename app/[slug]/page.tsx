@@ -1310,6 +1310,20 @@ export default async function StoreHomePage({
               : theme.layout.heroTaglineWeight === "medium"
               ? 500
               : 400;
+          // 主標字距（四個版型共用）。四處各寫死一個 letterSpacing（0.02 / -0.01 / -0.02 /
+          // -0.015em），那些值是照英文主標調的：負字距對拉丁字母是收緊，對中文方塊字是讓
+          // 筆畫互相咬住，而這是全站字級最大的一句。存相對量不是絕對值——收緊 -0.03em、
+          // 撐開 +0.05em，加在各版型原本那個數字上，版型之間的手感差異保留，預設不加不減。
+          const taglineTrackDelta =
+            theme.layout.heroTaglineTracking === "tight"
+              ? -0.03
+              : theme.layout.heroTaglineTracking === "wide"
+              ? 0.05
+              : 0;
+          // base 是該版型原本寫死的 em 值；加完四捨五入到小數第三位，避免浮點跑出
+          // 0.019999999999999997em 這種字串塞進 inline style。
+          const taglineTracking = (baseEm: number) =>
+            `${Math.round((baseEm + taglineTrackDelta) * 1000) / 1000}em`;
           // 各版型的預設字級是 Tailwind responsive class，只在 user 動過 slider
           // 時才用 inline clamp 蓋掉（1.0x 完全不覆寫，維持原本斷點行為）；
           // min / vw / max 各版型自己帶，對齊該版型原本 class 的字級範圍。
@@ -1426,7 +1440,7 @@ export default async function StoreHomePage({
                               color: taglineColor,
                               fontFamily: "var(--store-font)",
                               fontWeight: taglineWeight,
-                              letterSpacing: "0.02em",
+                              letterSpacing: taglineTracking(0.02),
                               wordBreak: "keep-all",
                               overflowWrap: "break-word",
                               fontSize: `clamp(${1.5 * taglineFontScale}rem, ${3 * taglineFontScale}vw, ${3 * taglineFontScale}rem)`,
@@ -1435,7 +1449,7 @@ export default async function StoreHomePage({
                               color: taglineColor,
                               fontFamily: "var(--store-font)",
                               fontWeight: taglineWeight,
-                              letterSpacing: "0.02em",
+                              letterSpacing: taglineTracking(0.02),
                               wordBreak: "keep-all",
                               overflowWrap: "break-word",
                               fontSize: `clamp(${1.5 * taglineFontScale}rem, ${3 * taglineFontScale}vw, ${3 * taglineFontScale}rem)`,
@@ -1593,7 +1607,7 @@ export default async function StoreHomePage({
                       color: taglineColor,
                       fontFamily: "var(--store-font)",
                       fontWeight: taglineWeight,
-                      letterSpacing: "-0.01em",
+                      letterSpacing: taglineTracking(-0.01),
                       wordBreak: "keep-all",
                       overflowWrap: "break-word",
                       ...taglineSizeStyle(1.875, 5, 3.75),
@@ -1676,7 +1690,7 @@ export default async function StoreHomePage({
                       color: taglineColor,
                       fontFamily: "var(--store-font)",
                       fontWeight: taglineWeight,
-                      letterSpacing: "-0.02em",
+                      letterSpacing: taglineTracking(-0.02),
                       wordBreak: "keep-all",
                       overflowWrap: "break-word",
                       ...taglineSizeStyle(2.25, 8, 6),
@@ -1760,7 +1774,7 @@ export default async function StoreHomePage({
                   color: taglineColor,
                   fontFamily: "var(--store-font)",
                   fontWeight: taglineWeight,
-                  letterSpacing: "-0.015em",
+                  letterSpacing: taglineTracking(-0.015),
                   wordBreak: "keep-all",
                   overflowWrap: "break-word",
                   ...taglineSizeStyle(1.875, 6, 3.75),

@@ -93,6 +93,7 @@ type EditorTheme = {
     heroTaglineColor: string | null;
     heroTaglineAlign: "left" | "center" | "right";
     heroTaglineWeight: "normal" | "medium" | "bold";
+    heroTaglineTracking: "tight" | "normal" | "wide";
     heroSubtitleFontScale: number;
     heroSubtitleColor: string | null;
     heroSubtitleAlign: "inherit" | "left" | "center" | "right";
@@ -928,6 +929,7 @@ export function EditorWorkspace({
           heroTaglineColor: t.layout.heroTaglineColor,
           heroTaglineAlign: t.layout.heroTaglineAlign,
           heroTaglineWeight: t.layout.heroTaglineWeight,
+          heroTaglineTracking: t.layout.heroTaglineTracking,
           heroSubtitleFontScale: t.layout.heroSubtitleFontScale,
           heroSubtitleColor: t.layout.heroSubtitleColor,
           heroSubtitleAlign: t.layout.heroSubtitleAlign,
@@ -1797,6 +1799,37 @@ export function EditorWorkspace({
               </div>
               <p className="text-[10px] text-stone-500 mt-1">
                 四種版型都會套用。字最大的那一句原本一律是最輕的常規，短主標容易撐不起整頁
+              </p>
+            </Field>
+            <Field label="主標字距">
+              <div className="grid grid-cols-3 gap-1.5">
+                {([
+                  { v: "tight", label: "收緊" },
+                  { v: "normal", label: "預設" },
+                  { v: "wide", label: "撐開" },
+                ] as const).map((opt) => (
+                  <button
+                    key={opt.v}
+                    type="button"
+                    onClick={() => updateLayout({ heroTaglineTracking: opt.v })}
+                    aria-pressed={theme.layout.heroTaglineTracking === opt.v}
+                    className={`rounded-lg border py-2 text-xs transition ${
+                      theme.layout.heroTaglineTracking === opt.v
+                        ? "border-emerald-500 bg-emerald-50 text-emerald-900"
+                        : "border-stone-200 text-stone-600 hover:border-stone-400"
+                    }`}
+                    style={{
+                      letterSpacing:
+                        opt.v === "tight" ? "-0.05em" : opt.v === "wide" ? "0.08em" : undefined,
+                    }}
+                  >
+                    {opt.label}
+                  </button>
+                ))}
+              </div>
+              <p className="text-[10px] text-stone-500 mt-1">
+                同一行裡字跟字之間的距離。四種版型原本的字距都是照英文主標調的，中文主標的
+                筆畫會黏在一起，選撐開拉開；主標只有四五個字時撐開也能把那一行拉滿版面
               </p>
             </Field>
             <Field label="Hero 高度">
