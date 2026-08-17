@@ -1538,6 +1538,36 @@ export default async function StoreHomePage({
               ? { fontSize: `${Math.round(10 * bylineScale * 10) / 10}px` }
               : {};
           const bylineColor = theme.layout.heroBylineColor ?? theme.textMuted;
+          // byline 的字距與大小寫。上面兩格動的是那行字多大、什麼顏色，這兩格動的是字與字
+          // 之間空多少、字母被轉成什麼字形——byline 那個 span 自己一個樣式都沒有，這兩件事
+          // 是從外層那條 flex 繼承來的（tracking-[0.32em] uppercase）。
+          // 0.32em 是整站最寬的字距，跟 10px 同一個出處（拉丁大寫字母），byline 打中文
+          //（「由 XX 選件」）會散成一個個不相干的字，而字級那格只會讓它散得更開。uppercase
+          // 對中文按了不會動，英文則會被整行拉大寫（Photography by Wang → 全大寫），改輸入框
+          // 的字沒用——轉換發生在畫面上不在資料裡。
+          // 跟字級、顏色同一個判斷：只套 byline 那個 span，不套外層那條 flex（右邊的 CTA
+          // 有自己的字距與大小寫兩格）。inline style 壓得過 class 與繼承來的值。
+          const bylineTrackDelta =
+            theme.layout.heroBylineTracking === "tight"
+              ? -0.24
+              : theme.layout.heroBylineTracking === "wide"
+              ? 0.1
+              : 0;
+          // base 是繼承來的 0.32em。收緊壓到 0 就不再往下：負字距會讓中文筆畫互相咬住。
+          const bylineTrackStyle =
+            bylineTrackDelta !== 0
+              ? {
+                  letterSpacing: `${
+                    Math.round(Math.max(0, 0.32 + bylineTrackDelta) * 1000) / 1000
+                  }em`,
+                }
+              : {};
+          const bylineCaseStyle: { textTransform?: "none" | "capitalize" } =
+            theme.layout.heroBylineCase === "none"
+              ? { textTransform: "none" }
+              : theme.layout.heroBylineCase === "capitalize"
+              ? { textTransform: "capitalize" }
+              : {};
 
           // Variant 1: full-image — 自適應 banner（圖 + 文字段），手機 / 桌機 同一套
           if (heroStyle === "full-image" && theme.heroUrl) {
@@ -1970,7 +2000,12 @@ export default async function StoreHomePage({
                     <span
                       data-edit-text
                       data-edit-field="heroMagazineByline"
-                      style={{ color: bylineColor, ...bylineSizeStyle }}
+                      style={{
+                        color: bylineColor,
+                        ...bylineSizeStyle,
+                        ...bylineTrackStyle,
+                        ...bylineCaseStyle,
+                      }}
                     >
                       {heroMagazineByline}
                     </span>

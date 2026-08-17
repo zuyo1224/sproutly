@@ -360,6 +360,26 @@ export interface StoreTheme {
     // 兩端是成對的，這一行不是）。沒設就完全不覆寫，既有店家算出來一模一樣。
     heroBylineFontScale: number;       // byline 字級 multiplier，0.6-1.8（預設 1.0 = 不覆寫）
     heroBylineColor: string | null;    // byline 顏色，hex；null = 原本的淡文字色
+    // byline 的字距與大小寫。上一格補了字級與顏色，但那兩格的說明裡沒提到 byline 那個 span
+    // 自己一個樣式都沒有——它的字距與大小寫是從外層那條 flex 繼承來的
+    //（tracking-[0.32em] uppercase），所以字放大之後還有兩個問題原封不動：
+    // 1. 0.32em 是整站最寬的字距，跟 10px 一起是照拉丁大寫字母挑的（全大寫的英文不撐開
+    //    會擠成一塊）。byline 商家實際打的是「由 XX 選件」「攝影 / 王小明」這種中文或
+    //    中英混排，方塊字自帶字身框留白，再加 0.32em 等於每個字之間空掉三分之一個字，
+    //    七八個字的一行會散成七八個不相干的字。而字級那格只會讓它散得更開——0.32em 是
+    //    相對字級的，字放大字距跟著等比例放大。
+    // 2. uppercase 對中文按了不會動（方塊字沒有大小寫），問題在英文與混排：byline 打
+    //    人名（Photography by Wang）會被拉成 PHOTOGRAPHY BY WANG，打自己的英文店名或
+    //    IG 帳號也一樣（帳號的大小寫是它自己的一部分）。改輸入框的字沒有用——轉換發生
+    //    在畫面上不在資料裡，商家看到自己打的還是小寫，怎麼改都一樣。
+    // 跟上面兩格同一個判斷：只套在 byline 那個 span 上、不套外層那條 flex。右邊的 CTA
+    // 已經有自己的「按鈕字距」「按鈕大小寫」，套外層會讓這兩格連帶動到按鈕。
+    // 字距存的是相對量（收緊 -0.24em、撐開 +0.1em，加在繼承來的 0.32em 上），收緊壓到 0
+    // 就不再往下（負字距會讓中文筆畫互相咬住）。大小寫的預設留「照原本的全大寫」那一檔，
+    // 少了它按過「字首大寫」之後沒有一顆按鈕退得回原樣（跟小標那格同一個理由）。
+    // 兩格都是沒設就完全不覆寫、回 {}，既有店家的 byline 一個字都不會變。
+    heroBylineTracking: "tight" | "normal" | "wide"; // byline 字距（預設 normal = 不加減）
+    heroBylineCase: "upper" | "capitalize" | "none"; // byline 大小寫（預設 upper = 原本的 uppercase）
     heroHeight: "auto" | "short" | "tall" | "full"; // 預設 auto（adaptive 比例）
     // 全網站
     fontScale: number;                 // 全網站字體 multiplier 0.8-1.3（預設 1.0）
@@ -835,6 +855,16 @@ function resolveLayout(raw: unknown): StoreTheme["layout"] {
       return clampHeroFontScale(v);
     })(),
     heroBylineColor: normalizeHexColor(l.heroBylineColor),
+    heroBylineTracking: (() => {
+      const v = l.heroBylineTracking;
+      if (v === "tight" || v === "normal" || v === "wide") return v;
+      return "normal" as const;
+    })(),
+    heroBylineCase: (() => {
+      const v = l.heroBylineCase;
+      if (v === "upper" || v === "capitalize" || v === "none") return v;
+      return "upper" as const;
+    })(),
     heroHeight: (() => {
       const v = l.heroHeight;
       if (v === "short" || v === "tall" || v === "full" || v === "auto") return v;

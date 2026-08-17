@@ -110,6 +110,8 @@ type EditorTheme = {
     heroCtaCase: "default" | "capitalize" | "none";
     heroBylineFontScale: number;
     heroBylineColor: string | null;
+    heroBylineTracking: "tight" | "normal" | "wide";
+    heroBylineCase: "upper" | "capitalize" | "none";
     heroHeight: "auto" | "short" | "tall" | "full";
     fontScale: number;
     sectionPaddingScale: "compact" | "default" | "spacious";
@@ -959,6 +961,8 @@ export function EditorWorkspace({
           heroCtaCase: t.layout.heroCtaCase,
           heroBylineFontScale: t.layout.heroBylineFontScale,
           heroBylineColor: t.layout.heroBylineColor,
+          heroBylineTracking: t.layout.heroBylineTracking,
+          heroBylineCase: t.layout.heroBylineCase,
           heroHeight: t.layout.heroHeight,
           fontScale: t.layout.fontScale,
           sectionPaddingScale: t.layout.sectionPaddingScale,
@@ -2066,6 +2070,64 @@ export function EditorWorkspace({
               <p className="text-[10px] text-stone-500 mt-1">
                 原本用淡文字色，是整個雜誌版型最淡的一行。想讓它退成純裝飾、或反過來讓
                 客人讀得清楚都從這裡調，右邊的按鈕不跟
+              </p>
+            </Field>
+            <Field label="byline 字距">
+              <div className="grid grid-cols-3 gap-1.5">
+                {([
+                  { v: "tight", label: "收緊" },
+                  { v: "normal", label: "預設" },
+                  { v: "wide", label: "撐開" },
+                ] as const).map((opt) => (
+                  <button
+                    key={opt.v}
+                    type="button"
+                    onClick={() => updateLayout({ heroBylineTracking: opt.v })}
+                    aria-pressed={theme.layout.heroBylineTracking === opt.v}
+                    className={`rounded-lg border py-2 text-xs transition ${
+                      theme.layout.heroBylineTracking === opt.v
+                        ? "border-emerald-500 bg-emerald-50 text-emerald-900"
+                        : "border-stone-200 text-stone-600 hover:border-stone-400"
+                    }`}
+                  >
+                    {opt.label}
+                  </button>
+                ))}
+              </div>
+              <p className="text-[10px] text-stone-500 mt-1">
+                那行 byline 每個字之間的空隙，原本空 0.32em、是全站最寬的一格。那個寬度
+                跟 10px 一樣是照英文全大寫挑的，byline 打中文（「由 XX 選件」）七八個字會
+                散成七八個不相干的字，而上面那格把字放大以後空隙也跟著等比例變大、散得更開。
+                選收緊會靠回來，右邊的按鈕不跟
+              </p>
+            </Field>
+            <Field label="byline 大小寫">
+              <div className="grid grid-cols-3 gap-1.5">
+                {([
+                  { v: "upper", label: "全大寫" },
+                  { v: "capitalize", label: "字首大寫" },
+                  { v: "none", label: "照原樣" },
+                ] as const).map((opt) => (
+                  <button
+                    key={opt.v}
+                    type="button"
+                    onClick={() => updateLayout({ heroBylineCase: opt.v })}
+                    aria-pressed={theme.layout.heroBylineCase === opt.v}
+                    className={`rounded-lg border py-2 text-xs transition ${
+                      theme.layout.heroBylineCase === opt.v
+                        ? "border-emerald-500 bg-emerald-50 text-emerald-900"
+                        : "border-stone-200 text-stone-600 hover:border-stone-400"
+                    }`}
+                  >
+                    {opt.label}
+                  </button>
+                ))}
+              </div>
+              <p className="text-[10px] text-stone-500 mt-1">
+                byline 打中文的話這格沒有作用（中文沒有大小寫）。打英文才看得出來：那行字
+                一律被轉成全大寫，「Photography by Wang」變 PHOTOGRAPHY BY WANG，打 IG
+                帳號也會被改掉。選照原樣就照你打的顯示（改上面輸入框的字沒有用，大寫是
+                顯示的時候才轉的），右邊的按鈕不跟
               </p>
             </Field>
             <Field label={`主標字體大小（${theme.layout.heroTaglineFontScale.toFixed(2)}x）`}>

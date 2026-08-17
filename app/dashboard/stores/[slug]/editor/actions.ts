@@ -61,6 +61,8 @@ type EditorPayload = {
     heroCtaCase?: string;
     heroBylineFontScale?: number;
     heroBylineColor?: string | null;
+    heroBylineTracking?: string;
+    heroBylineCase?: string;
     heroHeight?: string;
     fontScale?: number;
     sectionPaddingScale?: string;
@@ -402,6 +404,18 @@ export async function saveEditorState(slug: string, payload: EditorPayload) {
       } else {
         const hex = normalizeHexColor(v);
         if (hex) layoutPatch.heroBylineColor = hex;
+      }
+    }
+    if (payload.layout.heroBylineTracking !== undefined) {
+      const v = payload.layout.heroBylineTracking;
+      if (v === "tight" || v === "normal" || v === "wide") {
+        layoutPatch.heroBylineTracking = v;
+      }
+    }
+    if (payload.layout.heroBylineCase !== undefined) {
+      const v = payload.layout.heroBylineCase;
+      if (v === "upper" || v === "capitalize" || v === "none") {
+        layoutPatch.heroBylineCase = v;
       }
     }
     if (payload.layout.fontScale !== undefined) {
