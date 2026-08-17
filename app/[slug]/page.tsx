@@ -1432,6 +1432,35 @@ export default async function StoreHomePage({
               : theme.layout.heroSubtitleLeading === "relaxed"
               ? { lineHeight: 2.2 }
               : {};
+          // Hero 按鈕（CTA）文字大小。五處的字級寫死成三種值：滿版圖那兩處是 text-sm
+          //（0.875rem 的底線連結）、split 兩顆與極簡那顆走 .sproutly-btn-lg（0.875rem，
+          // 寫在 layout 的 CSS 裡）、雜誌那條繼承下面 metadata 那行的 10px。那一顆是整個
+          // hero 上唯一有動作的東西，卻是視覺順位最後的一行字——主標可以拉到 4rem 以上，
+          // 按鈕永遠 0.875rem，再加上 .sproutly-btn 一律 uppercase + 0.18em 字距，
+          // 中文的「立即選購」在一顆大按鈕裡看起來又小又散。存 multiplier，1.0x 完全不覆寫。
+          const ctaScale = theme.layout.heroCtaFontScale;
+          // 滿版圖那兩處的底線連結（base = text-sm 0.875rem）
+          const ctaLinkSizeStyle =
+            ctaScale !== 1
+              ? { fontSize: `${Math.round(0.875 * ctaScale * 1000) / 1000}rem` }
+              : {};
+          // split 兩顆 + 極簡那顆（base = .sproutly-btn-lg 的 0.875rem / padding 1.125rem
+          // 2.25rem）。內距改成 em 跟著字走——1.125 / 0.875 = 1.286em、2.25 / 0.875 =
+          // 2.571em，1.0x 算出來就是原本那組 rem。不換成 em 的話字一放大會把兩側留白吃光，
+          // 藥丸形變成一顆塞滿字的長方形。
+          const ctaBtnSizeStyle =
+            ctaScale !== 1
+              ? {
+                  fontSize: `${Math.round(0.875 * ctaScale * 1000) / 1000}rem`,
+                  padding: "1.286em 2.571em",
+                }
+              : {};
+          // 雜誌那條 CTA（base = metadata 那行的 10px）。刻意只套在 CTA 上不套整條
+          // metadata——那行左邊的 byline 是另一件事（下一格才輪到它），跟按鈕不是成對的。
+          const ctaMicroSizeStyle =
+            ctaScale !== 1
+              ? { fontSize: `${Math.round(10 * ctaScale * 10) / 10}px` }
+              : {};
 
           // Variant 1: full-image — 自適應 banner（圖 + 文字段），手機 / 桌機 同一套
           if (heroStyle === "full-image" && theme.heroUrl) {
@@ -1636,6 +1665,7 @@ export default async function StoreHomePage({
                           maxWidth: "min(24rem, 90%)",
                           color: theme.text,
                           fontFamily: "var(--store-font)",
+                          ...ctaLinkSizeStyle,
                         }}
                       >
                         {heroCta}
@@ -1651,6 +1681,7 @@ export default async function StoreHomePage({
                         style={{
                           color: theme.text,
                           fontFamily: "var(--store-font)",
+                          ...ctaLinkSizeStyle,
                         }}
                       >
                         {heroCta}
@@ -1749,6 +1780,7 @@ export default async function StoreHomePage({
                       className="sproutly-btn sproutly-btn-primary sproutly-btn-lg"
                       data-edit-text
                       data-edit-field="heroCta"
+                      style={ctaBtnSizeStyle}
                     >
                       {heroCta}
                     </Link>
@@ -1758,6 +1790,7 @@ export default async function StoreHomePage({
                         className="sproutly-btn sproutly-btn-secondary sproutly-btn-lg"
                         data-edit-text
                         data-edit-field="heroSecondaryCta"
+                        style={ctaBtnSizeStyle}
                       >
                         {heroSecondaryCta}
                       </Link>
@@ -1863,7 +1896,7 @@ export default async function StoreHomePage({
                       href={`/${slug}/shop`}
                       className="sproutly-link"
                       data-default-line="true"
-                      style={{ color: theme.text }}
+                      style={{ color: theme.text, ...ctaMicroSizeStyle }}
                     >
                       {/* 箭頭留在可編輯範圍外，雙擊改到的只有文字本體 */}
                       <span data-edit-text data-edit-field="heroCta">
@@ -1952,6 +1985,7 @@ export default async function StoreHomePage({
                 className={`sproutly-btn sproutly-btn-primary sproutly-btn-lg mt-12 ${fade3}`}
                 data-edit-text
                 data-edit-field="heroCta"
+                style={ctaBtnSizeStyle}
               >
                 {heroCta}
               </Link>

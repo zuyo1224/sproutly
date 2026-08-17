@@ -56,6 +56,7 @@ type EditorPayload = {
     heroSubtitleWeight?: string;
     heroSubtitleTracking?: string;
     heroSubtitleLeading?: string;
+    heroCtaFontScale?: number;
     heroHeight?: string;
     fontScale?: number;
     sectionPaddingScale?: string;
@@ -364,6 +365,12 @@ export async function saveEditorState(slug: string, payload: EditorPayload) {
       const v = payload.layout.heroSubtitleLeading;
       if (v === "tight" || v === "normal" || v === "relaxed") {
         layoutPatch.heroSubtitleLeading = v;
+      }
+    }
+    if (payload.layout.heroCtaFontScale !== undefined) {
+      const v = payload.layout.heroCtaFontScale;
+      if (typeof v === "number" && Number.isFinite(v)) {
+        layoutPatch.heroCtaFontScale = clampHeroFontScale(v);
       }
     }
     if (payload.layout.fontScale !== undefined) {

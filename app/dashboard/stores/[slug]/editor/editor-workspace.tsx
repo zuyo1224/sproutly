@@ -105,6 +105,7 @@ type EditorTheme = {
     heroSubtitleWeight: "normal" | "medium" | "bold";
     heroSubtitleTracking: "tight" | "normal" | "wide";
     heroSubtitleLeading: "tight" | "normal" | "relaxed";
+    heroCtaFontScale: number;
     heroHeight: "auto" | "short" | "tall" | "full";
     fontScale: number;
     sectionPaddingScale: "compact" | "default" | "spacious";
@@ -949,6 +950,7 @@ export function EditorWorkspace({
           heroSubtitleWeight: t.layout.heroSubtitleWeight,
           heroSubtitleTracking: t.layout.heroSubtitleTracking,
           heroSubtitleLeading: t.layout.heroSubtitleLeading,
+          heroCtaFontScale: t.layout.heroCtaFontScale,
           heroHeight: t.layout.heroHeight,
           fontScale: t.layout.fontScale,
           sectionPaddingScale: t.layout.sectionPaddingScale,
@@ -1906,6 +1908,28 @@ export function EditorWorkspace({
               />
               <p className="text-[10px] text-stone-500 mt-1">
                 Split 版型 Hero 區段的次要按鈕（連到關於頁），預設「關於我們」
+              </p>
+            </Field>
+            <Field label={`按鈕文字大小（${theme.layout.heroCtaFontScale.toFixed(2)}x）`}>
+              <input
+                type="range"
+                min={HERO_FONT_SCALE_MIN}
+                max={HERO_FONT_SCALE_MAX}
+                step="0.05"
+                value={theme.layout.heroCtaFontScale}
+                onChange={(e) => updateLayout({ heroCtaFontScale: parseFloat(e.target.value) })}
+                className="w-full"
+              />
+              <div className="flex justify-between text-[10px] text-stone-500">
+                <span>小</span>
+                <span>標準 1.0x</span>
+                <span>大</span>
+              </div>
+              <p className="text-[10px] text-stone-500 mt-1">
+                四種版型的按鈕（含次要按鈕）一起套。按鈕是 hero 上唯一可以按的東西，
+                但原本的字級固定不動——主標拉大之後，按鈕會被主標壓成最不起眼的一行；
+                雜誌版型那條更小（跟下面 byline 同一個字級），手機上不容易看出來可以按。
+                放大時按鈕的內距會跟著長，形狀不會被字撐爆
               </p>
             </Field>
             <Field label="雜誌版型下方 byline">

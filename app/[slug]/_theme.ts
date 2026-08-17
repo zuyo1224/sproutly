@@ -309,6 +309,21 @@ export interface StoreTheme {
     // 不發那個 attribute（跟副標粗細 / 字距同一個原因），所以副標吃不到。
     // base 只有 1.9 一個值，所以這裡存絕對值：收緊 1.55 / 舒展 2.2。預設不覆寫。
     heroSubtitleLeading: "tight" | "normal" | "relaxed"; // 副標行距（預設 normal = 不覆寫）
+    // Hero 按鈕（CTA）的文字大小。主標五格、副標五格、小標四格都補完了，客人真正要按的
+    // 那一顆反而沒有一格——五處的字級全寫死，而且三種寫法各不相同：滿版圖是一行帶底線的
+    // 連結（text-sm，0.875rem）、split 與極簡是 .sproutly-btn-lg（0.875rem，寫在 layout 的
+    // CSS 裡）、雜誌那條是繼承下面那行 metadata 的 10px。三個地方都不是商家改得到的。
+    // 為什麼要：那一顆是整個 hero 上唯一有動作的東西，但預設值把它排在視覺順位的最後——
+    // 主標可以放到 4rem 以上，按鈕文字固定 0.875rem，中間差了四五倍；再加上 .sproutly-btn
+    // 一律 uppercase + 0.18em 字距，中文的「立即選購」四個字在一顆大按鈕裡看起來又小又散。
+    // 雜誌版型那個 10px 更極端，客人在手機上幾乎看不到那行字是可以按的。
+    // 商家原本能繞的路都有副作用：把按鈕文字打長一點（版位會被撐開）、換全網站字級
+    //（每一頁的字一起變）、或改 hero 高度（按鈕沒變只是周圍空白變多）。
+    // 存的是 multiplier 不是絕對值——五處各自的 base 不同（0.875rem / 0.875rem / 10px），
+    // 乘上去各自放大，版型之間原本的手感差異保留；1.0x 完全不覆寫，既有店家一模一樣。
+    // 按鈕型那三顆的內距跟著字走（改成 em 表示，1.0x 算出來等於原本那組 rem），不然字放大
+    // 會把兩側的留白吃光、變成一顆塞滿字的長方形。
+    heroCtaFontScale: number;          // Hero 按鈕文字 multiplier，0.6-1.8（預設 1.0 = 不覆寫）
     heroHeight: "auto" | "short" | "tall" | "full"; // 預設 auto（adaptive 比例）
     // 全網站
     fontScale: number;                 // 全網站字體 multiplier 0.8-1.3（預設 1.0）
@@ -762,6 +777,11 @@ function resolveLayout(raw: unknown): StoreTheme["layout"] {
       const v = l.heroSubtitleLeading;
       if (v === "tight" || v === "normal" || v === "relaxed") return v;
       return "normal" as const;
+    })(),
+    heroCtaFontScale: (() => {
+      const v = l.heroCtaFontScale;
+      if (typeof v !== "number" || !Number.isFinite(v)) return 1.0;
+      return clampHeroFontScale(v);
     })(),
     heroHeight: (() => {
       const v = l.heroHeight;
