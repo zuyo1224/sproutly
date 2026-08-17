@@ -739,12 +739,18 @@ export default async function PublicStoreLayout({
            fallback 只能填另一個值，等於沒設定的 section 也會被那個值一律蓋掉，各 section
            原本 Tailwind class 的粗細層級就沒了。attribute selector 才有「沒設就不存在」。
            400 / 700 是 layout 這支已經載進來的字重，不用 300 之類沒載的（瀏覽器會拿常規
-           假變細，中文筆畫糊掉）。排除 hero — hero 主標的字級 / 顏色 / 對齊自成一組控制。 */
+           假變細，中文筆畫糊掉）。排除 hero — hero 主標的字級 / 顏色 / 對齊自成一組控制。
+           除了 font-weight 還一起寫出 --heading-weight：十五個 h2 每一個都在 inline style
+           裡寫死字重（多數 400、數字那段 500），inline 一律贏過這裡的規則，所以只寫
+           font-weight 這一格是死的——按下去畫面不動。page.tsx 那邊改讀
+           var(--heading-weight, 原本的值)，沒設變數時算出來一模一樣。 */
         section[data-edit-target]:not([data-edit-target="hero"])[data-heading-weight="light"] h2 {
           font-weight: 400;
+          --heading-weight: 400;
         }
         section[data-edit-target]:not([data-edit-target="hero"])[data-heading-weight="bold"] h2 {
           font-weight: 700;
+          --heading-weight: 700;
         }
 
         /* 區段大標行距：editor 各 section panel「標題行距」三按鈕（收緊 / 預設 / 拉開）。
@@ -756,12 +762,18 @@ export default async function PublicStoreLayout({
            會散掉），所以標題這邊要自己一條。同樣走 data attribute：沒設就整條規則不存在，
            各段維持自己 class 附帶的那個值。這份 <style> 沒包在 @layer，蓋得過 leading-* class。
            排除 hero — hero 主標自成一組控制，跟標題粗細、底線那幾條同一個範圍。
-           收緊給 1.1 不給更小：中文的字在行框裡本來就佔滿，1.0 以下上下兩行會疊到筆畫。 */
+           收緊給 1.1 不給更小：中文的字在行框裡本來就佔滿，1.0 以下上下兩行會疊到筆畫。
+           跟粗細同一個處境：慢讀 / 好評 / 常見問題 / 數字 / 相簿 / 來訪那六段的 h2 在 inline
+           style 裡寫死 lineHeight 1.2，inline 贏過這裡，只寫 line-height 這一格對那六段是死的。
+           一起寫出 --heading-leading，page.tsx 改讀 var(--heading-leading, 1.2)；選物與精選
+           那幾個 h2 的行距在 class 上（這份 <style> 沒包 @layer，蓋得過），本來就吃得到。 */
         section[data-edit-target]:not([data-edit-target="hero"])[data-heading-leading="tight"] h2 {
           line-height: 1.1;
+          --heading-leading: 1.1;
         }
         section[data-edit-target]:not([data-edit-target="hero"])[data-heading-leading="loose"] h2 {
           line-height: 1.5;
+          --heading-leading: 1.5;
         }
 
         /* 區段標題底線：editor 各 section panel「標題底線」三按鈕（無 / 短線 / 整條）。
