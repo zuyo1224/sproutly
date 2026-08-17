@@ -1301,6 +1301,15 @@ export default async function StoreHomePage({
           // 天生置中，套預設值 left 會把現有店家的版型翻掉，只在 full-image 生效）
           const taglineColor = theme.layout.heroTaglineColor ?? theme.text;
           const taglineFontScale = theme.layout.heroTaglineFontScale;
+          // 主標粗細（四個版型共用）。以前四處各寫死 fontWeight: 400——全站字最大的那一句
+          // 反而是唯一調不動粗細的標題（各段大標的「標題粗細」規則明確排除 hero）。
+          // 沒設定的店家算出來就是 400，跟原本一模一樣。
+          const taglineWeight =
+            theme.layout.heroTaglineWeight === "bold"
+              ? 700
+              : theme.layout.heroTaglineWeight === "medium"
+              ? 500
+              : 400;
           // 各版型的預設字級是 Tailwind responsive class，只在 user 動過 slider
           // 時才用 inline clamp 蓋掉（1.0x 完全不覆寫，維持原本斷點行為）；
           // min / vw / max 各版型自己帶，對齊該版型原本 class 的字級範圍。
@@ -1416,7 +1425,7 @@ export default async function StoreHomePage({
                               maxWidth: "min(800px, 90%)",
                               color: taglineColor,
                               fontFamily: "var(--store-font)",
-                              fontWeight: 400,
+                              fontWeight: taglineWeight,
                               letterSpacing: "0.02em",
                               wordBreak: "keep-all",
                               overflowWrap: "break-word",
@@ -1425,7 +1434,7 @@ export default async function StoreHomePage({
                           : {
                               color: taglineColor,
                               fontFamily: "var(--store-font)",
-                              fontWeight: 400,
+                              fontWeight: taglineWeight,
                               letterSpacing: "0.02em",
                               wordBreak: "keep-all",
                               overflowWrap: "break-word",
@@ -1583,7 +1592,7 @@ export default async function StoreHomePage({
                     style={{
                       color: taglineColor,
                       fontFamily: "var(--store-font)",
-                      fontWeight: 400,
+                      fontWeight: taglineWeight,
                       letterSpacing: "-0.01em",
                       wordBreak: "keep-all",
                       overflowWrap: "break-word",
@@ -1666,7 +1675,7 @@ export default async function StoreHomePage({
                     style={{
                       color: taglineColor,
                       fontFamily: "var(--store-font)",
-                      fontWeight: 400,
+                      fontWeight: taglineWeight,
                       letterSpacing: "-0.02em",
                       wordBreak: "keep-all",
                       overflowWrap: "break-word",
@@ -1750,7 +1759,7 @@ export default async function StoreHomePage({
                 style={{
                   color: taglineColor,
                   fontFamily: "var(--store-font)",
-                  fontWeight: 400,
+                  fontWeight: taglineWeight,
                   letterSpacing: "-0.015em",
                   wordBreak: "keep-all",
                   overflowWrap: "break-word",

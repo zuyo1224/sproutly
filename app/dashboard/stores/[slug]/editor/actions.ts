@@ -43,6 +43,7 @@ type EditorPayload = {
     heroTaglineFontScale?: number;
     heroTaglineColor?: string | null;
     heroTaglineAlign?: string;
+    heroTaglineWeight?: string;
     heroSubtitleFontScale?: number;
     heroSubtitleColor?: string | null;
     heroSubtitleAlign?: string;
@@ -270,6 +271,12 @@ export async function saveEditorState(slug: string, payload: EditorPayload) {
       const v = payload.layout.heroTaglineAlign;
       if (v === "left" || v === "center" || v === "right") {
         layoutPatch.heroTaglineAlign = v;
+      }
+    }
+    if (payload.layout.heroTaglineWeight !== undefined) {
+      const v = payload.layout.heroTaglineWeight;
+      if (v === "normal" || v === "medium" || v === "bold") {
+        layoutPatch.heroTaglineWeight = v;
       }
     }
     if (payload.layout.heroSubtitleFontScale !== undefined) {

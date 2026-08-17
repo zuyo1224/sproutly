@@ -92,6 +92,7 @@ type EditorTheme = {
     heroTaglineFontScale: number;
     heroTaglineColor: string | null;
     heroTaglineAlign: "left" | "center" | "right";
+    heroTaglineWeight: "normal" | "medium" | "bold";
     heroSubtitleFontScale: number;
     heroSubtitleColor: string | null;
     heroSubtitleAlign: "inherit" | "left" | "center" | "right";
@@ -926,6 +927,7 @@ export function EditorWorkspace({
           heroTaglineFontScale: t.layout.heroTaglineFontScale,
           heroTaglineColor: t.layout.heroTaglineColor,
           heroTaglineAlign: t.layout.heroTaglineAlign,
+          heroTaglineWeight: t.layout.heroTaglineWeight,
           heroSubtitleFontScale: t.layout.heroSubtitleFontScale,
           heroSubtitleColor: t.layout.heroSubtitleColor,
           heroSubtitleAlign: t.layout.heroSubtitleAlign,
@@ -1769,6 +1771,32 @@ export function EditorWorkspace({
               </div>
               <p className="text-[10px] text-stone-500 mt-1">
                 對齊只有「整版圖片」版型會套用；其他版型的主標位置是版型設計的一部分，先跟著版型走
+              </p>
+            </Field>
+            <Field label="主標粗細">
+              <div className="grid grid-cols-3 gap-1.5">
+                {([
+                  { v: "normal", label: "常規" },
+                  { v: "medium", label: "中黑" },
+                  { v: "bold", label: "粗" },
+                ] as const).map((opt) => (
+                  <button
+                    key={opt.v}
+                    type="button"
+                    onClick={() => updateLayout({ heroTaglineWeight: opt.v })}
+                    aria-pressed={theme.layout.heroTaglineWeight === opt.v}
+                    className={`rounded-lg border py-2 text-xs transition ${
+                      theme.layout.heroTaglineWeight === opt.v
+                        ? "border-emerald-500 bg-emerald-50 text-emerald-900"
+                        : "border-stone-200 text-stone-600 hover:border-stone-400"
+                    }`}
+                  >
+                    {opt.label}
+                  </button>
+                ))}
+              </div>
+              <p className="text-[10px] text-stone-500 mt-1">
+                四種版型都會套用。字最大的那一句原本一律是最輕的常規，短主標容易撐不起整頁
               </p>
             </Field>
             <Field label="Hero 高度">

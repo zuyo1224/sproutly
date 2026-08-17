@@ -221,6 +221,21 @@ export interface StoreTheme {
     heroTaglineFontScale: number;      // 主標字體 multiplier，0.6-1.8（預設 1.0）
     heroTaglineColor: string | null;   // 主標顏色，hex；null = 用 theme.text
     heroTaglineAlign: "left" | "center" | "right"; // 主標對齊（預設 left）
+    // 主標粗細（normal 400 常規 / medium 500 中黑 / bold 700 粗）。四種版型的 hero 主標
+    // 都在 inline style 裡寫死 fontWeight: 400——那是整個網站字最大、客人第一眼唯一會讀完
+    // 的一句話，而 400 是最輕的那一級。細字配大字級在雜誌版型上是好看的，配到太和工房那種
+    // 賣器物的店、或主標只有四五個字的短句，整句會軟掉、撐不起底下整頁的份量。
+    // 商家原本能動的只有三個方向，每一個都連帶動到別的：字級 slider 把字放大（hero 整塊
+    // 跟著變高、照片與文字的比例被改掉）、顏色調深（跟背景的對比一起變，深色底的店反而更糊）、
+    // 換字體（整站的字一起換，不只主標）。粗細不佔空間、不動顏色、只影響這一句，是讓主標
+    // 站出來最省的一格，卻是 hero 這組控制裡唯一沒有的——字級、顏色、對齊、高度、縮放都給了。
+    // 各段大標早就有「標題粗細」（headingWeight）可以各段獨立調，那條規則 selector 明確排除
+    // hero（hero 主標的字級 / 顏色 / 對齊自成一組），所以 hero 是全站唯一調不動粗細的標題。
+    // 只給 400 / 500 / 700：layout 那支載進來的就這三個字重，300 那種沒載的瀏覽器會拿常規
+    // 去假變細，中文筆畫糊掉——跟段落大標、卡片那幾格同一個理由。
+    // 四種版型一起套（不像對齊只在 full-image 生效）：粗細不動位置，split / magazine /
+    // minimal 的版面配置一格都不會被翻掉，沒設定的店家照樣算出 400、跟現在一模一樣。
+    heroTaglineWeight: "normal" | "medium" | "bold"; // 主標粗細（預設 normal = 400）
     heroSubtitleFontScale: number;     // 副標字體 multiplier，0.6-1.8（預設 1.0）
     heroSubtitleColor: string | null;  // 副標顏色，hex；null = 用 theme.textMuted
     heroSubtitleAlign: "inherit" | "left" | "center" | "right"; // 副標對齊（inherit = 跟版型預設走，不覆寫）
@@ -620,6 +635,11 @@ function resolveLayout(raw: unknown): StoreTheme["layout"] {
       const v = l.heroTaglineAlign;
       if (v === "left" || v === "center" || v === "right") return v;
       return "left" as const;
+    })(),
+    heroTaglineWeight: (() => {
+      const v = l.heroTaglineWeight;
+      if (v === "normal" || v === "medium" || v === "bold") return v;
+      return "normal" as const;
     })(),
     heroSubtitleFontScale: (() => {
       const v = l.heroSubtitleFontScale;
