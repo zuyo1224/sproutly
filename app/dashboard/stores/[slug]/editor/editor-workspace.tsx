@@ -98,6 +98,7 @@ type EditorTheme = {
     heroHeight: "auto" | "short" | "tall" | "full";
     fontScale: number;
     sectionPaddingScale: "compact" | "default" | "spacious";
+    buttonRadius: "pill" | "soft" | "square";
     featuredCount: number;
     featuredColumns: 2 | 3 | 4;
     collectionsColumns: 2 | 3 | 4;
@@ -931,6 +932,7 @@ export function EditorWorkspace({
           heroHeight: t.layout.heroHeight,
           fontScale: t.layout.fontScale,
           sectionPaddingScale: t.layout.sectionPaddingScale,
+          buttonRadius: t.layout.buttonRadius,
           featuredCount: t.layout.featuredCount,
           featuredColumns: t.layout.featuredColumns,
           collectionsColumns: t.layout.collectionsColumns,
@@ -6516,6 +6518,32 @@ export function EditorWorkspace({
                   </button>
                 ))}
               </div>
+            </Field>
+            <Field label="按鈕圓角">
+              <div className="grid grid-cols-3 gap-1.5">
+                {([
+                  { v: "pill", label: "整圓" },
+                  { v: "soft", label: "微圓" },
+                  { v: "square", label: "直角" },
+                ] as const).map((opt) => (
+                  <button
+                    key={opt.v}
+                    type="button"
+                    onClick={() => updateLayout({ buttonRadius: opt.v })}
+                    aria-pressed={theme.layout.buttonRadius === opt.v}
+                    className={`rounded-lg border py-2 text-xs transition ${
+                      theme.layout.buttonRadius === opt.v
+                        ? "border-emerald-500 bg-emerald-50 text-emerald-900"
+                        : "border-stone-200 text-stone-600 hover:border-stone-400"
+                    }`}
+                  >
+                    {opt.label}
+                  </button>
+                ))}
+              </div>
+              <p className="text-[10px] text-stone-500 leading-relaxed">
+                全站的按鈕一起換 — 首頁的行動按鈕、加入購物車、結帳、表單送出。
+              </p>
             </Field>
             <Field label="Logo（顯示在 nav）">
               {theme.logoUrl ? (

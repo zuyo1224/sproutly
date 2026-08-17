@@ -49,6 +49,7 @@ type EditorPayload = {
     heroHeight?: string;
     fontScale?: number;
     sectionPaddingScale?: string;
+    buttonRadius?: string;
     featuredCount?: number;
     featuredColumns?: number;
     collectionsColumns?: number;
@@ -302,6 +303,12 @@ export async function saveEditorState(slug: string, payload: EditorPayload) {
       const v = payload.layout.sectionPaddingScale;
       if (v === "compact" || v === "default" || v === "spacious") {
         layoutPatch.sectionPaddingScale = v;
+      }
+    }
+    if (payload.layout.buttonRadius !== undefined) {
+      const v = payload.layout.buttonRadius;
+      if (v === "pill" || v === "soft" || v === "square") {
+        layoutPatch.buttonRadius = v;
       }
     }
     if (payload.layout.featuredCount !== undefined) {

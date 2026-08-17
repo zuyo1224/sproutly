@@ -228,6 +228,22 @@ export interface StoreTheme {
     // 全網站
     fontScale: number;                 // 全網站字體 multiplier 0.8-1.3（預設 1.0）
     sectionPaddingScale: "compact" | "default" | "spacious"; // 區段上下空白
+    // 按鈕圓角（pill 整顆圓的 / soft 微圓角 / square 直角）。全站的按鈕一律是 9999px 的
+    // 藥丸形——那是寫死在 .sproutly-btn 上的一個值，從 hero 的「立即選購」、精選底下的
+    // 「看所有的植物」，到商品頁的加入購物車、購物車的結帳、每一頁的表單送出，全部同一顆。
+    // 藥丸形是有立場的形狀：柔、圓、偏生活風，配盆栽店剛好，配太和工房那種賣金屬水壺的
+    // 器物店、或做工業風、日式極簡的店，圓到底的按鈕跟整站的方正線條對不起來。而按鈕是
+    // 客人在一個頁面上唯一會按的東西，形狀不對整站就跟著不對。
+    // 商家原本沒有一格動得到——「圓角」那欄（borderRadius）畫的是單一區段的外框、
+    // 「卡片外觀」給的是卡片的邊界，兩個都不到按鈕身上；主色、字體那些換的是顏色與字，
+    // 形狀一動也不動。
+    // 走 CSS variable 不走 class：按鈕散在十幾個頁面（首頁、商品、購物車、結帳、會員、
+    // 訂單追蹤）與好幾個 client component 裡，要改的話每一處都得傳 theme 進去；圓角掛在
+    // 已經套在 root 的那組變數上，一個值全站到齊，沒設的店家 fallback 回原本的 9999px、
+    // 算出來一模一樣。
+    // 輸入框（.sproutly-input）不跟著動：那是另一種元素，商家想要方按鈕配圓搜尋框是合理的
+    // 組合，等真有店家被「兩個形狀對不起來」卡到再補一格，不先替他決定。
+    buttonRadius: "pill" | "soft" | "square";
     // Featured / Collections 顯示
     featuredCount: number;             // 顯示幾個商品 3-12（預設 6）
     featuredColumns: 2 | 3 | 4;        // 排成幾欄（預設 3）
@@ -631,6 +647,11 @@ function resolveLayout(raw: unknown): StoreTheme["layout"] {
       if (v === "compact" || v === "default" || v === "spacious") return v;
       return "default" as const;
     })(),
+    buttonRadius: (() => {
+      const v = l.buttonRadius;
+      if (v === "pill" || v === "soft" || v === "square") return v;
+      return "pill" as const;
+    })(),
     featuredCount: (() => {
       const v = l.featuredCount;
       if (typeof v !== "number" || !Number.isFinite(v)) return 6;
@@ -884,6 +905,14 @@ export function themeToCssVars(theme: StoreTheme): React.CSSProperties {
       : theme.layout.sectionPaddingScale === "spacious"
       ? 1.4
       : 1.0;
+  // 按鈕圓角 → 一個長度值，.sproutly-btn 讀它。soft 給 8px 不給更大：按鈕本身只有 44px
+  // 上下高，圓角一過 12px 兩端的弧就接起來、又變回藥丸的樣子，中間那一檔就白給了。
+  const btnRadius =
+    theme.layout.buttonRadius === "square"
+      ? "0px"
+      : theme.layout.buttonRadius === "soft"
+      ? "8px"
+      : "9999px";
   return {
     "--store-primary": theme.primary,
     "--store-accent": theme.accent,
@@ -896,5 +925,6 @@ export function themeToCssVars(theme: StoreTheme): React.CSSProperties {
     // 全網站字體 scale — body 套用
     fontSize: `${theme.layout.fontScale * 100}%`,
     "--store-section-pad": String(sectionPad),
+    "--store-btn-radius": btnRadius,
   } as React.CSSProperties;
 }

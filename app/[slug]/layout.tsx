@@ -509,7 +509,9 @@ export default async function PublicStoreLayout({
           justify-content: center;
           gap: 0.5rem;
           padding: 0.875rem 1.75rem;
-          border-radius: 9999px;
+          /* 商家在「按鈕圓角」那格挑的形狀，值由 themeToCssVars 算好掛在 root。
+             沒設的店家 fallback 回原本的 9999px，算出來一模一樣。 */
+          border-radius: var(--store-btn-radius, 9999px);
           font-size: 0.8125rem;
           letter-spacing: 0.18em;
           text-transform: uppercase;
