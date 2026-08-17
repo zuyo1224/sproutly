@@ -345,6 +345,21 @@ export interface StoreTheme {
     // 寫死一個 upper 當預設會在存檔的當下把滿版圖那顆改掉。兩格都是沒設就完全不覆寫。
     heroCtaTracking: "tight" | "normal" | "wide"; // 按鈕字距（預設 normal = 不加減）
     heroCtaCase: "default" | "capitalize" | "none"; // 按鈕大小寫（預設 default = 照各版型原本）
+    // 雜誌版型底下那條 byline 的字級與顏色。hero 這組控制補到這裡，主標、副標、小標、
+    // 按鈕都有了，byline 是最後一個完全沒得動的元素——商家改得到的只有那行字本身
+    //（編輯器早就有輸入框），字級寫死在外層那條 flex 的 text-[10px] 上、顏色寫死
+    // theme.textMuted。10px 跟上面那條 metadata 同一個值，都是照拉丁大寫字母挑的：
+    // 大寫字母沒有下伸筆畫、筆畫少，10px 還讀得出來；商家實際打的 byline 常是中文
+    //（「由 XX 選件」）或混中英，方塊字在 10px 只剩一團墨，而全網站字級那格動不到
+    // class 上寫死的 px。顏色則是整個雜誌版型最淡的一行——上面那條 metadata 至少可以
+    // 靠「小標顏色」那格拉回來，byline 沒有對應的格子，想讓它退成純裝飾或反過來讓它
+    // 讀得清楚都做不到。
+    // 兩格都刻意只套在 byline 那個 span 上、不套外層那條 flex：右邊的 CTA 連結是另一件
+    // 事，已經有自己的「按鈕文字大小」「按鈕字距」「按鈕大小寫」三格，套外層會讓 byline
+    // 這格連帶動到按鈕（跟小標那輪把三格套在整條 metadata 上的判斷相反，因為那一行左右
+    // 兩端是成對的，這一行不是）。沒設就完全不覆寫，既有店家算出來一模一樣。
+    heroBylineFontScale: number;       // byline 字級 multiplier，0.6-1.8（預設 1.0 = 不覆寫）
+    heroBylineColor: string | null;    // byline 顏色，hex；null = 原本的淡文字色
     heroHeight: "auto" | "short" | "tall" | "full"; // 預設 auto（adaptive 比例）
     // 全網站
     fontScale: number;                 // 全網站字體 multiplier 0.8-1.3（預設 1.0）
@@ -814,6 +829,12 @@ function resolveLayout(raw: unknown): StoreTheme["layout"] {
       if (v === "default" || v === "capitalize" || v === "none") return v;
       return "default" as const;
     })(),
+    heroBylineFontScale: (() => {
+      const v = l.heroBylineFontScale;
+      if (typeof v !== "number" || !Number.isFinite(v)) return 1.0;
+      return clampHeroFontScale(v);
+    })(),
+    heroBylineColor: normalizeHexColor(l.heroBylineColor),
     heroHeight: (() => {
       const v = l.heroHeight;
       if (v === "short" || v === "tall" || v === "full" || v === "auto") return v;

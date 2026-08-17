@@ -108,6 +108,8 @@ type EditorTheme = {
     heroCtaFontScale: number;
     heroCtaTracking: "tight" | "normal" | "wide";
     heroCtaCase: "default" | "capitalize" | "none";
+    heroBylineFontScale: number;
+    heroBylineColor: string | null;
     heroHeight: "auto" | "short" | "tall" | "full";
     fontScale: number;
     sectionPaddingScale: "compact" | "default" | "spacious";
@@ -955,6 +957,8 @@ export function EditorWorkspace({
           heroCtaFontScale: t.layout.heroCtaFontScale,
           heroCtaTracking: t.layout.heroCtaTracking,
           heroCtaCase: t.layout.heroCtaCase,
+          heroBylineFontScale: t.layout.heroBylineFontScale,
+          heroBylineColor: t.layout.heroBylineColor,
           heroHeight: t.layout.heroHeight,
           fontScale: t.layout.fontScale,
           sectionPaddingScale: t.layout.sectionPaddingScale,
@@ -2005,6 +2009,63 @@ export function EditorWorkspace({
               />
               <p className="text-[10px] text-stone-500 mt-1">
                 Magazine 版型 Hero 底部那行小字，預設「Curated by 店名」
+              </p>
+            </Field>
+            <Field label={`byline 文字大小（${theme.layout.heroBylineFontScale.toFixed(2)}x）`}>
+              <input
+                type="range"
+                min={HERO_FONT_SCALE_MIN}
+                max={HERO_FONT_SCALE_MAX}
+                step="0.05"
+                value={theme.layout.heroBylineFontScale}
+                onChange={(e) =>
+                  updateLayout({ heroBylineFontScale: parseFloat(e.target.value) })
+                }
+                className="w-full"
+              />
+              <div className="flex justify-between text-[10px] text-stone-500">
+                <span>小</span>
+                <span>標準 1.0x</span>
+                <span>大</span>
+              </div>
+              <p className="text-[10px] text-stone-500 mt-1">
+                只動上面那行 byline，右邊的按鈕不跟（按鈕有自己的那格）。原本固定 10px，
+                那個大小是照英文大寫字母挑的，byline 打中文的話在 10px 幾乎糊成一團，
+                而全網站字級那格也動不到它
+              </p>
+            </Field>
+            <Field label="byline 顏色">
+              <div className="flex items-center gap-2">
+                {/* 取色器需要一個具體的 hex 當初始值（EditorTheme 沒帶 textMuted）；
+                    沒設的時候公開頁走的還是各 preset 自己的淡文字色 */}
+                <input
+                  type="color"
+                  value={theme.layout.heroBylineColor ?? "#6B6B6B"}
+                  onChange={(e) => updateLayout({ heroBylineColor: e.target.value })}
+                  className="h-8 w-12 rounded border border-stone-200"
+                />
+                <input
+                  type="text"
+                  value={theme.layout.heroBylineColor ?? ""}
+                  onChange={(e) =>
+                    updateLayout({ heroBylineColor: e.target.value || null })
+                  }
+                  placeholder="預設用淡文字色"
+                  className="flex-1 rounded-lg border border-stone-200 px-3 py-2 text-sm font-mono"
+                />
+                {theme.layout.heroBylineColor && (
+                  <button
+                    type="button"
+                    onClick={() => updateLayout({ heroBylineColor: null })}
+                    className="text-xs text-stone-500 hover:text-stone-800 underline"
+                  >
+                    清除
+                  </button>
+                )}
+              </div>
+              <p className="text-[10px] text-stone-500 mt-1">
+                原本用淡文字色，是整個雜誌版型最淡的一行。想讓它退成純裝飾、或反過來讓
+                客人讀得清楚都從這裡調，右邊的按鈕不跟
               </p>
             </Field>
             <Field label={`主標字體大小（${theme.layout.heroTaglineFontScale.toFixed(2)}x）`}>

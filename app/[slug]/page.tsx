@@ -1487,6 +1487,19 @@ export default async function StoreHomePage({
               : theme.layout.heroCtaCase === "capitalize"
               ? { textTransform: "capitalize" }
               : {};
+          // 雜誌版型底下那條 byline（hero 最後一個完全沒得動的元素）。字級寫死在外層那條
+          // flex 的 text-[10px] 上、顏色寫死 theme.textMuted。10px 跟上面那條 metadata
+          // 同一個值，是照拉丁大寫字母挑的；byline 商家常打中文或中英混排，方塊字在 10px
+          // 只剩一團墨，而全網站字級那格動不到 class 上寫死的 px。顏色是整個版型最淡的一行，
+          // 上面那條 metadata 至少能靠「小標顏色」拉回來，這一行沒有對應的格子。
+          // 兩個都只套在 byline 那個 span 上、不套外層那條 flex——右邊的 CTA 已經有自己的
+          // 三格（大小 / 字距 / 大小寫），套外層會讓這格連帶動到按鈕。
+          const bylineScale = theme.layout.heroBylineFontScale;
+          const bylineSizeStyle =
+            bylineScale !== 1
+              ? { fontSize: `${Math.round(10 * bylineScale * 10) / 10}px` }
+              : {};
+          const bylineColor = theme.layout.heroBylineColor ?? theme.textMuted;
 
           // Variant 1: full-image — 自適應 banner（圖 + 文字段），手機 / 桌機 同一套
           if (heroStyle === "full-image" && theme.heroUrl) {
@@ -1919,6 +1932,7 @@ export default async function StoreHomePage({
                     <span
                       data-edit-text
                       data-edit-field="heroMagazineByline"
+                      style={{ color: bylineColor, ...bylineSizeStyle }}
                     >
                       {heroMagazineByline}
                     </span>

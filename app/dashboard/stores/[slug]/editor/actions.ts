@@ -59,6 +59,8 @@ type EditorPayload = {
     heroCtaFontScale?: number;
     heroCtaTracking?: string;
     heroCtaCase?: string;
+    heroBylineFontScale?: number;
+    heroBylineColor?: string | null;
     heroHeight?: string;
     fontScale?: number;
     sectionPaddingScale?: string;
@@ -385,6 +387,21 @@ export async function saveEditorState(slug: string, payload: EditorPayload) {
       const v = payload.layout.heroCtaCase;
       if (v === "default" || v === "capitalize" || v === "none") {
         layoutPatch.heroCtaCase = v;
+      }
+    }
+    if (payload.layout.heroBylineFontScale !== undefined) {
+      const v = payload.layout.heroBylineFontScale;
+      if (typeof v === "number" && Number.isFinite(v)) {
+        layoutPatch.heroBylineFontScale = clampHeroFontScale(v);
+      }
+    }
+    if (payload.layout.heroBylineColor !== undefined) {
+      const v = payload.layout.heroBylineColor;
+      if (v === null || v === "") {
+        layoutPatch.heroBylineColor = null;
+      } else {
+        const hex = normalizeHexColor(v);
+        if (hex) layoutPatch.heroBylineColor = hex;
       }
     }
     if (payload.layout.fontScale !== undefined) {
