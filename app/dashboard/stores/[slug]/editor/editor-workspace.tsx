@@ -122,6 +122,7 @@ type EditorTheme = {
     heroMagazineRuleWeight: "normal" | "medium" | "thick";
     heroMagazineRuleTone: "normal" | "faint" | "strong" | "accent";
     heroMagazineGap: "tight" | "medium" | "normal";
+    heroMagazineTextWidth: "narrow" | "normal" | "rule" | "full";
     heroMinimalWidth: "narrow" | "normal" | "wide";
     heroMinimalPadding: "compact" | "normal" | "spacious";
     heroMinimalRule: "none" | "short" | "normal" | "long";
@@ -991,6 +992,7 @@ export function EditorWorkspace({
           heroMagazineRuleWeight: t.layout.heroMagazineRuleWeight,
           heroMagazineRuleTone: t.layout.heroMagazineRuleTone,
           heroMagazineGap: t.layout.heroMagazineGap,
+          heroMagazineTextWidth: t.layout.heroMagazineTextWidth,
           heroMinimalWidth: t.layout.heroMinimalWidth,
           heroMinimalPadding: t.layout.heroMinimalPadding,
           heroMinimalRule: t.layout.heroMinimalRule,
@@ -2768,6 +2770,37 @@ export function EditorWorkspace({
                   這一段本來一定佔滿一整個螢幕，上下兩條線被推到螢幕的最上跟最下、中間浮
                   著主標，螢幕越大三塊離得越開，看起來像三件沒關係的東西——可是雜誌封面
                   的樣子就是靠那兩條線框住中間的字。只放一行主標的店選貼著或中等會收回來
+                </p>
+              </Field>
+            )}
+            {theme.layout.heroStyle === "magazine" && (
+              <Field label="大字排多寬">
+                <div className="grid grid-cols-2 gap-1.5">
+                  {([
+                    { v: "narrow", label: "窄" },
+                    { v: "normal", label: "跟預設" },
+                    { v: "rule", label: "跟橫線切齊" },
+                    { v: "full", label: "滿版" },
+                  ] as const).map((opt) => (
+                    <button
+                      key={opt.v}
+                      type="button"
+                      onClick={() => updateLayout({ heroMagazineTextWidth: opt.v })}
+                      aria-pressed={theme.layout.heroMagazineTextWidth === opt.v}
+                      className={`rounded-lg border py-2 text-xs transition ${
+                        theme.layout.heroMagazineTextWidth === opt.v
+                          ? "border-emerald-500 bg-emerald-50 text-emerald-900"
+                          : "border-stone-200 text-stone-600 hover:border-stone-400"
+                      }`}
+                    >
+                      {opt.label}
+                    </button>
+                  ))}
+                </div>
+                <p className="text-[10px] text-stone-500 mt-1">
+                  上下那兩條線的長度跟中間主標的寬度本來就不一樣，主標長一點就會排到比線
+                  更外面去，看起來像字撐破了框。選跟橫線切齊，字的左右兩端會跟兩條線的頭
+                  尾對齊；只放兩三個字的店選窄，那行字才不會散在中間
                 </p>
               </Field>
             )}

@@ -73,6 +73,7 @@ type EditorPayload = {
     heroMagazineRuleWeight?: string;
     heroMagazineRuleTone?: string;
     heroMagazineGap?: string;
+    heroMagazineTextWidth?: string;
     heroMinimalWidth?: string;
     heroMinimalPadding?: string;
     heroMinimalRule?: string;
@@ -497,6 +498,12 @@ export async function saveEditorState(slug: string, payload: EditorPayload) {
       const v = payload.layout.heroMagazineGap;
       if (v === "tight" || v === "medium" || v === "normal") {
         layoutPatch.heroMagazineGap = v;
+      }
+    }
+    if (payload.layout.heroMagazineTextWidth !== undefined) {
+      const v = payload.layout.heroMagazineTextWidth;
+      if (v === "narrow" || v === "normal" || v === "rule" || v === "full") {
+        layoutPatch.heroMagazineTextWidth = v;
       }
     }
     if (payload.layout.heroMinimalWidth !== undefined) {

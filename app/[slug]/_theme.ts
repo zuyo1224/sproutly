@@ -497,6 +497,13 @@ export interface StoreTheme {
     // tight 不設（線貼著字，內容多高這段就多高，上下留 py 那層）、medium 七成屏、
     // normal 不覆寫（整屏）。不開任意數字：比一屏更高只是把後面的商品推得更遠。
     heroMagazineGap: "tight" | "medium" | "normal"; // 雜誌大字與上下橫線的距離（預設 normal = 不覆寫）
+    // 同一個版型的下一格：中間大字那一層的欄寬。上下兩條線各自包在 max-w-6xl（72rem）
+    // 裡、中間大字包在 max-w-5xl（64rem）裡，兩層不同寬是寫死的——主標長一點的店，字會排
+    // 到比上下那兩條線更外面去，看起來像字撐破了框；而框住字正是這個版型唯一的結構。反過來
+    // 只放兩三個字的店，64rem 讓那行字散在中間、跟兩條線的長度對不起來。四檔動的是這一層的
+    // 上限：窄 48rem（字擠成一團、雜誌內頁那種窄欄）、跟預設不覆寫、跟橫線一樣寬 72rem
+    // （字的左右兩端剛好切齊上下兩條線）、滿版不設上限（左右只剩全站邊界那道 padding）。
+    heroMagazineTextWidth: "narrow" | "normal" | "rule" | "full"; // 雜誌中間大字欄寬（預設 normal = 不覆寫）
     // minimal 版型自己的兩個寫死參數：欄寬與上下留白。這個版型沒有圖、沒有線、沒有底色，
     // 只有置中的一段字，所以「字排多寬」跟「上下留多少空」就是它全部的設計——可是兩個值
     // 都寫死在 class 裡（max-w-3xl 的 48rem 欄寬、py-40 sm:py-56 的上下留白），前面開的
@@ -1093,6 +1100,11 @@ function resolveLayout(raw: unknown): StoreTheme["layout"] {
     heroMagazineGap: (() => {
       const v = l.heroMagazineGap;
       if (v === "tight" || v === "medium") return v;
+      return "normal" as const;
+    })(),
+    heroMagazineTextWidth: (() => {
+      const v = l.heroMagazineTextWidth;
+      if (v === "narrow" || v === "rule" || v === "full") return v;
       return "normal" as const;
     })(),
     heroMinimalWidth: (() => {

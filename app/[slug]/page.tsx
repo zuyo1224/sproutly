@@ -2298,8 +2298,21 @@ export default async function StoreHomePage({
                   />
                 </div>
 
-                {/* 中央大字 */}
-                <div className="max-w-5xl mx-auto px-8 sm:px-12 text-center w-full">
+                {/* 中央大字。欄寬單獨開一格：上下兩條線包在 max-w-6xl、這一層包在
+                    max-w-5xl，兩層不同寬，主標長的店會排到比線更外面。inline 的 maxWidth
+                    贏得過 class 的 max-w-5xl；「跟預設」不輸出任何值，算出來跟以前一樣。 */}
+                <div
+                  className="max-w-5xl mx-auto px-8 sm:px-12 text-center w-full"
+                  style={
+                    theme.layout.heroMagazineTextWidth === "narrow"
+                      ? { maxWidth: "48rem" }
+                      : theme.layout.heroMagazineTextWidth === "rule"
+                        ? { maxWidth: "72rem" }
+                        : theme.layout.heroMagazineTextWidth === "full"
+                          ? { maxWidth: "none" }
+                          : undefined
+                  }
+                >
                   <h1
                     className={`text-4xl sm:text-6xl md:text-7xl lg:text-8xl leading-[1.05] ${fade1}`}
                     style={{
