@@ -121,6 +121,7 @@ type EditorTheme = {
     heroSplitImageAspect: "tall" | "square" | "wide";
     heroMagazineRuleWeight: "normal" | "medium" | "thick";
     heroMagazineRuleTone: "normal" | "faint" | "strong" | "accent";
+    heroMagazineGap: "tight" | "medium" | "normal";
     heroMinimalWidth: "narrow" | "normal" | "wide";
     heroMinimalPadding: "compact" | "normal" | "spacious";
     heroMinimalRule: "none" | "short" | "normal" | "long";
@@ -989,6 +990,7 @@ export function EditorWorkspace({
           heroSplitImageAspect: t.layout.heroSplitImageAspect,
           heroMagazineRuleWeight: t.layout.heroMagazineRuleWeight,
           heroMagazineRuleTone: t.layout.heroMagazineRuleTone,
+          heroMagazineGap: t.layout.heroMagazineGap,
           heroMinimalWidth: t.layout.heroMinimalWidth,
           heroMinimalPadding: t.layout.heroMinimalPadding,
           heroMinimalRule: t.layout.heroMinimalRule,
@@ -2736,6 +2738,36 @@ export function EditorWorkspace({
                   看不見，等於整個版型的骨架不見了、只剩中間一團字。選同文字就跟字一樣深
                   （深底淺字的店會自動變成淺線，不用自己挑色），選主色可以把它當開章的
                   裝飾線，選更淡是想留骨架但不想它出聲
+                </p>
+              </Field>
+            )}
+            {theme.layout.heroStyle === "magazine" && (
+              <Field label="大字離上下橫線多遠">
+                <div className="grid grid-cols-3 gap-1.5">
+                  {([
+                    { v: "tight", label: "貼著" },
+                    { v: "medium", label: "中等" },
+                    { v: "normal", label: "跟預設" },
+                  ] as const).map((opt) => (
+                    <button
+                      key={opt.v}
+                      type="button"
+                      onClick={() => updateLayout({ heroMagazineGap: opt.v })}
+                      aria-pressed={theme.layout.heroMagazineGap === opt.v}
+                      className={`rounded-lg border py-2 text-xs transition ${
+                        theme.layout.heroMagazineGap === opt.v
+                          ? "border-emerald-500 bg-emerald-50 text-emerald-900"
+                          : "border-stone-200 text-stone-600 hover:border-stone-400"
+                      }`}
+                    >
+                      {opt.label}
+                    </button>
+                  ))}
+                </div>
+                <p className="text-[10px] text-stone-500 mt-1">
+                  這一段本來一定佔滿一整個螢幕，上下兩條線被推到螢幕的最上跟最下、中間浮
+                  著主標，螢幕越大三塊離得越開，看起來像三件沒關係的東西——可是雜誌封面
+                  的樣子就是靠那兩條線框住中間的字。只放一行主標的店選貼著或中等會收回來
                 </p>
               </Field>
             )}

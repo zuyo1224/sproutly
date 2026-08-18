@@ -488,6 +488,15 @@ export interface StoreTheme {
     // 不想它出聲的店）。normal 完全不覆寫，既有店家算出來一模一樣。
     heroMagazineRuleWeight: "normal" | "medium" | "thick"; // 雜誌橫線粗細（預設 normal = 不覆寫）
     heroMagazineRuleTone: "normal" | "faint" | "strong" | "accent"; // 雜誌橫線深淺（預設 normal = 不覆寫）
+    // 雜誌版型中間大字與上下兩條線之間的距離。這一段是 min-h-screen + justify-between：
+    // 上面 metadata 一條線、下面 byline 一條線、中間一團大字，三塊被撐到整屏的兩端與中央，
+    // 所以「線離字多遠」其實等於「這一段有多高」，而那個高度寫死成一整屏。桌機螢幕越高、
+    // 那兩條線被推得越遠，只放一行主標的店會變成上下各一條貼著螢幕邊的線、中間浮著一團字，
+    // 三塊看起來沒關係——而雜誌封面的樣子正是靠那兩條線框住中間的字才成立的。反過來主標加
+    // 副標都寫滿的店，一整屏又剛好，所以不能直接改小。三檔動的是這一段的最低高度：
+    // tight 不設（線貼著字，內容多高這段就多高，上下留 py 那層）、medium 七成屏、
+    // normal 不覆寫（整屏）。不開任意數字：比一屏更高只是把後面的商品推得更遠。
+    heroMagazineGap: "tight" | "medium" | "normal"; // 雜誌大字與上下橫線的距離（預設 normal = 不覆寫）
     // minimal 版型自己的兩個寫死參數：欄寬與上下留白。這個版型沒有圖、沒有線、沒有底色，
     // 只有置中的一段字，所以「字排多寬」跟「上下留多少空」就是它全部的設計——可是兩個值
     // 都寫死在 class 裡（max-w-3xl 的 48rem 欄寬、py-40 sm:py-56 的上下留白），前面開的
@@ -1079,6 +1088,11 @@ function resolveLayout(raw: unknown): StoreTheme["layout"] {
     heroMagazineRuleTone: (() => {
       const v = l.heroMagazineRuleTone;
       if (v === "faint" || v === "strong" || v === "accent") return v;
+      return "normal" as const;
+    })(),
+    heroMagazineGap: (() => {
+      const v = l.heroMagazineGap;
+      if (v === "tight" || v === "medium") return v;
       return "normal" as const;
     })(),
     heroMinimalWidth: (() => {

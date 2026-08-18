@@ -2259,7 +2259,17 @@ export default async function StoreHomePage({
             return (
               <section
                 className="relative min-h-screen flex flex-col justify-between py-20 sm:py-28"
-                style={{ background: theme.bg }}
+                style={{
+                  background: theme.bg,
+                  // 中間大字與上下兩條線的距離 = 這一段有多高（三塊被 justify-between
+                  // 撐到兩端與中央）。inline 的 minHeight 贏得過 class 的 min-h-screen；
+                  // tight 給 0 讓內容自己決定高度，線就貼著字（上下還留 py 那層）。
+                  ...(theme.layout.heroMagazineGap === "tight"
+                    ? { minHeight: 0 }
+                    : theme.layout.heroMagazineGap === "medium"
+                      ? { minHeight: "70vh" }
+                      : {}),
+                }}
                 data-edit-target="hero"
                 data-edit-label="Hero 區段"
               >
