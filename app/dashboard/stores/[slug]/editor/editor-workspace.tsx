@@ -136,6 +136,7 @@ type EditorTheme = {
     statsColumns: 2 | 3 | 4;
     galleryColumns: 2 | 3 | 4;
     journalColumns: 2 | 3;
+    faqDefaultOpen: "none" | "first" | "all";
     // 欄位表跟公開頁共用同一份 SectionStyle，加控制不必兩邊各抄一次
     sectionStyles: Record<string, SectionStyle>;
   };
@@ -1000,6 +1001,7 @@ export function EditorWorkspace({
           statsColumns: t.layout.statsColumns,
           galleryColumns: t.layout.galleryColumns,
           journalColumns: t.layout.journalColumns,
+          faqDefaultOpen: t.layout.faqDefaultOpen,
           sectionStyles: t.layout.sectionStyles,
         },
         homepage: t.homepage,
@@ -3431,6 +3433,36 @@ export function EditorWorkspace({
                 ({theme.layout.faqItems.length}/20)
               </span>
             </button>
+            <Field label="一進來先攤開">
+              <div className="grid grid-cols-3 gap-1.5">
+                {([
+                  { v: "none", label: "都收起來" },
+                  { v: "first", label: "第一題" },
+                  { v: "all", label: "全部" },
+                ] as const).map((opt) => (
+                  <button
+                    key={opt.v}
+                    type="button"
+                    onClick={() => updateLayout({ faqDefaultOpen: opt.v })}
+                    aria-pressed={theme.layout.faqDefaultOpen === opt.v}
+                    className={`rounded-lg border py-2 text-xs transition ${
+                      theme.layout.faqDefaultOpen === opt.v
+                        ? "border-emerald-500 bg-emerald-50 text-emerald-900"
+                        : "border-stone-200 text-stone-600 hover:border-stone-400"
+                    }`}
+                  >
+                    {opt.label}
+                  </button>
+                ))}
+              </div>
+              <p className="mt-1 text-[11px] text-stone-500 leading-relaxed">
+                你寫這一段的理由就是少回一次「幾點開」「怎麼去」。可是每題都收起來的話，
+                客人看到的是一排短句加一個加號，答案一個字都沒露出來——願意一題一題點的人
+                才讀得到，滑過去的人照樣去 IG 私訊問。題目只有三五題就選全部，整段變成一頁
+                滑得完的說明；題目多就選第一題，最多人問的那題先給答案，順便讓客人看懂
+                下面那幾行是點得開的。選了攤開，客人一樣可以自己收起來。
+              </p>
+            </Field>
           </PanelSection>
         )}
 

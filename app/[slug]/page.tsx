@@ -3686,7 +3686,18 @@ export default async function StoreHomePage({
                       style={{ borderColor: theme.border }}
                       className="border-t last:border-b"
                     >
-                      <details className="group">
+                      {/* 一進來攤開哪幾題：editor 常見問題 panel「一進來先攤開」三按鈕。
+                          走 details 自己的 open 屬性、不繞 CSS——攤開與收起來要動的是元素
+                          高度，用 CSS 只能做到把答案藏起來，客人點加號的時候那個展開就不會
+                          動了。open 是「初始狀態」而不是鎖住，商家選攤開之後客人照樣點得起來。
+                          none 那一檔算出來是 false，跟原本沒有這個屬性時一樣。 */}
+                      <details
+                        className="group"
+                        open={
+                          theme.layout.faqDefaultOpen === "all" ||
+                          (theme.layout.faqDefaultOpen === "first" && i === 0)
+                        }
+                      >
                         <summary
                           className="flex items-center justify-between cursor-pointer py-6 list-none transition hover:opacity-80"
                           style={{ color: "var(--store-text)" }}

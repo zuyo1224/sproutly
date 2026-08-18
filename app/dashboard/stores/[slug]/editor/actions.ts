@@ -87,6 +87,7 @@ type EditorPayload = {
     statsColumns?: number;
     galleryColumns?: number;
     journalColumns?: number;
+    faqDefaultOpen?: string;
     // 直接用共用型別，不再手抄一份欄位表（值合不合法交給 sanitizeSectionStyles 擋）
     sectionStyles?: Record<string, SectionStyle>;
   };
@@ -563,6 +564,12 @@ export async function saveEditorState(slug: string, payload: EditorPayload) {
       const v = payload.layout.journalColumns;
       // 慢讀固定三張卡，4 欄永遠填不滿，只收 2/3
       if (v === 2 || v === 3) layoutPatch.journalColumns = v;
+    }
+    if (payload.layout.faqDefaultOpen !== undefined) {
+      const v = payload.layout.faqDefaultOpen;
+      if (v === "none" || v === "first" || v === "all") {
+        layoutPatch.faqDefaultOpen = v;
+      }
     }
     if (payload.layout.sectionStyles !== undefined) {
       // 欄位表與合法值都在 lib/section-style-schema，跟公開頁讀回那層走同一支——

@@ -545,6 +545,19 @@ export interface StoreTheme {
     statsColumns: 2 | 3 | 4;           // 數字排成幾欄（預設 4）
     galleryColumns: 2 | 3 | 4;         // 相簿排成幾欄（預設 3）
     journalColumns: 2 | 3;             // 慢讀卡排成幾欄（預設 3；固定三張卡，4 欄永遠填不滿所以不開）
+    // 常見問題這段，客人一進來看到的是攤開的還是收起來的。
+    // 為什麼要：這一段是商家開店的第一個理由——「客人問同樣的問題問到瘋」，價目、地址、
+    // 營業時間寫在這裡就是要少回一次。可是每一題都寫死收起來，客人看到的是一排短句加一個
+    // 加號，答案一個字都沒露出來。願意一題一題點開的人才讀得到，滑過去的人只知道「這家店
+    // 有常見問題」，然後照樣去 IG 私訊問營業時間。
+    // 三檔：
+    //   none  全部收起來（現況，題數多的店掃起來最快）
+    //   first 只攤開第一題（第一題通常就是最多人問的那題，順便讓客人看懂這排東西點得開）
+    //   all   全部攤開（三五題的店最實用，整段直接變成一頁可以滑完的說明）
+    // 不做「記住客人上次開哪幾題」：那要存到瀏覽器、還要處理商家改題目之後對不上的情況，
+    // 而這一段的閱讀時間短到記不記得沒差。
+    // 沒設就是 none，既有店家的常見問題長得一模一樣。
+    faqDefaultOpen: "none" | "first" | "all"; // FAQ 預設攤開（預設 none）
     // 每個 section 的元素級樣式覆寫（北極星：超越 Wix 的元素級控制覆蓋率）
     sectionStyles: Record<string, SectionStyle>;
   };
@@ -1114,6 +1127,11 @@ function resolveLayout(raw: unknown): StoreTheme["layout"] {
       const v = l.journalColumns;
       if (v === 2 || v === 3) return v;
       return 3 as const;
+    })(),
+    faqDefaultOpen: (() => {
+      const v = l.faqDefaultOpen;
+      if (v === "first" || v === "all") return v;
+      return "none" as const;
     })(),
     // 欄位表與合法值都在 lib/section-style-schema，跟編輯器存檔那層走同一支——
     // 以前這裡跟 actions.ts 各手抄一條長判斷鏈，漏在哪一邊就是「控制看起來壞的」。
