@@ -2095,6 +2095,17 @@ export default async function StoreHomePage({
                     ? "2fr 3fr"
                     : "3fr 2fr"
                   : null;
+            // 手機上圖框的形狀。平板以上圖是整欄的高度（md:aspect-auto md:h-full），
+            // 這格碰不到；要蓋掉的是手機那個寫死的 aspect-square。規則寫在 layout.tsx 的
+            // max-width: 767px 裡（class 上的 aspect-square 是 Tailwind 工具類，inline
+            // 的 aspect-ratio 雖然贏得過它，但那樣平板以上也會被一起蓋掉，得再寫一條把它
+            // 還原，不如讓斷點自己管）。跟預設那一檔不輸出 attribute 也不輸出變數。
+            const splitImgAspect =
+              theme.layout.heroSplitImageAspect === "tall"
+                ? "4 / 5"
+                : theme.layout.heroSplitImageAspect === "wide"
+                  ? "3 / 2"
+                  : null;
             return (
               <section
                 className="relative grid grid-cols-1 md:grid-cols-2 min-h-[80vh] md:min-h-screen overflow-hidden"
@@ -2112,6 +2123,12 @@ export default async function StoreHomePage({
               >
                 <div
                   className={`relative aspect-square md:aspect-auto md:h-full ${imageOnRight ? "md:order-2" : ""}`}
+                  style={
+                    splitImgAspect
+                      ? ({ "--store-hero-split-img": splitImgAspect } as React.CSSProperties)
+                      : undefined
+                  }
+                  {...(splitImgAspect ? { "data-hero-split-img": "" } : {})}
                 >
                   <Image
                     src={theme.heroUrl}

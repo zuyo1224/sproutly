@@ -118,6 +118,7 @@ type EditorTheme = {
     heroBylineWeight: "normal" | "medium" | "bold";
     heroSplitRatio: "image-narrow" | "normal" | "image-wide";
     heroImageFocus: "top" | "center" | "bottom";
+    heroSplitImageAspect: "tall" | "square" | "wide";
     heroMagazineRuleWeight: "normal" | "medium" | "thick";
     heroMagazineRuleTone: "normal" | "faint" | "strong" | "accent";
     heroMinimalWidth: "narrow" | "normal" | "wide";
@@ -981,6 +982,7 @@ export function EditorWorkspace({
           heroBylineWeight: t.layout.heroBylineWeight,
           heroSplitRatio: t.layout.heroSplitRatio,
           heroImageFocus: t.layout.heroImageFocus,
+          heroSplitImageAspect: t.layout.heroSplitImageAspect,
           heroMagazineRuleWeight: t.layout.heroMagazineRuleWeight,
           heroMagazineRuleTone: t.layout.heroMagazineRuleTone,
           heroMinimalWidth: t.layout.heroMinimalWidth,
@@ -2632,6 +2634,38 @@ export function EditorWorkspace({
                   被切掉的上面（葉冠、瓶口）跟下面（盆器、落款）常常就是想給人看的地方——
                   選留上緣就往下切，選留下緣就往上切。上一格「圖文比例」讓的是寬度，這格
                   管的是切在哪
+                </p>
+              </Field>
+            )}
+            {theme.layout.heroStyle === "split" && (
+              <Field label="手機上圖片的形狀">
+                <div className="grid grid-cols-3 gap-1.5">
+                  {([
+                    { v: "tall", label: "直式" },
+                    { v: "square", label: "跟預設" },
+                    { v: "wide", label: "橫式" },
+                  ] as const).map((opt) => (
+                    <button
+                      key={opt.v}
+                      type="button"
+                      onClick={() => updateLayout({ heroSplitImageAspect: opt.v })}
+                      aria-pressed={theme.layout.heroSplitImageAspect === opt.v}
+                      className={`rounded-lg border py-2 text-xs transition ${
+                        theme.layout.heroSplitImageAspect === opt.v
+                          ? "border-emerald-500 bg-emerald-50 text-emerald-900"
+                          : "border-stone-200 text-stone-600 hover:border-stone-400"
+                      }`}
+                    >
+                      {opt.label}
+                    </button>
+                  ))}
+                </div>
+                <p className="text-[10px] text-stone-500 mt-1">
+                  上面兩格只管平板跟桌機。手機上這個版型是圖在上、文字在下，圖框永遠是正方形，
+                  跟你上傳什麼圖無關——一株連盆兩尺高的植物、一支細長的水壺，要從上下各切掉
+                  快三分之一才塞得進去，「照片取景」那格只能決定犧牲葉冠還是犧牲盆器。選直式
+                  就讓圖高一點、上下都留得住；橫幅的店面照或桌面陳列照則選橫式，不然撐開畫面
+                  的那些留白會被左右切掉。手機是客人幾乎唯一的入口
                 </p>
               </Field>
             )}

@@ -455,6 +455,23 @@ export interface StoreTheme {
     // 各段卡片圖框那格「照片取景」是同一件事的段落版，但那條規則只掛在卡片圖框上，
     // hero 這張不在卡片裡，所以要自己一格。
     heroImageFocus: "top" | "center" | "bottom"; // split 照片取景（預設 center = 不覆寫）
+    // split 版型在手機上那張圖的形狀。上面兩格處理的是平板以上：欄寬讓寬了、裁切保留哪一端
+    // 也能挑了，可是手機完全沒被碰到——手機的 split 是圖上文下的單欄堆疊，圖框寫死
+    // aspect-square，那個正方形跟商家上傳什麼圖無關，永遠是一比一。
+    // 為什麼要：手機是這些店的客人幾乎唯一的入口（IG 連過來的），而正方形是四種比例裡最
+    // 不適合直式商品照的一種——一株連盆兩尺高的植物、一支細長的水壺，塞進正方形要從上下
+    // 各切掉將近三分之一，「照片取景」那格只能決定犧牲葉冠還是犧牲盆器，兩邊都想留就沒辦法。
+    // 反過來橫幅的店面照、桌面陳列照塞進正方形，左右被切掉的是把畫面撐開的那些留白，
+    // 一張本來很鬆的照片會變成擠在中間的一團。
+    // 三檔就是三個 aspect-ratio，只在 md 以下生效（平板以上圖框是整欄的高度，跟這格無關）：
+    //   tall   4 / 5（直式，商品照原樣多留上下）
+    //   square 不覆寫（維持原本的 1:1）
+    //   wide   3 / 2（橫式，店面照或陳列照）
+    // 不開成任意數字：比例是會連帶動到後面整段文字位置的東西（圖變高文字就被推下去），
+    // 讓商家自己填數字很容易得到一張佔滿整個手機屏的圖，客人要滑兩下才看得到店名。
+    // 直式只給到 4/5 不給 3/4 或 2/3 也是同一個理由——4/5 已經是「圖後面還看得到一行字」
+    // 的邊界。沒設就完全不覆寫，既有店家的手機版一模一樣。
+    heroSplitImageAspect: "tall" | "square" | "wide"; // split 手機圖片形狀（預設 square = 不覆寫）
     // 雜誌版型上下那兩條橫線。整個版型的骨架就是這兩條線——上面那條把小標與店名那行
     // 框起來、下面那條把落款與按鈕那行框起來，中間才是大字，是它們讓這個版型看起來像
     // 一本雜誌的封面而不是一頁置中的字。可是兩條線的粗細與顏色都寫死（1px、theme.border），
@@ -1011,6 +1028,11 @@ function resolveLayout(raw: unknown): StoreTheme["layout"] {
       const v = l.heroImageFocus;
       if (v === "top" || v === "bottom") return v;
       return "center" as const;
+    })(),
+    heroSplitImageAspect: (() => {
+      const v = l.heroSplitImageAspect;
+      if (v === "tall" || v === "wide") return v;
+      return "square" as const;
     })(),
     heroMagazineRuleWeight: (() => {
       const v = l.heroMagazineRuleWeight;

@@ -1838,6 +1838,19 @@ export default async function PublicStoreLayout({
           }
         }
 
+        /* split 版型手機圖片形狀：editor Hero panel「手機上圖片的形狀」三按鈕
+           （直式 / 跟預設 / 橫式）。比例字串由公開頁算好從 inline style 的
+           --store-hero-split-img 進來，這裡負責蓋掉圖框 class 上寫死的 aspect-square。
+           只寫在 767px 以下：平板以上圖框是整欄的高度（md:aspect-auto md:h-full），
+           比例對它沒有意義，套上去會把整欄高那個行為弄掉。
+           跟預設那一檔不輸出 attribute 也不輸出變數，整條規則不存在，既有店家的手機版
+           那個正方形原樣留著。 */
+        @media (max-width: 767px) {
+          section[data-edit-target="hero"] [data-hero-split-img] {
+            aspect-ratio: var(--store-hero-split-img);
+          }
+        }
+
         /* 卡片價錢字級：editor 精選商品 panel「卡片價錢字級」三按鈕（小 / 跟預設 / 大）。
            上面三組把卡片裡的品名、描述、全大寫小字都補起來之後，價錢是這一組最後一行沒得
            動的——它寫死 14px，比品名的 16px 還小一級。那個安排是照「先看商品再看價錢」的
