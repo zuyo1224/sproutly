@@ -3389,6 +3389,7 @@ export function EditorWorkspace({
           const hideOn = cur.hideOn ?? null;
           const outline = cur.outline ?? null;
           const outlineTone = cur.outlineTone ?? null;
+          const outlineStyle = cur.outlineStyle ?? null;
           const shadow = cur.shadow ?? null;
           const borderRadius = cur.borderRadius ?? null;
           const mediaRadius = cur.mediaRadius ?? null;
@@ -5549,6 +5550,45 @@ export function EditorWorkspace({
                       <button
                         type="button"
                         onClick={() => patch({ outlineTone: null })}
+                        className="text-stone-500 hover:text-stone-800 underline"
+                      >
+                        清除
+                      </button>
+                    )}
+                  </div>
+                </Field>
+              )}
+              {/* 線型跟深淺同一個道理：沒畫框就沒東西可調。四條線的線型這格補到外框
+                  才全齊——一圈實線是名片框的正式語氣，虛線是優惠券「沿線剪下」那圈。 */}
+              {outline && outline !== "none" && (
+                <Field label="外框線型">
+                  <div className="grid grid-cols-3 gap-1.5">
+                    {([
+                      { v: "solid", label: "實線" },
+                      { v: "dashed", label: "虛線" },
+                      { v: "dotted", label: "點線" },
+                    ] as const).map((opt) => (
+                      <button
+                        key={opt.v}
+                        type="button"
+                        onClick={() => patch({ outlineStyle: opt.v })}
+                        aria-pressed={(outlineStyle ?? "solid") === opt.v}
+                        className={`rounded-lg border py-2 text-xs transition ${
+                          (outlineStyle ?? "solid") === opt.v
+                            ? "border-emerald-500 bg-emerald-50 text-emerald-900"
+                            : "border-stone-200 text-stone-600 hover:border-stone-400"
+                        }`}
+                      >
+                        {opt.label}
+                      </button>
+                    ))}
+                  </div>
+                  <div className="mt-1.5 flex items-center justify-between text-[11px] text-stone-500">
+                    <span>實線正式，虛線配主色像優惠券的沿線剪下，點線是手帳貼紙那圈</span>
+                    {outlineStyle && (
+                      <button
+                        type="button"
+                        onClick={() => patch({ outlineStyle: null })}
                         className="text-stone-500 hover:text-stone-800 underline"
                       >
                         清除

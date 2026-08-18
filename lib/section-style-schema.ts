@@ -847,6 +847,19 @@ export const SECTION_STYLE_ENUMS = {
   // 是「這一圈要跳出來」，四條一起加深是把對比抹平。
   // 沒設就完全不覆寫，outline 字串照舊餵淡色，既有店家一圈框都不會變。
   outlineTone: ["normal", "strong", "accent"],
+  // 外框的線型（solid 照原本的實線 / dashed 虛線 / dotted 點線），同樣只在畫了框之後
+  // 才有東西可調。四條線的線型這格補到第三條（分隔線、底線、色條）時就說過「三條線
+  // 才配得起來」，其實是四條——外框自己上一格才剛開了深淺，線型又只剩它沒有。
+  // 而外框有一個另外三條都沒有的處境：它是「底色＋外框＋圓角」卡片三件套裡的那件，
+  // 圈的是一整段。一圈實線的語氣是名片框、證書框，正式；手作與盆栽這類調性軟的店想要
+  // 的常常是另一種——郵票邊、優惠券那圈虛線（「沿線剪下」的手勢本來就長在優惠卡上，
+  // 深淺那格的說明自己就拿主色描邊的優惠卡當例子，可是優惠券的框慣用的是虛線不是實線）、
+  // 或手帳貼紙那圈點線。原本沒有一格動得到：另外三條的線型各管各的線，「圓角」把角
+  // 變圓但線還是實心的一圈。
+  // 三檔跟另外三條線一字不差。外框畫在 outline 上，換線型只是字串裡 solid 換個字——
+  // outline 不像 border 可以四邊各給一種，但這格本來就是一圈一起換，剛好夠用。
+  // 沒設就照舊寫 solid，既有店家一圈框都不會變。
+  outlineStyle: ["solid", "dashed", "dotted"],
   // 陰影（soft 淺 / deep 深），讓有 bgColor 的 section 像卡片浮起
   shadow: ["none", "soft", "deep"],
   // 圓角（soft 16px / strong 32px），跟 bgColor + outline + shadow 三件套組成卡片風
@@ -1063,6 +1076,7 @@ export const SECTION_STYLE_NEUTRAL_VALUES = {
   cardMetaTone: "default",
   outline: "none",
   outlineTone: "normal",
+  outlineStyle: "solid",
   shadow: "none",
   borderRadius: "none",
   entrance: "none",

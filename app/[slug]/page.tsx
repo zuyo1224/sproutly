@@ -300,6 +300,12 @@ export default async function StoreHomePage({
       outline && (s?.outlineTone === "strong" || s?.outlineTone === "accent")
         ? s.outlineTone
         : undefined;
+    // 外框線型：跟分隔線、色條的線型同一個口徑——沒畫框就不回（框不存在，線型沒有東西
+    // 可套），沒設或選實線就 undefined、outline 字串照舊寫 solid，既有店家一圈框都不會變。
+    const outlineStyleVal: "dashed" | "dotted" | undefined =
+      outline && (s?.outlineStyle === "dashed" || s?.outlineStyle === "dotted")
+        ? s.outlineStyle
+        : undefined;
     const shadow = shadowToVal(s?.shadow);
     const radius = radiusToVal(s?.borderRadius);
     const font = fontFamilyToVal(s?.fontFamily);
@@ -917,6 +923,7 @@ export default async function StoreHomePage({
       minHeightOverride: minH,
       outlineOverride: outline,
       outlineToneVal,
+      outlineStyleVal,
       shadowOverride: shadow,
       borderRadiusOverride: radius,
       fontFamilyOverride: font,
@@ -1182,7 +1189,9 @@ export default async function StoreHomePage({
           : s.outlineToneVal === "accent"
             ? sectionAccent
             : lineColor;
-      out.outline = `${s.outlineOverride.width} solid ${outlineColor}`;
+      // 線型讀「外框線型」那格（沒設就是原本的實線），跟分隔線、色條同一招：換線型只是
+      // 這條字串裡 solid 換個字。虛線配主色就是優惠券那圈「沿線剪下」的框。
+      out.outline = `${s.outlineOverride.width} ${s.outlineStyleVal ?? "solid"} ${outlineColor}`;
       out.outlineOffset = s.outlineOverride.offset;
     }
     // 標題底線：線本身在 layout.tsx 的 h2::after 畫，這裡只餵它兩件 CSS 沒辦法自己知道的事。
