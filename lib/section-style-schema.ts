@@ -832,6 +832,21 @@ export const SECTION_STYLE_ENUMS = {
   cardMetaTone: ["muted", "default", "strong"],
   // 外框（subtle 1px / strong 2px，用 outline 避免跟 divider 的 borderTop/Bottom 打架）
   outline: ["none", "subtle", "strong"],
+  // 外框的深淺（normal 照原本的淡色 / strong 跟這一段的文字同深 / accent 全站主色），
+  // 只在上面那欄畫了框之後才有東西可調。站上的線一共四條：分隔線、標題底線、側邊色條
+  // 都開了深淺（strong / accent 同一套三檔），外框是最後一條顏色還寫死的——它用的正是
+  // 分隔線深淺那格的說明裡點過名的那個淡色（全站邊框色，或該段自訂文字色算出來的 28%），
+  // 商家把外框選到「粗邊」得到的還是一圈 2px 的淡灰，圈住一段淺底的內容時幾乎看不出
+  // 有框。而外框偏偏是「底色 + 外框 + 圓角」卡片三件套裡負責畫出邊界的那件：想做一張
+  // 主色描邊的優惠卡、或深底淺字段落上一圈看得見的白框，原本沒有一格動得到——
+  // 「文字顏色」會連整段的字一起換（而且框只跟到 28%，字全黑框還是淡的）、分隔線與
+  // 底線的深淺各管各的線、「陰影」畫的是浮起不是邊界。
+  // strong 用該段文字色、accent 走 mergeSectionStyle 算好的 sectionAccent（主色壓在
+  // 自訂底色上看不見時已經換成該段文字色），跟另外三條線的深淺一字不差——同一段裡
+  // 四條線用同一套值才配得起來。只動外框不動另外三條，理由也同一個：商家按這格的意思
+  // 是「這一圈要跳出來」，四條一起加深是把對比抹平。
+  // 沒設就完全不覆寫，outline 字串照舊餵淡色，既有店家一圈框都不會變。
+  outlineTone: ["normal", "strong", "accent"],
   // 陰影（soft 淺 / deep 深），讓有 bgColor 的 section 像卡片浮起
   shadow: ["none", "soft", "deep"],
   // 圓角（soft 16px / strong 32px），跟 bgColor + outline + shadow 三件套組成卡片風
@@ -1047,6 +1062,7 @@ export const SECTION_STYLE_NEUTRAL_VALUES = {
   cardRowGap: "normal",
   cardMetaTone: "default",
   outline: "none",
+  outlineTone: "normal",
   shadow: "none",
   borderRadius: "none",
   entrance: "none",

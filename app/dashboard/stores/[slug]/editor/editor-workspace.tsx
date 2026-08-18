@@ -3388,6 +3388,7 @@ export function EditorWorkspace({
           const eyebrowCase = cur.eyebrowCase ?? null;
           const hideOn = cur.hideOn ?? null;
           const outline = cur.outline ?? null;
+          const outlineTone = cur.outlineTone ?? null;
           const shadow = cur.shadow ?? null;
           const borderRadius = cur.borderRadius ?? null;
           const mediaRadius = cur.mediaRadius ?? null;
@@ -5516,6 +5517,46 @@ export function EditorWorkspace({
                   )}
                 </div>
               </Field>
+              {/* 深淺跟分隔線那格同一個道理：沒畫框就沒東西可調。四條線裡分隔線、
+                  標題底線、側邊色條的深淺都開了，外框是最後一條顏色寫死的——預設那個
+                  淡色圈在淺底上幾乎看不出有框，粗邊也救不回來。 */}
+              {outline && outline !== "none" && (
+                <Field label="外框深淺">
+                  <div className="grid grid-cols-3 gap-1.5">
+                    {([
+                      { v: "normal", label: "跟預設" },
+                      { v: "strong", label: "同文字" },
+                      { v: "accent", label: "主色" },
+                    ] as const).map((opt) => (
+                      <button
+                        key={opt.v}
+                        type="button"
+                        onClick={() => patch({ outlineTone: opt.v })}
+                        aria-pressed={(outlineTone ?? "normal") === opt.v}
+                        className={`rounded-lg border py-2 text-xs transition ${
+                          (outlineTone ?? "normal") === opt.v
+                            ? "border-emerald-500 bg-emerald-50 text-emerald-900"
+                            : "border-stone-200 text-stone-600 hover:border-stone-400"
+                        }`}
+                      >
+                        {opt.label}
+                      </button>
+                    ))}
+                  </div>
+                  <div className="mt-1.5 flex items-center justify-between text-[11px] text-stone-500">
+                    <span>選了粗邊還是看不出框就調深：同文字跟這段的字一樣深，主色描邊像優惠卡</span>
+                    {outlineTone && (
+                      <button
+                        type="button"
+                        onClick={() => patch({ outlineTone: null })}
+                        className="text-stone-500 hover:text-stone-800 underline"
+                      >
+                        清除
+                      </button>
+                    )}
+                  </div>
+                </Field>
+              )}
               <Field label="側邊色條">
                 <div className="grid grid-cols-3 gap-1.5">
                   {([

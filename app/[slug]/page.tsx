@@ -292,6 +292,14 @@ export default async function StoreHomePage({
       s?.headingScale === "small" || s?.headingScale === "large" ? s.headingScale : undefined;
     const minH = minHeightToVal(s?.minHeight);
     const outline = outlineToVal(s?.outline);
+    // 外框深淺：只回選了哪一檔，實際的顏色在 mergeSectionStyle 算——strong 要用該段的
+    // 文字色、accent 要走那裡算好的 sectionAccent，兩個值都是那裡才有的。跟分隔線深淺
+    // 同一個口徑：沒畫框就不回（框不存在，深淺沒有東西可套），沒設就 undefined、框照舊
+    // 用原本的淡色，既有店家一圈框都不會變。
+    const outlineToneVal: "strong" | "accent" | undefined =
+      outline && (s?.outlineTone === "strong" || s?.outlineTone === "accent")
+        ? s.outlineTone
+        : undefined;
     const shadow = shadowToVal(s?.shadow);
     const radius = radiusToVal(s?.borderRadius);
     const font = fontFamilyToVal(s?.fontFamily);
@@ -908,6 +916,7 @@ export default async function StoreHomePage({
       headingScaleVal,
       minHeightOverride: minH,
       outlineOverride: outline,
+      outlineToneVal,
       shadowOverride: shadow,
       borderRadiusOverride: radius,
       fontFamilyOverride: font,
@@ -1163,7 +1172,17 @@ export default async function StoreHomePage({
       out.borderBottom = `${dividerWidth} ${dividerStyle} ${dividerColor}`;
     }
     if (s.outlineOverride) {
-      out.outline = `${s.outlineOverride.width} solid ${lineColor}`;
+      // 深淺讀「外框深淺」那格，三檔跟分隔線、底線、色條一字不差：strong 用該段文字色
+      //（跟字同深就一定看得見，深底淺字自動變淺框）、accent 用算好的 sectionAccent
+      //（主色被底色吃掉時已換成該段文字色，同一道防呆）。沒設照舊餵淡色，四條線在
+      // 同一段裡還是同一個顏色。
+      const outlineColor =
+        s.outlineToneVal === "strong"
+          ? s.text ?? theme.text
+          : s.outlineToneVal === "accent"
+            ? sectionAccent
+            : lineColor;
+      out.outline = `${s.outlineOverride.width} solid ${outlineColor}`;
       out.outlineOffset = s.outlineOverride.offset;
     }
     // 標題底線：線本身在 layout.tsx 的 h2::after 畫，這裡只餵它兩件 CSS 沒辦法自己知道的事。
