@@ -471,6 +471,21 @@ export interface StoreTheme {
     // 不想它出聲的店）。normal 完全不覆寫，既有店家算出來一模一樣。
     heroMagazineRuleWeight: "normal" | "medium" | "thick"; // 雜誌橫線粗細（預設 normal = 不覆寫）
     heroMagazineRuleTone: "normal" | "faint" | "strong" | "accent"; // 雜誌橫線深淺（預設 normal = 不覆寫）
+    // minimal 版型自己的兩個寫死參數：欄寬與上下留白。這個版型沒有圖、沒有線、沒有底色，
+    // 只有置中的一段字，所以「字排多寬」跟「上下留多少空」就是它全部的設計——可是兩個值
+    // 都寫死在 class 裡（max-w-3xl 的 48rem 欄寬、py-40 sm:py-56 的上下留白），前面開的
+    // 字級字距那些格動的都是字本身，動不到字排的範圍。
+    // 欄寬三檔：主標短的店（兩三個字的店名當主標）48rem 太寬，字擺在中間左右各空一大塊、
+    // 讀起來像沒排完；反過來主標長或副標寫了三四行的店，48rem 會讓每行拖得很長，
+    // 置中的長行讀起來要一直找行頭。narrow 36rem / normal 不覆寫 / wide 64rem。
+    // 上下留白三檔：原本那個留白是配「一行大主標」挑的，加了副標、按鈕之後整段變高，
+    // 上下再各留 14rem 會把後面的段落推到第二屏；反過來只放一行短主標時，留白不夠
+    // 這個版型就不成立（它靠的就是空）。用 clamp 讓手機到桌機連續變化，不切斷點：
+    //   compact  clamp(4rem, 10vw, 7rem)
+    //   normal   不覆寫（吃原本的 py-40 sm:py-56）
+    //   spacious clamp(14rem, 24vw, 20rem)
+    heroMinimalWidth: "narrow" | "normal" | "wide"; // minimal 欄寬（預設 normal = 不覆寫）
+    heroMinimalPadding: "compact" | "normal" | "spacious"; // minimal 上下留白（預設 normal = 不覆寫）
     heroHeight: "auto" | "short" | "tall" | "full"; // 預設 auto（adaptive 比例）
     // 全網站
     fontScale: number;                 // 全網站字體 multiplier 0.8-1.3（預設 1.0）
@@ -991,6 +1006,16 @@ function resolveLayout(raw: unknown): StoreTheme["layout"] {
     heroMagazineRuleTone: (() => {
       const v = l.heroMagazineRuleTone;
       if (v === "faint" || v === "strong" || v === "accent") return v;
+      return "normal" as const;
+    })(),
+    heroMinimalWidth: (() => {
+      const v = l.heroMinimalWidth;
+      if (v === "narrow" || v === "wide") return v;
+      return "normal" as const;
+    })(),
+    heroMinimalPadding: (() => {
+      const v = l.heroMinimalPadding;
+      if (v === "compact" || v === "spacious") return v;
       return "normal" as const;
     })(),
     heroHeight: (() => {

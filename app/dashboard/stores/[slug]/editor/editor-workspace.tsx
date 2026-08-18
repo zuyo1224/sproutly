@@ -120,6 +120,8 @@ type EditorTheme = {
     heroImageFocus: "top" | "center" | "bottom";
     heroMagazineRuleWeight: "normal" | "medium" | "thick";
     heroMagazineRuleTone: "normal" | "faint" | "strong" | "accent";
+    heroMinimalWidth: "narrow" | "normal" | "wide";
+    heroMinimalPadding: "compact" | "normal" | "spacious";
     heroHeight: "auto" | "short" | "tall" | "full";
     fontScale: number;
     sectionPaddingScale: "compact" | "default" | "spacious";
@@ -979,6 +981,8 @@ export function EditorWorkspace({
           heroImageFocus: t.layout.heroImageFocus,
           heroMagazineRuleWeight: t.layout.heroMagazineRuleWeight,
           heroMagazineRuleTone: t.layout.heroMagazineRuleTone,
+          heroMinimalWidth: t.layout.heroMinimalWidth,
+          heroMinimalPadding: t.layout.heroMinimalPadding,
           heroHeight: t.layout.heroHeight,
           fontScale: t.layout.fontScale,
           sectionPaddingScale: t.layout.sectionPaddingScale,
@@ -2686,6 +2690,66 @@ export function EditorWorkspace({
                   看不見，等於整個版型的骨架不見了、只剩中間一團字。選同文字就跟字一樣深
                   （深底淺字的店會自動變成淺線，不用自己挑色），選主色可以把它當開章的
                   裝飾線，選更淡是想留骨架但不想它出聲
+                </p>
+              </Field>
+            )}
+            {theme.layout.heroStyle === "minimal" && (
+              <Field label="文字欄寬">
+                <div className="grid grid-cols-3 gap-1.5">
+                  {([
+                    { v: "narrow", label: "窄" },
+                    { v: "normal", label: "跟預設" },
+                    { v: "wide", label: "寬" },
+                  ] as const).map((opt) => (
+                    <button
+                      key={opt.v}
+                      type="button"
+                      onClick={() => updateLayout({ heroMinimalWidth: opt.v })}
+                      aria-pressed={theme.layout.heroMinimalWidth === opt.v}
+                      className={`rounded-lg border py-2 text-xs transition ${
+                        theme.layout.heroMinimalWidth === opt.v
+                          ? "border-emerald-500 bg-emerald-50 text-emerald-900"
+                          : "border-stone-200 text-stone-600 hover:border-stone-400"
+                      }`}
+                    >
+                      {opt.label}
+                    </button>
+                  ))}
+                </div>
+                <p className="text-[10px] text-stone-500 mt-1">
+                  這個版型沒有圖也沒有線，只有中間一段字，所以字排多寬幾乎就是它的全部。
+                  主標只有兩三個字時，原本的寬度會讓字左右各空一大塊、像沒排完；
+                  主標長或副標寫了三四行時，每一行會拖得很長，置中的長行讀起來要一直找行頭
+                </p>
+              </Field>
+            )}
+            {theme.layout.heroStyle === "minimal" && (
+              <Field label="上下留白">
+                <div className="grid grid-cols-3 gap-1.5">
+                  {([
+                    { v: "compact", label: "少" },
+                    { v: "normal", label: "跟預設" },
+                    { v: "spacious", label: "多" },
+                  ] as const).map((opt) => (
+                    <button
+                      key={opt.v}
+                      type="button"
+                      onClick={() => updateLayout({ heroMinimalPadding: opt.v })}
+                      aria-pressed={theme.layout.heroMinimalPadding === opt.v}
+                      className={`rounded-lg border py-2 text-xs transition ${
+                        theme.layout.heroMinimalPadding === opt.v
+                          ? "border-emerald-500 bg-emerald-50 text-emerald-900"
+                          : "border-stone-200 text-stone-600 hover:border-stone-400"
+                      }`}
+                    >
+                      {opt.label}
+                    </button>
+                  ))}
+                </div>
+                <p className="text-[10px] text-stone-500 mt-1">
+                  字上下各留多少空。原本那個留白是配「只有一行大主標」挑的，加了副標跟按鈕
+                  之後整段變高，上下再各留那麼多會把後面的段落推到要捲一頁才看得到；
+                  反過來只放一行短主標時，留白不夠這個版型就不成立，它靠的就是空
                 </p>
               </Field>
             )}

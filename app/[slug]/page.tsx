@@ -2337,10 +2337,26 @@ export default async function StoreHomePage({
           }
 
           // Variant 4: minimal（無圖純文字大字 hero）+ 既有 full-image 但無 heroUrl 的 fallback
+          // 欄寬與上下留白是這個版型僅有的兩個版面參數（沒有圖、沒有線、沒有底色），
+          // 原本兩個都寫死在 class 上。inline style 贏得過 class，所以直接蓋；
+          // 兩個「跟預設」都不輸出任何值，既有店家算出來一模一樣。
+          const minimalWidthStyle =
+            theme.layout.heroMinimalWidth === "narrow"
+              ? { maxWidth: "36rem" }
+              : theme.layout.heroMinimalWidth === "wide"
+              ? { maxWidth: "64rem" }
+              : {};
+          // clamp 讓手機到桌機連續變化，不像原本的 sm 斷點那樣跳一階
+          const minimalPaddingStyle =
+            theme.layout.heroMinimalPadding === "compact"
+              ? { paddingTop: "clamp(4rem, 10vw, 7rem)", paddingBottom: "clamp(4rem, 10vw, 7rem)" }
+              : theme.layout.heroMinimalPadding === "spacious"
+              ? { paddingTop: "clamp(14rem, 24vw, 20rem)", paddingBottom: "clamp(14rem, 24vw, 20rem)" }
+              : {};
           return (
             <section
               className="max-w-3xl mx-auto px-6 py-40 sm:py-56 text-center"
-              style={{ background: theme.bg }}
+              style={{ background: theme.bg, ...minimalWidthStyle, ...minimalPaddingStyle }}
               data-edit-target="hero"
               data-edit-label="Hero 區段"
             >
