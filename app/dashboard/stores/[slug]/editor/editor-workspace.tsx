@@ -115,6 +115,7 @@ type EditorTheme = {
     heroBylineTracking: "tight" | "normal" | "wide";
     heroBylineCase: "upper" | "capitalize" | "none";
     heroBylineWeight: "normal" | "medium" | "bold";
+    heroSplitRatio: "image-narrow" | "normal" | "image-wide";
     heroHeight: "auto" | "short" | "tall" | "full";
     fontScale: number;
     sectionPaddingScale: "compact" | "default" | "spacious";
@@ -969,6 +970,7 @@ export function EditorWorkspace({
           heroBylineTracking: t.layout.heroBylineTracking,
           heroBylineCase: t.layout.heroBylineCase,
           heroBylineWeight: t.layout.heroBylineWeight,
+          heroSplitRatio: t.layout.heroSplitRatio,
           heroHeight: t.layout.heroHeight,
           fontScale: t.layout.fontScale,
           sectionPaddingScale: t.layout.sectionPaddingScale,
@@ -2524,6 +2526,37 @@ export function EditorWorkspace({
                     圖在右
                   </button>
                 </div>
+              </Field>
+            )}
+            {theme.layout.heroStyle === "split" && (
+              <Field label="圖文比例">
+                <div className="grid grid-cols-3 gap-1.5">
+                  {([
+                    { v: "image-narrow", label: "圖窄" },
+                    { v: "normal", label: "跟預設" },
+                    { v: "image-wide", label: "圖寬" },
+                  ] as const).map((opt) => (
+                    <button
+                      key={opt.v}
+                      type="button"
+                      onClick={() => updateLayout({ heroSplitRatio: opt.v })}
+                      aria-pressed={theme.layout.heroSplitRatio === opt.v}
+                      className={`rounded-lg border py-2 text-xs transition ${
+                        theme.layout.heroSplitRatio === opt.v
+                          ? "border-emerald-500 bg-emerald-50 text-emerald-900"
+                          : "border-stone-200 text-stone-600 hover:border-stone-400"
+                      }`}
+                    >
+                      {opt.label}
+                    </button>
+                  ))}
+                </div>
+                <p className="text-[10px] text-stone-500 mt-1">
+                  圖跟文字各占多寬。原本剛好一半一半，那個比例是配「方形的圖 + 一行主標」
+                  的——放直式商品照的話左右兩邊會被裁掉一大塊，選圖寬（六成）就少裁一點；
+                  反過來主標長、又有副標跟兩顆按鈕的話，文字那半會擠到一直換行，選圖窄
+                  （四成）把空間讓給字。手機上是圖在上文字在下的單欄，這格只影響平板以上
+                </p>
               </Field>
             )}
           </PanelSection>

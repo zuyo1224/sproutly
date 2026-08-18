@@ -424,6 +424,16 @@ export interface StoreTheme {
     // 「按鈕粗細」，套外層會讓這格連帶動到按鈕）。預設 normal = 繼承來的 400，沒設完全
     // 不覆寫、回 {}，既有店家的 byline 一個字都不會變。
     heroBylineWeight: "normal" | "medium" | "bold"; // byline 粗細（預設 normal = 不覆寫）
+    // split 版型的圖文比例。原本寫死 md:grid-cols-2（50:50），而 50:50 只有在「圖是方的、
+    // 文字只有一行主標」時才剛好；商家實際放的圖多半是直式商品照（左半被裁掉一大塊），
+    // 或者反過來主標加副標加兩顆按鈕塞不進右半那欄、字級一大就開始換行成四五行。
+    // 三檔動的是 md 以上的欄寬（手機是單欄堆疊，這格對它沒作用）：
+    //   image-narrow 2fr 3fr（圖 40%，讓文字那欄鬆一點）
+    //   normal       不覆寫（吃 Tailwind 的 md:grid-cols-2）
+    //   image-wide   3fr 2fr（圖 60%，直式照片少裁一點）
+    // 值算出來時已經把「圖在右」那個 order 反轉考慮進去（grid-template-columns 講的是
+    // 視覺左右欄，跟 order 無關），所以存的是語意檔、render 才翻成欄寬字串。
+    heroSplitRatio: "image-narrow" | "normal" | "image-wide"; // split 圖文比例（預設 normal = 不覆寫）
     heroHeight: "auto" | "short" | "tall" | "full"; // 預設 auto（adaptive 比例）
     // 全網站
     fontScale: number;                 // 全網站字體 multiplier 0.8-1.3（預設 1.0）
@@ -919,6 +929,11 @@ function resolveLayout(raw: unknown): StoreTheme["layout"] {
     heroBylineWeight: (() => {
       const v = l.heroBylineWeight;
       if (v === "normal" || v === "medium" || v === "bold") return v;
+      return "normal" as const;
+    })(),
+    heroSplitRatio: (() => {
+      const v = l.heroSplitRatio;
+      if (v === "image-narrow" || v === "image-wide") return v;
       return "normal" as const;
     })(),
     heroHeight: (() => {

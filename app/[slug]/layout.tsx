@@ -1824,6 +1824,20 @@ export default async function PublicStoreLayout({
           text-transform: none;
         }
 
+        /* split 版型圖文比例：editor Hero panel「圖文比例」三按鈕（圖窄 / 跟預設 / 圖寬）。
+           欄寬字串由公開頁算好（已把「圖在右」的 order 反轉考慮進去）從 inline style 的
+           --store-hero-split 進來，這裡只負責讓它蓋過 Tailwind 的 md:grid-cols-2——同樣
+           贏在這份 <style> 沒包 @layer。
+           只在 md 以上寫規則：手機的 split 是圖上文下的單欄堆疊（grid-cols-1），欄寬對它
+           沒有意義，硬套會把圖擠成一條。
+           跟預設那一檔不輸出 attribute 也不輸出變數，整條規則不存在，既有店家的 50:50
+           原樣留著。 */
+        @media (min-width: 768px) {
+          section[data-edit-target="hero"][data-hero-split] {
+            grid-template-columns: var(--store-hero-split);
+          }
+        }
+
         /* 卡片價錢字級：editor 精選商品 panel「卡片價錢字級」三按鈕（小 / 跟預設 / 大）。
            上面三組把卡片裡的品名、描述、全大寫小字都補起來之後，價錢是這一組最後一行沒得
            動的——它寫死 14px，比品名的 16px 還小一級。那個安排是照「先看商品再看價錢」的

@@ -2030,10 +2030,33 @@ export default async function StoreHomePage({
           // Variant 2: split — 左/右 50:50（圖 + 文字）
           if (heroStyle === "split" && theme.heroUrl) {
             const imageOnRight = theme.layout.heroImageSide === "right";
+            // 圖文比例。grid-template-columns 講的是視覺上的左欄右欄，跟 order 無關，
+            // 所以圖被排到右邊時要把兩個值對調，不然「圖窄」會去縮到文字那欄。
+            // 只在 md 以上生效（規則寫在 layout.tsx 的 media query 裡），手機是單欄堆疊。
+            // normal 不輸出 attribute 也不輸出變數，Tailwind 的 md:grid-cols-2 原樣留著。
+            const splitRatio = theme.layout.heroSplitRatio;
+            const splitCols =
+              splitRatio === "image-narrow"
+                ? imageOnRight
+                  ? "3fr 2fr"
+                  : "2fr 3fr"
+                : splitRatio === "image-wide"
+                  ? imageOnRight
+                    ? "2fr 3fr"
+                    : "3fr 2fr"
+                  : null;
             return (
               <section
                 className="relative grid grid-cols-1 md:grid-cols-2 min-h-[80vh] md:min-h-screen overflow-hidden"
-                style={{ background: theme.bg }}
+                style={
+                  splitCols
+                    ? ({
+                        background: theme.bg,
+                        "--store-hero-split": splitCols,
+                      } as React.CSSProperties)
+                    : { background: theme.bg }
+                }
+                {...(splitCols ? { "data-hero-split": "" } : {})}
                 data-edit-target="hero"
                 data-edit-label="Hero 區段"
               >
