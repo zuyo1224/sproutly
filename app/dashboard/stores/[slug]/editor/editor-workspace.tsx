@@ -99,6 +99,7 @@ type EditorTheme = {
     heroEyebrowTracking: "tight" | "normal" | "wide";
     heroEyebrowColor: string | null;
     heroEyebrowCase: "upper" | "capitalize" | "none";
+    heroEyebrowWeight: "normal" | "medium" | "bold";
     heroSubtitleFontScale: number;
     heroSubtitleColor: string | null;
     heroSubtitleAlign: "inherit" | "left" | "center" | "right";
@@ -957,6 +958,7 @@ export function EditorWorkspace({
           heroEyebrowTracking: t.layout.heroEyebrowTracking,
           heroEyebrowColor: t.layout.heroEyebrowColor,
           heroEyebrowCase: t.layout.heroEyebrowCase,
+          heroEyebrowWeight: t.layout.heroEyebrowWeight,
           heroSubtitleFontScale: t.layout.heroSubtitleFontScale,
           heroSubtitleColor: t.layout.heroSubtitleColor,
           heroSubtitleAlign: t.layout.heroSubtitleAlign,
@@ -1726,6 +1728,35 @@ export function EditorWorkspace({
               <p className="text-[10px] text-stone-500 mt-1">
                 小標打中文的話這格沒有作用（中文沒有大小寫）。打英文才看得出來：原本一律轉成
                 全大寫，「Est. 2019」會變 EST. 2019、英文店名也會被拉大寫，選照原樣就照你打的顯示
+              </p>
+            </Field>
+            <Field label="小標粗細">
+              <div className="grid grid-cols-3 gap-1.5">
+                {([
+                  { v: "normal", label: "原樣" },
+                  { v: "medium", label: "稍重" },
+                  { v: "bold", label: "重" },
+                ] as const).map((opt) => (
+                  <button
+                    key={opt.v}
+                    type="button"
+                    onClick={() => updateLayout({ heroEyebrowWeight: opt.v })}
+                    aria-pressed={theme.layout.heroEyebrowWeight === opt.v}
+                    className={`rounded-lg border py-2 text-xs transition ${
+                      theme.layout.heroEyebrowWeight === opt.v
+                        ? "border-emerald-500 bg-emerald-50 text-emerald-900"
+                        : "border-stone-200 text-stone-600 hover:border-stone-400"
+                    }`}
+                  >
+                    {opt.label}
+                  </button>
+                ))}
+              </div>
+              <p className="text-[10px] text-stone-500 mt-1">
+                客人由上往下讀到的第一行字有多重。它原本是全站最小的字級配最鬆的字距再配最輕的
+                字重，三個往淡的方向疊在一起，壓在照片上就像浮在圖上的一排灰點。想讓它讀得出來，
+                上面只有拉深顏色（那行字會變成跟主標搶的一塊深色）或放大字級（一放大就不是小標
+                是第二個標題）兩條路，這格是「一樣小、一樣淡，但看得出是一行字」
               </p>
             </Field>
             <Field label="Tagline（主標）">

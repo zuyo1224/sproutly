@@ -50,6 +50,7 @@ type EditorPayload = {
     heroEyebrowTracking?: string;
     heroEyebrowColor?: string | null;
     heroEyebrowCase?: string;
+    heroEyebrowWeight?: string;
     heroSubtitleFontScale?: number;
     heroSubtitleColor?: string | null;
     heroSubtitleAlign?: string;
@@ -339,6 +340,12 @@ export async function saveEditorState(slug: string, payload: EditorPayload) {
       const v = payload.layout.heroEyebrowCase;
       if (v === "upper" || v === "capitalize" || v === "none") {
         layoutPatch.heroEyebrowCase = v;
+      }
+    }
+    if (payload.layout.heroEyebrowWeight !== undefined) {
+      const v = payload.layout.heroEyebrowWeight;
+      if (v === "normal" || v === "medium" || v === "bold") {
+        layoutPatch.heroEyebrowWeight = v;
       }
     }
     if (payload.layout.heroSubtitleFontScale !== undefined) {

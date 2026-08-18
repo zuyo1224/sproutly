@@ -1591,6 +1591,17 @@ export default async function StoreHomePage({
               : theme.layout.heroEyebrowCase === "capitalize"
               ? { textTransform: "capitalize" }
               : {};
+          // 小標粗細。四處 class 一個 font-weight 都沒寫，繼承內文的 400——全站最小的字級
+          // （10px）配全站最鬆的字距（0.4em）再配最輕的字重，三個往淡的方向疊在一起，壓在
+          // hero 照片上就是浮在影像上的一排灰點。商家原本只能拉深顏色（那行字變成跟主標搶
+          // 的深色塊）或放大字級（10px 是撐開字距的前提，放大就變第二個標題），加重量是
+          // 唯一「一樣小、一樣淡、但看得出是字」的做法。沒選回 {} 完全不覆寫。
+          const eyebrowWeightStyle =
+            theme.layout.heroEyebrowWeight === "bold"
+              ? { fontWeight: 700 }
+              : theme.layout.heroEyebrowWeight === "medium"
+              ? { fontWeight: 500 }
+              : {};
           // 副標自訂顏色 / 字級（split / magazine / minimal 共用）
           const subtitleColor =
             theme.layout.heroSubtitleColor ?? theme.textMuted;
@@ -1878,6 +1889,7 @@ export default async function StoreHomePage({
                           ...eyebrowSizeStyle,
                           ...eyebrowTrackStyle(0.4),
                           ...eyebrowCaseStyle,
+                          ...eyebrowWeightStyle,
                         }}
                       >
                         {theme.layout.heroEyebrow}
@@ -1893,6 +1905,7 @@ export default async function StoreHomePage({
                           ...eyebrowSizeStyle,
                           ...eyebrowTrackStyle(0.4),
                           ...eyebrowCaseStyle,
+                          ...eyebrowWeightStyle,
                         }}
                       >
                         {theme.layout.heroEyebrow}
@@ -2126,6 +2139,7 @@ export default async function StoreHomePage({
                         ...eyebrowSizeStyle,
                         ...eyebrowTrackStyle(0.4),
                         ...eyebrowCaseStyle,
+                        ...eyebrowWeightStyle,
                       }}
                     >
                       {theme.layout.heroEyebrow}
@@ -2216,6 +2230,7 @@ export default async function StoreHomePage({
                       ...eyebrowSizeStyle,
                       ...eyebrowTrackStyle(0.32),
                       ...eyebrowCaseStyle,
+                      ...eyebrowWeightStyle,
                     }}
                   >
                     <span data-edit-text data-edit-field="heroEyebrow">
@@ -2339,6 +2354,7 @@ export default async function StoreHomePage({
                     ...eyebrowSizeStyle,
                     ...eyebrowTrackStyle(0.4),
                     ...eyebrowCaseStyle,
+                    ...eyebrowWeightStyle,
                   }}
                 >
                   {theme.layout.heroEyebrow}

@@ -285,6 +285,17 @@ export interface StoreTheme {
     //    而店名的大小寫通常是 logo 的一部分，被改掉等於招牌被改。商家原本沒有任何一格
     //    能把它關掉——連改字都沒用，因為轉換發生在畫面上不在資料裡（輸入框裡還是小寫）。
     heroEyebrowCase: "upper" | "capitalize" | "none"; // 小標大小寫（預設 upper = 原本的 uppercase）
+    // 5. 粗細。小標的字級、字距、顏色、大小寫四格都補完了，唯獨「有多重」沒有——四處
+    //    <p> 的 class 只有 text-[10px] tracking-[0.4em] uppercase，一個 font-weight 都沒寫，
+    //    繼承的是內文的 400。全站最小的那行字（10px）配上全站最鬆的字距（0.4em）再配上
+    //    最輕的字重，是三個「往淡的方向」疊在一起：壓在 hero 照片上時，那行字幾乎是浮在
+    //    影像紋理裡的一排灰點，客人由上往下讀到的第一行字直接讀不到。商家原本要救只有
+    //    兩條路，兩條都連坐：把顏色拉深（那行字就從輔助資訊變成跟主標搶的一塊深色），
+    //    或把字級放大（10px 是撐開字距的前提，一放大整行就從 eyebrow 變成第二個標題）。
+    //    加重量是唯一「一樣小、一樣淡、但看得出來是字」的做法，而全站字重控制（各區段
+    //    那組 data-body-weight）走的是段落內文，發不到 hero 這四個 <p> 上。
+    //    只給 400 / 500 / 700（layout 載進來的三個字重），預設 normal 完全不覆寫。
+    heroEyebrowWeight: "normal" | "medium" | "bold"; // 小標粗細（預設 normal = 不覆寫）
     heroSubtitleFontScale: number;     // 副標字體 multiplier，0.6-1.8（預設 1.0）
     heroSubtitleColor: string | null;  // 副標顏色，hex；null = 用 theme.textMuted
     heroSubtitleAlign: "inherit" | "left" | "center" | "right"; // 副標對齊（inherit = 跟版型預設走，不覆寫）
@@ -887,6 +898,11 @@ function resolveLayout(raw: unknown): StoreTheme["layout"] {
       const v = l.heroEyebrowCase;
       if (v === "upper" || v === "capitalize" || v === "none") return v;
       return "upper" as const;
+    })(),
+    heroEyebrowWeight: (() => {
+      const v = l.heroEyebrowWeight;
+      if (v === "normal" || v === "medium" || v === "bold") return v;
+      return "normal" as const;
     })(),
     heroSubtitleFontScale: (() => {
       const v = l.heroSubtitleFontScale;
