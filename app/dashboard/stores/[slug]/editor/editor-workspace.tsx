@@ -3453,6 +3453,7 @@ export function EditorWorkspace({
           const textureTone = cur.textureTone ?? null;
           const textureScale = cur.textureScale ?? null;
           const bgGradient = cur.bgGradient ?? null;
+          const bgGradientTone = cur.bgGradientTone ?? null;
           // 色票快選：全站主色 + 中性白/奶油/淺灰/近黑，省得每次自己對色碼
           const bgSwatches = [
             { c: "#FFFFFF", label: "白" },
@@ -7324,6 +7325,45 @@ export function EditorWorkspace({
                   )}
                 </div>
               </Field>
+              {/* 濃淡跟底紋濃淡同一個處理：沒選明暗方向就沒東西可調。三個方向都疊在一個
+                  寫死的 12% 上，底色跟文字色拉不開的段落按了三個方向都像壞的。 */}
+              {bgGradient && bgGradient !== "none" && (
+                <Field label="底色明暗濃淡">
+                  <div className="grid grid-cols-3 gap-1.5">
+                    {([
+                      { v: "faint", label: "更淡" },
+                      { v: "default", label: "跟預設" },
+                      { v: "strong", label: "加深" },
+                    ] as const).map((opt) => (
+                      <button
+                        key={opt.v}
+                        type="button"
+                        onClick={() => patch({ bgGradientTone: opt.v })}
+                        aria-pressed={(bgGradientTone ?? "default") === opt.v}
+                        className={`rounded-lg border py-2 text-xs transition ${
+                          (bgGradientTone ?? "default") === opt.v
+                            ? "border-emerald-500 bg-emerald-50 text-emerald-900"
+                            : "border-stone-200 text-stone-600 hover:border-stone-400"
+                        }`}
+                      >
+                        {opt.label}
+                      </button>
+                    ))}
+                  </div>
+                  <div className="mt-1.5 flex items-center justify-between text-[11px] text-stone-500">
+                    <span>明暗看不出來就加深；加深後暈影像舞台打光，把視線收到段落中央</span>
+                    {bgGradientTone && (
+                      <button
+                        type="button"
+                        onClick={() => patch({ bgGradientTone: null })}
+                        className="text-stone-500 hover:text-stone-800 underline"
+                      >
+                        清除
+                      </button>
+                    )}
+                  </div>
+                </Field>
+              )}
               <div className="mt-3 pt-3 border-t border-stone-200">
                 <p className="text-[10px] font-medium tracking-[0.3em] uppercase text-stone-500">
                   字體 / 動效

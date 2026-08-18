@@ -949,6 +949,17 @@ export const SECTION_STYLE_ENUMS = {
   // 底色明暗變化（top 上緣加重 / bottom 下緣加重 / vignette 四周暈影），跟底紋同樣走
   // currentColor：淺底深字的段落疊出來是變暗，深底淺字的段落疊出來是提亮，不用另挑顏色。
   bgGradient: ["none", "top", "bottom", "vignette"],
+  // 底色明暗的濃淡（faint 更淡 / default 照原本的 / strong 加深），只在上面那欄選了方向
+  // 之後才有東西可調。三個方向都疊在一個寫死的濃度上（currentColor 的 12%）——那個值是
+  // 照白底近黑字的預設配色挑的「淡淡一層」，換一組配色就不一定對：底色跟文字色拉不開的
+  // 段落（奶油底配深棕字那類）疊出來的漸層幾乎看不見，商家按了三個方向都以為這格是壞的
+  // ——跟底紋濃淡開欄前一模一樣的處境，裝飾層裡它是最後一個濃度寫死的。反過來拿暈影當
+  // 舞台打光、想把客人視線收到段落中央的（深底淺字的展示段常見），12% 又淡得圈不出來。
+  // 商家原本沒有一格動得到——「底紋濃淡」調的是另一層 gradient（花樣那層，不是明暗這層）、
+  // 「文字顏色」改深會連整段的字一起變、「淡化」透明的是整段連照片一起。
+  // 只給三檔不給滑桿，跟底紋濃淡同一個口徑：更淡是預設的一半、加深是兩倍，三檔之間的差
+  // 是一眼看得出來的。沒設就沒這欄，漸層字串跟以前一字不差，既有店家一層都不會變。
+  bgGradientTone: ["faint", "default", "strong"],
   // 標題底線（short 短線 / full 整條），畫在該段 h2 底下。顏色跟外框、分隔線同一個口徑
   // （自訂文字色算出來的淡色），所以深底淺字的段落自動變成淺色線、不用另挑一次顏色。
   headingRule: ["none", "short", "full"],
@@ -1115,6 +1126,7 @@ export const SECTION_STYLE_NEUTRAL_VALUES = {
   textureTone: "default",
   textureScale: "default",
   bgGradient: "none",
+  bgGradientTone: "default",
   headingRule: "none",
   headingRuleWeight: "normal",
   headingRuleTone: "normal",

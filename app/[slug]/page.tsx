@@ -281,8 +281,15 @@ export default async function StoreHomePage({
   // 也不會挑出一個在自己底色上看不見（或整段變髒）的值。
   // 回傳跟 textureToVal 同一個形狀（backgroundImage + backgroundSize），下面合併時當成
   // 一層 layer 疊上去，跟底紋可以同時存在。
-  const gradientToVal = (s: "none" | "top" | "bottom" | "vignette" | undefined) => {
-    const heavy = "color-mix(in srgb, currentColor 12%, transparent)";
+  const gradientToVal = (
+    s: "none" | "top" | "bottom" | "vignette" | undefined,
+    tone?: "faint" | "default" | "strong"
+  ) => {
+    // 濃淡三檔：原本的 12% 是照白底近黑字挑的「淡淡一層」，faint 折半給只要一點空氣感的
+    // 段落，strong 兩倍給底色文字色拉不開、或拿暈影當舞台打光把視線收到中央的。
+    // 沒設 tone 時走 default，算出來的字串跟以前一字不差。
+    const heavyPct = tone === "faint" ? 6 : tone === "strong" ? 24 : 12;
+    const heavy = `color-mix(in srgb, currentColor ${heavyPct}%, transparent)`;
     if (s === "top")
       return {
         backgroundImage: `linear-gradient(to bottom, ${heavy} 0%, transparent 55%)`,
@@ -331,7 +338,7 @@ export default async function StoreHomePage({
     const width = widthToVal(s?.sectionWidth);
     const gap = gapToVal(s?.sectionGap);
     const texture = textureToVal(s?.texture, s?.textureTone, s?.textureScale);
-    const bgGradient = gradientToVal(s?.bgGradient);
+    const bgGradient = gradientToVal(s?.bgGradient, s?.bgGradientTone);
     // 進場動畫：只回 "fade" / "slide-up" 給 wrapper 設 data-anim attr；
     // 實際 CSS keyframes + scroll-timeline 在 layout.tsx 注入；edit mode 內 disable
     const entranceVal: "fade" | "slide-up" | undefined =
