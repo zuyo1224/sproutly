@@ -937,6 +937,15 @@ export const SECTION_STYLE_ENUMS = {
   // 只給三檔不給滑桿，跟分隔線粗細同一個口徑：更淡是預設的一半、加深是兩倍多一點，
   // 三檔之間的差是一眼看得出來的。沒設就沒這欄，濃度字串跟以前一字不差。
   textureTone: ["faint", "default", "strong"],
+  // 底紋的密度（dense 更密 / default 照原本的 / sparse 更疏），跟濃淡一樣只在設了底紋
+  // 之後才有東西可調。三種花樣的格距各是一個寫死值（格線 32px、點陣 20px、斜紋 10px）——
+  // 那組值是照「內文段落背後隱約一層」挑的，濃淡開了之後就對不齊了：把點陣加深想當滿版
+  // 圓點主視覺，20px 的點還是筆記本方眼紙的密度，主視覺要的是點少而大的呼吸感；反過來
+  // 想要織物那種細密質感，32px 的格線又疏得像表格。濃淡調的是一顆點多黑，密度調的是點
+  // 跟點隔多遠，兩件事各自缺一格都會讓商家拿另一格硬湊。
+  // 只給三檔不給滑桿，跟濃淡同一個口徑：更密約折半、更疏約一倍半，三檔之間的差一眼看得
+  // 出來。沒設就沒這欄，格距字串跟以前一字不差，既有店家一層紋都不會變。
+  textureScale: ["dense", "default", "sparse"],
   // 底色明暗變化（top 上緣加重 / bottom 下緣加重 / vignette 四周暈影），跟底紋同樣走
   // currentColor：淺底深字的段落疊出來是變暗，深底淺字的段落疊出來是提亮，不用另挑顏色。
   bgGradient: ["none", "top", "bottom", "vignette"],
@@ -1104,6 +1113,7 @@ export const SECTION_STYLE_NEUTRAL_VALUES = {
   headingTracking: "normal",
   texture: "none",
   textureTone: "default",
+  textureScale: "default",
   bgGradient: "none",
   headingRule: "none",
   headingRuleWeight: "normal",

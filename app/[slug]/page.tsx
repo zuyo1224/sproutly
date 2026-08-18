@@ -244,27 +244,34 @@ export default async function StoreHomePage({
   // 回 backgroundImage + backgroundSize 一組，跟 backgroundColor 是不同屬性、不互相蓋掉。
   const textureToVal = (
     s: "none" | "grid" | "dots" | "lines" | undefined,
-    tone?: "faint" | "default" | "strong"
+    tone?: "faint" | "default" | "strong",
+    scale?: "dense" | "default" | "sparse"
   ) => {
     // 濃淡三檔：原本的 7% / 14% 是照白底近黑字挑的「隱約看得到」，faint 折半給拿紋當
     // 若有似無質感的段落，strong 兩倍多一點給底色文字色拉不開、或想拿點陣當主視覺的。
     // 沒設 tone 時走 default，算出來的字串跟以前一字不差。
     const linePct = tone === "faint" ? 4 : tone === "strong" ? 16 : 7;
     const dotPct = tone === "faint" ? 8 : tone === "strong" ? 30 : 14;
+    // 密度三檔：原本的格距（格線 32px / 點陣 20px / 斜紋 10px）是照「內文背後隱約一層」
+    // 挑的。dense 約折半給要織物細密感的，sparse 約一倍半給拿點陣當滿版圓點主視覺、
+    // 要點少而大的呼吸感的。沒設 scale 時走 default，格距字串跟以前一字不差。
+    const gridPx = scale === "dense" ? 20 : scale === "sparse" ? 48 : 32;
+    const dotPx = scale === "dense" ? 12 : scale === "sparse" ? 32 : 20;
+    const linesPx = scale === "dense" ? 6 : scale === "sparse" ? 16 : 10;
     const line = `color-mix(in srgb, currentColor ${linePct}%, transparent)`;
     if (s === "grid")
       return {
         backgroundImage: `linear-gradient(to right, ${line} 1px, transparent 1px), linear-gradient(to bottom, ${line} 1px, transparent 1px)`,
-        backgroundSize: "32px 32px",
+        backgroundSize: `${gridPx}px ${gridPx}px`,
       };
     if (s === "dots")
       return {
         backgroundImage: `radial-gradient(color-mix(in srgb, currentColor ${dotPct}%, transparent) 1px, transparent 1px)`,
-        backgroundSize: "20px 20px",
+        backgroundSize: `${dotPx}px ${dotPx}px`,
       };
     if (s === "lines")
       return {
-        backgroundImage: `repeating-linear-gradient(45deg, ${line} 0, ${line} 1px, transparent 1px, transparent 10px)`,
+        backgroundImage: `repeating-linear-gradient(45deg, ${line} 0, ${line} 1px, transparent 1px, transparent ${linesPx}px)`,
         backgroundSize: "auto",
       };
     return undefined;
@@ -323,7 +330,7 @@ export default async function StoreHomePage({
     const filter = filterToVal(s?.filter);
     const width = widthToVal(s?.sectionWidth);
     const gap = gapToVal(s?.sectionGap);
-    const texture = textureToVal(s?.texture, s?.textureTone);
+    const texture = textureToVal(s?.texture, s?.textureTone, s?.textureScale);
     const bgGradient = gradientToVal(s?.bgGradient);
     // 進場動畫：只回 "fade" / "slide-up" 給 wrapper 設 data-anim attr；
     // 實際 CSS keyframes + scroll-timeline 在 layout.tsx 注入；edit mode 內 disable
