@@ -345,6 +345,20 @@ export interface StoreTheme {
     // 寫死一個 upper 當預設會在存檔的當下把滿版圖那顆改掉。兩格都是沒設就完全不覆寫。
     heroCtaTracking: "tight" | "normal" | "wide"; // 按鈕字距（預設 normal = 不加減）
     heroCtaCase: "default" | "capitalize" | "none"; // 按鈕大小寫（預設 default = 照各版型原本）
+    // Hero 按鈕的粗細。大小、字距、大小寫三格開完之後，按鈕那組字剩最後一個寫死的參數——
+    // 字有多重。六處的 base 一樣是兩種寫法：藥丸型那三顆（split 兩顆 + 極簡那顆）吃
+    // .sproutly-btn 的 font-weight: 500（寫在 layout 的 CSS 裡），連結型那三處（滿版圖兩處、
+    // 雜誌那條）什麼都沒寫、繼承內文的 400。
+    // 為什麼要：字級那格可以把按鈕文字放大，但放大之後常常反而暴露它太輕——滿版圖那顆
+    // 底線連結跟旁邊的副標是同一個重量，字拉大以後看起來像一行被劃掉的內文，不像可以按；
+    // 反過來商家把主標調細走輕盈路線時，藥丸按鈕上那個 500 會變成整個 hero 最重的字，
+    // 想把它退下來也沒有一格。主標、副標、卡片標題、各段標題全都有粗細可調，唯獨客人
+    // 真正要按的那行字沒有。
+    // 預設是「照各版型原本」不是某個字重——六處的 base 本來就不一致（500 跟 400），寫死
+    // 一個值當預設會在商家存檔的當下把其中一種改掉。只給 400 / 500 / 700 三檔：layout
+    // 載進來的就這三個字重，其他的瀏覽器會拿常規去假造，中文筆畫糊掉（跟主標粗細、副標
+    // 粗細那幾格同一個理由）。沒設就完全不覆寫、回 {}，既有店家算出來一模一樣。
+    heroCtaWeight: "default" | "normal" | "medium" | "bold"; // 按鈕粗細（預設 default = 照各版型原本）
     // 雜誌版型底下那條 byline 的字級與顏色。hero 這組控制補到這裡，主標、副標、小標、
     // 按鈕都有了，byline 是最後一個完全沒得動的元素——商家改得到的只有那行字本身
     //（編輯器早就有輸入框），字級寫死在外層那條 flex 的 text-[10px] 上、顏色寫死
@@ -847,6 +861,12 @@ function resolveLayout(raw: unknown): StoreTheme["layout"] {
     heroCtaCase: (() => {
       const v = l.heroCtaCase;
       if (v === "default" || v === "capitalize" || v === "none") return v;
+      return "default" as const;
+    })(),
+    heroCtaWeight: (() => {
+      const v = l.heroCtaWeight;
+      if (v === "default" || v === "normal" || v === "medium" || v === "bold")
+        return v;
       return "default" as const;
     })(),
     heroBylineFontScale: (() => {

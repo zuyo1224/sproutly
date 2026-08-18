@@ -108,6 +108,7 @@ type EditorTheme = {
     heroCtaFontScale: number;
     heroCtaTracking: "tight" | "normal" | "wide";
     heroCtaCase: "default" | "capitalize" | "none";
+    heroCtaWeight: "default" | "normal" | "medium" | "bold";
     heroBylineFontScale: number;
     heroBylineColor: string | null;
     heroBylineTracking: "tight" | "normal" | "wide";
@@ -959,6 +960,7 @@ export function EditorWorkspace({
           heroCtaFontScale: t.layout.heroCtaFontScale,
           heroCtaTracking: t.layout.heroCtaTracking,
           heroCtaCase: t.layout.heroCtaCase,
+          heroCtaWeight: t.layout.heroCtaWeight,
           heroBylineFontScale: t.layout.heroBylineFontScale,
           heroBylineColor: t.layout.heroBylineColor,
           heroBylineTracking: t.layout.heroBylineTracking,
@@ -1998,6 +2000,35 @@ export function EditorWorkspace({
                 按鈕打中文的話這格沒有作用（中文沒有大小寫）。打英文才看得出來：左右分割、
                 極簡、雜誌三種版型會把按鈕字一律轉成全大寫，「Shop Now」變 SHOP NOW，
                 選照原樣就照你打的顯示（全屏沉浸那顆本來就沒轉，維持原樣）
+              </p>
+            </Field>
+            <Field label="按鈕粗細">
+              <div className="grid grid-cols-4 gap-1.5">
+                {([
+                  { v: "default", label: "照版型預設" },
+                  { v: "normal", label: "細" },
+                  { v: "medium", label: "中" },
+                  { v: "bold", label: "粗" },
+                ] as const).map((opt) => (
+                  <button
+                    key={opt.v}
+                    type="button"
+                    onClick={() => updateLayout({ heroCtaWeight: opt.v })}
+                    aria-pressed={theme.layout.heroCtaWeight === opt.v}
+                    className={`rounded-lg border py-2 text-xs transition ${
+                      theme.layout.heroCtaWeight === opt.v
+                        ? "border-emerald-500 bg-emerald-50 text-emerald-900"
+                        : "border-stone-200 text-stone-600 hover:border-stone-400"
+                    }`}
+                  >
+                    {opt.label}
+                  </button>
+                ))}
+              </div>
+              <p className="text-[10px] text-stone-500 mt-1">
+                按鈕文字有多重。原本兩種：實心／描邊那種按鈕是中等，帶底線的連結型是
+                跟內文一樣細——連結型的字放大之後容易看起來像一行普通的字，加粗會更像
+                可以按的；反過來整個 hero 走輕盈路線時，也可以把按鈕退細一點
               </p>
             </Field>
             <Field label="雜誌版型下方 byline">

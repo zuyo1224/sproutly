@@ -59,6 +59,7 @@ type EditorPayload = {
     heroCtaFontScale?: number;
     heroCtaTracking?: string;
     heroCtaCase?: string;
+    heroCtaWeight?: string;
     heroBylineFontScale?: number;
     heroBylineColor?: string | null;
     heroBylineTracking?: string;
@@ -389,6 +390,12 @@ export async function saveEditorState(slug: string, payload: EditorPayload) {
       const v = payload.layout.heroCtaCase;
       if (v === "default" || v === "capitalize" || v === "none") {
         layoutPatch.heroCtaCase = v;
+      }
+    }
+    if (payload.layout.heroCtaWeight !== undefined) {
+      const v = payload.layout.heroCtaWeight;
+      if (v === "default" || v === "normal" || v === "medium" || v === "bold") {
+        layoutPatch.heroCtaWeight = v;
       }
     }
     if (payload.layout.heroBylineFontScale !== undefined) {

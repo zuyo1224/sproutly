@@ -1684,6 +1684,18 @@ export default async function StoreHomePage({
               : theme.layout.heroCtaCase === "capitalize"
               ? { textTransform: "capitalize" }
               : {};
+          // 按鈕粗細。六處的 base 不一致：藥丸型那三顆吃 .sproutly-btn 的 500（寫在 layout
+          // 的 CSS 裡），連結型那三處什麼都沒寫、繼承內文的 400——所以預設「照各版型原本」
+          // 回 {} 完全不覆寫，選了才用 inline fontWeight 壓過 class 與繼承值。
+          // 只給 400 / 500 / 700：layout 載進來的就這三個字重（跟副標粗細同一個理由）。
+          const ctaWeightStyle =
+            theme.layout.heroCtaWeight === "bold"
+              ? { fontWeight: 700 }
+              : theme.layout.heroCtaWeight === "medium"
+              ? { fontWeight: 500 }
+              : theme.layout.heroCtaWeight === "normal"
+              ? { fontWeight: 400 }
+              : {};
           // 雜誌版型底下那條 byline（hero 最後一個完全沒得動的元素）。字級寫死在外層那條
           // flex 的 text-[10px] 上、顏色寫死 theme.textMuted。10px 跟上面那條 metadata
           // 同一個值，是照拉丁大寫字母挑的；byline 商家常打中文或中英混排，方塊字在 10px
@@ -1934,6 +1946,7 @@ export default async function StoreHomePage({
                           ...ctaLinkSizeStyle,
                           ...ctaTrackStyle(0.05),
                           ...ctaCaseStyle,
+                          ...ctaWeightStyle,
                         }}
                       >
                         {heroCta}
@@ -1952,6 +1965,7 @@ export default async function StoreHomePage({
                           ...ctaLinkSizeStyle,
                           ...ctaTrackStyle(0.05),
                           ...ctaCaseStyle,
+                          ...ctaWeightStyle,
                         }}
                       >
                         {heroCta}
@@ -2050,7 +2064,7 @@ export default async function StoreHomePage({
                       className="sproutly-btn sproutly-btn-primary sproutly-btn-lg"
                       data-edit-text
                       data-edit-field="heroCta"
-                      style={{ ...ctaBtnSizeStyle, ...ctaTrackStyle(0.18), ...ctaCaseStyle }}
+                      style={{ ...ctaBtnSizeStyle, ...ctaTrackStyle(0.18), ...ctaCaseStyle, ...ctaWeightStyle }}
                     >
                       {heroCta}
                     </Link>
@@ -2060,7 +2074,7 @@ export default async function StoreHomePage({
                         className="sproutly-btn sproutly-btn-secondary sproutly-btn-lg"
                         data-edit-text
                         data-edit-field="heroSecondaryCta"
-                        style={{ ...ctaBtnSizeStyle, ...ctaTrackStyle(0.18), ...ctaCaseStyle }}
+                        style={{ ...ctaBtnSizeStyle, ...ctaTrackStyle(0.18), ...ctaCaseStyle, ...ctaWeightStyle }}
                       >
                         {heroSecondaryCta}
                       </Link>
@@ -2179,6 +2193,7 @@ export default async function StoreHomePage({
                         // 左邊的 byline 跟按鈕不是成對的（跟字級那格同一個理由）。
                         ...ctaTrackStyle(0.32),
                         ...ctaCaseStyle,
+                        ...ctaWeightStyle,
                       }}
                     >
                       {/* 箭頭留在可編輯範圍外，雙擊改到的只有文字本體 */}
@@ -2268,7 +2283,7 @@ export default async function StoreHomePage({
                 className={`sproutly-btn sproutly-btn-primary sproutly-btn-lg mt-12 ${fade3}`}
                 data-edit-text
                 data-edit-field="heroCta"
-                style={{ ...ctaBtnSizeStyle, ...ctaTrackStyle(0.18), ...ctaCaseStyle }}
+                style={{ ...ctaBtnSizeStyle, ...ctaTrackStyle(0.18), ...ctaCaseStyle, ...ctaWeightStyle }}
               >
                 {heroCta}
               </Link>
