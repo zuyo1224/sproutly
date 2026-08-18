@@ -1836,6 +1836,16 @@ export default async function StoreHomePage({
                 ? "min-h-screen"
                 : ""; // auto
             const taglineAlign = theme.layout.heroTaglineAlign;
+            // 圖底下那塊文字段（俗稱米色 strip）的底色與上下內距。底色沒設就維持吃
+            // theme.bg（跟以前一模一樣）；內距只蓋上下，左右那兩個值是全站的邊界，
+            // 動了這一段就變成整頁唯一一段沒跟導覽列對齊的。inline style 贏得過 class。
+            const heroTextBgColor = theme.layout.heroTextBg ?? theme.bg;
+            const heroTextPaddingStyle =
+              theme.layout.heroTextPadding === "compact"
+                ? { paddingTop: "clamp(2rem, 5vw, 3rem)", paddingBottom: "clamp(2rem, 5vw, 3rem)" }
+                : theme.layout.heroTextPadding === "spacious"
+                ? { paddingTop: "clamp(6rem, 12vw, 9rem)", paddingBottom: "clamp(6rem, 12vw, 9rem)" }
+                : {};
             return (
               <section
                 className={heroHeightClass}
@@ -1863,7 +1873,7 @@ export default async function StoreHomePage({
                   return (
                 <div
                   className="relative px-6 sm:px-12 py-14 sm:py-20"
-                  style={{ backgroundColor: theme.bg, minHeight: taglinePos || subtitlePos || ctaPos || eyebrowPos ? "300px" : undefined }}
+                  style={{ backgroundColor: heroTextBgColor, minHeight: taglinePos || subtitlePos || ctaPos || eyebrowPos ? "300px" : undefined, ...heroTextPaddingStyle }}
                   data-edit-target="hero-text-area"
                 >
                   <div

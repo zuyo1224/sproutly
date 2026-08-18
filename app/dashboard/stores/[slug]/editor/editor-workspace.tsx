@@ -122,6 +122,8 @@ type EditorTheme = {
     heroMagazineRuleTone: "normal" | "faint" | "strong" | "accent";
     heroMinimalWidth: "narrow" | "normal" | "wide";
     heroMinimalPadding: "compact" | "normal" | "spacious";
+    heroTextBg: string | null;
+    heroTextPadding: "compact" | "normal" | "spacious";
     heroHeight: "auto" | "short" | "tall" | "full";
     fontScale: number;
     sectionPaddingScale: "compact" | "default" | "spacious";
@@ -983,6 +985,8 @@ export function EditorWorkspace({
           heroMagazineRuleTone: t.layout.heroMagazineRuleTone,
           heroMinimalWidth: t.layout.heroMinimalWidth,
           heroMinimalPadding: t.layout.heroMinimalPadding,
+          heroTextBg: t.layout.heroTextBg,
+          heroTextPadding: t.layout.heroTextPadding,
           heroHeight: t.layout.heroHeight,
           fontScale: t.layout.fontScale,
           sectionPaddingScale: t.layout.sectionPaddingScale,
@@ -2750,6 +2754,72 @@ export function EditorWorkspace({
                   字上下各留多少空。原本那個留白是配「只有一行大主標」挑的，加了副標跟按鈕
                   之後整段變高，上下再各留那麼多會把後面的段落推到要捲一頁才看得到；
                   反過來只放一行短主標時，留白不夠這個版型就不成立，它靠的就是空
+                </p>
+              </Field>
+            )}
+            {theme.layout.heroStyle === "full-image" && (
+              <Field label="文字段底色">
+                <div className="flex items-center gap-2">
+                  {/* 沒設的時候公開頁走的還是全站底色，所以取色器拿全站底色當初始值 */}
+                  <input
+                    type="color"
+                    value={theme.layout.heroTextBg ?? theme.bg}
+                    onChange={(e) => updateLayout({ heroTextBg: e.target.value })}
+                    className="h-8 w-12 rounded border border-stone-200"
+                  />
+                  <input
+                    type="text"
+                    value={theme.layout.heroTextBg ?? ""}
+                    onChange={(e) =>
+                      updateLayout({ heroTextBg: e.target.value || null })
+                    }
+                    placeholder="預設跟全站底色一樣"
+                    className="flex-1 rounded-lg border border-stone-200 px-3 py-2 text-sm font-mono"
+                  />
+                  {theme.layout.heroTextBg && (
+                    <button
+                      type="button"
+                      onClick={() => updateLayout({ heroTextBg: null })}
+                      className="text-xs text-stone-500 hover:text-stone-800 underline"
+                    >
+                      清除
+                    </button>
+                  )}
+                </div>
+                <p className="text-[10px] text-stone-500 mt-1">
+                  照片底下裝主標跟按鈕的那一塊。它原本跟後面每一段同一個顏色，
+                  所以照片以下整頁變成一長條同色，開頭那段跟下一段之間沒有任何界線。
+                  換個顏色就能把開頭這段跟後面分開
+                </p>
+              </Field>
+            )}
+            {theme.layout.heroStyle === "full-image" && (
+              <Field label="文字段上下留白">
+                <div className="grid grid-cols-3 gap-1.5">
+                  {([
+                    { v: "compact", label: "少" },
+                    { v: "normal", label: "跟預設" },
+                    { v: "spacious", label: "多" },
+                  ] as const).map((opt) => (
+                    <button
+                      key={opt.v}
+                      type="button"
+                      onClick={() => updateLayout({ heroTextPadding: opt.v })}
+                      aria-pressed={theme.layout.heroTextPadding === opt.v}
+                      className={`rounded-lg border py-2 text-xs transition ${
+                        theme.layout.heroTextPadding === opt.v
+                          ? "border-emerald-500 bg-emerald-50 text-emerald-900"
+                          : "border-stone-200 text-stone-600 hover:border-stone-400"
+                      }`}
+                    >
+                      {opt.label}
+                    </button>
+                  ))}
+                </div>
+                <p className="text-[10px] text-stone-500 mt-1">
+                  那一塊上下各留多少空。只放一行主標時，原本的留白會讓那塊顯得空；
+                  主標加副標加小標加按鈕全開的店，同樣的留白會讓那塊拖得很長，
+                  照片跟後面的商品之間隔了一大段。左右的邊界不動，那是跟導覽列對齊用的
                 </p>
               </Field>
             )}

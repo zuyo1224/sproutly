@@ -486,6 +486,20 @@ export interface StoreTheme {
     //   spacious clamp(14rem, 24vw, 20rem)
     heroMinimalWidth: "narrow" | "normal" | "wide"; // minimal 欄寬（預設 normal = 不覆寫）
     heroMinimalPadding: "compact" | "normal" | "spacious"; // minimal 上下留白（預設 normal = 不覆寫）
+    // 滿版圖版型底下那塊米色文字段的底色與內距。這個版型的圖是自適應 banner（圖以自身
+    // 比例貼齊，不裁切也不覆蓋整屏），所以圖底下一定跟著一塊裝主標 / 副標 / 小標 / 按鈕
+    // 的色塊——那塊色塊有多高、什麼顏色，是這個版型除了圖以外全部的版面。兩個值原本都
+    // 寫死：底色直接吃 theme.bg（跟後面每一個段落同一個顏色，所以 hero 跟下一段之間沒有
+    // 任何界線，整頁從圖以下變成一長條同色），內距寫死 px-6 sm:px-12 py-14 sm:py-20。
+    // 底色開一個色碼欄位（不是三檔）：這塊要的是「跟後面那段分得開」，而分得開的那個
+    // 顏色跟店的調子有關，挑不出通用的三檔；沒設完全不覆寫，既有店家算出來一模一樣。
+    // 內距三檔只動上下不動左右：左右那兩個值是全站的邊界（跟導覽列、後面每一段對齊），
+    // 只有這一段縮排會變成整頁唯一一段沒對齊的。
+    //   compact  clamp(2rem, 5vw, 3rem)
+    //   normal   不覆寫（吃原本的 py-14 sm:py-20）
+    //   spacious clamp(6rem, 12vw, 9rem)
+    heroTextBg: string | null;         // 滿版圖文字段底色，hex；null = 跟全站底色
+    heroTextPadding: "compact" | "normal" | "spacious"; // 文字段上下內距（預設 normal = 不覆寫）
     heroHeight: "auto" | "short" | "tall" | "full"; // 預設 auto（adaptive 比例）
     // 全網站
     fontScale: number;                 // 全網站字體 multiplier 0.8-1.3（預設 1.0）
@@ -1015,6 +1029,12 @@ function resolveLayout(raw: unknown): StoreTheme["layout"] {
     })(),
     heroMinimalPadding: (() => {
       const v = l.heroMinimalPadding;
+      if (v === "compact" || v === "spacious") return v;
+      return "normal" as const;
+    })(),
+    heroTextBg: normalizeHexColor(l.heroTextBg),
+    heroTextPadding: (() => {
+      const v = l.heroTextPadding;
       if (v === "compact" || v === "spacious") return v;
       return "normal" as const;
     })(),
