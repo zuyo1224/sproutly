@@ -503,6 +503,19 @@ export interface StoreTheme {
     //   spacious clamp(14rem, 24vw, 20rem)
     heroMinimalWidth: "narrow" | "normal" | "wide"; // minimal 欄寬（預設 normal = 不覆寫）
     heroMinimalPadding: "compact" | "normal" | "spacious"; // minimal 上下留白（預設 normal = 不覆寫）
+    // minimal 版型主標與按鈕之間那條短橫線。這個版型只有一段字，那條線是它唯一的
+    // 圖形——它在做的是把上面的字跟下面的按鈕斷開，順便告訴人「這裡還沒完，往下有東西」。
+    // 長度與顏色原本都寫死（48px、全站主色壓到半透明）。48px 是配「一行大主標」挑的，
+    // 主標拉到最大或欄寬選寬的店，那條線在一整排大字底下細到像掃描沒掃乾淨的痕跡；
+    // 反過來主標只有兩三個字又選窄欄的店，48px 幾乎跟主標一樣長，變成把字劃掉的一條線。
+    // 長度給四檔，其中一檔是不顯示：有些店的 hero 只放一行店名、連按鈕都不要，那條線
+    // 沒有東西要斷開，留著只是一個沒來由的裝飾。長度走 24 / 48 / 96 的倍數，
+    // 不開任意數字（那條線超過欄寬一半就不再是分隔，是一條沒對齊的底線）。
+    // 顏色開色碼欄位不開三檔：主色壓半透明在淺底店看起來是一條灰痕，而要挑什麼顏色
+    // 才「看得見又不搶戲」跟店的調子有關，挑不出通用的三檔。有挑顏色就照挑的畫（不再
+    // 壓半透明——半透明那層是為了讓沒挑色的店不被主色刺到，商家指定的顏色就是他要的）。
+    heroMinimalRule: "none" | "short" | "normal" | "long"; // minimal 短橫線長度（預設 normal = 不覆寫）
+    heroMinimalRuleColor: string | null; // minimal 短橫線顏色，hex；null = 全站主色壓半透明
     // 滿版圖版型底下那塊米色文字段的底色與內距。這個版型的圖是自適應 banner（圖以自身
     // 比例貼齊，不裁切也不覆蓋整屏），所以圖底下一定跟著一塊裝主標 / 副標 / 小標 / 按鈕
     // 的色塊——那塊色塊有多高、什麼顏色，是這個版型除了圖以外全部的版面。兩個值原本都
@@ -1067,6 +1080,12 @@ function resolveLayout(raw: unknown): StoreTheme["layout"] {
       if (v === "compact" || v === "spacious") return v;
       return "normal" as const;
     })(),
+    heroMinimalRule: (() => {
+      const v = l.heroMinimalRule;
+      if (v === "none" || v === "short" || v === "long") return v;
+      return "normal" as const;
+    })(),
+    heroMinimalRuleColor: normalizeHexColor(l.heroMinimalRuleColor),
     heroTextBg: normalizeHexColor(l.heroTextBg),
     heroTextPadding: (() => {
       const v = l.heroTextPadding;

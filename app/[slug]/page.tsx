@@ -2380,6 +2380,17 @@ export default async function StoreHomePage({
               : theme.layout.heroMinimalPadding === "spacious"
               ? { paddingTop: "clamp(14rem, 24vw, 20rem)", paddingBottom: "clamp(14rem, 24vw, 20rem)" }
               : {};
+          // 主標與按鈕之間那條短橫線：這個版型唯一的圖形，在做的是把字跟按鈕斷開。
+          // 長度 24 / 48 / 96 三檔加一檔不顯示（hero 只放一行店名、連按鈕都不要的店，
+          // 那條線沒有東西要斷開）。顏色有挑就照挑的畫、不再壓半透明——那層半透明是
+          // 為了讓沒挑色的店不被主色刺到，商家指定的顏色就是他要看到的顏色。
+          const minimalRuleWidth =
+            theme.layout.heroMinimalRule === "short"
+              ? "24px"
+              : theme.layout.heroMinimalRule === "long"
+              ? "96px"
+              : "48px";
+          const minimalRuleColor = theme.layout.heroMinimalRuleColor;
           return (
             <section
               className="max-w-3xl mx-auto px-6 py-40 sm:py-56 text-center"
@@ -2441,15 +2452,17 @@ export default async function StoreHomePage({
                   {theme.layout.heroSubtitle}
                 </p>
               )}
-              <div
-                className={`mx-auto mt-10 ${fade2}`}
-                style={{
-                  width: "48px",
-                  height: "1px",
-                  background: theme.accent,
-                  opacity: 0.5,
-                }}
-              />
+              {theme.layout.heroMinimalRule !== "none" && (
+                <div
+                  className={`mx-auto mt-10 ${fade2}`}
+                  style={{
+                    width: minimalRuleWidth,
+                    height: "1px",
+                    background: minimalRuleColor ?? theme.accent,
+                    opacity: minimalRuleColor ? 1 : 0.5,
+                  }}
+                />
+              )}
               <Link
                 href={`/${slug}/shop`}
                 className={`sproutly-btn sproutly-btn-primary sproutly-btn-lg mt-12 ${fade3}`}

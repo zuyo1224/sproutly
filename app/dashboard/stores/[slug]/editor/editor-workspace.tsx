@@ -123,6 +123,8 @@ type EditorTheme = {
     heroMagazineRuleTone: "normal" | "faint" | "strong" | "accent";
     heroMinimalWidth: "narrow" | "normal" | "wide";
     heroMinimalPadding: "compact" | "normal" | "spacious";
+    heroMinimalRule: "none" | "short" | "normal" | "long";
+    heroMinimalRuleColor: string | null;
     heroTextBg: string | null;
     heroTextPadding: "compact" | "normal" | "spacious";
     heroHeight: "auto" | "short" | "tall" | "full";
@@ -988,6 +990,8 @@ export function EditorWorkspace({
           heroMagazineRuleTone: t.layout.heroMagazineRuleTone,
           heroMinimalWidth: t.layout.heroMinimalWidth,
           heroMinimalPadding: t.layout.heroMinimalPadding,
+          heroMinimalRule: t.layout.heroMinimalRule,
+          heroMinimalRuleColor: t.layout.heroMinimalRuleColor,
           heroTextBg: t.layout.heroTextBg,
           heroTextPadding: t.layout.heroTextPadding,
           heroHeight: t.layout.heroHeight,
@@ -2790,6 +2794,77 @@ export function EditorWorkspace({
                   字上下各留多少空。原本那個留白是配「只有一行大主標」挑的，加了副標跟按鈕
                   之後整段變高，上下再各留那麼多會把後面的段落推到要捲一頁才看得到；
                   反過來只放一行短主標時，留白不夠這個版型就不成立，它靠的就是空
+                </p>
+              </Field>
+            )}
+            {theme.layout.heroStyle === "minimal" && (
+              <Field label="短橫線長度">
+                <div className="grid grid-cols-4 gap-1.5">
+                  {([
+                    { v: "none", label: "不顯示" },
+                    { v: "short", label: "短" },
+                    { v: "normal", label: "跟預設" },
+                    { v: "long", label: "長" },
+                  ] as const).map((opt) => (
+                    <button
+                      key={opt.v}
+                      type="button"
+                      onClick={() => updateLayout({ heroMinimalRule: opt.v })}
+                      aria-pressed={theme.layout.heroMinimalRule === opt.v}
+                      className={`rounded-lg border py-2 text-xs transition ${
+                        theme.layout.heroMinimalRule === opt.v
+                          ? "border-emerald-500 bg-emerald-50 text-emerald-900"
+                          : "border-stone-200 text-stone-600 hover:border-stone-400"
+                      }`}
+                    >
+                      {opt.label}
+                    </button>
+                  ))}
+                </div>
+                <p className="text-[10px] text-stone-500 mt-1">
+                  主標跟按鈕中間那條短橫線。它是這個版型唯一的圖形，作用是把上面的字跟
+                  下面的按鈕斷開。主標拉大或欄寬選寬的店，原本的長度在一整排大字底下細到
+                  像沒擦乾淨的痕跡；主標只有兩三個字又選窄欄的店，它幾乎跟主標一樣長，
+                  看起來像把字劃掉。只放一行店名、連按鈕都不要的話就選不顯示
+                </p>
+              </Field>
+            )}
+            {theme.layout.heroStyle === "minimal" &&
+              theme.layout.heroMinimalRule !== "none" && (
+              <Field label="短橫線顏色">
+                <div className="flex items-center gap-2">
+                  {/* 沒挑的時候公開頁畫的是全站主色壓半透明，所以取色器拿主色當初始值 */}
+                  <input
+                    type="color"
+                    value={theme.layout.heroMinimalRuleColor ?? theme.accent}
+                    onChange={(e) =>
+                      updateLayout({ heroMinimalRuleColor: e.target.value })
+                    }
+                    className="h-8 w-12 rounded border border-stone-200"
+                  />
+                  <input
+                    type="text"
+                    value={theme.layout.heroMinimalRuleColor ?? ""}
+                    onChange={(e) =>
+                      updateLayout({ heroMinimalRuleColor: e.target.value || null })
+                    }
+                    placeholder="預設是全站主色的淡版"
+                    className="flex-1 rounded-lg border border-stone-200 px-3 py-2 text-sm font-mono"
+                  />
+                  {theme.layout.heroMinimalRuleColor && (
+                    <button
+                      type="button"
+                      onClick={() => updateLayout({ heroMinimalRuleColor: null })}
+                      className="text-xs text-stone-500 hover:text-stone-800 underline"
+                    >
+                      清除
+                    </button>
+                  )}
+                </div>
+                <p className="text-[10px] text-stone-500 mt-1">
+                  它原本畫的是全站主色的淡版，在淺底的店看起來只是一條灰痕。挑了顏色就
+                  照挑的畫、不再壓淡，所以挑深一點的可以讓它真的看得見，挑跟底色相近的
+                  可以讓它幾乎消失、但字跟按鈕之間的距離還留著
                 </p>
               </Field>
             )}
