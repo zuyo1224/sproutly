@@ -3450,6 +3450,7 @@ export function EditorWorkspace({
           const accentBarTone = cur.accentBarTone ?? null;
           const accentBarStyle = cur.accentBarStyle ?? null;
           const texture = cur.texture ?? null;
+          const textureTone = cur.textureTone ?? null;
           const bgGradient = cur.bgGradient ?? null;
           // 色票快選：全站主色 + 中性白/奶油/淺灰/近黑，省得每次自己對色碼
           const bgSwatches = [
@@ -7207,6 +7208,45 @@ export function EditorWorkspace({
                   )}
                 </div>
               </Field>
+              {/* 濃淡跟分隔線、色條的深淺同一個處理：沒設底紋就沒東西可調。三種花樣都畫在
+                  一個寫死的濃度上，底色跟文字色拉不開的段落按了三種花樣都像壞的。 */}
+              {texture && texture !== "none" && (
+                <Field label="底紋濃淡">
+                  <div className="grid grid-cols-3 gap-1.5">
+                    {([
+                      { v: "faint", label: "更淡" },
+                      { v: "default", label: "跟預設" },
+                      { v: "strong", label: "加深" },
+                    ] as const).map((opt) => (
+                      <button
+                        key={opt.v}
+                        type="button"
+                        onClick={() => patch({ textureTone: opt.v })}
+                        aria-pressed={(textureTone ?? "default") === opt.v}
+                        className={`rounded-lg border py-2 text-xs transition ${
+                          (textureTone ?? "default") === opt.v
+                            ? "border-emerald-500 bg-emerald-50 text-emerald-900"
+                            : "border-stone-200 text-stone-600 hover:border-stone-400"
+                        }`}
+                      >
+                        {opt.label}
+                      </button>
+                    ))}
+                  </div>
+                  <div className="mt-1.5 flex items-center justify-between text-[11px] text-stone-500">
+                    <span>底紋看不出來就加深；更淡是留一點若有似無的質感，加深後點陣可以當滿版圓點主視覺</span>
+                    {textureTone && (
+                      <button
+                        type="button"
+                        onClick={() => patch({ textureTone: null })}
+                        className="text-stone-500 hover:text-stone-800 underline"
+                      >
+                        清除
+                      </button>
+                    )}
+                  </div>
+                </Field>
+              )}
               <Field label="底色明暗">
                 <div className="grid grid-cols-4 gap-1.5">
                   {([

@@ -925,6 +925,18 @@ export const SECTION_STYLE_ENUMS = {
   // 底紋（grid 細格線 / dots 點陣 / lines 斜紋），純 CSS gradient 疊在底色上，不吃圖檔。
   // 線的顏色走 currentColor，所以深底淺字的 section 換成淺色紋、不用另外設一組顏色。
   texture: ["none", "grid", "dots", "lines"],
+  // 底紋的濃淡（faint 更淡 / default 照原本的 / strong 加深），只在上面那欄設了底紋之後
+  // 才有東西可調。三種花樣都畫在一個寫死的濃度上（格線與斜紋 7%、點陣 14%）——那組值
+  // 是照白底近黑字的預設配色挑的「隱約看得到」，換一組配色就不一定對：底色跟文字色
+  // 拉不開的段落（奶油底配深棕字那類）疊出來的紋幾乎是看不見的，商家按了三種花樣都
+  // 以為這格是壞的；反過來想拿點陣當主視覺的一部分（手作感網站常見的滿版圓點），14%
+  // 又淡得撐不起來。分隔線、外框、色條的深淺都開了，底紋是最後一個濃度寫死的裝飾層。
+  // 商家原本沒有一格動得到——「文字顏色」改深會連整段的字一起變（紋跟著 currentColor
+  // 變濃是真的，但那是拿整段的字換一層紋）、「底色明暗」是另一層 gradient、「淡化」
+  // 透明的是整段連照片一起。
+  // 只給三檔不給滑桿，跟分隔線粗細同一個口徑：更淡是預設的一半、加深是兩倍多一點，
+  // 三檔之間的差是一眼看得出來的。沒設就沒這欄，濃度字串跟以前一字不差。
+  textureTone: ["faint", "default", "strong"],
   // 底色明暗變化（top 上緣加重 / bottom 下緣加重 / vignette 四周暈影），跟底紋同樣走
   // currentColor：淺底深字的段落疊出來是變暗，深底淺字的段落疊出來是提亮，不用另挑顏色。
   bgGradient: ["none", "top", "bottom", "vignette"],
@@ -1091,6 +1103,7 @@ export const SECTION_STYLE_NEUTRAL_VALUES = {
   headingLeading: "normal",
   headingTracking: "normal",
   texture: "none",
+  textureTone: "default",
   bgGradient: "none",
   headingRule: "none",
   headingRuleWeight: "normal",

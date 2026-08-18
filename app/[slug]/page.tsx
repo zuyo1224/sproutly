@@ -242,8 +242,16 @@ export default async function StoreHomePage({
   // 底紋：純 CSS gradient 疊在底色上（不吃圖檔、不多一次請求）。線的顏色一律用 currentColor
   // 算，所以深底淺字的 section 自動變成淺色紋，商家不用再另外挑一次紋路顏色。
   // 回 backgroundImage + backgroundSize 一組，跟 backgroundColor 是不同屬性、不互相蓋掉。
-  const textureToVal = (s: "none" | "grid" | "dots" | "lines" | undefined) => {
-    const line = "color-mix(in srgb, currentColor 7%, transparent)";
+  const textureToVal = (
+    s: "none" | "grid" | "dots" | "lines" | undefined,
+    tone?: "faint" | "default" | "strong"
+  ) => {
+    // 濃淡三檔：原本的 7% / 14% 是照白底近黑字挑的「隱約看得到」，faint 折半給拿紋當
+    // 若有似無質感的段落，strong 兩倍多一點給底色文字色拉不開、或想拿點陣當主視覺的。
+    // 沒設 tone 時走 default，算出來的字串跟以前一字不差。
+    const linePct = tone === "faint" ? 4 : tone === "strong" ? 16 : 7;
+    const dotPct = tone === "faint" ? 8 : tone === "strong" ? 30 : 14;
+    const line = `color-mix(in srgb, currentColor ${linePct}%, transparent)`;
     if (s === "grid")
       return {
         backgroundImage: `linear-gradient(to right, ${line} 1px, transparent 1px), linear-gradient(to bottom, ${line} 1px, transparent 1px)`,
@@ -251,7 +259,7 @@ export default async function StoreHomePage({
       };
     if (s === "dots")
       return {
-        backgroundImage: `radial-gradient(color-mix(in srgb, currentColor 14%, transparent) 1px, transparent 1px)`,
+        backgroundImage: `radial-gradient(color-mix(in srgb, currentColor ${dotPct}%, transparent) 1px, transparent 1px)`,
         backgroundSize: "20px 20px",
       };
     if (s === "lines")
@@ -315,7 +323,7 @@ export default async function StoreHomePage({
     const filter = filterToVal(s?.filter);
     const width = widthToVal(s?.sectionWidth);
     const gap = gapToVal(s?.sectionGap);
-    const texture = textureToVal(s?.texture);
+    const texture = textureToVal(s?.texture, s?.textureTone);
     const bgGradient = gradientToVal(s?.bgGradient);
     // 進場動畫：只回 "fade" / "slide-up" 給 wrapper 設 data-anim attr；
     // 實際 CSS keyframes + scroll-timeline 在 layout.tsx 注入；edit mode 內 disable
