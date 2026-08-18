@@ -68,6 +68,8 @@ type EditorPayload = {
     heroBylineWeight?: string;
     heroSplitRatio?: string;
     heroImageFocus?: string;
+    heroMagazineRuleWeight?: string;
+    heroMagazineRuleTone?: string;
     heroHeight?: string;
     fontScale?: number;
     sectionPaddingScale?: string;
@@ -454,6 +456,18 @@ export async function saveEditorState(slug: string, payload: EditorPayload) {
       const v = payload.layout.heroImageFocus;
       if (v === "top" || v === "center" || v === "bottom") {
         layoutPatch.heroImageFocus = v;
+      }
+    }
+    if (payload.layout.heroMagazineRuleWeight !== undefined) {
+      const v = payload.layout.heroMagazineRuleWeight;
+      if (v === "normal" || v === "medium" || v === "thick") {
+        layoutPatch.heroMagazineRuleWeight = v;
+      }
+    }
+    if (payload.layout.heroMagazineRuleTone !== undefined) {
+      const v = payload.layout.heroMagazineRuleTone;
+      if (v === "normal" || v === "faint" || v === "strong" || v === "accent") {
+        layoutPatch.heroMagazineRuleTone = v;
       }
     }
     if (payload.layout.fontScale !== undefined) {

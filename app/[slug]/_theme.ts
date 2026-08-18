@@ -444,6 +444,22 @@ export interface StoreTheme {
     // 各段卡片圖框那格「照片取景」是同一件事的段落版，但那條規則只掛在卡片圖框上，
     // hero 這張不在卡片裡，所以要自己一格。
     heroImageFocus: "top" | "center" | "bottom"; // split 照片取景（預設 center = 不覆寫）
+    // 雜誌版型上下那兩條橫線。整個版型的骨架就是這兩條線——上面那條把小標與店名那行
+    // 框起來、下面那條把落款與按鈕那行框起來，中間才是大字，是它們讓這個版型看起來像
+    // 一本雜誌的封面而不是一頁置中的字。可是兩條線的粗細與顏色都寫死（1px、theme.border），
+    // 而 border 色是全站挑來畫卡片邊界的最淡的一階：
+    // 1. 底色深一點的店（深綠、墨色）那兩條線直接看不見，版型的骨架整個消失，剩下中間
+    //    一團大字浮在畫面中央；商家沒有一格動得到——「分隔線深淺」那組是各區段的控制，
+    //    畫的是段落與段落之間那條，到不了 hero 裡面。
+    // 2. 反過來想把這兩條線當設計元素（粗一點的黑線是雜誌封面很常見的做法）也沒有格子，
+    //    1px 在大字旁邊細到像是沒對齊的痕跡。
+    // 兩條線一起動不分開給：它們在版型裡是成對的（上下對稱框住中間），只加粗一條會變成
+    // 沒關係的兩條線。粗細只給 1 / 2 / 3px——再粗就不是線是色塊，會跟中間的大字搶。
+    // 深淺四檔跟各區段那組同一套口徑：strong 用全站文字色（跟字同深就一定看得見，深底
+    // 淺字的店自動變淺線）、accent 用全站主色、faint 是原本那階再淡一半（給想留骨架但
+    // 不想它出聲的店）。normal 完全不覆寫，既有店家算出來一模一樣。
+    heroMagazineRuleWeight: "normal" | "medium" | "thick"; // 雜誌橫線粗細（預設 normal = 不覆寫）
+    heroMagazineRuleTone: "normal" | "faint" | "strong" | "accent"; // 雜誌橫線深淺（預設 normal = 不覆寫）
     heroHeight: "auto" | "short" | "tall" | "full"; // 預設 auto（adaptive 比例）
     // 全網站
     fontScale: number;                 // 全網站字體 multiplier 0.8-1.3（預設 1.0）
@@ -950,6 +966,16 @@ function resolveLayout(raw: unknown): StoreTheme["layout"] {
       const v = l.heroImageFocus;
       if (v === "top" || v === "bottom") return v;
       return "center" as const;
+    })(),
+    heroMagazineRuleWeight: (() => {
+      const v = l.heroMagazineRuleWeight;
+      if (v === "medium" || v === "thick") return v;
+      return "normal" as const;
+    })(),
+    heroMagazineRuleTone: (() => {
+      const v = l.heroMagazineRuleTone;
+      if (v === "faint" || v === "strong" || v === "accent") return v;
+      return "normal" as const;
     })(),
     heroHeight: (() => {
       const v = l.heroHeight;

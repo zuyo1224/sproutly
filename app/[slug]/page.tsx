@@ -1786,6 +1786,33 @@ export default async function StoreHomePage({
               ? { fontWeight: 500 }
               : {};
 
+          // 雜誌版型上下那兩條橫線的粗細與深淺。這兩條線是那個版型的骨架（上面框住小標
+          // 與店名、下面框住落款與按鈕，中間才是大字），可是粗細寫死 h-px、顏色寫死
+          // theme.border——border 是全站最淡的那一階，底色深一點的店整組骨架直接看不見，
+          // 而各區段那組「分隔線深淺」畫的是段落之間那條，伸不進 hero 裡面。
+          // 兩條一起動不分開給：它們在版型裡是成對的，只加粗一條會變成沒關係的兩條線。
+          // 高度走 inline style 壓過 h-px（inline 贏 class）；顏色的 faint 用 color-mix
+          // 往底色調一半（不是往透明調——這兩條線是實心 background 不是 border，往透明
+          // 調在有底紋的段落會透出底下的花樣）。
+          const magRuleHeight =
+            theme.layout.heroMagazineRuleWeight === "thick"
+              ? "3px"
+              : theme.layout.heroMagazineRuleWeight === "medium"
+              ? "2px"
+              : null;
+          const magRuleColor =
+            theme.layout.heroMagazineRuleTone === "strong"
+              ? theme.text
+              : theme.layout.heroMagazineRuleTone === "accent"
+              ? accentColor
+              : theme.layout.heroMagazineRuleTone === "faint"
+              ? `color-mix(in srgb, ${theme.border} 50%, ${theme.bg})`
+              : theme.border;
+          const magRuleStyle = {
+            background: magRuleColor,
+            ...(magRuleHeight ? { height: magRuleHeight } : {}),
+          };
+
           // Variant 1: full-image — 自適應 banner（圖 + 文字段），手機 / 桌機 同一套
           if (heroStyle === "full-image" && theme.heroUrl) {
             // Hero 高度策略
@@ -2198,7 +2225,7 @@ export default async function StoreHomePage({
                   </div>
                   <div
                     className="mt-4 h-px w-full"
-                    style={{ background: theme.border }}
+                    style={magRuleStyle}
                   />
                 </div>
 
@@ -2248,7 +2275,7 @@ export default async function StoreHomePage({
                 <div className="max-w-6xl mx-auto px-8 sm:px-12 w-full">
                   <div
                     className="h-px w-full mb-4"
-                    style={{ background: theme.border }}
+                    style={magRuleStyle}
                   />
                   <div
                     className={`flex justify-between items-center text-[10px] tracking-[0.32em] uppercase ${fade3}`}

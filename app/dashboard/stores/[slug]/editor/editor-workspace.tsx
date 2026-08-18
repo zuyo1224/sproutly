@@ -117,6 +117,8 @@ type EditorTheme = {
     heroBylineWeight: "normal" | "medium" | "bold";
     heroSplitRatio: "image-narrow" | "normal" | "image-wide";
     heroImageFocus: "top" | "center" | "bottom";
+    heroMagazineRuleWeight: "normal" | "medium" | "thick";
+    heroMagazineRuleTone: "normal" | "faint" | "strong" | "accent";
     heroHeight: "auto" | "short" | "tall" | "full";
     fontScale: number;
     sectionPaddingScale: "compact" | "default" | "spacious";
@@ -973,6 +975,8 @@ export function EditorWorkspace({
           heroBylineWeight: t.layout.heroBylineWeight,
           heroSplitRatio: t.layout.heroSplitRatio,
           heroImageFocus: t.layout.heroImageFocus,
+          heroMagazineRuleWeight: t.layout.heroMagazineRuleWeight,
+          heroMagazineRuleTone: t.layout.heroMagazineRuleTone,
           heroHeight: t.layout.heroHeight,
           fontScale: t.layout.fontScale,
           sectionPaddingScale: t.layout.sectionPaddingScale,
@@ -2589,6 +2593,68 @@ export function EditorWorkspace({
                   被切掉的上面（葉冠、瓶口）跟下面（盆器、落款）常常就是想給人看的地方——
                   選留上緣就往下切，選留下緣就往上切。上一格「圖文比例」讓的是寬度，這格
                   管的是切在哪
+                </p>
+              </Field>
+            )}
+            {theme.layout.heroStyle === "magazine" && (
+              <Field label="上下橫線粗細">
+                <div className="grid grid-cols-3 gap-1.5">
+                  {([
+                    { v: "normal", label: "跟預設" },
+                    { v: "medium", label: "稍粗" },
+                    { v: "thick", label: "粗" },
+                  ] as const).map((opt) => (
+                    <button
+                      key={opt.v}
+                      type="button"
+                      onClick={() => updateLayout({ heroMagazineRuleWeight: opt.v })}
+                      aria-pressed={theme.layout.heroMagazineRuleWeight === opt.v}
+                      className={`rounded-lg border py-2 text-xs transition ${
+                        theme.layout.heroMagazineRuleWeight === opt.v
+                          ? "border-emerald-500 bg-emerald-50 text-emerald-900"
+                          : "border-stone-200 text-stone-600 hover:border-stone-400"
+                      }`}
+                    >
+                      {opt.label}
+                    </button>
+                  ))}
+                </div>
+                <p className="text-[10px] text-stone-500 mt-1">
+                  雜誌版型上面那條（框住小標跟店名）跟下面那條（框住落款跟按鈕）的粗細。
+                  兩條一起動——它們是上下對稱的一對，只加粗一條會變成沒關係的兩條線。
+                  原本是最細的那種，旁邊擺著超大的主標時常常細到像沒對齊的痕跡
+                </p>
+              </Field>
+            )}
+            {theme.layout.heroStyle === "magazine" && (
+              <Field label="上下橫線深淺">
+                <div className="grid grid-cols-2 gap-1.5">
+                  {([
+                    { v: "normal", label: "跟預設" },
+                    { v: "faint", label: "更淡" },
+                    { v: "strong", label: "同文字" },
+                    { v: "accent", label: "主色" },
+                  ] as const).map((opt) => (
+                    <button
+                      key={opt.v}
+                      type="button"
+                      onClick={() => updateLayout({ heroMagazineRuleTone: opt.v })}
+                      aria-pressed={theme.layout.heroMagazineRuleTone === opt.v}
+                      className={`rounded-lg border py-2 text-xs transition ${
+                        theme.layout.heroMagazineRuleTone === opt.v
+                          ? "border-emerald-500 bg-emerald-50 text-emerald-900"
+                          : "border-stone-200 text-stone-600 hover:border-stone-400"
+                      }`}
+                    >
+                      {opt.label}
+                    </button>
+                  ))}
+                </div>
+                <p className="text-[10px] text-stone-500 mt-1">
+                  那兩條線的顏色。原本用的是全站畫卡片邊界的那階淡色，底色深一點的店根本
+                  看不見，等於整個版型的骨架不見了、只剩中間一團字。選同文字就跟字一樣深
+                  （深底淺字的店會自動變成淺線，不用自己挑色），選主色可以把它當開章的
+                  裝飾線，選更淡是想留骨架但不想它出聲
                 </p>
               </Field>
             )}
