@@ -359,6 +359,19 @@ export interface StoreTheme {
     // 載進來的就這三個字重，其他的瀏覽器會拿常規去假造，中文筆畫糊掉（跟主標粗細、副標
     // 粗細那幾格同一個理由）。沒設就完全不覆寫、回 {}，既有店家算出來一模一樣。
     heroCtaWeight: "default" | "normal" | "medium" | "bold"; // 按鈕粗細（預設 default = 照各版型原本）
+    // 按鈕顏色。大小、字距、大小寫、粗細開完之後，按鈕上唯一還寫死的就是顏色，而顏色
+    // 是這顆東西「看起來能不能按」最主要的訊號——前面四格能做的只有把字弄大弄粗，弄到
+    // 最後還是一顆跟旁邊主標同色的字。六處的底是兩件不同的事：連結型那三處（滿版圖的
+    // 兩顆、雜誌那條）只有字，字色寫死 theme.text，跟主標同一個顏色，底線走
+    // currentColor 所以跟著字走；藥丸型那三顆吃 .sproutly-btn-primary / -secondary，
+    // 實心那兩顆是「底色＝全站文字色、字色＝全站底色」的反白，描邊那顆是「字色＝文字色、
+    // 框線＝border 色」。
+    // 所以這一格的口徑訂成「按鈕的顏色」而不是「按鈕的文字顏色」：連結型只有字，那就是
+    // 字色；實心藥丸拿去當底色，字色不另外開一格而是算出來（見 page.tsx），因為底色跟
+    // 字色分兩格開，商家挑到兩個相近的顏色就會得到一顆讀不出字的按鈕，而那正是最不該
+    // 出事的元素；描邊藥丸沒有底色，就同時當字色與框線色。
+    // 一個色碼欄位、沒設完全不覆寫，既有店家算出來一模一樣。
+    heroCtaColor: string | null;       // 按鈕顏色，hex；null = 各版型原本的顏色
     // 雜誌版型底下那條 byline 的字級與顏色。hero 這組控制補到這裡，主標、副標、小標、
     // 按鈕都有了，byline 是最後一個完全沒得動的元素——商家改得到的只有那行字本身
     //（編輯器早就有輸入框），字級寫死在外層那條 flex 的 text-[10px] 上、顏色寫死
@@ -869,6 +882,7 @@ function resolveLayout(raw: unknown): StoreTheme["layout"] {
         return v;
       return "default" as const;
     })(),
+    heroCtaColor: normalizeHexColor(l.heroCtaColor),
     heroBylineFontScale: (() => {
       const v = l.heroBylineFontScale;
       if (typeof v !== "number" || !Number.isFinite(v)) return 1.0;

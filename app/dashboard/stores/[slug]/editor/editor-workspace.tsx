@@ -109,6 +109,7 @@ type EditorTheme = {
     heroCtaTracking: "tight" | "normal" | "wide";
     heroCtaCase: "default" | "capitalize" | "none";
     heroCtaWeight: "default" | "normal" | "medium" | "bold";
+    heroCtaColor: string | null;
     heroBylineFontScale: number;
     heroBylineColor: string | null;
     heroBylineTracking: "tight" | "normal" | "wide";
@@ -961,6 +962,7 @@ export function EditorWorkspace({
           heroCtaTracking: t.layout.heroCtaTracking,
           heroCtaCase: t.layout.heroCtaCase,
           heroCtaWeight: t.layout.heroCtaWeight,
+          heroCtaColor: t.layout.heroCtaColor,
           heroBylineFontScale: t.layout.heroBylineFontScale,
           heroBylineColor: t.layout.heroBylineColor,
           heroBylineTracking: t.layout.heroBylineTracking,
@@ -2029,6 +2031,42 @@ export function EditorWorkspace({
                 按鈕文字有多重。原本兩種：實心／描邊那種按鈕是中等，帶底線的連結型是
                 跟內文一樣細——連結型的字放大之後容易看起來像一行普通的字，加粗會更像
                 可以按的；反過來整個 hero 走輕盈路線時，也可以把按鈕退細一點
+              </p>
+            </Field>
+            <Field label="按鈕顏色">
+              <div className="flex items-center gap-2">
+                {/* 取色器需要一個具體的 hex 當初始值；沒設的時候公開頁走的還是各版型
+                    原本的顏色（連結型跟主標同色、實心那種是全站文字色反白） */}
+                <input
+                  type="color"
+                  value={theme.layout.heroCtaColor ?? theme.accent}
+                  onChange={(e) => updateLayout({ heroCtaColor: e.target.value })}
+                  className="h-8 w-12 rounded border border-stone-200"
+                />
+                <input
+                  type="text"
+                  value={theme.layout.heroCtaColor ?? ""}
+                  onChange={(e) =>
+                    updateLayout({ heroCtaColor: e.target.value || null })
+                  }
+                  placeholder="預設用版型原本的顏色"
+                  className="flex-1 rounded-lg border border-stone-200 px-3 py-2 text-sm font-mono"
+                />
+                {theme.layout.heroCtaColor && (
+                  <button
+                    type="button"
+                    onClick={() => updateLayout({ heroCtaColor: null })}
+                    className="text-xs text-stone-500 hover:text-stone-800 underline"
+                  >
+                    清除
+                  </button>
+                )}
+              </div>
+              <p className="text-[10px] text-stone-500 mt-1">
+                前面幾格只能把按鈕的字弄大弄粗，弄到最後那顆還是跟主標同一個顏色。
+                挑一個顏色就整顆換掉：帶底線的連結型換的是字（底線跟著換），
+                實心那種換的是底色、上面的字會自動挑讀得清楚的那個，
+                描邊那種換的是框線跟字
               </p>
             </Field>
             <Field label="雜誌版型下方 byline">

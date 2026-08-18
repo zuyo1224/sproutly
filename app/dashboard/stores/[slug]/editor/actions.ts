@@ -60,6 +60,7 @@ type EditorPayload = {
     heroCtaTracking?: string;
     heroCtaCase?: string;
     heroCtaWeight?: string;
+    heroCtaColor?: string | null;
     heroBylineFontScale?: number;
     heroBylineColor?: string | null;
     heroBylineTracking?: string;
@@ -396,6 +397,15 @@ export async function saveEditorState(slug: string, payload: EditorPayload) {
       const v = payload.layout.heroCtaWeight;
       if (v === "default" || v === "normal" || v === "medium" || v === "bold") {
         layoutPatch.heroCtaWeight = v;
+      }
+    }
+    if (payload.layout.heroCtaColor !== undefined) {
+      const v = payload.layout.heroCtaColor;
+      if (v === null || v === "") {
+        layoutPatch.heroCtaColor = null;
+      } else {
+        const hex = normalizeHexColor(v);
+        if (hex) layoutPatch.heroCtaColor = hex;
       }
     }
     if (payload.layout.heroBylineFontScale !== undefined) {

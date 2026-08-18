@@ -9,7 +9,15 @@ import { buildStoreJsonLd, buildFaqJsonLd, siteBaseUrl, storeSchemaId } from "@/
 import { telHref, mailHref, telDigits, cleanEmail, mapsHref } from "@/lib/contact-href";
 import { isSoldOut, isLowStock, bySoldOutLast, stockAriaSuffix } from "@/lib/product-stock";
 import { FREE_POS_KEYS } from "@/lib/free-positions";
-import { contrastRatio, NON_TEXT_CONTRAST_MIN } from "@/lib/color-contrast";
+import {
+  contrastRatio,
+  relativeLuminance,
+  NON_TEXT_CONTRAST_MIN,
+} from "@/lib/color-contrast";
+
+// 實心按鈕上的字要讀得清楚——它不是裝飾線也不是小標，是客人真正要按的那幾個字，
+// 所以用內文那條線（WCAG 1.4.3 的 4.5）判，不用非文字元素的 3。
+const CTA_TEXT_CONTRAST_MIN = 4.5;
 import HeroAdaptiveBanner from "./HeroAdaptiveBanner";
 
 type Params = Promise<{ slug: string }>;
@@ -1696,6 +1704,35 @@ export default async function StoreHomePage({
               : theme.layout.heroCtaWeight === "normal"
               ? { fontWeight: 400 }
               : {};
+          // 按鈕顏色。前四格（大小 / 字距 / 大小寫 / 粗細）能做的只有把字弄大弄粗，弄完
+          // 那顆還是跟主標同色的一行字。六處的底是兩件不同的事，所以拆成三種算法，但
+          // 商家只挑一個顏色（口徑寫在 _theme.ts 那個欄位上）。
+          const ctaColor = theme.layout.heroCtaColor;
+          // 連結型三處（滿版圖兩顆、雜誌那條）：只有字，挑的顏色就是字色。底線是
+          // currentColor，跟著字一起換，不用另外處理。
+          const ctaLinkColorStyle = ctaColor ? { color: ctaColor } : {};
+          // 實心藥丸兩顆（split 主按鈕、極簡那顆）：挑的顏色當底色。字色算出來不另外開
+          // 一格——底色跟字色分兩格開，商家挑到兩個相近的顏色就得到一顆讀不出字的按鈕。
+          // 先試原本的字色（全站底色）：商家挑一個深綠當底色時，底色跟字色的關係跟原本
+          // 一樣，整店的調子不會被這一格打散。真的不夠讀才換成黑或白裡對比高的那個。
+          const ctaSolidColorStyle = ctaColor
+            ? {
+                background: ctaColor,
+                color:
+                  (contrastRatio(ctaColor, theme.bg) ?? 0) >= CTA_TEXT_CONTRAST_MIN
+                    ? theme.bg
+                    : (relativeLuminance(ctaColor) ?? 0) > 0.4
+                    ? "#1a1a1a"
+                    : "#ffffff",
+                borderColor: ctaColor,
+              }
+            : {};
+          // 描邊藥丸一顆（split 次按鈕）：沒有底色，挑的顏色同時當字色與框線色。原本
+          // 框線是很淡的 border 色，換成挑的顏色會比原本重——這一格本來就是「讓按鈕跳
+          // 出來」用的，重是要的效果。
+          const ctaOutlineColorStyle = ctaColor
+            ? { color: ctaColor, borderColor: ctaColor }
+            : {};
           // 雜誌版型底下那條 byline（hero 最後一個完全沒得動的元素）。字級寫死在外層那條
           // flex 的 text-[10px] 上、顏色寫死 theme.textMuted。10px 跟上面那條 metadata
           // 同一個值，是照拉丁大寫字母挑的；byline 商家常打中文或中英混排，方塊字在 10px
@@ -1947,6 +1984,7 @@ export default async function StoreHomePage({
                           ...ctaTrackStyle(0.05),
                           ...ctaCaseStyle,
                           ...ctaWeightStyle,
+                          ...ctaLinkColorStyle,
                         }}
                       >
                         {heroCta}
@@ -1966,6 +2004,7 @@ export default async function StoreHomePage({
                           ...ctaTrackStyle(0.05),
                           ...ctaCaseStyle,
                           ...ctaWeightStyle,
+                          ...ctaLinkColorStyle,
                         }}
                       >
                         {heroCta}
@@ -2064,7 +2103,7 @@ export default async function StoreHomePage({
                       className="sproutly-btn sproutly-btn-primary sproutly-btn-lg"
                       data-edit-text
                       data-edit-field="heroCta"
-                      style={{ ...ctaBtnSizeStyle, ...ctaTrackStyle(0.18), ...ctaCaseStyle, ...ctaWeightStyle }}
+                      style={{ ...ctaBtnSizeStyle, ...ctaTrackStyle(0.18), ...ctaCaseStyle, ...ctaWeightStyle, ...ctaSolidColorStyle }}
                     >
                       {heroCta}
                     </Link>
@@ -2074,7 +2113,7 @@ export default async function StoreHomePage({
                         className="sproutly-btn sproutly-btn-secondary sproutly-btn-lg"
                         data-edit-text
                         data-edit-field="heroSecondaryCta"
-                        style={{ ...ctaBtnSizeStyle, ...ctaTrackStyle(0.18), ...ctaCaseStyle, ...ctaWeightStyle }}
+                        style={{ ...ctaBtnSizeStyle, ...ctaTrackStyle(0.18), ...ctaCaseStyle, ...ctaWeightStyle, ...ctaOutlineColorStyle }}
                       >
                         {heroSecondaryCta}
                       </Link>
@@ -2194,6 +2233,7 @@ export default async function StoreHomePage({
                         ...ctaTrackStyle(0.32),
                         ...ctaCaseStyle,
                         ...ctaWeightStyle,
+                        ...ctaLinkColorStyle,
                       }}
                     >
                       {/* 箭頭留在可編輯範圍外，雙擊改到的只有文字本體 */}
@@ -2283,7 +2323,7 @@ export default async function StoreHomePage({
                 className={`sproutly-btn sproutly-btn-primary sproutly-btn-lg mt-12 ${fade3}`}
                 data-edit-text
                 data-edit-field="heroCta"
-                style={{ ...ctaBtnSizeStyle, ...ctaTrackStyle(0.18), ...ctaCaseStyle, ...ctaWeightStyle }}
+                style={{ ...ctaBtnSizeStyle, ...ctaTrackStyle(0.18), ...ctaCaseStyle, ...ctaWeightStyle, ...ctaSolidColorStyle }}
               >
                 {heroCta}
               </Link>
