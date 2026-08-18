@@ -530,6 +530,17 @@ export interface StoreTheme {
     //   spacious clamp(6rem, 12vw, 9rem)
     heroTextBg: string | null;         // 滿版圖文字段底色，hex；null = 跟全站底色
     heroTextPadding: "compact" | "normal" | "spacious"; // 文字段上下內距（預設 normal = 不覆寫）
+    // 同一塊文字段裡面那一層的最大寬度（原本寫死 max-w-4xl mx-auto = 56rem 置中）。
+    // 上一格動的是那塊色塊有多高，這格動的是裡面的字排多寬——兩件不同的事：色塊是
+    // 滿版的（左右貼齊全站邊界），字被關在中間 56rem 裡。56rem 是配「一行大主標」挑的，
+    // 主標拉大或副標寫成兩三句的店，每一行會拖得很長，而這段又常是置中對齊的，
+    // 長行置中讀起來每一行都要重新找行頭；反過來只放店名兩三個字的店，56rem 讓那塊
+    // 色塊左右各空一大片，看起來像沒排完。多給一檔「滿版」：照片是整屏寬的，
+    // 有些店要的是字跟照片同一個寬度、不要中間那塊看不見的欄。
+    // 左右內距不開（那是跟導覽列與後面每一段對齊用的全站邊界，滿版檔也還是留著）。
+    // 主標拖過位置的店這格不生效——那時整層是自由定位，沒有欄寬可言。
+    //   narrow 40rem / normal 不覆寫（56rem）/ wide 72rem / full 不設上限
+    heroTextWidth: "narrow" | "normal" | "wide" | "full"; // 文字段欄寬（預設 normal = 不覆寫）
     heroHeight: "auto" | "short" | "tall" | "full"; // 預設 auto（adaptive 比例）
     // 全網站
     fontScale: number;                 // 全網站字體 multiplier 0.8-1.3（預設 1.0）
@@ -1090,6 +1101,11 @@ function resolveLayout(raw: unknown): StoreTheme["layout"] {
     heroTextPadding: (() => {
       const v = l.heroTextPadding;
       if (v === "compact" || v === "spacious") return v;
+      return "normal" as const;
+    })(),
+    heroTextWidth: (() => {
+      const v = l.heroTextWidth;
+      if (v === "narrow" || v === "wide" || v === "full") return v;
       return "normal" as const;
     })(),
     heroHeight: (() => {

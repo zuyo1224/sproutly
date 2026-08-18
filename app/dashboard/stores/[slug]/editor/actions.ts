@@ -78,6 +78,7 @@ type EditorPayload = {
     heroMinimalRuleColor?: string | null;
     heroTextBg?: string | null;
     heroTextPadding?: string;
+    heroTextWidth?: string;
     heroHeight?: string;
     fontScale?: number;
     sectionPaddingScale?: string;
@@ -531,6 +532,12 @@ export async function saveEditorState(slug: string, payload: EditorPayload) {
       const v = payload.layout.heroTextPadding;
       if (v === "compact" || v === "normal" || v === "spacious") {
         layoutPatch.heroTextPadding = v;
+      }
+    }
+    if (payload.layout.heroTextWidth !== undefined) {
+      const v = payload.layout.heroTextWidth;
+      if (v === "narrow" || v === "normal" || v === "wide" || v === "full") {
+        layoutPatch.heroTextWidth = v;
       }
     }
     if (payload.layout.fontScale !== undefined) {

@@ -127,6 +127,7 @@ type EditorTheme = {
     heroMinimalRuleColor: string | null;
     heroTextBg: string | null;
     heroTextPadding: "compact" | "normal" | "spacious";
+    heroTextWidth: "narrow" | "normal" | "wide" | "full";
     heroHeight: "auto" | "short" | "tall" | "full";
     fontScale: number;
     sectionPaddingScale: "compact" | "default" | "spacious";
@@ -994,6 +995,7 @@ export function EditorWorkspace({
           heroMinimalRuleColor: t.layout.heroMinimalRuleColor,
           heroTextBg: t.layout.heroTextBg,
           heroTextPadding: t.layout.heroTextPadding,
+          heroTextWidth: t.layout.heroTextWidth,
           heroHeight: t.layout.heroHeight,
           fontScale: t.layout.fontScale,
           sectionPaddingScale: t.layout.sectionPaddingScale,
@@ -2931,6 +2933,38 @@ export function EditorWorkspace({
                   那一塊上下各留多少空。只放一行主標時，原本的留白會讓那塊顯得空；
                   主標加副標加小標加按鈕全開的店，同樣的留白會讓那塊拖得很長，
                   照片跟後面的商品之間隔了一大段。左右的邊界不動，那是跟導覽列對齊用的
+                </p>
+              </Field>
+            )}
+            {theme.layout.heroStyle === "full-image" && (
+              <Field label="文字段欄寬">
+                <div className="grid grid-cols-4 gap-1.5">
+                  {([
+                    { v: "narrow", label: "窄" },
+                    { v: "normal", label: "跟預設" },
+                    { v: "wide", label: "寬" },
+                    { v: "full", label: "滿版" },
+                  ] as const).map((opt) => (
+                    <button
+                      key={opt.v}
+                      type="button"
+                      onClick={() => updateLayout({ heroTextWidth: opt.v })}
+                      aria-pressed={theme.layout.heroTextWidth === opt.v}
+                      className={`rounded-lg border py-2 text-xs transition ${
+                        theme.layout.heroTextWidth === opt.v
+                          ? "border-emerald-500 bg-emerald-50 text-emerald-900"
+                          : "border-stone-200 text-stone-600 hover:border-stone-400"
+                      }`}
+                    >
+                      {opt.label}
+                    </button>
+                  ))}
+                </div>
+                <p className="text-[10px] text-stone-500 mt-1">
+                  上面那格動的是那塊色塊有多高，這格動的是裡面的字排多寬。色塊本身是
+                  滿版的，字被關在中間一道看不見的欄裡：主標拉大或副標寫成兩三句的店，
+                  每一行會拖得很長，置中的長行讀起來每行都要重新找行頭；只放店名兩三個
+                  字的店則會左右各空一大片。要字跟照片同寬就選滿版
                 </p>
               </Field>
             )}

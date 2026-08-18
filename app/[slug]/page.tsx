@@ -1876,9 +1876,24 @@ export default async function StoreHomePage({
                   style={{ backgroundColor: heroTextBgColor, minHeight: taglinePos || subtitlePos || ctaPos || eyebrowPos ? "300px" : undefined, ...heroTextPaddingStyle }}
                   data-edit-target="hero-text-area"
                 >
+                  {/* 裡面那一層的欄寬。色塊本身是滿版的（左右貼齊全站邊界），字被關在
+                      中間 56rem 裡——這格動的是那道看不見的欄，不是色塊。主標拖過位置的
+                      店整層改走自由定位、沒有欄寬可言，那時這格不生效。inline 贏過 class，
+                      滿版檔輸出 maxWidth:none 蓋掉 max-w-4xl。 */}
+                  {(() => {
+                    const w = theme.layout.heroTextWidth;
+                    const heroTextWidthStyle: React.CSSProperties =
+                      taglinePos || w === "normal"
+                        ? {}
+                        : w === "narrow"
+                        ? { maxWidth: "40rem" }
+                        : w === "wide"
+                        ? { maxWidth: "72rem" }
+                        : { maxWidth: "none" };
+                    return (
                   <div
                     className={taglinePos ? "" : "max-w-4xl mx-auto"}
-                    style={{ textAlign: taglineAlign }}
+                    style={{ textAlign: taglineAlign, ...heroTextWidthStyle }}
                   >
                     {/* Eyebrow 小標：其他三版型都有渲染，full-image 一直漏掉。
                         跟副標 / CTA 同邏輯：定過位走 absolute（不再被主標連坐藏），
@@ -2070,6 +2085,8 @@ export default async function StoreHomePage({
                       </Link>
                     )}
                   </div>
+                    );
+                  })()}
                 </div>
                   );
                 })()}
