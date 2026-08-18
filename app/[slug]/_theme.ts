@@ -434,6 +434,16 @@ export interface StoreTheme {
     // 值算出來時已經把「圖在右」那個 order 反轉考慮進去（grid-template-columns 講的是
     // 視覺左右欄，跟 order 無關），所以存的是語意檔、render 才翻成欄寬字串。
     heroSplitRatio: "image-narrow" | "normal" | "image-wide"; // split 圖文比例（預設 normal = 不覆寫）
+    // split 版型那張圖被裁時保留哪一端。上一格把欄寬讓寬了，可是圖框的形狀還是由版型決定
+    // （手機是正方形、平板以上是整欄的高度），跟照片本身的比例不一樣就一定要裁掉一邊；
+    // 裁的位置寫死在正中間，直式商品照被切掉的上緣（葉冠、瓶口）跟下緣（盆器、落款）
+    // 剛好是商家真正想給人看的地方。三檔就是 object-position 的三個值：
+    //   top    保留上緣（切下面）
+    //   center 不覆寫（維持原本的置中裁）
+    //   bottom 保留下緣（切上面）
+    // 各段卡片圖框那格「照片取景」是同一件事的段落版，但那條規則只掛在卡片圖框上，
+    // hero 這張不在卡片裡，所以要自己一格。
+    heroImageFocus: "top" | "center" | "bottom"; // split 照片取景（預設 center = 不覆寫）
     heroHeight: "auto" | "short" | "tall" | "full"; // 預設 auto（adaptive 比例）
     // 全網站
     fontScale: number;                 // 全網站字體 multiplier 0.8-1.3（預設 1.0）
@@ -935,6 +945,11 @@ function resolveLayout(raw: unknown): StoreTheme["layout"] {
       const v = l.heroSplitRatio;
       if (v === "image-narrow" || v === "image-wide") return v;
       return "normal" as const;
+    })(),
+    heroImageFocus: (() => {
+      const v = l.heroImageFocus;
+      if (v === "top" || v === "bottom") return v;
+      return "center" as const;
     })(),
     heroHeight: (() => {
       const v = l.heroHeight;

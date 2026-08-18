@@ -67,6 +67,7 @@ type EditorPayload = {
     heroBylineCase?: string;
     heroBylineWeight?: string;
     heroSplitRatio?: string;
+    heroImageFocus?: string;
     heroHeight?: string;
     fontScale?: number;
     sectionPaddingScale?: string;
@@ -447,6 +448,12 @@ export async function saveEditorState(slug: string, payload: EditorPayload) {
       const v = payload.layout.heroSplitRatio;
       if (v === "image-narrow" || v === "normal" || v === "image-wide") {
         layoutPatch.heroSplitRatio = v;
+      }
+    }
+    if (payload.layout.heroImageFocus !== undefined) {
+      const v = payload.layout.heroImageFocus;
+      if (v === "top" || v === "center" || v === "bottom") {
+        layoutPatch.heroImageFocus = v;
       }
     }
     if (payload.layout.fontScale !== undefined) {

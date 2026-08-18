@@ -2071,6 +2071,19 @@ export default async function StoreHomePage({
                     sizes="(min-width: 768px) 50vw, 100vw"
                     quality={85}
                     className="object-cover"
+                    // 照片取景。圖框的形狀是版型定的（手機正方形、平板以上整欄高），跟照片
+                    // 本身比例不一樣就一定裁掉一邊，而裁的位置原本永遠是正中間。這裡直接寫
+                    // 在這張圖的 inline style 上就夠——object-position 跟 class 上的
+                    // object-cover 是不同屬性，不會互相蓋掉，也不必像段落那幾格繞去 layout.tsx
+                    // 補規則（那是因為規則要落在別人的元素上，這張圖是自己的）。
+                    // 置中那一檔不輸出任何東西，既有店家的裁法一點都不會變。
+                    style={
+                      theme.layout.heroImageFocus === "top"
+                        ? { objectPosition: "center top" }
+                        : theme.layout.heroImageFocus === "bottom"
+                          ? { objectPosition: "center bottom" }
+                          : undefined
+                    }
                   />
                 </div>
                 <div

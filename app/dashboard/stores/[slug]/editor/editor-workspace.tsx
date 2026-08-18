@@ -116,6 +116,7 @@ type EditorTheme = {
     heroBylineCase: "upper" | "capitalize" | "none";
     heroBylineWeight: "normal" | "medium" | "bold";
     heroSplitRatio: "image-narrow" | "normal" | "image-wide";
+    heroImageFocus: "top" | "center" | "bottom";
     heroHeight: "auto" | "short" | "tall" | "full";
     fontScale: number;
     sectionPaddingScale: "compact" | "default" | "spacious";
@@ -971,6 +972,7 @@ export function EditorWorkspace({
           heroBylineCase: t.layout.heroBylineCase,
           heroBylineWeight: t.layout.heroBylineWeight,
           heroSplitRatio: t.layout.heroSplitRatio,
+          heroImageFocus: t.layout.heroImageFocus,
           heroHeight: t.layout.heroHeight,
           fontScale: t.layout.fontScale,
           sectionPaddingScale: t.layout.sectionPaddingScale,
@@ -2556,6 +2558,37 @@ export function EditorWorkspace({
                   的——放直式商品照的話左右兩邊會被裁掉一大塊，選圖寬（六成）就少裁一點；
                   反過來主標長、又有副標跟兩顆按鈕的話，文字那半會擠到一直換行，選圖窄
                   （四成）把空間讓給字。手機上是圖在上文字在下的單欄，這格只影響平板以上
+                </p>
+              </Field>
+            )}
+            {theme.layout.heroStyle === "split" && (
+              <Field label="照片取景">
+                <div className="grid grid-cols-3 gap-1.5">
+                  {([
+                    { v: "top", label: "留上緣" },
+                    { v: "center", label: "跟預設" },
+                    { v: "bottom", label: "留下緣" },
+                  ] as const).map((opt) => (
+                    <button
+                      key={opt.v}
+                      type="button"
+                      onClick={() => updateLayout({ heroImageFocus: opt.v })}
+                      aria-pressed={theme.layout.heroImageFocus === opt.v}
+                      className={`rounded-lg border py-2 text-xs transition ${
+                        theme.layout.heroImageFocus === opt.v
+                          ? "border-emerald-500 bg-emerald-50 text-emerald-900"
+                          : "border-stone-200 text-stone-600 hover:border-stone-400"
+                      }`}
+                    >
+                      {opt.label}
+                    </button>
+                  ))}
+                </div>
+                <p className="text-[10px] text-stone-500 mt-1">
+                  照片鋪滿圖框、比例對不上時要切掉一邊，原本一律從正中間切。直式的商品照
+                  被切掉的上面（葉冠、瓶口）跟下面（盆器、落款）常常就是想給人看的地方——
+                  選留上緣就往下切，選留下緣就往上切。上一格「圖文比例」讓的是寬度，這格
+                  管的是切在哪
                 </p>
               </Field>
             )}
