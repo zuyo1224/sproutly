@@ -114,6 +114,7 @@ type EditorTheme = {
     heroBylineColor: string | null;
     heroBylineTracking: "tight" | "normal" | "wide";
     heroBylineCase: "upper" | "capitalize" | "none";
+    heroBylineWeight: "normal" | "medium" | "bold";
     heroHeight: "auto" | "short" | "tall" | "full";
     fontScale: number;
     sectionPaddingScale: "compact" | "default" | "spacious";
@@ -967,6 +968,7 @@ export function EditorWorkspace({
           heroBylineColor: t.layout.heroBylineColor,
           heroBylineTracking: t.layout.heroBylineTracking,
           heroBylineCase: t.layout.heroBylineCase,
+          heroBylineWeight: t.layout.heroBylineWeight,
           heroHeight: t.layout.heroHeight,
           fontScale: t.layout.fontScale,
           sectionPaddingScale: t.layout.sectionPaddingScale,
@@ -2197,6 +2199,35 @@ export function EditorWorkspace({
                 一律被轉成全大寫，「Photography by Wang」變 PHOTOGRAPHY BY WANG，打 IG
                 帳號也會被改掉。選照原樣就照你打的顯示（改上面輸入框的字沒有用，大寫是
                 顯示的時候才轉的），右邊的按鈕不跟
+              </p>
+            </Field>
+            <Field label="byline 粗細">
+              <div className="grid grid-cols-3 gap-1.5">
+                {([
+                  { v: "normal", label: "原樣" },
+                  { v: "medium", label: "稍重" },
+                  { v: "bold", label: "重" },
+                ] as const).map((opt) => (
+                  <button
+                    key={opt.v}
+                    type="button"
+                    onClick={() => updateLayout({ heroBylineWeight: opt.v })}
+                    aria-pressed={theme.layout.heroBylineWeight === opt.v}
+                    className={`rounded-lg border py-2 text-xs transition ${
+                      theme.layout.heroBylineWeight === opt.v
+                        ? "border-emerald-500 bg-emerald-50 text-emerald-900"
+                        : "border-stone-200 text-stone-600 hover:border-stone-400"
+                    }`}
+                  >
+                    {opt.label}
+                  </button>
+                ))}
+              </div>
+              <p className="text-[10px] text-stone-500 mt-1">
+                那行字有多重。原本跟內文一樣輕，是整個版面最不明顯的一行——想讓客人真的
+                讀到它，上面的顏色那格只能拉深，拉深了又會跟同一行的其他字打架。這格是
+                「一樣的淡，但看得出是一行字」。反過來當落款用的話，選稍重配收緊的字距，
+                那幾個字會結成一塊像印章。右邊的按鈕不跟
               </p>
             </Field>
             <Field label={`主標字體大小（${theme.layout.heroTaglineFontScale.toFixed(2)}x）`}>

@@ -1776,6 +1776,15 @@ export default async function StoreHomePage({
               : theme.layout.heroBylineCase === "capitalize"
               ? { textTransform: "capitalize" }
               : {};
+          // byline 粗細。這個 span 自己沒寫 font-weight，繼承的是內文的 400——顏色那格
+          // 只能讓它更淡或更深，讓「一樣的淡但讀得出來」這件事沒有格子可按，補的就是這個。
+          // 只給 400 / 500 / 700（layout 載進來的三個字重），沒選回 {} 完全不覆寫。
+          const bylineWeightStyle =
+            theme.layout.heroBylineWeight === "bold"
+              ? { fontWeight: 700 }
+              : theme.layout.heroBylineWeight === "medium"
+              ? { fontWeight: 500 }
+              : {};
 
           // Variant 1: full-image — 自適應 banner（圖 + 文字段），手機 / 桌機 同一套
           if (heroStyle === "full-image" && theme.heroUrl) {
@@ -2217,6 +2226,7 @@ export default async function StoreHomePage({
                         ...bylineSizeStyle,
                         ...bylineTrackStyle,
                         ...bylineCaseStyle,
+                        ...bylineWeightStyle,
                       }}
                     >
                       {heroMagazineByline}

@@ -65,6 +65,7 @@ type EditorPayload = {
     heroBylineColor?: string | null;
     heroBylineTracking?: string;
     heroBylineCase?: string;
+    heroBylineWeight?: string;
     heroHeight?: string;
     fontScale?: number;
     sectionPaddingScale?: string;
@@ -433,6 +434,12 @@ export async function saveEditorState(slug: string, payload: EditorPayload) {
       const v = payload.layout.heroBylineCase;
       if (v === "upper" || v === "capitalize" || v === "none") {
         layoutPatch.heroBylineCase = v;
+      }
+    }
+    if (payload.layout.heroBylineWeight !== undefined) {
+      const v = payload.layout.heroBylineWeight;
+      if (v === "normal" || v === "medium" || v === "bold") {
+        layoutPatch.heroBylineWeight = v;
       }
     }
     if (payload.layout.fontScale !== undefined) {

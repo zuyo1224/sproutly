@@ -407,6 +407,23 @@ export interface StoreTheme {
     // 兩格都是沒設就完全不覆寫、回 {}，既有店家的 byline 一個字都不會變。
     heroBylineTracking: "tight" | "normal" | "wide"; // byline 字距（預設 normal = 不加減）
     heroBylineCase: "upper" | "capitalize" | "none"; // byline 大小寫（預設 upper = 原本的 uppercase）
+    // byline 的粗細。字級、顏色、字距、大小寫四格開完之後，byline 剩最後一個沒得動的
+    // 參數——那行字有多重。它自己一個 font-weight 都沒寫，繼承的是內文的 400，而 hero 上
+    // 每一個其他元素都已經有粗細可調（主標、副標、小標、按鈕），只剩這一行沒有。
+    // 為什麼要：byline 在兩種店裡是兩種東西。一種店把它當真的資訊在用（「攝影 / 王小明」
+    // 「由 XX 選件」），商家調大字級想讓客人讀到，但 400 配上整個雜誌版型最淡的那個顏色，
+    // 放大之後仍然是整頁最不明顯的一行。顏色那格能拉深，可是拉深到接近主標又會跟上面
+    // 那條 metadata 打架——商家真正要的是「一樣的淡，但看得出是一行字」，那是字重的事
+    // 不是顏色的事。另一種店把 byline 當落款、當版型底下的一句署名，這時 500 那一檔配上
+    // 收緊過的字距，能讓那幾個字結成一塊像印章，而不是散在分隔線底下的一排灰字。
+    // 只給 400 / 500 / 700 三檔（跟主標、副標、按鈕那幾格同一個理由）：layout 載進來的
+    // 就這三個字重，其他的瀏覽器會拿常規去假造，中文筆畫糊掉——byline 的 base 只有 10px，
+    // 假造的字重在這個字級上糊得最兇。往細的方向沒有一檔可以給，因為 400 已經是載進來
+    // 最細的；想讓 byline 更退後仍然是走顏色那格。
+    // 跟前面四格同一個判斷：只套 byline 那個 span，不套外層那條 flex（右邊的 CTA 有自己的
+    // 「按鈕粗細」，套外層會讓這格連帶動到按鈕）。預設 normal = 繼承來的 400，沒設完全
+    // 不覆寫、回 {}，既有店家的 byline 一個字都不會變。
+    heroBylineWeight: "normal" | "medium" | "bold"; // byline 粗細（預設 normal = 不覆寫）
     heroHeight: "auto" | "short" | "tall" | "full"; // 預設 auto（adaptive 比例）
     // 全網站
     fontScale: number;                 // 全網站字體 multiplier 0.8-1.3（預設 1.0）
@@ -898,6 +915,11 @@ function resolveLayout(raw: unknown): StoreTheme["layout"] {
       const v = l.heroBylineCase;
       if (v === "upper" || v === "capitalize" || v === "none") return v;
       return "upper" as const;
+    })(),
+    heroBylineWeight: (() => {
+      const v = l.heroBylineWeight;
+      if (v === "normal" || v === "medium" || v === "bold") return v;
+      return "normal" as const;
     })(),
     heroHeight: (() => {
       const v = l.heroHeight;
