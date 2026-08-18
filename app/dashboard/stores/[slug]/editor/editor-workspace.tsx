@@ -3452,6 +3452,7 @@ export function EditorWorkspace({
           const texture = cur.texture ?? null;
           const textureTone = cur.textureTone ?? null;
           const textureScale = cur.textureScale ?? null;
+          const textureColor = cur.textureColor ?? null;
           const bgGradient = cur.bgGradient ?? null;
           const bgGradientTone = cur.bgGradientTone ?? null;
           // 色票快選：全站主色 + 中性白/奶油/淺灰/近黑，省得每次自己對色碼
@@ -7281,6 +7282,45 @@ export function EditorWorkspace({
                       <button
                         type="button"
                         onClick={() => patch({ textureScale: null })}
+                        className="text-stone-500 hover:text-stone-800 underline"
+                      >
+                        清除
+                      </button>
+                    )}
+                  </div>
+                </Field>
+              )}
+              {/* 用色跟濃淡、密度是一組：濃淡調多黑、密度調多密，這格調什麼色。密度開了
+                  「更疏」就是給拿點陣當滿版圓點主視覺的，而那種圓點慣用品牌色——缺這格
+                  的話商家調完濃淡密度拿到的還是一片灰點。 */}
+              {texture && texture !== "none" && (
+                <Field label="底紋用色">
+                  <div className="grid grid-cols-2 gap-1.5">
+                    {([
+                      { v: "text", label: "跟文字色" },
+                      { v: "accent", label: "全站主色" },
+                    ] as const).map((opt) => (
+                      <button
+                        key={opt.v}
+                        type="button"
+                        onClick={() => patch({ textureColor: opt.v })}
+                        aria-pressed={(textureColor ?? "text") === opt.v}
+                        className={`rounded-lg border py-2 text-xs transition ${
+                          (textureColor ?? "text") === opt.v
+                            ? "border-emerald-500 bg-emerald-50 text-emerald-900"
+                            : "border-stone-200 text-stone-600 hover:border-stone-400"
+                        }`}
+                      >
+                        {opt.label}
+                      </button>
+                    ))}
+                  </div>
+                  <div className="mt-1.5 flex items-center justify-between text-[11px] text-stone-500">
+                    <span>跟文字色是安靜的襯底；全站主色讓紋帶品牌色，配加深、更疏就是品牌色圓點主視覺</span>
+                    {textureColor && (
+                      <button
+                        type="button"
+                        onClick={() => patch({ textureColor: null })}
                         className="text-stone-500 hover:text-stone-800 underline"
                       >
                         清除

@@ -245,7 +245,8 @@ export default async function StoreHomePage({
   const textureToVal = (
     s: "none" | "grid" | "dots" | "lines" | undefined,
     tone?: "faint" | "default" | "strong",
-    scale?: "dense" | "default" | "sparse"
+    scale?: "dense" | "default" | "sparse",
+    color?: "text" | "accent"
   ) => {
     // 濃淡三檔：原本的 7% / 14% 是照白底近黑字挑的「隱約看得到」，faint 折半給拿紋當
     // 若有似無質感的段落，strong 兩倍多一點給底色文字色拉不開、或想拿點陣當主視覺的。
@@ -258,7 +259,12 @@ export default async function StoreHomePage({
     const gridPx = scale === "dense" ? 20 : scale === "sparse" ? 48 : 32;
     const dotPx = scale === "dense" ? 12 : scale === "sparse" ? 32 : 20;
     const linesPx = scale === "dense" ? 6 : scale === "sparse" ? 16 : 10;
-    const line = `color-mix(in srgb, currentColor ${linePct}%, transparent)`;
+    // 用色兩檔：預設 currentColor（跟這一段的文字同色，深底淺字自動變淺紋）；accent 讀
+    // --store-accent 變數——全站在 _theme.ts 餵 theme.accent，主色壓在自訂底色上看不見的
+    // 段落已經把這個變數換成該段文字色（mergeSectionStyle 那道防呆），這裡跟著讀就跟著防。
+    // fallback 留 currentColor：變數不在（不該發生）時退回原本的樣子，不會整層紋消失。
+    const ink = color === "accent" ? "var(--store-accent, currentColor)" : "currentColor";
+    const line = `color-mix(in srgb, ${ink} ${linePct}%, transparent)`;
     if (s === "grid")
       return {
         backgroundImage: `linear-gradient(to right, ${line} 1px, transparent 1px), linear-gradient(to bottom, ${line} 1px, transparent 1px)`,
@@ -266,7 +272,7 @@ export default async function StoreHomePage({
       };
     if (s === "dots")
       return {
-        backgroundImage: `radial-gradient(color-mix(in srgb, currentColor ${dotPct}%, transparent) 1px, transparent 1px)`,
+        backgroundImage: `radial-gradient(color-mix(in srgb, ${ink} ${dotPct}%, transparent) 1px, transparent 1px)`,
         backgroundSize: `${dotPx}px ${dotPx}px`,
       };
     if (s === "lines")
@@ -337,7 +343,7 @@ export default async function StoreHomePage({
     const filter = filterToVal(s?.filter);
     const width = widthToVal(s?.sectionWidth);
     const gap = gapToVal(s?.sectionGap);
-    const texture = textureToVal(s?.texture, s?.textureTone, s?.textureScale);
+    const texture = textureToVal(s?.texture, s?.textureTone, s?.textureScale, s?.textureColor);
     const bgGradient = gradientToVal(s?.bgGradient, s?.bgGradientTone);
     // 進場動畫：只回 "fade" / "slide-up" 給 wrapper 設 data-anim attr；
     // 實際 CSS keyframes + scroll-timeline 在 layout.tsx 注入；edit mode 內 disable

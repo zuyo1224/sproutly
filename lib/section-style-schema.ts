@@ -946,6 +946,19 @@ export const SECTION_STYLE_ENUMS = {
   // 只給三檔不給滑桿，跟濃淡同一個口徑：更密約折半、更疏約一倍半，三檔之間的差一眼看得
   // 出來。沒設就沒這欄，格距字串跟以前一字不差，既有店家一層紋都不會變。
   textureScale: ["dense", "default", "sparse"],
+  // 底紋的用色（text 照原本的、跟這一段的文字同色 / accent 全站主色），跟濃淡、密度一樣
+  // 只在設了底紋之後才有東西可調。花樣、濃淡、密度補齊之後，紋的顏色仍然寫死跟文字色走
+  // （currentColor）——那是「內文背後隱約一層」的正確預設，但三條線（分隔線、標題底線、
+  // 側邊色條）的深淺都開了主色檔之後，裝飾層裡只剩底紋拿不到主色：密度那格開了「更疏」
+  // 就是給拿點陣當滿版圓點主視覺的（手作感網站常見），而那種圓點慣用的是品牌色，不是
+  // 內文的黑；商家把濃淡按到加深、密度按到更疏，拿到的還是一片灰點。
+  // 商家原本沒有一格動得到——「文字顏色」換成主色會連整段的字一起變、「底紋濃淡」調的
+  // 是多黑不是什麼色、三條線的主色檔都落在線上，到不了這層紋。
+  // 只給兩檔不開色票：跟分隔線深淺不開線色控制同一個口徑——多一個要挑的值，挑出跟底色
+  // 同色的看不見值就又回到「這格像壞的」。主色讀的是 --store-accent 那個變數，主色壓在
+  // 自訂底色上看不見時，該段已經把這個變數換成該段文字色（跟小標、短線同一道防呆）。
+  // 沒設就沒這欄，濃度字串照舊寫 currentColor，既有店家一層紋都不會變。
+  textureColor: ["text", "accent"],
   // 底色明暗變化（top 上緣加重 / bottom 下緣加重 / vignette 四周暈影），跟底紋同樣走
   // currentColor：淺底深字的段落疊出來是變暗，深底淺字的段落疊出來是提亮，不用另挑顏色。
   bgGradient: ["none", "top", "bottom", "vignette"],
@@ -1125,6 +1138,7 @@ export const SECTION_STYLE_NEUTRAL_VALUES = {
   texture: "none",
   textureTone: "default",
   textureScale: "default",
+  textureColor: "text",
   bgGradient: "none",
   bgGradientTone: "default",
   headingRule: "none",
