@@ -575,6 +575,16 @@ export interface StoreTheme {
     // 上限：窄 48rem（字擠成一團、雜誌內頁那種窄欄）、跟預設不覆寫、跟橫線一樣寬 72rem
     // （字的左右兩端剛好切齊上下兩條線）、滿版不設上限（左右只剩全站邊界那道 padding）。
     heroMagazineTextWidth: "narrow" | "normal" | "rule" | "full"; // 雜誌中間大字欄寬（預設 normal = 不覆寫）
+    // 上一格開的是中間那一層的欄寬，可是那一層裡面有兩行字：主標吃那一層的寬度，副標自己
+    // 另外包了一個 max-w-xl（36rem）。兩個寬度是分開寫死的——主標放寬到跟橫線切齊或滿版
+    // 之後，副標還是原本那條 36rem 的窄欄，變成上面一行很寬的大字、下面一條窄窄的小字，
+    // 中軸對齊但左右兩端差很多，看起來像兩段沒關係的東西擺在一起。反過來主標選窄
+    // （48rem）時，副標的 36rem 跟它差得不多、勉強還看得過去，所以這格不能直接跟著主標動，
+    // 要分開給。四檔動的是副標那一層的上限：窄 28rem（副標只有一句話時收成一小條，
+    // 跟上面的大字拉開層次）、跟預設不覆寫、寬 48rem、跟主標一樣寬（不設上限，直接吃上一
+    // 層算出來的寬度，兩行字左右兩端切齊）。不開任意數字：這一層本來就被上一層框住，
+    // 給的數字比上一層大也不會更寬，只會讓商家以為沒生效。
+    heroMagazineSubtitleWidth: "narrow" | "normal" | "wide" | "title"; // 雜誌副標欄寬（預設 normal = 不覆寫）
     // minimal 版型自己的兩個寫死參數：欄寬與上下留白。這個版型沒有圖、沒有線、沒有底色，
     // 只有置中的一段字，所以「字排多寬」跟「上下留多少空」就是它全部的設計——可是兩個值
     // 都寫死在 class 裡（max-w-3xl 的 48rem 欄寬、py-40 sm:py-56 的上下留白），前面開的
@@ -1197,6 +1207,11 @@ function resolveLayout(raw: unknown): StoreTheme["layout"] {
     heroMagazineTextWidth: (() => {
       const v = l.heroMagazineTextWidth;
       if (v === "narrow" || v === "rule" || v === "full") return v;
+      return "normal" as const;
+    })(),
+    heroMagazineSubtitleWidth: (() => {
+      const v = l.heroMagazineSubtitleWidth;
+      if (v === "narrow" || v === "wide" || v === "title") return v;
       return "normal" as const;
     })(),
     heroMinimalWidth: (() => {

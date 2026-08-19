@@ -128,6 +128,7 @@ type EditorTheme = {
     heroMagazineRuleTone: "normal" | "faint" | "strong" | "accent";
     heroMagazineGap: "tight" | "medium" | "normal";
     heroMagazineTextWidth: "narrow" | "normal" | "rule" | "full";
+    heroMagazineSubtitleWidth: "narrow" | "normal" | "wide" | "title";
     heroMinimalWidth: "narrow" | "normal" | "wide";
     heroMinimalPadding: "compact" | "normal" | "spacious";
     heroMinimalRule: "none" | "short" | "normal" | "long";
@@ -1003,6 +1004,7 @@ export function EditorWorkspace({
           heroMagazineRuleTone: t.layout.heroMagazineRuleTone,
           heroMagazineGap: t.layout.heroMagazineGap,
           heroMagazineTextWidth: t.layout.heroMagazineTextWidth,
+          heroMagazineSubtitleWidth: t.layout.heroMagazineSubtitleWidth,
           heroMinimalWidth: t.layout.heroMinimalWidth,
           heroMinimalPadding: t.layout.heroMinimalPadding,
           heroMinimalRule: t.layout.heroMinimalRule,
@@ -2975,6 +2977,41 @@ export function EditorWorkspace({
                   上下那兩條線的長度跟中間主標的寬度本來就不一樣，主標長一點就會排到比線
                   更外面去，看起來像字撐破了框。選跟橫線切齊，字的左右兩端會跟兩條線的頭
                   尾對齊；只放兩三個字的店選窄，那行字才不會散在中間
+                </p>
+              </Field>
+            )}
+            {theme.layout.heroStyle === "magazine" && (
+              <Field label="第二行小字排多寬">
+                <div className="grid grid-cols-2 gap-1.5">
+                  {([
+                    { v: "narrow", label: "窄" },
+                    { v: "normal", label: "跟預設" },
+                    { v: "wide", label: "寬" },
+                    { v: "title", label: "跟主標一樣寬" },
+                  ] as const).map((opt) => (
+                    <button
+                      key={opt.v}
+                      type="button"
+                      onClick={() =>
+                        updateLayout({ heroMagazineSubtitleWidth: opt.v })
+                      }
+                      aria-pressed={
+                        theme.layout.heroMagazineSubtitleWidth === opt.v
+                      }
+                      className={`rounded-lg border py-2 text-xs transition ${
+                        theme.layout.heroMagazineSubtitleWidth === opt.v
+                          ? "border-emerald-500 bg-emerald-50 text-emerald-900"
+                          : "border-stone-200 text-stone-600 hover:border-stone-400"
+                      }`}
+                    >
+                      {opt.label}
+                    </button>
+                  ))}
+                </div>
+                <p className="text-[10px] text-stone-500 mt-1">
+                  上一格放寬的只有主標，主標下面那行小字是另外一條寫死的窄欄，所以主標拉
+                  寬之後會變成上面一行很寬、下面一條很窄，中間對齊但左右差一大截。選跟主
+                  標一樣寬，兩行字的左右兩端才會切齊
                 </p>
               </Field>
             )}

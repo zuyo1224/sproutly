@@ -2394,6 +2394,16 @@ export default async function StoreHomePage({
                       data-edit-field="heroSubtitle"
                       className={`mt-8 text-base sm:text-lg italic max-w-xl mx-auto leading-[1.9] ${fade2}`}
                       style={{
+                        // 副標的欄寬跟主標那層分開寫死（這裡是 max-w-xl 的 36rem，
+                        // 外層是上一格控的那個上限）。主標放寬之後副標還是窄的一條，
+                        // 所以另外開一格；「跟主標一樣寬」不設上限、直接吃外層算出來的寬度。
+                        ...(theme.layout.heroMagazineSubtitleWidth === "narrow"
+                          ? { maxWidth: "28rem" }
+                          : theme.layout.heroMagazineSubtitleWidth === "wide"
+                            ? { maxWidth: "48rem" }
+                            : theme.layout.heroMagazineSubtitleWidth === "title"
+                              ? { maxWidth: "none" }
+                              : {}),
                         color: subtitleColor,
                         ...subtitleSizeStyle,
                         ...subtitleAlignStyle,
