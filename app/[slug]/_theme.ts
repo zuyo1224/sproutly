@@ -500,6 +500,20 @@ export interface StoreTheme {
     // 每一段對齊），動它會變成整頁唯一沒對齊的一段。上下的 py-20 md:py-0 也不動——
     // 上一格「垂直對齊」管的就是上下，兩格動同一個方向會互相打架。
     heroSplitTextPadding: "tight" | "normal" | "roomy"; // split 文字欄左右內距（預設 normal = 不覆寫）
+    // split 版型在手機上，照片與文字誰排在上面。平板以上有「圖片靠左 / 靠右」那格可以把
+    // 字換到前面，可是手機是單欄堆疊（grid-cols-1），那格的 md:order-1 / md:order-2 完全
+    // 碰不到，順序永遠是照片先、文字後。
+    // 為什麼要：手機上照片是滿寬的，配上預設的正方形圖框，光那張圖就吃掉一個螢幕寬的高度，
+    // 客人從 IG 點進來第一屏看到的是一張圖，店名、那句話、兩顆按鈕全部在摺線下面，要滑一下
+    // 才出現。對「照片本身就是招牌」的店（店面照、一整面植物牆）那是對的，第一屏就該是那張
+    // 圖；可是對「先讓客人知道這是誰、賣什麼」的店就反過來——那張圖變成擋在店名前面的一道牆。
+    // 兩檔就是手機那一欄的 order：
+    //   image-first 不覆寫（維持原本的圖上文下）
+    //   text-first  文字排到圖上面（第一屏就是店名 + 那句話 + 按鈕，照片接在下面）
+    // 只寫在 767px 以下：平板以上的左右順序歸「圖片靠左 / 靠右」那格管，兩格動的是不同
+    // 斷點的同一件事，混在一起會變成選了靠右卻在手機上看不出差別的那種格子。
+    // 不覆寫那一檔連 attribute 都不輸出，既有店家的手機版一模一樣。
+    heroSplitMobileOrder: "image-first" | "text-first"; // split 手機圖文順序（預設 image-first = 不覆寫）
     // 雜誌版型上下那兩條橫線。整個版型的骨架就是這兩條線——上面那條把小標與店名那行
     // 框起來、下面那條把落款與按鈕那行框起來，中間才是大字，是它們讓這個版型看起來像
     // 一本雜誌的封面而不是一頁置中的字。可是兩條線的粗細與顏色都寫死（1px、theme.border），
@@ -1124,6 +1138,11 @@ function resolveLayout(raw: unknown): StoreTheme["layout"] {
       const v = l.heroSplitTextPadding;
       if (v === "tight" || v === "roomy") return v;
       return "normal" as const;
+    })(),
+    heroSplitMobileOrder: (() => {
+      const v = l.heroSplitMobileOrder;
+      if (v === "text-first") return v;
+      return "image-first" as const;
     })(),
     heroMagazineRuleWeight: (() => {
       const v = l.heroMagazineRuleWeight;

@@ -2143,9 +2143,18 @@ export default async function StoreHomePage({
                 : theme.layout.heroSplitTextPadding === "roomy"
                   ? "clamp(4rem, 10vw, 9rem)"
                   : null;
+            // 手機上照片與文字誰排在上面。平板以上的左右順序是 class 上那組 md:order-*
+            //（「圖片靠左 / 靠右」那格），手機那一欄從來沒有 order 可言——單欄堆疊照 DOM
+            // 順序排，圖永遠先。規則寫在 layout.tsx 的 max-width: 767px 裡（要同時動兩個
+            // 子元素的 order，寫成一組 CSS 比在兩邊各補一個 inline style 乾淨，也不會跟
+            // md:order-* 在同一個屬性上打架——那組只在 768px 以上生效）。
+            // 跟預設那一檔不輸出 attribute，整條規則不存在。
+            const splitMobileTextFirst =
+              theme.layout.heroSplitMobileOrder === "text-first";
             return (
               <section
                 className="relative grid grid-cols-1 md:grid-cols-2 min-h-[80vh] md:min-h-screen overflow-hidden"
+                {...(splitMobileTextFirst ? { "data-hero-split-mobile": "text-first" } : {})}
                 style={
                   splitCols
                     ? ({
@@ -2159,6 +2168,7 @@ export default async function StoreHomePage({
                 data-edit-label="Hero 區段"
               >
                 <div
+                  data-hero-split-media
                   className={`relative aspect-square md:aspect-auto md:h-full ${imageOnRight ? "md:order-2" : ""}`}
                   style={
                     splitImgAspect
@@ -2191,6 +2201,7 @@ export default async function StoreHomePage({
                   />
                 </div>
                 <div
+                  data-hero-split-text
                   className={`flex flex-col justify-center px-8 sm:px-12 md:px-16 lg:px-24 py-20 md:py-0 ${imageOnRight ? "md:order-1" : ""}`}
                   style={
                     splitTextJustify || splitTextPad

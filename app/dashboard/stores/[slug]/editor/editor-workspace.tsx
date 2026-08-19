@@ -121,6 +121,7 @@ type EditorTheme = {
     heroSplitImageAspect: "tall" | "square" | "wide";
     heroSplitTextAlign: "top" | "center" | "bottom";
     heroSplitTextPadding: "tight" | "normal" | "roomy";
+    heroSplitMobileOrder: "image-first" | "text-first";
     heroMagazineRuleWeight: "normal" | "medium" | "thick";
     heroMagazineRuleTone: "normal" | "faint" | "strong" | "accent";
     heroMagazineGap: "tight" | "medium" | "normal";
@@ -993,6 +994,7 @@ export function EditorWorkspace({
           heroSplitImageAspect: t.layout.heroSplitImageAspect,
           heroSplitTextAlign: t.layout.heroSplitTextAlign,
           heroSplitTextPadding: t.layout.heroSplitTextPadding,
+          heroSplitMobileOrder: t.layout.heroSplitMobileOrder,
           heroMagazineRuleWeight: t.layout.heroMagazineRuleWeight,
           heroMagazineRuleTone: t.layout.heroMagazineRuleTone,
           heroMagazineGap: t.layout.heroMagazineGap,
@@ -2746,6 +2748,37 @@ export function EditorWorkspace({
                   一行常常只排得下四五個字，整段變成一條細長的字柱，這時候選窄；反過來
                   只放一行短主標的店選寬，留白本身就是版面。手機上那個左右邊界要跟導覽列
                   對齊，所以這格只影響平板以上
+                </p>
+              </Field>
+            )}
+            {theme.layout.heroStyle === "split" && (
+              <Field label="手機上誰排在上面">
+                <div className="grid grid-cols-2 gap-1.5">
+                  {([
+                    { v: "image-first", label: "跟預設（照片）" },
+                    { v: "text-first", label: "文字" },
+                  ] as const).map((opt) => (
+                    <button
+                      key={opt.v}
+                      type="button"
+                      onClick={() => updateLayout({ heroSplitMobileOrder: opt.v })}
+                      aria-pressed={theme.layout.heroSplitMobileOrder === opt.v}
+                      className={`rounded-lg border py-2 text-xs transition ${
+                        theme.layout.heroSplitMobileOrder === opt.v
+                          ? "border-emerald-500 bg-emerald-50 text-emerald-900"
+                          : "border-stone-200 text-stone-600 hover:border-stone-400"
+                      }`}
+                    >
+                      {opt.label}
+                    </button>
+                  ))}
+                </div>
+                <p className="text-[10px] text-stone-500 mt-1">
+                  「圖片靠左 / 靠右」只管平板以上的左右。手機是上下堆疊，永遠是照片先——
+                  滿寬的照片光自己就吃掉一個螢幕寬的高度，客人從 IG 點進來第一屏只看得到
+                  那張圖，店名、那句話、兩顆按鈕全在下面，要滑一下才出現。照片本身就是招牌
+                  的店（店面照、一整面植物牆）維持預設；想讓客人先知道這是誰、賣什麼的店選
+                  文字，照片接在下面
                 </p>
               </Field>
             )}

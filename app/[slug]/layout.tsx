@@ -1866,6 +1866,20 @@ export default async function PublicStoreLayout({
           }
         }
 
+        /* split 版型手機圖文順序：editor Hero panel「手機上誰排在上面」兩按鈕
+           （跟預設 / 文字在上）。手機是單欄堆疊，順序照 DOM 走、圖永遠先，而「圖片靠左 /
+           靠右」那格用的是 md:order-1 / md:order-2，只在 768px 以上生效，碰不到手機。
+           只寫在 767px 以下，就不會跟那組 md:order-* 在同一個斷點上打架。
+           跟預設那一檔不輸出 attribute，整條規則不存在，既有店家的手機版原樣留著。 */
+        @media (max-width: 767px) {
+          section[data-edit-target="hero"][data-hero-split-mobile="text-first"] [data-hero-split-text] {
+            order: 1;
+          }
+          section[data-edit-target="hero"][data-hero-split-mobile="text-first"] [data-hero-split-media] {
+            order: 2;
+          }
+        }
+
         /* 卡片價錢字級：editor 精選商品 panel「卡片價錢字級」三按鈕（小 / 跟預設 / 大）。
            上面三組把卡片裡的品名、描述、全大寫小字都補起來之後，價錢是這一組最後一行沒得
            動的——它寫死 14px，比品名的 16px 還小一級。那個安排是照「先看商品再看價錢」的
