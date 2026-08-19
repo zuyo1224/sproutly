@@ -119,6 +119,8 @@ type EditorTheme = {
     heroSplitRatio: "image-narrow" | "normal" | "image-wide";
     heroImageFocus: "top" | "center" | "bottom";
     heroSplitImageAspect: "tall" | "square" | "wide";
+    heroSplitTextAlign: "top" | "center" | "bottom";
+    heroSplitTextPadding: "tight" | "normal" | "roomy";
     heroMagazineRuleWeight: "normal" | "medium" | "thick";
     heroMagazineRuleTone: "normal" | "faint" | "strong" | "accent";
     heroMagazineGap: "tight" | "medium" | "normal";
@@ -989,6 +991,8 @@ export function EditorWorkspace({
           heroSplitRatio: t.layout.heroSplitRatio,
           heroImageFocus: t.layout.heroImageFocus,
           heroSplitImageAspect: t.layout.heroSplitImageAspect,
+          heroSplitTextAlign: t.layout.heroSplitTextAlign,
+          heroSplitTextPadding: t.layout.heroSplitTextPadding,
           heroMagazineRuleWeight: t.layout.heroMagazineRuleWeight,
           heroMagazineRuleTone: t.layout.heroMagazineRuleTone,
           heroMagazineGap: t.layout.heroMagazineGap,
@@ -2678,6 +2682,70 @@ export function EditorWorkspace({
                   快三分之一才塞得進去，「照片取景」那格只能決定犧牲葉冠還是犧牲盆器。選直式
                   就讓圖高一點、上下都留得住；橫幅的店面照或桌面陳列照則選橫式，不然撐開畫面
                   的那些留白會被左右切掉。手機是客人幾乎唯一的入口
+                </p>
+              </Field>
+            )}
+            {theme.layout.heroStyle === "split" && (
+              <Field label="文字靠哪">
+                <div className="grid grid-cols-3 gap-1.5">
+                  {([
+                    { v: "top", label: "靠上" },
+                    { v: "center", label: "跟預設" },
+                    { v: "bottom", label: "靠下" },
+                  ] as const).map((opt) => (
+                    <button
+                      key={opt.v}
+                      type="button"
+                      onClick={() => updateLayout({ heroSplitTextAlign: opt.v })}
+                      aria-pressed={theme.layout.heroSplitTextAlign === opt.v}
+                      className={`rounded-lg border py-2 text-xs transition ${
+                        theme.layout.heroSplitTextAlign === opt.v
+                          ? "border-emerald-500 bg-emerald-50 text-emerald-900"
+                          : "border-stone-200 text-stone-600 hover:border-stone-400"
+                      }`}
+                    >
+                      {opt.label}
+                    </button>
+                  ))}
+                </div>
+                <p className="text-[10px] text-stone-500 mt-1">
+                  上面三格動的都是照片那半，文字那半的字則是一律擺在正中間。這一段在平板
+                  以上是整個螢幕高，所以只放一行店名的店，那行字會孤零零浮在中央、照片
+                  上緣到字之間空掉半個螢幕；反過來主標兩三行加副標加按鈕的店，字團本來
+                  就快撐滿，擺中間跟照片的上下緣對不起來。選靠上就讓第一行字對齊照片
+                  上緣，靠下就讓最後一顆按鈕對齊照片下緣。手機是圖上文下，這格沒作用
+                </p>
+              </Field>
+            )}
+            {theme.layout.heroStyle === "split" && (
+              <Field label="文字欄左右留白">
+                <div className="grid grid-cols-3 gap-1.5">
+                  {([
+                    { v: "tight", label: "窄" },
+                    { v: "normal", label: "跟預設" },
+                    { v: "roomy", label: "寬" },
+                  ] as const).map((opt) => (
+                    <button
+                      key={opt.v}
+                      type="button"
+                      onClick={() => updateLayout({ heroSplitTextPadding: opt.v })}
+                      aria-pressed={theme.layout.heroSplitTextPadding === opt.v}
+                      className={`rounded-lg border py-2 text-xs transition ${
+                        theme.layout.heroSplitTextPadding === opt.v
+                          ? "border-emerald-500 bg-emerald-50 text-emerald-900"
+                          : "border-stone-200 text-stone-600 hover:border-stone-400"
+                      }`}
+                    >
+                      {opt.label}
+                    </button>
+                  ))}
+                </div>
+                <p className="text-[10px] text-stone-500 mt-1">
+                  「圖文比例」讓的是文字那半有多寬，這格管的是那一半裡面兩邊再空多少。
+                  桌機原本左右各空一大截——選了圖寬之後文字只剩四成，還照樣空這麼多，
+                  一行常常只排得下四五個字，整段變成一條細長的字柱，這時候選窄；反過來
+                  只放一行短主標的店選寬，留白本身就是版面。手機上那個左右邊界要跟導覽列
+                  對齊，所以這格只影響平板以上
                 </p>
               </Field>
             )}

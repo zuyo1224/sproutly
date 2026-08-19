@@ -472,6 +472,34 @@ export interface StoreTheme {
     // 直式只給到 4/5 不給 3/4 或 2/3 也是同一個理由——4/5 已經是「圖後面還看得到一行字」
     // 的邊界。沒設就完全不覆寫，既有店家的手機版一模一樣。
     heroSplitImageAspect: "tall" | "square" | "wide"; // split 手機圖片形狀（預設 square = 不覆寫）
+    // split 版型文字那欄的字擺在欄的哪個高度。前三格處理的都是圖那半（欄寬、裁切、手機
+    // 形狀），文字那半從頭到尾沒動過：它是 flex flex-col justify-center，也就是不管裡面
+    // 有幾行字，整團永遠釘在欄的正中央，而這一段在平板以上是整屏高（md:min-h-screen）。
+    // 為什麼要：置中是配「主標一行、副標一句」挑的，那時候字團矮、擺中間跟旁邊整欄高的
+    // 照片剛好對得起來。可是內容一多就不是這樣——主標兩三行加副標加兩顆按鈕的店，字團
+    // 本來就快撐滿整欄，置中等於上下各剩一點點、跟照片的上下緣沒有任何對齊關係；反過來
+    // 只放一行店名的店，那行字孤零零浮在整屏高的欄正中間，照片上緣到字之間空掉半個螢幕。
+    // 雜誌與型錄的圖文對頁排法多半是兩邊切齊上緣（字從照片頂端開始）或切齊下緣，正中間
+    // 反而是最少用的一種。三檔就是 justify-content 的三個值：
+    //   top    靠上（字的第一行對齊照片上緣）
+    //   center 不覆寫（維持原本的置中）
+    //   bottom 靠下（最後一顆按鈕對齊照片下緣）
+    // 手機上這格不會有作用也不會出事：手機是圖上文下的單欄，文字那欄的高度就是內容自己
+    // 的高度，justify-content 沒有多的空間可以分。
+    heroSplitTextAlign: "top" | "center" | "bottom"; // split 文字欄垂直對齊（預設 center = 不覆寫）
+    // split 版型文字那欄左右留多少空。上面「圖文比例」讓的是欄本身有多寬，可是欄裡面
+    // 那圈內距是寫死的（px-8 sm:px-12 md:px-16 lg:px-24，桌機左右各 6rem），兩件事會
+    // 互相抵消：選了「圖窄」把欄讓寬，字實際能用的寬度先被兩邊各 6rem 吃掉一截，主標
+    // 照樣在換行；反過來選「圖寬」之後文字那欄本來就只剩四成，還維持 6rem 的內距，
+    // 一行常常只排得下四五個字，整段變成一條細長的字柱。
+    // 三檔都用 clamp 讓平板到桌機連續變化，不沿用原本 md / lg 兩階跳的寫法：
+    //   tight  clamp(2rem, 4vw, 3rem)   欄窄的店把空間還給字
+    //   normal 不覆寫（吃原本的 md:px-16 lg:px-24）
+    //   roomy  clamp(4rem, 10vw, 9rem) 只放一行短主標的店，留白本身就是版面
+    // 只寫在 md 以上：手機是單欄堆疊，那時候 px-8 是全站的左右邊界（跟導覽列與後面
+    // 每一段對齊），動它會變成整頁唯一沒對齊的一段。上下的 py-20 md:py-0 也不動——
+    // 上一格「垂直對齊」管的就是上下，兩格動同一個方向會互相打架。
+    heroSplitTextPadding: "tight" | "normal" | "roomy"; // split 文字欄左右內距（預設 normal = 不覆寫）
     // 雜誌版型上下那兩條橫線。整個版型的骨架就是這兩條線——上面那條把小標與店名那行
     // 框起來、下面那條把落款與按鈕那行框起來，中間才是大字，是它們讓這個版型看起來像
     // 一本雜誌的封面而不是一頁置中的字。可是兩條線的粗細與顏色都寫死（1px、theme.border），
@@ -1086,6 +1114,16 @@ function resolveLayout(raw: unknown): StoreTheme["layout"] {
       const v = l.heroSplitImageAspect;
       if (v === "tall" || v === "wide") return v;
       return "square" as const;
+    })(),
+    heroSplitTextAlign: (() => {
+      const v = l.heroSplitTextAlign;
+      if (v === "top" || v === "bottom") return v;
+      return "center" as const;
+    })(),
+    heroSplitTextPadding: (() => {
+      const v = l.heroSplitTextPadding;
+      if (v === "tight" || v === "roomy") return v;
+      return "normal" as const;
     })(),
     heroMagazineRuleWeight: (() => {
       const v = l.heroMagazineRuleWeight;

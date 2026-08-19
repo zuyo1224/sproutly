@@ -1851,6 +1851,21 @@ export default async function PublicStoreLayout({
           }
         }
 
+        /* split 版型文字欄左右內距：editor Hero panel「文字欄左右留白」三按鈕
+           （窄 / 跟預設 / 寬）。值由公開頁算好從 inline style 的 --store-hero-split-pad
+           進來，這裡負責蓋掉那欄 class 上的 md:px-16 lg:px-24——同樣贏在這份 <style>
+           沒包 @layer。
+           只寫在 md 以上：手機的 split 是單欄堆疊，那時候的 px-8 是全站左右邊界（跟
+           導覽列與後面每一段對齊），改掉這一段就會變成整頁唯一沒對齊的一段。
+           上下的 py-20 md:py-0 不動（那個方向歸「文字靠哪」那格管）。
+           跟預設那一檔不輸出 attribute 也不輸出變數，整條規則不存在。 */
+        @media (min-width: 768px) {
+          section[data-edit-target="hero"] [data-hero-split-pad] {
+            padding-left: var(--store-hero-split-pad);
+            padding-right: var(--store-hero-split-pad);
+          }
+        }
+
         /* 卡片價錢字級：editor 精選商品 panel「卡片價錢字級」三按鈕（小 / 跟預設 / 大）。
            上面三組把卡片裡的品名、描述、全大寫小字都補起來之後，價錢是這一組最後一行沒得
            動的——它寫死 14px，比品名的 16px 還小一級。那個安排是照「先看商品再看價錢」的

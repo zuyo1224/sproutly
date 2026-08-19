@@ -2123,6 +2123,26 @@ export default async function StoreHomePage({
                 : theme.layout.heroSplitImageAspect === "wide"
                   ? "3 / 2"
                   : null;
+            // 文字那欄的字擺在欄的哪個高度。這一欄是 flex flex-col justify-center，
+            // 平板以上整段又是整屏高，所以不管幾行字都永遠釘在正中央。inline 的
+            // justifyContent 贏得過 class 上的 justify-center，直接蓋就好（手機是單欄、
+            // 欄高等於內容高，這個值沒有多的空間可以分，套上去也不會動到任何東西）。
+            const splitTextJustify =
+              theme.layout.heroSplitTextAlign === "top"
+                ? "flex-start"
+                : theme.layout.heroSplitTextAlign === "bottom"
+                  ? "flex-end"
+                  : null;
+            // 文字那欄左右留多少空。跟欄寬那格是兩件事：欄寬決定這一半有多寬，內距決定
+            // 裡面的字實際能用到多少。只在 md 以上生效（規則寫在 layout.tsx 的 media
+            // query 裡）——手機是單欄堆疊，那時候的 px-8 是全站左右邊界，動它這一段會
+            // 變成整頁唯一沒跟導覽列對齊的一段。
+            const splitTextPad =
+              theme.layout.heroSplitTextPadding === "tight"
+                ? "clamp(2rem, 4vw, 3rem)"
+                : theme.layout.heroSplitTextPadding === "roomy"
+                  ? "clamp(4rem, 10vw, 9rem)"
+                  : null;
             return (
               <section
                 className="relative grid grid-cols-1 md:grid-cols-2 min-h-[80vh] md:min-h-screen overflow-hidden"
@@ -2172,6 +2192,15 @@ export default async function StoreHomePage({
                 </div>
                 <div
                   className={`flex flex-col justify-center px-8 sm:px-12 md:px-16 lg:px-24 py-20 md:py-0 ${imageOnRight ? "md:order-1" : ""}`}
+                  style={
+                    splitTextJustify || splitTextPad
+                      ? ({
+                          ...(splitTextJustify ? { justifyContent: splitTextJustify } : {}),
+                          ...(splitTextPad ? { "--store-hero-split-pad": splitTextPad } : {}),
+                        } as React.CSSProperties)
+                      : undefined
+                  }
+                  {...(splitTextPad ? { "data-hero-split-pad": "" } : {})}
                 >
                   {theme.layout.heroEyebrow && (
                     <p
