@@ -630,6 +630,20 @@ export interface StoreTheme {
     // 壓半透明——半透明那層是為了讓沒挑色的店不被主色刺到，商家指定的顏色就是他要的）。
     heroMinimalRule: "none" | "short" | "normal" | "long"; // minimal 短橫線長度（預設 normal = 不覆寫）
     heroMinimalRuleColor: string | null; // minimal 短橫線顏色，hex；null = 全站主色壓半透明
+    // minimal 版型「整段字靠哪邊」。前面幾格開的是這段字排多寬、上下留多少空、中間那條
+    // 線多長什麼顏色，全部都在調「那一團字的框有多大」，可是字在框裡面靠哪一邊從頭到尾
+    // 寫死置中（section 上一個 text-center，副標跟短橫線再各自 mx-auto 把自己推到中間）。
+    // 「主標對齊」那格明講只在滿版圖版型生效，理由是 magazine / minimal 天生置中、套上
+    // 預設值 left 會把現有店家的版型翻掉——那是為了不動到既有店家而留的洞，不是「這個
+    // 版型不該能改」。這個版型沒有圖可看，一進站就是一整片空白配中間一段字，置中那版
+    // 是海報、是開場白；靠左那版是信紙、是店主自己寫的一段話，兩種完全不同的調子，
+    // 而想要後面那種的店現在一格都沒有。
+    // 三檔跟「主標對齊」同一組字（靠左 / 置中 / 靠右），預設 center = 完全不覆寫，
+    // 既有店家算出來一模一樣。不是只改 section 的 text-align 就好：副標的 mx-auto 跟
+    // 短橫線的 mx-auto 是寫在 class 上的左右 auto 邊界，只改 text-align 的話字會靠左、
+    // 但那條線跟那塊副標的區塊還留在中間，變成兩邊各對各的。所以靠左 / 靠右時要連
+    // 那兩個 auto 一起蓋掉（inline 贏 class），三個東西才會對到同一條邊。
+    heroMinimalAlign: "left" | "center" | "right"; // minimal 整段文字對齊（預設 center = 不覆寫）
     // 滿版圖版型底下那塊米色文字段的底色與內距。這個版型的圖是自適應 banner（圖以自身
     // 比例貼齊，不裁切也不覆蓋整屏），所以圖底下一定跟著一塊裝主標 / 副標 / 小標 / 按鈕
     // 的色塊——那塊色塊有多高、什麼顏色，是這個版型除了圖以外全部的版面。兩個值原本都
@@ -1252,6 +1266,11 @@ function resolveLayout(raw: unknown): StoreTheme["layout"] {
       return "normal" as const;
     })(),
     heroMinimalRuleColor: normalizeHexColor(l.heroMinimalRuleColor),
+    heroMinimalAlign: (() => {
+      const v = l.heroMinimalAlign;
+      if (v === "left" || v === "right") return v;
+      return "center" as const;
+    })(),
     heroTextBg: normalizeHexColor(l.heroTextBg),
     heroTextPadding: (() => {
       const v = l.heroTextPadding;

@@ -134,6 +134,7 @@ type EditorTheme = {
     heroMinimalPadding: "compact" | "normal" | "spacious";
     heroMinimalRule: "none" | "short" | "normal" | "long";
     heroMinimalRuleColor: string | null;
+    heroMinimalAlign: "left" | "center" | "right";
     heroTextBg: string | null;
     heroTextPadding: "compact" | "normal" | "spacious";
     heroTextWidth: "narrow" | "normal" | "wide" | "full";
@@ -1011,6 +1012,7 @@ export function EditorWorkspace({
           heroMinimalPadding: t.layout.heroMinimalPadding,
           heroMinimalRule: t.layout.heroMinimalRule,
           heroMinimalRuleColor: t.layout.heroMinimalRuleColor,
+          heroMinimalAlign: t.layout.heroMinimalAlign,
           heroTextBg: t.layout.heroTextBg,
           heroTextPadding: t.layout.heroTextPadding,
           heroTextWidth: t.layout.heroTextWidth,
@@ -3106,6 +3108,38 @@ export function EditorWorkspace({
                   字上下各留多少空。原本那個留白是配「只有一行大主標」挑的，加了副標跟按鈕
                   之後整段變高，上下再各留那麼多會把後面的段落推到要捲一頁才看得到；
                   反過來只放一行短主標時，留白不夠這個版型就不成立，它靠的就是空
+                </p>
+              </Field>
+            )}
+            {theme.layout.heroStyle === "minimal" && (
+              <Field label="文字對齊">
+                <div className="grid grid-cols-3 gap-1.5">
+                  {([
+                    { v: "left", label: "靠左" },
+                    { v: "center", label: "置中" },
+                    { v: "right", label: "靠右" },
+                  ] as const).map((opt) => (
+                    <button
+                      key={opt.v}
+                      type="button"
+                      onClick={() => updateLayout({ heroMinimalAlign: opt.v })}
+                      aria-pressed={theme.layout.heroMinimalAlign === opt.v}
+                      className={`rounded-lg border py-2 text-xs transition ${
+                        theme.layout.heroMinimalAlign === opt.v
+                          ? "border-emerald-500 bg-emerald-50 text-emerald-900"
+                          : "border-stone-200 text-stone-600 hover:border-stone-400"
+                      }`}
+                    >
+                      {opt.label}
+                    </button>
+                  ))}
+                </div>
+                <p className="text-[10px] text-stone-500 mt-1">
+                  整段字靠哪一邊。上面幾格調的都是這段字的框有多大，字在框裡面一直是
+                  置中的。這個版型沒有圖，一進站就是一片空白配中間一段字：置中那版像
+                  海報、像開場白；靠左那版像信紙、像店主自己寫的一段話。上面那格「主標
+                  對齊」只管滿版圖的版型，這格才管得到這裡，而且副標跟那條短橫線會跟著
+                  一起靠過去，三個東西對到同一條邊
                 </p>
               </Field>
             )}

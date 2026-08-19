@@ -2508,10 +2508,24 @@ export default async function StoreHomePage({
               ? "96px"
               : "48px";
           const minimalRuleColor = theme.layout.heroMinimalRuleColor;
+          // 整段字靠哪邊。section 上寫死 text-center，副標與短橫線再各自 mx-auto——
+          // 只改 text-align 的話字會靠邊、但那條線跟副標那塊還留在中間，變成各對各的，
+          // 所以靠左 / 靠右時把那兩個 auto 一起蓋掉（inline 贏 class）。
+          // 置中完全不輸出任何值，既有店家算出來一模一樣。
+          const minimalAlign = theme.layout.heroMinimalAlign;
+          const minimalAlignStyle =
+            minimalAlign === "center" ? {} : { textAlign: minimalAlign as "left" | "right" };
+          // 副標與短橫線的左右 auto：靠左時右邊留 auto、靠右時左邊留 auto
+          const minimalBlockAlignStyle =
+            minimalAlign === "left"
+              ? { marginLeft: 0, marginRight: "auto" }
+              : minimalAlign === "right"
+              ? { marginLeft: "auto", marginRight: 0 }
+              : {};
           return (
             <section
               className="max-w-3xl mx-auto px-6 py-40 sm:py-56 text-center"
-              style={{ background: theme.bg, ...minimalWidthStyle, ...minimalPaddingStyle }}
+              style={{ background: theme.bg, ...minimalWidthStyle, ...minimalPaddingStyle, ...minimalAlignStyle }}
               data-edit-target="hero"
               data-edit-label="Hero 區段"
             >
@@ -2559,6 +2573,7 @@ export default async function StoreHomePage({
                   className={`mt-8 text-base sm:text-lg max-w-xl mx-auto leading-[1.9] ${fade2}`}
                   style={{
                     color: subtitleColor,
+                    ...minimalBlockAlignStyle,
                     ...subtitleSizeStyle,
                     ...subtitleAlignStyle,
                     ...subtitleWeightStyle,
@@ -2573,6 +2588,7 @@ export default async function StoreHomePage({
                 <div
                   className={`mx-auto mt-10 ${fade2}`}
                   style={{
+                    ...minimalBlockAlignStyle,
                     width: minimalRuleWidth,
                     height: "1px",
                     background: minimalRuleColor ?? theme.accent,
