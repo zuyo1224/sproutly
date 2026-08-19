@@ -34,6 +34,10 @@ export default async function EditorPage({
     accent: theme.accent,
     // 全站底色（preset base）— 給編輯器算「文字色配在底色上看不看得清」的對比防呆
     bg: theme.bg,
+    // 卡片底色與全站文字色（preset base，唯讀）— 頁尾配色那兩格沒設時，取色器要拿
+    // 公開頁實際用的那個值當初始值，不然商家一點取色器就跳到一個跟畫面無關的顏色
+    surface: theme.surface,
+    text: theme.text,
     tagline: theme.tagline ?? "",
     heroUrl: theme.heroUrl,
     logoUrl: theme.logoUrl,

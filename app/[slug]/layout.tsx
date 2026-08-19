@@ -11,6 +11,7 @@ import {
 } from "next/font/google";
 import { createClient } from "@/lib/supabase/server";
 import { telHref, socialUrl, mapsHref } from "@/lib/contact-href";
+import { contrastRatio, NON_TEXT_CONTRAST_MIN } from "@/lib/color-contrast";
 import { resolveTheme, themeToCssVars, HOMEPAGE_DEFAULTS } from "./_theme";
 import { FavoritesCounter } from "@/app/_components/favorite-button";
 import { CartIcon } from "@/app/_components/cart-icon";
@@ -197,6 +198,29 @@ export default async function PublicStoreLayout({
       : "";
   const footerHours = theme.sections.hours ? businessHoursText : "";
   const showStoreInfo = !!(footerAddress || footerPhone || footerHours);
+
+  // 頁尾配色：商家只挑底色與文字色兩個值，頁尾裡另外四種深淺從它們算出來。
+  // 兩個欄位都經過 normalizeHexColor，一定是 #rrggbb，所以次要文字直接接 alpha
+  // （B3 ≈ 70%、47 ≈ 28%）——跟公開頁 mutedFromText 同一個數值口徑。
+  // 沒挑就整組退回 theme 原本的值，既有店家的頁尾一個像素都不動。
+  const fBg = theme.layout.footerBg ?? theme.surface;
+  const fText = theme.layout.footerText ?? theme.text;
+  const fMuted = theme.layout.footerText
+    ? theme.layout.footerText + "B3"
+    : theme.textMuted;
+  const fBorder = theme.layout.footerText
+    ? theme.layout.footerText + "47"
+    : theme.border;
+  // 點綴色（tagline 那行斜體、店面資訊與社群兩側的短線）是配著全站底色挑的，商家把頁尾
+  // 換成深底時它會一起淡進去——不是壞掉，是看不見，而商家不會知道是哪一格造成的。
+  // 對比低於非文字元素的下限就換成頁尾的文字色（那個色是配著這塊底色挑的，一定看得見），
+  // 跟區段自訂底色那道防呆同一個口徑；夠的店一個像素都不動。
+  const fAccent =
+    theme.layout.footerBg &&
+    (contrastRatio(theme.accent, theme.layout.footerBg) ?? Infinity) <
+      NON_TEXT_CONTRAST_MIN
+      ? fText
+      : theme.accent;
 
   // 客人是否登入（決定 nav 上「會員」連結指向哪）
   const { data: userData } = await supabase.auth.getUser();
@@ -2385,11 +2409,16 @@ export default async function PublicStoreLayout({
         {children}
       </div>
 
+      {/* 頁尾的顏色：底色與文字色是商家可挑的兩個值（見 _theme layout.footerBg /
+          footerText），其餘四種深淺全部從那兩個算出來——次要文字是文字色的七成（跟各段落
+          自訂文字色那套同一個口徑）、上下那幾條短線 28%、點綴色壓在自訂底色上看不見時
+          換成文字色（跟 mergeSectionStyle 的 sectionAccent 同一道防呆）。
+          兩個都沒設就整組退回 theme 原本的值，既有店家的頁尾一個像素都不動。 */}
       <footer
         className="border-t mt-16"
         style={{
-          borderColor: theme.border,
-          backgroundColor: theme.surface,
+          borderColor: fBorder,
+          backgroundColor: fBg,
         }}
       >
         <div className="max-w-6xl mx-auto px-6 sm:px-10 py-16 sm:py-20 text-center space-y-8">
@@ -2400,7 +2429,7 @@ export default async function PublicStoreLayout({
                 data-edit-field="footerWordsLabel"
                 className="font-medium uppercase"
                 style={{
-                  color: theme.textMuted,
+                  color: fMuted,
                   fontSize: "0.6875rem",
                   letterSpacing: "0.4em",
                 }}
@@ -2410,7 +2439,7 @@ export default async function PublicStoreLayout({
               <p
                 className="italic"
                 style={{
-                  color: theme.accent,
+                  color: fAccent,
                   fontFamily: "var(--store-font)",
                   fontSize: "0.9375rem",
                   lineHeight: 1.7,
@@ -2427,12 +2456,12 @@ export default async function PublicStoreLayout({
               <div className="flex items-center justify-center gap-3">
                 <span
                   className="h-px w-10"
-                  style={{ background: theme.accent, opacity: 0.6 }}
+                  style={{ background: fAccent, opacity: 0.6 }}
                 />
                 <span
                   className="font-medium uppercase"
                   style={{
-                    color: theme.textMuted,
+                    color: fMuted,
                     fontSize: "0.6875rem",
                     letterSpacing: "0.4em",
                   }}
@@ -2441,7 +2470,7 @@ export default async function PublicStoreLayout({
                 </span>
                 <span
                   className="h-px w-10"
-                  style={{ background: theme.accent, opacity: 0.6 }}
+                  style={{ background: fAccent, opacity: 0.6 }}
                 />
               </div>
               <div
@@ -2455,7 +2484,7 @@ export default async function PublicStoreLayout({
                       target="_blank"
                       rel="noopener"
                       className="sproutly-link"
-                      style={{ color: theme.text, letterSpacing: "0.02em" }}
+                      style={{ color: fText, letterSpacing: "0.02em" }}
                     >
                       {footerAddress}
                     </a>
@@ -2466,7 +2495,7 @@ export default async function PublicStoreLayout({
                     <a
                       href={telHref(footerPhone)}
                       className="sproutly-link"
-                      style={{ color: theme.text, letterSpacing: "0.04em" }}
+                      style={{ color: fText, letterSpacing: "0.04em" }}
                     >
                       {footerPhone}
                     </a>
@@ -2475,7 +2504,7 @@ export default async function PublicStoreLayout({
                 {footerHours && (
                   <p
                     className="whitespace-pre-line"
-                    style={{ color: theme.textMuted, letterSpacing: "0.02em" }}
+                    style={{ color: fMuted, letterSpacing: "0.02em" }}
                   >
                     {footerHours}
                   </p>
@@ -2492,7 +2521,7 @@ export default async function PublicStoreLayout({
                   data-edit-field="footerFollowLabel"
                   className="font-medium uppercase"
                   style={{
-                    color: theme.textMuted,
+                    color: fMuted,
                     fontSize: "0.6875rem",
                     letterSpacing: "0.4em",
                   }}
@@ -2501,7 +2530,7 @@ export default async function PublicStoreLayout({
                 </span>
                 <span
                   className="h-px w-10"
-                  style={{ background: theme.accent, opacity: 0.6 }}
+                  style={{ background: fAccent, opacity: 0.6 }}
                 />
               </div>
               <div className="flex justify-center gap-6">
@@ -2512,7 +2541,7 @@ export default async function PublicStoreLayout({
                     rel="noopener"
                     className="sproutly-link uppercase"
                     style={{
-                      color: theme.textMuted,
+                      color: fMuted,
                       fontSize: "0.75rem",
                       letterSpacing: "0.3em",
                     }}
@@ -2527,7 +2556,7 @@ export default async function PublicStoreLayout({
                     rel="noopener"
                     className="sproutly-link uppercase"
                     style={{
-                      color: theme.textMuted,
+                      color: fMuted,
                       fontSize: "0.75rem",
                       letterSpacing: "0.3em",
                     }}
@@ -2542,7 +2571,7 @@ export default async function PublicStoreLayout({
                     rel="noopener"
                     className="sproutly-link uppercase"
                     style={{
-                      color: theme.textMuted,
+                      color: fMuted,
                       fontSize: "0.75rem",
                       letterSpacing: "0.3em",
                     }}
@@ -2557,13 +2586,13 @@ export default async function PublicStoreLayout({
           <div className="flex items-center justify-center gap-3">
             <span
               className="h-px w-8"
-              style={{ background: theme.border }}
+              style={{ background: fBorder }}
             />
             <Link
               href={`/${slug}/track`}
               className="sproutly-link uppercase"
               style={{
-                color: theme.textMuted,
+                color: fMuted,
                 fontSize: "0.75rem",
                 letterSpacing: "0.3em",
               }}
@@ -2575,14 +2604,14 @@ export default async function PublicStoreLayout({
             </Link>
             <span
               className="h-px w-8"
-              style={{ background: theme.border }}
+              style={{ background: fBorder }}
             />
           </div>
 
           <p
             className="uppercase"
             style={{
-              color: theme.textMuted,
+              color: fMuted,
               opacity: 0.7,
               fontSize: "0.6875rem",
               letterSpacing: "0.32em",
@@ -2592,7 +2621,7 @@ export default async function PublicStoreLayout({
             <Link
               href="/"
               className="sproutly-link font-medium"
-              style={{ color: theme.textMuted, letterSpacing: "0.32em" }}
+              style={{ color: fMuted, letterSpacing: "0.32em" }}
             >
               Sproutly
             </Link>

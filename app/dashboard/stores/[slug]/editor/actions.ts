@@ -94,6 +94,8 @@ type EditorPayload = {
     fontScale?: number;
     sectionPaddingScale?: string;
     buttonRadius?: string;
+    footerBg?: string | null;
+    footerText?: string | null;
     featuredCount?: number;
     featuredColumns?: number;
     collectionsColumns?: number;
@@ -639,6 +641,18 @@ export async function saveEditorState(slug: string, payload: EditorPayload) {
       const v = payload.layout.buttonRadius;
       if (v === "pill" || v === "soft" || v === "square") {
         layoutPatch.buttonRadius = v;
+      }
+    }
+    // 頁尾底色 / 文字色：跟其他色碼欄位同一套（空字串 = 清除回預設，非法色碼整格不存）
+    for (const field of ["footerBg", "footerText"] as const) {
+      if (payload.layout[field] !== undefined) {
+        const v = payload.layout[field];
+        if (v === null || v === "") {
+          layoutPatch[field] = null;
+        } else {
+          const hex = normalizeHexColor(v);
+          if (hex) layoutPatch[field] = hex;
+        }
       }
     }
     if (payload.layout.featuredCount !== undefined) {

@@ -69,6 +69,9 @@ type EditorTheme = {
   accent: string;
   // 全站底色（preset base，唯讀）— 算區段文字色的對比防呆用，不經編輯器修改也不存回 DB
   bg: string;
+  // 卡片底色 / 全站文字色（preset base，唯讀）— 頁尾配色那兩格的取色器初始值
+  surface: string;
+  text: string;
   tagline: string;
   heroUrl: string | null;
   logoUrl: string | null;
@@ -143,6 +146,8 @@ type EditorTheme = {
     fontScale: number;
     sectionPaddingScale: "compact" | "default" | "spacious";
     buttonRadius: "pill" | "soft" | "square";
+    footerBg: string | null;
+    footerText: string | null;
     featuredCount: number;
     featuredColumns: 2 | 3 | 4;
     collectionsColumns: 2 | 3 | 4;
@@ -1022,6 +1027,8 @@ export function EditorWorkspace({
           fontScale: t.layout.fontScale,
           sectionPaddingScale: t.layout.sectionPaddingScale,
           buttonRadius: t.layout.buttonRadius,
+          footerBg: t.layout.footerBg,
+          footerText: t.layout.footerText,
           featuredCount: t.layout.featuredCount,
           featuredColumns: t.layout.featuredColumns,
           collectionsColumns: t.layout.collectionsColumns,
@@ -8648,6 +8655,68 @@ export function EditorWorkspace({
               </div>
               <p className="text-[10px] text-stone-500 leading-relaxed">
                 全站的按鈕一起換 — 首頁的行動按鈕、加入購物車、結帳、表單送出。
+              </p>
+            </Field>
+            <Field label="頁尾底色">
+              <div className="flex items-center gap-2">
+                {/* 沒設的時候頁尾坐的是卡片底色，所以取色器拿它當初始值 */}
+                <input
+                  type="color"
+                  value={theme.layout.footerBg ?? theme.surface}
+                  onChange={(e) => updateLayout({ footerBg: e.target.value })}
+                  className="h-8 w-12 rounded border border-stone-200"
+                />
+                <input
+                  type="text"
+                  value={theme.layout.footerBg ?? ""}
+                  onChange={(e) => updateLayout({ footerBg: e.target.value || null })}
+                  placeholder="預設跟卡片底色一樣"
+                  className="flex-1 rounded-lg border border-stone-200 px-3 py-2 text-sm font-mono"
+                />
+                {theme.layout.footerBg && (
+                  <button
+                    type="button"
+                    onClick={() => updateLayout({ footerBg: null })}
+                    className="text-xs text-stone-500 hover:text-stone-800 underline"
+                  >
+                    清除
+                  </button>
+                )}
+              </div>
+              <p className="text-[10px] text-stone-500 leading-relaxed mt-1">
+                每一頁最後那一塊（首頁、商品、購物車、結帳、會員都是同一個）。原本它跟
+                卡片同一個顏色，全站底色也調成白的店，最後一段到頁尾是一整片白、只剩一條
+                細線在撐。換一塊深色收尾，客人一眼看得出這一頁到這裡結束
+              </p>
+            </Field>
+            <Field label="頁尾文字色">
+              <div className="flex items-center gap-2">
+                <input
+                  type="color"
+                  value={theme.layout.footerText ?? theme.text}
+                  onChange={(e) => updateLayout({ footerText: e.target.value })}
+                  className="h-8 w-12 rounded border border-stone-200"
+                />
+                <input
+                  type="text"
+                  value={theme.layout.footerText ?? ""}
+                  onChange={(e) => updateLayout({ footerText: e.target.value || null })}
+                  placeholder="預設跟全站文字色一樣"
+                  className="flex-1 rounded-lg border border-stone-200 px-3 py-2 text-sm font-mono"
+                />
+                {theme.layout.footerText && (
+                  <button
+                    type="button"
+                    onClick={() => updateLayout({ footerText: null })}
+                    className="text-xs text-stone-500 hover:text-stone-800 underline"
+                  >
+                    清除
+                  </button>
+                )}
+              </div>
+              <p className="text-[10px] text-stone-500 leading-relaxed mt-1">
+                上面那格挑深色的話這格要跟著挑淺色，不然整塊看不見。只要挑一個顏色就好，
+                地址、營業時間、社群、版權那幾行的深淺跟中間那幾條短線都會自己從它算出來
               </p>
             </Field>
             <Field label="Logo（顯示在 nav）">

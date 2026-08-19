@@ -698,6 +698,24 @@ export interface StoreTheme {
     // 輸入框（.sproutly-input）不跟著動：那是另一種元素，商家想要方按鈕配圓搜尋框是合理的
     // 組合，等真有店家被「兩個形狀對不起來」卡到再補一格，不先替他決定。
     buttonRadius: "pill" | "soft" | "square";
+    // 頁尾的底色與文字色。頁尾是每一頁的最後一塊（首頁、商品、購物車、結帳、會員、
+    // 訂單追蹤全都掛著同一個），客人捲到底一定會看到它，而它到今天一格樣式都動不到——
+    // 首頁十一個段落各自有底色、文字色、邊框、留白那整排控制，頁尾只有三個字串（Words /
+    // Follow / 訂單追蹤那三行的字），顏色全部寫死。
+    // 寫死的那組是「卡片底色 + 全站文字色」：頁尾坐的是 theme.surface，多數版型那是純白，
+    // 底色是米色的店還分得出來，可是把全站底色也調成白的店（極簡、日式那類）從最後一段
+    // 到頁尾是一整片白，只剩上面那條 1px 的線在撐——而頁尾正是網頁最常用深色收尾的地方，
+    // 一塊深色在視覺上等於「這一頁到這裡結束」。
+    // 商家原本想要深色頁尾，唯一動得到的是設定頁那格「卡片底色」——那一格同時是全站每張
+    // 商品卡、每個面板、每張好評卡的底，改深一次全站的卡片一起變深，等於做不到。
+    // 兩格一起開不是兩個功能：底色挑深了字沒跟著換就是一片看不見的深色，所以文字色跟著
+    // 出。次要文字（營業時間、社群、版權那行）不另外挑，照各段落自訂文字色那套算——
+    // 挑好的文字色的七成；上下那幾條短線同樣從文字色算（28%），商家只挑兩個值，頁尾裡
+    // 六種深淺自己排好。點綴色（tagline 那行斜體與兩側短線）壓在深底上看不見時換成文字色，
+    // 跟區段底色那套防呆同一個口徑。
+    // 沒設完全不覆寫，既有店家的頁尾算出來一模一樣。
+    footerBg: string | null;           // 頁尾底色，hex；null = 跟卡片底色（theme.surface）
+    footerText: string | null;         // 頁尾文字色，hex；null = 跟全站文字色
     // Featured / Collections 顯示
     featuredCount: number;             // 顯示幾個商品 3-12（預設 6）
     featuredColumns: 2 | 3 | 4;        // 排成幾欄（預設 3）
@@ -1312,6 +1330,8 @@ function resolveLayout(raw: unknown): StoreTheme["layout"] {
       if (v === "pill" || v === "soft" || v === "square") return v;
       return "pill" as const;
     })(),
+    footerBg: normalizeHexColor(l.footerBg),
+    footerText: normalizeHexColor(l.footerText),
     featuredCount: (() => {
       const v = l.featuredCount;
       if (typeof v !== "number" || !Number.isFinite(v)) return 6;
