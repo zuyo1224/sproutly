@@ -86,6 +86,7 @@ type EditorPayload = {
     heroMinimalRule?: string;
     heroMinimalRuleColor?: string | null;
     heroMinimalAlign?: string;
+    heroMinimalBg?: string | null;
     heroTextBg?: string | null;
     heroTextPadding?: string;
     heroTextWidth?: string;
@@ -590,6 +591,15 @@ export async function saveEditorState(slug: string, payload: EditorPayload) {
       const v = payload.layout.heroMinimalAlign;
       if (v === "left" || v === "center" || v === "right") {
         layoutPatch.heroMinimalAlign = v;
+      }
+    }
+    if (payload.layout.heroMinimalBg !== undefined) {
+      const v = payload.layout.heroMinimalBg;
+      if (v === null || v === "") {
+        layoutPatch.heroMinimalBg = null;
+      } else {
+        const hex = normalizeHexColor(v);
+        if (hex) layoutPatch.heroMinimalBg = hex;
       }
     }
     if (payload.layout.heroTextBg !== undefined) {

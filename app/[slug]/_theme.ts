@@ -644,6 +644,15 @@ export interface StoreTheme {
     // 但那條線跟那塊副標的區塊還留在中間，變成兩邊各對各的。所以靠左 / 靠右時要連
     // 那兩個 auto 一起蓋掉（inline 贏 class），三個東西才會對到同一條邊。
     heroMinimalAlign: "left" | "center" | "right"; // minimal 整段文字對齊（預設 center = 不覆寫）
+    // minimal 版型整段的底色。這個版型沒有圖、沒有卡片、沒有色塊，一進站就是一片底色
+    // 配中間一段字——那片底色就是它全部的畫面，可是它一直寫死吃 theme.bg，跟底下的
+    // 商品段、慢讀段、頁尾同一個顏色。客人從 IG 點進來看到的是一整片同色從上捲到下，
+    // 開頭那段在哪裡結束、下一段在哪裡開始完全看不出來，而這個版型又剛好是唯一沒有
+    // 圖片、沒有橫線可以幫忙斷開的那一種。滿版圖版型有「文字段底色」、split 版型有
+    // 「文字那半的底色」，兩格都在解同一件事，只有 minimal 一格都沒有。
+    // 開色碼欄位不開三檔：要挑什麼顏色才「跟後面分得開又不打架」跟店的調子有關，
+    // 挑不出通用的三檔；沒設完全不覆寫，既有店家算出來一模一樣。
+    heroMinimalBg: string | null;      // minimal 區段底色，hex；null = 跟全站底色
     // 滿版圖版型底下那塊米色文字段的底色與內距。這個版型的圖是自適應 banner（圖以自身
     // 比例貼齊，不裁切也不覆蓋整屏），所以圖底下一定跟著一塊裝主標 / 副標 / 小標 / 按鈕
     // 的色塊——那塊色塊有多高、什麼顏色，是這個版型除了圖以外全部的版面。兩個值原本都
@@ -1266,6 +1275,7 @@ function resolveLayout(raw: unknown): StoreTheme["layout"] {
       return "normal" as const;
     })(),
     heroMinimalRuleColor: normalizeHexColor(l.heroMinimalRuleColor),
+    heroMinimalBg: normalizeHexColor(l.heroMinimalBg),
     heroMinimalAlign: (() => {
       const v = l.heroMinimalAlign;
       if (v === "left" || v === "right") return v;

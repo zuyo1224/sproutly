@@ -2524,11 +2524,22 @@ export default async function StoreHomePage({
               : {};
           return (
             <section
-              className="max-w-3xl mx-auto px-6 py-40 sm:py-56 text-center"
-              style={{ background: theme.bg, ...minimalWidthStyle, ...minimalPaddingStyle, ...minimalAlignStyle }}
+              className="py-40 sm:py-56"
+              style={{
+                // 沒挑顏色就還是全站底色（既有店家算出來一模一樣）。這個版型沒有圖也
+                // 沒有色塊，整段就是這片底色，挑一個跟後面不一樣的才分得出開頭在哪裡結束。
+                // 底色要鋪滿整個螢幕寬，所以 max-w-3xl / mx-auto / text-center 那層從
+                // section 移到裡面那個 div（原本沒有底色時兩者長得一樣，所以以前不用分）
+                background: theme.layout.heroMinimalBg ?? theme.bg,
+                ...minimalPaddingStyle,
+              }}
               data-edit-target="hero"
               data-edit-label="Hero 區段"
             >
+              <div
+                className="max-w-3xl mx-auto px-6 text-center"
+                style={{ ...minimalWidthStyle, ...minimalAlignStyle }}
+              >
               {theme.layout.heroEyebrow && (
                 <p
                   data-edit-text
@@ -2605,6 +2616,7 @@ export default async function StoreHomePage({
               >
                 {heroCta}
               </Link>
+              </div>
             </section>
           );
         })()}

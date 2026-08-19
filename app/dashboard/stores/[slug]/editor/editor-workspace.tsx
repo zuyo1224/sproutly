@@ -135,6 +135,7 @@ type EditorTheme = {
     heroMinimalRule: "none" | "short" | "normal" | "long";
     heroMinimalRuleColor: string | null;
     heroMinimalAlign: "left" | "center" | "right";
+    heroMinimalBg: string | null;
     heroTextBg: string | null;
     heroTextPadding: "compact" | "normal" | "spacious";
     heroTextWidth: "narrow" | "normal" | "wide" | "full";
@@ -1013,6 +1014,7 @@ export function EditorWorkspace({
           heroMinimalRule: t.layout.heroMinimalRule,
           heroMinimalRuleColor: t.layout.heroMinimalRuleColor,
           heroMinimalAlign: t.layout.heroMinimalAlign,
+          heroMinimalBg: t.layout.heroMinimalBg,
           heroTextBg: t.layout.heroTextBg,
           heroTextPadding: t.layout.heroTextPadding,
           heroTextWidth: t.layout.heroTextWidth,
@@ -3211,6 +3213,43 @@ export function EditorWorkspace({
                   它原本畫的是全站主色的淡版，在淺底的店看起來只是一條灰痕。挑了顏色就
                   照挑的畫、不再壓淡，所以挑深一點的可以讓它真的看得見，挑跟底色相近的
                   可以讓它幾乎消失、但字跟按鈕之間的距離還留著
+                </p>
+              </Field>
+            )}
+            {theme.layout.heroStyle === "minimal" && (
+              <Field label="整段底色">
+                <div className="flex items-center gap-2">
+                  {/* 沒設的時候公開頁走的還是全站底色，所以取色器拿全站底色當初始值 */}
+                  <input
+                    type="color"
+                    value={theme.layout.heroMinimalBg ?? theme.bg}
+                    onChange={(e) => updateLayout({ heroMinimalBg: e.target.value })}
+                    className="h-8 w-12 rounded border border-stone-200"
+                  />
+                  <input
+                    type="text"
+                    value={theme.layout.heroMinimalBg ?? ""}
+                    onChange={(e) =>
+                      updateLayout({ heroMinimalBg: e.target.value || null })
+                    }
+                    placeholder="預設跟全站底色一樣"
+                    className="flex-1 rounded-lg border border-stone-200 px-3 py-2 text-sm font-mono"
+                  />
+                  {theme.layout.heroMinimalBg && (
+                    <button
+                      type="button"
+                      onClick={() => updateLayout({ heroMinimalBg: null })}
+                      className="text-xs text-stone-500 hover:text-stone-800 underline"
+                    >
+                      清除
+                    </button>
+                  )}
+                </div>
+                <p className="text-[10px] text-stone-500 mt-1">
+                  這個版型沒有圖也沒有色塊，一進站看到的就是這一片底色配中間一段字，
+                  可是它原本跟底下的商品、慢讀、頁尾同一個顏色，客人往下捲是一整片同色，
+                  開頭這段在哪裡結束看不出來。換個顏色就能把它跟後面分開。
+                  底色會鋪滿整個螢幕寬，字還是照上面那格的欄寬排
                 </p>
               </Field>
             )}
