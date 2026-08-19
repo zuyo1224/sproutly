@@ -1866,6 +1866,21 @@ export default async function PublicStoreLayout({
           }
         }
 
+        /* split 版型文字欄手機上下留白：editor Hero panel「手機上文字段上下留白」三按鈕
+           （窄 / 跟預設 / 寬）。值由公開頁算好從 inline style 的 --store-hero-split-pady
+           進來，這裡負責蓋掉那欄 class 上的 py-20——同樣贏在這份 <style> 沒包 @layer。
+           只寫在 767px 以下：平板以上 class 上是 md:py-0，那個 0 是刻意的（那時候字在
+           欄裡的高度歸「文字靠哪」那格用 justify-content 分），套上內距會讓靠上 / 靠下
+           對不到照片的上下緣。左右那格剛好相反（只寫在 md 以上），兩格管的是不同方向、
+           不同斷點，不會互相蓋。
+           跟預設那一檔不輸出 attribute 也不輸出變數，整條規則不存在。 */
+        @media (max-width: 767px) {
+          section[data-edit-target="hero"] [data-hero-split-pady] {
+            padding-top: var(--store-hero-split-pady);
+            padding-bottom: var(--store-hero-split-pady);
+          }
+        }
+
         /* split 版型手機圖文順序：editor Hero panel「手機上誰排在上面」兩按鈕
            （跟預設 / 文字在上）。手機是單欄堆疊，順序照 DOM 走、圖永遠先，而「圖片靠左 /
            靠右」那格用的是 md:order-1 / md:order-2，只在 768px 以上生效，碰不到手機。

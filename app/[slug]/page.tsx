@@ -2143,6 +2143,17 @@ export default async function StoreHomePage({
                 : theme.layout.heroSplitTextPadding === "roomy"
                   ? "clamp(4rem, 10vw, 9rem)"
                   : null;
+            // 文字那欄在手機上上下留多少空。跟上面那格是兩個方向、兩個斷點：左右那格只在
+            // md 以上生效（手機的左右邊界要跟導覽列對齊不能動），上下這個相反——class 上是
+            // py-20 md:py-0，只有手機有值。規則寫在 layout.tsx 的 max-width: 767px 裡，
+            // 不寫 inline 的 padding（inline 會把 md:py-0 一起蓋掉，平板以上就多出一段
+            // 推不掉的空隙，「文字靠哪」那格的靠上 / 靠下會對不到照片邊緣）。
+            const splitTextPadY =
+              theme.layout.heroSplitMobilePadY === "tight"
+                ? "2.5rem"
+                : theme.layout.heroSplitMobilePadY === "roomy"
+                  ? "7rem"
+                  : null;
             // 手機上照片與文字誰排在上面。平板以上的左右順序是 class 上那組 md:order-*
             //（「圖片靠左 / 靠右」那格），手機那一欄從來沒有 order 可言——單欄堆疊照 DOM
             // 順序排，圖永遠先。規則寫在 layout.tsx 的 max-width: 767px 裡（要同時動兩個
@@ -2217,15 +2228,17 @@ export default async function StoreHomePage({
                   data-hero-split-text
                   className={`flex flex-col justify-center px-8 sm:px-12 md:px-16 lg:px-24 py-20 md:py-0 ${imageOnRight ? "md:order-1" : ""}`}
                   style={
-                    splitTextJustify || splitTextPad || splitTextBg
+                    splitTextJustify || splitTextPad || splitTextPadY || splitTextBg
                       ? ({
                           ...(splitTextJustify ? { justifyContent: splitTextJustify } : {}),
                           ...(splitTextPad ? { "--store-hero-split-pad": splitTextPad } : {}),
+                          ...(splitTextPadY ? { "--store-hero-split-pady": splitTextPadY } : {}),
                           ...(splitTextBg ? { backgroundColor: splitTextBg } : {}),
                         } as React.CSSProperties)
                       : undefined
                   }
                   {...(splitTextPad ? { "data-hero-split-pad": "" } : {})}
+                  {...(splitTextPadY ? { "data-hero-split-pady": "" } : {})}
                 >
                   {theme.layout.heroEyebrow && (
                     <p

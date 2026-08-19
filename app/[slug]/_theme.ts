@@ -500,6 +500,23 @@ export interface StoreTheme {
     // 每一段對齊），動它會變成整頁唯一沒對齊的一段。上下的 py-20 md:py-0 也不動——
     // 上一格「垂直對齊」管的就是上下，兩格動同一個方向會互相打架。
     heroSplitTextPadding: "tight" | "normal" | "roomy"; // split 文字欄左右內距（預設 normal = 不覆寫）
+    // split 版型文字那半在手機上的上下留白。左右那格（上面這個）明講只管平板以上，因為
+    // 手機的左右邊界要跟導覽列對齊；可是上下這個方向在手機上一格都沒有——class 上寫死
+    // py-20 md:py-0，也就是手機時字的上下各撐 5rem，平板以上歸零（那時候高度由
+    // justify-content 分，不靠內距）。
+    // 為什麼要：5rem 是配「照片是正方形、字只有店名加一句話」挑的。可是「手機上圖片的
+    // 形狀」那格一改成直式，照片自己就吃掉一個多螢幕的高度，底下再接一塊上下各空 5rem
+    // 的字，整段被拉得很長，客人得一直滑；而「這一段有多高」那格只寫在平板以上，手機
+    // 完全碰不到。反過來，把文字排到照片上面（「手機上誰排在上面」選文字）當第一屏的店，
+    // 5rem 反而不夠——字貼著螢幕上緣的導覽列，開頭沒有喘息的地方。
+    // 三檔動的是手機那一欄的 padding-top / padding-bottom：
+    //   tight  2.5rem  照片本身已經很高的店，把長度還回去
+    //   normal 不覆寫（維持原本的 5rem）
+    //   roomy  7rem    文字排在第一屏的店，開頭多留一點空
+    // 只寫在 767px 以下：平板以上那個 md:py-0 是刻意的（高度歸「文字靠哪」那格用
+    // justify-content 管），套上去會讓那格的靠上 / 靠下多出一段推不掉的空隙。
+    // 不覆寫那一檔連 attribute 都不輸出，既有店家的手機版一模一樣。
+    heroSplitMobilePadY: "tight" | "normal" | "roomy"; // split 文字欄手機上下內距（預設 normal = 不覆寫）
     // split 版型在手機上，照片與文字誰排在上面。平板以上有「圖片靠左 / 靠右」那格可以把
     // 字換到前面，可是手機是單欄堆疊（grid-cols-1），那格的 md:order-1 / md:order-2 完全
     // 碰不到，順序永遠是照片先、文字後。
@@ -1175,6 +1192,11 @@ function resolveLayout(raw: unknown): StoreTheme["layout"] {
     })(),
     heroSplitTextPadding: (() => {
       const v = l.heroSplitTextPadding;
+      if (v === "tight" || v === "roomy") return v;
+      return "normal" as const;
+    })(),
+    heroSplitMobilePadY: (() => {
+      const v = l.heroSplitMobilePadY;
       if (v === "tight" || v === "roomy") return v;
       return "normal" as const;
     })(),

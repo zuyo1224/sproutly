@@ -121,6 +121,7 @@ type EditorTheme = {
     heroSplitImageAspect: "tall" | "square" | "wide";
     heroSplitTextAlign: "top" | "center" | "bottom";
     heroSplitTextPadding: "tight" | "normal" | "roomy";
+    heroSplitMobilePadY: "tight" | "normal" | "roomy";
     heroSplitMobileOrder: "image-first" | "text-first";
     heroSplitHeight: "content" | "compact" | "normal";
     heroSplitTextBg: string | null;
@@ -997,6 +998,7 @@ export function EditorWorkspace({
           heroSplitImageAspect: t.layout.heroSplitImageAspect,
           heroSplitTextAlign: t.layout.heroSplitTextAlign,
           heroSplitTextPadding: t.layout.heroSplitTextPadding,
+          heroSplitMobilePadY: t.layout.heroSplitMobilePadY,
           heroSplitMobileOrder: t.layout.heroSplitMobileOrder,
           heroSplitHeight: t.layout.heroSplitHeight,
           heroSplitTextBg: t.layout.heroSplitTextBg,
@@ -2754,6 +2756,38 @@ export function EditorWorkspace({
                   一行常常只排得下四五個字，整段變成一條細長的字柱，這時候選窄；反過來
                   只放一行短主標的店選寬，留白本身就是版面。手機上那個左右邊界要跟導覽列
                   對齊，所以這格只影響平板以上
+                </p>
+              </Field>
+            )}
+            {theme.layout.heroStyle === "split" && (
+              <Field label="手機上文字段上下留白">
+                <div className="grid grid-cols-3 gap-1.5">
+                  {([
+                    { v: "tight", label: "窄" },
+                    { v: "normal", label: "跟預設" },
+                    { v: "roomy", label: "寬" },
+                  ] as const).map((opt) => (
+                    <button
+                      key={opt.v}
+                      type="button"
+                      onClick={() => updateLayout({ heroSplitMobilePadY: opt.v })}
+                      aria-pressed={theme.layout.heroSplitMobilePadY === opt.v}
+                      className={`rounded-lg border py-2 text-xs transition ${
+                        theme.layout.heroSplitMobilePadY === opt.v
+                          ? "border-emerald-500 bg-emerald-50 text-emerald-900"
+                          : "border-stone-200 text-stone-600 hover:border-stone-400"
+                      }`}
+                    >
+                      {opt.label}
+                    </button>
+                  ))}
+                </div>
+                <p className="text-[10px] text-stone-500 mt-1">
+                  上一格管的是左右、而且只影響平板以上；這格剛好相反，只影響手機的上下。
+                  手機上文字那段的上下各空一截，那個空白是配正方形照片、字只有店名加
+                  一句話挑的。照片改成直式之後，光那張圖就超過一個螢幕高，底下再接一塊
+                  上下都很空的字，整段拉得很長、客人得一直滑，這時候選窄；反過來把文字
+                  排到照片上面當第一屏的店選寬，開頭才不會貼著上面那條導覽列
                 </p>
               </Field>
             )}
