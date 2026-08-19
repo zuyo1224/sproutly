@@ -2157,6 +2157,12 @@ export default async function StoreHomePage({
             // 跟預設那一檔不輸出 attribute，整條規則不存在。
             const splitHeight =
               theme.layout.heroSplitHeight === "normal" ? null : theme.layout.heroSplitHeight;
+            // 文字那半的底色。整個 section 的 background 吃的是全站底色，左半被照片蓋住，
+            // 右半就是一整塊跟後面每一段同色的底——照片旁邊那半欄跟底下的商品段之間沒有
+            // 界線。直接寫在文字那個 div 的 inline style 上就夠（那個 div 原本沒有背景，
+            // 不跟任何 class 打架），也刻意不套整個 section：照片那半換了也看不到。
+            // 沒設完全不輸出 backgroundColor，section 的底色原樣透出來。
+            const splitTextBg = theme.layout.heroSplitTextBg;
             return (
               <section
                 className="relative grid grid-cols-1 md:grid-cols-2 min-h-[80vh] md:min-h-screen overflow-hidden"
@@ -2211,10 +2217,11 @@ export default async function StoreHomePage({
                   data-hero-split-text
                   className={`flex flex-col justify-center px-8 sm:px-12 md:px-16 lg:px-24 py-20 md:py-0 ${imageOnRight ? "md:order-1" : ""}`}
                   style={
-                    splitTextJustify || splitTextPad
+                    splitTextJustify || splitTextPad || splitTextBg
                       ? ({
                           ...(splitTextJustify ? { justifyContent: splitTextJustify } : {}),
                           ...(splitTextPad ? { "--store-hero-split-pad": splitTextPad } : {}),
+                          ...(splitTextBg ? { backgroundColor: splitTextBg } : {}),
                         } as React.CSSProperties)
                       : undefined
                   }

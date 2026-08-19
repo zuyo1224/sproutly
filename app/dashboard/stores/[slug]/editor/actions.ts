@@ -74,6 +74,7 @@ type EditorPayload = {
     heroSplitTextPadding?: string;
     heroSplitMobileOrder?: string;
     heroSplitHeight?: string;
+    heroSplitTextBg?: string | null;
     heroMagazineRuleWeight?: string;
     heroMagazineRuleTone?: string;
     heroMagazineGap?: string;
@@ -496,6 +497,15 @@ export async function saveEditorState(slug: string, payload: EditorPayload) {
       const v = payload.layout.heroSplitMobileOrder;
       if (v === "image-first" || v === "text-first") {
         layoutPatch.heroSplitMobileOrder = v;
+      }
+    }
+    if (payload.layout.heroSplitTextBg !== undefined) {
+      const v = payload.layout.heroSplitTextBg;
+      if (v === null || v === "") {
+        layoutPatch.heroSplitTextBg = null;
+      } else {
+        const hex = normalizeHexColor(v);
+        if (hex) layoutPatch.heroSplitTextBg = hex;
       }
     }
     if (payload.layout.heroSplitHeight !== undefined) {

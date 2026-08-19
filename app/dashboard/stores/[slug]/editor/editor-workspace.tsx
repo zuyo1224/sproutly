@@ -123,6 +123,7 @@ type EditorTheme = {
     heroSplitTextPadding: "tight" | "normal" | "roomy";
     heroSplitMobileOrder: "image-first" | "text-first";
     heroSplitHeight: "content" | "compact" | "normal";
+    heroSplitTextBg: string | null;
     heroMagazineRuleWeight: "normal" | "medium" | "thick";
     heroMagazineRuleTone: "normal" | "faint" | "strong" | "accent";
     heroMagazineGap: "tight" | "medium" | "normal";
@@ -997,6 +998,7 @@ export function EditorWorkspace({
           heroSplitTextPadding: t.layout.heroSplitTextPadding,
           heroSplitMobileOrder: t.layout.heroSplitMobileOrder,
           heroSplitHeight: t.layout.heroSplitHeight,
+          heroSplitTextBg: t.layout.heroSplitTextBg,
           heroMagazineRuleWeight: t.layout.heroMagazineRuleWeight,
           heroMagazineRuleTone: t.layout.heroMagazineRuleTone,
           heroMagazineGap: t.layout.heroMagazineGap,
@@ -2813,6 +2815,43 @@ export function EditorWorkspace({
                   那半欄會空一大片，客人得再滑一整個螢幕才碰得到下一段——選跟著內容，整段
                   就收成照片那欄的高度；稍矮是比一個螢幕短一截、還留得住開頭的份量。照片
                   直式又寫了三四行字的店維持跟預設。只影響平板以上，手機是圖上文下堆疊
+                </p>
+              </Field>
+            )}
+            {theme.layout.heroStyle === "split" && (
+              <Field label="文字那半的底色">
+                <div className="flex items-center gap-2">
+                  {/* 沒設的時候公開頁透出來的是整段的底色（等於全站底色），
+                      所以取色器拿全站底色當初始值 */}
+                  <input
+                    type="color"
+                    value={theme.layout.heroSplitTextBg ?? theme.bg}
+                    onChange={(e) => updateLayout({ heroSplitTextBg: e.target.value })}
+                    className="h-8 w-12 rounded border border-stone-200"
+                  />
+                  <input
+                    type="text"
+                    value={theme.layout.heroSplitTextBg ?? ""}
+                    onChange={(e) =>
+                      updateLayout({ heroSplitTextBg: e.target.value || null })
+                    }
+                    placeholder="預設跟全站底色一樣"
+                    className="flex-1 rounded-lg border border-stone-200 px-3 py-2 text-sm font-mono"
+                  />
+                  {theme.layout.heroSplitTextBg && (
+                    <button
+                      type="button"
+                      onClick={() => updateLayout({ heroSplitTextBg: null })}
+                      className="text-xs text-stone-500 hover:text-stone-800 underline"
+                    >
+                      清除
+                    </button>
+                  )}
+                </div>
+                <p className="text-[10px] text-stone-500 mt-1">
+                  照片旁邊那半欄。它原本跟後面每一段同一個顏色，所以往下捲是一整片同色，
+                  開頭在哪裡結束看不出來；手機上圖上文下，照片以下到頁尾也全是同一塊色。
+                  換個顏色就能把開頭這段跟後面分開。照片那半不會受影響
                 </p>
               </Field>
             )}

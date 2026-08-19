@@ -531,6 +531,18 @@ export interface StoreTheme {
     // min-h-[80vh] 幾乎永遠碰不到（光滿寬的正方形照片就超過了），動它等於什麼都沒動。
     // 不覆寫那一檔連 attribute 都不輸出，既有店家的整屏原樣留著。
     heroSplitHeight: "content" | "compact" | "normal"; // split 區段高度（預設 normal = 不覆寫）
+    // split 版型文字那半的底色。前面幾格把這一段的分法、高度、留白都開了，可是這半欄
+    // 是什麼顏色一直是寫死的——整個 section 的 background 直接吃 theme.bg，也就是後面
+    // 每一段的同一個底色。左半被照片蓋住看不出來，右半那一整塊就是全站底色，所以照片
+    // 旁邊那半欄跟它底下的商品段、慢讀段之間沒有任何界線，往下捲的時候是一整片同色，
+    // 開頭在哪裡結束看不出來。手機上更明顯：圖上文下堆疊，照片以下到頁尾全是同一塊色。
+    // 為什麼開色碼欄位不開三檔（跟滿版圖那格「文字段底色」同一個判斷）：這格要的是
+    // 「跟後面那段分得開」，而分得開又不打架的那個顏色跟店的調子有關（米白店往米色走、
+    // 深色店往更深走），挑不出通用的三檔。
+    // 只套在文字那半的 div 上，不套整個 section：套 section 會連照片那半一起換，而那半
+    // 只有照片載入前那一瞬間看得到底色，換了等於什麼都沒換；真正要分開的是有字的那一半。
+    // 沒設完全不覆寫（連 backgroundColor 都不輸出），既有店家算出來一模一樣。
+    heroSplitTextBg: string | null;    // split 文字欄底色，hex；null = 跟全站底色
     // 雜誌版型上下那兩條橫線。整個版型的骨架就是這兩條線——上面那條把小標與店名那行
     // 框起來、下面那條把落款與按鈕那行框起來，中間才是大字，是它們讓這個版型看起來像
     // 一本雜誌的封面而不是一頁置中的字。可是兩條線的粗細與顏色都寫死（1px、theme.border），
@@ -1161,6 +1173,7 @@ function resolveLayout(raw: unknown): StoreTheme["layout"] {
       if (v === "text-first") return v;
       return "image-first" as const;
     })(),
+    heroSplitTextBg: normalizeHexColor(l.heroSplitTextBg),
     heroSplitHeight: (() => {
       const v = l.heroSplitHeight;
       if (v === "content" || v === "compact") return v;
