@@ -514,6 +514,23 @@ export interface StoreTheme {
     // 斷點的同一件事，混在一起會變成選了靠右卻在手機上看不出差別的那種格子。
     // 不覆寫那一檔連 attribute 都不輸出，既有店家的手機版一模一樣。
     heroSplitMobileOrder: "image-first" | "text-first"; // split 手機圖文順序（預設 image-first = 不覆寫）
+    // split 版型這一段有多高。上面那幾格動的都是這一段裡面怎麼分（左右比例、圖框形狀、
+    // 字擺在欄的哪個高度、欄裡留多少空），這一段本身多高卻是寫死的——平板以上 min-h-screen，
+    // 整整一個螢幕。而 Hero panel 那格「Hero 高度」的說明白紙黑字寫著只有整版圖片版型會
+    // 套用，split 選了也沒反應。
+    // 為什麼要：整屏高是照「照片撐得起一整屏」挑的。可是這一段是左右各一半，右半只放
+    // 店名一行加一句話的店，那半欄就有一大片空白，而「文字靠哪」那格能做的只是把字挪到
+    // 上緣或下緣，空白還是那麼多。客人看完第一屏那幾個字得再滑一整個螢幕才碰得到下一段，
+    // 中間全是空的。反過來，照片直式、字又寫了三四行的店，整屏高剛好，不該被動到。
+    // 三檔動的是這一段的 min-height：
+    //   content 不設下限（min-height: 0），高度由照片跟字自己撐——字少的店整段就收成
+    //           照片那欄的高度，下一段直接接上來
+    //   compact 70vh（比一個螢幕矮一截，但還留得住「這是開頭」的份量）
+    //   normal  不覆寫（維持原本的整屏）
+    // 只寫在 md 以上：手機是圖上文下的單欄堆疊，高度本來就是兩塊加起來，class 上那個
+    // min-h-[80vh] 幾乎永遠碰不到（光滿寬的正方形照片就超過了），動它等於什麼都沒動。
+    // 不覆寫那一檔連 attribute 都不輸出，既有店家的整屏原樣留著。
+    heroSplitHeight: "content" | "compact" | "normal"; // split 區段高度（預設 normal = 不覆寫）
     // 雜誌版型上下那兩條橫線。整個版型的骨架就是這兩條線——上面那條把小標與店名那行
     // 框起來、下面那條把落款與按鈕那行框起來，中間才是大字，是它們讓這個版型看起來像
     // 一本雜誌的封面而不是一頁置中的字。可是兩條線的粗細與顏色都寫死（1px、theme.border），
@@ -1143,6 +1160,11 @@ function resolveLayout(raw: unknown): StoreTheme["layout"] {
       const v = l.heroSplitMobileOrder;
       if (v === "text-first") return v;
       return "image-first" as const;
+    })(),
+    heroSplitHeight: (() => {
+      const v = l.heroSplitHeight;
+      if (v === "content" || v === "compact") return v;
+      return "normal" as const;
     })(),
     heroMagazineRuleWeight: (() => {
       const v = l.heroMagazineRuleWeight;

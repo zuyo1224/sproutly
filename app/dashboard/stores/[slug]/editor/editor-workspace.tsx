@@ -122,6 +122,7 @@ type EditorTheme = {
     heroSplitTextAlign: "top" | "center" | "bottom";
     heroSplitTextPadding: "tight" | "normal" | "roomy";
     heroSplitMobileOrder: "image-first" | "text-first";
+    heroSplitHeight: "content" | "compact" | "normal";
     heroMagazineRuleWeight: "normal" | "medium" | "thick";
     heroMagazineRuleTone: "normal" | "faint" | "strong" | "accent";
     heroMagazineGap: "tight" | "medium" | "normal";
@@ -995,6 +996,7 @@ export function EditorWorkspace({
           heroSplitTextAlign: t.layout.heroSplitTextAlign,
           heroSplitTextPadding: t.layout.heroSplitTextPadding,
           heroSplitMobileOrder: t.layout.heroSplitMobileOrder,
+          heroSplitHeight: t.layout.heroSplitHeight,
           heroMagazineRuleWeight: t.layout.heroMagazineRuleWeight,
           heroMagazineRuleTone: t.layout.heroMagazineRuleTone,
           heroMagazineGap: t.layout.heroMagazineGap,
@@ -2779,6 +2781,38 @@ export function EditorWorkspace({
                   那張圖，店名、那句話、兩顆按鈕全在下面，要滑一下才出現。照片本身就是招牌
                   的店（店面照、一整面植物牆）維持預設；想讓客人先知道這是誰、賣什麼的店選
                   文字，照片接在下面
+                </p>
+              </Field>
+            )}
+            {theme.layout.heroStyle === "split" && (
+              <Field label="這一段有多高">
+                <div className="grid grid-cols-3 gap-1.5">
+                  {([
+                    { v: "content", label: "跟著內容" },
+                    { v: "compact", label: "稍矮" },
+                    { v: "normal", label: "跟預設" },
+                  ] as const).map((opt) => (
+                    <button
+                      key={opt.v}
+                      type="button"
+                      onClick={() => updateLayout({ heroSplitHeight: opt.v })}
+                      aria-pressed={theme.layout.heroSplitHeight === opt.v}
+                      className={`rounded-lg border py-2 text-xs transition ${
+                        theme.layout.heroSplitHeight === opt.v
+                          ? "border-emerald-500 bg-emerald-50 text-emerald-900"
+                          : "border-stone-200 text-stone-600 hover:border-stone-400"
+                      }`}
+                    >
+                      {opt.label}
+                    </button>
+                  ))}
+                </div>
+                <p className="text-[10px] text-stone-500 mt-1">
+                  上面幾格動的都是這一段裡面怎麼分，這一段本身多高是寫死的整屏（上面那格
+                  「Hero 高度」只有整版圖片版型會套用）。右半只放店名一行加一句話的店，
+                  那半欄會空一大片，客人得再滑一整個螢幕才碰得到下一段——選跟著內容，整段
+                  就收成照片那欄的高度；稍矮是比一個螢幕短一截、還留得住開頭的份量。照片
+                  直式又寫了三四行字的店維持跟預設。只影響平板以上，手機是圖上文下堆疊
                 </p>
               </Field>
             )}

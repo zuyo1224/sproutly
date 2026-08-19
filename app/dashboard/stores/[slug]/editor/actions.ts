@@ -73,6 +73,7 @@ type EditorPayload = {
     heroSplitTextAlign?: string;
     heroSplitTextPadding?: string;
     heroSplitMobileOrder?: string;
+    heroSplitHeight?: string;
     heroMagazineRuleWeight?: string;
     heroMagazineRuleTone?: string;
     heroMagazineGap?: string;
@@ -495,6 +496,12 @@ export async function saveEditorState(slug: string, payload: EditorPayload) {
       const v = payload.layout.heroSplitMobileOrder;
       if (v === "image-first" || v === "text-first") {
         layoutPatch.heroSplitMobileOrder = v;
+      }
+    }
+    if (payload.layout.heroSplitHeight !== undefined) {
+      const v = payload.layout.heroSplitHeight;
+      if (v === "content" || v === "compact" || v === "normal") {
+        layoutPatch.heroSplitHeight = v;
       }
     }
     if (payload.layout.heroSplitTextPadding !== undefined) {

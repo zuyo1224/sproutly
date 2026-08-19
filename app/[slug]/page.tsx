@@ -2151,10 +2151,17 @@ export default async function StoreHomePage({
             // 跟預設那一檔不輸出 attribute，整條規則不存在。
             const splitMobileTextFirst =
               theme.layout.heroSplitMobileOrder === "text-first";
+            // 這一段有多高。class 上是 min-h-[80vh] md:min-h-screen，平板以上整整一個
+            // 螢幕。規則寫在 layout.tsx 的 min-width: 768px 裡而不是 inline 的 minHeight
+            //（inline 會連手機那個 80vh 一起蓋掉，得再補一條還原）。
+            // 跟預設那一檔不輸出 attribute，整條規則不存在。
+            const splitHeight =
+              theme.layout.heroSplitHeight === "normal" ? null : theme.layout.heroSplitHeight;
             return (
               <section
                 className="relative grid grid-cols-1 md:grid-cols-2 min-h-[80vh] md:min-h-screen overflow-hidden"
                 {...(splitMobileTextFirst ? { "data-hero-split-mobile": "text-first" } : {})}
+                {...(splitHeight ? { "data-hero-split-height": splitHeight } : {})}
                 style={
                   splitCols
                     ? ({

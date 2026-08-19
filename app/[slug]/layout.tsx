@@ -1880,6 +1880,24 @@ export default async function PublicStoreLayout({
           }
         }
 
+        /* split 版型區段高度：editor Hero panel「這一段有多高」三按鈕
+           （跟著內容 / 稍矮 / 跟預設）。要蓋掉的是 section class 上的 md:min-h-screen。
+           寫成 CSS 而不是 inline 的 minHeight，是因為 inline 會連手機那個 min-h-[80vh]
+           一起蓋掉，得再補一條把它還原，不如讓斷點自己管。
+           選 element + attribute 兩層，贏得過 Tailwind 那個單一 class（同樣贏在這份
+           <style> 沒包 @layer）。
+           只寫在 md 以上：手機是圖上文下的單欄堆疊，高度是兩塊加起來，min-h-[80vh]
+           幾乎永遠碰不到，動它等於什麼都沒動。
+           跟預設那一檔不輸出 attribute，整條規則不存在，既有店家的整屏原樣留著。 */
+        @media (min-width: 768px) {
+          section[data-edit-target="hero"][data-hero-split-height="content"] {
+            min-height: 0;
+          }
+          section[data-edit-target="hero"][data-hero-split-height="compact"] {
+            min-height: 70vh;
+          }
+        }
+
         /* 卡片價錢字級：editor 精選商品 panel「卡片價錢字級」三按鈕（小 / 跟預設 / 大）。
            上面三組把卡片裡的品名、描述、全大寫小字都補起來之後，價錢是這一組最後一行沒得
            動的——它寫死 14px，比品名的 16px 還小一級。那個安排是照「先看商品再看價錢」的
