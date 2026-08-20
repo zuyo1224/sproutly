@@ -602,6 +602,18 @@ export interface StoreTheme {
     // 層算出來的寬度，兩行字左右兩端切齊）。不開任意數字：這一層本來就被上一層框住，
     // 給的數字比上一層大也不會更寬，只會讓商家以為沒生效。
     heroMagazineSubtitleWidth: "narrow" | "normal" | "wide" | "title"; // 雜誌副標欄寬（預設 normal = 不覆寫）
+    // 雜誌版型整段的底色。這個版型跟 minimal 一樣沒有圖，畫面上只有兩條 1px 的線、
+    // 中間一段大字，其餘全是底色——而那片底色一直寫死吃 theme.bg，跟底下的商品段、
+    // 慢讀段、頁尾同一個顏色。雜誌封面的成立條件就是「整版一個色塊，線與字壓在上面」，
+    // 底色跟後面每一段一樣的時候，那兩條線變成頁面中間兩條沒來由的橫線，客人看不出
+    // 封面在哪裡結束。minimal 有「整段底色」、滿版圖有「文字段底色」、split 有「文字
+    // 那半的底色」，四個版型裡只有雜誌一格都沒有。
+    // 跟 minimal 那格同一個口徑：開色碼欄位不開三檔（要挑什麼顏色才跟後面分得開又
+    // 不打架跟店的調子有關，挑不出通用的三檔），沒設完全不覆寫，既有店家算出來一樣。
+    // 只給底色不給文字色：這個版型的字色已經有「主標顏色」「副標顏色」「小標顏色」
+    // 「落款顏色」「橫線顏色」五格各自可調，深底要配的每一處都動得到，再開一格總文字色
+    // 反而會跟那五格打架（誰贏誰輸講不清楚）。
+    heroMagazineBg: string | null;     // 雜誌區段底色，hex；null = 跟全站底色
     // minimal 版型自己的兩個寫死參數：欄寬與上下留白。這個版型沒有圖、沒有線、沒有底色，
     // 只有置中的一段字，所以「字排多寬」跟「上下留多少空」就是它全部的設計——可是兩個值
     // 都寫死在 class 裡（max-w-3xl 的 48rem 欄寬、py-40 sm:py-56 的上下留白），前面開的
@@ -1277,6 +1289,7 @@ function resolveLayout(raw: unknown): StoreTheme["layout"] {
       if (v === "narrow" || v === "wide" || v === "title") return v;
       return "normal" as const;
     })(),
+    heroMagazineBg: normalizeHexColor(l.heroMagazineBg),
     heroMinimalWidth: (() => {
       const v = l.heroMinimalWidth;
       if (v === "narrow" || v === "wide") return v;

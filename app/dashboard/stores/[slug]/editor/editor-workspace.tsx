@@ -133,6 +133,7 @@ type EditorTheme = {
     heroMagazineGap: "tight" | "medium" | "normal";
     heroMagazineTextWidth: "narrow" | "normal" | "rule" | "full";
     heroMagazineSubtitleWidth: "narrow" | "normal" | "wide" | "title";
+    heroMagazineBg: string | null;
     heroMinimalWidth: "narrow" | "normal" | "wide";
     heroMinimalPadding: "compact" | "normal" | "spacious";
     heroMinimalRule: "none" | "short" | "normal" | "long";
@@ -1014,6 +1015,7 @@ export function EditorWorkspace({
           heroMagazineGap: t.layout.heroMagazineGap,
           heroMagazineTextWidth: t.layout.heroMagazineTextWidth,
           heroMagazineSubtitleWidth: t.layout.heroMagazineSubtitleWidth,
+          heroMagazineBg: t.layout.heroMagazineBg,
           heroMinimalWidth: t.layout.heroMinimalWidth,
           heroMinimalPadding: t.layout.heroMinimalPadding,
           heroMinimalRule: t.layout.heroMinimalRule,
@@ -3057,6 +3059,44 @@ export function EditorWorkspace({
                   上一格放寬的只有主標，主標下面那行小字是另外一條寫死的窄欄，所以主標拉
                   寬之後會變成上面一行很寬、下面一條很窄，中間對齊但左右差一大截。選跟主
                   標一樣寬，兩行字的左右兩端才會切齊
+                </p>
+              </Field>
+            )}
+            {theme.layout.heroStyle === "magazine" && (
+              <Field label="整段底色">
+                <div className="flex items-center gap-2">
+                  {/* 沒設的時候公開頁走的還是全站底色，所以取色器拿全站底色當初始值 */}
+                  <input
+                    type="color"
+                    value={theme.layout.heroMagazineBg ?? theme.bg}
+                    onChange={(e) => updateLayout({ heroMagazineBg: e.target.value })}
+                    className="h-8 w-12 rounded border border-stone-200"
+                  />
+                  <input
+                    type="text"
+                    value={theme.layout.heroMagazineBg ?? ""}
+                    onChange={(e) =>
+                      updateLayout({ heroMagazineBg: e.target.value || null })
+                    }
+                    placeholder="預設跟全站底色一樣"
+                    className="flex-1 rounded-lg border border-stone-200 px-3 py-2 text-sm font-mono"
+                  />
+                  {theme.layout.heroMagazineBg && (
+                    <button
+                      type="button"
+                      onClick={() => updateLayout({ heroMagazineBg: null })}
+                      className="text-xs text-stone-500 hover:text-stone-800 underline"
+                    >
+                      清除
+                    </button>
+                  )}
+                </div>
+                <p className="text-[10px] text-stone-500 mt-1">
+                  這個版型沒有圖，畫面上只有上下兩條細線跟中間一段大字，其餘全是這片底色。
+                  它原本跟底下的商品、慢讀、頁尾同一個顏色，往下捲是一整片同色，那兩條線
+                  看起來就像頁面中間兩條沒來由的橫線。換個顏色，封面才有一個自己的色塊。
+                  底色會鋪滿整個螢幕寬；挑深色的話，主標 / 副標 / 小標 / 落款 / 橫線的顏色
+                  各有自己那一格可以跟著換
                 </p>
               </Field>
             )}

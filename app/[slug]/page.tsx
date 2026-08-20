@@ -2327,7 +2327,10 @@ export default async function StoreHomePage({
               <section
                 className="relative min-h-screen flex flex-col justify-between py-20 sm:py-28"
                 style={{
-                  background: theme.bg,
+                  // 沒挑顏色就還是全站底色（既有店家算出來一模一樣）。這個版型畫面上
+                  // 只有兩條 1px 的線跟中間一段字，其餘全是這片底色；跟後面每一段同色
+                  // 的時候那兩條線變成頁面中間兩條沒來由的橫線，封面在哪裡結束看不出來。
+                  background: theme.layout.heroMagazineBg ?? theme.bg,
                   // 中間大字與上下兩條線的距離 = 這一段有多高（三塊被 justify-between
                   // 撐到兩端與中央）。inline 的 minHeight 贏得過 class 的 min-h-screen；
                   // tight 給 0 讓內容自己決定高度，線就貼著字（上下還留 py 那層）。
