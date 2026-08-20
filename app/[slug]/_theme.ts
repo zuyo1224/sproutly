@@ -517,6 +517,19 @@ export interface StoreTheme {
     // justify-content 管），套上去會讓那格的靠上 / 靠下多出一段推不掉的空隙。
     // 不覆寫那一檔連 attribute 都不輸出，既有店家的手機版一模一樣。
     heroSplitMobilePadY: "tight" | "normal" | "roomy"; // split 文字欄手機上下內距（預設 normal = 不覆寫）
+    // split 版型文字那一欄裡面那三段直向間距（小標到主標、主標到副標、副標到按鈕列）。
+    // 上面兩格（左右內距、手機上下內距）調的都是「這一欄的邊界離字有多遠」，這一格調的
+    // 是欄裡面各行之間的疏密，兩件事互不相干卻只有前者能動：三個間距一直寫死在 class 上
+    //（mb-6 / mt-6 / mt-10），是配「主標字級跟預設一樣大、副標一兩行」挑的。
+    // 為什麼要：主標字級那格拉大之後，一行大字跟下一行之間只剩原本那 1.5rem，字級越大
+    // 越像黏在一起；而這一欄跟 minimal 不一樣的地方是它只有半個螢幕寬，字換行更早、
+    // 行數更多，整團字更容易糊成一塊。反過來「圖文比例」選了圖窄、文字那半變寬的店，
+    // 字排得開了、行與行之間卻還是原本那點空，上下顯得比左右擠。平板以上這一欄是
+    // justify-center 撐滿整屏高，字本來就有空間可以散開，這時候把行距放鬆最划算。
+    // 三檔跟 minimal 那格同口徑，三個值一起套同一個倍率（緊 0.5x / 鬆 1.75x）：
+    // 6 / 6 / 10 之間原本就有「副標貼主標近、按鈕離得遠」的層次，拆成三格讓商家各填一個
+    // 數字，那個層次第一次調就會壞掉。預設完全不輸出任何值，既有店家算出來一模一樣。
+    heroSplitGap: "tight" | "normal" | "loose"; // split 文字欄內部間距（預設 normal = 不覆寫）
     // split 版型在手機上，照片與文字誰排在上面。平板以上有「圖片靠左 / 靠右」那格可以把
     // 字換到前面，可是手機是單欄堆疊（grid-cols-1），那格的 md:order-1 / md:order-2 完全
     // 碰不到，順序永遠是照片先、文字後。
@@ -1261,6 +1274,11 @@ function resolveLayout(raw: unknown): StoreTheme["layout"] {
     heroSplitMobilePadY: (() => {
       const v = l.heroSplitMobilePadY;
       if (v === "tight" || v === "roomy") return v;
+      return "normal" as const;
+    })(),
+    heroSplitGap: (() => {
+      const v = l.heroSplitGap;
+      if (v === "tight" || v === "loose") return v;
       return "normal" as const;
     })(),
     heroSplitMobileOrder: (() => {

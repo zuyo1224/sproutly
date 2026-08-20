@@ -2174,6 +2174,20 @@ export default async function StoreHomePage({
             // 不跟任何 class 打架），也刻意不套整個 section：照片那半換了也看不到。
             // 沒設完全不輸出 backgroundColor，section 的底色原樣透出來。
             const splitTextBg = theme.layout.heroSplitTextBg;
+            // 文字那欄裡面那三段直向間距（小標→主標→副標→按鈕列）。原本寫死
+            // mb-6 / mt-6 / mt-10（1.5 / 1.5 / 2.5rem），是配預設主標字級挑的。
+            // 三個值套同一個倍率，6:6:10 的層次不變，只有整體疏密變；
+            // 「跟預設」不輸出任何值（inline style 不蓋 class），既有店家算出來一模一樣。
+            const splitGapScale =
+              theme.layout.heroSplitGap === "tight"
+                ? 0.5
+                : theme.layout.heroSplitGap === "loose"
+                  ? 1.75
+                  : null;
+            const splitGapTop = (rem: number) =>
+              splitGapScale === null ? {} : { marginTop: `${rem * splitGapScale}rem` };
+            const splitGapBottom = (rem: number) =>
+              splitGapScale === null ? {} : { marginBottom: `${rem * splitGapScale}rem` };
             return (
               <section
                 className="relative grid grid-cols-1 md:grid-cols-2 min-h-[80vh] md:min-h-screen overflow-hidden"
@@ -2251,6 +2265,7 @@ export default async function StoreHomePage({
                         ...eyebrowTrackStyle(0.4),
                         ...eyebrowCaseStyle,
                         ...eyebrowWeightStyle,
+                        ...splitGapBottom(1.5),
                       }}
                     >
                       {theme.layout.heroEyebrow}
@@ -2289,12 +2304,13 @@ export default async function StoreHomePage({
                         ...subtitleWeightStyle,
                         ...subtitleTrackStyle,
                         ...subtitleLeadingStyle,
+                        ...splitGapTop(1.5),
                       }}
                     >
                       {theme.layout.heroSubtitle}
                     </p>
                   )}
-                  <div className={`mt-10 flex gap-5 ${fade3}`}>
+                  <div className={`mt-10 flex gap-5 ${fade3}`} style={splitGapTop(2.5)}>
                     <Link
                       href={`/${slug}/shop`}
                       className="sproutly-btn sproutly-btn-primary sproutly-btn-lg"

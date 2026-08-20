@@ -125,6 +125,7 @@ type EditorTheme = {
     heroSplitTextAlign: "top" | "center" | "bottom";
     heroSplitTextPadding: "tight" | "normal" | "roomy";
     heroSplitMobilePadY: "tight" | "normal" | "roomy";
+    heroSplitGap: "tight" | "normal" | "loose";
     heroSplitMobileOrder: "image-first" | "text-first";
     heroSplitHeight: "content" | "compact" | "normal";
     heroSplitTextBg: string | null;
@@ -1008,6 +1009,7 @@ export function EditorWorkspace({
           heroSplitTextAlign: t.layout.heroSplitTextAlign,
           heroSplitTextPadding: t.layout.heroSplitTextPadding,
           heroSplitMobilePadY: t.layout.heroSplitMobilePadY,
+          heroSplitGap: t.layout.heroSplitGap,
           heroSplitMobileOrder: t.layout.heroSplitMobileOrder,
           heroSplitHeight: t.layout.heroSplitHeight,
           heroSplitTextBg: t.layout.heroSplitTextBg,
@@ -2803,6 +2805,39 @@ export function EditorWorkspace({
                   一句話挑的。照片改成直式之後，光那張圖就超過一個螢幕高，底下再接一塊
                   上下都很空的字，整段拉得很長、客人得一直滑，這時候選窄；反過來把文字
                   排到照片上面當第一屏的店選寬，開頭才不會貼著上面那條導覽列
+                </p>
+              </Field>
+            )}
+            {theme.layout.heroStyle === "split" && (
+              <Field label="這段字裡面的行距">
+                <div className="grid grid-cols-3 gap-1.5">
+                  {([
+                    { v: "tight", label: "緊" },
+                    { v: "normal", label: "跟預設" },
+                    { v: "loose", label: "鬆" },
+                  ] as const).map((opt) => (
+                    <button
+                      key={opt.v}
+                      type="button"
+                      onClick={() => updateLayout({ heroSplitGap: opt.v })}
+                      aria-pressed={theme.layout.heroSplitGap === opt.v}
+                      className={`rounded-lg border py-2 text-xs transition ${
+                        theme.layout.heroSplitGap === opt.v
+                          ? "border-emerald-500 bg-emerald-50 text-emerald-900"
+                          : "border-stone-200 text-stone-600 hover:border-stone-400"
+                      }`}
+                    >
+                      {opt.label}
+                    </button>
+                  ))}
+                </div>
+                <p className="text-[10px] text-stone-500 mt-1">
+                  小標、主標、副標、那排按鈕，這四樣東西彼此之間隔多遠。上面兩格管的是
+                  這一欄的邊界離字有多遠，這格管的是欄裡面各行之間的疏密。原本那組間距
+                  是配預設主標字級挑的：字級拉大之後，一行大字跟下一行之間只剩原本那點空，
+                  而這一欄又只有半個螢幕寬、字換行更早行數更多，整團字容易糊成一塊；反過來
+                  「圖文比例」選了圖窄、文字那半變寬的店，字排得開了行距卻沒跟著開，上下
+                  會比左右擠。四樣東西一起縮放，副標貼主標近、按鈕離得遠的層次不會跑掉
                 </p>
               </Field>
             )}
