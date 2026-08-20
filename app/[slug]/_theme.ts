@@ -615,6 +615,18 @@ export interface StoreTheme {
     // 層算出來的寬度，兩行字左右兩端切齊）。不開任意數字：這一層本來就被上一層框住，
     // 給的數字比上一層大也不會更寬，只會讓商家以為沒生效。
     heroMagazineSubtitleWidth: "narrow" | "normal" | "wide" | "title"; // 雜誌副標欄寬（預設 normal = 不覆寫）
+    // 這一段內部剩下的三處間距：小標那行到上面那條線（mt-4）、主標到副標（mt-8）、
+    // 下面那條線到落款那行（mb-4），全寫死在 class 上（1 / 2 / 1rem）。
+    // 為什麼要：這個版型已經有的「大字與上下橫線的距離」動的是整段的最低高度，也就是
+    // 那兩條線被推到多遠——三塊之間的空。可是每一塊自己裡面的疏密一格都沒有，而雜誌
+    // 封面的樣子就是靠「線緊貼著那行小字、中間大字自己一團」這個對比撐起來的。主標字級
+    // 那格拉大之後，主標跟副標之間只剩原本那 2rem，兩行字黏成一塊；同一時間上下那兩條
+    // 線離小字還是原本的 1rem，中間那團越大、線那兩端越顯得薄。反過來「大字與上下橫線
+    // 的距離」選了緊、想把整段收成一塊的店，外圈收了、裡面三處沒收，比例反而比預設更鬆。
+    // 跟另外三個版型那格同口徑：三個值一起套同一個倍率（緊 0.5x / 鬆 1.75x），不拆成三格
+    // 分開填——4 / 8 / 4 之間原本就有「線貼著小字、大字自己站開」的層次，拆開讓商家各填
+    // 一個數字，那個層次第一次調就會壞掉。預設完全不輸出任何值，既有店家算出來一模一樣。
+    heroMagazineTextGap: "tight" | "normal" | "loose"; // 雜誌版型內部間距（預設 normal = 不覆寫）
     // 雜誌版型整段的底色。這個版型跟 minimal 一樣沒有圖，畫面上只有兩條 1px 的線、
     // 中間一段大字，其餘全是底色——而那片底色一直寫死吃 theme.bg，跟底下的商品段、
     // 慢讀段、頁尾同一個顏色。雜誌封面的成立條件就是「整版一個色塊，線與字壓在上面」，
@@ -1329,6 +1341,11 @@ function resolveLayout(raw: unknown): StoreTheme["layout"] {
     heroMagazineSubtitleWidth: (() => {
       const v = l.heroMagazineSubtitleWidth;
       if (v === "narrow" || v === "wide" || v === "title") return v;
+      return "normal" as const;
+    })(),
+    heroMagazineTextGap: (() => {
+      const v = l.heroMagazineTextGap;
+      if (v === "tight" || v === "loose") return v;
       return "normal" as const;
     })(),
     heroMagazineBg: normalizeHexColor(l.heroMagazineBg),

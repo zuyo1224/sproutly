@@ -2357,6 +2357,21 @@ export default async function StoreHomePage({
 
           // Variant 3: magazine — 雜誌封面風（上 metadata、中央大字、下 byline）
           if (heroStyle === "magazine") {
+            // 這一段裡面剩下的三處間距：小標那行→上面那條線（mt-4）、主標→副標（mt-8）、
+            // 下面那條線→落款那行（mb-4），原本寫死 1 / 2 / 1rem。上面那格「大字與上下
+            // 橫線的距離」動的是整段的最低高度、也就是三塊之間被撐開多遠，這格動的是每
+            // 一塊自己裡面。三個值套同一個倍率，4:8:4 的層次不變，只有整體疏密變；
+            // 「跟預設」不輸出任何值（inline style 不蓋 class），既有店家算出來一模一樣。
+            const magGapScale =
+              theme.layout.heroMagazineTextGap === "tight"
+                ? 0.5
+                : theme.layout.heroMagazineTextGap === "loose"
+                  ? 1.75
+                  : null;
+            const magGapTop = (rem: number) =>
+              magGapScale === null ? {} : { marginTop: `${rem * magGapScale}rem` };
+            const magGapBottom = (rem: number) =>
+              magGapScale === null ? {} : { marginBottom: `${rem * magGapScale}rem` };
             return (
               <section
                 className="relative min-h-screen flex flex-col justify-between py-20 sm:py-28"
@@ -2398,7 +2413,7 @@ export default async function StoreHomePage({
                   </div>
                   <div
                     className="mt-4 h-px w-full"
-                    style={magRuleStyle}
+                    style={{ ...magRuleStyle, ...magGapTop(1) }}
                   />
                 </div>
 
@@ -2460,6 +2475,7 @@ export default async function StoreHomePage({
                         ...subtitleWeightStyle,
                         ...subtitleTrackStyle,
                         ...subtitleLeadingStyle,
+                        ...magGapTop(2),
                       }}
                     >
                       {theme.layout.heroSubtitle}
@@ -2471,7 +2487,7 @@ export default async function StoreHomePage({
                 <div className="max-w-6xl mx-auto px-8 sm:px-12 w-full">
                   <div
                     className="h-px w-full mb-4"
-                    style={magRuleStyle}
+                    style={{ ...magRuleStyle, ...magGapBottom(1) }}
                   />
                   <div
                     className={`flex justify-between items-center text-[10px] tracking-[0.32em] uppercase ${fade3}`}

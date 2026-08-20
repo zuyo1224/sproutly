@@ -134,6 +134,7 @@ type EditorTheme = {
     heroMagazineGap: "tight" | "medium" | "normal";
     heroMagazineTextWidth: "narrow" | "normal" | "rule" | "full";
     heroMagazineSubtitleWidth: "narrow" | "normal" | "wide" | "title";
+    heroMagazineTextGap: "tight" | "normal" | "loose";
     heroMagazineBg: string | null;
     heroMinimalWidth: "narrow" | "normal" | "wide";
     heroMinimalPadding: "compact" | "normal" | "spacious";
@@ -1019,6 +1020,7 @@ export function EditorWorkspace({
           heroMagazineGap: t.layout.heroMagazineGap,
           heroMagazineTextWidth: t.layout.heroMagazineTextWidth,
           heroMagazineSubtitleWidth: t.layout.heroMagazineSubtitleWidth,
+          heroMagazineTextGap: t.layout.heroMagazineTextGap,
           heroMagazineBg: t.layout.heroMagazineBg,
           heroMinimalWidth: t.layout.heroMinimalWidth,
           heroMinimalPadding: t.layout.heroMinimalPadding,
@@ -3098,6 +3100,38 @@ export function EditorWorkspace({
                   上一格放寬的只有主標，主標下面那行小字是另外一條寫死的窄欄，所以主標拉
                   寬之後會變成上面一行很寬、下面一條很窄，中間對齊但左右差一大截。選跟主
                   標一樣寬，兩行字的左右兩端才會切齊
+                </p>
+              </Field>
+            )}
+            {theme.layout.heroStyle === "magazine" && (
+              <Field label="這段字裡面的行距">
+                <div className="grid grid-cols-3 gap-1.5">
+                  {([
+                    { v: "tight", label: "緊" },
+                    { v: "normal", label: "跟預設" },
+                    { v: "loose", label: "鬆" },
+                  ] as const).map((opt) => (
+                    <button
+                      key={opt.v}
+                      type="button"
+                      onClick={() => updateLayout({ heroMagazineTextGap: opt.v })}
+                      aria-pressed={theme.layout.heroMagazineTextGap === opt.v}
+                      className={`rounded-lg border py-2 text-xs transition ${
+                        theme.layout.heroMagazineTextGap === opt.v
+                          ? "border-emerald-500 bg-emerald-50 text-emerald-900"
+                          : "border-stone-200 text-stone-600 hover:border-stone-400"
+                      }`}
+                    >
+                      {opt.label}
+                    </button>
+                  ))}
+                </div>
+                <p className="text-[10px] text-stone-500 mt-1">
+                  上面那行小字離線多近、主標跟下面那行小字離多近、下面那條線離落款多近。
+                  前面「大字跟上下橫線的距離」那格動的是三塊之間被撐開多遠，這格動的
+                  是每一塊自己裡面。主標字級拉大之後，主標跟副標只剩原本那點空、兩行
+                  黏成一塊，而上下那兩條線離小字還是原本那麼近，中間那團越大、線那
+                  兩端越顯得薄。三處一起縮放，線貼著小字、大字自己站開的層次不會跑掉
                 </p>
               </Field>
             )}
