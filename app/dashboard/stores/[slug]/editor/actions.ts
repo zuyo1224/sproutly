@@ -93,6 +93,7 @@ type EditorPayload = {
     heroTextBg?: string | null;
     heroTextPadding?: string;
     heroTextWidth?: string;
+    heroTextGap?: string;
     heroHeight?: string;
     fontScale?: number;
     sectionPaddingScale?: string;
@@ -647,6 +648,12 @@ export async function saveEditorState(slug: string, payload: EditorPayload) {
       const v = payload.layout.heroTextWidth;
       if (v === "narrow" || v === "normal" || v === "wide" || v === "full") {
         layoutPatch.heroTextWidth = v;
+      }
+    }
+    if (payload.layout.heroTextGap !== undefined) {
+      const v = payload.layout.heroTextGap;
+      if (v === "tight" || v === "normal" || v === "loose") {
+        layoutPatch.heroTextGap = v;
       }
     }
     if (payload.layout.fontScale !== undefined) {

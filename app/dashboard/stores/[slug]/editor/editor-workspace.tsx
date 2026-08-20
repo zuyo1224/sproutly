@@ -145,6 +145,7 @@ type EditorTheme = {
     heroTextBg: string | null;
     heroTextPadding: "compact" | "normal" | "spacious";
     heroTextWidth: "narrow" | "normal" | "wide" | "full";
+    heroTextGap: "tight" | "normal" | "loose";
     heroHeight: "auto" | "short" | "tall" | "full";
     fontScale: number;
     sectionPaddingScale: "compact" | "default" | "spacious";
@@ -1029,6 +1030,7 @@ export function EditorWorkspace({
           heroTextBg: t.layout.heroTextBg,
           heroTextPadding: t.layout.heroTextPadding,
           heroTextWidth: t.layout.heroTextWidth,
+          heroTextGap: t.layout.heroTextGap,
           heroHeight: t.layout.heroHeight,
           fontScale: t.layout.fontScale,
           sectionPaddingScale: t.layout.sectionPaddingScale,
@@ -3465,6 +3467,40 @@ export function EditorWorkspace({
                   滿版的，字被關在中間一道看不見的欄裡：主標拉大或副標寫成兩三句的店，
                   每一行會拖得很長，置中的長行讀起來每行都要重新找行頭；只放店名兩三個
                   字的店則會左右各空一大片。要字跟照片同寬就選滿版
+                </p>
+              </Field>
+            )}
+            {theme.layout.heroStyle === "full-image" && (
+              <Field label="這段字裡面的行距">
+                <div className="grid grid-cols-3 gap-1.5">
+                  {([
+                    { v: "tight", label: "緊" },
+                    { v: "normal", label: "跟預設" },
+                    { v: "loose", label: "鬆" },
+                  ] as const).map((opt) => (
+                    <button
+                      key={opt.v}
+                      type="button"
+                      onClick={() => updateLayout({ heroTextGap: opt.v })}
+                      aria-pressed={theme.layout.heroTextGap === opt.v}
+                      className={`rounded-lg border py-2 text-xs transition ${
+                        theme.layout.heroTextGap === opt.v
+                          ? "border-emerald-500 bg-emerald-50 text-emerald-900"
+                          : "border-stone-200 text-stone-600 hover:border-stone-400"
+                      }`}
+                    >
+                      {opt.label}
+                    </button>
+                  ))}
+                </div>
+                <p className="text-[10px] text-stone-500 mt-1">
+                  小標、主標、副標、按鈕，這四樣東西彼此之間隔多遠。上面兩格管的是那塊
+                  色塊的邊界離字有多遠，這格管的是字跟字之間。原本那組間距是配預設主標
+                  字級挑的：字級拉大之後，一行大字跟下一行之間只剩原本那點空，而這段字
+                  上面就是一張滿版照片、本身已經很滿，底下再擠成一團整個開頭都沒有喘息
+                  的地方；反過來欄寬選了滿版、字排到跟照片同寬的店，一行拉得很長行距卻
+                  沒跟著開，上下會比左右擠。四樣東西一起縮放，副標貼主標近、按鈕離得遠
+                  的層次不會跑掉。主標拖過位置的店這格不生效
                 </p>
               </Field>
             )}

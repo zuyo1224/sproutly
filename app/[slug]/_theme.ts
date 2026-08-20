@@ -713,6 +713,20 @@ export interface StoreTheme {
     // 主標拖過位置的店這格不生效——那時整層是自由定位，沒有欄寬可言。
     //   narrow 40rem / normal 不覆寫（56rem）/ wide 72rem / full 不設上限
     heroTextWidth: "narrow" | "normal" | "wide" | "full"; // 文字段欄寬（預設 normal = 不覆寫）
+    // 同一塊文字段裡面，小標、主標、副標、按鈕彼此之間隔多遠。原本寫死在 class 上
+    //（小標 mb-6、副標 mt-5、按鈕 mt-8 = 1.5 / 1.25 / 2rem），是配預設主標字級挑的。
+    // 為什麼要：這個版型已經有的兩格留白，一格管那塊色塊上下各留多少空、一格管裡面的字
+    // 排多寬，兩格動的都是「這塊色塊的邊界離字有多遠」，字與字之間的疏密一格都沒有。
+    // 主標字級那格拉大之後，一行大字跟下一行之間只剩原本那 1.25rem，字級越大越像黏在
+    // 一起；而這一段跟另外兩個版型不一樣的地方是它上面就是一張滿版照片，照片本身已經
+    // 是一整塊很滿的東西，底下那段字再擠成一團，整個開頭上下都沒有喘息的地方。反過來
+    // 「文字段欄寬」選了滿版、字排到跟照片同寬的店，一行拉得很長、行與行之間卻還是原本
+    // 那點空，上下顯得比左右擠。三檔跟 minimal / split 那兩格同口徑：三個值一起套同一個
+    // 倍率（緊 0.5x / 鬆 1.75x），6 / 5 / 8 之間原本就有「副標貼主標近、按鈕離得遠」的
+    // 層次，拆成三格讓商家各填一個數字，那個層次第一次調就會壞掉。
+    // 主標拖過位置的店，那幾樣東西各自是自由定位的絕對座標，這格碰不到也不該碰。
+    // 預設完全不輸出任何值，既有店家算出來一模一樣。
+    heroTextGap: "tight" | "normal" | "loose"; // 滿版圖文字段內部間距（預設 normal = 不覆寫）
     heroHeight: "auto" | "short" | "tall" | "full"; // 預設 auto（adaptive 比例）
     // 全網站
     fontScale: number;                 // 全網站字體 multiplier 0.8-1.3（預設 1.0）
@@ -1354,6 +1368,11 @@ function resolveLayout(raw: unknown): StoreTheme["layout"] {
     heroTextWidth: (() => {
       const v = l.heroTextWidth;
       if (v === "narrow" || v === "wide" || v === "full") return v;
+      return "normal" as const;
+    })(),
+    heroTextGap: (() => {
+      const v = l.heroTextGap;
+      if (v === "tight" || v === "loose") return v;
       return "normal" as const;
     })(),
     heroHeight: (() => {

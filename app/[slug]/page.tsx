@@ -1846,6 +1846,21 @@ export default async function StoreHomePage({
                 : theme.layout.heroTextPadding === "spacious"
                 ? { paddingTop: "clamp(6rem, 12vw, 9rem)", paddingBottom: "clamp(6rem, 12vw, 9rem)" }
                 : {};
+            // 那段字自己內部的疏密（小標→主標→副標→按鈕）。原本寫死 mb-6 / mt-5 / mt-8
+            //（1.5 / 1.25 / 2rem），上面兩格管的是那塊色塊的邊界離字有多遠，這格管的是
+            // 字與字之間。三個值套同一個倍率，6:5:8 的層次不變，只有整體疏密變；
+            // 「跟預設」不輸出任何值（inline style 不蓋 class），既有店家算出來一模一樣。
+            // 只套在照 flow 排的那幾條路徑上——拖過位置的走絕對座標，跟間距無關。
+            const heroTextGapScale =
+              theme.layout.heroTextGap === "tight"
+                ? 0.5
+                : theme.layout.heroTextGap === "loose"
+                  ? 1.75
+                  : null;
+            const heroTextGapTop = (rem: number) =>
+              heroTextGapScale === null ? {} : { marginTop: `${rem * heroTextGapScale}rem` };
+            const heroTextGapBottom = (rem: number) =>
+              heroTextGapScale === null ? {} : { marginBottom: `${rem * heroTextGapScale}rem` };
             return (
               <section
                 className={heroHeightClass}
@@ -1931,6 +1946,7 @@ export default async function StoreHomePage({
                           ...eyebrowTrackStyle(0.4),
                           ...eyebrowCaseStyle,
                           ...eyebrowWeightStyle,
+                          ...heroTextGapBottom(1.5),
                         }}
                       >
                         {theme.layout.heroEyebrow}
@@ -2030,6 +2046,7 @@ export default async function StoreHomePage({
                             ...subtitleWeightStyle,
                             ...subtitleTrackStyle,
                             ...subtitleLeadingStyle,
+                            ...heroTextGapTop(1.25),
                           }}
                         >
                           {theme.layout.heroSubtitle}
@@ -2079,6 +2096,7 @@ export default async function StoreHomePage({
                           ...ctaCaseStyle,
                           ...ctaWeightStyle,
                           ...ctaLinkColorStyle,
+                          ...heroTextGapTop(2),
                         }}
                       >
                         {heroCta}
