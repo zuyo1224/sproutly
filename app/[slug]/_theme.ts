@@ -665,6 +665,16 @@ export interface StoreTheme {
     // 開色碼欄位不開三檔：要挑什麼顏色才「跟後面分得開又不打架」跟店的調子有關，
     // 挑不出通用的三檔；沒設完全不覆寫，既有店家算出來一模一樣。
     heroMinimalBg: string | null;      // minimal 區段底色，hex；null = 跟全站底色
+    // minimal 版型內部那四段直向間距（小標到主標、主標到副標、副標到短橫線、短橫線到
+    // 按鈕）。「上下留白」那格調的是整段字上下各離前後段多遠，這一格調的是這段字自己
+    // 內部各行之間的疏密，兩件事互不相干卻只有前者能動：四個間距一直寫死在 class 上
+    // （mb-8 / mt-8 / mt-10 / mt-12），是配「主標字級跟預設一樣大」挑的。主標字級那格
+    // 拉到最大之後，一行大字跟下一行之間只剩原本那點空，整段擠成一團；反過來選了
+    // 「上下留白：少」想把整段收緊的店，外圈收了、內部四段沒收，比例反而比預設更鬆。
+    // 四個值一起用同一個倍率縮放（緊 0.5x / 鬆 1.75x），不是四格分開開——這四段之間
+    // 原本就有 8 / 8 / 10 / 12 的層次（副標貼主標近、按鈕離得遠），拆成四格讓商家各填
+    // 一個數字，那個層次第一次調就會壞掉。預設完全不輸出任何值，既有店家算出來一樣。
+    heroMinimalGap: "tight" | "normal" | "loose"; // minimal 內部間距（預設 normal = 不覆寫）
     // 滿版圖版型底下那塊米色文字段的底色與內距。這個版型的圖是自適應 banner（圖以自身
     // 比例貼齊，不裁切也不覆蓋整屏），所以圖底下一定跟著一塊裝主標 / 副標 / 小標 / 按鈕
     // 的色塊——那塊色塊有多高、什麼顏色，是這個版型除了圖以外全部的版面。兩個值原本都
@@ -1307,6 +1317,11 @@ function resolveLayout(raw: unknown): StoreTheme["layout"] {
     })(),
     heroMinimalRuleColor: normalizeHexColor(l.heroMinimalRuleColor),
     heroMinimalBg: normalizeHexColor(l.heroMinimalBg),
+    heroMinimalGap: (() => {
+      const v = l.heroMinimalGap;
+      if (v === "tight" || v === "loose") return v;
+      return "normal" as const;
+    })(),
     heroMinimalAlign: (() => {
       const v = l.heroMinimalAlign;
       if (v === "left" || v === "right") return v;

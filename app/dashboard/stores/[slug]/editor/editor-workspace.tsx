@@ -140,6 +140,7 @@ type EditorTheme = {
     heroMinimalRuleColor: string | null;
     heroMinimalAlign: "left" | "center" | "right";
     heroMinimalBg: string | null;
+    heroMinimalGap: "tight" | "normal" | "loose";
     heroTextBg: string | null;
     heroTextPadding: "compact" | "normal" | "spacious";
     heroTextWidth: "narrow" | "normal" | "wide" | "full";
@@ -1022,6 +1023,7 @@ export function EditorWorkspace({
           heroMinimalRuleColor: t.layout.heroMinimalRuleColor,
           heroMinimalAlign: t.layout.heroMinimalAlign,
           heroMinimalBg: t.layout.heroMinimalBg,
+          heroMinimalGap: t.layout.heroMinimalGap,
           heroTextBg: t.layout.heroTextBg,
           heroTextPadding: t.layout.heroTextPadding,
           heroTextWidth: t.layout.heroTextWidth,
@@ -3157,6 +3159,39 @@ export function EditorWorkspace({
                   字上下各留多少空。原本那個留白是配「只有一行大主標」挑的，加了副標跟按鈕
                   之後整段變高，上下再各留那麼多會把後面的段落推到要捲一頁才看得到；
                   反過來只放一行短主標時，留白不夠這個版型就不成立，它靠的就是空
+                </p>
+              </Field>
+            )}
+            {theme.layout.heroStyle === "minimal" && (
+              <Field label="這段字裡面的行距">
+                <div className="grid grid-cols-3 gap-1.5">
+                  {([
+                    { v: "tight", label: "緊" },
+                    { v: "normal", label: "跟預設" },
+                    { v: "loose", label: "鬆" },
+                  ] as const).map((opt) => (
+                    <button
+                      key={opt.v}
+                      type="button"
+                      onClick={() => updateLayout({ heroMinimalGap: opt.v })}
+                      aria-pressed={theme.layout.heroMinimalGap === opt.v}
+                      className={`rounded-lg border py-2 text-xs transition ${
+                        theme.layout.heroMinimalGap === opt.v
+                          ? "border-emerald-500 bg-emerald-50 text-emerald-900"
+                          : "border-stone-200 text-stone-600 hover:border-stone-400"
+                      }`}
+                    >
+                      {opt.label}
+                    </button>
+                  ))}
+                </div>
+                <p className="text-[10px] text-stone-500 mt-1">
+                  小標、主標、副標、那條短橫線、按鈕，這五樣東西彼此之間隔多遠。上面那格
+                  「上下留白」管的是整段字離前後段多遠，這格管的是這段字自己內部的疏密，
+                  兩件事一直只有前者能動。原本那組間距是配預設主標字級挑的：主標字級拉大
+                  之後，一行大字跟下一行之間只剩原本那點空，整段擠成一團；反過來選了
+                  「上下留白：少」想把整段收緊，外圈收了內部沒收，比例反而比預設還鬆。
+                  五樣東西一起縮放，副標貼主標近、按鈕離得遠的那個層次不會跑掉
                 </p>
               </Field>
             )}

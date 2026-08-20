@@ -2515,6 +2515,20 @@ export default async function StoreHomePage({
           // 只改 text-align 的話字會靠邊、但那條線跟副標那塊還留在中間，變成各對各的，
           // 所以靠左 / 靠右時把那兩個 auto 一起蓋掉（inline 贏 class）。
           // 置中完全不輸出任何值，既有店家算出來一模一樣。
+          // 這段字自己內部那四段間距（小標→主標→副標→短橫線→按鈕）。原本寫死
+          // mb-8 / mt-8 / mt-10 / mt-12（2 / 2 / 2.5 / 3rem），是配預設主標字級挑的。
+          // 四個值套同一個倍率，8:8:10:12 的層次不變，只有整體疏密變；
+          // 「跟預設」不輸出任何值（inline style 不蓋 class），既有店家算出來一模一樣。
+          const minimalGapScale =
+            theme.layout.heroMinimalGap === "tight"
+              ? 0.5
+              : theme.layout.heroMinimalGap === "loose"
+              ? 1.75
+              : null;
+          const minimalGapTop = (rem: number) =>
+            minimalGapScale === null ? {} : { marginTop: `${rem * minimalGapScale}rem` };
+          const minimalGapBottom = (rem: number) =>
+            minimalGapScale === null ? {} : { marginBottom: `${rem * minimalGapScale}rem` };
           const minimalAlign = theme.layout.heroMinimalAlign;
           const minimalAlignStyle =
             minimalAlign === "center" ? {} : { textAlign: minimalAlign as "left" | "right" };
@@ -2554,6 +2568,7 @@ export default async function StoreHomePage({
                     ...eyebrowTrackStyle(0.4),
                     ...eyebrowCaseStyle,
                     ...eyebrowWeightStyle,
+                    ...minimalGapBottom(2),
                   }}
                 >
                   {theme.layout.heroEyebrow}
@@ -2593,6 +2608,7 @@ export default async function StoreHomePage({
                     ...subtitleWeightStyle,
                     ...subtitleTrackStyle,
                     ...subtitleLeadingStyle,
+                    ...minimalGapTop(2),
                   }}
                 >
                   {theme.layout.heroSubtitle}
@@ -2603,6 +2619,7 @@ export default async function StoreHomePage({
                   className={`mx-auto mt-10 ${fade2}`}
                   style={{
                     ...minimalBlockAlignStyle,
+                    ...minimalGapTop(2.5),
                     width: minimalRuleWidth,
                     height: "1px",
                     background: minimalRuleColor ?? theme.accent,
@@ -2615,7 +2632,7 @@ export default async function StoreHomePage({
                 className={`sproutly-btn sproutly-btn-primary sproutly-btn-lg mt-12 ${fade3}`}
                 data-edit-text
                 data-edit-field="heroCta"
-                style={{ ...ctaBtnSizeStyle, ...ctaTrackStyle(0.18), ...ctaCaseStyle, ...ctaWeightStyle, ...ctaSolidColorStyle }}
+                style={{ ...ctaBtnSizeStyle, ...ctaTrackStyle(0.18), ...ctaCaseStyle, ...ctaWeightStyle, ...ctaSolidColorStyle, ...minimalGapTop(3) }}
               >
                 {heroCta}
               </Link>
