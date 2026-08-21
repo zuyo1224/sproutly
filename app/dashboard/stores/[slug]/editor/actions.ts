@@ -95,6 +95,7 @@ type EditorPayload = {
     heroTextPadding?: string;
     heroTextWidth?: string;
     heroTextGap?: string;
+    heroImageMaxHeight?: string;
     heroHeight?: string;
     fontScale?: number;
     sectionPaddingScale?: string;
@@ -661,6 +662,12 @@ export async function saveEditorState(slug: string, payload: EditorPayload) {
       const v = payload.layout.heroTextGap;
       if (v === "tight" || v === "normal" || v === "loose") {
         layoutPatch.heroTextGap = v;
+      }
+    }
+    if (payload.layout.heroImageMaxHeight !== undefined) {
+      const v = payload.layout.heroImageMaxHeight;
+      if (v === "none" || v === "screen" || v === "short") {
+        layoutPatch.heroImageMaxHeight = v;
       }
     }
     if (payload.layout.fontScale !== undefined) {

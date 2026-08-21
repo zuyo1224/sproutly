@@ -14,9 +14,13 @@ type Bounds = { topPct: number; bottomPct: number; fileAspect: number };
 export default function HeroAdaptiveBanner({
   url,
   alt,
+  maxHeight,
 }: {
   url: string;
   alt: string;
+  /** 商家在「照片最高佔多少螢幕」那格挑的上限（CSS 長度）。沒設就不限，
+      banner 高度照自適應算出來的比例走，跟以前一模一樣。 */
+  maxHeight?: string;
 }) {
   const [bounds, setBounds] = useState<Bounds | null>(null);
 
@@ -127,7 +131,10 @@ export default function HeroAdaptiveBanner({
   return (
     <div
       className="relative w-full overflow-hidden"
-      style={{ aspectRatio }}
+      // maxHeight 只壓上限：算出來比它矮的圖完全不受影響。被壓到的圖是
+      // 高度被截、寬度照舊，底下那張 Image 是 object-fit: cover 加上算好的
+      // objectPosition，裁掉的是上下兩端、主體仍對齊中央。
+      style={{ aspectRatio, maxHeight }}
     >
       <Image
         src={url}

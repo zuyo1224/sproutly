@@ -147,6 +147,7 @@ type EditorTheme = {
     heroTextPadding: "compact" | "normal" | "spacious";
     heroTextWidth: "narrow" | "normal" | "wide" | "full";
     heroTextGap: "tight" | "normal" | "loose";
+    heroImageMaxHeight: "none" | "screen" | "short";
     heroHeight: "auto" | "short" | "tall" | "full";
     fontScale: number;
     sectionPaddingScale: "compact" | "default" | "spacious";
@@ -1033,6 +1034,7 @@ export function EditorWorkspace({
           heroTextPadding: t.layout.heroTextPadding,
           heroTextWidth: t.layout.heroTextWidth,
           heroTextGap: t.layout.heroTextGap,
+          heroImageMaxHeight: t.layout.heroImageMaxHeight,
           heroHeight: t.layout.heroHeight,
           fontScale: t.layout.fontScale,
           sectionPaddingScale: t.layout.sectionPaddingScale,
@@ -3535,6 +3537,40 @@ export function EditorWorkspace({
                   的地方；反過來欄寬選了滿版、字排到跟照片同寬的店，一行拉得很長行距卻
                   沒跟著開，上下會比左右擠。四樣東西一起縮放，副標貼主標近、按鈕離得遠
                   的層次不會跑掉。主標拖過位置的店這格不生效
+                </p>
+              </Field>
+            )}
+            {theme.layout.heroStyle === "full-image" && (
+              <Field label="照片最高佔多少螢幕">
+                <div className="grid grid-cols-3 gap-1.5">
+                  {([
+                    { v: "none", label: "不限" },
+                    { v: "screen", label: "一個螢幕" },
+                    { v: "short", label: "七成螢幕" },
+                  ] as const).map((opt) => (
+                    <button
+                      key={opt.v}
+                      type="button"
+                      onClick={() => updateLayout({ heroImageMaxHeight: opt.v })}
+                      aria-pressed={theme.layout.heroImageMaxHeight === opt.v}
+                      className={`rounded-lg border py-2 text-xs transition ${
+                        theme.layout.heroImageMaxHeight === opt.v
+                          ? "border-emerald-500 bg-emerald-50 text-emerald-900"
+                          : "border-stone-200 text-stone-600 hover:border-stone-400"
+                      }`}
+                    >
+                      {opt.label}
+                    </button>
+                  ))}
+                </div>
+                <p className="text-[10px] text-stone-500 mt-1">
+                  這個版型的照片會自己算高度：系統看那張圖四周留了多少白邊，把版位調成
+                  剛好框住主體，所以不管上傳哪種圖都不會把主體切掉。代價是照片有多高完全
+                  由那張圖的形狀決定——手機直拍那種長圖算出來會比一個螢幕還高，客人一進站
+                  只看到照片中間一塊，得先滑過整張圖才碰得到店名跟按鈕。上面「Hero 高度」
+                  那格說的是這一段至少多高，只撐得開、壓不下來。這格是「最高不超過」：
+                  圖本來就矮的店選了也不會變，只有太高的才被收回來，收的方式是照原本
+                  對齊主體的位置裁上下，主體不會偏掉
                 </p>
               </Field>
             )}

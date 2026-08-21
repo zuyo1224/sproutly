@@ -739,6 +739,18 @@ export interface StoreTheme {
     // 主標拖過位置的店，那幾樣東西各自是自由定位的絕對座標，這格碰不到也不該碰。
     // 預設完全不輸出任何值，既有店家算出來一模一樣。
     heroTextGap: "tight" | "normal" | "loose"; // 滿版圖文字段內部間距（預設 normal = 不覆寫）
+    // 滿版圖版型那張照片最高佔多少螢幕。這個版型的照片走的是自適應：client 端偵測圖片
+    // 自帶的留白，把 banner 的比例算成「剛好框住主體」——好處是不論商家上傳哪種圖都不會
+    // 把主體切掉，代價是照片有多高完全由那張圖的形狀決定，商家一格都碰不到。
+    // 直式照片（手機直拍、1:1 以下）算出來的比例會讓 banner 比一個螢幕還高，客人一進站
+    // 看到的是照片中間一塊，得先滑過整張圖才看得到店名、那句話跟按鈕；而「Hero 高度」
+    // 那格給的是 min-height（這一段至少多高），只撐得開、壓不下來，照片高過那個值時
+    // 那格等於沒有作用。
+    // 三檔都是「最高不超過」，不是把照片拉成某個固定比例：圖本來就矮的店選了也不會變，
+    // 只有算出來超過的才被收到上限，收的方式是照原本對齊主體的位置裁上下（跟自適應
+    // 本來在做的事同一件），主體不會偏掉。
+    // 預設不限＝完全不輸出 max-height，既有店家算出來一模一樣。
+    heroImageMaxHeight: "none" | "screen" | "short"; // 滿版圖照片高度上限（預設 none = 不限）
     heroHeight: "auto" | "short" | "tall" | "full"; // 預設 auto（adaptive 比例）
     // 全網站
     fontScale: number;                 // 全網站字體 multiplier 0.8-1.3（預設 1.0）
@@ -1391,6 +1403,11 @@ function resolveLayout(raw: unknown): StoreTheme["layout"] {
       const v = l.heroTextGap;
       if (v === "tight" || v === "loose") return v;
       return "normal" as const;
+    })(),
+    heroImageMaxHeight: (() => {
+      const v = l.heroImageMaxHeight;
+      if (v === "screen" || v === "short") return v;
+      return "none" as const;
     })(),
     heroHeight: (() => {
       const v = l.heroHeight;

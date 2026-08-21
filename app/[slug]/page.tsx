@@ -1870,7 +1870,20 @@ export default async function StoreHomePage({
                 {/* 自適應 banner — client 偵測圖片自帶 padding，banner aspect 動態算成
                     剛好框住內容本體的比例，不論手機 / 平板 / 桌機都用同一套：
                     圖以自身比例顯示，不再 h-screen 強制 overlay、不再 transform scale 放大圖片。 */}
-                <HeroAdaptiveBanner url={theme.heroUrl} alt={store.name} />
+                <HeroAdaptiveBanner
+                  url={theme.heroUrl}
+                  alt={store.name}
+                  // 照片高度上限。自適應算出來的比例遇到直式照片會比一個螢幕還高，
+                  // 客人第一屏只看得到照片中間一塊，而「Hero 高度」那格是 min-height、
+                  // 壓不下來。沒設就不傳，banner 跟以前一模一樣。
+                  maxHeight={
+                    theme.layout.heroImageMaxHeight === "screen"
+                      ? "100vh"
+                      : theme.layout.heroImageMaxHeight === "short"
+                      ? "68vh"
+                      : undefined
+                  }
+                />
                 {(() => {
                   // 主標拖動：data-edit-drag 只綁在 h1，不綁外層整塊。
                   // 拖動座標範圍 = cream block（position:relative wrapper）。
