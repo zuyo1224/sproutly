@@ -487,6 +487,21 @@ export interface StoreTheme {
     // 手機上這格不會有作用也不會出事：手機是圖上文下的單欄，文字那欄的高度就是內容自己
     // 的高度，justify-content 沒有多的空間可以分。
     heroSplitTextAlign: "top" | "center" | "bottom"; // split 文字欄垂直對齊（預設 center = 不覆寫）
+    // 上一格開的是這欄的字擺在多高，這一格是同一欄的另一個方向：字靠哪一邊。那欄是
+    // flex flex-col，沒有寫任何 text-align 也沒寫 align-items，所以裡面每一樣東西都
+    // 從左邊界開始排——小標、主標、副標、兩顆按鈕全部靠左，而且是寫死的、一格都碰不到。
+    // 為什麼要：左右那半是一張整欄高的照片，照片是一塊實心的東西、兩邊都切齊欄的邊界；
+    // 文字這半只有幾行長短不一的字，全靠左的時候右邊那側是一條凹凸不平的邊，跟旁邊那張
+    // 照片切得筆直的邊擺在一起，兩半看起來不是一組的。置中那版兩半各自對稱、中軸對上
+    // 照片的中軸，是型錄那種對頁排法；靠右那版讓文字的右邊界貼著欄的內緣，圖在左時
+    // 兩半的字與圖會朝中間互相靠攏，這是雜誌跨頁最常見的收法——而想要這兩種的店現在
+    // 一格都沒有。minimal 版型已經有「整段文字對齊」，split 這欄一直缺同一格。
+    // 三檔跟那格同一組字（靠左 / 置中 / 靠右），預設 left = 完全不覆寫，既有店家算出來
+    // 一模一樣。不是只改 text-align 就好：副標自己包了一個 max-w-md（28rem 窄欄）、
+    // 按鈕那排是 flex，兩樣都是比欄窄的區塊，只改 text-align 的話字會置中、但那塊副標
+    // 跟那排按鈕還黏在左邊界，變成上面置中下面靠左。所以要連 align-items 一起給，
+    // 那兩塊才會跟著移到同一邊。
+    heroSplitTextAlignX: "left" | "center" | "right"; // split 文字欄水平對齊（預設 left = 不覆寫）
     // split 版型文字那欄左右留多少空。上面「圖文比例」讓的是欄本身有多寬，可是欄裡面
     // 那圈內距是寫死的（px-8 sm:px-12 md:px-16 lg:px-24，桌機左右各 6rem），兩件事會
     // 互相抵消：選了「圖窄」把欄讓寬，字實際能用的寬度先被兩邊各 6rem 吃掉一截，主標
@@ -1303,6 +1318,11 @@ function resolveLayout(raw: unknown): StoreTheme["layout"] {
       const v = l.heroSplitTextAlign;
       if (v === "top" || v === "bottom") return v;
       return "center" as const;
+    })(),
+    heroSplitTextAlignX: (() => {
+      const v = l.heroSplitTextAlignX;
+      if (v === "center" || v === "right") return v;
+      return "left" as const;
     })(),
     heroSplitTextPadding: (() => {
       const v = l.heroSplitTextPadding;

@@ -123,6 +123,7 @@ type EditorTheme = {
     heroImageFocus: "top" | "center" | "bottom";
     heroSplitImageAspect: "tall" | "square" | "wide";
     heroSplitTextAlign: "top" | "center" | "bottom";
+    heroSplitTextAlignX: "left" | "center" | "right";
     heroSplitTextPadding: "tight" | "normal" | "roomy";
     heroSplitMobilePadY: "tight" | "normal" | "roomy";
     heroSplitGap: "tight" | "normal" | "loose";
@@ -1010,6 +1011,7 @@ export function EditorWorkspace({
           heroImageFocus: t.layout.heroImageFocus,
           heroSplitImageAspect: t.layout.heroSplitImageAspect,
           heroSplitTextAlign: t.layout.heroSplitTextAlign,
+          heroSplitTextAlignX: t.layout.heroSplitTextAlignX,
           heroSplitTextPadding: t.layout.heroSplitTextPadding,
           heroSplitMobilePadY: t.layout.heroSplitMobilePadY,
           heroSplitGap: t.layout.heroSplitGap,
@@ -2747,6 +2749,38 @@ export function EditorWorkspace({
                   上緣到字之間空掉半個螢幕；反過來主標兩三行加副標加按鈕的店，字團本來
                   就快撐滿，擺中間跟照片的上下緣對不起來。選靠上就讓第一行字對齊照片
                   上緣，靠下就讓最後一顆按鈕對齊照片下緣。手機是圖上文下，這格沒作用
+                </p>
+              </Field>
+            )}
+            {theme.layout.heroStyle === "split" && (
+              <Field label="文字靠左右哪邊">
+                <div className="grid grid-cols-3 gap-1.5">
+                  {([
+                    { v: "left", label: "靠左" },
+                    { v: "center", label: "置中" },
+                    { v: "right", label: "靠右" },
+                  ] as const).map((opt) => (
+                    <button
+                      key={opt.v}
+                      type="button"
+                      onClick={() => updateLayout({ heroSplitTextAlignX: opt.v })}
+                      aria-pressed={theme.layout.heroSplitTextAlignX === opt.v}
+                      className={`rounded-lg border py-2 text-xs transition ${
+                        theme.layout.heroSplitTextAlignX === opt.v
+                          ? "border-emerald-500 bg-emerald-50 text-emerald-900"
+                          : "border-stone-200 text-stone-600 hover:border-stone-400"
+                      }`}
+                    >
+                      {opt.label}
+                    </button>
+                  ))}
+                </div>
+                <p className="text-[10px] text-stone-500 mt-1">
+                  上一格是這欄的字擺多高，這格是同一欄的另一個方向。左右那半是一張整欄高
+                  的照片，兩邊都切得筆直；文字這半的字全部靠左，右邊那側就是一條長短不齊
+                  的邊，跟旁邊那張照片擺在一起看起來不像一組的。置中讓兩半各自對稱、中軸
+                  對上照片的中軸；靠右讓字的右緣貼著欄的內緣，圖在左的時候兩半會朝中間
+                  互相靠攏。副標跟那排按鈕會一起跟著移，不會上面置中下面還留在左邊
                 </p>
               </Field>
             )}

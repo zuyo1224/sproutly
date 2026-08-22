@@ -2219,6 +2219,18 @@ export default async function StoreHomePage({
               splitGapScale === null ? {} : { marginTop: `${rem * splitGapScale}rem` };
             const splitGapBottom = (rem: number) =>
               splitGapScale === null ? {} : { marginBottom: `${rem * splitGapScale}rem` };
+            // 文字那欄裡面的字靠哪一邊。原本一格都沒有：那欄是 flex flex-col，沒寫
+            // text-align 也沒寫 align-items，所以每一樣東西都從左邊界起排。
+            // 兩個屬性一起給：text-align 管小標、主標這種吃滿整欄的區塊裡面的字，
+            // align-items 管副標（自己有 max-w-md）跟按鈕列（flex）這種比欄窄的區塊
+            // 整塊往哪邊靠。只給前者的話會變成上面置中、下面那兩塊還黏在左邊。
+            // 靠左那一檔完全不輸出，既有店家算出來一模一樣。
+            const splitAlignX =
+              theme.layout.heroSplitTextAlignX === "center"
+                ? { textAlign: "center" as const, alignItems: "center" }
+                : theme.layout.heroSplitTextAlignX === "right"
+                  ? { textAlign: "right" as const, alignItems: "flex-end" }
+                  : null;
             return (
               <section
                 className="relative grid grid-cols-1 md:grid-cols-2 min-h-[80vh] md:min-h-screen overflow-hidden"
@@ -2273,9 +2285,10 @@ export default async function StoreHomePage({
                   data-hero-split-text
                   className={`flex flex-col justify-center px-8 sm:px-12 md:px-16 lg:px-24 py-20 md:py-0 ${imageOnRight ? "md:order-1" : ""}`}
                   style={
-                    splitTextJustify || splitTextPad || splitTextPadY || splitTextBg
+                    splitTextJustify || splitTextPad || splitTextPadY || splitTextBg || splitAlignX
                       ? ({
                           ...(splitTextJustify ? { justifyContent: splitTextJustify } : {}),
+                          ...(splitAlignX ?? {}),
                           ...(splitTextPad ? { "--store-hero-split-pad": splitTextPad } : {}),
                           ...(splitTextPadY ? { "--store-hero-split-pady": splitTextPadY } : {}),
                           ...(splitTextBg ? { backgroundColor: splitTextBg } : {}),
