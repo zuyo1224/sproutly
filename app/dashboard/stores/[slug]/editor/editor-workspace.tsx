@@ -134,6 +134,7 @@ type EditorTheme = {
     heroMagazineRuleTone: "normal" | "faint" | "strong" | "accent";
     heroMagazineGap: "tight" | "medium" | "normal";
     heroMagazineTextWidth: "narrow" | "normal" | "rule" | "full";
+    heroMagazineRuleWidth: "narrow" | "normal" | "full";
     heroMagazineSubtitleWidth: "narrow" | "normal" | "wide" | "title";
     heroMagazineTextGap: "tight" | "normal" | "loose";
     heroMagazineBg: string | null;
@@ -1022,6 +1023,7 @@ export function EditorWorkspace({
           heroMagazineRuleTone: t.layout.heroMagazineRuleTone,
           heroMagazineGap: t.layout.heroMagazineGap,
           heroMagazineTextWidth: t.layout.heroMagazineTextWidth,
+          heroMagazineRuleWidth: t.layout.heroMagazineRuleWidth,
           heroMagazineSubtitleWidth: t.layout.heroMagazineSubtitleWidth,
           heroMagazineTextGap: t.layout.heroMagazineTextGap,
           heroMagazineBg: t.layout.heroMagazineBg,
@@ -3101,6 +3103,38 @@ export function EditorWorkspace({
                   上下那兩條線的長度跟中間主標的寬度本來就不一樣，主標長一點就會排到比線
                   更外面去，看起來像字撐破了框。選跟橫線切齊，字的左右兩端會跟兩條線的頭
                   尾對齊；只放兩三個字的店選窄，那行字才不會散在中間
+                </p>
+              </Field>
+            )}
+            {theme.layout.heroStyle === "magazine" && (
+              <Field label="上下那兩條線排多寬">
+                <div className="grid grid-cols-3 gap-1.5">
+                  {([
+                    { v: "narrow", label: "窄" },
+                    { v: "normal", label: "跟預設" },
+                    { v: "full", label: "滿版" },
+                  ] as const).map((opt) => (
+                    <button
+                      key={opt.v}
+                      type="button"
+                      onClick={() => updateLayout({ heroMagazineRuleWidth: opt.v })}
+                      aria-pressed={theme.layout.heroMagazineRuleWidth === opt.v}
+                      className={`rounded-lg border py-2 text-xs transition ${
+                        theme.layout.heroMagazineRuleWidth === opt.v
+                          ? "border-emerald-500 bg-emerald-50 text-emerald-900"
+                          : "border-stone-200 text-stone-600 hover:border-stone-400"
+                      }`}
+                    >
+                      {opt.label}
+                    </button>
+                  ))}
+                </div>
+                <p className="text-[10px] text-stone-500 mt-1">
+                  這格動的是上下那兩條線，連同貼著線的小標、店名、落款跟按鈕一起。前面兩
+                  格放寬的都是中間的字，兩條線一直停在原來的長度，所以中間選滿版之後，字
+                  會排到比線更外面、看起來像撐破了框；中間選窄則反過來，線比字長出一大截。
+                  想讓字剛好被框住，這格挑跟中間那格配成一對的檔位。上下兩條一起動，不會
+                  變成一長一短
                 </p>
               </Field>
             )}

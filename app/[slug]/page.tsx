@@ -2398,6 +2398,17 @@ export default async function StoreHomePage({
               magGapScale === null ? {} : { marginTop: `${rem * magGapScale}rem` };
             const magGapBottom = (rem: number) =>
               magGapScale === null ? {} : { marginBottom: `${rem * magGapScale}rem` };
+            // 上下那兩條線（連同貼著線的小標 / 店名 / 落款 / 按鈕）的欄寬。原本兩塊各自
+            // 寫死 max-w-6xl（72rem），跟中間大字那層是分開的兩個上限：中間選了滿版，
+            // 字排到邊界、線還停在 72rem，字跑到框外面；選了窄，線又比字長出一大截。
+            // 上下兩塊一起套同一個值——這一組是對稱的，只動一邊會變成一長一短。
+            // 「跟預設」不輸出任何值（inline 不蓋 class），既有店家算出來一模一樣。
+            const magRuleWidthStyle =
+              theme.layout.heroMagazineRuleWidth === "narrow"
+                ? { maxWidth: "48rem" }
+                : theme.layout.heroMagazineRuleWidth === "full"
+                  ? { maxWidth: "none" }
+                  : undefined;
             return (
               <section
                 className="relative min-h-screen flex flex-col justify-between py-20 sm:py-28"
@@ -2421,7 +2432,7 @@ export default async function StoreHomePage({
                 {/* 上方 metadata 條。小標三格套在外層這條 metadata 上、不是只套小標那個
                     span：這一行左右兩端（小標與店名）在雜誌版型裡是成對的，只動一邊會變成
                     一大一小。 */}
-                <div className="max-w-6xl mx-auto px-8 sm:px-12 w-full">
+                <div className="max-w-6xl mx-auto px-8 sm:px-12 w-full" style={magRuleWidthStyle}>
                   <div
                     className={`flex justify-between items-center text-[10px] tracking-[0.32em] uppercase ${fade1}`}
                     style={{
@@ -2510,7 +2521,7 @@ export default async function StoreHomePage({
                 </div>
 
                 {/* 下方 byline + CTA */}
-                <div className="max-w-6xl mx-auto px-8 sm:px-12 w-full">
+                <div className="max-w-6xl mx-auto px-8 sm:px-12 w-full" style={magRuleWidthStyle}>
                   <div
                     className="h-px w-full mb-4"
                     style={{ ...magRuleStyle, ...magGapBottom(1) }}

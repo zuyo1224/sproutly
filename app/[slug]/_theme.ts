@@ -620,6 +620,18 @@ export interface StoreTheme {
     // 上限：窄 48rem（字擠成一團、雜誌內頁那種窄欄）、跟預設不覆寫、跟橫線一樣寬 72rem
     // （字的左右兩端剛好切齊上下兩條線）、滿版不設上限（左右只剩全站邊界那道 padding）。
     heroMagazineTextWidth: "narrow" | "normal" | "rule" | "full"; // 雜誌中間大字欄寬（預設 normal = 不覆寫）
+    // 上一格動的是中間那一層，可是這個版型畫面上的框不是那一層畫出來的——是上下那兩條
+    // 1px 的線，加上貼著線的兩行小字（左邊小標、右邊店名 / 落款、按鈕）。那兩塊各自包在
+    // 一個寫死的 max-w-6xl（72rem）裡，從頭到尾沒有一格碰得到。問題出在兩層寬度是分開
+    // 寫死的：中間那格選了「滿版」，大字排到只剩全站邊界那道 padding，兩條線卻還停在
+    // 72rem，字的左右兩端跑到線的外面去，變成字撐破了框；選「窄」的店反過來，線在外面
+    // 空出一大截、中間一小團字，兩者對不起來。而雜誌封面成立的樣子正是「線把字框住」。
+    // 三檔動的是那兩塊的上限：窄 48rem（跟中間選窄那檔配成一對，線收到跟字差不多長）、
+    // 跟預設不覆寫（72rem）、滿版不設上限（線拉到只剩全站邊界那道 padding，跟中間選滿版
+    // 配成一對）。上下兩條一起動不拆成兩格——這個版型的上下兩塊是對稱的一組，只動一邊
+    // 會變成上面一條長、下面一條短，那不是雜誌封面是排版沒對到。左右內距不在這格裡：
+    // 那道 padding 三層共用，動了會讓中間的字跟著移、兩件事糊在一起。
+    heroMagazineRuleWidth: "narrow" | "normal" | "full"; // 雜誌上下橫線與那兩行小字的欄寬（預設 normal = 不覆寫）
     // 上一格開的是中間那一層的欄寬，可是那一層裡面有兩行字：主標吃那一層的寬度，副標自己
     // 另外包了一個 max-w-xl（36rem）。兩個寬度是分開寫死的——主標放寬到跟橫線切齊或滿版
     // 之後，副標還是原本那條 36rem 的窄欄，變成上面一行很寬的大字、下面一條窄窄的小字，
@@ -1368,6 +1380,11 @@ function resolveLayout(raw: unknown): StoreTheme["layout"] {
     heroMagazineTextWidth: (() => {
       const v = l.heroMagazineTextWidth;
       if (v === "narrow" || v === "rule" || v === "full") return v;
+      return "normal" as const;
+    })(),
+    heroMagazineRuleWidth: (() => {
+      const v = l.heroMagazineRuleWidth;
+      if (v === "narrow" || v === "full") return v;
       return "normal" as const;
     })(),
     heroMagazineSubtitleWidth: (() => {
