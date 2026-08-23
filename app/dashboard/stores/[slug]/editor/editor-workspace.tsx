@@ -135,6 +135,7 @@ type EditorTheme = {
     heroMagazineGap: "tight" | "medium" | "normal";
     heroMagazineTextWidth: "narrow" | "normal" | "rule" | "full";
     heroMagazineRuleWidth: "narrow" | "normal" | "full";
+    heroMagazinePadX: "narrow" | "normal" | "wide";
     heroMagazineSubtitleWidth: "narrow" | "normal" | "wide" | "title";
     heroMagazineTextGap: "tight" | "normal" | "loose";
     heroMagazineBg: string | null;
@@ -1024,6 +1025,7 @@ export function EditorWorkspace({
           heroMagazineGap: t.layout.heroMagazineGap,
           heroMagazineTextWidth: t.layout.heroMagazineTextWidth,
           heroMagazineRuleWidth: t.layout.heroMagazineRuleWidth,
+          heroMagazinePadX: t.layout.heroMagazinePadX,
           heroMagazineSubtitleWidth: t.layout.heroMagazineSubtitleWidth,
           heroMagazineTextGap: t.layout.heroMagazineTextGap,
           heroMagazineBg: t.layout.heroMagazineBg,
@@ -3135,6 +3137,37 @@ export function EditorWorkspace({
                   會排到比線更外面、看起來像撐破了框；中間選窄則反過來，線比字長出一大截。
                   想讓字剛好被框住，這格挑跟中間那格配成一對的檔位。上下兩條一起動，不會
                   變成一長一短
+                </p>
+              </Field>
+            )}
+            {theme.layout.heroStyle === "magazine" && (
+              <Field label="這一段離螢幕邊多遠">
+                <div className="grid grid-cols-3 gap-1.5">
+                  {([
+                    { v: "narrow", label: "窄" },
+                    { v: "normal", label: "跟預設" },
+                    { v: "wide", label: "寬" },
+                  ] as const).map((opt) => (
+                    <button
+                      key={opt.v}
+                      type="button"
+                      onClick={() => updateLayout({ heroMagazinePadX: opt.v })}
+                      aria-pressed={theme.layout.heroMagazinePadX === opt.v}
+                      className={`rounded-lg border py-2 text-xs transition ${
+                        theme.layout.heroMagazinePadX === opt.v
+                          ? "border-emerald-500 bg-emerald-50 text-emerald-900"
+                          : "border-stone-200 text-stone-600 hover:border-stone-400"
+                      }`}
+                    >
+                      {opt.label}
+                    </button>
+                  ))}
+                </div>
+                <p className="text-[10px] text-stone-500 mt-1">
+                  前面幾格挑的是字跟線排多寬，這格挑的是外面那一圈留白。中間選滿版之後，
+                  大字的左右兩端就停在這道留白上，整段到底離螢幕邊多遠就由這格決定。窄是
+                  字幾乎頂到紙邊的那種大版面，寬是四周留一大片白、中間一小團字的那種。
+                  上下兩條線跟中間的字一起移，不會有一層對不齊
                 </p>
               </Field>
             )}

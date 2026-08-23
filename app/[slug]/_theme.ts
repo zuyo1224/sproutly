@@ -654,6 +654,17 @@ export interface StoreTheme {
     // 分開填——4 / 8 / 4 之間原本就有「線貼著小字、大字自己站開」的層次，拆開讓商家各填
     // 一個數字，那個層次第一次調就會壞掉。預設完全不輸出任何值，既有店家算出來一模一樣。
     heroMagazineTextGap: "tight" | "normal" | "loose"; // 雜誌版型內部間距（預設 normal = 不覆寫）
+    // 這一段離螢幕左右兩邊多遠。上下兩塊與中間大字那層各自寫著同一道 px-8 sm:px-12
+    // （手機 2rem、640px 以上 3rem），三層共用同一組數字——所以這件事只能三層一起動，
+    // 拆開會變成線與字對不齊。為什麼要：前面幾格開的都是「排多寬」，動的是內容那一塊
+    // 的上限；上限碰不到的是外面那圈留白。中間那格選滿版之後，大字的左右兩端就停在這道
+    // padding 上，等於整段的邊界已經交給它決定，可是它是寫死的。雜誌封面最常見的兩種收
+    // 法都被卡住：字幾乎頂到紙邊的那種大版面（要更窄），跟四周留很寬白邊、中間一小團字
+    // 的那種（要更寬）。三檔用 clamp 而不是固定數字：這道 padding 原本就是手機一個值、
+    // 桌機一個值，給死了會讓手機那端不是太擠就是只剩中間一條字。窄 clamp(1rem, 4vw,
+    // 1.5rem)、寬 clamp(2.5rem, 9vw, 6rem)，預設完全不輸出任何值（inline 不蓋 class），
+    // 既有店家算出來一模一樣。
+    heroMagazinePadX: "narrow" | "normal" | "wide"; // 雜誌整段左右內距（預設 normal = 不覆寫）
     // 雜誌版型整段的底色。這個版型跟 minimal 一樣沒有圖，畫面上只有兩條 1px 的線、
     // 中間一段大字，其餘全是底色——而那片底色一直寫死吃 theme.bg，跟底下的商品段、
     // 慢讀段、頁尾同一個顏色。雜誌封面的成立條件就是「整版一個色塊，線與字壓在上面」，
@@ -1395,6 +1406,11 @@ function resolveLayout(raw: unknown): StoreTheme["layout"] {
     heroMagazineTextGap: (() => {
       const v = l.heroMagazineTextGap;
       if (v === "tight" || v === "loose") return v;
+      return "normal" as const;
+    })(),
+    heroMagazinePadX: (() => {
+      const v = l.heroMagazinePadX;
+      if (v === "narrow" || v === "wide") return v;
       return "normal" as const;
     })(),
     heroMagazineBg: normalizeHexColor(l.heroMagazineBg),

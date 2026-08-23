@@ -2409,6 +2409,18 @@ export default async function StoreHomePage({
                 : theme.layout.heroMagazineRuleWidth === "full"
                   ? { maxWidth: "none" }
                   : undefined;
+            // 這一段離螢幕左右兩邊多遠。上下兩塊與中間大字那層各自寫著同一道
+            // px-8 sm:px-12，三層共用同一組數字，所以只能三層一起套——只動一層會讓線
+            // 與字對不齊。上面那幾格動的都是內容的上限（排多寬），碰不到的是外面這圈
+            // 留白；中間選滿版之後大字就停在這道 padding 上，整段的邊界等於交給它決定。
+            // 用 clamp 不用固定數字：它原本就是手機一個值、桌機一個值，給死了手機那端
+            // 不是太擠就是只剩中間一條字。「跟預設」不輸出任何值，既有店家算出來一樣。
+            const magPadXStyle =
+              theme.layout.heroMagazinePadX === "narrow"
+                ? { paddingLeft: "clamp(1rem, 4vw, 1.5rem)", paddingRight: "clamp(1rem, 4vw, 1.5rem)" }
+                : theme.layout.heroMagazinePadX === "wide"
+                  ? { paddingLeft: "clamp(2.5rem, 9vw, 6rem)", paddingRight: "clamp(2.5rem, 9vw, 6rem)" }
+                  : undefined;
             return (
               <section
                 className="relative min-h-screen flex flex-col justify-between py-20 sm:py-28"
@@ -2432,7 +2444,10 @@ export default async function StoreHomePage({
                 {/* 上方 metadata 條。小標三格套在外層這條 metadata 上、不是只套小標那個
                     span：這一行左右兩端（小標與店名）在雜誌版型裡是成對的，只動一邊會變成
                     一大一小。 */}
-                <div className="max-w-6xl mx-auto px-8 sm:px-12 w-full" style={magRuleWidthStyle}>
+                <div
+                  className="max-w-6xl mx-auto px-8 sm:px-12 w-full"
+                  style={{ ...magRuleWidthStyle, ...magPadXStyle }}
+                >
                   <div
                     className={`flex justify-between items-center text-[10px] tracking-[0.32em] uppercase ${fade1}`}
                     style={{
@@ -2459,15 +2474,16 @@ export default async function StoreHomePage({
                     贏得過 class 的 max-w-5xl；「跟預設」不輸出任何值，算出來跟以前一樣。 */}
                 <div
                   className="max-w-5xl mx-auto px-8 sm:px-12 text-center w-full"
-                  style={
-                    theme.layout.heroMagazineTextWidth === "narrow"
+                  style={{
+                    ...(theme.layout.heroMagazineTextWidth === "narrow"
                       ? { maxWidth: "48rem" }
                       : theme.layout.heroMagazineTextWidth === "rule"
                         ? { maxWidth: "72rem" }
                         : theme.layout.heroMagazineTextWidth === "full"
                           ? { maxWidth: "none" }
-                          : undefined
-                  }
+                          : {}),
+                    ...magPadXStyle,
+                  }}
                 >
                   <h1
                     className={`text-4xl sm:text-6xl md:text-7xl lg:text-8xl leading-[1.05] ${fade1}`}
@@ -2521,7 +2537,10 @@ export default async function StoreHomePage({
                 </div>
 
                 {/* 下方 byline + CTA */}
-                <div className="max-w-6xl mx-auto px-8 sm:px-12 w-full" style={magRuleWidthStyle}>
+                <div
+                  className="max-w-6xl mx-auto px-8 sm:px-12 w-full"
+                  style={{ ...magRuleWidthStyle, ...magPadXStyle }}
+                >
                   <div
                     className="h-px w-full mb-4"
                     style={{ ...magRuleStyle, ...magGapBottom(1) }}
