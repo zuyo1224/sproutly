@@ -149,6 +149,7 @@ type EditorTheme = {
     heroTextBg: string | null;
     heroTextPadding: "compact" | "normal" | "spacious";
     heroTextWidth: "narrow" | "normal" | "wide" | "full";
+    heroTextAlignX: "left" | "center" | "right";
     heroTextGap: "tight" | "normal" | "loose";
     heroImageMaxHeight: "none" | "screen" | "short";
     heroHeight: "auto" | "short" | "tall" | "full";
@@ -1039,6 +1040,7 @@ export function EditorWorkspace({
           heroTextBg: t.layout.heroTextBg,
           heroTextPadding: t.layout.heroTextPadding,
           heroTextWidth: t.layout.heroTextWidth,
+          heroTextAlignX: t.layout.heroTextAlignX,
           heroTextGap: t.layout.heroTextGap,
           heroImageMaxHeight: t.layout.heroImageMaxHeight,
           heroHeight: t.layout.heroHeight,
@@ -3604,6 +3606,38 @@ export function EditorWorkspace({
                   滿版的，字被關在中間一道看不見的欄裡：主標拉大或副標寫成兩三句的店，
                   每一行會拖得很長，置中的長行讀起來每行都要重新找行頭；只放店名兩三個
                   字的店則會左右各空一大片。要字跟照片同寬就選滿版
+                </p>
+              </Field>
+            )}
+            {theme.layout.heroStyle === "full-image" && (
+              <Field label="文字段擺哪邊">
+                <div className="grid grid-cols-3 gap-1.5">
+                  {([
+                    { v: "left", label: "靠左" },
+                    { v: "center", label: "置中" },
+                    { v: "right", label: "靠右" },
+                  ] as const).map((opt) => (
+                    <button
+                      key={opt.v}
+                      type="button"
+                      onClick={() => updateLayout({ heroTextAlignX: opt.v })}
+                      aria-pressed={theme.layout.heroTextAlignX === opt.v}
+                      className={`rounded-lg border py-2 text-xs transition ${
+                        theme.layout.heroTextAlignX === opt.v
+                          ? "border-emerald-500 bg-emerald-50 text-emerald-900"
+                          : "border-stone-200 text-stone-600 hover:border-stone-400"
+                      }`}
+                    >
+                      {opt.label}
+                    </button>
+                  ))}
+                </div>
+                <p className="text-[10px] text-stone-500 mt-1">
+                  上面那格決定那道欄有多寬，這格決定那道欄擺在照片的哪一邊。欄選窄之後
+                  整塊停在正中間，裡面的字再靠左，左緣就落在一個誰也對不到的位置——不是
+                  照片的左緣，也不是導覽列跟底下商品那道邊界。要做「照片下面一段字貼著
+                  左邊起排」就選靠左，照片重心在右的話字挪到右邊配重。跟「主標對齊」是
+                  兩件事：那格動的是每一行字各自靠哪邊，這格動的是整道欄擺哪
                 </p>
               </Field>
             )}

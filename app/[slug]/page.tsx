@@ -1918,10 +1918,20 @@ export default async function StoreHomePage({
                         : w === "wide"
                         ? { maxWidth: "72rem" }
                         : { maxWidth: "none" };
+                    // 那道欄擺在照片的哪一邊。置中是原本 mx-auto 的行為，不輸出任何值；
+                    // 靠左 / 靠右各自把另一邊的 margin 留成 auto，讓欄自己被推過去。
+                    // inline 的 marginLeft / marginRight 贏過 class 上的 mx-auto。
+                    const ax = theme.layout.heroTextAlignX;
+                    const heroTextAlignXStyle: React.CSSProperties =
+                      taglinePos || ax === "center"
+                        ? {}
+                        : ax === "left"
+                        ? { marginLeft: 0, marginRight: "auto" }
+                        : { marginLeft: "auto", marginRight: 0 };
                     return (
                   <div
                     className={taglinePos ? "" : "max-w-4xl mx-auto"}
-                    style={{ textAlign: taglineAlign, ...heroTextWidthStyle }}
+                    style={{ textAlign: taglineAlign, ...heroTextWidthStyle, ...heroTextAlignXStyle }}
                   >
                     {/* Eyebrow 小標：其他三版型都有渲染，full-image 一直漏掉。
                         跟副標 / CTA 同邏輯：定過位走 absolute（不再被主標連坐藏），

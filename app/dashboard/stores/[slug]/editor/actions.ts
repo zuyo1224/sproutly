@@ -97,6 +97,7 @@ type EditorPayload = {
     heroTextBg?: string | null;
     heroTextPadding?: string;
     heroTextWidth?: string;
+    heroTextAlignX?: string;
     heroTextGap?: string;
     heroImageMaxHeight?: string;
     heroHeight?: string;
@@ -677,6 +678,12 @@ export async function saveEditorState(slug: string, payload: EditorPayload) {
       const v = payload.layout.heroTextWidth;
       if (v === "narrow" || v === "normal" || v === "wide" || v === "full") {
         layoutPatch.heroTextWidth = v;
+      }
+    }
+    if (payload.layout.heroTextAlignX !== undefined) {
+      const v = payload.layout.heroTextAlignX;
+      if (v === "left" || v === "center" || v === "right") {
+        layoutPatch.heroTextAlignX = v;
       }
     }
     if (payload.layout.heroTextGap !== undefined) {

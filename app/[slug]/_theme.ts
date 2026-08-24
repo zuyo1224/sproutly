@@ -763,6 +763,17 @@ export interface StoreTheme {
     // 主標拖過位置的店這格不生效——那時整層是自由定位，沒有欄寬可言。
     //   narrow 40rem / normal 不覆寫（56rem）/ wide 72rem / full 不設上限
     heroTextWidth: "narrow" | "normal" | "wide" | "full"; // 文字段欄寬（預設 normal = 不覆寫）
+    // 上面那格決定那道看不見的欄有多寬，這格決定那道欄擺在照片的哪一邊。原本寫死
+    // mx-auto——欄一律置中，商家碰不到。為什麼要：欄寬選了「窄」之後，那塊 40rem 的欄
+    // 停在畫面正中間，裡面的字再靠左，字的左緣就停在一個誰也對不到的位置：既不是照片
+    // 的左緣，也不是導覽列跟底下商品那道全站邊界，整段字看起來像浮在中間。雜誌那種
+    // 「照片下面一段字貼著左邊界起排」的收法做不出來，圖右重心的照片想把字挪到右邊
+    // 配重也做不到。三檔跟 minimal / split 那兩格同一組字（靠左 / 置中 / 靠右）。
+    // 這格跟「主標對齊」是兩件事：那格動的是欄裡面每一行字各自靠哪邊，這格動的是整道
+    // 欄本身擺哪。欄寬選「滿版」時欄已經佔滿、這格自然看不出差別，不特別擋。
+    // 主標拖過位置的店整層走自由定位、沒有欄可言，這格跟欄寬那格一樣不生效。
+    // 預設置中＝完全不輸出任何 inline style，既有店家算出來一模一樣。
+    heroTextAlignX: "left" | "center" | "right"; // 滿版圖文字段整欄擺哪邊（預設 center = 不覆寫）
     // 同一塊文字段裡面，小標、主標、副標、按鈕彼此之間隔多遠。原本寫死在 class 上
     //（小標 mb-6、副標 mt-5、按鈕 mt-8 = 1.5 / 1.25 / 2rem），是配預設主標字級挑的。
     // 為什麼要：這個版型已經有的兩格留白，一格管那塊色塊上下各留多少空、一格管裡面的字
@@ -1451,6 +1462,11 @@ function resolveLayout(raw: unknown): StoreTheme["layout"] {
       const v = l.heroTextWidth;
       if (v === "narrow" || v === "wide" || v === "full") return v;
       return "normal" as const;
+    })(),
+    heroTextAlignX: (() => {
+      const v = l.heroTextAlignX;
+      if (v === "left" || v === "right") return v;
+      return "center" as const;
     })(),
     heroTextGap: (() => {
       const v = l.heroTextGap;
