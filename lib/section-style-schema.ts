@@ -895,6 +895,23 @@ export const SECTION_STYLE_ENUMS = {
   // 容器，而那個 max-w-5xl 是 class 上的值，只有更精確的規則蓋得掉。「照原本的」不發
   // attribute、整條規則不存在，既有店家的欄寬一段都不會變。
   contentWidth: ["narrow", "normal", "wide", "full"],
+  // 內容欄靠哪邊（left 靠左 / center 照原本的置中 / right 靠右），動的是上一欄那道排字排
+  // 卡片的欄本身擺在段落的哪一邊。那道欄的位置寫死 mx-auto 永遠置中——問題在上一欄選了
+  // 「窄」之後：48rem 的欄停在畫面正中間，裡面的字再靠左，字的左緣就落在一個誰也對不到
+  // 的位置，既不是導覽列與底下商品共用的那道全站邊界，也不是前後段落的左緣，整段看起來
+  // 像浮在畫面中間。雜誌那種「窄欄貼著左邊界起排」的收法做不出來；照片牆設成滿版大圖、
+  // 想把上面那塊標題挪到一側配重的也做不到。hero 的滿版圖版型上一輪補過同一格
+  // （heroTextAlignX），區段這七道欄是同一個問題的另外七個位置。
+  // 跟「區段對齊」（headingAlign）不是同一件事，兩格並存不衝突：那格動的是欄裡面每一行
+  // 字各自靠哪一邊（text-align），這格動的是整道欄本身擺在段落的哪一邊（margin）；
+  // 窄欄靠左、裡面的字置中是成立的組合。
+  // 只在欄比外框窄的時候看得出差別——上一欄照原本的 64rem 在筆電上就已經比螢幕窄，
+  // 平常也看得到效果；選了滿版的段落欄已經佔滿，這格自然沒差別，跟「內容垂直位置」要
+  // 先設「最低高度」同一種處境，不特別擋。
+  // 走 attribute 讓 layout.tsx 補規則，跟上一欄同一個理由：要蓋的是內層容器 class 上的
+  // mx-auto，段落上的 inline style 傳不下去。「照原本的置中」不發 attribute、整條規則
+  // 不存在，既有店家算出來一模一樣。
+  contentAlignX: ["left", "center", "right"],
   // 標題粗細（light 400 常規 / normal 不套維持原樣 / bold 700 粗）。只用思源黑體 / 宋體有
   // 載進來的字重（400 / 700），不挑 300 之類沒載的——瀏覽器會拿常規去假變細，中文筆畫糊掉。
   headingWeight: ["light", "normal", "bold"],
@@ -1148,6 +1165,7 @@ export const SECTION_STYLE_NEUTRAL_VALUES = {
   sectionWidth: "full",
   sectionGap: "none",
   contentWidth: "normal",
+  contentAlignX: "center",
   headingWeight: "normal",
   headingLeading: "normal",
   headingTracking: "normal",

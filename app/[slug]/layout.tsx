@@ -1095,6 +1095,24 @@ export default async function PublicStoreLayout({
           max-width: none;
         }
 
+        /* 內容欄靠哪邊：editor 各 section panel「內容欄位置」三按鈕（靠左 / 置中 / 靠右）。
+           上面那組調的是欄多寬，這組調的是那道欄本身擺在段落的哪一邊——欄的位置寫死
+           mx-auto 永遠置中，商家把欄收窄之後，字的左緣停在畫面正中偏左的一個誰也對不到
+           的位置，雜誌那種「窄欄貼著左邊界起排」做不出來。做法跟 hero 滿版圖版型那格
+           （heroTextAlignX）同一招：靠左 / 靠右各自把另一邊的 margin 留成 auto 讓欄被
+           推過去。跟「區段對齊」不衝突：那格動欄裡每行字的 text-align，這格動整道欄。
+           選擇器帶兩個 attribute，比 class 上那個 mx-auto 精確，蓋得掉。左右內距（欄自己
+           的 px-8）不動，靠左時字的左緣剛好落在導覽列與商品共用的那道全站邊界上。
+           沒設（或選「置中」）就沒 attribute、整條規則不存在，各段維持原本的置中。 */
+        section[data-edit-target][data-content-align-x="left"] .sproutly-section-inner {
+          margin-left: 0;
+          margin-right: auto;
+        }
+        section[data-edit-target][data-content-align-x="right"] .sproutly-section-inner {
+          margin-left: auto;
+          margin-right: 0;
+        }
+
         /* 照片比例：editor 各 section panel「照片比例」四按鈕（各段預設 / 正方 / 直式 / 橫式）。
            每段的圖框比例是寫死的一個值（選物 3:4、精選商品 1:1、慢讀 5:3、照片牆 1:1），
            照片放進框一律鋪滿再裁（object-cover）——賣水壺、高盆栽這類直式商品的店，商品照

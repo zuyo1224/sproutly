@@ -4752,6 +4752,7 @@ export function EditorWorkspace({
           const sectionWidth = cur.sectionWidth ?? null;
           const sectionGap = cur.sectionGap ?? null;
           const contentWidth = cur.contentWidth ?? null;
+          const contentAlignX = cur.contentAlignX ?? null;
           const headingWeight = cur.headingWeight ?? null;
           const headingLeading = cur.headingLeading ?? null;
           const headingTracking = cur.headingTracking ?? null;
@@ -6800,6 +6801,32 @@ export function EditorWorkspace({
                 </div>
                 <p className="mt-1.5 text-[11px] text-stone-500 leading-snug">
                   這一段的字跟卡片排多寬。上面那格「區段寬度」收的是這一段的底色跟外框畫到哪，裡面的字跟卡片不會跟著動，這格才是。窄 768px · 照原本 1024px（照片牆 1152px）· 寬 1280px · 滿版 排到畫面左右邊界為止。卡片調成 4 欄、或想讓照片牆變成跨頁大圖時用這格
+                </p>
+              </Field>
+              <Field label="內容欄位置">
+                <div className="grid grid-cols-3 gap-1.5">
+                  {([
+                    { v: "left", label: "靠左" },
+                    { v: "center", label: "置中" },
+                    { v: "right", label: "靠右" },
+                  ] as const).map((opt) => (
+                    <button
+                      key={opt.v}
+                      type="button"
+                      onClick={() => patch({ contentAlignX: opt.v })}
+                      aria-pressed={(contentAlignX ?? "center") === opt.v}
+                      className={`rounded-lg border py-2 text-xs transition ${
+                        (contentAlignX ?? "center") === opt.v
+                          ? "border-emerald-500 bg-emerald-50 text-emerald-900"
+                          : "border-stone-200 text-stone-600 hover:border-stone-400"
+                      }`}
+                    >
+                      {opt.label}
+                    </button>
+                  ))}
+                </div>
+                <p className="mt-1.5 text-[11px] text-stone-500 leading-snug">
+                  上面那格排出來的欄擺在這一段的哪一邊。平常置中；把欄寬設成窄之後選靠左，字會貼著跟導覽列同一道左邊界起排（雜誌常見的收法）。跟「區段對齊」不一樣——那格是欄裡每行字各自靠哪邊，這格是整道欄搬家。欄寬選滿版時欄已經佔滿，這格看不出差別
                 </p>
               </Field>
               <Field label="區段外距">
