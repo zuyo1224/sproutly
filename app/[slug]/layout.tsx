@@ -1072,6 +1072,29 @@ export default async function PublicStoreLayout({
           --store-media-radius: 28px;
         }
 
+        /* 內容欄寬：editor 各 section panel「內容欄寬」四按鈕（窄 / 照原本的 / 寬 / 滿版）。
+           每一段的小標、大標、說明、底下整片卡片格線都排在同一道看不見的欄裡，那道欄的
+           寬度是寫死在 class 上的一個值（多數段落 max-w-5xl 也就是 64rem，照片牆 72rem），
+           商家一格都碰不到。欄數那幾格已經開到 4 欄，四張卡擠在 1024px 裡每張只剩兩百多
+           px 寬；反過來把照片牆當跨頁大圖用的店，兩側永遠留著一截白，做不出滿版。
+           規則落在 .sproutly-section-inner（各段那層容器）上，不落在 section 自己——段落
+           那一層是「寬度」（sectionWidth）在管的，那格收的是底色與外框畫到哪，跟這格收的
+           不是同一層；而且那格最寬的一檔 1100px 比裡面這道 64rem 的欄還寬，所以商家把段落
+           設成 boxed 時真正變窄的只有背景色塊，內容一格沒動——「怎麼調都沒反應」就是這樣來的。
+           選擇器帶 section[data-edit-target][data-content-width]，比 class 上那個 max-w-5xl
+           精確，蓋得掉。左右內距不動（那是全站共用的那道邊界，動了會跟導覽列與商品對不齊），
+           滿版那一檔是把上限拿掉、讓內容排到那道邊界為止。沒設（或選「照原本的」）就沒
+           attribute、整條規則不存在，各段維持自己原本的欄寬。 */
+        section[data-edit-target][data-content-width="narrow"] .sproutly-section-inner {
+          max-width: 48rem;
+        }
+        section[data-edit-target][data-content-width="wide"] .sproutly-section-inner {
+          max-width: 80rem;
+        }
+        section[data-edit-target][data-content-width="full"] .sproutly-section-inner {
+          max-width: none;
+        }
+
         /* 照片比例：editor 各 section panel「照片比例」四按鈕（各段預設 / 正方 / 直式 / 橫式）。
            每段的圖框比例是寫死的一個值（選物 3:4、精選商品 1:1、慢讀 5:3、照片牆 1:1），
            照片放進框一律鋪滿再裁（object-cover）——賣水壺、高盆栽這類直式商品的店，商品照

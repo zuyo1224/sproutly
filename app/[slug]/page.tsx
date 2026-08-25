@@ -521,6 +521,17 @@ export default async function StoreHomePage({
     // 實際怎麼推由 layout.tsx 那條規則做，見那裡為什麼不是把 section 改成 flex。
     const contentAlignVal: "middle" | "bottom" | undefined =
       s?.contentAlign === "middle" || s?.contentAlign === "bottom" ? s.contentAlign : undefined;
+    // 內容欄寬：段落裡那道排字排卡片的欄有多寬（見 section-style-schema 那一欄的說明——
+    // 跟上面的 sectionWidth 收的不是同一層，那個收外框、這個收框裡的內容）。跟照片比例、
+    // 卡片間距同一個處境同一個解法：要蓋的是內層容器 class 上的 max-w-5xl，段落上的
+    // inline style 傳不下去，attribute 讓 layout.tsx 補一條更精確的規則。沒設或選「照原本的」
+    // 就沒 attribute、整條規則不存在，各段維持自己原本的欄寬。
+    const contentWidthVal: "narrow" | "wide" | "full" | undefined =
+      s?.contentWidth === "narrow" ||
+      s?.contentWidth === "wide" ||
+      s?.contentWidth === "full"
+        ? s.contentWidth
+        : undefined;
     // 這一段在哪台裝置不顯示：同樣走 attribute，實際藏起來的是 layout.tsx 那兩條 media query。
     // 不在這裡用 inline display: none —— 那要在伺服器上就知道客人拿什麼裝置在看（讀不到，
     // 同一份 HTML 會被 CDN 快取給所有人），而且編輯器預覽是同一份頁面塞在不同寬度的 iframe
@@ -994,6 +1005,7 @@ export default async function StoreHomePage({
       bodyTrackingVal,
       headingToneVal,
       contentAlignVal,
+      contentWidthVal,
       headingGapVal,
       headingInnerGapVal,
       eyebrowTrackingVal,
@@ -2792,6 +2804,7 @@ export default async function StoreHomePage({
             data-body-weight={collStyle.bodyWeightVal}
             data-body-tracking={collStyle.bodyTrackingVal}
             data-content-align={collStyle.contentAlignVal}
+            data-content-width={collStyle.contentWidthVal}
             data-hide-on={collStyle.hideOnVal}
             data-media-radius={collStyle.mediaRadiusVal}
             data-media-aspect={collStyle.mediaAspectVal}
@@ -2824,7 +2837,7 @@ export default async function StoreHomePage({
             data-card-meta-tone={collStyle.cardMetaToneVal}
             style={mergeSectionStyle(collStyle)}
           >
-            <div className="max-w-5xl mx-auto px-8 sm:px-12" style={{ textAlign: collStyle.align }}>
+            <div className="sproutly-section-inner max-w-5xl mx-auto px-8 sm:px-12" style={{ textAlign: collStyle.align }}>
               {introFree ? (
                 <h2
                   data-edit-text
@@ -2996,6 +3009,7 @@ export default async function StoreHomePage({
             data-body-weight={featuredStyle.bodyWeightVal}
             data-body-tracking={featuredStyle.bodyTrackingVal}
             data-content-align={featuredStyle.contentAlignVal}
+            data-content-width={featuredStyle.contentWidthVal}
             data-hide-on={featuredStyle.hideOnVal}
             data-media-radius={featuredStyle.mediaRadiusVal}
             data-media-aspect={featuredStyle.mediaAspectVal}
@@ -3025,7 +3039,7 @@ export default async function StoreHomePage({
             data-card-micro-case={featuredStyle.cardMicroCaseVal}
             data-card-meta-tone={featuredStyle.cardMetaToneVal}
           >
-            <div className="max-w-5xl mx-auto px-8 sm:px-12" style={{ textAlign: featuredStyle.align }}>
+            <div className="sproutly-section-inner max-w-5xl mx-auto px-8 sm:px-12" style={{ textAlign: featuredStyle.align }}>
               {featuredFree ? (
                 <h2
                   data-edit-text
@@ -3236,6 +3250,7 @@ export default async function StoreHomePage({
             data-body-weight={journalStyle.bodyWeightVal}
             data-body-tracking={journalStyle.bodyTrackingVal}
             data-content-align={journalStyle.contentAlignVal}
+            data-content-width={journalStyle.contentWidthVal}
             data-hide-on={journalStyle.hideOnVal}
             data-media-radius={journalStyle.mediaRadiusVal}
             data-media-aspect={journalStyle.mediaAspectVal}
@@ -3266,7 +3281,7 @@ export default async function StoreHomePage({
             data-card-micro-case={journalStyle.cardMicroCaseVal}
             data-card-row-gap={journalStyle.cardRowGapVal}
           >
-          <div className="max-w-5xl mx-auto px-8 sm:px-12" style={{ textAlign: journalStyle.align }}>
+          <div className="sproutly-section-inner max-w-5xl mx-auto px-8 sm:px-12" style={{ textAlign: journalStyle.align }}>
             {journalFree ? (
               <div
                 data-edit-drag={FREE_POS_KEYS.journalIntro}
@@ -3643,6 +3658,7 @@ export default async function StoreHomePage({
               data-body-weight={testimonialsStyle.bodyWeightVal}
               data-body-tracking={testimonialsStyle.bodyTrackingVal}
               data-content-align={testimonialsStyle.contentAlignVal}
+              data-content-width={testimonialsStyle.contentWidthVal}
               data-hide-on={testimonialsStyle.hideOnVal}
               data-media-radius={testimonialsStyle.mediaRadiusVal}
               data-grid-gap={testimonialsStyle.gridGapVal}
@@ -3662,7 +3678,7 @@ export default async function StoreHomePage({
               data-card-micro-case={testimonialsStyle.cardMicroCaseVal}
             >
               <div
-                className="max-w-5xl mx-auto px-8 sm:px-12"
+                className="sproutly-section-inner max-w-5xl mx-auto px-8 sm:px-12"
                 style={{ textAlign: testimonialsStyle.align }}
               >
                 {testimonialsFree ? (
@@ -4097,6 +4113,7 @@ export default async function StoreHomePage({
               data-body-weight={statsStyle.bodyWeightVal}
               data-body-tracking={statsStyle.bodyTrackingVal}
               data-content-align={statsStyle.contentAlignVal}
+              data-content-width={statsStyle.contentWidthVal}
               data-hide-on={statsStyle.hideOnVal}
               data-media-radius={statsStyle.mediaRadiusVal}
               data-grid-gap={statsStyle.gridGapVal}
@@ -4111,7 +4128,7 @@ export default async function StoreHomePage({
               data-card-micro-case={statsStyle.cardMicroCaseVal}
             >
               <div
-                className="max-w-5xl mx-auto px-8 sm:px-12"
+                className="sproutly-section-inner max-w-5xl mx-auto px-8 sm:px-12"
                 style={{ textAlign: statsStyle.align }}
               >
                 {statsFree && (
@@ -4298,6 +4315,7 @@ export default async function StoreHomePage({
               data-body-weight={partnersStyle.bodyWeightVal}
               data-body-tracking={partnersStyle.bodyTrackingVal}
               data-content-align={partnersStyle.contentAlignVal}
+              data-content-width={partnersStyle.contentWidthVal}
               data-hide-on={partnersStyle.hideOnVal}
               data-media-radius={partnersStyle.mediaRadiusVal}
               data-grid-gap={partnersStyle.gridGapVal}
@@ -4305,7 +4323,7 @@ export default async function StoreHomePage({
               data-partner-logo-opacity={partnersStyle.partnerLogoOpacityVal}
             >
               <div
-                className="max-w-5xl mx-auto px-8 sm:px-12"
+                className="sproutly-section-inner max-w-5xl mx-auto px-8 sm:px-12"
                 style={{ textAlign: partnersStyle.align }}
               >
                 {partnersFree ? (
@@ -4421,6 +4439,7 @@ export default async function StoreHomePage({
               data-body-weight={galleryStyle.bodyWeightVal}
               data-body-tracking={galleryStyle.bodyTrackingVal}
               data-content-align={galleryStyle.contentAlignVal}
+              data-content-width={galleryStyle.contentWidthVal}
               data-hide-on={galleryStyle.hideOnVal}
               data-media-radius={galleryStyle.mediaRadiusVal}
               data-media-aspect={galleryStyle.mediaAspectVal}
@@ -4440,7 +4459,7 @@ export default async function StoreHomePage({
               data-card-row-gap={galleryStyle.cardRowGapVal}
             >
               <div
-                className="max-w-6xl mx-auto px-6 sm:px-10"
+                className="sproutly-section-inner max-w-6xl mx-auto px-6 sm:px-10"
                 style={{ textAlign: galleryStyle.align }}
               >
                 {galleryFree ? (

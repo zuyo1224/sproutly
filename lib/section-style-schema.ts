@@ -880,6 +880,21 @@ export const SECTION_STYLE_ENUMS = {
   sectionWidth: ["full", "boxed", "narrow"],
   // 上下外距（none 貼緊相鄰 / normal 64px / large 112px），配 sectionWidth 讓卡片浮出來
   sectionGap: ["none", "normal", "large"],
+  // 內容欄寬（narrow 窄 48rem / normal 照原本的 / wide 寬 80rem / full 滿版不設上限），
+  // 指的是段落裡那道看不見的欄——小標、大標、說明、底下整片卡片格線全都排在它裡面。
+  // 每一段的那道欄寬度是寫死的一個值（多數段落 max-w-5xl 也就是 64rem／1024px，照片牆
+  // 是 72rem），商家一格都碰不到。缺這格會怎樣：欄數那幾格已經開放到 4 欄，四張卡擠在
+  // 1024px 裡每張只剩 240px 寬，商品照小到看不出是什麼；把照片牆當跨頁大圖用的店，圖
+  // 兩側永遠留著一截白邊，做不出滿版；反過來只放兩三張卡的店，卡片被攤在 1024px 上、
+  // 彼此離得老遠，看起來像沒排完。
+  // 跟上面那格「寬度」（sectionWidth）不是同一件事，兩格並存不衝突：那格收的是整段的
+  // 外框（底色、外框線、陰影畫到哪），這格收的是外框裡面那道排字排卡片的欄。而且那格
+  // 只收得窄、收不寬——它最寬的一檔 1100px 已經超過裡面這道 1024px 的欄，所以商家把段落
+  // 設成 boxed 時真正變窄的只有背景色塊，內容一格都沒動，這才是「怎麼調都沒反應」的來源。
+  // 走 attribute 讓 layout.tsx 補規則、不寫 inline style：段落上的 style 到不了裡面那層
+  // 容器，而那個 max-w-5xl 是 class 上的值，只有更精確的規則蓋得掉。「照原本的」不發
+  // attribute、整條規則不存在，既有店家的欄寬一段都不會變。
+  contentWidth: ["narrow", "normal", "wide", "full"],
   // 標題粗細（light 400 常規 / normal 不套維持原樣 / bold 700 粗）。只用思源黑體 / 宋體有
   // 載進來的字重（400 / 700），不挑 300 之類沒載的——瀏覽器會拿常規去假變細，中文筆畫糊掉。
   headingWeight: ["light", "normal", "bold"],
@@ -1132,6 +1147,7 @@ export const SECTION_STYLE_NEUTRAL_VALUES = {
   filter: "none",
   sectionWidth: "full",
   sectionGap: "none",
+  contentWidth: "normal",
   headingWeight: "normal",
   headingLeading: "normal",
   headingTracking: "normal",

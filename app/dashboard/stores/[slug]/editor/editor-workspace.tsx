@@ -4751,6 +4751,7 @@ export function EditorWorkspace({
           const filter = cur.filter ?? null;
           const sectionWidth = cur.sectionWidth ?? null;
           const sectionGap = cur.sectionGap ?? null;
+          const contentWidth = cur.contentWidth ?? null;
           const headingWeight = cur.headingWeight ?? null;
           const headingLeading = cur.headingLeading ?? null;
           const headingTracking = cur.headingTracking ?? null;
@@ -6772,6 +6773,33 @@ export function EditorWorkspace({
                 </div>
                 <p className="mt-1.5 text-[11px] text-stone-500 leading-snug">
                   滿版 寬度撐滿 · 置中 1100px · 窄欄 760px。配背景色 + 陰影 + 圓角就成置中的卡片式區段
+                </p>
+              </Field>
+              <Field label="內容欄寬">
+                <div className="grid grid-cols-4 gap-1.5">
+                  {([
+                    { v: "narrow", label: "窄" },
+                    { v: "normal", label: "照原本" },
+                    { v: "wide", label: "寬" },
+                    { v: "full", label: "滿版" },
+                  ] as const).map((opt) => (
+                    <button
+                      key={opt.v}
+                      type="button"
+                      onClick={() => patch({ contentWidth: opt.v })}
+                      aria-pressed={(contentWidth ?? "normal") === opt.v}
+                      className={`rounded-lg border py-2 text-xs transition ${
+                        (contentWidth ?? "normal") === opt.v
+                          ? "border-emerald-500 bg-emerald-50 text-emerald-900"
+                          : "border-stone-200 text-stone-600 hover:border-stone-400"
+                      }`}
+                    >
+                      {opt.label}
+                    </button>
+                  ))}
+                </div>
+                <p className="mt-1.5 text-[11px] text-stone-500 leading-snug">
+                  這一段的字跟卡片排多寬。上面那格「區段寬度」收的是這一段的底色跟外框畫到哪，裡面的字跟卡片不會跟著動，這格才是。窄 768px · 照原本 1024px（照片牆 1152px）· 寬 1280px · 滿版 排到畫面左右邊界為止。卡片調成 4 欄、或想讓照片牆變成跨頁大圖時用這格
                 </p>
               </Field>
               <Field label="區段外距">
