@@ -540,6 +540,12 @@ export default async function StoreHomePage({
       s?.contentAlignX === "left" || s?.contentAlignX === "right"
         ? s.contentAlignX
         : undefined;
+    // 內容欄左右內距：那道欄自己兩側留多少空白（見 section-style-schema 那一欄的說明——
+    // 欄寬選了滿版之後，字排到哪裡停就是這道空白在決定）。同樣走 attribute：要蓋的是
+    // 內層容器 class 上的 px-8 sm:px-12，段落上的 inline style 傳不下去。沒設或選
+    // 「照原本的」就沒 attribute，各段維持原本那道跟導覽列對齊的邊界。
+    const contentPadXVal: "tight" | "wide" | undefined =
+      s?.contentPadX === "tight" || s?.contentPadX === "wide" ? s.contentPadX : undefined;
     // 這一段在哪台裝置不顯示：同樣走 attribute，實際藏起來的是 layout.tsx 那兩條 media query。
     // 不在這裡用 inline display: none —— 那要在伺服器上就知道客人拿什麼裝置在看（讀不到，
     // 同一份 HTML 會被 CDN 快取給所有人），而且編輯器預覽是同一份頁面塞在不同寬度的 iframe
@@ -1015,6 +1021,7 @@ export default async function StoreHomePage({
       contentAlignVal,
       contentWidthVal,
       contentAlignXVal,
+      contentPadXVal,
       headingGapVal,
       headingInnerGapVal,
       eyebrowTrackingVal,
@@ -2815,6 +2822,7 @@ export default async function StoreHomePage({
             data-content-align={collStyle.contentAlignVal}
             data-content-width={collStyle.contentWidthVal}
             data-content-align-x={collStyle.contentAlignXVal}
+            data-content-pad-x={collStyle.contentPadXVal}
             data-hide-on={collStyle.hideOnVal}
             data-media-radius={collStyle.mediaRadiusVal}
             data-media-aspect={collStyle.mediaAspectVal}
@@ -3021,6 +3029,7 @@ export default async function StoreHomePage({
             data-content-align={featuredStyle.contentAlignVal}
             data-content-width={featuredStyle.contentWidthVal}
             data-content-align-x={featuredStyle.contentAlignXVal}
+            data-content-pad-x={featuredStyle.contentPadXVal}
             data-hide-on={featuredStyle.hideOnVal}
             data-media-radius={featuredStyle.mediaRadiusVal}
             data-media-aspect={featuredStyle.mediaAspectVal}
@@ -3263,6 +3272,7 @@ export default async function StoreHomePage({
             data-content-align={journalStyle.contentAlignVal}
             data-content-width={journalStyle.contentWidthVal}
             data-content-align-x={journalStyle.contentAlignXVal}
+            data-content-pad-x={journalStyle.contentPadXVal}
             data-hide-on={journalStyle.hideOnVal}
             data-media-radius={journalStyle.mediaRadiusVal}
             data-media-aspect={journalStyle.mediaAspectVal}
@@ -3672,6 +3682,7 @@ export default async function StoreHomePage({
               data-content-align={testimonialsStyle.contentAlignVal}
               data-content-width={testimonialsStyle.contentWidthVal}
               data-content-align-x={testimonialsStyle.contentAlignXVal}
+              data-content-pad-x={testimonialsStyle.contentPadXVal}
               data-hide-on={testimonialsStyle.hideOnVal}
               data-media-radius={testimonialsStyle.mediaRadiusVal}
               data-grid-gap={testimonialsStyle.gridGapVal}
@@ -4128,6 +4139,7 @@ export default async function StoreHomePage({
               data-content-align={statsStyle.contentAlignVal}
               data-content-width={statsStyle.contentWidthVal}
               data-content-align-x={statsStyle.contentAlignXVal}
+              data-content-pad-x={statsStyle.contentPadXVal}
               data-hide-on={statsStyle.hideOnVal}
               data-media-radius={statsStyle.mediaRadiusVal}
               data-grid-gap={statsStyle.gridGapVal}
@@ -4331,6 +4343,7 @@ export default async function StoreHomePage({
               data-content-align={partnersStyle.contentAlignVal}
               data-content-width={partnersStyle.contentWidthVal}
               data-content-align-x={partnersStyle.contentAlignXVal}
+              data-content-pad-x={partnersStyle.contentPadXVal}
               data-hide-on={partnersStyle.hideOnVal}
               data-media-radius={partnersStyle.mediaRadiusVal}
               data-grid-gap={partnersStyle.gridGapVal}
@@ -4456,6 +4469,7 @@ export default async function StoreHomePage({
               data-content-align={galleryStyle.contentAlignVal}
               data-content-width={galleryStyle.contentWidthVal}
               data-content-align-x={galleryStyle.contentAlignXVal}
+              data-content-pad-x={galleryStyle.contentPadXVal}
               data-hide-on={galleryStyle.hideOnVal}
               data-media-radius={galleryStyle.mediaRadiusVal}
               data-media-aspect={galleryStyle.mediaAspectVal}

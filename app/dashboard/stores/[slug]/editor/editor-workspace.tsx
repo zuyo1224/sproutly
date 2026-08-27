@@ -4753,6 +4753,7 @@ export function EditorWorkspace({
           const sectionGap = cur.sectionGap ?? null;
           const contentWidth = cur.contentWidth ?? null;
           const contentAlignX = cur.contentAlignX ?? null;
+          const contentPadX = cur.contentPadX ?? null;
           const headingWeight = cur.headingWeight ?? null;
           const headingLeading = cur.headingLeading ?? null;
           const headingTracking = cur.headingTracking ?? null;
@@ -6827,6 +6828,32 @@ export function EditorWorkspace({
                 </div>
                 <p className="mt-1.5 text-[11px] text-stone-500 leading-snug">
                   上面那格排出來的欄擺在這一段的哪一邊。平常置中；把欄寬設成窄之後選靠左，字會貼著跟導覽列同一道左邊界起排（雜誌常見的收法）。跟「區段對齊」不一樣——那格是欄裡每行字各自靠哪邊，這格是整道欄搬家。欄寬選滿版時欄已經佔滿，這格看不出差別
+                </p>
+              </Field>
+              <Field label="內容欄內距">
+                <div className="grid grid-cols-3 gap-1.5">
+                  {([
+                    { v: "tight", label: "收窄" },
+                    { v: "normal", label: "照原本" },
+                    { v: "wide", label: "加寬" },
+                  ] as const).map((opt) => (
+                    <button
+                      key={opt.v}
+                      type="button"
+                      onClick={() => patch({ contentPadX: opt.v })}
+                      aria-pressed={(contentPadX ?? "normal") === opt.v}
+                      className={`rounded-lg border py-2 text-xs transition ${
+                        (contentPadX ?? "normal") === opt.v
+                          ? "border-emerald-500 bg-emerald-50 text-emerald-900"
+                          : "border-stone-200 text-stone-600 hover:border-stone-400"
+                      }`}
+                    >
+                      {opt.label}
+                    </button>
+                  ))}
+                </div>
+                <p className="mt-1.5 text-[11px] text-stone-500 leading-snug">
+                  這道欄自己左右兩側留多少空白。照原本是跟導覽列、商品同一道邊界（手機 32px · 電腦 48px）。欄寬選了滿版之後，字跟卡片離畫面邊多遠就是這格在管：照片牆想幾乎頂到邊選收窄；想讓整段四周留一大片白、字只佔中間選加寬。手機上會自動縮小一點，不會擠成一條
                 </p>
               </Field>
               <Field label="區段外距">

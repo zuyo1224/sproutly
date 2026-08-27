@@ -912,6 +912,23 @@ export const SECTION_STYLE_ENUMS = {
   // mx-auto，段落上的 inline style 傳不下去。「照原本的置中」不發 attribute、整條規則
   // 不存在，既有店家算出來一模一樣。
   contentAlignX: ["left", "center", "right"],
+  // 內容欄左右內距（tight 收窄 / normal 照原本的 / wide 加寬），動的是上兩欄那道欄自己
+  // 兩側留的空白——欄裡的字與卡片離欄的左右邊多遠。那道空白是寫死的一組值（六段
+  // px-8 sm:px-12，手機 2rem、640 以上 3rem；照片牆 1.5rem / 2.5rem），它同時就是
+  // 導覽列與底下商品共用的那道全站邊界，前兩格刻意沒動它。
+  // 缺這格會怎樣：欄寬選了「滿版」之後，欄的上限拿掉、字與卡片排到哪裡停是這道內距在
+  // 決定——等於整段的邊界已經交給它、商家卻一格碰不到。兩種常見的收法都卡在中間：
+  // 想把照片牆真的排成幾乎頂到畫面邊的跨頁大圖（要更窄），跟想讓滿版的段落四周留一大片
+  // 空白、字只佔中間一小團的（要更寬）。反過來選了「窄」又「靠左」的欄，字的左緣落在
+  // 哪裡也是這道內距說了算，雜誌那種貼邊起排要能再往邊推一點。hero 的雜誌版型上一輪已
+  // 補過同一格（heroMagazinePadX），區段這七道欄是同一個問題的另外七個位置。
+  // 三檔用 clamp 不用固定數字，跟 hero 那格同一個理由：這道內距本來就是手機一個值、桌機
+  // 一個值，給死一個數手機那端不是太擠就是只剩中間一條字；收窄 clamp(1rem, 4vw, 1.5rem)、
+  // 加寬 clamp(2.5rem, 9vw, 6rem)，兩端各自有下限與上限。
+  // 走 attribute 讓 layout.tsx 補規則，跟前兩格同一個理由：要蓋的是內層容器 class 上的
+  // px-8 sm:px-12，段落上的 inline style 傳不下去。「照原本的」不發 attribute、整條規則
+  // 不存在，既有店家算出來一模一樣、跟導覽列照樣對齊。
+  contentPadX: ["tight", "normal", "wide"],
   // 標題粗細（light 400 常規 / normal 不套維持原樣 / bold 700 粗）。只用思源黑體 / 宋體有
   // 載進來的字重（400 / 700），不挑 300 之類沒載的——瀏覽器會拿常規去假變細，中文筆畫糊掉。
   headingWeight: ["light", "normal", "bold"],
@@ -1166,6 +1183,7 @@ export const SECTION_STYLE_NEUTRAL_VALUES = {
   sectionGap: "none",
   contentWidth: "normal",
   contentAlignX: "center",
+  contentPadX: "normal",
   headingWeight: "normal",
   headingLeading: "normal",
   headingTracking: "normal",

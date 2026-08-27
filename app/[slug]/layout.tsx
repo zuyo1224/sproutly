@@ -1113,6 +1113,25 @@ export default async function PublicStoreLayout({
           margin-right: 0;
         }
 
+        /* 內容欄左右內距：editor 各 section panel「內容欄內距」三按鈕（收窄 / 照原本 / 加寬）。
+           上面兩組調的是欄多寬、擺哪邊，這組調的是欄自己兩側留的空白——那組值寫死在
+           class 上（px-8 sm:px-12，照片牆 px-6 sm:px-10），前兩組刻意不碰它，因為它就是
+           導覽列與商品共用的那道全站邊界。可是欄寬選了滿版之後，字與卡片排到哪裡停就只剩
+           這道空白在決定，等於整段的邊界交給它、商家卻碰不到：想把照片牆排成幾乎頂到畫面
+           邊的跨頁大圖做不到，想讓滿版段落四周留一大片白也做不到。做法跟 hero 雜誌版型那格
+           （heroMagazinePadX）同一招，三檔都用 clamp：這道空白本來就是手機一個值、桌機一個
+           值，給死一個數手機那端不是太擠就是只剩中間一條字。選擇器帶兩個 attribute，比
+           class 上那兩個 px 精確（含 640 以上那條 media query 裡的），蓋得掉。沒設（或選
+           「照原本」）就沒 attribute、整條規則不存在，各段維持原本那道邊界、跟導覽列照樣對齊。 */
+        section[data-edit-target][data-content-pad-x="tight"] .sproutly-section-inner {
+          padding-left: clamp(1rem, 4vw, 1.5rem);
+          padding-right: clamp(1rem, 4vw, 1.5rem);
+        }
+        section[data-edit-target][data-content-pad-x="wide"] .sproutly-section-inner {
+          padding-left: clamp(2.5rem, 9vw, 6rem);
+          padding-right: clamp(2.5rem, 9vw, 6rem);
+        }
+
         /* 照片比例：editor 各 section panel「照片比例」四按鈕（各段預設 / 正方 / 直式 / 橫式）。
            每段的圖框比例是寫死的一個值（選物 3:4、精選商品 1:1、慢讀 5:3、照片牆 1:1），
            照片放進框一律鋪滿再裁（object-cover）——賣水壺、高盆栽這類直式商品的店，商品照
