@@ -692,6 +692,12 @@ export interface StoreTheme {
     //   spacious clamp(14rem, 24vw, 20rem)
     heroMinimalWidth: "narrow" | "normal" | "wide"; // minimal 欄寬（預設 normal = 不覆寫）
     heroMinimalPadding: "compact" | "normal" | "spacious"; // minimal 上下留白（預設 normal = 不覆寫）
+    // minimal 整段離螢幕左右兩邊多遠。欄寬那格動的是字排多寬的上限，手機上上限根本
+    // 碰不到（螢幕比欄還窄），字離螢幕邊多遠就只剩這道 px-6 在決定，原本寫死。
+    //   narrow  clamp(0.5rem, 2.5vw, 1rem)
+    //   normal  不覆寫（吃原本的 px-6 = 1.5rem）
+    //   wide    clamp(2.5rem, 9vw, 6rem)
+    heroMinimalPadX: "narrow" | "normal" | "wide"; // minimal 左右內距（預設 normal = 不覆寫）
     // minimal 版型主標與按鈕之間那條短橫線。這個版型只有一段字，那條線是它唯一的
     // 圖形——它在做的是把上面的字跟下面的按鈕斷開，順便告訴人「這裡還沒完，往下有東西」。
     // 長度與顏色原本都寫死（48px、全站主色壓到半透明）。48px 是配「一行大主標」挑的，
@@ -1433,6 +1439,11 @@ function resolveLayout(raw: unknown): StoreTheme["layout"] {
     heroMinimalPadding: (() => {
       const v = l.heroMinimalPadding;
       if (v === "compact" || v === "spacious") return v;
+      return "normal" as const;
+    })(),
+    heroMinimalPadX: (() => {
+      const v = l.heroMinimalPadX;
+      if (v === "narrow" || v === "wide") return v;
       return "normal" as const;
     })(),
     heroMinimalRule: (() => {

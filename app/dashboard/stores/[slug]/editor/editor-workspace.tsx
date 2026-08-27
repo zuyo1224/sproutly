@@ -141,6 +141,7 @@ type EditorTheme = {
     heroMagazineBg: string | null;
     heroMinimalWidth: "narrow" | "normal" | "wide";
     heroMinimalPadding: "compact" | "normal" | "spacious";
+    heroMinimalPadX: "narrow" | "normal" | "wide";
     heroMinimalRule: "none" | "short" | "normal" | "long";
     heroMinimalRuleColor: string | null;
     heroMinimalAlign: "left" | "center" | "right";
@@ -1032,6 +1033,7 @@ export function EditorWorkspace({
           heroMagazineBg: t.layout.heroMagazineBg,
           heroMinimalWidth: t.layout.heroMinimalWidth,
           heroMinimalPadding: t.layout.heroMinimalPadding,
+          heroMinimalPadX: t.layout.heroMinimalPadX,
           heroMinimalRule: t.layout.heroMinimalRule,
           heroMinimalRuleColor: t.layout.heroMinimalRuleColor,
           heroMinimalAlign: t.layout.heroMinimalAlign,
@@ -3335,6 +3337,36 @@ export function EditorWorkspace({
                   字上下各留多少空。原本那個留白是配「只有一行大主標」挑的，加了副標跟按鈕
                   之後整段變高，上下再各留那麼多會把後面的段落推到要捲一頁才看得到；
                   反過來只放一行短主標時，留白不夠這個版型就不成立，它靠的就是空
+                </p>
+              </Field>
+            )}
+            {theme.layout.heroStyle === "minimal" && (
+              <Field label="這段字離螢幕邊多遠">
+                <div className="grid grid-cols-3 gap-1.5">
+                  {([
+                    { v: "narrow", label: "窄" },
+                    { v: "normal", label: "跟預設" },
+                    { v: "wide", label: "寬" },
+                  ] as const).map((opt) => (
+                    <button
+                      key={opt.v}
+                      type="button"
+                      onClick={() => updateLayout({ heroMinimalPadX: opt.v })}
+                      aria-pressed={theme.layout.heroMinimalPadX === opt.v}
+                      className={`rounded-lg border py-2 text-xs transition ${
+                        theme.layout.heroMinimalPadX === opt.v
+                          ? "border-emerald-500 bg-emerald-50 text-emerald-900"
+                          : "border-stone-200 text-stone-600 hover:border-stone-400"
+                      }`}
+                    >
+                      {opt.label}
+                    </button>
+                  ))}
+                </div>
+                <p className="text-[10px] text-stone-500 mt-1">
+                  「排多寬」那格給的是上限，電腦上才碰得到；手機螢幕比最窄那檔還窄，字離
+                  螢幕邊多遠其實只由這格決定。窄是字幾乎貼到邊的那種大版面，寬是四周留一
+                  大片白、中間一小團字的那種。整段連同短橫線、按鈕一起移，不會有一層對不齊
                 </p>
               </Field>
             )}

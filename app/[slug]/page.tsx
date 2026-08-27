@@ -2644,6 +2644,16 @@ export default async function StoreHomePage({
               : theme.layout.heroMinimalPadding === "spacious"
               ? { paddingTop: "clamp(14rem, 24vw, 20rem)", paddingBottom: "clamp(14rem, 24vw, 20rem)" }
               : {};
+          // 這段字離螢幕左右兩邊多遠。欄寬那格給的是上限，桌機上才碰得到；手機螢幕比
+          // 最窄那檔還窄，字離邊多遠就只剩這道 px-6 在決定，原本寫死 1.5rem。雜誌版型
+          // 補過同一格（heroMagazinePadX），同一招：三檔用 clamp 讓手機到桌機連續變化。
+          // 「跟預設」不輸出任何值，既有店家算出來一模一樣。
+          const minimalPadXStyle =
+            theme.layout.heroMinimalPadX === "narrow"
+              ? { paddingLeft: "clamp(0.5rem, 2.5vw, 1rem)", paddingRight: "clamp(0.5rem, 2.5vw, 1rem)" }
+              : theme.layout.heroMinimalPadX === "wide"
+              ? { paddingLeft: "clamp(2.5rem, 9vw, 6rem)", paddingRight: "clamp(2.5rem, 9vw, 6rem)" }
+              : {};
           // 主標與按鈕之間那條短橫線：這個版型唯一的圖形，在做的是把字跟按鈕斷開。
           // 長度 24 / 48 / 96 三檔加一檔不顯示（hero 只放一行店名、連按鈕都不要的店，
           // 那條線沒有東西要斷開）。顏色有挑就照挑的畫、不再壓半透明——那層半透明是
@@ -2699,7 +2709,7 @@ export default async function StoreHomePage({
             >
               <div
                 className="max-w-3xl mx-auto px-6 text-center"
-                style={{ ...minimalWidthStyle, ...minimalAlignStyle }}
+                style={{ ...minimalWidthStyle, ...minimalPadXStyle, ...minimalAlignStyle }}
               >
               {theme.layout.heroEyebrow && (
                 <p
