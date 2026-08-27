@@ -121,6 +121,7 @@ type EditorTheme = {
     heroBylineWeight: "normal" | "medium" | "bold";
     heroSplitRatio: "image-narrow" | "normal" | "image-wide";
     heroImageFocus: "top" | "center" | "bottom";
+    heroImageFocusX: "left" | "center" | "right";
     heroSplitImageAspect: "tall" | "square" | "wide";
     heroSplitTextAlign: "top" | "center" | "bottom";
     heroSplitTextAlignX: "left" | "center" | "right";
@@ -1013,6 +1014,7 @@ export function EditorWorkspace({
           heroBylineWeight: t.layout.heroBylineWeight,
           heroSplitRatio: t.layout.heroSplitRatio,
           heroImageFocus: t.layout.heroImageFocus,
+          heroImageFocusX: t.layout.heroImageFocusX,
           heroSplitImageAspect: t.layout.heroSplitImageAspect,
           heroSplitTextAlign: t.layout.heroSplitTextAlign,
           heroSplitTextAlignX: t.layout.heroSplitTextAlignX,
@@ -2693,6 +2695,37 @@ export function EditorWorkspace({
                   被切掉的上面（葉冠、瓶口）跟下面（盆器、落款）常常就是想給人看的地方——
                   選留上緣就往下切，選留下緣就往上切。上一格「圖文比例」讓的是寬度，這格
                   管的是切在哪
+                </p>
+              </Field>
+            )}
+            {theme.layout.heroStyle === "split" && (
+              <Field label="照片左右取景">
+                <div className="grid grid-cols-3 gap-1.5">
+                  {([
+                    { v: "left", label: "留左緣" },
+                    { v: "center", label: "跟預設" },
+                    { v: "right", label: "留右緣" },
+                  ] as const).map((opt) => (
+                    <button
+                      key={opt.v}
+                      type="button"
+                      onClick={() => updateLayout({ heroImageFocusX: opt.v })}
+                      aria-pressed={theme.layout.heroImageFocusX === opt.v}
+                      className={`rounded-lg border py-2 text-xs transition ${
+                        theme.layout.heroImageFocusX === opt.v
+                          ? "border-emerald-500 bg-emerald-50 text-emerald-900"
+                          : "border-stone-200 text-stone-600 hover:border-stone-400"
+                      }`}
+                    >
+                      {opt.label}
+                    </button>
+                  ))}
+                </div>
+                <p className="text-[10px] text-stone-500 mt-1">
+                  上一格管上下，這格管左右。平板以上這張圖的框是整屏高、半屏寬的直式框，
+                  橫式照片（店面外觀、桌上一排商品）放進去被切掉的是左右兩邊——主體站在
+                  畫面左邊的照片，從正中間切下去主體只剩半個。選留左緣就往右切，留右緣就
+                  往左切；跟上一格可以疊著用，留上緣加留左緣就是保留左上角
                 </p>
               </Field>
             )}

@@ -455,6 +455,15 @@ export interface StoreTheme {
     // 各段卡片圖框那格「照片取景」是同一件事的段落版，但那條規則只掛在卡片圖框上，
     // hero 這張不在卡片裡，所以要自己一格。
     heroImageFocus: "top" | "center" | "bottom"; // split 照片取景（預設 center = 不覆寫）
+    // 上一格管的是上下，這格管左右。平板以上 split 的圖框是整屏高、半屏寬的直式框，
+    // 橫式照片（店面外觀、桌上一排商品）塞進去被切掉的是左右兩側，不是上下——主體
+    // 站在畫面左邊的照片，正中間裁下去主體只剩半個。上一格三檔對這種照片一點用都沒有
+    // （它只動 object-position 的直向那一半）。三檔就是 object-position 橫向那一半：
+    //   left   保留左緣（切右邊）
+    //   center 不覆寫
+    //   right  保留右緣（切左邊）
+    // 兩格各管一軸、可以疊：留上緣 + 留左緣 = 保留左上角。
+    heroImageFocusX: "left" | "center" | "right"; // split 照片左右取景（預設 center = 不覆寫）
     // split 版型在手機上那張圖的形狀。上面兩格處理的是平板以上：欄寬讓寬了、裁切保留哪一端
     // 也能挑了，可是手機完全沒被碰到——手機的 split 是圖上文下的單欄堆疊，圖框寫死
     // aspect-square，那個正方形跟商家上傳什麼圖無關，永遠是一比一。
@@ -1347,6 +1356,11 @@ function resolveLayout(raw: unknown): StoreTheme["layout"] {
     heroImageFocus: (() => {
       const v = l.heroImageFocus;
       if (v === "top" || v === "bottom") return v;
+      return "center" as const;
+    })(),
+    heroImageFocusX: (() => {
+      const v = l.heroImageFocusX;
+      if (v === "left" || v === "right") return v;
       return "center" as const;
     })(),
     heroSplitImageAspect: (() => {

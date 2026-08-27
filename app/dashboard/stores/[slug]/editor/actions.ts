@@ -69,6 +69,7 @@ type EditorPayload = {
     heroBylineWeight?: string;
     heroSplitRatio?: string;
     heroImageFocus?: string;
+    heroImageFocusX?: string;
     heroSplitImageAspect?: string;
     heroSplitTextAlign?: string;
     heroSplitTextAlignX?: string;
@@ -496,6 +497,12 @@ export async function saveEditorState(slug: string, payload: EditorPayload) {
       const v = payload.layout.heroImageFocus;
       if (v === "top" || v === "center" || v === "bottom") {
         layoutPatch.heroImageFocus = v;
+      }
+    }
+    if (payload.layout.heroImageFocusX !== undefined) {
+      const v = payload.layout.heroImageFocusX;
+      if (v === "left" || v === "center" || v === "right") {
+        layoutPatch.heroImageFocusX = v;
       }
     }
     if (payload.layout.heroSplitImageAspect !== undefined) {

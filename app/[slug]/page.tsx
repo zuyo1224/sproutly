@@ -2309,14 +2309,14 @@ export default async function StoreHomePage({
                     // 在這張圖的 inline style 上就夠——object-position 跟 class 上的
                     // object-cover 是不同屬性，不會互相蓋掉，也不必像段落那幾格繞去 layout.tsx
                     // 補規則（那是因為規則要落在別人的元素上，這張圖是自己的）。
-                    // 置中那一檔不輸出任何東西，既有店家的裁法一點都不會變。
-                    style={
-                      theme.layout.heroImageFocus === "top"
-                        ? { objectPosition: "center top" }
-                        : theme.layout.heroImageFocus === "bottom"
-                          ? { objectPosition: "center bottom" }
-                          : undefined
-                    }
+                    // 上下（heroImageFocus）跟左右（heroImageFocusX）各管一軸，拼成同一個
+                    // object-position 值；兩格都是置中時不輸出任何東西，既有店家的裁法一點都不會變。
+                    style={(() => {
+                      const y = theme.layout.heroImageFocus;
+                      const x = theme.layout.heroImageFocusX;
+                      if (y === "center" && x === "center") return undefined;
+                      return { objectPosition: `${x} ${y}` };
+                    })()}
                   />
                 </div>
                 <div
