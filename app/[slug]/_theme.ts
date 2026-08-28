@@ -606,6 +606,15 @@ export interface StoreTheme {
     // 只有照片載入前那一瞬間看得到底色，換了等於什麼都沒換；真正要分開的是有字的那一半。
     // 沒設完全不覆寫（連 backgroundColor 都不輸出），既有店家算出來一模一樣。
     heroSplitTextBg: string | null;    // split 文字欄底色，hex；null = 跟全站底色
+    // 照片那半的底色。「照片完整度」選整張顯示之後，照片放不滿的那兩條邊露出來的是
+    // section 的底色（全站底色）；設了「文字那半的底色」的店，照片那半就跟文字那半
+    // 不同色——整段變成三截：文字色、露出來的全站色、照片。白底棚拍配米色框也是
+    // 同一件事在這半邊的版本，跟卡片那格「框底色」要解的問題一樣。
+    // 為什麼只開色碼不開三檔：跟上面那格一樣，要接得起來的顏色取決於照片自己的底
+    // （#f5f5f5 灰白、淡奶油），通用三檔挑不出來。
+    // 鋪滿框的時候框整個被照片蓋住、這格看不到，所以 editor 只在整張顯示時才長出來。
+    // 沒設完全不覆寫（連 backgroundColor 都不輸出），既有店家算出來一模一樣。
+    heroSplitImageBg: string | null;   // split 照片欄底色，hex；null = 跟全站底色
     // 雜誌版型上下那兩條橫線。整個版型的骨架就是這兩條線——上面那條把小標與店名那行
     // 框起來、下面那條把落款與按鈕那行框起來，中間才是大字，是它們讓這個版型看起來像
     // 一本雜誌的封面而不是一頁置中的字。可是兩條線的粗細與顏色都寫死（1px、theme.border），
@@ -1409,6 +1418,7 @@ function resolveLayout(raw: unknown): StoreTheme["layout"] {
       return "image-first" as const;
     })(),
     heroSplitTextBg: normalizeHexColor(l.heroSplitTextBg),
+    heroSplitImageBg: normalizeHexColor(l.heroSplitImageBg),
     heroSplitHeight: (() => {
       const v = l.heroSplitHeight;
       if (v === "content" || v === "compact") return v;

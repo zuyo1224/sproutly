@@ -2266,6 +2266,11 @@ export default async function StoreHomePage({
             // 不跟任何 class 打架），也刻意不套整個 section：照片那半換了也看不到。
             // 沒設完全不輸出 backgroundColor，section 的底色原樣透出來。
             const splitTextBg = theme.layout.heroSplitTextBg;
+            // 照片那半的底色。只有「整張顯示」時照片放不滿的邊才露得出底，鋪滿框時整個框
+            // 被照片蓋住、設了也看不到，所以 cover 時一律不輸出，免得 DB 殘值影響到
+            // 照片載入前那一瞬間的閃色。跟上面那格一樣寫在自己那個 div 的 inline style 上。
+            const splitImageBg =
+              theme.layout.heroSplitImageFit === "contain" ? theme.layout.heroSplitImageBg : null;
             // 文字那欄裡面那三段直向間距（小標→主標→副標→按鈕列）。原本寫死
             // mb-6 / mt-6 / mt-10（1.5 / 1.5 / 2.5rem），是配預設主標字級挑的。
             // 三個值套同一個倍率，6:6:10 的層次不變，只有整體疏密變；
@@ -2313,8 +2318,11 @@ export default async function StoreHomePage({
                   data-hero-split-media
                   className={`relative aspect-square md:aspect-auto md:h-full ${imageOnRight ? "md:order-2" : ""}`}
                   style={
-                    splitImgAspect
-                      ? ({ "--store-hero-split-img": splitImgAspect } as React.CSSProperties)
+                    splitImgAspect || splitImageBg
+                      ? ({
+                          ...(splitImgAspect ? { "--store-hero-split-img": splitImgAspect } : {}),
+                          ...(splitImageBg ? { backgroundColor: splitImageBg } : {}),
+                        } as React.CSSProperties)
                       : undefined
                   }
                   {...(splitImgAspect ? { "data-hero-split-img": "" } : {})}

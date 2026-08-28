@@ -80,6 +80,7 @@ type EditorPayload = {
     heroSplitMobileOrder?: string;
     heroSplitHeight?: string;
     heroSplitTextBg?: string | null;
+    heroSplitImageBg?: string | null;
     heroMagazineRuleWeight?: string;
     heroMagazineRuleTone?: string;
     heroMagazineGap?: string;
@@ -543,6 +544,15 @@ export async function saveEditorState(slug: string, payload: EditorPayload) {
       } else {
         const hex = normalizeHexColor(v);
         if (hex) layoutPatch.heroSplitTextBg = hex;
+      }
+    }
+    if (payload.layout.heroSplitImageBg !== undefined) {
+      const v = payload.layout.heroSplitImageBg;
+      if (v === null || v === "") {
+        layoutPatch.heroSplitImageBg = null;
+      } else {
+        const hex = normalizeHexColor(v);
+        if (hex) layoutPatch.heroSplitImageBg = hex;
       }
     }
     if (payload.layout.heroSplitHeight !== undefined) {
