@@ -19,6 +19,7 @@ import {
 // 所以用內文那條線（WCAG 1.4.3 的 4.5）判，不用非文字元素的 3。
 const CTA_TEXT_CONTRAST_MIN = 4.5;
 import HeroAdaptiveBanner from "./HeroAdaptiveBanner";
+import { pickHeroImageBounds } from "@/lib/hero-image-bounds";
 
 type Params = Promise<{ slug: string }>;
 
@@ -1951,6 +1952,12 @@ export default async function StoreHomePage({
                       ? theme.layout.heroFullImageBg ?? undefined
                       : undefined
                   }
+                  // 編輯器先偵測好的主體邊界。只在就是這張圖時才傳，SSR 第一張就是正確
+                  // 比例、第一屏不會跳；換了圖還沒存、或舊店沒存過，元件自己照舊偵測。
+                  initialBounds={pickHeroImageBounds(
+                    theme.layout.heroImageBounds,
+                    theme.heroUrl
+                  )}
                 />
                 {(() => {
                   // 主標拖動：data-edit-drag 只綁在 h1，不綁外層整塊。

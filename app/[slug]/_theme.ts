@@ -9,6 +9,10 @@ import {
 } from "@/lib/theme-scale";
 import { normalizeHexColor } from "@/lib/hex-color";
 import {
+  normalizeHeroImageBounds,
+  type HeroImageBounds,
+} from "@/lib/hero-image-bounds";
+import {
   sanitizeSectionStyles,
   type SectionStyle,
 } from "@/lib/section-style-schema";
@@ -861,6 +865,13 @@ export interface StoreTheme {
     // cover 時整個框被照片蓋住、設了也看不到，page.tsx 只在 contain 時才傳進元件；
     // 沒設完全不輸出 backgroundColor，既有店家一模一樣。
     heroFullImageBg: string | null;    // 滿版圖框底色，hex；null = 跟全站底色
+    // 滿版圖照片的主體邊界（編輯器換照片時自動偵測存下來的，不是商家手動設的）。
+    // HeroAdaptiveBanner 一直是在客人的瀏覽器裡偵測照片自帶的留白，偵測完才知道 banner
+    // 該多高；伺服器端不知道，只能先畫 2:1 的框頂著，偵測完再換——每位客人每次打開第一屏
+    // 都會跳一下，店名跟按鈕跟著上下位移。存了邊界，公開頁 SSR 第一張就是正確比例。
+    // 帶 url 是為了認得出「這是哪一張圖的」：商家換了圖、舊邊界對不上就當沒存，客人那邊
+    // 照舊偵測。null = 沒存過（舊店、偵測失敗），行為跟以前一模一樣。
+    heroImageBounds: HeroImageBounds | null;
     heroHeight: "auto" | "short" | "tall" | "full"; // 預設 auto（adaptive 比例）
     // 全網站
     fontScale: number;                 // 全網站字體 multiplier 0.8-1.3（預設 1.0）
@@ -1563,6 +1574,7 @@ function resolveLayout(raw: unknown): StoreTheme["layout"] {
     })(),
     heroFullImageFit: l.heroFullImageFit === "contain" ? ("contain" as const) : ("cover" as const),
     heroFullImageBg: normalizeHexColor(l.heroFullImageBg),
+    heroImageBounds: normalizeHeroImageBounds(l.heroImageBounds),
     heroHeight: (() => {
       const v = l.heroHeight;
       if (v === "short" || v === "tall" || v === "full" || v === "auto") return v;

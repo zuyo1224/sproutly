@@ -20,6 +20,10 @@ import {
 } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import { saveEditorState } from "./actions";
+import {
+  detectHeroImageBounds,
+  type HeroImageBounds,
+} from "@/lib/hero-image-bounds";
 import { AssetPicker } from "@/app/_components/asset-picker";
 import { EditorAIChat } from "./editor-ai-chat";
 import {
@@ -160,6 +164,7 @@ type EditorTheme = {
     heroImageMaxHeight: "none" | "screen" | "short";
     heroFullImageFit: "cover" | "contain";
     heroFullImageBg: string | null;
+    heroImageBounds: HeroImageBounds | null;
     heroHeight: "auto" | "short" | "tall" | "full";
     fontScale: number;
     sectionPaddingScale: "compact" | "default" | "spacious";
@@ -711,6 +716,34 @@ export function EditorWorkspace({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  // 滿版 hero 照片的主體邊界：換了照片（或舊店從沒存過）就在這裡偵測一次、存進
+  // theme.layout.heroImageBounds。公開頁 SSR 拿到就能直接畫出正確比例，客人第一屏
+  // 不用先頂著 2:1 的框等偵測、不會跳。這是系統自己算的不是商家按的，所以直接改
+  // theme、不推復原點（不然商家按一下復原退掉的是一個看不見的東西）；只標 dirty 讓
+  // auto-save 順手存。同一張圖只試一次：偵測失敗（CORS 拿不到像素）就放著，公開頁
+  // 退回客人那邊自己偵測，跟以前一模一樣。
+  const boundsAttemptRef = useRef<string | null>(null);
+  useEffect(() => {
+    const url = theme.heroUrl;
+    if (!url) return;
+    if (theme.layout.heroImageBounds?.url === url) return;
+    if (boundsAttemptRef.current === url) return;
+    boundsAttemptRef.current = url;
+    let cancelled = false;
+    detectHeroImageBounds(url).then((b) => {
+      if (cancelled || !b) return;
+      setTheme((t) => {
+        // 偵測期間商家又換了圖：這筆是舊圖的，丟掉（新圖那輪會自己再跑）
+        if (t.heroUrl !== url) return t;
+        return { ...t, layout: { ...t.layout, heroImageBounds: b } };
+      });
+      setDirty(true);
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, [theme.heroUrl, theme.layout.heroImageBounds]);
+
   // Auto-save: 改動後 2 秒沒新動作就自動 save（silent，不 reload iframe）
   useEffect(() => {
     if (!dirty || !autoSaveEnabled) return;
@@ -1059,6 +1092,7 @@ export function EditorWorkspace({
           heroImageMaxHeight: t.layout.heroImageMaxHeight,
           heroFullImageFit: t.layout.heroFullImageFit,
           heroFullImageBg: t.layout.heroFullImageBg,
+          heroImageBounds: t.layout.heroImageBounds,
           heroHeight: t.layout.heroHeight,
           fontScale: t.layout.fontScale,
           sectionPaddingScale: t.layout.sectionPaddingScale,
@@ -3936,8 +3970,8 @@ export function EditorWorkspace({
                 <p className="text-[10px] text-stone-500 mt-1">
                   上一格把太高的照片收到上限之後，多出來的那截怎麼辦。裁上下是照原本對齊
                   主體的位置切掉頭尾，店面照、桌面照這樣就對；有些照片哪一截都不能切——
-                  整株連盆的植物、上下都有字的海報——選整張顯示就整張縮進那個框裡，一點
-                  都不裁，放不滿的邊露出全站底色。沒設上限時照片本來就不會被切，這格不會出現
+                  整株連盆的植物、上下都有字的海報——選整張顯示就把主體整個縮進那個框裡
+                 （圖自帶的留白會先裁掉），一點都不裁，放不滿的邊露出全站底色。沒設上限時照片本來就不會被切，這格不會出現
                 </p>
               </Field>
             )}

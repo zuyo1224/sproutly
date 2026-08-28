@@ -9,6 +9,7 @@ import {
   clampFreePos,
 } from "@/lib/theme-scale";
 import { normalizeHexColor } from "@/lib/hex-color";
+import { normalizeHeroImageBounds } from "@/lib/hero-image-bounds";
 import {
   sanitizeSectionStyles,
   type SectionStyle,
@@ -108,6 +109,7 @@ type EditorPayload = {
     heroImageMaxHeight?: string;
     heroFullImageFit?: string;
     heroFullImageBg?: string | null;
+    heroImageBounds?: unknown;
     heroHeight?: string;
     fontScale?: number;
     sectionPaddingScale?: string;
@@ -759,6 +761,13 @@ export async function saveEditorState(slug: string, payload: EditorPayload) {
         const hex = normalizeHexColor(v);
         if (hex) layoutPatch.heroFullImageBg = hex;
       }
+    }
+    if (payload.layout.heroImageBounds !== undefined) {
+      // 編輯器自動偵測存進來的主體邊界。壞資料（數字不合理、沒 url）一律存 null，
+      // 公開頁就退回客人那邊自己偵測，不會畫出奇怪的比例。
+      layoutPatch.heroImageBounds = normalizeHeroImageBounds(
+        payload.layout.heroImageBounds
+      );
     }
     if (payload.layout.fontScale !== undefined) {
       const v = payload.layout.fontScale;
