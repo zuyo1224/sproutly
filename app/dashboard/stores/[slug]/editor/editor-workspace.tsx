@@ -122,6 +122,7 @@ type EditorTheme = {
     heroSplitRatio: "image-narrow" | "normal" | "image-wide";
     heroImageFocus: "top" | "center" | "bottom";
     heroImageFocusX: "left" | "center" | "right";
+    heroSplitImageFit: "cover" | "contain";
     heroSplitImageAspect: "tall" | "square" | "wide";
     heroSplitTextAlign: "top" | "center" | "bottom";
     heroSplitTextAlignX: "left" | "center" | "right";
@@ -1015,6 +1016,7 @@ export function EditorWorkspace({
           heroSplitRatio: t.layout.heroSplitRatio,
           heroImageFocus: t.layout.heroImageFocus,
           heroImageFocusX: t.layout.heroImageFocusX,
+          heroSplitImageFit: t.layout.heroSplitImageFit,
           heroSplitImageAspect: t.layout.heroSplitImageAspect,
           heroSplitTextAlign: t.layout.heroSplitTextAlign,
           heroSplitTextAlignX: t.layout.heroSplitTextAlignX,
@@ -2726,6 +2728,36 @@ export function EditorWorkspace({
                   橫式照片（店面外觀、桌上一排商品）放進去被切掉的是左右兩邊——主體站在
                   畫面左邊的照片，從正中間切下去主體只剩半個。選留左緣就往右切，留右緣就
                   往左切；跟上一格可以疊著用，留上緣加留左緣就是保留左上角
+                </p>
+              </Field>
+            )}
+            {theme.layout.heroStyle === "split" && (
+              <Field label="照片完整度">
+                <div className="grid grid-cols-2 gap-1.5">
+                  {([
+                    { v: "cover", label: "鋪滿框" },
+                    { v: "contain", label: "整張顯示" },
+                  ] as const).map((opt) => (
+                    <button
+                      key={opt.v}
+                      type="button"
+                      onClick={() => updateLayout({ heroSplitImageFit: opt.v })}
+                      aria-pressed={theme.layout.heroSplitImageFit === opt.v}
+                      className={`rounded-lg border py-2 text-xs transition ${
+                        theme.layout.heroSplitImageFit === opt.v
+                          ? "border-emerald-500 bg-emerald-50 text-emerald-900"
+                          : "border-stone-200 text-stone-600 hover:border-stone-400"
+                      }`}
+                    >
+                      {opt.label}
+                    </button>
+                  ))}
+                </div>
+                <p className="text-[10px] text-stone-500 mt-1">
+                  上面兩格取景挑的是切哪一邊，前提是照片一定會被切。有些照片哪邊都不能切
+                  ——整株連盆的植物、四邊帶留白的商品棚拍——選整張顯示就一點都不裁，放不滿
+                  的地方露出這一段的底色；取景那兩格照樣有用，變成整張圖往框的哪一邊靠。
+                  照片本身就是滿版店面照、想要撐滿整個半屏的店維持鋪滿框
                 </p>
               </Field>
             )}

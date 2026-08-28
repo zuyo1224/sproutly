@@ -2326,7 +2326,11 @@ export default async function StoreHomePage({
                     priority
                     sizes="(min-width: 768px) 50vw, 100vw"
                     quality={85}
-                    className="object-cover"
+                    // 照片完整度（heroSplitImageFit）。整張顯示就不裁，放不滿的邊露出 section
+                    // 的底色；object-position 對 contain 一樣有效，取景那兩格變成整張圖往哪邊靠。
+                    className={
+                      theme.layout.heroSplitImageFit === "contain" ? "object-contain" : "object-cover"
+                    }
                     // 照片取景。圖框的形狀是版型定的（手機正方形、平板以上整欄高），跟照片
                     // 本身比例不一樣就一定裁掉一邊，而裁的位置原本永遠是正中間。這裡直接寫
                     // 在這張圖的 inline style 上就夠——object-position 跟 class 上的

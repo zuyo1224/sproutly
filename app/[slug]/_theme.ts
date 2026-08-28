@@ -464,6 +464,15 @@ export interface StoreTheme {
     //   right  保留右緣（切左邊）
     // 兩格各管一軸、可以疊：留上緣 + 留左緣 = 保留左上角。
     heroImageFocusX: "left" | "center" | "right"; // split 照片左右取景（預設 center = 不覆寫）
+    // split 照片鋪滿圖框還是整張顯示。上面兩格挑的是「裁哪一邊」，前提都是照片一定會被
+    // 裁：圖框的形狀是版型定的（平板以上整欄高的直式框、手機正方形），照片比例對不上就
+    // 鋪滿（object-cover）切掉多的那一截。有些照片哪一邊都不能切——整株連盆的植物、
+    // 四邊帶留白的商品棚拍、上下都有字的海報——兩格取景怎麼按都只是在選犧牲哪一頭。
+    // 各段卡片圖框已經有同一格（mediaFit），hero 這張不在卡片裡，規則掛不到，要自己一格：
+    //   cover   不覆寫（維持原本鋪滿）
+    //   contain 整張顯示，放不滿的地方露出這一段的底色；取景那兩格照樣有效，變成整張圖
+    //           往框的哪一邊靠
+    heroSplitImageFit: "cover" | "contain"; // split 照片完整度（預設 cover = 不覆寫）
     // split 版型在手機上那張圖的形狀。上面兩格處理的是平板以上：欄寬讓寬了、裁切保留哪一端
     // 也能挑了，可是手機完全沒被碰到——手機的 split 是圖上文下的單欄堆疊，圖框寫死
     // aspect-square，那個正方形跟商家上傳什麼圖無關，永遠是一比一。
@@ -1363,6 +1372,7 @@ function resolveLayout(raw: unknown): StoreTheme["layout"] {
       if (v === "left" || v === "right") return v;
       return "center" as const;
     })(),
+    heroSplitImageFit: l.heroSplitImageFit === "contain" ? ("contain" as const) : ("cover" as const),
     heroSplitImageAspect: (() => {
       const v = l.heroSplitImageAspect;
       if (v === "tall" || v === "wide") return v;
