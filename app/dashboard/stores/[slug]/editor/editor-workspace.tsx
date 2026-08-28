@@ -722,7 +722,16 @@ export function EditorWorkspace({
   // theme、不推復原點（不然商家按一下復原退掉的是一個看不見的東西）；只標 dirty 讓
   // auto-save 順手存。同一張圖只試一次：偵測失敗（CORS 拿不到像素）就放著，公開頁
   // 退回客人那邊自己偵測，跟以前一模一樣。
+  // 另外記一筆「這張圖現在算到哪」給 Hero 面板顯示：以前偵測失敗完全沒聲音，商家
+  // 換了一張外站圖、公開頁第一屏還是跳，卻不知道是這張圖拿不到像素。算好了不用另外
+  // 記——theme.layout.heroImageBounds.url 就是現在這張就代表算好了。
   const boundsAttemptRef = useRef<string | null>(null);
+  const [boundsStatus, setBoundsStatus] = useState<{
+    url: string;
+    state: "detecting" | "failed";
+  } | null>(null);
+  // 「再算一次」按的是這個：把「同一張只試一次」的記號清掉，effect 就會再跑
+  const [boundsRetryTick, setBoundsRetryTick] = useState(0);
   useEffect(() => {
     const url = theme.heroUrl;
     if (!url) return;
@@ -730,8 +739,14 @@ export function EditorWorkspace({
     if (boundsAttemptRef.current === url) return;
     boundsAttemptRef.current = url;
     let cancelled = false;
+    setBoundsStatus({ url, state: "detecting" });
     detectHeroImageBounds(url).then((b) => {
-      if (cancelled || !b) return;
+      if (cancelled) return;
+      if (!b) {
+        setBoundsStatus({ url, state: "failed" });
+        return;
+      }
+      setBoundsStatus(null);
       setTheme((t) => {
         // 偵測期間商家又換了圖：這筆是舊圖的，丟掉（新圖那輪會自己再跑）
         if (t.heroUrl !== url) return t;
@@ -742,7 +757,7 @@ export function EditorWorkspace({
     return () => {
       cancelled = true;
     };
-  }, [theme.heroUrl, theme.layout.heroImageBounds]);
+  }, [theme.heroUrl, theme.layout.heroImageBounds, boundsRetryTick]);
 
   // Auto-save: 改動後 2 秒沒新動作就自動 save（silent，不 reload iframe）
   useEffect(() => {
@@ -1714,6 +1729,51 @@ export function EditorWorkspace({
                       移除
                     </button>
                   </div>
+                  {/* 滿版版型會先算這張照片的主體邊界存起來（客人第一屏才不會跳）。
+                      算中、算好、算不出來各講一句，不然商家換了外站圖公開頁還是跳，
+                      卻不知道是這張圖拿不到像素 */}
+                  {theme.layout.heroStyle === "full-image" &&
+                    (() => {
+                      const url = theme.heroUrl;
+                      const ready = theme.layout.heroImageBounds?.url === url;
+                      const st =
+                        boundsStatus && boundsStatus.url === url ? boundsStatus.state : null;
+                      if (ready) {
+                        return (
+                          <p className="text-[10px] text-stone-500">
+                            這張照片的比例已經算好，客人打開第一屏不會跳
+                          </p>
+                        );
+                      }
+                      if (st === "failed") {
+                        return (
+                          <div className="flex items-start gap-2 rounded-lg border border-amber-200 bg-amber-50 px-2.5 py-2">
+                            <p className="flex-1 text-[10px] leading-relaxed text-amber-900">
+                              這張照片的比例還沒算好：圖是從別的網站拿的，瀏覽器不讓我們讀它的
+                              像素。店面照樣能開，只是客人第一屏會等照片載完才長成該有的高度、
+                              會跳一下。把圖上傳到圖庫再挑一次就能算
+                            </p>
+                            <button
+                              type="button"
+                              onClick={() => {
+                                boundsAttemptRef.current = null;
+                                setBoundsRetryTick((n) => n + 1);
+                              }}
+                              className="shrink-0 rounded border border-amber-300 px-2 py-1 text-[10px] text-amber-900 hover:bg-amber-100 transition"
+                            >
+                              再算一次
+                            </button>
+                          </div>
+                        );
+                      }
+                      return (
+                        <p className="text-[10px] text-stone-500">
+                          {st === "detecting"
+                            ? "正在算這張照片的比例⋯"
+                            : "這張照片的比例還沒算，開著編輯器就會自己算"}
+                        </p>
+                      );
+                    })()}
                 </div>
               ) : (
                 <button
