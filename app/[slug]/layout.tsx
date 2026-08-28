@@ -1159,14 +1159,29 @@ export default async function PublicStoreLayout({
            瓶口偏偏都在上面，裁掉的剛好是重點。上面那條「照片比例」換的是框的形狀，
            救不了「同一個框裡該留哪一端」。規則落在 .sproutly-card-image 裡的 img——
            四段的卡片圖都是鋪滿圖框的 img（next/image fill），沒有一張帶 inline 的
-           object-position，這條規則落得下去。只有上下兩檔：卡片圖框永遠比照片窄邊裁
-           長邊，直式照片被裁的是上下；沒設（或選「置中」）就沒 attribute、整條規則
-           不存在，照片維持置中裁。 */
-        section[data-edit-target][data-media-focus="top"] .sproutly-card-image img {
-          object-position: 50% 0%;
+           object-position，這條規則落得下去。
+           上下（data-media-focus）跟左右（data-media-focus-x）是兩格、各管一軸：上下那格
+           剛開時只給兩檔，理由是圖框永遠比照片窄邊裁長邊、直式照片被裁的是上下——那是
+           圖框比例還寫死的時候；「照片比例」開放之後橫式照片放進正方 / 直式的框，被切的
+           變成左右，上下那格按了沒反應，所以補左右那格。兩格要能疊（留上緣 + 留左緣 =
+           保留左上角），attribute 選擇器不可能寫遍四種組合，改成各自只設一個 CSS 變數、
+           由同一條規則拼成 object-position；沒設的那一軸 fallback 回 50%（＝原本的置中）。
+           兩格都沒設（或都選「置中」）就沒 attribute、整條規則不存在，照片維持置中裁。 */
+        section[data-edit-target][data-media-focus="top"] {
+          --sproutly-media-focus-y: 0%;
         }
-        section[data-edit-target][data-media-focus="bottom"] .sproutly-card-image img {
-          object-position: 50% 100%;
+        section[data-edit-target][data-media-focus="bottom"] {
+          --sproutly-media-focus-y: 100%;
+        }
+        section[data-edit-target][data-media-focus-x="left"] {
+          --sproutly-media-focus-x: 0%;
+        }
+        section[data-edit-target][data-media-focus-x="right"] {
+          --sproutly-media-focus-x: 100%;
+        }
+        section[data-edit-target][data-media-focus] .sproutly-card-image img,
+        section[data-edit-target][data-media-focus-x] .sproutly-card-image img {
+          object-position: var(--sproutly-media-focus-x, 50%) var(--sproutly-media-focus-y, 50%);
         }
 
         /* 照片放不放得下整張：editor 各 section panel「照片完整度」兩按鈕（鋪滿 / 整張）。

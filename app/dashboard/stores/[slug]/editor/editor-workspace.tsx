@@ -4773,6 +4773,7 @@ export function EditorWorkspace({
           const mediaRadius = cur.mediaRadius ?? null;
           const mediaAspect = cur.mediaAspect ?? null;
           const mediaFocus = cur.mediaFocus ?? null;
+          const mediaFocusX = cur.mediaFocusX ?? null;
           const mediaFit = cur.mediaFit ?? null;
           const partnerLogoScale = cur.partnerLogoScale ?? null;
           const partnerLogoOpacity = cur.partnerLogoOpacity ?? null;
@@ -7384,6 +7385,41 @@ export function EditorWorkspace({
                     <button
                       type="button"
                       onClick={() => patch({ mediaFocus: null })}
+                      className="text-stone-500 hover:text-stone-800 underline"
+                    >
+                      清除
+                    </button>
+                  )}
+                </div>
+              </Field>
+              <Field label="照片左右取景">
+                <div className="grid grid-cols-3 gap-1.5">
+                  {([
+                    { v: "left", label: "靠左" },
+                    { v: "auto", label: "置中" },
+                    { v: "right", label: "靠右" },
+                  ] as const).map((opt) => (
+                    <button
+                      key={opt.v}
+                      type="button"
+                      onClick={() => patch({ mediaFocusX: opt.v })}
+                      aria-pressed={(mediaFocusX ?? "auto") === opt.v}
+                      className={`rounded-lg border py-2 text-xs transition ${
+                        (mediaFocusX ?? "auto") === opt.v
+                          ? "border-emerald-500 bg-emerald-50 text-emerald-900"
+                          : "border-stone-200 text-stone-600 hover:border-stone-400"
+                      }`}
+                    >
+                      {opt.label}
+                    </button>
+                  ))}
+                </div>
+                <div className="mt-1.5 flex items-center justify-between text-[11px] text-stone-500">
+                  <span>橫式照片放進正方或直式的框時保留哪一側，可跟上面那格疊著用</span>
+                  {mediaFocusX && (
+                    <button
+                      type="button"
+                      onClick={() => patch({ mediaFocusX: null })}
                       className="text-stone-500 hover:text-stone-800 underline"
                     >
                       清除
