@@ -133,6 +133,8 @@ type EditorTheme = {
     heroSplitHeight: "content" | "compact" | "normal";
     heroSplitTextBg: string | null;
     heroSplitImageBg: string | null;
+    heroSplitDivider: "none" | "thin" | "medium" | "thick";
+    heroSplitDividerTone: "normal" | "strong" | "accent";
     heroMagazineRuleWeight: "normal" | "medium" | "thick";
     heroMagazineRuleTone: "normal" | "faint" | "strong" | "accent";
     heroMagazineGap: "tight" | "medium" | "normal";
@@ -1030,6 +1032,8 @@ export function EditorWorkspace({
           heroSplitHeight: t.layout.heroSplitHeight,
           heroSplitTextBg: t.layout.heroSplitTextBg,
           heroSplitImageBg: t.layout.heroSplitImageBg,
+          heroSplitDivider: t.layout.heroSplitDivider,
+          heroSplitDividerTone: t.layout.heroSplitDividerTone,
           heroMagazineRuleWeight: t.layout.heroMagazineRuleWeight,
           heroMagazineRuleTone: t.layout.heroMagazineRuleTone,
           heroMagazineGap: t.layout.heroMagazineGap,
@@ -3096,6 +3100,61 @@ export function EditorWorkspace({
                   是另一個顏色。填照片自己的底色（白底就填 #ffffff）讓邊跟照片接成一片，
                   或填跟文字那半一樣的色讓整段是一塊。鋪滿框時這格看不到，所以只在整張
                   顯示時出現
+                </p>
+              </Field>
+            )}
+            {theme.layout.heroStyle === "split" && (
+              <Field label="圖文之間的線">
+                <div className="grid grid-cols-4 gap-1.5">
+                  {([
+                    { v: "none", label: "沒有" },
+                    { v: "thin", label: "細" },
+                    { v: "medium", label: "中" },
+                    { v: "thick", label: "粗" },
+                  ] as const).map((opt) => (
+                    <button
+                      key={opt.v}
+                      type="button"
+                      onClick={() => updateLayout({ heroSplitDivider: opt.v })}
+                      aria-pressed={theme.layout.heroSplitDivider === opt.v}
+                      className={`rounded-lg border py-2 text-xs transition ${
+                        theme.layout.heroSplitDivider === opt.v
+                          ? "border-emerald-500 bg-emerald-50 text-emerald-900"
+                          : "border-stone-200 text-stone-600 hover:border-stone-400"
+                      }`}
+                    >
+                      {opt.label}
+                    </button>
+                  ))}
+                </div>
+                {theme.layout.heroSplitDivider !== "none" && (
+                  <div className="grid grid-cols-3 gap-1.5 mt-1.5">
+                    {([
+                      { v: "normal", label: "淡" },
+                      { v: "strong", label: "深" },
+                      { v: "accent", label: "主色" },
+                    ] as const).map((opt) => (
+                      <button
+                        key={opt.v}
+                        type="button"
+                        onClick={() => updateLayout({ heroSplitDividerTone: opt.v })}
+                        aria-pressed={theme.layout.heroSplitDividerTone === opt.v}
+                        className={`rounded-lg border py-2 text-xs transition ${
+                          theme.layout.heroSplitDividerTone === opt.v
+                            ? "border-emerald-500 bg-emerald-50 text-emerald-900"
+                            : "border-stone-200 text-stone-600 hover:border-stone-400"
+                        }`}
+                      >
+                        {opt.label}
+                      </button>
+                    ))}
+                  </div>
+                )}
+                <p className="text-[10px] text-stone-500 mt-1">
+                  照片跟文字那半相接的地方原本什麼都沒有，兩邊底色只差一階的店看起來像
+                  照片下面糊了一塊。開一條線把兩塊分清楚：桌機畫在兩欄中間、手機畫在照片
+                  跟文字之間，照片靠哪一邊、手機誰在上面都會自己跟著換邊。淡是全站分隔線
+                  的顏色，深跟字同色（深底淺字的店會自動變淺線），主色跟按鈕同色
                 </p>
               </Field>
             )}

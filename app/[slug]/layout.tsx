@@ -2018,6 +2018,32 @@ export default async function PublicStoreLayout({
           }
         }
 
+        /* split 版型圖文相接處的分隔線：editor Hero panel「圖文之間的線」兩組按鈕
+           （粗細 / 深淺）。粗細與顏色由公開頁算好放在 section 的
+           --store-hero-split-divider-w / -c，這裡只管畫在照片那個 div 的哪一邊：
+           手機圖上文下畫下緣、「文字在上」那檔畫上緣；平板以上照片在左畫右緣、
+           在右（data-hero-split-image-side="right"）畫左緣。分兩個斷點各自寫、每條都
+           先把另一邊歸零，換斷點時不會兩邊同時有線。
+           沒開這格不輸出 attribute，整組規則不存在，既有店家一模一樣。 */
+        @media (max-width: 767px) {
+          section[data-edit-target="hero"][data-hero-split-divider] [data-hero-split-media] {
+            border-bottom: var(--store-hero-split-divider-w) solid var(--store-hero-split-divider-c);
+          }
+          section[data-edit-target="hero"][data-hero-split-divider][data-hero-split-mobile="text-first"] [data-hero-split-media] {
+            border-bottom: 0;
+            border-top: var(--store-hero-split-divider-w) solid var(--store-hero-split-divider-c);
+          }
+        }
+        @media (min-width: 768px) {
+          section[data-edit-target="hero"][data-hero-split-divider] [data-hero-split-media] {
+            border-right: var(--store-hero-split-divider-w) solid var(--store-hero-split-divider-c);
+          }
+          section[data-edit-target="hero"][data-hero-split-divider][data-hero-split-image-side="right"] [data-hero-split-media] {
+            border-right: 0;
+            border-left: var(--store-hero-split-divider-w) solid var(--store-hero-split-divider-c);
+          }
+        }
+
         /* split 版型區段高度：editor Hero panel「這一段有多高」三按鈕
            （跟著內容 / 稍矮 / 跟預設）。要蓋掉的是 section class 上的 md:min-h-screen。
            寫成 CSS 而不是 inline 的 minHeight，是因為 inline 會連手機那個 min-h-[80vh]

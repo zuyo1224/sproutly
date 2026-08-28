@@ -615,6 +615,19 @@ export interface StoreTheme {
     // 鋪滿框的時候框整個被照片蓋住、這格看不到，所以 editor 只在整張顯示時才長出來。
     // 沒設完全不覆寫（連 backgroundColor 都不輸出），既有店家算出來一模一樣。
     heroSplitImageBg: string | null;   // split 照片欄底色，hex；null = 跟全站底色
+    // split 版型圖文相接處那條線。上面兩格把文字那半、照片那半的底色各自開了之後，
+    // 兩塊色在中間相接的地方沒有任何界線：桌機是左右兩欄直接貼著，手機圖上文下堆疊
+    // 更明顯——照片下緣直接接文字那塊底色，兩個顏色只差一階的店（米白配米色）看起來
+    // 像照片下面糊了一塊；照片選整張顯示、框底色又填了跟文字那半同色的店，整段成了
+    // 一塊、照片浮在中間，跟文字半欄沒有關係。雜誌版型的骨架是那兩條橫線，這個版型
+    // 要有骨架也只能是這一條。
+    // 線畫在照片那個 div 的 border 上，哪一邊由斷點決定（規則在 layout.tsx）：手機
+    // 照片在上就畫下緣、「文字在上」就畫上緣；平板以上照片在左畫右緣、在右畫左緣。
+    // 粗細只給 1 / 2 / 3px——再粗就不是線是色塊。深淺跟雜誌橫線同一套口徑：normal
+    // 用全站分隔線色、strong 用全站文字色（深底淺字的店自動變淺線）、accent 用全站主色。
+    // none 完全不輸出（連 attribute 都沒有），既有店家算出來一模一樣。
+    heroSplitDivider: "none" | "thin" | "medium" | "thick"; // split 圖文分隔線粗細（預設 none = 沒有線）
+    heroSplitDividerTone: "normal" | "strong" | "accent"; // split 圖文分隔線深淺（預設 normal = 全站分隔線色）
     // 雜誌版型上下那兩條橫線。整個版型的骨架就是這兩條線——上面那條把小標與店名那行
     // 框起來、下面那條把落款與按鈕那行框起來，中間才是大字，是它們讓這個版型看起來像
     // 一本雜誌的封面而不是一頁置中的字。可是兩條線的粗細與顏色都寫死（1px、theme.border），
@@ -1434,6 +1447,16 @@ function resolveLayout(raw: unknown): StoreTheme["layout"] {
     })(),
     heroSplitTextBg: normalizeHexColor(l.heroSplitTextBg),
     heroSplitImageBg: normalizeHexColor(l.heroSplitImageBg),
+    heroSplitDivider: (() => {
+      const v = l.heroSplitDivider;
+      if (v === "thin" || v === "medium" || v === "thick") return v;
+      return "none" as const;
+    })(),
+    heroSplitDividerTone: (() => {
+      const v = l.heroSplitDividerTone;
+      if (v === "strong" || v === "accent") return v;
+      return "normal" as const;
+    })(),
     heroSplitHeight: (() => {
       const v = l.heroSplitHeight;
       if (v === "content" || v === "compact") return v;

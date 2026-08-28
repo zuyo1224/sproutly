@@ -2288,6 +2288,25 @@ export default async function StoreHomePage({
             // 照片載入前那一瞬間的閃色。跟上面那格一樣寫在自己那個 div 的 inline style 上。
             const splitImageBg =
               theme.layout.heroSplitImageFit === "contain" ? theme.layout.heroSplitImageBg : null;
+            // 圖文相接處的分隔線（heroSplitDivider / heroSplitDividerTone）。線畫在照片那個
+            // div 的 border 上，畫哪一邊跟斷點與圖文順序有關（手機看上下順序、桌機看左右），
+            // 所以這裡只把粗細與顏色算好放進變數、掛 attribute，四條規則寫在 layout.tsx 的
+            // media query 裡。照片靠右那一檔要多掛一個 attribute 讓桌機那條規則知道換邊。
+            // none 完全不輸出，既有店家一模一樣。
+            const splitDividerWidth =
+              theme.layout.heroSplitDivider === "thick"
+                ? "3px"
+                : theme.layout.heroSplitDivider === "medium"
+                  ? "2px"
+                  : theme.layout.heroSplitDivider === "thin"
+                    ? "1px"
+                    : null;
+            const splitDividerColor =
+              theme.layout.heroSplitDividerTone === "strong"
+                ? theme.text
+                : theme.layout.heroSplitDividerTone === "accent"
+                  ? accentColor
+                  : theme.border;
             // 文字那欄裡面那三段直向間距（小標→主標→副標→按鈕列）。原本寫死
             // mb-6 / mt-6 / mt-10（1.5 / 1.5 / 2.5rem），是配預設主標字級挑的。
             // 三個值套同一個倍率，6:6:10 的層次不變，只有整體疏密變；
@@ -2320,14 +2339,22 @@ export default async function StoreHomePage({
                 {...(splitMobileTextFirst ? { "data-hero-split-mobile": "text-first" } : {})}
                 {...(splitHeight ? { "data-hero-split-height": splitHeight } : {})}
                 style={
-                  splitCols
+                  splitCols || splitDividerWidth
                     ? ({
                         background: theme.bg,
-                        "--store-hero-split": splitCols,
+                        ...(splitCols ? { "--store-hero-split": splitCols } : {}),
+                        ...(splitDividerWidth
+                          ? {
+                              "--store-hero-split-divider-w": splitDividerWidth,
+                              "--store-hero-split-divider-c": splitDividerColor,
+                            }
+                          : {}),
                       } as React.CSSProperties)
                     : { background: theme.bg }
                 }
                 {...(splitCols ? { "data-hero-split": "" } : {})}
+                {...(splitDividerWidth ? { "data-hero-split-divider": "" } : {})}
+                {...(splitDividerWidth && imageOnRight ? { "data-hero-split-image-side": "right" } : {})}
                 data-edit-target="hero"
                 data-edit-label="Hero 區段"
               >
