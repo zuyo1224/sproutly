@@ -15,12 +15,17 @@ export default function HeroAdaptiveBanner({
   url,
   alt,
   maxHeight,
+  fit,
 }: {
   url: string;
   alt: string;
   /** 商家在「照片最高佔多少螢幕」那格挑的上限（CSS 長度）。沒設就不限，
       banner 高度照自適應算出來的比例走，跟以前一模一樣。 */
   maxHeight?: string;
+  /** 被 maxHeight 收到上限之後超出的那截怎麼辦。不傳 = cover（照原本對齊主體
+      裁上下）；"contain" = 整張縮進框裡不裁，放不滿的邊露出底下的底色。
+      contain 時圖整張都在框內，對齊主體的 objectPosition 沒有意義，改置中。 */
+  fit?: "contain";
 }) {
   const [bounds, setBounds] = useState<Bounds | null>(null);
 
@@ -142,7 +147,11 @@ export default function HeroAdaptiveBanner({
         fill
         sizes="100vw"
         priority
-        style={{ objectFit: "cover", objectPosition }}
+        style={
+          fit === "contain"
+            ? { objectFit: "contain", objectPosition: "center" }
+            : { objectFit: "cover", objectPosition }
+        }
       />
     </div>
   );

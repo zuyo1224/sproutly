@@ -156,6 +156,7 @@ type EditorTheme = {
     heroTextAlignX: "left" | "center" | "right";
     heroTextGap: "tight" | "normal" | "loose";
     heroImageMaxHeight: "none" | "screen" | "short";
+    heroFullImageFit: "cover" | "contain";
     heroHeight: "auto" | "short" | "tall" | "full";
     fontScale: number;
     sectionPaddingScale: "compact" | "default" | "spacious";
@@ -1051,6 +1052,7 @@ export function EditorWorkspace({
           heroTextAlignX: t.layout.heroTextAlignX,
           heroTextGap: t.layout.heroTextGap,
           heroImageMaxHeight: t.layout.heroImageMaxHeight,
+          heroFullImageFit: t.layout.heroFullImageFit,
           heroHeight: t.layout.heroHeight,
           fontScale: t.layout.fontScale,
           sectionPaddingScale: t.layout.sectionPaddingScale,
@@ -3844,6 +3846,37 @@ export function EditorWorkspace({
                   那格說的是這一段至少多高，只撐得開、壓不下來。這格是「最高不超過」：
                   圖本來就矮的店選了也不會變，只有太高的才被收回來，收的方式是照原本
                   對齊主體的位置裁上下，主體不會偏掉
+                </p>
+              </Field>
+            )}
+            {theme.layout.heroStyle === "full-image" &&
+              theme.layout.heroImageMaxHeight !== "none" && (
+              <Field label="照片完整度">
+                <div className="grid grid-cols-2 gap-1.5">
+                  {([
+                    { v: "cover", label: "裁上下" },
+                    { v: "contain", label: "整張顯示" },
+                  ] as const).map((opt) => (
+                    <button
+                      key={opt.v}
+                      type="button"
+                      onClick={() => updateLayout({ heroFullImageFit: opt.v })}
+                      aria-pressed={theme.layout.heroFullImageFit === opt.v}
+                      className={`rounded-lg border py-2 text-xs transition ${
+                        theme.layout.heroFullImageFit === opt.v
+                          ? "border-emerald-500 bg-emerald-50 text-emerald-900"
+                          : "border-stone-200 text-stone-600 hover:border-stone-400"
+                      }`}
+                    >
+                      {opt.label}
+                    </button>
+                  ))}
+                </div>
+                <p className="text-[10px] text-stone-500 mt-1">
+                  上一格把太高的照片收到上限之後，多出來的那截怎麼辦。裁上下是照原本對齊
+                  主體的位置切掉頭尾，店面照、桌面照這樣就對；有些照片哪一截都不能切——
+                  整株連盆的植物、上下都有字的海報——選整張顯示就整張縮進那個框裡，一點
+                  都不裁，放不滿的邊露出全站底色。沒設上限時照片本來就不會被切，這格不會出現
                 </p>
               </Field>
             )}

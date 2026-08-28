@@ -833,6 +833,14 @@ export interface StoreTheme {
     // 本來在做的事同一件），主體不會偏掉。
     // 預設不限＝完全不輸出 max-height，既有店家算出來一模一樣。
     heroImageMaxHeight: "none" | "screen" | "short"; // 滿版圖照片高度上限（預設 none = 不限）
+    // 滿版圖版型被上一格收到上限之後，超出的那截怎麼處理。上一格的收法是裁上下（鋪滿），
+    // 主體對齊原本算好的位置，多數店面照、桌面照這樣就對；可是有些照片哪一截都不能裁——
+    // 整株連盆的植物、上下都有字的海報、四邊帶留白的棚拍——收到上限之後不是頭沒了就是
+    // 盆沒了。split 版型已經有同一格（heroSplitImageFit），這張圖走的是另一個元件，掛不到。
+    //   cover   不覆寫（維持原本裁上下）
+    //   contain 整張顯示：照片整張縮進上限的框裡，放不滿的邊露出全站底色
+    // 沒設上限時自適應本來就不裁主體，這格沒有東西可以管，editor 那格也只在設了上限時才出現。
+    heroFullImageFit: "cover" | "contain"; // 滿版圖照片完整度（預設 cover = 不覆寫）
     heroHeight: "auto" | "short" | "tall" | "full"; // 預設 auto（adaptive 比例）
     // 全網站
     fontScale: number;                 // 全網站字體 multiplier 0.8-1.3（預設 1.0）
@@ -1523,6 +1531,7 @@ function resolveLayout(raw: unknown): StoreTheme["layout"] {
       if (v === "screen" || v === "short") return v;
       return "none" as const;
     })(),
+    heroFullImageFit: l.heroFullImageFit === "contain" ? ("contain" as const) : ("cover" as const),
     heroHeight: (() => {
       const v = l.heroHeight;
       if (v === "short" || v === "tall" || v === "full" || v === "auto") return v;

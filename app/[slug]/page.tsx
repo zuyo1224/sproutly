@@ -1934,6 +1934,14 @@ export default async function StoreHomePage({
                       ? "68vh"
                       : undefined
                   }
+                  // 照片完整度（heroFullImageFit）。只在有上限時才有東西可以管：沒上限
+                  // 自適應本來就不裁主體，contain 只會把圖自帶的留白重新露出來，所以不傳。
+                  fit={
+                    theme.layout.heroImageMaxHeight !== "none" &&
+                    theme.layout.heroFullImageFit === "contain"
+                      ? "contain"
+                      : undefined
+                  }
                 />
                 {(() => {
                   // 主標拖動：data-edit-drag 只綁在 h1，不綁外層整塊。

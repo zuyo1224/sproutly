@@ -104,6 +104,7 @@ type EditorPayload = {
     heroTextAlignX?: string;
     heroTextGap?: string;
     heroImageMaxHeight?: string;
+    heroFullImageFit?: string;
     heroHeight?: string;
     fontScale?: number;
     sectionPaddingScale?: string;
@@ -727,6 +728,12 @@ export async function saveEditorState(slug: string, payload: EditorPayload) {
       const v = payload.layout.heroImageMaxHeight;
       if (v === "none" || v === "screen" || v === "short") {
         layoutPatch.heroImageMaxHeight = v;
+      }
+    }
+    if (payload.layout.heroFullImageFit !== undefined) {
+      const v = payload.layout.heroFullImageFit;
+      if (v === "cover" || v === "contain") {
+        layoutPatch.heroFullImageFit = v;
       }
     }
     if (payload.layout.fontScale !== undefined) {
