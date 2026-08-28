@@ -587,6 +587,11 @@ export default async function StoreHomePage({
     // 補規則——要蓋掉的是圖自己帶的 object-cover class，段落上的 inline style 傳不下去。
     const mediaFitVal: "contain" | undefined =
       s?.mediaFit === "contain" ? "contain" : undefined;
+    // 框底色：上一欄選「整張顯示」之後，照片放不滿的邊露出的是框的底，而框沒有自己的底、
+    // 透出來的是段落底色——白底商品圖放進米色段落會接成兩截。這一欄只給圖框自己一個底。
+    // 同樣走 attribute 讓 layout.tsx 補規則，落在 .sproutly-card-image 上。沒設就沒 attribute。
+    const mediaFrameBgVal: "white" | "dark" | undefined =
+      s?.mediaFrameBg === "white" || s?.mediaFrameBg === "dark" ? s.mediaFrameBg : undefined;
     // 合作 logo 大小：上面那四欄的規則都落在卡片格線裡的圖框（.sproutly-card-image）上，
     // 合作那段的 logo 不在圖框裡——它是直接排在 flex 容器裡的 img，高度寫死 h-8 / sm:h-10 /
     // md:h-12。方形的商圈標章、上圖下字的兩層式 logo 在 48px 高裡只剩一小塊是字，客人認不
@@ -1041,6 +1046,7 @@ export default async function StoreHomePage({
       mediaFocusVal,
       mediaFocusXVal,
       mediaFitVal,
+      mediaFrameBgVal,
       partnerLogoScaleVal,
       partnerLogoOpacityVal,
       gridGapVal,
@@ -2845,6 +2851,7 @@ export default async function StoreHomePage({
             data-media-focus={collStyle.mediaFocusVal}
             data-media-focus-x={collStyle.mediaFocusXVal}
             data-media-fit={collStyle.mediaFitVal}
+            data-media-frame-bg={collStyle.mediaFrameBgVal}
             data-grid-gap={collStyle.gridGapVal}
             data-mobile-cols={collStyle.mobileColumnsVal}
             data-card-hover={collStyle.cardHoverVal}
@@ -3053,6 +3060,7 @@ export default async function StoreHomePage({
             data-media-focus={featuredStyle.mediaFocusVal}
             data-media-focus-x={featuredStyle.mediaFocusXVal}
             data-media-fit={featuredStyle.mediaFitVal}
+            data-media-frame-bg={featuredStyle.mediaFrameBgVal}
             data-grid-gap={featuredStyle.gridGapVal}
             data-mobile-cols={featuredStyle.mobileColumnsVal}
             data-card-hover={featuredStyle.cardHoverVal}
@@ -3297,6 +3305,7 @@ export default async function StoreHomePage({
             data-media-focus={journalStyle.mediaFocusVal}
             data-media-focus-x={journalStyle.mediaFocusXVal}
             data-media-fit={journalStyle.mediaFitVal}
+            data-media-frame-bg={journalStyle.mediaFrameBgVal}
             data-grid-gap={journalStyle.gridGapVal}
             data-mobile-cols={journalStyle.mobileColumnsVal}
             data-card-hover={journalStyle.cardHoverVal}
@@ -3411,9 +3420,11 @@ export default async function StoreHomePage({
                 const fallbackImage = visibleCollections[i]?.image;
                 return (
                   <article key={i} className="sproutly-card">
+                    {/* 這段的圖框原本就有一個 inline 底（沒照片時當佔位色用）。inline 會贏過
+                        layout.tsx 那條「框底色」規則，商家設了那格時這裡讓路、沒設照舊。 */}
                     <div
                       className="sproutly-card-image aspect-[5/3] overflow-hidden relative"
-                      style={{ background: theme.surface }}
+                      style={journalStyle.mediaFrameBgVal ? undefined : { background: theme.surface }}
                     >
                       {fallbackImage ? (
                         <Image
@@ -4495,6 +4506,7 @@ export default async function StoreHomePage({
               data-media-focus={galleryStyle.mediaFocusVal}
               data-media-focus-x={galleryStyle.mediaFocusXVal}
               data-media-fit={galleryStyle.mediaFitVal}
+              data-media-frame-bg={galleryStyle.mediaFrameBgVal}
               data-grid-gap={galleryStyle.gridGapVal}
               data-mobile-cols={galleryStyle.mobileColumnsVal}
               data-card-hover={galleryStyle.cardHoverVal}

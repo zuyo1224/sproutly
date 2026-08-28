@@ -303,6 +303,15 @@ export const SECTION_STYLE_ENUMS = {
   // 是一點都不要裁，原本沒有一格做得到。選了整張進框之後也一起關掉滑過時的放大——那個
   // 放大會把照片撐出框外再被框裁掉，等於剛留住的邊又切一次，跟商家按這一格的意思相反。
   mediaFit: ["cover", "contain"],
+  // 框底色（auto 跟段落底色 / white 白 / dark 深），只在上一欄選了「整張顯示」之後才有意義。
+  // 整張進框之後照片放不滿的那兩條邊露出來的是框自己的底，而框沒有自己的底——透出來的
+  // 就是這一段的段落底色。多數版型段落底是米色或淺灰，去背的白底商品圖（電商圖庫最常見
+  // 的那種）放進去，照片自己那塊白跟框露出的米色接成兩截，一眼就看得出「這張圖放不滿」；
+  // 反過來深色段落配深色構圖的照片，邊界又整個糊掉。商家原本沒有一格動得到：「段落底色」
+  // 換的是整段連標題文字一起的底；「卡片底色」畫的是整張卡的面板、框裡那兩條邊還是透的。
+  // 這一欄只動圖框自己的底：白配白底商品圖讓照片跟框接成一片，深配淺色構圖讓照片像裱在
+  // 深色卡紙上。沒設就沒 attribute，圖框照舊透出段落底色。
+  mediaFrameBg: ["auto", "white", "dark"],
   // 合作 logo 大小（small 小 / default 照原本的 / large 大），只有合作夥伴那一段用得到。
   // 那一段整段只有兩樣東西：最上面一行小標、底下排成一列的 logo。小標的大小、字距、粗細、
   // 行距、用色五格都補過了，logo 自己一格都沒有——高度寫死 h-8 / sm:h-10 / md:h-12
@@ -1142,6 +1151,7 @@ export const SECTION_STYLE_NEUTRAL_VALUES = {
   mediaFocus: "auto",
   mediaFocusX: "auto",
   mediaFit: "cover",
+  mediaFrameBg: "auto",
   partnerLogoScale: "default",
   partnerLogoOpacity: "default",
   gridGap: "normal",

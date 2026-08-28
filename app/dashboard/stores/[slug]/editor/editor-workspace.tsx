@@ -4775,6 +4775,7 @@ export function EditorWorkspace({
           const mediaFocus = cur.mediaFocus ?? null;
           const mediaFocusX = cur.mediaFocusX ?? null;
           const mediaFit = cur.mediaFit ?? null;
+          const mediaFrameBg = cur.mediaFrameBg ?? null;
           const partnerLogoScale = cur.partnerLogoScale ?? null;
           const partnerLogoOpacity = cur.partnerLogoOpacity ?? null;
           const gridGap = cur.gridGap ?? null;
@@ -7461,6 +7462,45 @@ export function EditorWorkspace({
                   )}
                 </div>
               </Field>
+              {/* 框底色只在選了「整張顯示」之後才長出來：鋪滿框的時候照片蓋住整個框，
+                  框的底根本看不到，擺出來會是按了畫面不動的死按鈕。 */}
+              {mediaFit === "contain" && (
+                <Field label="框底色">
+                  <div className="grid grid-cols-3 gap-1.5">
+                    {([
+                      { v: "auto", label: "跟段落" },
+                      { v: "white", label: "白" },
+                      { v: "dark", label: "深" },
+                    ] as const).map((opt) => (
+                      <button
+                        key={opt.v}
+                        type="button"
+                        onClick={() => patch({ mediaFrameBg: opt.v })}
+                        aria-pressed={(mediaFrameBg ?? "auto") === opt.v}
+                        className={`rounded-lg border py-2 text-xs transition ${
+                          (mediaFrameBg ?? "auto") === opt.v
+                            ? "border-emerald-500 bg-emerald-50 text-emerald-900"
+                            : "border-stone-200 text-stone-600 hover:border-stone-400"
+                        }`}
+                      >
+                        {opt.label}
+                      </button>
+                    ))}
+                  </div>
+                  <div className="mt-1.5 flex items-center justify-between text-[11px] text-stone-500">
+                    <span>照片放不滿的邊露出的底色。白底商品圖選「白」會跟照片接成一片</span>
+                    {mediaFrameBg && (
+                      <button
+                        type="button"
+                        onClick={() => patch({ mediaFrameBg: null })}
+                        className="text-stone-500 hover:text-stone-800 underline"
+                      >
+                        清除
+                      </button>
+                    )}
+                  </div>
+                </Field>
+              )}
               {/* 這兩格只在合作夥伴那段列出來：規則落在那排 logo 上，別段沒有這種 img，
                   擺出來會是按了畫面不動的死按鈕（其他段的卡片照片歸上面那四格管）。 */}
               {selectedSection === "partners" && (

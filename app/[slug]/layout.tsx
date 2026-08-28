@@ -1205,6 +1205,23 @@ export default async function PublicStoreLayout({
           transform: none;
         }
 
+        /* 框底色：editor 各 section panel「框底色」三按鈕（跟段落 / 白 / 深），只在上一格
+           選了「整張顯示」之後才長出來。整張進框之後照片放不滿的那兩條邊露出來的是圖框
+           自己的底，而圖框（.sproutly-card-image）沒有自己的底、透出來的是段落底色——
+           多數版型那是米色或淺灰，去背的白底商品圖放進去，照片那塊白跟框露出的米色接成
+           兩截，一眼看得出「這張放不滿」；深色段落配深色構圖，邊界又整個糊掉。
+           「段落底色」換的是整段連文字的底、「卡片底色」畫的是整張卡的面板，框裡那兩條邊
+           都還是透的，商家原本沒有一格動得到。規則落在圖框本身（不是裡面的 img）：兩條邊
+           是框露出來的地方，底要給框。慢讀那段的圖框原本掛著一個 inline 的佔位底色
+           （page.tsx），商家設了這格時 page.tsx 會把那個 inline 拿掉讓路，不然 inline 會贏。
+           沒設（或選「跟段落」）就沒 attribute、整條規則不存在，圖框照舊透出段落底色。 */
+        section[data-edit-target][data-media-frame-bg="white"] .sproutly-card-image {
+          background: #ffffff;
+        }
+        section[data-edit-target][data-media-frame-bg="dark"] .sproutly-card-image {
+          background: #1c1917;
+        }
+
         /* 合作 logo 大小：editor 合作夥伴 panel「合作 logo 大小」三按鈕（小 / 跟預設 / 大）。
            上面那四欄（照片圓角 / 比例 / 取景 / 完整度）的規則都落在卡片格線裡的圖框
            （.sproutly-card-image）上，合作那段的 logo 不在圖框裡——它是直接排在 flex 容器裡
