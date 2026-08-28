@@ -16,6 +16,7 @@ export default function HeroAdaptiveBanner({
   alt,
   maxHeight,
   fit,
+  bg,
 }: {
   url: string;
   alt: string;
@@ -26,6 +27,9 @@ export default function HeroAdaptiveBanner({
       裁上下）；"contain" = 整張縮進框裡不裁，放不滿的邊露出底下的底色。
       contain 時圖整張都在框內，對齊主體的 objectPosition 沒有意義，改置中。 */
   fit?: "contain";
+  /** contain 時放不滿的邊露出來的底色（六碼 hex）。不傳 = 不輸出 backgroundColor，
+      透出 section 的底色（全站底色），跟以前一模一樣。 */
+  bg?: string;
 }) {
   const [bounds, setBounds] = useState<Bounds | null>(null);
 
@@ -139,7 +143,7 @@ export default function HeroAdaptiveBanner({
       // maxHeight 只壓上限：算出來比它矮的圖完全不受影響。被壓到的圖是
       // 高度被截、寬度照舊，底下那張 Image 是 object-fit: cover 加上算好的
       // objectPosition，裁掉的是上下兩端、主體仍對齊中央。
-      style={{ aspectRatio, maxHeight }}
+      style={{ aspectRatio, maxHeight, ...(bg ? { backgroundColor: bg } : {}) }}
     >
       <Image
         src={url}

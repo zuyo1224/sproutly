@@ -157,6 +157,7 @@ type EditorTheme = {
     heroTextGap: "tight" | "normal" | "loose";
     heroImageMaxHeight: "none" | "screen" | "short";
     heroFullImageFit: "cover" | "contain";
+    heroFullImageBg: string | null;
     heroHeight: "auto" | "short" | "tall" | "full";
     fontScale: number;
     sectionPaddingScale: "compact" | "default" | "spacious";
@@ -1053,6 +1054,7 @@ export function EditorWorkspace({
           heroTextGap: t.layout.heroTextGap,
           heroImageMaxHeight: t.layout.heroImageMaxHeight,
           heroFullImageFit: t.layout.heroFullImageFit,
+          heroFullImageBg: t.layout.heroFullImageBg,
           heroHeight: t.layout.heroHeight,
           fontScale: t.layout.fontScale,
           sectionPaddingScale: t.layout.sectionPaddingScale,
@@ -3877,6 +3879,45 @@ export function EditorWorkspace({
                   主體的位置切掉頭尾，店面照、桌面照這樣就對；有些照片哪一截都不能切——
                   整株連盆的植物、上下都有字的海報——選整張顯示就整張縮進那個框裡，一點
                   都不裁，放不滿的邊露出全站底色。沒設上限時照片本來就不會被切，這格不會出現
+                </p>
+              </Field>
+            )}
+            {theme.layout.heroStyle === "full-image" &&
+              theme.layout.heroImageMaxHeight !== "none" &&
+              theme.layout.heroFullImageFit === "contain" && (
+              <Field label="照片框的底色">
+                <div className="flex items-center gap-2">
+                  {/* 沒設的時候露出來的是整段的底色（等於全站底色），取色器拿它當初始值 */}
+                  <input
+                    type="color"
+                    value={theme.layout.heroFullImageBg ?? theme.bg}
+                    onChange={(e) => updateLayout({ heroFullImageBg: e.target.value })}
+                    className="h-8 w-12 rounded border border-stone-200"
+                  />
+                  <input
+                    type="text"
+                    value={theme.layout.heroFullImageBg ?? ""}
+                    onChange={(e) =>
+                      updateLayout({ heroFullImageBg: e.target.value || null })
+                    }
+                    placeholder="預設跟全站底色一樣"
+                    className="flex-1 rounded-lg border border-stone-200 px-3 py-2 text-sm font-mono"
+                  />
+                  {theme.layout.heroFullImageBg && (
+                    <button
+                      type="button"
+                      onClick={() => updateLayout({ heroFullImageBg: null })}
+                      className="text-xs text-stone-500 hover:text-stone-800 underline"
+                    >
+                      清除
+                    </button>
+                  )}
+                </div>
+                <p className="text-[10px] text-stone-500 mt-1">
+                  上一格選了整張顯示，照片放不滿的那兩條邊露出來的是全站底色。白底的商品
+                  棚拍放進米色底會接成兩截、深色構圖配淺底邊界整個跳出來。填照片自己的
+                  底色（白底就填 #ffffff）讓邊跟照片接成一片，或填深色讓整張像放在相框裡。
+                  裁上下時這格看不到，所以只在整張顯示時出現
                 </p>
               </Field>
             )}

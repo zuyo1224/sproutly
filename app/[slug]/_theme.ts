@@ -841,6 +841,13 @@ export interface StoreTheme {
     //   contain 整張顯示：照片整張縮進上限的框裡，放不滿的邊露出全站底色
     // 沒設上限時自適應本來就不裁主體，這格沒有東西可以管，editor 那格也只在設了上限時才出現。
     heroFullImageFit: "cover" | "contain"; // 滿版圖照片完整度（預設 cover = 不覆寫）
+    // 滿版圖「整張顯示」時放不滿的邊露出來的底色。上一格選了 contain 之後，照片縮進框裡、
+    // 上下或左右露出的是全站底色：白底棚拍放進米色底接成兩截、深色構圖配淺底邊界整個
+    // 跳出來。split 版型已經有同一格（heroSplitImageBg），這張圖走的是 HeroAdaptiveBanner，
+    // 掛不到。跟那格一樣只開色碼不開三檔：要接得起來的顏色取決於照片自己的底。
+    // cover 時整個框被照片蓋住、設了也看不到，page.tsx 只在 contain 時才傳進元件；
+    // 沒設完全不輸出 backgroundColor，既有店家一模一樣。
+    heroFullImageBg: string | null;    // 滿版圖框底色，hex；null = 跟全站底色
     heroHeight: "auto" | "short" | "tall" | "full"; // 預設 auto（adaptive 比例）
     // 全網站
     fontScale: number;                 // 全網站字體 multiplier 0.8-1.3（預設 1.0）
@@ -1532,6 +1539,7 @@ function resolveLayout(raw: unknown): StoreTheme["layout"] {
       return "none" as const;
     })(),
     heroFullImageFit: l.heroFullImageFit === "contain" ? ("contain" as const) : ("cover" as const),
+    heroFullImageBg: normalizeHexColor(l.heroFullImageBg),
     heroHeight: (() => {
       const v = l.heroHeight;
       if (v === "short" || v === "tall" || v === "full" || v === "auto") return v;

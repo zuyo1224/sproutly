@@ -105,6 +105,7 @@ type EditorPayload = {
     heroTextGap?: string;
     heroImageMaxHeight?: string;
     heroFullImageFit?: string;
+    heroFullImageBg?: string | null;
     heroHeight?: string;
     fontScale?: number;
     sectionPaddingScale?: string;
@@ -734,6 +735,15 @@ export async function saveEditorState(slug: string, payload: EditorPayload) {
       const v = payload.layout.heroFullImageFit;
       if (v === "cover" || v === "contain") {
         layoutPatch.heroFullImageFit = v;
+      }
+    }
+    if (payload.layout.heroFullImageBg !== undefined) {
+      const v = payload.layout.heroFullImageBg;
+      if (v === null || v === "") {
+        layoutPatch.heroFullImageBg = null;
+      } else {
+        const hex = normalizeHexColor(v);
+        if (hex) layoutPatch.heroFullImageBg = hex;
       }
     }
     if (payload.layout.fontScale !== undefined) {

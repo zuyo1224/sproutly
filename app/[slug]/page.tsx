@@ -1942,6 +1942,15 @@ export default async function StoreHomePage({
                       ? "contain"
                       : undefined
                   }
+                  // 框底色（heroFullImageBg）。只有整張顯示時放不滿的邊才露得出底，
+                  // 裁上下時整個框被照片蓋住、設了也看不到，所以跟 fit 同一個條件才傳，
+                  // 免得 DB 殘值影響到照片載入前那一瞬間的閃色。
+                  bg={
+                    theme.layout.heroImageMaxHeight !== "none" &&
+                    theme.layout.heroFullImageFit === "contain"
+                      ? theme.layout.heroFullImageBg ?? undefined
+                      : undefined
+                  }
                 />
                 {(() => {
                   // 主標拖動：data-edit-drag 只綁在 h1，不綁外層整塊。
