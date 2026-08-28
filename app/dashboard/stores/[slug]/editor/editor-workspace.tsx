@@ -1704,14 +1704,45 @@ export function EditorWorkspace({
             <Field label="Hero 圖片">
               {theme.heroUrl ? (
                 <div className="space-y-2">
-                  <div className="relative aspect-video rounded-lg overflow-hidden bg-stone-100 border border-stone-200">
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img
-                      src={theme.heroUrl}
-                      alt="Hero"
-                      className="w-full h-full object-cover"
-                    />
-                  </div>
+                  {(() => {
+                    // 滿版版型且主體邊界已經算好：預覽框直接畫成公開頁 banner 會用的
+                    // 主體比例（跟 HeroAdaptiveBanner 同一條算式：整檔寬高比 ÷ 主體佔的
+                    // 高度比例），照片也對到同一個主體中點。以前這格固定 16:9 裁中央，
+                    // 商家在面板看到的框跟客人看到的框不是同一個，直式照片在這裡被
+                    // 砍掉上下、橫式照片多露出一截，得開預覽才知道系統框到哪。
+                    // 比例夾在 3:4 到 3:1 之間：面板窄，太直的照片會把整欄撐得很長。
+                    // 其他版型、還沒算好的照片維持 16:9。
+                    const b = theme.layout.heroImageBounds;
+                    const subject =
+                      theme.layout.heroStyle === "full-image" && b && b.url === theme.heroUrl
+                        ? b
+                        : null;
+                    let aspectRatio: string | undefined;
+                    let objectPosition: string | undefined;
+                    if (subject) {
+                      const contentH = subject.bottomPct - subject.topPct;
+                      const mid = (subject.topPct + subject.bottomPct) / 2;
+                      const ar = subject.fileAspect / (contentH / 100);
+                      aspectRatio = String(Math.min(3, Math.max(0.75, ar)));
+                      objectPosition = `50% ${mid.toFixed(2)}%`;
+                    }
+                    return (
+                      <div
+                        className={`relative rounded-lg overflow-hidden bg-stone-100 border border-stone-200 ${
+                          subject ? "" : "aspect-video"
+                        }`}
+                        style={subject ? { aspectRatio } : undefined}
+                      >
+                        {/* eslint-disable-next-line @next/next/no-img-element */}
+                        <img
+                          src={theme.heroUrl}
+                          alt="Hero"
+                          className="w-full h-full object-cover"
+                          style={objectPosition ? { objectPosition } : undefined}
+                        />
+                      </div>
+                    );
+                  })()}
                   <div className="flex gap-1.5">
                     <button
                       type="button"
@@ -1741,7 +1772,7 @@ export function EditorWorkspace({
                       if (ready) {
                         return (
                           <p className="text-[10px] text-stone-500">
-                            這張照片的比例已經算好，客人打開第一屏不會跳
+                            這張照片的比例已經算好，上面的預覽框就是客人第一屏看到的範圍，不會跳
                           </p>
                         );
                       }
