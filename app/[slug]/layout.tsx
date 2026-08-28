@@ -1221,6 +1221,13 @@ export default async function PublicStoreLayout({
         section[data-edit-target][data-media-frame-bg="dark"] .sproutly-card-image {
           background: #1c1917;
         }
+        /* 自訂色：白 / 深是寫死的純白與暖黑，商品圖的底不一定是那兩種（圖庫圖常見 #f5f5f5
+           灰白、商家自拍的淡奶油底），配純白框還是接成兩截。色值每家店不同、規則裡寫不
+           出來，page.tsx 把商家的 hex 放進 --store-media-frame-bg，這裡只讀變數。
+           editor 讓自訂色跟那三檔互斥，所以 "custom" 出現時三檔一定都沒設。 */
+        section[data-edit-target][data-media-frame-bg="custom"] .sproutly-card-image {
+          background: var(--store-media-frame-bg);
+        }
 
         /* 合作 logo 大小：editor 合作夥伴 panel「合作 logo 大小」三按鈕（小 / 跟預設 / 大）。
            上面那四欄（照片圓角 / 比例 / 取景 / 完整度）的規則都落在卡片格線裡的圖框

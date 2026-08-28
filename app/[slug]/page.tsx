@@ -590,8 +590,15 @@ export default async function StoreHomePage({
     // 框底色：上一欄選「整張顯示」之後，照片放不滿的邊露出的是框的底，而框沒有自己的底、
     // 透出來的是段落底色——白底商品圖放進米色段落會接成兩截。這一欄只給圖框自己一個底。
     // 同樣走 attribute 讓 layout.tsx 補規則，落在 .sproutly-card-image 上。沒設就沒 attribute。
-    const mediaFrameBgVal: "white" | "dark" | undefined =
-      s?.mediaFrameBg === "white" || s?.mediaFrameBg === "dark" ? s.mediaFrameBg : undefined;
+    // 自訂色（mediaFrameColor）優先：設了就掛 "custom"、色值走 --store-media-frame-bg
+    // 這個變數給 layout.tsx 那條規則讀（規則裡寫不了每家店不同的 hex，只能透過變數）。
+    // 讀進來的值已經被 sanitizeSectionStyles 驗過是六碼 hex，這裡不用再驗。
+    const mediaFrameColorVal: string | undefined = s?.mediaFrameColor ?? undefined;
+    const mediaFrameBgVal: "white" | "dark" | "custom" | undefined = mediaFrameColorVal
+      ? "custom"
+      : s?.mediaFrameBg === "white" || s?.mediaFrameBg === "dark"
+        ? s.mediaFrameBg
+        : undefined;
     // 合作 logo 大小：上面那四欄的規則都落在卡片格線裡的圖框（.sproutly-card-image）上，
     // 合作那段的 logo 不在圖框裡——它是直接排在 flex 容器裡的 img，高度寫死 h-8 / sm:h-10 /
     // md:h-12。方形的商圈標章、上圖下字的兩層式 logo 在 48px 高裡只剩一小塊是字，客人認不
@@ -1047,6 +1054,7 @@ export default async function StoreHomePage({
       mediaFocusXVal,
       mediaFitVal,
       mediaFrameBgVal,
+      mediaFrameColorVal,
       partnerLogoScaleVal,
       partnerLogoOpacityVal,
       gridGapVal,
@@ -1170,6 +1178,9 @@ export default async function StoreHomePage({
     // ——商家把這一段換成跟主色相近的底色時，那裡已經把主色換成該段的文字色，小標跟標題、
     // 短線走同一道防呆，不會單獨淡進底色裡。muted 跟次要文字同一個口徑（文字色的七成），
     // text 是跟內文同深，給那十四段主色小標一個「退回一般文字」的選擇。
+    // 框底色自訂色：規則落在 .sproutly-card-image（layout.tsx），色值只能透過變數傳下去。
+    // 沒設就不放變數；此時 data-media-frame-bg 也不會是 "custom"，那條規則整條不存在。
+    if (s.mediaFrameColorVal) out["--store-media-frame-bg"] = s.mediaFrameColorVal;
     if (s.eyebrowToneVal) {
       out["--store-eyebrow-color"] =
         s.eyebrowToneVal === "accent"

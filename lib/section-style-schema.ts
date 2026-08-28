@@ -311,6 +311,9 @@ export const SECTION_STYLE_ENUMS = {
   // 換的是整段連標題文字一起的底；「卡片底色」畫的是整張卡的面板、框裡那兩條邊還是透的。
   // 這一欄只動圖框自己的底：白配白底商品圖讓照片跟框接成一片，深配淺色構圖讓照片像裱在
   // 深色卡紙上。沒設就沒 attribute，圖框照舊透出段落底色。
+  // 白 / 深之外還有一格自訂色（mediaFrameColor，見下面顏色欄位那組）：那兩檔是寫死的
+  // 純白與暖黑，商品圖的底不一定是那兩種——很多圖庫圖是 #f5f5f5 那種灰白、或商家自己
+  // 拍的是淡奶油底，配純白框還是接成兩截。商家設了自訂色時這一欄讓路（editor 兩邊互斥）。
   mediaFrameBg: ["auto", "white", "dark"],
   // 合作 logo 大小（small 小 / default 照原本的 / large 大），只有合作夥伴那一段用得到。
   // 那一段整段只有兩樣東西：最上面一行小標、底下排成一列的 logo。小標的大小、字距、粗細、
@@ -1234,7 +1237,15 @@ type SectionStyleEnums = {
 export interface SectionStyle extends SectionStyleEnums {
   bgColor?: string | null; // null = 用 theme.bg；hex = 覆寫
   textColor?: string | null; // null = 用 theme.text；hex = 覆寫（深底配淺字常用）
+  // 圖框底色的自訂 hex（mediaFrameBg 白 / 深之外的第三條路）。只在「照片完整度」選了
+  // 整張顯示之後有意義；設了這欄公開頁就掛 data-media-frame-bg="custom" 並把色值放進
+  // --store-media-frame-bg，mediaFrameBg 那三檔同時被 editor 清掉（兩邊互斥，不然商家
+  // 按了「白」畫面卻是自訂色，會以為那顆按鈕壞了）。null = 清掉、回到跟段落底色。
+  mediaFrameColor?: string | null;
 }
+
+// 顏色欄位清單：sanitize 與 patch 兩處共用，加一個顏色欄位只在這裡補一個名字。
+export const SECTION_STYLE_COLOR_FIELDS = ["bgColor", "textColor", "mediaFrameColor"] as const;
 
 // 編輯器改某一段樣式時送的 patch：沒提到的欄位不動，給合法值就設，給 null 就清掉這一欄。
 export type SectionStylePatch = Partial<{
@@ -1242,6 +1253,7 @@ export type SectionStylePatch = Partial<{
 }> & {
   bgColor?: string | null;
   textColor?: string | null;
+  mediaFrameColor?: string | null;
 };
 
 // 把 patch 疊到現有樣式上，回一份新的（不改原物件——編輯器的 undo history 靠每步一份新值）。
@@ -1261,8 +1273,9 @@ export function applySectionStylePatch(
     else (next as Record<string, unknown>)[field] = v;
   }
 
-  if (patch.bgColor !== undefined) next.bgColor = patch.bgColor;
-  if (patch.textColor !== undefined) next.textColor = patch.textColor;
+  for (const field of SECTION_STYLE_COLOR_FIELDS) {
+    if (patch[field] !== undefined) next[field] = patch[field];
+  }
   return next;
 }
 
@@ -1287,7 +1300,7 @@ export function sanitizeSectionStyle(raw: unknown): SectionStyle | null {
 
   // 顏色：清得出 hex 就用清過的；明確給 null 代表「清掉覆寫」，也要留著（跟「沒設定」
   // 在畫面上同結果，但商家按了重設就該存回去，不能被當沒設定而保留舊值）。
-  for (const field of ["bgColor", "textColor"] as const) {
+  for (const field of SECTION_STYLE_COLOR_FIELDS) {
     const hex = normalizeHexColor(obj[field]);
     if (hex) entry[field] = hex;
     else if (obj[field] === null) entry[field] = null;

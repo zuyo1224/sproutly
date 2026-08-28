@@ -4776,6 +4776,7 @@ export function EditorWorkspace({
           const mediaFocusX = cur.mediaFocusX ?? null;
           const mediaFit = cur.mediaFit ?? null;
           const mediaFrameBg = cur.mediaFrameBg ?? null;
+          const mediaFrameColor = cur.mediaFrameColor ?? null;
           const partnerLogoScale = cur.partnerLogoScale ?? null;
           const partnerLogoOpacity = cur.partnerLogoOpacity ?? null;
           const gridGap = cur.gridGap ?? null;
@@ -7475,10 +7476,10 @@ export function EditorWorkspace({
                       <button
                         key={opt.v}
                         type="button"
-                        onClick={() => patch({ mediaFrameBg: opt.v })}
-                        aria-pressed={(mediaFrameBg ?? "auto") === opt.v}
+                        onClick={() => patch({ mediaFrameBg: opt.v, mediaFrameColor: null })}
+                        aria-pressed={!mediaFrameColor && (mediaFrameBg ?? "auto") === opt.v}
                         className={`rounded-lg border py-2 text-xs transition ${
-                          (mediaFrameBg ?? "auto") === opt.v
+                          !mediaFrameColor && (mediaFrameBg ?? "auto") === opt.v
                             ? "border-emerald-500 bg-emerald-50 text-emerald-900"
                             : "border-stone-200 text-stone-600 hover:border-stone-400"
                         }`}
@@ -7487,12 +7488,33 @@ export function EditorWorkspace({
                       </button>
                     ))}
                   </div>
+                  {/* 自訂色跟上面三檔互斥：挑了色就清掉三檔、按了三檔就清掉色。不然商家按「白」
+                      畫面卻停在自訂色，會以為那顆按鈕壞了。白 / 深是寫死的純白與暖黑，商品圖的
+                      底不一定是那兩種（圖庫圖常見的灰白、自拍的淡奶油底），這格讓商家直接對色。 */}
+                  <div className="mt-2 flex items-center gap-2">
+                    <input
+                      type="color"
+                      value={mediaFrameColor ?? "#FFFFFF"}
+                      onChange={(e) => patch({ mediaFrameColor: e.target.value, mediaFrameBg: null })}
+                      className="h-8 w-12 rounded border border-stone-200"
+                      aria-label="框底色自訂色"
+                    />
+                    <input
+                      type="text"
+                      value={mediaFrameColor ?? ""}
+                      onChange={(e) =>
+                        patch({ mediaFrameColor: e.target.value || null, mediaFrameBg: null })
+                      }
+                      placeholder="或直接填色碼，例如 #F5F5F5"
+                      className="flex-1 rounded-lg border border-stone-200 px-3 py-2 text-sm font-mono"
+                    />
+                  </div>
                   <div className="mt-1.5 flex items-center justify-between text-[11px] text-stone-500">
-                    <span>照片放不滿的邊露出的底色。白底商品圖選「白」會跟照片接成一片</span>
-                    {mediaFrameBg && (
+                    <span>照片放不滿的邊露出的底色。白底商品圖選「白」會跟照片接成一片；圖的底不是純白就填它的色碼</span>
+                    {(mediaFrameBg || mediaFrameColor) && (
                       <button
                         type="button"
-                        onClick={() => patch({ mediaFrameBg: null })}
+                        onClick={() => patch({ mediaFrameBg: null, mediaFrameColor: null })}
                         className="text-stone-500 hover:text-stone-800 underline"
                       >
                         清除
