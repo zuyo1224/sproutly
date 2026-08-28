@@ -24,8 +24,11 @@ export default function HeroAdaptiveBanner({
       banner 高度照自適應算出來的比例走，跟以前一模一樣。 */
   maxHeight?: string;
   /** 被 maxHeight 收到上限之後超出的那截怎麼辦。不傳 = cover（照原本對齊主體
-      裁上下）；"contain" = 整張縮進框裡不裁，放不滿的邊露出底下的底色。
-      contain 時圖整張都在框內，對齊主體的 objectPosition 沒有意義，改置中。 */
+      裁上下）；"contain" = 主體整個縮進框裡不裁，放不滿的邊露出底下的底色。
+      縮的是「偵測出來的主體那塊」不是整個檔案：整個檔案縮進去會把圖自帶的
+      米色邊、純色塊重新露出來，框底色跟圖自己的留白接成兩截色；主體那塊縮
+      進去，框裡露出來的只有框底色一種顏色，左右留白也自然對稱。
+      偵測還沒完成（或 CORS 拿不到像素）時退回整個檔案 contain，主體一樣不會被裁。 */
   fit?: "contain";
   /** contain 時放不滿的邊露出來的底色（六碼 hex）。不傳 = 不輸出 backgroundColor，
       透出 section 的底色（全站底色），跟以前一模一樣。 */
@@ -137,6 +140,21 @@ export default function HeroAdaptiveBanner({
     objectPosition = `50% ${contentMid.toFixed(2)}%`;
   }
 
+  const image = (
+    <Image
+      src={url}
+      alt={alt}
+      fill
+      sizes="100vw"
+      priority
+      style={
+        fit === "contain" && !bounds
+          ? { objectFit: "contain", objectPosition: "center" }
+          : { objectFit: "cover", objectPosition }
+      }
+    />
+  );
+
   return (
     <div
       className="relative w-full overflow-hidden"
@@ -145,18 +163,21 @@ export default function HeroAdaptiveBanner({
       // objectPosition，裁掉的是上下兩端、主體仍對齊中央。
       style={{ aspectRatio, maxHeight, ...(bg ? { backgroundColor: bg } : {}) }}
     >
-      <Image
-        src={url}
-        alt={alt}
-        fill
-        sizes="100vw"
-        priority
-        style={
-          fit === "contain"
-            ? { objectFit: "contain", objectPosition: "center" }
-            : { objectFit: "cover", objectPosition }
-        }
-      />
+      {fit === "contain" && bounds ? (
+        // 整張顯示：外框被 maxHeight 壓扁之後，裡面再放一個「主體比例」的內框，
+        // 高度貼齊外框（上下撐滿）、寬度由比例算出來、左右置中。內框裡的圖走跟
+        // cover 一樣的裁法（裁掉的只有圖自帶的留白），所以框裡看到的正好是主體
+        // 整個、一點都沒切；外框沒被壓到時內框寬度算出來剛好等於外框，跟 cover
+        // 一模一樣。
+        <div
+          className="absolute inset-y-0 left-1/2 max-w-full -translate-x-1/2"
+          style={{ aspectRatio }}
+        >
+          {image}
+        </div>
+      ) : (
+        image
+      )}
     </div>
   );
 }
