@@ -2093,6 +2093,20 @@ export default async function PublicStoreLayout({
             [data-hero-split-media]:not([data-hero-split-img-md]) {
             min-height: 50vh;
           }
+          /* 跟著內容那檔的文字欄上下留白。文字欄 class 上是 py-20 md:py-0，那個 0 在整屏
+             跟稍矮兩檔是對的：段高由 min-height 撐、字在欄裡的位置歸「文字靠哪」用
+             justify-content 分，靠上 / 靠下要剛好對到照片上下緣。可是跟著內容這檔段高
+             就是文字撐出來的——字一比上面 50vh 的地板高，段高 = 文字高，第一行貼著段的
+             上緣、最後一行貼著下一段，中間一點呼吸的空間都沒有；比地板矮時靠上 / 靠下
+             也會直接黏在段的邊上。給它一截 clamp(2.5rem, 6vh, 4rem) 的上下內距：字少
+             時仍在 50vh 裡置中（內距只是縮小可用範圍）、字多時段高多出這兩截。寫在
+             這條 md 規則裡，跟「手機上文字段上下留白」那格（只寫在 767px 以下）不同斷點，
+             不會互相蓋。其他兩檔不掛這個 attribute，md:py-0 原樣。 */
+          section[data-edit-target="hero"][data-hero-split-height="content"]
+            [data-hero-split-text] {
+            padding-top: clamp(2.5rem, 6vh, 4rem);
+            padding-bottom: clamp(2.5rem, 6vh, 4rem);
+          }
         }
 
         /* 卡片價錢字級：editor 精選商品 panel「卡片價錢字級」三按鈕（小 / 跟預設 / 大）。

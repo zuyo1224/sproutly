@@ -2312,6 +2312,8 @@ export default async function StoreHomePage({
             // py-20 md:py-0，只有手機有值。規則寫在 layout.tsx 的 max-width: 767px 裡，
             // 不寫 inline 的 padding（inline 會把 md:py-0 一起蓋掉，平板以上就多出一段
             // 推不掉的空隙，「文字靠哪」那格的靠上 / 靠下會對不到照片邊緣）。
+            // 唯一的例外是「這一段有多高 = 跟著內容」：那檔段高就是文字撐的，md:py-0 會
+            // 讓字貼著段的上下緣，layout.tsx 在那條規則裡另外給文字欄一截上下內距。
             const splitTextPadY =
               theme.layout.heroSplitMobilePadY === "tight"
                 ? "2.5rem"
@@ -2331,7 +2333,8 @@ export default async function StoreHomePage({
             //（inline 會連手機那個 80vh 一起蓋掉，得再補一條還原）。
             // 「跟著內容」那檔清掉 min-height 之後，圖欄（md:h-full）自己沒有高度，段高只剩
             // 文字撐的；layout.tsx 同一組規則裡給圖欄一個 50vh 的地板（跟照片那檔除外，
-            // 那檔高度由 aspect-ratio 算），這裡不用多輸出什麼，attribute 同一個。
+            // 那檔高度由 aspect-ratio 算），並給文字欄一截上下內距（md:py-0 在這檔會讓
+            // 字貼著段的上下緣），這裡不用多輸出什麼，attribute 同一個。
             // 跟預設那一檔不輸出 attribute，整條規則不存在。
             const splitHeight =
               theme.layout.heroSplitHeight === "normal" ? null : theme.layout.heroSplitHeight;
