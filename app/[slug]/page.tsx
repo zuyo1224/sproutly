@@ -2225,14 +2225,30 @@ export default async function StoreHomePage({
             // 欄寬再夾在整段的 30% 到 65% 之間——太直的照片欄會瘦到一條、太扁的會把文字
             // 擠到只剩一個字寬。文字那欄吃剩下的（minmax(0, 1fr)，不讓長字撐破欄）。
             const splitRatio = theme.layout.heroSplitRatio;
+            const splitPhotoBounds =
+              splitRatio === "photo"
+                ? pickHeroImageBounds(theme.layout.heroImageBounds, theme.heroUrl)
+                : null;
             const splitPhotoCol = (() => {
-              if (splitRatio !== "photo") return null;
               if (theme.layout.heroSplitHeight === "content") return null;
-              const b = pickHeroImageBounds(theme.layout.heroImageBounds, theme.heroUrl);
-              if (!b) return null;
-              const r = Math.min(3, Math.max(0.5, b.fileAspect));
+              if (!splitPhotoBounds) return null;
+              const r = Math.min(3, Math.max(0.5, splitPhotoBounds.fileAspect));
               const vh = theme.layout.heroSplitHeight === "compact" ? 70 : 100;
               return `clamp(30%, ${(vh * r).toFixed(2)}vh, 65%)`;
+            })();
+            // 「跟照片」配「這一段有多高 = 跟著內容」：上面那條算不出欄寬（段高不是寫死的），
+            // 就反過來讓圖撐出段高——欄寬維持一半，圖那欄在平板以上直接掛照片自己的比例
+            //（aspect-ratio），段高 = 欄寬 ÷ 比例，照片剛好放滿。原本這一檔的圖欄沒有自己
+            // 的高度（裡面那張 fill 的圖撐不出東西），段高只剩文字那幾行，圖被壓成一條。
+            // 文字比照片高的時候圖欄會被拉開跟文字一樣高（align-self: stretch），那時候
+            // 鋪滿還是會裁、整張顯示還是會上下露底，跟其他檔一樣。規則寫在 layout.tsx 的
+            // min-width: 768px 裡（手機那個正方形 / 手機那格的比例歸 --store-hero-split-img
+            // 管，兩條各管一個斷點）。比例夾法跟另外兩處一樣 1:2 到 3:1。
+            const splitPhotoMdAspect = (() => {
+              if (theme.layout.heroSplitHeight !== "content") return null;
+              if (!splitPhotoBounds) return null;
+              const r = Math.min(3, Math.max(0.5, splitPhotoBounds.fileAspect));
+              return `${r.toFixed(4)} / 1`;
             })();
             const splitCols =
               splitRatio === "image-narrow"
@@ -2401,14 +2417,18 @@ export default async function StoreHomePage({
                   data-hero-split-media
                   className={`relative aspect-square md:aspect-auto md:h-full ${imageOnRight ? "md:order-2" : ""}`}
                   style={
-                    splitImgAspect || splitImageBg
+                    splitImgAspect || splitPhotoMdAspect || splitImageBg
                       ? ({
                           ...(splitImgAspect ? { "--store-hero-split-img": splitImgAspect } : {}),
+                          ...(splitPhotoMdAspect
+                            ? { "--store-hero-split-img-md": splitPhotoMdAspect }
+                            : {}),
                           ...(splitImageBg ? { backgroundColor: splitImageBg } : {}),
                         } as React.CSSProperties)
                       : undefined
                   }
                   {...(splitImgAspect ? { "data-hero-split-img": "" } : {})}
+                  {...(splitPhotoMdAspect ? { "data-hero-split-img-md": "" } : {})}
                 >
                   <Image
                     src={theme.heroUrl}

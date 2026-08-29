@@ -2927,8 +2927,9 @@ export function EditorWorkspace({
                   反過來主標長、又有副標跟兩顆按鈕的話，文字那半會擠到一直換行，選圖窄
                   （四成）把空間讓給字。「跟照片」是圖那欄的寬度直接照這張照片的比例算
                   （欄有多高、照片就配多寬），照片剛好放滿整欄，鋪滿不會裁、整張顯示也不會
-                  左右露出框底色；欄寬會收在整段的三成到六成半之間，「這一段有多高」選跟著內容
-                  時算不出來、先照一半一半。手機上是圖在上文字在下的單欄，這格只影響平板以上
+                  左右露出框底色；欄寬會收在整段的三成到六成半之間。「這一段有多高」選跟著
+                  內容時反過來：欄寬維持一半，整段的高度照這張照片撐出來。手機上是圖在上文字
+                  在下的單欄，這格只影響平板以上
                 </p>
                 {theme.layout.heroSplitRatio === "photo" &&
                   theme.heroUrl &&
@@ -2941,8 +2942,8 @@ export function EditorWorkspace({
                   )}
                 {theme.layout.heroSplitRatio === "photo" &&
                   theme.layout.heroSplitHeight === "content" && (
-                    <p className="text-[10px] text-amber-800 bg-amber-50 border border-amber-200 rounded-lg px-2 py-1.5 mt-1.5">
-                      「這一段有多高」選了跟著內容，段高要等文字排好才知道，圖欄寬算不出來，平板以上先照一半一半顯示。想讓欄寬跟照片走，那格改選稍矮或跟預設。
+                    <p className="text-[10px] text-stone-500 bg-stone-50 border border-stone-200 rounded-lg px-2 py-1.5 mt-1.5">
+                      「這一段有多高」選了跟著內容，平板以上圖那欄維持一半寬、整段的高度照這張照片撐出來，照片剛好放滿。文字比照片高的話圖欄會跟著拉高，那時候鋪滿還是會裁一點、整張顯示會上下露底色。
                     </p>
                   )}
               </Field>

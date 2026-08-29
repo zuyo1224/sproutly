@@ -1974,6 +1974,25 @@ export default async function PublicStoreLayout({
           }
         }
 
+        /* split 版型平板以上圖欄比例：只在「圖文比例 = 跟照片」配「這一段有多高 = 跟著內容」
+           時公開頁才掛 data-hero-split-img-md 跟 --store-hero-split-img-md。那一檔段高
+           不是寫死的、算不出欄寬，就反過來讓圖撐出段高：欄寬維持一半，圖那欄掛照片自己的
+           比例，段高 = 欄寬 ÷ 比例。三件事缺一不可（探針量過）：
+           - height: auto 蓋掉 class 上的 md:h-full，不然高度先被鎖成 100% 撐不出東西；
+           - align-self: stretch——grid 對有 aspect-ratio 的 item 預設不拉伸，文字比照片
+             高的時候圖欄會停在照片高度、底下露一截；
+           - width: 100%——被拉高的時候比例會反過來從高度算寬，圖欄變成 1500px 撐破整段，
+             把寬寫定它才知道要放棄比例。
+           只寫在 md 以上，手機那個正方形 / 手機那格的比例歸上面那條管。 */
+        @media (min-width: 768px) {
+          section[data-edit-target="hero"] [data-hero-split-img-md] {
+            aspect-ratio: var(--store-hero-split-img-md);
+            height: auto;
+            width: 100%;
+            align-self: stretch;
+          }
+        }
+
         /* split 版型文字欄左右內距：editor Hero panel「文字欄左右留白」三按鈕
            （窄 / 跟預設 / 寬）。值由公開頁算好從 inline style 的 --store-hero-split-pad
            進來，這裡負責蓋掉那欄 class 上的 md:px-16 lg:px-24——同樣贏在這份 <style>
