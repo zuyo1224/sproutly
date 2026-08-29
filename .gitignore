@@ -40,3 +40,7 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 /.next-old/
+
+# 本機量版面用的探針頁與 Playwright MCP 截圖，不進 repo
+.tmp-*.html
+/.playwright-mcp/

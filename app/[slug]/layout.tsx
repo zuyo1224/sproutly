@@ -2064,7 +2064,7 @@ export default async function PublicStoreLayout({
         }
 
         /* split 版型區段高度：editor Hero panel「這一段有多高」三按鈕
-           （跟著內容 / 稍矮 / 跟預設）。要蓋掉的是 section class 上的 md:min-h-screen。
+           （跟著內容 / 七成螢幕 / 跟預設）。要蓋掉的是 section class 上的 md:min-h-screen。
            寫成 CSS 而不是 inline 的 minHeight，是因為 inline 會連手機那個 min-h-[80vh]
            一起蓋掉，得再補一條把它還原，不如讓斷點自己管。
            選 element + attribute 兩層，贏得過 Tailwind 那個單一 class（同樣贏在這份
@@ -2085,7 +2085,7 @@ export default async function PublicStoreLayout({
              一百多 px，照片被壓成一條橫幅，面板上寫的「整段收成照片那欄的高度」根本沒發生。
              給圖欄一個 50vh 的地板：文字比這矮就照 50vh、比這高就跟文字走（grid 那一列
              會照兩欄裡高的那個算，圖欄 align-self 預設 stretch 跟著拉滿），探針頁量過。
-             50vh 刻意比稍矮的 70vh 再低一階，三檔還是照「跟著內容 < 稍矮 < 跟預設」排。
+             50vh 刻意比七成螢幕的 70vh 再低一階，三檔還是照「跟著內容 < 七成螢幕 < 跟預設」排。
              :not([data-hero-split-img-md]) 排掉「圖文比例 = 跟照片」那個組合——那一檔圖欄
              掛的是照片自己的比例、高度由比例算出來，地板一疊上去比例就被撐歪。
              只寫在 md 以上：手機圖框是正方形 / 手機那格的比例，跟這條無關。 */
@@ -2094,7 +2094,7 @@ export default async function PublicStoreLayout({
             min-height: 50vh;
           }
           /* 跟著內容那檔的文字欄上下留白。文字欄 class 上是 py-20 md:py-0，那個 0 在整屏
-             跟稍矮兩檔是對的：段高由 min-height 撐、字在欄裡的位置歸「文字靠哪」用
+             跟七成螢幕兩檔是對的：段高由 min-height 撐、字在欄裡的位置歸「文字靠哪」用
              justify-content 分，靠上 / 靠下要剛好對到照片上下緣。可是跟著內容這檔段高
              就是文字撐出來的——字一比上面 50vh 的地板高，段高 = 文字高，第一行貼著段的
              上緣、最後一行貼著下一段，中間一點呼吸的空間都沒有；比地板矮時靠上 / 靠下
