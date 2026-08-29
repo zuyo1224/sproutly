@@ -2329,6 +2329,9 @@ export default async function StoreHomePage({
             // 這一段有多高。class 上是 min-h-[80vh] md:min-h-screen，平板以上整整一個
             // 螢幕。規則寫在 layout.tsx 的 min-width: 768px 裡而不是 inline 的 minHeight
             //（inline 會連手機那個 80vh 一起蓋掉，得再補一條還原）。
+            // 「跟著內容」那檔清掉 min-height 之後，圖欄（md:h-full）自己沒有高度，段高只剩
+            // 文字撐的；layout.tsx 同一組規則裡給圖欄一個 50vh 的地板（跟照片那檔除外，
+            // 那檔高度由 aspect-ratio 算），這裡不用多輸出什麼，attribute 同一個。
             // 跟預設那一檔不輸出 attribute，整條規則不存在。
             const splitHeight =
               theme.layout.heroSplitHeight === "normal" ? null : theme.layout.heroSplitHeight;

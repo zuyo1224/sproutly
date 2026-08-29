@@ -2079,6 +2079,20 @@ export default async function PublicStoreLayout({
           section[data-edit-target="hero"][data-hero-split-height="compact"] {
             min-height: 70vh;
           }
+          /* 跟著內容那檔的圖欄保底。這一檔把段的 min-height 清成 0 之後，段高就只剩文字
+             那欄撐出來的——圖那欄 class 上是 md:h-full，跟著 grid 那一列走，自己沒有高度
+             （裡面那張 fill 的圖也撐不出東西）。店名一行加一句話的店，平板以上整段只剩
+             一百多 px，照片被壓成一條橫幅，面板上寫的「整段收成照片那欄的高度」根本沒發生。
+             給圖欄一個 50vh 的地板：文字比這矮就照 50vh、比這高就跟文字走（grid 那一列
+             會照兩欄裡高的那個算，圖欄 align-self 預設 stretch 跟著拉滿），探針頁量過。
+             50vh 刻意比稍矮的 70vh 再低一階，三檔還是照「跟著內容 < 稍矮 < 跟預設」排。
+             :not([data-hero-split-img-md]) 排掉「圖文比例 = 跟照片」那個組合——那一檔圖欄
+             掛的是照片自己的比例、高度由比例算出來，地板一疊上去比例就被撐歪。
+             只寫在 md 以上：手機圖框是正方形 / 手機那格的比例，跟這條無關。 */
+          section[data-edit-target="hero"][data-hero-split-height="content"]
+            [data-hero-split-media]:not([data-hero-split-img-md]) {
+            min-height: 50vh;
+          }
         }
 
         /* 卡片價錢字級：editor 精選商品 panel「卡片價錢字級」三按鈕（小 / 跟預設 / 大）。
