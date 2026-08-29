@@ -1913,9 +1913,18 @@ export default async function StoreHomePage({
               heroTextGapScale === null ? {} : { marginTop: `${rem * heroTextGapScale}rem` };
             const heroTextGapBottom = (rem: number) =>
               heroTextGapScale === null ? {} : { marginBottom: `${rem * heroTextGapScale}rem` };
+            // 「Hero 高度」撐高之後多出來的那截要去哪。section 原本是普通的 block、只掛
+            // min-height：照片 + 文字段加起來比 60vh / 80vh / 100vh 矮時，多出來的高度全掉
+            // 在文字段底下、露出一條全站底色——文字段底色跟全站底色不同的店（「文字段底色」
+            // 那格有設）會看到色塊跟下一段之間夾一條別的顏色，同色的店則是字上面貼著照片、
+            // 字下面空一大截，怎麼看都不像「這段變高了」。改成 flex 直排、文字段 grow：多出
+            // 的高度全給文字段吃掉，色塊一路鋪到段的底邊。自適應那檔沒有 min-height、沒有
+            // 多出來的高度可分，不掛 flex，版面跟以前一個 px 都不差。
+            const heroFillClass = heroHeightClass ? "flex flex-col" : "";
+            const heroTextGrowClass = heroHeightClass ? " grow" : "";
             return (
               <section
-                className={heroHeightClass}
+                className={`${heroHeightClass} ${heroFillClass}`.trim()}
                 data-edit-target="hero"
                 data-edit-label="Hero 區段"
               >
@@ -1975,7 +1984,7 @@ export default async function StoreHomePage({
                     theme.layout.freePositions[FREE_POS_KEYS.heroEyebrow] ?? null;
                   return (
                 <div
-                  className="relative px-6 sm:px-12 py-14 sm:py-20"
+                  className={`relative px-6 sm:px-12 py-14 sm:py-20${heroTextGrowClass}`}
                   style={{ backgroundColor: heroTextBgColor, minHeight: taglinePos || subtitlePos || ctaPos || eyebrowPos ? "300px" : undefined, ...heroTextPaddingStyle }}
                   data-edit-target="hero-text-area"
                 >
