@@ -2233,12 +2233,24 @@ export default async function StoreHomePage({
             // max-width: 767px 裡（class 上的 aspect-square 是 Tailwind 工具類，inline
             // 的 aspect-ratio 雖然贏得過它，但那樣平板以上也會被一起蓋掉，得再寫一條把它
             // 還原，不如讓斷點自己管）。跟預設那一檔不輸出 attribute 也不輸出變數。
+            // 「跟照片」那檔用照片自己的比例：fileAspect 是編輯器換圖時偵測存進
+            // heroImageBounds 的（存的 url 要就是現在這張才算數，pickHeroImageBounds 管這件事）。
+            // 夾在 1:2 到 3:1 之間——比 1:2 更直的照片在手機上會撐到兩個螢幕高、店名被推到
+            // 看不見；比 3:1 更扁的圖框會矮到像一條橫幅。沒存到、換圖還沒存、算失敗都退回
+            // 預設正方形（不輸出 attribute），跟沒選一樣。
+            const splitPhotoAspect = (() => {
+              if (theme.layout.heroSplitImageAspect !== "photo") return null;
+              const b = pickHeroImageBounds(theme.layout.heroImageBounds, theme.heroUrl);
+              if (!b) return null;
+              const r = Math.min(3, Math.max(0.5, b.fileAspect));
+              return `${r.toFixed(4)} / 1`;
+            })();
             const splitImgAspect =
               theme.layout.heroSplitImageAspect === "tall"
                 ? "4 / 5"
                 : theme.layout.heroSplitImageAspect === "wide"
                   ? "3 / 2"
-                  : null;
+                  : splitPhotoAspect;
             // 文字那欄的字擺在欄的哪個高度。這一欄是 flex flex-col justify-center，
             // 平板以上整段又是整屏高，所以不管幾行字都永遠釘在正中央。inline 的
             // justifyContent 贏得過 class 上的 justify-center，直接蓋就好（手機是單欄、

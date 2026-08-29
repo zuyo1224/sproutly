@@ -521,7 +521,7 @@ export async function saveEditorState(slug: string, payload: EditorPayload) {
     }
     if (payload.layout.heroSplitImageAspect !== undefined) {
       const v = payload.layout.heroSplitImageAspect;
-      if (v === "tall" || v === "square" || v === "wide") {
+      if (v === "tall" || v === "square" || v === "wide" || v === "photo") {
         layoutPatch.heroSplitImageAspect = v;
       }
     }

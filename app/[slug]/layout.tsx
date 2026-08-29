@@ -1961,8 +1961,8 @@ export default async function PublicStoreLayout({
           }
         }
 
-        /* split 版型手機圖片形狀：editor Hero panel「手機上圖片的形狀」三按鈕
-           （直式 / 跟預設 / 橫式）。比例字串由公開頁算好從 inline style 的
+        /* split 版型手機圖片形狀：editor Hero panel「手機上圖片的形狀」四按鈕
+           （直式 / 跟預設 / 橫式 / 跟照片）。比例字串由公開頁算好從 inline style 的
            --store-hero-split-img 進來，這裡負責蓋掉圖框 class 上寫死的 aspect-square。
            只寫在 767px 以下：平板以上圖框是整欄的高度（md:aspect-auto md:h-full），
            比例對它沒有意義，套上去會把整欄高那個行為弄掉。

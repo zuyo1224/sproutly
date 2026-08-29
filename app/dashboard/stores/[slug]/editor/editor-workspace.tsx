@@ -127,7 +127,7 @@ type EditorTheme = {
     heroImageFocus: "top" | "center" | "bottom";
     heroImageFocusX: "left" | "center" | "right";
     heroSplitImageFit: "cover" | "contain";
-    heroSplitImageAspect: "tall" | "square" | "wide";
+    heroSplitImageAspect: "tall" | "square" | "wide" | "photo";
     heroSplitTextAlign: "top" | "center" | "bottom";
     heroSplitTextAlignX: "left" | "center" | "right";
     heroSplitTextPadding: "tight" | "normal" | "roomy";
@@ -2898,11 +2898,12 @@ export function EditorWorkspace({
             )}
             {theme.layout.heroStyle === "split" && (
               <Field label="手機上圖片的形狀">
-                <div className="grid grid-cols-3 gap-1.5">
+                <div className="grid grid-cols-4 gap-1.5">
                   {([
                     { v: "tall", label: "直式" },
                     { v: "square", label: "跟預設" },
                     { v: "wide", label: "橫式" },
+                    { v: "photo", label: "跟照片" },
                   ] as const).map((opt) => (
                     <button
                       key={opt.v}
@@ -2924,8 +2925,18 @@ export function EditorWorkspace({
                   跟你上傳什麼圖無關——一株連盆兩尺高的植物、一支細長的水壺，要從上下各切掉
                   快三分之一才塞得進去，「照片取景」那格只能決定犧牲葉冠還是犧牲盆器。選直式
                   就讓圖高一點、上下都留得住；橫幅的店面照或桌面陳列照則選橫式，不然撐開畫面
-                  的那些留白會被左右切掉。手機是客人幾乎唯一的入口
+                  的那些留白會被左右切掉。「跟照片」是圖框直接照這張照片的比例來，一點都不裁、
+                  也不會多出留白（太直或太扁的照片會收在 1:2 到 3:1 之間）。手機是客人幾乎唯一的入口
                 </p>
+                {theme.layout.heroSplitImageAspect === "photo" &&
+                  theme.heroUrl &&
+                  theme.layout.heroImageBounds?.url !== theme.heroUrl && (
+                    <p className="text-[10px] text-amber-800 bg-amber-50 border border-amber-200 rounded-lg px-2 py-1.5 mt-1.5">
+                      {boundsStatus?.url === theme.heroUrl && boundsStatus.state === "detecting"
+                        ? "正在算這張照片的比例，算好會自動套上。"
+                        : "這張照片的比例還沒算出來（圖是外站的、瀏覽器不讓讀），手機上先照正方形顯示。把照片上傳到圖庫再挑一次就能算。"}
+                    </p>
+                  )}
               </Field>
             )}
             {theme.layout.heroStyle === "split" && (

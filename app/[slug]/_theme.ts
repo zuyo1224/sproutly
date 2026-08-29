@@ -493,7 +493,10 @@ export interface StoreTheme {
     // 讓商家自己填數字很容易得到一張佔滿整個手機屏的圖，客人要滑兩下才看得到店名。
     // 直式只給到 4/5 不給 3/4 或 2/3 也是同一個理由——4/5 已經是「圖後面還看得到一行字」
     // 的邊界。沒設就完全不覆寫，既有店家的手機版一模一樣。
-    heroSplitImageAspect: "tall" | "square" | "wide"; // split 手機圖片形狀（預設 square = 不覆寫）
+    // photo = 手機圖框直接用照片自己的比例（fileAspect 從 heroImageBounds 來，要 url 就是現在
+    // 這張才算數）：整張顯示時不裁也不留白，鋪滿時看到的也是整張。還沒算好、算失敗、
+    // 或存的是別張圖時退回 square，跟沒設一樣。
+    heroSplitImageAspect: "tall" | "square" | "wide" | "photo"; // split 手機圖片形狀（預設 square = 不覆寫）
     // split 版型文字那欄的字擺在欄的哪個高度。前三格處理的都是圖那半（欄寬、裁切、手機
     // 形狀），文字那半從頭到尾沒動過：它是 flex flex-col justify-center，也就是不管裡面
     // 有幾行字，整團永遠釘在欄的正中央，而這一段在平板以上是整屏高（md:min-h-screen）。
@@ -1423,7 +1426,7 @@ function resolveLayout(raw: unknown): StoreTheme["layout"] {
     heroSplitImageFit: l.heroSplitImageFit === "contain" ? ("contain" as const) : ("cover" as const),
     heroSplitImageAspect: (() => {
       const v = l.heroSplitImageAspect;
-      if (v === "tall" || v === "wide") return v;
+      if (v === "tall" || v === "wide" || v === "photo") return v;
       return "square" as const;
     })(),
     heroSplitTextAlign: (() => {
