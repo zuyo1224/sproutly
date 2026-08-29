@@ -123,7 +123,7 @@ type EditorTheme = {
     heroBylineTracking: "tight" | "normal" | "wide";
     heroBylineCase: "upper" | "capitalize" | "none";
     heroBylineWeight: "normal" | "medium" | "bold";
-    heroSplitRatio: "image-narrow" | "normal" | "image-wide";
+    heroSplitRatio: "image-narrow" | "normal" | "image-wide" | "photo";
     heroImageFocus: "top" | "center" | "bottom";
     heroImageFocusX: "left" | "center" | "right";
     heroSplitImageFit: "cover" | "contain";
@@ -2899,11 +2899,12 @@ export function EditorWorkspace({
             )}
             {theme.layout.heroStyle === "split" && (
               <Field label="圖文比例">
-                <div className="grid grid-cols-3 gap-1.5">
+                <div className="grid grid-cols-4 gap-1.5">
                   {([
                     { v: "image-narrow", label: "圖窄" },
                     { v: "normal", label: "跟預設" },
                     { v: "image-wide", label: "圖寬" },
+                    { v: "photo", label: "跟照片" },
                   ] as const).map((opt) => (
                     <button
                       key={opt.v}
@@ -2924,8 +2925,26 @@ export function EditorWorkspace({
                   圖跟文字各占多寬。原本剛好一半一半，那個比例是配「方形的圖 + 一行主標」
                   的——放直式商品照的話左右兩邊會被裁掉一大塊，選圖寬（六成）就少裁一點；
                   反過來主標長、又有副標跟兩顆按鈕的話，文字那半會擠到一直換行，選圖窄
-                  （四成）把空間讓給字。手機上是圖在上文字在下的單欄，這格只影響平板以上
+                  （四成）把空間讓給字。「跟照片」是圖那欄的寬度直接照這張照片的比例算
+                  （欄有多高、照片就配多寬），照片剛好放滿整欄，鋪滿不會裁、整張顯示也不會
+                  左右露出框底色；欄寬會收在整段的三成到六成半之間，「這一段有多高」選跟著內容
+                  時算不出來、先照一半一半。手機上是圖在上文字在下的單欄，這格只影響平板以上
                 </p>
+                {theme.layout.heroSplitRatio === "photo" &&
+                  theme.heroUrl &&
+                  theme.layout.heroImageBounds?.url !== theme.heroUrl && (
+                    <p className="text-[10px] text-amber-800 bg-amber-50 border border-amber-200 rounded-lg px-2 py-1.5 mt-1.5">
+                      {boundsStatus?.url === theme.heroUrl && boundsStatus.state === "detecting"
+                        ? "正在算這張照片的比例，算好會自動套上。"
+                        : "這張照片的比例還沒算出來（圖是外站的、瀏覽器不讓讀），平板以上先照一半一半顯示。把照片上傳到圖庫再挑一次就能算。"}
+                    </p>
+                  )}
+                {theme.layout.heroSplitRatio === "photo" &&
+                  theme.layout.heroSplitHeight === "content" && (
+                    <p className="text-[10px] text-amber-800 bg-amber-50 border border-amber-200 rounded-lg px-2 py-1.5 mt-1.5">
+                      「這一段有多高」選了跟著內容，段高要等文字排好才知道，圖欄寬算不出來，平板以上先照一半一半顯示。想讓欄寬跟照片走，那格改選稍矮或跟預設。
+                    </p>
+                  )}
               </Field>
             )}
             {theme.layout.heroStyle === "split" && (

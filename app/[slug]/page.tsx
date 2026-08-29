@@ -2217,7 +2217,23 @@ export default async function StoreHomePage({
             // 所以圖被排到右邊時要把兩個值對調，不然「圖窄」會去縮到文字那欄。
             // 只在 md 以上生效（規則寫在 layout.tsx 的 media query 裡），手機是單欄堆疊。
             // normal 不輸出 attribute 也不輸出變數，Tailwind 的 md:grid-cols-2 原樣留著。
+            // 「跟照片」那檔：圖欄寬直接等於「這段有多高 × 照片比例」，照片在整欄高的框裡
+            // 剛好放滿——鋪滿框不用裁、整張顯示也不會左右露出一截框底色。段高只認得
+            // 寫死在 min-h 上的那兩檔（跟預設 100vh、稍矮 70vh）；「跟著內容」那檔的段高
+            // 是文字撐出來的、render 時不知道，算不出欄寬就退回預設 50:50。比例跟手機那格
+            // 一樣從 heroImageBounds 拿（存的 url 要就是現在這張），一樣夾在 1:2 到 3:1；
+            // 欄寬再夾在整段的 30% 到 65% 之間——太直的照片欄會瘦到一條、太扁的會把文字
+            // 擠到只剩一個字寬。文字那欄吃剩下的（minmax(0, 1fr)，不讓長字撐破欄）。
             const splitRatio = theme.layout.heroSplitRatio;
+            const splitPhotoCol = (() => {
+              if (splitRatio !== "photo") return null;
+              if (theme.layout.heroSplitHeight === "content") return null;
+              const b = pickHeroImageBounds(theme.layout.heroImageBounds, theme.heroUrl);
+              if (!b) return null;
+              const r = Math.min(3, Math.max(0.5, b.fileAspect));
+              const vh = theme.layout.heroSplitHeight === "compact" ? 70 : 100;
+              return `clamp(30%, ${(vh * r).toFixed(2)}vh, 65%)`;
+            })();
             const splitCols =
               splitRatio === "image-narrow"
                 ? imageOnRight
@@ -2227,7 +2243,11 @@ export default async function StoreHomePage({
                   ? imageOnRight
                     ? "2fr 3fr"
                     : "3fr 2fr"
-                  : null;
+                  : splitPhotoCol
+                    ? imageOnRight
+                      ? `minmax(0, 1fr) ${splitPhotoCol}`
+                      : `${splitPhotoCol} minmax(0, 1fr)`
+                    : null;
             // 手機上圖框的形狀。平板以上圖是整欄的高度（md:aspect-auto md:h-full），
             // 這格碰不到；要蓋掉的是手機那個寫死的 aspect-square。規則寫在 layout.tsx 的
             // max-width: 767px 裡（class 上的 aspect-square 是 Tailwind 工具類，inline

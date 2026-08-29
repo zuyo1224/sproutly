@@ -497,7 +497,7 @@ export async function saveEditorState(slug: string, payload: EditorPayload) {
     }
     if (payload.layout.heroSplitRatio !== undefined) {
       const v = payload.layout.heroSplitRatio;
-      if (v === "image-narrow" || v === "normal" || v === "image-wide") {
+      if (v === "image-narrow" || v === "normal" || v === "image-wide" || v === "photo") {
         layoutPatch.heroSplitRatio = v;
       }
     }

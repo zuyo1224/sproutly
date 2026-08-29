@@ -446,9 +446,11 @@ export interface StoreTheme {
     //   image-narrow 2fr 3fr（圖 40%，讓文字那欄鬆一點）
     //   normal       不覆寫（吃 Tailwind 的 md:grid-cols-2）
     //   image-wide   3fr 2fr（圖 60%，直式照片少裁一點）
+    //   photo        圖欄寬 = 段高 × 照片比例（照片在整欄高的框裡剛好放滿，不裁也不留白）；
+    //                比例從 heroImageBounds.fileAspect 拿，沒存到 / 段高選「跟著內容」退回 normal
     // 值算出來時已經把「圖在右」那個 order 反轉考慮進去（grid-template-columns 講的是
     // 視覺左右欄，跟 order 無關），所以存的是語意檔、render 才翻成欄寬字串。
-    heroSplitRatio: "image-narrow" | "normal" | "image-wide"; // split 圖文比例（預設 normal = 不覆寫）
+    heroSplitRatio: "image-narrow" | "normal" | "image-wide" | "photo"; // split 圖文比例（預設 normal = 不覆寫）
     // split 版型那張圖被裁時保留哪一端。上一格把欄寬讓寬了，可是圖框的形狀還是由版型決定
     // （手機是正方形、平板以上是整欄的高度），跟照片本身的比例不一樣就一定要裁掉一邊；
     // 裁的位置寫死在正中間，直式商品照被切掉的上緣（葉冠、瓶口）跟下緣（盆器、落款）
@@ -1410,7 +1412,7 @@ function resolveLayout(raw: unknown): StoreTheme["layout"] {
     })(),
     heroSplitRatio: (() => {
       const v = l.heroSplitRatio;
-      if (v === "image-narrow" || v === "image-wide") return v;
+      if (v === "image-narrow" || v === "image-wide" || v === "photo") return v;
       return "normal" as const;
     })(),
     heroImageFocus: (() => {
