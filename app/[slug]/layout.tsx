@@ -2035,6 +2035,31 @@ export default async function PublicStoreLayout({
           section[data-edit-target="hero"][data-hero-split-mobile="text-first"] [data-hero-split-media] {
             order: 2;
           }
+          /* split 版型手機的列高。section class 上是 min-h-[80vh]，手機圖上文下整段是兩塊
+             加起來：照片正方形時光照片就一個螢幕寬、加上文字段一定超過 80vh，那條碰不到；
+             可是「手機上照片的比例」選了 3:2 / 跟照片（最扁到 3:1）、字又只有店名加一句
+             的店，兩塊加起來不到 80vh，grid 就把多出來的高度平分給兩列——圖欄掛著
+             aspect-ratio，在 grid 裡預設不拉伸、只靠上，照片下面跟文字之間就空出一條底色
+             （390×844 配 3:2 量到 66px）。把列高寫成 auto / minmax(0, 1fr)：照片那列照自己
+             的比例、多出來的全給文字那列，字在裡面照「文字靠哪」擺。文字在上那檔兩列反過來。
+             掛在常駐的 data-hero-split-section 上，所有 split 店家都吃得到——照片正方形的
+             店兩塊本來就超過 80vh，1fr 沒有多的空間可分，版面一個 px 都不動。 */
+          section[data-edit-target="hero"][data-hero-split-section] {
+            grid-template-rows: auto minmax(0, 1fr);
+          }
+          section[data-edit-target="hero"][data-hero-split-section][data-hero-split-mobile="text-first"] {
+            grid-template-rows: minmax(0, 1fr) auto;
+          }
+          /* split 版型「這一段有多高」的手機那份。下面 min-width: 768px 那組只管平板以上，
+             手機一直是 class 上寫死的 80vh，面板選了跟著內容手機還是會被撐到八成螢幕、
+             照片扁一點的店文字那列就多一大截空。手機也照同一把尺：跟著內容清成 0（整段
+             剛好兩塊加起來）、七成螢幕 70vh、跟預設不掛 attribute、維持 80vh。 */
+          section[data-edit-target="hero"][data-hero-split-height="content"] {
+            min-height: 0;
+          }
+          section[data-edit-target="hero"][data-hero-split-height="compact"] {
+            min-height: 70vh;
+          }
         }
 
         /* split 版型圖文相接處的分隔線：editor Hero panel「圖文之間的線」兩組按鈕
@@ -2069,8 +2094,8 @@ export default async function PublicStoreLayout({
            一起蓋掉，得再補一條把它還原，不如讓斷點自己管。
            選 element + attribute 兩層，贏得過 Tailwind 那個單一 class（同樣贏在這份
            <style> 沒包 @layer）。
-           只寫在 md 以上：手機是圖上文下的單欄堆疊，高度是兩塊加起來，min-h-[80vh]
-           幾乎永遠碰不到，動它等於什麼都沒動。
+           這一組只管 md 以上；手機那份（跟著內容 0 / 七成螢幕 70vh）寫在上面
+           max-width: 767px 那組裡，跟列高的規則放一起。
            跟預設那一檔不輸出 attribute，整條規則不存在，既有店家的整屏原樣留著。 */
         @media (min-width: 768px) {
           section[data-edit-target="hero"][data-hero-split-height="content"] {

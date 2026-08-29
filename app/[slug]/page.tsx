@@ -2289,8 +2289,9 @@ export default async function StoreHomePage({
                   : splitPhotoAspect;
             // 文字那欄的字擺在欄的哪個高度。這一欄是 flex flex-col justify-center，
             // 平板以上整段又是整屏高，所以不管幾行字都永遠釘在正中央。inline 的
-            // justifyContent 贏得過 class 上的 justify-center，直接蓋就好（手機是單欄、
-            // 欄高等於內容高，這個值沒有多的空間可以分，套上去也不會動到任何東西）。
+            // justifyContent 贏得過 class 上的 justify-center，直接蓋就好。手機圖上文下
+            // 時文字那列吃掉整段比兩塊加起來多出的高度（layout.tsx 手機那組
+            // grid-template-rows），字比 80vh 少的店這個值在手機也會動到字的位置。
             const splitTextJustify =
               theme.layout.heroSplitTextAlign === "top"
                 ? "flex-start"
@@ -2329,8 +2330,14 @@ export default async function StoreHomePage({
             const splitMobileTextFirst =
               theme.layout.heroSplitMobileOrder === "text-first";
             // 這一段有多高。class 上是 min-h-[80vh] md:min-h-screen，平板以上整整一個
-            // 螢幕。規則寫在 layout.tsx 的 min-width: 768px 裡而不是 inline 的 minHeight
-            //（inline 會連手機那個 80vh 一起蓋掉，得再補一條還原）。
+            // 螢幕、手機至少八成。規則寫在 layout.tsx 裡而不是 inline 的 minHeight，
+            // 平板以上跟手機各一組斷點各管各的（inline 一寫就兩邊一起蓋）。
+            // 手機那組：跟著內容清成 0、七成螢幕 70vh、跟預設維持 class 上的 80vh。
+            // 手機圖上文下時整段是兩塊加起來，比 80vh 矮的話（照片選了扁的比例、字又少）
+            // grid 會把多出來的高度平分給兩列，圖欄有 aspect-ratio 在自己那列只靠上不拉
+            // 伸，照片跟文字之間就空出一條——layout.tsx 同一組手機規則裡把列高改成
+            // auto / 1fr（文字在上時反過來），多出來的高度全給文字那列，這條靠常駐的
+            // data-hero-split-section 掛上去，跟這格選哪一檔無關。
             // 「跟著內容」那檔清掉 min-height 之後，圖欄（md:h-full）自己沒有高度，段高只剩
             // 文字撐的；layout.tsx 同一組規則裡給圖欄一個 50vh 的地板（跟照片那檔除外，
             // 那檔高度由 aspect-ratio 算），並給文字欄一截上下內距（md:py-0 在這檔會讓
@@ -2397,6 +2404,7 @@ export default async function StoreHomePage({
             return (
               <section
                 className="relative grid grid-cols-1 md:grid-cols-2 min-h-[80vh] md:min-h-screen overflow-hidden"
+                data-hero-split-section=""
                 {...(splitMobileTextFirst ? { "data-hero-split-mobile": "text-first" } : {})}
                 {...(splitHeight ? { "data-hero-split-height": splitHeight } : {})}
                 style={
