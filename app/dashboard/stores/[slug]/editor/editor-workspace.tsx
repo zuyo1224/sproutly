@@ -166,6 +166,7 @@ type EditorTheme = {
     heroFullImageBg: string | null;
     heroImageBounds: HeroImageBounds | null;
     heroHeight: "auto" | "short" | "tall" | "full";
+    heroFullTextAlignY: "top" | "center" | "bottom";
     fontScale: number;
     sectionPaddingScale: "compact" | "default" | "spacious";
     buttonRadius: "pill" | "soft" | "square";
@@ -1131,6 +1132,7 @@ export function EditorWorkspace({
           heroFullImageBg: t.layout.heroFullImageBg,
           heroImageBounds: t.layout.heroImageBounds,
           heroHeight: t.layout.heroHeight,
+          heroFullTextAlignY: t.layout.heroFullTextAlignY,
           fontScale: t.layout.fontScale,
           sectionPaddingScale: t.layout.sectionPaddingScale,
           buttonRadius: t.layout.buttonRadius,
@@ -2784,6 +2786,40 @@ export function EditorWorkspace({
                 不會在文字段下面露出一條別的顏色；比這高時整段照內容長、不裁字
               </p>
             </Field>
+            {theme.layout.heroStyle === "full-image" &&
+              theme.layout.heroHeight !== "auto" && (
+              <Field label="文字段裡的字靠哪">
+                <div className="grid grid-cols-3 gap-1.5">
+                  {([
+                    { v: "top", label: "靠上" },
+                    { v: "center", label: "置中" },
+                    { v: "bottom", label: "靠下" },
+                  ] as const).map((opt) => (
+                    <button
+                      key={opt.v}
+                      type="button"
+                      onClick={() => updateLayout({ heroFullTextAlignY: opt.v })}
+                      aria-pressed={theme.layout.heroFullTextAlignY === opt.v}
+                      className={`rounded-lg border py-2 text-xs transition ${
+                        theme.layout.heroFullTextAlignY === opt.v
+                          ? "border-emerald-500 bg-emerald-50 text-emerald-900"
+                          : "border-stone-200 text-stone-600 hover:border-stone-400"
+                      }`}
+                    >
+                      {opt.label}
+                    </button>
+                  ))}
+                </div>
+                <p className="text-[10px] text-stone-500 mt-1">
+                  上面「Hero 高度」選了矮 / 高 / 全屏之後，照片加字比那個矮的店，多出來的
+                  高度全給了文字段那塊色塊，可是字還是貼著色塊上緣排：只有店名一行加一句話
+                  的店選全屏，上面一排字、底下一大片空色塊，看起來像字掉了一半。置中把字擺到
+                  色塊正中間；靠下把字貼到色塊底邊、照片跟字之間留空，比較像海報。字比色塊高
+                  的時候沒有多的空間可分，三檔看起來一樣。自適應那檔色塊剛好包住字，這格
+                  用不到所以收起來。主標拖過位置的店這格不生效
+                </p>
+              </Field>
+            )}
             {theme.layout.heroStyle === "full-image" && (() => {
               // Per-viewport zoom：依當前預覽裝置決定編哪個欄位
               const zoomKey =

@@ -878,6 +878,15 @@ export interface StoreTheme {
     // 照舊偵測。null = 沒存過（舊店、偵測失敗），行為跟以前一模一樣。
     heroImageBounds: HeroImageBounds | null;
     heroHeight: "auto" | "short" | "tall" | "full"; // 預設 auto（adaptive 比例）
+    // 滿版圖版型「Hero 高度」撐高之後，文字段裡那幾行字靠色塊的哪一邊。上一格選了矮 / 高 /
+    // 全屏，照片加字比那個矮時多出來的高度全給文字段（色塊鋪到底），可是字本身還是貼著
+    // 色塊上緣排：字少的店選全屏，上面一排字、底下一大片空色塊，看起來像字掉了一半。
+    //   top     不覆寫（維持原本靠上）
+    //   center  字擺在色塊正中間
+    //   bottom  字貼著色塊底邊（照片在上、字在最下、中間留空，海報式）
+    // 只在有「Hero 高度」時才有多出來的空間可分；自適應那檔色塊剛好包住字、三檔看起來一樣。
+    // 主標拖過位置的店整層走絕對座標，這格不生效。預設 top 不輸出任何 class，既有店家一模一樣。
+    heroFullTextAlignY: "top" | "center" | "bottom"; // 滿版圖文字段內容靠哪（預設 top = 不覆寫）
     // 全網站
     fontScale: number;                 // 全網站字體 multiplier 0.8-1.3（預設 1.0）
     sectionPaddingScale: "compact" | "default" | "spacious"; // 區段上下空白
@@ -1584,6 +1593,11 @@ function resolveLayout(raw: unknown): StoreTheme["layout"] {
       const v = l.heroHeight;
       if (v === "short" || v === "tall" || v === "full" || v === "auto") return v;
       return "auto" as const;
+    })(),
+    heroFullTextAlignY: (() => {
+      const v = l.heroFullTextAlignY;
+      if (v === "center" || v === "bottom") return v;
+      return "top" as const;
     })(),
     fontScale: (() => {
       const v = l.fontScale;

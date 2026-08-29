@@ -111,6 +111,7 @@ type EditorPayload = {
     heroFullImageBg?: string | null;
     heroImageBounds?: unknown;
     heroHeight?: string;
+    heroFullTextAlignY?: string;
     fontScale?: number;
     sectionPaddingScale?: string;
     buttonRadius?: string;
@@ -331,6 +332,12 @@ export async function saveEditorState(slug: string, payload: EditorPayload) {
       const v = payload.layout.heroHeight;
       if (v === "auto" || v === "short" || v === "tall" || v === "full") {
         layoutPatch.heroHeight = v;
+      }
+    }
+    if (payload.layout.heroFullTextAlignY !== undefined) {
+      const v = payload.layout.heroFullTextAlignY;
+      if (v === "top" || v === "center" || v === "bottom") {
+        layoutPatch.heroFullTextAlignY = v;
       }
     }
     if (payload.layout.heroTaglineAlign !== undefined) {

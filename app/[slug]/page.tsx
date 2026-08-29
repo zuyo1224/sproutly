@@ -1922,6 +1922,19 @@ export default async function StoreHomePage({
             // 多出來的高度可分，不掛 flex，版面跟以前一個 px 都不差。
             const heroFillClass = heroHeightClass ? "flex flex-col" : "";
             const heroTextGrowClass = heroHeightClass ? " grow" : "";
+            // 文字段吃到多出來的高度之後，字靠色塊的哪一邊（heroFullTextAlignY）。grow 只是
+            // 把色塊鋪到底，字還是從色塊上緣排：字少 + 全屏會上面一排字、底下一大片空色塊。
+            // 置中 / 靠下把文字段本身也變成 flex 直排、用 justify-content 推字；裡面那道
+            // 56rem 的欄在 flex 直排裡照樣被撐到滿寬再被 max-width 收回、auto margin 一樣
+            // 置中或推到一邊，跟原本 block 排法算出來的位置一致。沒有「Hero 高度」就沒有多的
+            // 空間可分，不掛；靠上是原本的樣子，也不掛。主標拖過位置的店（整層絕對座標）
+            // 在下面用的地方再排掉。
+            const heroTextAlignYClass =
+              heroHeightClass && theme.layout.heroFullTextAlignY === "center"
+                ? " flex flex-col justify-center"
+                : heroHeightClass && theme.layout.heroFullTextAlignY === "bottom"
+                  ? " flex flex-col justify-end"
+                  : "";
             return (
               <section
                 className={`${heroHeightClass} ${heroFillClass}`.trim()}
@@ -1984,7 +1997,7 @@ export default async function StoreHomePage({
                     theme.layout.freePositions[FREE_POS_KEYS.heroEyebrow] ?? null;
                   return (
                 <div
-                  className={`relative px-6 sm:px-12 py-14 sm:py-20${heroTextGrowClass}`}
+                  className={`relative px-6 sm:px-12 py-14 sm:py-20${heroTextGrowClass}${taglinePos ? "" : heroTextAlignYClass}`}
                   style={{ backgroundColor: heroTextBgColor, minHeight: taglinePos || subtitlePos || ctaPos || eyebrowPos ? "300px" : undefined, ...heroTextPaddingStyle }}
                   data-edit-target="hero-text-area"
                 >
