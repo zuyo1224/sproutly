@@ -722,6 +722,28 @@ export function EditorWorkspace({
   // theme、不推復原點（不然商家按一下復原退掉的是一個看不見的東西）；只標 dirty 讓
   // auto-save 順手存。同一張圖只試一次：偵測失敗（CORS 拿不到像素）就放著，公開頁
   // 退回客人那邊自己偵測，跟以前一模一樣。
+  // 量預覽畫布（iframe）現在的實際寬高。「照片最高佔多少螢幕」那格的上限是用
+  // 螢幕高度的百分比算的，畫布多寬多高決定上限會裁到照片哪裡；Hero 面板的預覽框
+  // 要標出「裁到這裡」就得知道畫布尺寸。iframe 換裝置（375 / 768 / 100%）、全螢幕
+  // 切換、視窗拉大縮小都會變，用 ResizeObserver 跟著量；previewKey 換了 iframe 會
+  // 重新掛，得重新觀察。
+  const [canvasSize, setCanvasSize] = useState<{ w: number; h: number } | null>(null);
+  useEffect(() => {
+    const el = iframeRef.current;
+    if (!el) return;
+    const measure = () => {
+      const w = el.clientWidth;
+      const h = el.clientHeight;
+      setCanvasSize((prev) =>
+        prev && prev.w === w && prev.h === h ? prev : w > 0 && h > 0 ? { w, h } : null
+      );
+    };
+    measure();
+    const ro = new ResizeObserver(measure);
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, [previewKey]);
+
   // 另外記一筆「這張圖現在算到哪」給 Hero 面板顯示：以前偵測失敗完全沒聲音，商家
   // 換了一張外站圖、公開頁第一屏還是跳，卻不知道是這張圖拿不到像素。算好了不用另外
   // 記——theme.layout.heroImageBounds.url 就是現在這張就代表算好了。
@@ -1719,27 +1741,129 @@ export function EditorWorkspace({
                         : null;
                     let aspectRatio: string | undefined;
                     let objectPosition: string | undefined;
+                    // 「照片最高佔多少螢幕」設了上限之後，公開頁的框會比主體比例矮，
+                    // 可是這格預覽以前只畫主體比例，商家看不出上限會把照片收到哪。
+                    // 照現在預覽畫布的寬高算一次（跟 HeroAdaptiveBanner 同一套：框寬 ÷
+                    // 主體比例 = 沒上限時的高度，超過畫布高度 × 上限比例才會被收）：
+                    //   裁上下  → 在預覽框上下各壓一層暗色，暗掉的就是客人第一屏看不到的，
+                    //             分法照主體中點（object-position 就是這樣切的）
+                    //   整張顯示 → 預覽框改畫成收過上限的那個框（畫布寬 ÷ 上限高），主體
+                    //             縮在中間，左右露出框底色，就是客人會看到的樣子
+                    // 沒設上限、沒被收到、畫布還沒量到、比例被夾過（太直的照片預覽框本
+                    // 來就不是完整主體）都不畫，跟以前一樣。
+                    let capTopPct: number | null = null;
+                    let capBottomPct: number | null = null;
+                    let capCroppedPct: number | null = null;
+                    let containFrame: { aspectRatio: string; innerWidthPct: number } | null = null;
                     if (subject) {
                       const contentH = subject.bottomPct - subject.topPct;
                       const mid = (subject.topPct + subject.bottomPct) / 2;
                       const ar = subject.fileAspect / (contentH / 100);
-                      aspectRatio = String(Math.min(3, Math.max(0.75, ar)));
+                      const clamped = Math.min(3, Math.max(0.75, ar));
+                      aspectRatio = String(clamped);
                       objectPosition = `50% ${mid.toFixed(2)}%`;
+                      const capRatio =
+                        theme.layout.heroImageMaxHeight === "screen"
+                          ? 1
+                          : theme.layout.heroImageMaxHeight === "short"
+                            ? 0.68
+                            : null;
+                      if (capRatio !== null && canvasSize && clamped === ar) {
+                        const bannerH = canvasSize.w / ar;
+                        const capH = canvasSize.h * capRatio;
+                        if (bannerH > capH + 0.5) {
+                          const visible = capH / bannerH; // 0-1，上限留下來的那一截
+                          capCroppedPct = Math.round((1 - visible) * 100);
+                          if (theme.layout.heroFullImageFit === "contain") {
+                            containFrame = {
+                              aspectRatio: String(
+                                Math.min(3, Math.max(0.75, canvasSize.w / capH))
+                              ),
+                              innerWidthPct: visible * 100,
+                            };
+                          } else {
+                            capTopPct = (mid / 100) * (1 - visible) * 100;
+                            capBottomPct = capTopPct + visible * 100;
+                          }
+                        }
+                      }
+                    }
+                    const canvasLabel =
+                      viewport === "mobile"
+                        ? "手機 375 寬"
+                        : viewport === "tablet"
+                          ? "平板 768 寬"
+                          : "桌機";
+                    if (containFrame) {
+                      return (
+                        <div className="space-y-1">
+                          <div
+                            className="relative rounded-lg overflow-hidden border border-stone-200"
+                            style={{
+                              aspectRatio: containFrame.aspectRatio,
+                              backgroundColor: theme.layout.heroFullImageBg ?? theme.bg,
+                            }}
+                          >
+                            <div
+                              className="absolute inset-y-0 left-1/2 -translate-x-1/2"
+                              style={{ width: `${containFrame.innerWidthPct}%` }}
+                            >
+                              {/* eslint-disable-next-line @next/next/no-img-element */}
+                              <img
+                                src={theme.heroUrl}
+                                alt="Hero"
+                                className="w-full h-full object-cover"
+                                style={objectPosition ? { objectPosition } : undefined}
+                              />
+                            </div>
+                          </div>
+                          <p className="text-[10px] text-stone-500">
+                            照現在的預覽畫布（{canvasLabel}）算，這張照片會被上限收掉約 {capCroppedPct}%
+                            的高度；選了整張顯示，主體整個縮進框裡、左右露出框底色，上面就是客人第一屏看到的樣子。換裝置或客人的螢幕比例不同，露出的多少會跟著變
+                          </p>
+                        </div>
+                      );
                     }
                     return (
-                      <div
-                        className={`relative rounded-lg overflow-hidden bg-stone-100 border border-stone-200 ${
-                          subject ? "" : "aspect-video"
-                        }`}
-                        style={subject ? { aspectRatio } : undefined}
-                      >
-                        {/* eslint-disable-next-line @next/next/no-img-element */}
-                        <img
-                          src={theme.heroUrl}
-                          alt="Hero"
-                          className="w-full h-full object-cover"
-                          style={objectPosition ? { objectPosition } : undefined}
-                        />
+                      <div className="space-y-1">
+                        <div
+                          className={`relative rounded-lg overflow-hidden bg-stone-100 border border-stone-200 ${
+                            subject ? "" : "aspect-video"
+                          }`}
+                          style={subject ? { aspectRatio } : undefined}
+                        >
+                          {/* eslint-disable-next-line @next/next/no-img-element */}
+                          <img
+                            src={theme.heroUrl}
+                            alt="Hero"
+                            className="w-full h-full object-cover"
+                            style={objectPosition ? { objectPosition } : undefined}
+                          />
+                          {capTopPct !== null && capBottomPct !== null && (
+                            <>
+                              <div
+                                className="pointer-events-none absolute inset-x-0 top-0 border-b border-dashed border-white/90 bg-stone-900/55"
+                                style={{ height: `${capTopPct}%` }}
+                              />
+                              <div
+                                className="pointer-events-none absolute inset-x-0 bottom-0 border-t border-dashed border-white/90 bg-stone-900/55"
+                                style={{ height: `${100 - capBottomPct}%` }}
+                              />
+                              <span
+                                className="pointer-events-none absolute left-1.5 rounded bg-white/90 px-1 py-0.5 text-[9px] leading-none text-stone-700"
+                                style={{ top: `calc(${capTopPct}% + 4px)` }}
+                              >
+                                上限裁到這裡
+                              </span>
+                            </>
+                          )}
+                        </div>
+                        {capCroppedPct !== null && (
+                          <p className="text-[10px] text-stone-500">
+                            照現在的預覽畫布（{canvasLabel}）算，這張照片會被上限收掉約 {capCroppedPct}%
+                            的高度，暗掉的部分客人第一屏看不到（照主體中點分上下）。換裝置或客人的螢幕比例不同，裁的多少會跟著變；不想裁可以在下面「照片完整度」選整張顯示
+                          </p>
+                        )}
                       </div>
                     );
                   })()}
