@@ -2633,6 +2633,16 @@ export default async function StoreHomePage({
                 : theme.layout.heroMagazinePadX === "wide"
                   ? { paddingLeft: "clamp(2.5rem, 9vw, 6rem)", paddingRight: "clamp(2.5rem, 9vw, 6rem)" }
                   : undefined;
+            // 上下那兩條線離這一段上下邊多遠。section 上的 py-20 sm:py-28 是寫死的，
+            // 「大字與上下橫線的距離」那格清掉段高之後，線外面還是固定留 5–7rem。
+            // padding 算在 min-height 裡面（border-box），所以段的最低高度不變，只是
+            // 線往邊或往中間移。「跟預設」不輸出任何值，既有店家算出來一模一樣。
+            const magPadYStyle =
+              theme.layout.heroMagazinePadY === "tight"
+                ? { paddingTop: "clamp(2rem, 5vw, 3.5rem)", paddingBottom: "clamp(2rem, 5vw, 3.5rem)" }
+                : theme.layout.heroMagazinePadY === "roomy"
+                  ? { paddingTop: "clamp(8rem, 14vw, 12rem)", paddingBottom: "clamp(8rem, 14vw, 12rem)" }
+                  : undefined;
             return (
               <section
                 className="relative min-h-screen flex flex-col justify-between py-20 sm:py-28"
@@ -2649,6 +2659,7 @@ export default async function StoreHomePage({
                     : theme.layout.heroMagazineGap === "medium"
                       ? { minHeight: "70vh" }
                       : {}),
+                  ...magPadYStyle,
                 }}
                 data-edit-target="hero"
                 data-edit-label="Hero 區段"

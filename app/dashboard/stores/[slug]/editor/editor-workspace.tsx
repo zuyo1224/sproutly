@@ -145,6 +145,7 @@ type EditorTheme = {
     heroMagazineTextWidth: "narrow" | "normal" | "rule" | "full";
     heroMagazineRuleWidth: "narrow" | "normal" | "full";
     heroMagazinePadX: "narrow" | "normal" | "wide";
+    heroMagazinePadY: "tight" | "normal" | "roomy";
     heroMagazineSubtitleWidth: "narrow" | "normal" | "wide" | "title";
     heroMagazineTextGap: "tight" | "normal" | "loose";
     heroMagazineBg: string | null;
@@ -1111,6 +1112,7 @@ export function EditorWorkspace({
           heroMagazineTextWidth: t.layout.heroMagazineTextWidth,
           heroMagazineRuleWidth: t.layout.heroMagazineRuleWidth,
           heroMagazinePadX: t.layout.heroMagazinePadX,
+          heroMagazinePadY: t.layout.heroMagazinePadY,
           heroMagazineSubtitleWidth: t.layout.heroMagazineSubtitleWidth,
           heroMagazineTextGap: t.layout.heroMagazineTextGap,
           heroMagazineBg: t.layout.heroMagazineBg,
@@ -3667,6 +3669,37 @@ export function EditorWorkspace({
                   大字的左右兩端就停在這道留白上，整段到底離螢幕邊多遠就由這格決定。窄是
                   字幾乎頂到紙邊的那種大版面，寬是四周留一大片白、中間一小團字的那種。
                   上下兩條線跟中間的字一起移，不會有一層對不齊
+                </p>
+              </Field>
+            )}
+            {theme.layout.heroStyle === "magazine" && (
+              <Field label="上下那兩條線離段的邊多遠">
+                <div className="grid grid-cols-3 gap-1.5">
+                  {([
+                    { v: "tight", label: "少" },
+                    { v: "normal", label: "跟預設" },
+                    { v: "roomy", label: "多" },
+                  ] as const).map((opt) => (
+                    <button
+                      key={opt.v}
+                      type="button"
+                      onClick={() => updateLayout({ heroMagazinePadY: opt.v })}
+                      aria-pressed={theme.layout.heroMagazinePadY === opt.v}
+                      className={`rounded-lg border py-2 text-xs transition ${
+                        theme.layout.heroMagazinePadY === opt.v
+                          ? "border-emerald-500 bg-emerald-50 text-emerald-900"
+                          : "border-stone-200 text-stone-600 hover:border-stone-400"
+                      }`}
+                    >
+                      {opt.label}
+                    </button>
+                  ))}
+                </div>
+                <p className="text-[10px] text-stone-500 mt-1">
+                  上面那格「大字與上下橫線的距離」動的是線跟字之間；這格動的是線外面、
+                  離這一段上下邊的那一圈。那格選貼緊之後線是貼到字了，可是線外面還固定留
+                  一截，整段收不扁；選少就能讓線幾乎頂到段的邊。多是四周留一大片白、線往
+                  中間縮的那種。段的最低高度不變，留白多的時候線跟字會往中間靠
                 </p>
               </Field>
             )}

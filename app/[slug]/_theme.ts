@@ -714,6 +714,13 @@ export interface StoreTheme {
     // 1.5rem)、寬 clamp(2.5rem, 9vw, 6rem)，預設完全不輸出任何值（inline 不蓋 class），
     // 既有店家算出來一模一樣。
     heroMagazinePadX: "narrow" | "normal" | "wide"; // 雜誌整段左右內距（預設 normal = 不覆寫）
+    // 雜誌版型上下那兩條線離這一段上下邊多遠。section 上寫死 py-20 sm:py-28（5 / 7rem），
+    // 「大字與上下橫線的距離」那格動的是段的最低高度，貼緊那檔把高度清成 0 之後線是貼
+    // 到字了，可是線外面還是固定留 5–7rem 一圈——想做「線頂到段的邊、整段收得很扁」的
+    // 封面做不到；反過來四周留一大片白的那種也只能靠中間那格撐高、線跟著被推遠。三檔用
+    // clamp 讓手機到桌機連續變化（原本就是兩個斷點兩個值）：少 clamp(2rem, 5vw, 3.5rem)、
+    // 多 clamp(8rem, 14vw, 12rem)；預設不輸出任何值（inline 不蓋 class），既有店家一樣。
+    heroMagazinePadY: "tight" | "normal" | "roomy"; // 雜誌整段上下內距（預設 normal = 不覆寫）
     // 雜誌版型整段的底色。這個版型跟 minimal 一樣沒有圖，畫面上只有兩條 1px 的線、
     // 中間一段大字，其餘全是底色——而那片底色一直寫死吃 theme.bg，跟底下的商品段、
     // 慢讀段、頁尾同一個顏色。雜誌封面的成立條件就是「整版一個色塊，線與字壓在上面」，
@@ -1525,6 +1532,11 @@ function resolveLayout(raw: unknown): StoreTheme["layout"] {
     heroMagazinePadX: (() => {
       const v = l.heroMagazinePadX;
       if (v === "narrow" || v === "wide") return v;
+      return "normal" as const;
+    })(),
+    heroMagazinePadY: (() => {
+      const v = l.heroMagazinePadY;
+      if (v === "tight" || v === "roomy") return v;
       return "normal" as const;
     })(),
     heroMagazineBg: normalizeHexColor(l.heroMagazineBg),
