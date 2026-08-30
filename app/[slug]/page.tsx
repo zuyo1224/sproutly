@@ -2651,16 +2651,21 @@ export default async function StoreHomePage({
                   // 只有兩條 1px 的線跟中間一段字，其餘全是這片底色；跟後面每一段同色
                   // 的時候那兩條線變成頁面中間兩條沒來由的橫線，封面在哪裡結束看不出來。
                   background: theme.layout.heroMagazineBg ?? theme.bg,
-                  // 中間大字與上下兩條線的距離 = 這一段有多高（三塊被 justify-between
-                  // 撐到兩端與中央）。inline 的 minHeight 贏得過 class 的 min-h-screen；
-                  // tight 給 0 讓內容自己決定高度，線就貼著字（上下還留 py 那層）。
-                  ...(theme.layout.heroMagazineGap === "tight"
-                    ? { minHeight: 0 }
-                    : theme.layout.heroMagazineGap === "medium"
-                      ? { minHeight: "70vh" }
-                      : {}),
                   ...magPadYStyle,
                 }}
+                // 中間大字與上下兩條線的距離 = 這一段有多高（三塊被 justify-between
+                // 撐到兩端與中央）。原本用 inline 的 minHeight 蓋 class 的 min-h-screen，
+                // 但 inline 一寫手機桌機一起蓋，手機那格就沒地方插；改成掛 attribute、
+                // 規則寫在 layout.tsx（那份 <style> 沒包 @layer，贏得過 Tailwind 的 class），
+                // 桌機那組不分斷點、手機那組只在 767px 以下且寫在後面，同分時後者贏。
+                // 算出來跟以前一樣：tight 0（線貼著字，上下還留 py 那層）、medium 70vh。
+                // 跟預設 / 跟桌機一樣都不掛 attribute，整條規則不存在。
+                {...(theme.layout.heroMagazineGap !== "normal"
+                  ? { "data-hero-magazine-gap": theme.layout.heroMagazineGap }
+                  : {})}
+                {...(theme.layout.heroMagazineGapMobile !== "same"
+                  ? { "data-hero-magazine-gap-mobile": theme.layout.heroMagazineGapMobile }
+                  : {})}
                 data-edit-target="hero"
                 data-edit-label="Hero 區段"
               >

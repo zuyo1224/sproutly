@@ -1947,6 +1947,32 @@ export default async function PublicStoreLayout({
           text-transform: none;
         }
 
+        /* 雜誌版型「大字離上下橫線多遠」：editor Hero panel 那格三檔（貼著 / 中等 / 跟預設）
+           加手機自己的一格（跟桌機一樣 / 貼著 / 中等 / 整屏）。這一段是 min-h-screen +
+           justify-between，線離字多遠等於段有多高，所以動的全是 min-height。
+           原本桌機那格是公開頁 inline 的 minHeight，但 inline 一寫手機桌機一起蓋，手機那格
+           插不進去；改成兩個 attribute 各管各的。第一組不分斷點（等於以前的 inline），第二組
+           只管 767px 以下、寫在後面，同一個 section 兩組都命中時後者贏——手機那格選了什麼
+           就是什麼。跟預設 / 跟桌機一樣都不掛 attribute，整條規則不存在，既有店家（含已經
+           選了貼著 / 中等的）算出來一模一樣。 */
+        section[data-edit-target="hero"][data-hero-magazine-gap="tight"] {
+          min-height: 0;
+        }
+        section[data-edit-target="hero"][data-hero-magazine-gap="medium"] {
+          min-height: 70vh;
+        }
+        @media (max-width: 767px) {
+          section[data-edit-target="hero"][data-hero-magazine-gap-mobile="tight"] {
+            min-height: 0;
+          }
+          section[data-edit-target="hero"][data-hero-magazine-gap-mobile="medium"] {
+            min-height: 70vh;
+          }
+          section[data-edit-target="hero"][data-hero-magazine-gap-mobile="normal"] {
+            min-height: 100vh;
+          }
+        }
+
         /* split 版型圖文比例：editor Hero panel「圖文比例」三按鈕（圖窄 / 跟預設 / 圖寬）。
            欄寬字串由公開頁算好（已把「圖在右」的 order 反轉考慮進去）從 inline style 的
            --store-hero-split 進來，這裡只負責讓它蓋過 Tailwind 的 md:grid-cols-2——同樣

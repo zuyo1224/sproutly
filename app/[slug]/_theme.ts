@@ -662,6 +662,12 @@ export interface StoreTheme {
     // tight 不設（線貼著字，內容多高這段就多高，上下留 py 那層）、medium 七成屏、
     // normal 不覆寫（整屏）。不開任意數字：比一屏更高只是把後面的商品推得更遠。
     heroMagazineGap: "tight" | "medium" | "normal"; // 雜誌大字與上下橫線的距離（預設 normal = 不覆寫）
+    // 上面那格的手機那份。整屏 / 七成屏這種尺在手機跟桌機量出來差很多：桌機 900px 高
+    // 配八十幾 px 的大字一整屏剛好，手機 844px 高只有 36px 的字，整屏就是上下各一條線、
+    // 中間一小行字、其餘全空；反過來想手機收緊、桌機仍留整屏封面的店，上面那格一改
+    // 兩邊一起變。這格只管 767px 以下，same 完全不掛 attribute、手機照上面那格走，
+    // 既有店家一個 px 都不動；另外三檔各自對到同一把尺（0 / 70vh / 100vh）。
+    heroMagazineGapMobile: "same" | "tight" | "medium" | "normal"; // 雜誌大字與橫線距離（手機）（預設 same = 跟上面那格）
     // 同一個版型的下一格：中間大字那一層的欄寬。上下兩條線各自包在 max-w-6xl（72rem）
     // 裡、中間大字包在 max-w-5xl（64rem）裡，兩層不同寬是寫死的——主標長一點的店，字會排
     // 到比上下那兩條線更外面去，看起來像字撐破了框；而框住字正是這個版型唯一的結構。反過來
@@ -1508,6 +1514,11 @@ function resolveLayout(raw: unknown): StoreTheme["layout"] {
       const v = l.heroMagazineGap;
       if (v === "tight" || v === "medium") return v;
       return "normal" as const;
+    })(),
+    heroMagazineGapMobile: (() => {
+      const v = l.heroMagazineGapMobile;
+      if (v === "tight" || v === "medium" || v === "normal") return v;
+      return "same" as const;
     })(),
     heroMagazineTextWidth: (() => {
       const v = l.heroMagazineTextWidth;

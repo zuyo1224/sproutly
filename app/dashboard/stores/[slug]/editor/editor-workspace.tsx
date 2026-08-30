@@ -142,6 +142,7 @@ type EditorTheme = {
     heroMagazineRuleWeight: "normal" | "medium" | "thick";
     heroMagazineRuleTone: "normal" | "faint" | "strong" | "accent";
     heroMagazineGap: "tight" | "medium" | "normal";
+    heroMagazineGapMobile: "same" | "tight" | "medium" | "normal";
     heroMagazineTextWidth: "narrow" | "normal" | "rule" | "full";
     heroMagazineRuleWidth: "narrow" | "normal" | "full";
     heroMagazinePadX: "narrow" | "normal" | "wide";
@@ -1109,6 +1110,7 @@ export function EditorWorkspace({
           heroMagazineRuleWeight: t.layout.heroMagazineRuleWeight,
           heroMagazineRuleTone: t.layout.heroMagazineRuleTone,
           heroMagazineGap: t.layout.heroMagazineGap,
+          heroMagazineGapMobile: t.layout.heroMagazineGapMobile,
           heroMagazineTextWidth: t.layout.heroMagazineTextWidth,
           heroMagazineRuleWidth: t.layout.heroMagazineRuleWidth,
           heroMagazinePadX: t.layout.heroMagazinePadX,
@@ -3575,6 +3577,38 @@ export function EditorWorkspace({
                   這一段本來一定佔滿一整個螢幕，上下兩條線被推到螢幕的最上跟最下、中間浮
                   著主標，螢幕越大三塊離得越開，看起來像三件沒關係的東西——可是雜誌封面
                   的樣子就是靠那兩條線框住中間的字。只放一行主標的店選貼著或中等會收回來
+                </p>
+              </Field>
+            )}
+            {theme.layout.heroStyle === "magazine" && (
+              <Field label="手機上大字離上下橫線多遠">
+                <div className="grid grid-cols-2 gap-1.5">
+                  {([
+                    { v: "same", label: "跟桌機一樣" },
+                    { v: "tight", label: "貼著" },
+                    { v: "medium", label: "中等" },
+                    { v: "normal", label: "整個螢幕" },
+                  ] as const).map((opt) => (
+                    <button
+                      key={opt.v}
+                      type="button"
+                      onClick={() => updateLayout({ heroMagazineGapMobile: opt.v })}
+                      aria-pressed={theme.layout.heroMagazineGapMobile === opt.v}
+                      className={`rounded-lg border py-2 text-xs transition ${
+                        theme.layout.heroMagazineGapMobile === opt.v
+                          ? "border-emerald-500 bg-emerald-50 text-emerald-900"
+                          : "border-stone-200 text-stone-600 hover:border-stone-400"
+                      }`}
+                    >
+                      {opt.label}
+                    </button>
+                  ))}
+                </div>
+                <p className="text-[10px] text-stone-500 mt-1">
+                  上面那格在手機跟桌機是同一把尺，可是量出來差很多：桌機的大字有八十幾
+                  px、佔一整個螢幕剛好；手機的字只有三十幾 px，一整個螢幕就是上下各一條線、
+                  中間一小行字、其餘全空。這格只管手機（767px 以下），想桌機留整屏封面、
+                  手機收緊的店在這裡選貼著或中等；跟桌機一樣就照上面那格走。切到手機預覽看
                 </p>
               </Field>
             )}
