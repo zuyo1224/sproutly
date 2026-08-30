@@ -1940,6 +1940,13 @@ export default async function StoreHomePage({
                 className={`${heroHeightClass} ${heroFillClass}`.trim()}
                 data-edit-target="hero"
                 data-edit-label="Hero 區段"
+                // 「Hero 高度」的手機那一份（heroHeightMobile）。上面 class 的三檔手機桌機
+                // 同一個值、手機插不進自己的高度，跟雜誌版型那格同一招：值掛在 attribute、
+                // min-height（含 auto 的清回 0）與撐高時要的 flex / grow 規則都在 layout.tsx
+                // 767px 以下那組。跟桌機一樣 = 不掛，整條規則不存在，既有店家一個 px 都不動。
+                {...(theme.layout.heroHeightMobile !== "same"
+                  ? { "data-hero-full-height-mobile": theme.layout.heroHeightMobile }
+                  : {})}
               >
                 {/* 自適應 banner — client 偵測圖片自帶 padding，banner aspect 動態算成
                     剛好框住內容本體的比例，不論手機 / 平板 / 桌機都用同一套：

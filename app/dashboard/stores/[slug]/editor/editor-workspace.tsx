@@ -168,6 +168,7 @@ type EditorTheme = {
     heroFullImageBg: string | null;
     heroImageBounds: HeroImageBounds | null;
     heroHeight: "auto" | "short" | "tall" | "full";
+    heroHeightMobile: "same" | "auto" | "short" | "tall" | "full";
     heroFullTextAlignY: "top" | "center" | "bottom";
     fontScale: number;
     sectionPaddingScale: "compact" | "default" | "spacious";
@@ -1136,6 +1137,7 @@ export function EditorWorkspace({
           heroFullImageBg: t.layout.heroFullImageBg,
           heroImageBounds: t.layout.heroImageBounds,
           heroHeight: t.layout.heroHeight,
+          heroHeightMobile: t.layout.heroHeightMobile,
           heroFullTextAlignY: t.layout.heroFullTextAlignY,
           fontScale: t.layout.fontScale,
           sectionPaddingScale: t.layout.sectionPaddingScale,
@@ -2790,6 +2792,40 @@ export function EditorWorkspace({
                 不會在文字段下面露出一條別的顏色；比這高時整段照內容長、不裁字
               </p>
             </Field>
+            {theme.layout.heroStyle === "full-image" && (
+              <Field label="手機上的 Hero 高度">
+                <div className="grid grid-cols-3 gap-1.5">
+                  {([
+                    { v: "same", label: "跟桌機一樣" },
+                    { v: "auto", label: "自適應" },
+                    { v: "short", label: "矮", hint: "60vh" },
+                    { v: "tall", label: "高", hint: "80vh" },
+                    { v: "full", label: "全屏", hint: "100vh" },
+                  ] as const).map((opt) => (
+                    <button
+                      key={opt.v}
+                      type="button"
+                      onClick={() => updateLayout({ heroHeightMobile: opt.v })}
+                      aria-pressed={theme.layout.heroHeightMobile === opt.v}
+                      className={`rounded-lg border py-2 text-xs transition ${
+                        theme.layout.heroHeightMobile === opt.v
+                          ? "border-emerald-500 bg-emerald-50 text-emerald-900"
+                          : "border-stone-200 text-stone-600 hover:border-stone-400"
+                      }`}
+                      title={"hint" in opt ? opt.hint : undefined}
+                    >
+                      {opt.label}
+                    </button>
+                  ))}
+                </div>
+                <p className="text-[10px] text-stone-500 mt-1">
+                  上面那格在手機跟桌機是同一把尺，可是同一張照片在手機是滿寬顯示、比桌機
+                  高得多，字又小一半：桌機選全屏剛好的店，手機常常是文字段被硬撐一大截空
+                  色塊；想手機做滿屏封面、桌機照內容走的也動不了。這格只管手機（767px
+                  以下），跟桌機一樣就照上面那格走。切到手機預覽看
+                </p>
+              </Field>
+            )}
             {theme.layout.heroStyle === "full-image" &&
               theme.layout.heroHeight !== "auto" && (
               <Field label="文字段裡的字靠哪">

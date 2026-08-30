@@ -1973,6 +1973,42 @@ export default async function PublicStoreLayout({
           }
         }
 
+        /* 滿版版型「Hero 高度」的手機那一格（heroHeightMobile）。桌機那格是 class 上的
+           min-h-[60vh] / min-h-[80vh] / min-h-screen，手機桌機同一個值——同一張照片手機
+           滿寬顯示比桌機高得多、字又小一半，桌機剛好的高度到手機常常不是被硬撐一大截
+           空色塊、就是想撐反而不夠。跟雜誌那組同一招：只管 767px 以下、贏在這份 <style>
+           沒包 @layer。auto 那檔把桌機的 min-height 清回 0，手機照內容長（桌機的 flex /
+           grow 還掛著，但沒有多出來的高度可分，算出來跟自適應一樣）。三個高度檔要自己補
+           flex 直排 + 文字段 grow——桌機選自適應時 page.tsx 不掛那兩個 class，沒補的話
+           多出來的高度會掉在文字段底下露一條全站底色（9478b31 修過的那個病）；桌機也有
+           高度時這兩條是重複宣告，算出來一樣。跟桌機一樣 = 不掛 attribute，整組規則
+           不存在，既有店家一個 px 都不動。 */
+        @media (max-width: 767px) {
+          section[data-edit-target="hero"][data-hero-full-height-mobile="auto"] {
+            min-height: 0;
+          }
+          section[data-edit-target="hero"][data-hero-full-height-mobile="short"] {
+            min-height: 60vh;
+          }
+          section[data-edit-target="hero"][data-hero-full-height-mobile="tall"] {
+            min-height: 80vh;
+          }
+          section[data-edit-target="hero"][data-hero-full-height-mobile="full"] {
+            min-height: 100vh;
+          }
+          section[data-edit-target="hero"][data-hero-full-height-mobile="short"],
+          section[data-edit-target="hero"][data-hero-full-height-mobile="tall"],
+          section[data-edit-target="hero"][data-hero-full-height-mobile="full"] {
+            display: flex;
+            flex-direction: column;
+          }
+          section[data-hero-full-height-mobile="short"] [data-edit-target="hero-text-area"],
+          section[data-hero-full-height-mobile="tall"] [data-edit-target="hero-text-area"],
+          section[data-hero-full-height-mobile="full"] [data-edit-target="hero-text-area"] {
+            flex-grow: 1;
+          }
+        }
+
         /* split 版型圖文比例：editor Hero panel「圖文比例」三按鈕（圖窄 / 跟預設 / 圖寬）。
            欄寬字串由公開頁算好（已把「圖在右」的 order 反轉考慮進去）從 inline style 的
            --store-hero-split 進來，這裡只負責讓它蓋過 Tailwind 的 md:grid-cols-2——同樣

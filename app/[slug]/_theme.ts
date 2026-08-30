@@ -891,6 +891,16 @@ export interface StoreTheme {
     // 照舊偵測。null = 沒存過（舊店、偵測失敗），行為跟以前一模一樣。
     heroImageBounds: HeroImageBounds | null;
     heroHeight: "auto" | "short" | "tall" | "full"; // 預設 auto（adaptive 比例）
+    // 滿版圖版型「Hero 高度」的手機那一份。上面那格三檔（60vh / 80vh / 100vh）手機桌機
+    // 同一個值，可是同一張照片在手機是滿寬顯示、比桌機高得多，字的字級又只有桌機的一半
+    // 不到：桌機選全屏剛好的店，手機常常是照片就吃掉大半個螢幕、文字段再被硬撐一大截
+    // 空色塊；反過來想手機做滿屏封面、桌機照內容走的店也動不了——桌機那格一改兩邊一起變。
+    //   same   跟桌機那格走（預設，不掛 attribute，既有店家一個 px 都不動）
+    //   auto   手機照內容長（桌機撐高、手機收回自適應）
+    //   short / tall / full  手機自己的 60vh / 80vh / 100vh
+    // 跟 heroMagazineGapMobile 同一招：page.tsx 掛 data attribute、規則寫在 layout.tsx
+    // 那份沒包 @layer 的 <style> 裡、只管 767px 以下，贏得過 class 上的 min-h-*。
+    heroHeightMobile: "same" | "auto" | "short" | "tall" | "full"; // 滿版 Hero 高度（手機）（預設 same = 跟桌機那格）
     // 滿版圖版型「Hero 高度」撐高之後，文字段裡那幾行字靠色塊的哪一邊。上一格選了矮 / 高 /
     // 全屏，照片加字比那個矮時多出來的高度全給文字段（色塊鋪到底），可是字本身還是貼著
     // 色塊上緣排：字少的店選全屏，上面一排字、底下一大片空色塊，看起來像字掉了一半。
@@ -1616,6 +1626,11 @@ function resolveLayout(raw: unknown): StoreTheme["layout"] {
       const v = l.heroHeight;
       if (v === "short" || v === "tall" || v === "full" || v === "auto") return v;
       return "auto" as const;
+    })(),
+    heroHeightMobile: (() => {
+      const v = l.heroHeightMobile;
+      if (v === "auto" || v === "short" || v === "tall" || v === "full") return v;
+      return "same" as const;
     })(),
     heroFullTextAlignY: (() => {
       const v = l.heroFullTextAlignY;
