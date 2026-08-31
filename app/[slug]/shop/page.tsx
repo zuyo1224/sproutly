@@ -366,7 +366,7 @@ export default async function ShopPage({
             <Link
               key={p.id}
               href={`/${slug}/products/${p.id}`}
-              className="sproutly-card"
+              className="sproutly-card group"
               aria-label={`${p.name}，${formatPrice(p.price_cents, p.currency)}${stockAriaSuffix(p.stock)}`}
             >
               <div className="sproutly-card-image aspect-square relative">
@@ -385,15 +385,31 @@ export default async function ShopPage({
                   </span>
                 )}
                 {p.image_urls?.[0] ? (
-                  // eslint-disable-next-line @next/next/no-img-element
-                  <img
-                    src={p.image_urls[0]}
-                    alt={p.name}
-                    className={`w-full h-full object-cover transition ${
-                      soldOut ? "opacity-55 grayscale" : ""
-                    }`}
-                    loading="lazy"
-                  />
+                  <>
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img
+                      src={p.image_urls[0]}
+                      alt={p.name}
+                      className={`w-full h-full object-cover transition ${
+                        soldOut ? "opacity-55 grayscale" : ""
+                      }`}
+                      loading="lazy"
+                    />
+                    {/* 商家上傳超過一張圖時，滑到卡片上淡入第二張——客人不用點進
+                        詳情頁就能多看一個角度（實體店拿起來翻一面的那個動作）。
+                        只疊在第一張上面淡入淡出，不動排版；手機沒有 hover，維持
+                        第一張不變。售完的商品不做，沒貨的東西不需要再導購。 */}
+                    {!soldOut && p.image_urls[1] && (
+                      // eslint-disable-next-line @next/next/no-img-element
+                      <img
+                        src={p.image_urls[1]}
+                        alt=""
+                        aria-hidden="true"
+                        loading="lazy"
+                        className="absolute inset-0 w-full h-full object-cover opacity-0 transition-opacity duration-500 group-hover:opacity-100 group-focus-visible:opacity-100 motion-reduce:transition-none"
+                      />
+                    )}
+                  </>
                 ) : (
                   <div
                     className="w-full h-full flex items-center justify-center"
