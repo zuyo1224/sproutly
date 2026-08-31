@@ -170,6 +170,43 @@ export default async function OrdersListPage({
     ? fetchedOrders.filter((o) => matchesOrderSearch(o, q))
     : fetchedOrders;
 
+  // 每筆訂單帶「買了什麼」摘要。列表原本只有顧客跟金額，商家包貨、回訊息
+  // 都得一筆筆點進詳情才知道內容——尤其一早起來十幾筆待確認的單，光是
+  // 「哪筆是要那株龜背芋」就要點十幾次。把眼前這批訂單的明細一次批次撈回來
+  // （50 筆一組 chunk 進 .in()，避免訂單一多把查詢字串撐爆），組成
+  // 「商品名 ×數量、⋯」一行字，桌機塞進表格新欄、手機卡片加一行，
+  // 過長交給 CSS 截斷、完整內容留在 title 滑過可看。
+  const orderIds = (orders ?? []).map((o) => o.id as string);
+  const itemsByOrder = new Map<string, string[]>();
+  if (orderIds.length > 0) {
+    const chunks: string[][] = [];
+    for (let i = 0; i < orderIds.length; i += 50) {
+      chunks.push(orderIds.slice(i, i + 50));
+    }
+    const results = await Promise.all(
+      chunks.map((chunk) =>
+        supabase
+          .from("sproutly_order_items")
+          .select("order_id, name_snapshot, quantity")
+          .in("order_id", chunk)
+      )
+    );
+    for (const { data } of results) {
+      for (const it of data ?? []) {
+        const label =
+          it.quantity > 1
+            ? `${it.name_snapshot} ×${it.quantity}`
+            : it.name_snapshot;
+        const list = itemsByOrder.get(it.order_id);
+        if (list) list.push(label);
+        else itemsByOrder.set(it.order_id, [label]);
+      }
+    }
+  }
+  function itemsSummary(orderId: string) {
+    return (itemsByOrder.get(orderId) ?? []).join("、");
+  }
+
   // 這批篩出來的單裡錢的狀況：已取消的不算錢（沒成交）。
   // 轉帳 / 貨到付款的店家最在意「未收」這個數字 — 篩到「已出貨 + 未付款」時，
   // 這條就直接告訴他現在還有多少錢在外面沒進來，不用自己一筆筆加。
@@ -458,6 +495,14 @@ export default async function OrdersListPage({
                     </div>
                   </div>
                 </div>
+                {itemsSummary(o.id) && (
+                  <div
+                    className="mt-2 text-xs text-emerald-900/60 truncate"
+                    title={itemsSummary(o.id)}
+                  >
+                    {itemsSummary(o.id)}
+                  </div>
+                )}
                 <div className="flex items-center gap-2 mt-3">
                   <span
                     className={`inline-block text-xs px-2 py-1 rounded-full ${s.color}`}
@@ -477,6 +522,7 @@ export default async function OrdersListPage({
               <tr>
                 <th className="text-left px-5 py-3">訂單</th>
                 <th className="text-left px-5 py-3">顧客</th>
+                <th className="text-left px-5 py-3">內容</th>
                 <th className="text-left px-5 py-3">金額</th>
                 <th className="text-left px-5 py-3">狀態</th>
                 <th className="text-left px-5 py-3">付款</th>
@@ -517,6 +563,14 @@ export default async function OrdersListPage({
                       </div>
                       <div className="text-xs text-emerald-900/50">
                         {o.customer_phone}
+                      </div>
+                    </td>
+                    <td className="px-5 py-4 text-xs text-emerald-900/60">
+                      <div
+                        className="max-w-[14rem] truncate"
+                        title={itemsSummary(o.id)}
+                      >
+                        {itemsSummary(o.id) || "—"}
                       </div>
                     </td>
                     <td className="px-5 py-4 font-semibold text-emerald-950">
