@@ -1,14 +1,14 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { requireUser } from "@/lib/require-user";
-import { updateProduct, deleteProduct } from "../../actions";
+import { updateProduct, deleteProduct, duplicateProduct } from "../../actions";
 import { SubmitButton } from "@/app/_components/submit-button";
 import { ImageFilePicker } from "@/app/_components/image-file-picker";
 import { UnsavedChangesGuard } from "@/app/_components/unsaved-changes-guard";
 import { currencySymbol } from "@/lib/format-price";
 
 type Params = Promise<{ slug: string; id: string }>;
-type SearchParams = Promise<{ error?: string }>;
+type SearchParams = Promise<{ error?: string; copied?: string }>;
 
 const LABEL_STYLE = {
   fontSize: "0.6875rem",
@@ -32,7 +32,7 @@ export default async function EditProductPage({
   searchParams: SearchParams;
 }) {
   const { slug, id } = await params;
-  const { error } = await searchParams;
+  const { error, copied } = await searchParams;
 
   const { supabase, user } = await requireUser();
 
@@ -54,6 +54,7 @@ export default async function EditProductPage({
 
   const updateBound = updateProduct.bind(null, slug, product.id);
   const deleteBound = deleteProduct.bind(null, slug, product.id);
+  const duplicateBound = duplicateProduct.bind(null, slug, product.id);
   const price = (product.price_cents / 100).toFixed(0);
   const imageCount = product.image_urls?.length ?? 0;
   // 價格 label 跟著這件商品實際的幣別走，非台幣的商品不再硬寫 NT$（共用 currencySymbol）
@@ -97,6 +98,25 @@ export default async function EditProductPage({
               : `${imageCount} 張圖片`}
           </p>
         </div>
+
+        {copied && (
+          <div
+            role="status"
+            className="mt-8 rounded-2xl bg-emerald-50/80 p-5 border border-emerald-200/70"
+            style={{ boxShadow: "0 1px 2px rgba(6,78,59,0.04)" }}
+          >
+            <p className="text-emerald-700" style={LABEL_STYLE}>
+              Copied · 已複製
+            </p>
+            <p
+              className="mt-2 text-sm text-emerald-900"
+              style={{ lineHeight: 1.7 }}
+            >
+              這是剛複製出來的副本，目前是停售狀態、客人還看不到。
+              改好名稱和價格後勾回「上架中」再儲存就會出現在店裡。
+            </p>
+          </div>
+        )}
 
         {error && (
           <div
@@ -304,6 +324,36 @@ export default async function EditProductPage({
               取消
             </Link>
           </div>
+        </form>
+
+        <hr className="my-10 border-emerald-100/60" />
+
+        {/* 複製：店裡常有一批只差品種 / 尺寸的商品，每件都從零填太費工。
+            副本帶走名稱（加「（副本）」）、描述、價格、庫存與整批圖片，
+            以停售狀態建立，按下去直接跳到副本的編輯頁接著改。 */}
+        <form
+          action={duplicateBound}
+          className="flex items-center justify-between gap-4 flex-wrap"
+        >
+          <div>
+            <p className="text-emerald-700/70" style={LABEL_STYLE}>
+              Duplicate · 複製
+            </p>
+            <p
+              className="mt-2 text-sm text-emerald-900/65"
+              style={{ lineHeight: 1.7 }}
+            >
+              要上一件很像的商品？複製這件當底稿，改幾個字就能上架。
+              <br />
+              副本會先停售，客人不會看到兩件一樣的。
+            </p>
+          </div>
+          <SubmitButton
+            pendingText="複製中..."
+            className="rounded-full border border-emerald-200 bg-white px-6 py-2.5 text-emerald-800 text-sm font-medium hover:bg-emerald-50 transition tracking-tight"
+          >
+            複製這件商品
+          </SubmitButton>
         </form>
 
         <hr className="my-10 border-emerald-100/60" />

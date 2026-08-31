@@ -193,6 +193,49 @@ export async function updateProduct(
   redirect(`/dashboard/stores/${slug}/products`);
 }
 
+export async function duplicateProduct(slug: string, productId: string) {
+  const { supabase, store } = await authorizedStore(slug);
+
+  const { data: original } = await supabase
+    .from("sproutly_products")
+    .select("name, description, price_cents, currency, image_urls, stock, sort_order")
+    .eq("id", productId)
+    .eq("merchant_id", store.id)
+    .maybeSingle();
+  if (!original) {
+    redirect(`/dashboard/stores/${slug}/products`);
+  }
+
+  // 副本一律停售起步：商家是要拿去改成另一件（同盆器換品種、同品種換尺寸），
+  // 不是要讓店面同時出現兩件一模一樣的在賣。名稱加「（副本）」讓列表分得出
+  // 哪件是剛複製的；圖片直接沿用同一批網址不重新上傳，商家編輯時想換再換。
+  // sort_order 照抄，副本才會排在原件旁邊，不會掉到列表最尾端找不到。
+  const { data: copy, error } = await supabase
+    .from("sproutly_products")
+    .insert({
+      merchant_id: store.id,
+      name: `${original.name}（副本）`,
+      description: original.description,
+      price_cents: original.price_cents,
+      currency: original.currency,
+      image_urls: original.image_urls,
+      stock: original.stock,
+      sort_order: original.sort_order,
+      is_active: false,
+    })
+    .select("id")
+    .single();
+
+  if (error || !copy) {
+    redirect(
+      `/dashboard/stores/${slug}/products/${productId}/edit?error=` +
+        encodeURIComponent(error?.message ?? "複製失敗，再試一次")
+    );
+  }
+
+  redirect(`/dashboard/stores/${slug}/products/${copy.id}/edit?copied=1`);
+}
+
 export async function deleteProduct(slug: string, productId: string) {
   const { supabase, store } = await authorizedStore(slug);
 
