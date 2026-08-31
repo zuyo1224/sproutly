@@ -1609,6 +1609,23 @@ export default async function StoreHomePage({
                   fontSize: `clamp(${minRem * taglineFontScale}rem, ${vw * taglineFontScale}vw, ${maxRem * taglineFontScale}rem)`,
                 }
               : {};
+          // 主標字級（手機）。桌機那格是 inline fontSize，media query 插不進 inline，
+          // 所以手機的值走 CSS variable：h1 掛 data-hero-tagline-size-mobile + 把算好的
+          // clamp 塞進 --hero-tagline-fs-m，規則寫在 layout.tsx 那份沒包 @layer 的
+          // <style>、只管 767px 以下、帶 !important（要贏的是同一顆 h1 上桌機那格寫的
+          // inline fontSize，光是沒包 @layer 只贏得過 class）。null = 跟桌機那格走，
+          // 不掛 attribute 也不塞 variable，既有店家兩端照舊。
+          const taglineMobileScale = theme.layout.heroTaglineFontScaleMobile;
+          const taglineMobileAttr =
+            taglineMobileScale !== null
+              ? { "data-hero-tagline-size-mobile": "" }
+              : {};
+          const taglineMobileSizeVar = (minRem: number, vw: number, maxRem: number) =>
+            taglineMobileScale !== null
+              ? ({
+                  "--hero-tagline-fs-m": `clamp(${minRem * taglineMobileScale}rem, ${vw * taglineMobileScale}vw, ${maxRem * taglineMobileScale}rem)`,
+                } as React.CSSProperties)
+              : {};
           // Hero eyebrow 小標（四個版型共用）。字級 10px、字距 0.4em（雜誌 0.32em）、
           // 顏色三處 accent 一處 textMuted，四個值全寫死——hero 這組控制裡唯一一格都動不到
           // 的元素，而它是客人由上往下讀到的第一行字。10px 與 0.4em 都是照拉丁大寫字母調的，
@@ -2096,6 +2113,7 @@ export default async function StoreHomePage({
                               wordBreak: "keep-all",
                               overflowWrap: "break-word",
                               fontSize: `clamp(${1.5 * taglineFontScale}rem, ${3 * taglineFontScale}vw, ${3 * taglineFontScale}rem)`,
+                              ...taglineMobileSizeVar(1.5, 3, 3),
                               ...taglineLeadingStyle(1.6),
                             }
                           : {
@@ -2106,12 +2124,14 @@ export default async function StoreHomePage({
                               wordBreak: "keep-all",
                               overflowWrap: "break-word",
                               fontSize: `clamp(${1.5 * taglineFontScale}rem, ${3 * taglineFontScale}vw, ${3 * taglineFontScale}rem)`,
+                              ...taglineMobileSizeVar(1.5, 3, 3),
                               ...taglineLeadingStyle(1.6),
                             }
                       }
                       data-edit-text
                       data-edit-field="tagline"
                       data-edit-drag="hero-tagline"
+                      {...taglineMobileAttr}
                     >
                       {taglineLines.map((line, i) => (
                         <span key={i} className="block">
@@ -2544,10 +2564,12 @@ export default async function StoreHomePage({
                       wordBreak: "keep-all",
                       overflowWrap: "break-word",
                       ...taglineSizeStyle(1.875, 5, 3.75),
+                      ...taglineMobileSizeVar(1.875, 5, 3.75),
                       ...taglineLeadingStyle(1.15),
                     }}
                     data-edit-text
                     data-edit-field="tagline"
+                    {...taglineMobileAttr}
                   >
                     {taglineLines.map((line, i) => (
                       <span key={i} className="block">
@@ -2730,10 +2752,12 @@ export default async function StoreHomePage({
                       wordBreak: "keep-all",
                       overflowWrap: "break-word",
                       ...taglineSizeStyle(2.25, 8, 6),
+                      ...taglineMobileSizeVar(2.25, 8, 6),
                       ...taglineLeadingStyle(1.05),
                     }}
                     data-edit-text
                     data-edit-field="tagline"
+                    {...taglineMobileAttr}
                   >
                     {taglineLines.map((line, i) => (
                       <span key={i} className="block">
@@ -2935,10 +2959,12 @@ export default async function StoreHomePage({
                   wordBreak: "keep-all",
                   overflowWrap: "break-word",
                   ...taglineSizeStyle(1.875, 6, 3.75),
+                  ...taglineMobileSizeVar(1.875, 6, 3.75),
                   ...taglineLeadingStyle(1.2),
                 }}
                 data-edit-text
                 data-edit-field="tagline"
+                {...taglineMobileAttr}
               >
                 {taglineLines.map((line, i) => (
                   <span key={i} className="block">

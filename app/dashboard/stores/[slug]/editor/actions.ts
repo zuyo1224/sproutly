@@ -42,6 +42,7 @@ type EditorPayload = {
     heroZoomTablet?: number;
     heroZoomDesktop?: number;
     heroTaglineFontScale?: number;
+    heroTaglineFontScaleMobile?: number | null;
     heroTaglineColor?: string | null;
     heroTaglineAlign?: string;
     heroTaglineWeight?: string;
@@ -320,6 +321,15 @@ export async function saveEditorState(slug: string, payload: EditorPayload) {
       const v = payload.layout.heroTaglineFontScale;
       if (typeof v === "number" && Number.isFinite(v)) {
         layoutPatch.heroTaglineFontScale = clampHeroFontScale(v);
+      }
+    }
+    if (payload.layout.heroTaglineFontScaleMobile !== undefined) {
+      const v = payload.layout.heroTaglineFontScaleMobile;
+      if (v === null) {
+        // null = 商家按「改回跟桌機一樣」，要存進去把舊值蓋掉，不能當「沒帶」跳過
+        layoutPatch.heroTaglineFontScaleMobile = null;
+      } else if (typeof v === "number" && Number.isFinite(v)) {
+        layoutPatch.heroTaglineFontScaleMobile = clampHeroFontScale(v);
       }
     }
     if (payload.layout.heroTaglineColor !== undefined) {

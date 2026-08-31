@@ -223,6 +223,12 @@ export interface StoreTheme {
     heroZoomDesktop: number;           // 桌機（≥ 1024px）獨立縮放，預設 1.0
     // Hero 主標自訂：null = 用預設
     heroTaglineFontScale: number;      // 主標字體 multiplier，0.6-1.8（預設 1.0）
+    // 主標字級（手機）。上面那格手機桌機同一把尺，可是版型 class 上的 responsive 字級
+    // 手機那端只有桌機的一半上下（雜誌版型 text-4xl 對 lg:text-8xl）：桌機調到剛好的店，
+    // 手機常常還是一行小字壓不住整張封面；反過來把 slider 拉大遷就手機，桌機那句又大到
+    // 破版。跟 heroZoomMobile 三格獨立同一個道理，只是這格用 null = 跟桌機那格走，
+    // 沒動過的店家兩端照舊、一個 px 都不動。只管 767px 以下（跟其他 *Mobile 那幾格同一條線）。
+    heroTaglineFontScaleMobile: number | null; // 主標字級（手機），null = 跟桌機那格走
     heroTaglineColor: string | null;   // 主標顏色，hex；null = 用 theme.text
     heroTaglineAlign: "left" | "center" | "right"; // 主標對齊（預設 left）
     // 主標粗細（normal 400 常規 / medium 500 中黑 / bold 700 粗）。四種版型的 hero 主標
@@ -1329,6 +1335,11 @@ function resolveLayout(raw: unknown): StoreTheme["layout"] {
     heroTaglineFontScale: (() => {
       const v = l.heroTaglineFontScale;
       if (typeof v !== "number" || !Number.isFinite(v)) return 1.0;
+      return clampHeroFontScale(v);
+    })(),
+    heroTaglineFontScaleMobile: (() => {
+      const v = l.heroTaglineFontScaleMobile;
+      if (typeof v !== "number" || !Number.isFinite(v)) return null;
       return clampHeroFontScale(v);
     })(),
     heroTaglineColor: normalizeHexColor(l.heroTaglineColor),

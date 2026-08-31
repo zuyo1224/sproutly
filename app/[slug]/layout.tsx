@@ -2009,6 +2009,18 @@ export default async function PublicStoreLayout({
           }
         }
 
+        /* 主標字級的手機那一格（heroTaglineFontScaleMobile）。桌機那格動過 slider 時是
+           h1 上的 inline fontSize，media query 插不進 inline，所以手機的值由公開頁算好
+           clamp、塞進同一顆 h1 的 --hero-tagline-fs-m，這裡只負責在 767px 以下拿出來套。
+           帶 !important 是因為要贏的是同一顆 h1 的 inline fontSize——這份 <style> 沒包
+           @layer 只贏得過 class（桌機 slider 沒動過時的 text-3xl sm:text-4xl 那組），
+           贏不過 inline。跟桌機一樣 = 不掛 attribute，這條規則匹配不到，兩端照舊。 */
+        @media (max-width: 767px) {
+          section[data-edit-target="hero"] [data-hero-tagline-size-mobile] {
+            font-size: var(--hero-tagline-fs-m) !important;
+          }
+        }
+
         /* split 版型圖文比例：editor Hero panel「圖文比例」三按鈕（圖窄 / 跟預設 / 圖寬）。
            欄寬字串由公開頁算好（已把「圖在右」的 order 反轉考慮進去）從 inline style 的
            --store-hero-split 進來，這裡只負責讓它蓋過 Tailwind 的 md:grid-cols-2——同樣

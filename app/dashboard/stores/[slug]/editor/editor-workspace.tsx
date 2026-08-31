@@ -97,6 +97,7 @@ type EditorTheme = {
     heroZoomTablet: number;
     heroZoomDesktop: number;
     heroTaglineFontScale: number;
+    heroTaglineFontScaleMobile: number | null;
     heroTaglineColor: string | null;
     heroTaglineAlign: "left" | "center" | "right";
     heroTaglineWeight: "normal" | "medium" | "bold";
@@ -1066,6 +1067,7 @@ export function EditorWorkspace({
           heroZoomTablet: t.layout.heroZoomTablet,
           heroZoomDesktop: t.layout.heroZoomDesktop,
           heroTaglineFontScale: t.layout.heroTaglineFontScale,
+          heroTaglineFontScaleMobile: t.layout.heroTaglineFontScaleMobile,
           heroTaglineColor: t.layout.heroTaglineColor,
           heroTaglineAlign: t.layout.heroTaglineAlign,
           heroTaglineWeight: t.layout.heroTaglineWeight,
@@ -2624,6 +2626,52 @@ export function EditorWorkspace({
                 <span>標準 1.0x</span>
                 <span>大</span>
               </div>
+            </Field>
+            <Field
+              label={`主標字體大小（手機）（${
+                theme.layout.heroTaglineFontScaleMobile !== null
+                  ? `${theme.layout.heroTaglineFontScaleMobile.toFixed(2)}x`
+                  : "跟桌機一樣"
+              }）`}
+            >
+              <input
+                type="range"
+                min={HERO_FONT_SCALE_MIN}
+                max={HERO_FONT_SCALE_MAX}
+                step="0.05"
+                value={
+                  theme.layout.heroTaglineFontScaleMobile ??
+                  theme.layout.heroTaglineFontScale
+                }
+                onChange={(e) =>
+                  updateLayout({
+                    heroTaglineFontScaleMobile: parseFloat(e.target.value),
+                  })
+                }
+                className="w-full"
+              />
+              <div className="flex justify-between text-[10px] text-stone-500">
+                <span>小</span>
+                <span>標準 1.0x</span>
+                <span>大</span>
+              </div>
+              {theme.layout.heroTaglineFontScaleMobile !== null && (
+                <button
+                  type="button"
+                  onClick={() =>
+                    updateLayout({ heroTaglineFontScaleMobile: null })
+                  }
+                  className="text-xs text-stone-500 hover:text-stone-800 underline"
+                >
+                  改回跟桌機一樣
+                </button>
+              )}
+              <p className="text-[10px] text-stone-500 mt-1">
+                上面那格手機桌機同一把尺，可是版型內建的字級在手機那端只有桌機的一半上下：
+                桌機調到剛好，手機常常還是一行小字壓不住整張封面；拉大遷就手機，桌機又大到
+                破版。這格只管 767px 以下、只動主標這一句，沒動過就一直跟著上面那格走。
+                切到手機預覽看效果。
+              </p>
             </Field>
             <Field label="主標顏色">
               <div className="flex items-center gap-2">
