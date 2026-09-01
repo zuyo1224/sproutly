@@ -744,6 +744,21 @@ export default async function StoreHomePage({
       cardSurfaceVal && (s?.cardShadow === "soft" || s?.cardShadow === "strong")
         ? s.cardShadow
         : undefined;
+    // 卡片框線粗細與深淺：那條 border 寫死在 layout.tsx 的 outline 那條規則上
+    // （1px + currentColor 16%），段落上的 inline style 一樣到不了卡片自己那層——跟內距、
+    // 圓角、陰影同一個處境同一個解法。
+    // 條件比上面那幾格再窄一層：只有「一圈細框」那一檔才掛。面板那檔畫的是底色、沒有線，
+    // 掛了是死 attribute；商家把外觀從框換成面板時這兩格在編輯器裡也一起收起來。
+    const cardOutlineOn = cardSurfaceVal === "outline";
+    const cardBorderWeightVal: "medium" | "thick" | undefined =
+      cardOutlineOn &&
+      (s?.cardBorderWeight === "medium" || s?.cardBorderWeight === "thick")
+        ? s.cardBorderWeight
+        : undefined;
+    const cardBorderToneVal: "soft" | "strong" | undefined =
+      cardOutlineOn && (s?.cardBorderTone === "soft" || s?.cardBorderTone === "strong")
+        ? s.cardBorderTone
+        : undefined;
     // 卡片排法：照片從卡片上面搬到左邊，要重排的是卡片自己那幾層子元素（圖框、品名、
     // 價錢是平的一疊 block），還要順手把手機收成一列一張——兩件事段落上的 inline style
     // 都碰不到，跟卡片外觀、卡片文字同一個處境同一個解法，attribute 讓 layout.tsx 補規則。
@@ -1081,6 +1096,8 @@ export default async function StoreHomePage({
       cardPaddingVal,
       cardRadiusVal,
       cardShadowVal,
+      cardBorderWeightVal,
+      cardBorderToneVal,
       cardLayoutVal,
       cardMediaWidthVal,
       mobileColumnsVal,
@@ -3104,6 +3121,8 @@ export default async function StoreHomePage({
             data-card-padding={collStyle.cardPaddingVal}
             data-card-radius={collStyle.cardRadiusVal}
             data-card-shadow={collStyle.cardShadowVal}
+            data-card-border-weight={collStyle.cardBorderWeightVal}
+            data-card-border-tone={collStyle.cardBorderToneVal}
             data-card-layout={collStyle.cardLayoutVal}
             data-card-media-width={collStyle.cardMediaWidthVal}
             data-card-title-lines={collStyle.cardTitleLinesVal}
@@ -3315,6 +3334,8 @@ export default async function StoreHomePage({
             data-card-padding={featuredStyle.cardPaddingVal}
             data-card-radius={featuredStyle.cardRadiusVal}
             data-card-shadow={featuredStyle.cardShadowVal}
+            data-card-border-weight={featuredStyle.cardBorderWeightVal}
+            data-card-border-tone={featuredStyle.cardBorderToneVal}
             data-card-layout={featuredStyle.cardLayoutVal}
             data-card-media-width={featuredStyle.cardMediaWidthVal}
             data-card-title-lines={featuredStyle.cardTitleLinesVal}
@@ -3579,6 +3600,8 @@ export default async function StoreHomePage({
             data-card-padding={journalStyle.cardPaddingVal}
             data-card-radius={journalStyle.cardRadiusVal}
             data-card-shadow={journalStyle.cardShadowVal}
+            data-card-border-weight={journalStyle.cardBorderWeightVal}
+            data-card-border-tone={journalStyle.cardBorderToneVal}
             data-card-layout={journalStyle.cardLayoutVal}
             data-card-media-width={journalStyle.cardMediaWidthVal}
             data-card-title-lines={journalStyle.cardTitleLinesVal}
@@ -4782,6 +4805,8 @@ export default async function StoreHomePage({
               data-card-padding={galleryStyle.cardPaddingVal}
               data-card-radius={galleryStyle.cardRadiusVal}
               data-card-shadow={galleryStyle.cardShadowVal}
+              data-card-border-weight={galleryStyle.cardBorderWeightVal}
+              data-card-border-tone={galleryStyle.cardBorderToneVal}
               data-card-desc-scale={galleryStyle.cardDescScaleVal}
               data-card-desc-leading={galleryStyle.cardDescLeadingVal}
               data-card-desc-weight={galleryStyle.cardDescWeightVal}

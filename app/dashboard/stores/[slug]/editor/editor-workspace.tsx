@@ -5538,6 +5538,8 @@ export function EditorWorkspace({
           const cardPadding = cur.cardPadding ?? null;
           const cardRadius = cur.cardRadius ?? null;
           const cardShadow = cur.cardShadow ?? null;
+          const cardBorderWeight = cur.cardBorderWeight ?? null;
+          const cardBorderTone = cur.cardBorderTone ?? null;
           const cardLayout = cur.cardLayout ?? null;
           const cardMediaWidth = cur.cardMediaWidth ?? null;
           const mobileColumns = cur.mobileColumns ?? null;
@@ -8603,6 +8605,82 @@ export function EditorWorkspace({
                       <button
                         type="button"
                         onClick={() => patch({ cardShadow: null })}
+                        className="text-stone-500 hover:text-stone-800 underline"
+                      >
+                        清除
+                      </button>
+                    )}
+                  </div>
+                </Field>
+              )}
+              {/* 框線這兩格的條件比上面幾格再窄一層：只有選了「一圈細框」才長出來，
+                  面板那檔畫的是底色、沒有線可以加粗或加深。 */}
+              {cardSurface === "outline" && (
+                <Field label="框線粗細">
+                  <div className="grid grid-cols-3 gap-1.5">
+                    {([
+                      { v: "normal", label: "照原本" },
+                      { v: "medium", label: "中" },
+                      { v: "thick", label: "粗" },
+                    ] as const).map((opt) => (
+                      <button
+                        key={opt.v}
+                        type="button"
+                        onClick={() => patch({ cardBorderWeight: opt.v })}
+                        aria-pressed={(cardBorderWeight ?? "normal") === opt.v}
+                        className={`rounded-lg border py-2 text-xs transition ${
+                          (cardBorderWeight ?? "normal") === opt.v
+                            ? "border-emerald-500 bg-emerald-50 text-emerald-900"
+                            : "border-stone-200 text-stone-600 hover:border-stone-400"
+                        }`}
+                      >
+                        {opt.label}
+                      </button>
+                    ))}
+                  </div>
+                  <div className="mt-1.5 flex items-center justify-between text-[11px] text-stone-500">
+                    <span>卡片那圈框有多粗（原本是最細的一格，一列排三四張時遠看幾乎看不到）</span>
+                    {cardBorderWeight && (
+                      <button
+                        type="button"
+                        onClick={() => patch({ cardBorderWeight: null })}
+                        className="text-stone-500 hover:text-stone-800 underline"
+                      >
+                        清除
+                      </button>
+                    )}
+                  </div>
+                </Field>
+              )}
+              {cardSurface === "outline" && (
+                <Field label="框線深淺">
+                  <div className="grid grid-cols-3 gap-1.5">
+                    {([
+                      { v: "normal", label: "照原本" },
+                      { v: "soft", label: "淡" },
+                      { v: "strong", label: "明顯" },
+                    ] as const).map((opt) => (
+                      <button
+                        key={opt.v}
+                        type="button"
+                        onClick={() => patch({ cardBorderTone: opt.v })}
+                        aria-pressed={(cardBorderTone ?? "normal") === opt.v}
+                        className={`rounded-lg border py-2 text-xs transition ${
+                          (cardBorderTone ?? "normal") === opt.v
+                            ? "border-emerald-500 bg-emerald-50 text-emerald-900"
+                            : "border-stone-200 text-stone-600 hover:border-stone-400"
+                        }`}
+                      >
+                        {opt.label}
+                      </button>
+                    ))}
+                  </div>
+                  <div className="mt-1.5 flex items-center justify-between text-[11px] text-stone-500">
+                    <span>框的顏色有多明顯（跟著這一段的文字色走，深底淺字會自動變成淺色的框）</span>
+                    {cardBorderTone && (
+                      <button
+                        type="button"
+                        onClick={() => patch({ cardBorderTone: null })}
                         className="text-stone-500 hover:text-stone-800 underline"
                       >
                         清除

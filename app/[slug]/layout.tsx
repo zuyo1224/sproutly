@@ -1477,6 +1477,35 @@ export default async function PublicStoreLayout({
           box-shadow: var(--sproutly-elev-3);
         }
 
+        /* 卡片框線粗細與深淺：editor 各 section panel 的「框線粗細」（照原本 / 中 / 粗）與
+           「框線深淺」（照原本 / 淡 / 明顯），只有「卡片外觀＝一圈細框」那一檔才長出來
+           （面板那檔畫的是底色，沒有線可以加粗或加深）。
+           上面那條 outline 把線寫死成 1px 加 currentColor 的 16%——又細又淡，配站上預設那種
+           留白多的排法剛好，但商家按下「外框」多半就是嫌卡片沒有邊界：3、4 欄的小卡排滿
+           一整片時那條線在遠一點的距離上等於不存在，設了外觀看到的還是一堆散字。反方向是
+           走報紙、型錄那種硬邊排版的店，框是版面的主角、要看得見的實線。
+           粗細與深淺分兩格是因為兩件事會互相拖：3px 配 16% 是一條糊掉的灰帶不是框（粗線
+           更需要色夠實才收得住邊），想要一條看得見但不搶戲的細框又不該連重量一起加。
+           兩格各自只改 border 的一段（width 或 color），另一段照原樣；兩格都設就疊起來。
+           選擇器多帶一個 [data-card-surface="outline"]，分量比上面那條 outline 重，排在
+           後面也壓得過。沒設就沒 attribute，線維持原本的 1px 加 16%。 */
+        section[data-edit-target][data-card-surface="outline"][data-card-border-weight="medium"]
+          .sproutly-card {
+          border-width: 2px;
+        }
+        section[data-edit-target][data-card-surface="outline"][data-card-border-weight="thick"]
+          .sproutly-card {
+          border-width: 3px;
+        }
+        section[data-edit-target][data-card-surface="outline"][data-card-border-tone="soft"]
+          .sproutly-card {
+          border-color: color-mix(in srgb, currentColor 8%, transparent);
+        }
+        section[data-edit-target][data-card-surface="outline"][data-card-border-tone="strong"]
+          .sproutly-card {
+          border-color: color-mix(in srgb, currentColor 34%, transparent);
+        }
+
         /* 卡片排法：editor 各 section panel「卡片排法」兩按鈕（照片在上 / 照片在左）。
            站上每一段的卡片都是同一種排法——照片在上，品名、價錢、摘要在下面疊成一落。
            那是格子牆的排法，客人一眼掃過整片照片；但同一批商品換成「一列一張、照片在左、
