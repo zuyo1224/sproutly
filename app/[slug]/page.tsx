@@ -766,6 +766,14 @@ export default async function StoreHomePage({
       (s?.cardBorderStyle === "dashed" || s?.cardBorderStyle === "dotted")
         ? s.cardBorderStyle
         : undefined;
+    // 卡片底色深淺：面板那檔的底寫死在 layout.tsx 的 panel 規則上（currentColor 6%），
+    // 段落上的 inline style 一樣到不了卡片自己那層——跟框線那三格同一個處境同一個解法，
+    // 只是條件相反：只有「一塊底色面板」那一檔才掛（框那檔畫的是線，沒有底可以調深淺）。
+    const cardPanelToneVal: "soft" | "strong" | undefined =
+      cardSurfaceVal === "panel" &&
+      (s?.cardPanelTone === "soft" || s?.cardPanelTone === "strong")
+        ? s.cardPanelTone
+        : undefined;
     // 卡片排法：照片從卡片上面搬到左邊，要重排的是卡片自己那幾層子元素（圖框、品名、
     // 價錢是平的一疊 block），還要順手把手機收成一列一張——兩件事段落上的 inline style
     // 都碰不到，跟卡片外觀、卡片文字同一個處境同一個解法，attribute 讓 layout.tsx 補規則。
@@ -1106,6 +1114,7 @@ export default async function StoreHomePage({
       cardBorderWeightVal,
       cardBorderToneVal,
       cardBorderStyleVal,
+      cardPanelToneVal,
       cardLayoutVal,
       cardMediaWidthVal,
       mobileColumnsVal,
@@ -3132,6 +3141,7 @@ export default async function StoreHomePage({
             data-card-border-weight={collStyle.cardBorderWeightVal}
             data-card-border-tone={collStyle.cardBorderToneVal}
             data-card-border-style={collStyle.cardBorderStyleVal}
+            data-card-panel-tone={collStyle.cardPanelToneVal}
             data-card-layout={collStyle.cardLayoutVal}
             data-card-media-width={collStyle.cardMediaWidthVal}
             data-card-title-lines={collStyle.cardTitleLinesVal}
@@ -3346,6 +3356,7 @@ export default async function StoreHomePage({
             data-card-border-weight={featuredStyle.cardBorderWeightVal}
             data-card-border-tone={featuredStyle.cardBorderToneVal}
             data-card-border-style={featuredStyle.cardBorderStyleVal}
+            data-card-panel-tone={featuredStyle.cardPanelToneVal}
             data-card-layout={featuredStyle.cardLayoutVal}
             data-card-media-width={featuredStyle.cardMediaWidthVal}
             data-card-title-lines={featuredStyle.cardTitleLinesVal}
@@ -3613,6 +3624,7 @@ export default async function StoreHomePage({
             data-card-border-weight={journalStyle.cardBorderWeightVal}
             data-card-border-tone={journalStyle.cardBorderToneVal}
             data-card-border-style={journalStyle.cardBorderStyleVal}
+            data-card-panel-tone={journalStyle.cardPanelToneVal}
             data-card-layout={journalStyle.cardLayoutVal}
             data-card-media-width={journalStyle.cardMediaWidthVal}
             data-card-title-lines={journalStyle.cardTitleLinesVal}
@@ -4819,6 +4831,7 @@ export default async function StoreHomePage({
               data-card-border-weight={galleryStyle.cardBorderWeightVal}
               data-card-border-tone={galleryStyle.cardBorderToneVal}
               data-card-border-style={galleryStyle.cardBorderStyleVal}
+              data-card-panel-tone={galleryStyle.cardPanelToneVal}
               data-card-desc-scale={galleryStyle.cardDescScaleVal}
               data-card-desc-leading={galleryStyle.cardDescLeadingVal}
               data-card-desc-weight={galleryStyle.cardDescWeightVal}

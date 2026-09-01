@@ -1527,6 +1527,29 @@ export default async function PublicStoreLayout({
           border-style: dotted;
         }
 
+        /* 卡片底色深淺：editor 各 section panel 的「底色深淺」（照原本 / 淡 / 明顯），
+           條件跟上面那三格相反——只有「卡片外觀＝一塊底色面板」那一檔才長出來（一圈細框
+           那檔畫的是線，沒有底可以調深淺）。
+           上面那條 panel 把底寫死成 currentColor 的 6%。那個值是照站上預設那種奶油白底、
+           深色字的段落挑的，換成商家自己的配色就常常不對：整段底色本來就是淺灰、米色那類
+           的店，卡片那層 6% 疊上去幾乎跟背景同一色，商家按了面板卻看不出卡片在哪；反方向
+           是深底淺字的段落，同樣的 6% 變成淺色疊在深底上，對比比淺底那邊強得多、一片卡片
+           牆亮得比照片還搶。
+           淡那檔是「隱約分得出這是一張卡」（照片很滿的商品卡、照片牆，底重一點就跟照片
+           打架）；明顯那檔是「卡片是一塊實實在在的板子」（字多照片少的段落，底夠實才撐得
+           住整段文字）。
+           跟框線那三格一樣只改一個屬性（background），其他照原樣；選擇器多帶一個
+           [data-card-surface="panel"] 壓過上面那條 panel。
+           沒設就沒 attribute，底維持原本的 6%。 */
+        section[data-edit-target][data-card-surface="panel"][data-card-panel-tone="soft"]
+          .sproutly-card {
+          background: color-mix(in srgb, currentColor 3%, transparent);
+        }
+        section[data-edit-target][data-card-surface="panel"][data-card-panel-tone="strong"]
+          .sproutly-card {
+          background: color-mix(in srgb, currentColor 12%, transparent);
+        }
+
         /* 卡片排法：editor 各 section panel「卡片排法」兩按鈕（照片在上 / 照片在左）。
            站上每一段的卡片都是同一種排法——照片在上，品名、價錢、摘要在下面疊成一落。
            那是格子牆的排法，客人一眼掃過整片照片；但同一批商品換成「一列一張、照片在左、
