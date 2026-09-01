@@ -1418,6 +1418,19 @@ export default async function PublicStoreLayout({
           padding: 22px;
           border-radius: 22px;
         }
+
+        /* 卡片圓角：editor 各 section panel「卡片圓角」三按鈕（直角 / 跟內距走 / 更圓），
+           跟內距一樣設了底或框之後才長出來。上面那兩組把圓角綁在內距上，商家想單獨動
+           四個角時只能靠改內距換——走硬邊排版的店要的是完全直角（收到最緊還是 8px 的圓），
+           想要更圓的卡又得把內距一起放寬、卡片跟著變胖。這兩條只改 border-radius，內距
+           那格照原樣。選擇器的分量跟上面那兩組一樣重，靠排在後面壓過它們算出來的圓角。
+           沒設（或選「跟內距走」）就沒 attribute，維持原本 8 / 14 / 22px 那組。 */
+        section[data-edit-target][data-card-surface][data-card-radius="square"] .sproutly-card {
+          border-radius: 0;
+        }
+        section[data-edit-target][data-card-surface][data-card-radius="round"] .sproutly-card {
+          border-radius: 26px;
+        }
         section[data-edit-target][data-card-surface] .sproutly-card .sproutly-card-image,
         section[data-edit-target][data-card-surface] .sproutly-card:hover .sproutly-card-image {
           box-shadow: none;

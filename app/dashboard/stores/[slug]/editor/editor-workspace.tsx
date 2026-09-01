@@ -5536,6 +5536,7 @@ export function EditorWorkspace({
           const cardText = cur.cardText ?? null;
           const cardSurface = cur.cardSurface ?? null;
           const cardPadding = cur.cardPadding ?? null;
+          const cardRadius = cur.cardRadius ?? null;
           const cardLayout = cur.cardLayout ?? null;
           const cardMediaWidth = cur.cardMediaWidth ?? null;
           const mobileColumns = cur.mobileColumns ?? null;
@@ -8523,6 +8524,45 @@ export function EditorWorkspace({
                       <button
                         type="button"
                         onClick={() => patch({ cardPadding: null })}
+                        className="text-stone-500 hover:text-stone-800 underline"
+                      >
+                        清除
+                      </button>
+                    )}
+                  </div>
+                </Field>
+              )}
+              {/* 圓角跟內距同一個條件（有底或有框才看得到四個角），但獨立一格：
+                  上面那格把兩件事綁在一起，想單獨動四個角的商家只能靠改內距換。 */}
+              {cardSurface && (
+                <Field label="卡片圓角">
+                  <div className="grid grid-cols-3 gap-1.5">
+                    {([
+                      { v: "square", label: "直角" },
+                      { v: "auto", label: "跟內距走" },
+                      { v: "round", label: "更圓" },
+                    ] as const).map((opt) => (
+                      <button
+                        key={opt.v}
+                        type="button"
+                        onClick={() => patch({ cardRadius: opt.v })}
+                        aria-pressed={(cardRadius ?? "auto") === opt.v}
+                        className={`rounded-lg border py-2 text-xs transition ${
+                          (cardRadius ?? "auto") === opt.v
+                            ? "border-emerald-500 bg-emerald-50 text-emerald-900"
+                            : "border-stone-200 text-stone-600 hover:border-stone-400"
+                        }`}
+                      >
+                        {opt.label}
+                      </button>
+                    ))}
+                  </div>
+                  <div className="mt-1.5 flex items-center justify-between text-[11px] text-stone-500">
+                    <span>卡片四個角有多圓（報紙、型錄那種硬邊排版選直角；不選的話跟著上面的內距一起走）</span>
+                    {cardRadius && (
+                      <button
+                        type="button"
+                        onClick={() => patch({ cardRadius: null })}
                         className="text-stone-500 hover:text-stone-800 underline"
                       >
                         清除
