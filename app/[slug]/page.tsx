@@ -759,6 +759,13 @@ export default async function StoreHomePage({
       cardOutlineOn && (s?.cardBorderTone === "soft" || s?.cardBorderTone === "strong")
         ? s.cardBorderTone
         : undefined;
+    // 卡片框線樣式：那條 border 的 style 一樣寫死在 layout.tsx 的 outline 規則上（solid），
+    // 跟粗細、深淺同一個處境同一個解法，掛同一個「只有一圈細框才掛」的條件。
+    const cardBorderStyleVal: "dashed" | "dotted" | undefined =
+      cardOutlineOn &&
+      (s?.cardBorderStyle === "dashed" || s?.cardBorderStyle === "dotted")
+        ? s.cardBorderStyle
+        : undefined;
     // 卡片排法：照片從卡片上面搬到左邊，要重排的是卡片自己那幾層子元素（圖框、品名、
     // 價錢是平的一疊 block），還要順手把手機收成一列一張——兩件事段落上的 inline style
     // 都碰不到，跟卡片外觀、卡片文字同一個處境同一個解法，attribute 讓 layout.tsx 補規則。
@@ -1098,6 +1105,7 @@ export default async function StoreHomePage({
       cardShadowVal,
       cardBorderWeightVal,
       cardBorderToneVal,
+      cardBorderStyleVal,
       cardLayoutVal,
       cardMediaWidthVal,
       mobileColumnsVal,
@@ -3123,6 +3131,7 @@ export default async function StoreHomePage({
             data-card-shadow={collStyle.cardShadowVal}
             data-card-border-weight={collStyle.cardBorderWeightVal}
             data-card-border-tone={collStyle.cardBorderToneVal}
+            data-card-border-style={collStyle.cardBorderStyleVal}
             data-card-layout={collStyle.cardLayoutVal}
             data-card-media-width={collStyle.cardMediaWidthVal}
             data-card-title-lines={collStyle.cardTitleLinesVal}
@@ -3336,6 +3345,7 @@ export default async function StoreHomePage({
             data-card-shadow={featuredStyle.cardShadowVal}
             data-card-border-weight={featuredStyle.cardBorderWeightVal}
             data-card-border-tone={featuredStyle.cardBorderToneVal}
+            data-card-border-style={featuredStyle.cardBorderStyleVal}
             data-card-layout={featuredStyle.cardLayoutVal}
             data-card-media-width={featuredStyle.cardMediaWidthVal}
             data-card-title-lines={featuredStyle.cardTitleLinesVal}
@@ -3602,6 +3612,7 @@ export default async function StoreHomePage({
             data-card-shadow={journalStyle.cardShadowVal}
             data-card-border-weight={journalStyle.cardBorderWeightVal}
             data-card-border-tone={journalStyle.cardBorderToneVal}
+            data-card-border-style={journalStyle.cardBorderStyleVal}
             data-card-layout={journalStyle.cardLayoutVal}
             data-card-media-width={journalStyle.cardMediaWidthVal}
             data-card-title-lines={journalStyle.cardTitleLinesVal}
@@ -4807,6 +4818,7 @@ export default async function StoreHomePage({
               data-card-shadow={galleryStyle.cardShadowVal}
               data-card-border-weight={galleryStyle.cardBorderWeightVal}
               data-card-border-tone={galleryStyle.cardBorderToneVal}
+              data-card-border-style={galleryStyle.cardBorderStyleVal}
               data-card-desc-scale={galleryStyle.cardDescScaleVal}
               data-card-desc-leading={galleryStyle.cardDescLeadingVal}
               data-card-desc-weight={galleryStyle.cardDescWeightVal}

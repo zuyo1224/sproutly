@@ -5540,6 +5540,7 @@ export function EditorWorkspace({
           const cardShadow = cur.cardShadow ?? null;
           const cardBorderWeight = cur.cardBorderWeight ?? null;
           const cardBorderTone = cur.cardBorderTone ?? null;
+          const cardBorderStyle = cur.cardBorderStyle ?? null;
           const cardLayout = cur.cardLayout ?? null;
           const cardMediaWidth = cur.cardMediaWidth ?? null;
           const mobileColumns = cur.mobileColumns ?? null;
@@ -8681,6 +8682,46 @@ export function EditorWorkspace({
                       <button
                         type="button"
                         onClick={() => patch({ cardBorderTone: null })}
+                        className="text-stone-500 hover:text-stone-800 underline"
+                      >
+                        清除
+                      </button>
+                    )}
+                  </div>
+                </Field>
+              )}
+              {/* 框線樣式：同樣只在「一圈細框」那一檔給——面板那檔畫的是底色，沒有線可以
+                  換成虛線或點線。實線講的是「這張卡已經定案」，虛線與點線是預告、缺貨、
+                  佔位卡，以及拼貼、手作那類店要的語氣。 */}
+              {cardSurface === "outline" && (
+                <Field label="框線樣式">
+                  <div className="grid grid-cols-3 gap-1.5">
+                    {([
+                      { v: "solid", label: "實線" },
+                      { v: "dashed", label: "虛線" },
+                      { v: "dotted", label: "點線" },
+                    ] as const).map((opt) => (
+                      <button
+                        key={opt.v}
+                        type="button"
+                        onClick={() => patch({ cardBorderStyle: opt.v })}
+                        aria-pressed={(cardBorderStyle ?? "solid") === opt.v}
+                        className={`rounded-lg border py-2 text-xs transition ${
+                          (cardBorderStyle ?? "solid") === opt.v
+                            ? "border-emerald-500 bg-emerald-50 text-emerald-900"
+                            : "border-stone-200 text-stone-600 hover:border-stone-400"
+                        }`}
+                      >
+                        {opt.label}
+                      </button>
+                    ))}
+                  </div>
+                  <div className="mt-1.5 flex items-center justify-between text-[11px] text-stone-500">
+                    <span>那條線是不是連續的（虛線、點線適合預告與還沒上架的卡；細線配虛線遠看不明顯，搭配上面的粗細一起調）</span>
+                    {cardBorderStyle && (
+                      <button
+                        type="button"
+                        onClick={() => patch({ cardBorderStyle: null })}
                         className="text-stone-500 hover:text-stone-800 underline"
                       >
                         清除

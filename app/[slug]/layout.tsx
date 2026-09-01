@@ -1506,6 +1506,27 @@ export default async function PublicStoreLayout({
           border-color: color-mix(in srgb, currentColor 34%, transparent);
         }
 
+        /* 卡片框線樣式：editor 各 section panel 的「框線樣式」（實線 / 虛線 / 點線），跟
+           上面兩格同一個條件——只有「卡片外觀＝一圈細框」那一檔才長出來。
+           上面那條 outline 把 border-style 寫死成 solid，粗細與深淺再怎麼配，畫出來永遠是
+           一圈規規矩矩的實線；那條線在版面上講的是「這是一張已經定案的卡」。虛線與點線
+           講的是相反的話——預告、缺貨、還沒上架的佔位卡，站上目前只能靠文字寫「即將推出」，
+           框看起來跟正在賣的商品一模一樣；點線則是拼貼、手作那類店的排版語言。
+           段落自己的「外框樣式」畫的是整段外圍那個大框、「分隔線樣式」動的是段落上下那條
+           橫線，兩個都到不了每張卡身上。
+           跟上面兩格一樣只改 border 的一段（style），寬度與顏色照原樣，三格疊得起來——
+           1px 的虛線遠看斷斷續續讀不出是虛的，配 2px 以上才成立。
+           選擇器同樣多帶一個 [data-card-surface="outline"] 壓過上面那條 outline。
+           沒設就沒 attribute，線維持原本的實線。 */
+        section[data-edit-target][data-card-surface="outline"][data-card-border-style="dashed"]
+          .sproutly-card {
+          border-style: dashed;
+        }
+        section[data-edit-target][data-card-surface="outline"][data-card-border-style="dotted"]
+          .sproutly-card {
+          border-style: dotted;
+        }
+
         /* 卡片排法：editor 各 section panel「卡片排法」兩按鈕（照片在上 / 照片在左）。
            站上每一段的卡片都是同一種排法——照片在上，品名、價錢、摘要在下面疊成一落。
            那是格子牆的排法，客人一眼掃過整片照片；但同一批商品換成「一列一張、照片在左、
