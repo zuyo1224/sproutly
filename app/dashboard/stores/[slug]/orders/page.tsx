@@ -6,6 +6,8 @@ import { requireUser } from "@/lib/require-user";
 import {
   ORDER_STATUS_BADGES,
   ORDER_STATUS_OPTIONS,
+  ORDER_ADVANCE_VERBS,
+  nextOrderStatus,
   isPendingOrder,
   isPaidOrder,
   isUnpaidOrder,
@@ -22,6 +24,8 @@ import {
   needsMemoryOrderSearch,
 } from "@/lib/order-search";
 import { fetchAllRows } from "@/lib/fetch-all-rows";
+import { advanceOrderStatus } from "./actions";
+import { SubmitButton } from "@/app/_components/submit-button";
 
 type Params = Promise<{ slug: string }>;
 type SearchParams = Promise<{
@@ -264,6 +268,43 @@ export default async function OrdersListPage({
     return `/dashboard/stores/${slug}/orders/export${qs ? `?${qs}` : ""}`;
   }
 
+  // 快速推進按完要跳回「同一批篩選、同一個搜尋」的列表，不然商家在「待確認」分頁
+  // 按了確認，會被丟回全部列表、剛剛看到一半的那批單整個不見。
+  const listQsParams = new URLSearchParams();
+  if (status !== "all") listQsParams.set("status", status);
+  if (q) listQsParams.set("q", q);
+  if (range !== "all") listQsParams.set("range", range);
+  if (pay !== "all") listQsParams.set("pay", pay);
+  const listQs = listQsParams.toString();
+
+  // 一筆單右邊那顆「往下一步」按鈕（待確認→確認、已確認→出貨、已出貨→完成）。
+  // 手機卡片版與桌機表格版共用同一顆，說法與行為只有一份。已完成／已取消沒有下一步，
+  // 回 null 讓那格空著。待確認是商家最該動手的一步，走實心綠；後面幾步走低調外框，
+  // 免得整張列表都在喊「按我」。
+  function advanceButton(o: { id: string; status: string }) {
+    const next = nextOrderStatus(o.status);
+    const verb = next ? ORDER_ADVANCE_VERBS[next] : null;
+    if (!next || !verb) return null;
+    return (
+      <form
+        action={advanceOrderStatus.bind(null, slug, o.id, o.status, listQs)}
+        className="relative z-10"
+      >
+        <SubmitButton
+          pendingText="處理中..."
+          className={
+            isPendingOrder(o.status)
+              ? "rounded-full bg-emerald-700 px-3 py-1 text-xs font-medium text-white hover:bg-emerald-800"
+              : "rounded-full border border-emerald-100 px-3 py-1 text-xs text-emerald-900/70 hover:bg-emerald-50"
+          }
+        >
+          {verb}
+          <span className="sr-only">訂單 #{shortOrderId(o.id)}</span>
+        </SubmitButton>
+      </form>
+    );
+  }
+
   const matchCount = orders?.length ?? 0;
   const headerCaption = filterActive
     ? `符合條件 ${matchCount} 筆 · 全部 ${statusCounts.all} 筆`
@@ -467,13 +508,23 @@ export default async function OrdersListPage({
             const p = PAYMENT_LABEL[o.payment_status] ?? PAYMENT_LABEL.unpaid;
             const needsAction = isPendingOrder(o.status);
             return (
-              <Link
+              // 卡片從整張 <Link> 改成 div + 蓋滿的 overlay link：快速推進的表單按鈕
+              // 不能包在 <a> 裡（HTML 不允許、點按鈕也會順便跳頁），改成連結 absolute
+              // 蓋滿整張、按鈕自己 z-10 疊在上面，點卡片任一處照樣進詳情頁。
+              <div
                 key={o.id}
-                href={`/dashboard/stores/${slug}/orders/${o.id}`}
-                className={`block bg-white rounded-2xl p-4 shadow-lg shadow-emerald-700/5 border-l-[3px] ${
+                className={`relative bg-white rounded-2xl p-4 shadow-lg shadow-emerald-700/5 border-l-[3px] ${
                   needsAction ? "border-amber-400" : "border-transparent"
                 }`}
               >
+                <Link
+                  href={`/dashboard/stores/${slug}/orders/${o.id}`}
+                  className="absolute inset-0 rounded-2xl outline-none focus-visible:ring-2 focus-visible:ring-emerald-400"
+                >
+                  <span className="sr-only">
+                    看訂單 #{shortOrderId(o.id)} 的詳情
+                  </span>
+                </Link>
                 <div className="flex items-start justify-between gap-3">
                   <div className="min-w-0">
                     <span className="font-mono text-sm text-emerald-900">
@@ -510,8 +561,9 @@ export default async function OrdersListPage({
                     {s.label}
                   </span>
                   <span className={`text-xs ${p.color}`}>{p.label}</span>
+                  <span className="ml-auto">{advanceButton(o)}</span>
                 </div>
-              </Link>
+              </div>
             );
           })}
         </div>
@@ -589,13 +641,16 @@ export default async function OrdersListPage({
                     <td className="px-5 py-4 text-xs text-emerald-900/60">
                       {taipeiStampShort(o.created_at)}
                     </td>
-                    <td className="px-5 py-4 text-right">
-                      <Link
-                        href={`/dashboard/stores/${slug}/orders/${o.id}`}
-                        className="text-emerald-700 hover:text-emerald-900 text-sm font-medium"
-                      >
-                        詳情 →
-                      </Link>
+                    <td className="px-5 py-4">
+                      <div className="flex items-center justify-end gap-3">
+                        {advanceButton(o)}
+                        <Link
+                          href={`/dashboard/stores/${slug}/orders/${o.id}`}
+                          className="text-emerald-700 hover:text-emerald-900 text-sm font-medium whitespace-nowrap"
+                        >
+                          詳情 →
+                        </Link>
+                      </div>
                     </td>
                   </tr>
                 );

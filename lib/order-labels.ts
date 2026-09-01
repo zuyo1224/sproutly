@@ -62,6 +62,35 @@ export const ORDER_STATUSES: string[] = Object.keys(ORDER_STATUS_BADGES);
 export const ORDER_STATUS_OPTIONS: { value: string; label: string }[] =
   ORDER_STATUSES.map((value) => ({ value, label: ORDER_STATUS_BADGES[value].label }));
 
+// 訂單「下一步是哪一個狀態」單一來源：待確認→已確認→已出貨→已完成，走完就沒有下一步；
+// 已取消不在這條線上（那是離開流程，不是往前一步），所以從 ORDER_STATUSES 扣掉它當作
+// 這條線。後台訂單詳情頁改狀態是一個五選一的下拉（要能跳著改、也要能取消），那頁維持
+// 原樣；這份是給「照流程往前推一格」用的——訂單列表一顆按鈕就把單推到下一步，不必為了
+// 按確認點進詳情頁。日後流程中間多一個狀態（例如 packing），只要它照順序排進
+// ORDER_STATUS_BADGES，這條線與按鈕自動跟著長，不用另外同步一份。
+export const ORDER_ADVANCE_FLOW: string[] = ORDER_STATUSES.filter(
+  (key) => key !== "cancelled"
+);
+
+// 往前推一格之後的狀態；已完成（走到底）、已取消（不在線上）、不認得的值都回 null。
+export function nextOrderStatus(
+  status: string | null | undefined
+): string | null {
+  if (status == null) return null;
+  const i = ORDER_ADVANCE_FLOW.indexOf(status);
+  if (i < 0 || i === ORDER_ADVANCE_FLOW.length - 1) return null;
+  return ORDER_ADVANCE_FLOW[i + 1];
+}
+
+// 推到某個狀態那顆按鈕上寫的動詞。徽章那份是「這筆單現在是什麼」（已確認 / 已出貨），
+// 按鈕要的是「按下去會發生什麼」（確認 / 出貨），是兩種話，所以另外列一份而不是拿
+// 徽章 label 硬套——按鈕寫「已出貨」商家會以為它現在就是已出貨、不敢按。
+export const ORDER_ADVANCE_VERBS: Record<string, string> = {
+  confirmed: "確認",
+  shipped: "出貨",
+  completed: "完成",
+};
+
 // 客人端的訂單狀態說法：刻意比後台 ORDER_STATUS_BADGES 更柔（pending 寫成「待店家確認」
 // 而非後台的「待確認」、completed/cancelled 去掉「已」字只留「完成」「取消」），語氣站在
 // 客人角度、也不配後台那套 amber/red 硬色票（客人頁吃店家自訂 theme，顏色另由各頁依
