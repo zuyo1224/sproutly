@@ -760,6 +760,18 @@ export interface StoreTheme {
     //   spacious clamp(14rem, 24vw, 20rem)
     heroMinimalWidth: "narrow" | "normal" | "wide"; // minimal 欄寬（預設 normal = 不覆寫）
     heroMinimalPadding: "compact" | "normal" | "spacious"; // minimal 上下留白（預設 normal = 不覆寫）
+    // 上下留白的手機那一格。上面那格是一把尺量兩種螢幕：桌機的主標有七八十 px、上下各
+    // 留 14rem 撐得住；手機的字只有三十幾 px，同一份留白就變成一整屏幾乎全空、要捲一頁
+    // 才看得到後面的段落。跟 heroMagazineGapMobile / heroHeightMobile 同一招：page.tsx
+    // 掛 data attribute、規則寫在 layout.tsx 的 media query，只是上面那格是 inline style
+    // （贏過 class 也贏過 media query），所以這組要帶 !important 才蓋得掉。
+    // 斷點用 639px 不是別處的 767px——原本的 py-40 sm:py-56 就是在 640px 換檔，
+    // 跟著 sm 走「跟桌機一樣」那檔才真的等於原本的值。
+    //   same     不掛 attribute（跟上面那格走）
+    //   compact  4rem（= 上面那格的 clamp 在手機寬度算出來的值）
+    //   normal   10rem（= 原本的 py-40）
+    //   spacious 14rem（= 上面那格的 clamp 在手機寬度算出來的值）
+    heroMinimalPaddingMobile: "same" | "compact" | "normal" | "spacious"; // minimal 上下留白（手機）（預設 same = 跟上面那格）
     // minimal 整段離螢幕左右兩邊多遠。欄寬那格動的是字排多寬的上限，手機上上限根本
     // 碰不到（螢幕比欄還窄），字離螢幕邊多遠就只剩這道 px-6 在決定，原本寫死。
     //   narrow  clamp(0.5rem, 2.5vw, 1rem)
@@ -1581,6 +1593,11 @@ function resolveLayout(raw: unknown): StoreTheme["layout"] {
       const v = l.heroMinimalPadding;
       if (v === "compact" || v === "spacious") return v;
       return "normal" as const;
+    })(),
+    heroMinimalPaddingMobile: (() => {
+      const v = l.heroMinimalPaddingMobile;
+      if (v === "compact" || v === "normal" || v === "spacious") return v;
+      return "same" as const;
     })(),
     heroMinimalPadX: (() => {
       const v = l.heroMinimalPadX;

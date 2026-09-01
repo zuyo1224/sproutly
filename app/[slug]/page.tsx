@@ -2927,6 +2927,13 @@ export default async function StoreHomePage({
               }}
               data-edit-target="hero"
               data-edit-label="Hero 區段"
+              // 上下留白的手機那一格（heroMinimalPaddingMobile）。上面那格是 inline
+              // style、手機桌機一起蓋，手機插不進去；改成掛 attribute、規則寫在
+              // layout.tsx 的 639px media query 裡帶 !important 蓋掉 inline。
+              // 跟上面那格一樣就不掛，整條規則不存在，既有店家算出來一模一樣。
+              {...(theme.layout.heroMinimalPaddingMobile !== "same"
+                ? { "data-hero-minimal-padding-mobile": theme.layout.heroMinimalPaddingMobile }
+                : {})}
             >
               <div
                 className="max-w-3xl mx-auto px-6 text-center"

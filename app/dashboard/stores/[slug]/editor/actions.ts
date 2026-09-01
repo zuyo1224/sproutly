@@ -97,6 +97,7 @@ type EditorPayload = {
     heroMagazineTextGap?: string;
     heroMinimalWidth?: string;
     heroMinimalPadding?: string;
+    heroMinimalPaddingMobile?: string;
     heroMinimalPadX?: string;
     heroMinimalRule?: string;
     heroMinimalRuleColor?: string | null;
@@ -693,6 +694,12 @@ export async function saveEditorState(slug: string, payload: EditorPayload) {
       const v = payload.layout.heroMinimalPadding;
       if (v === "compact" || v === "normal" || v === "spacious") {
         layoutPatch.heroMinimalPadding = v;
+      }
+    }
+    if (payload.layout.heroMinimalPaddingMobile !== undefined) {
+      const v = payload.layout.heroMinimalPaddingMobile;
+      if (v === "same" || v === "compact" || v === "normal" || v === "spacious") {
+        layoutPatch.heroMinimalPaddingMobile = v;
       }
     }
     if (payload.layout.heroMinimalPadX !== undefined) {

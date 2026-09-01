@@ -153,6 +153,7 @@ type EditorTheme = {
     heroMagazineBg: string | null;
     heroMinimalWidth: "narrow" | "normal" | "wide";
     heroMinimalPadding: "compact" | "normal" | "spacious";
+    heroMinimalPaddingMobile: "same" | "compact" | "normal" | "spacious";
     heroMinimalPadX: "narrow" | "normal" | "wide";
     heroMinimalRule: "none" | "short" | "normal" | "long";
     heroMinimalRuleColor: string | null;
@@ -1123,6 +1124,7 @@ export function EditorWorkspace({
           heroMagazineBg: t.layout.heroMagazineBg,
           heroMinimalWidth: t.layout.heroMinimalWidth,
           heroMinimalPadding: t.layout.heroMinimalPadding,
+          heroMinimalPaddingMobile: t.layout.heroMinimalPaddingMobile,
           heroMinimalPadX: t.layout.heroMinimalPadX,
           heroMinimalRule: t.layout.heroMinimalRule,
           heroMinimalRuleColor: t.layout.heroMinimalRuleColor,
@@ -3983,6 +3985,38 @@ export function EditorWorkspace({
                   字上下各留多少空。原本那個留白是配「只有一行大主標」挑的，加了副標跟按鈕
                   之後整段變高，上下再各留那麼多會把後面的段落推到要捲一頁才看得到；
                   反過來只放一行短主標時，留白不夠這個版型就不成立，它靠的就是空
+                </p>
+              </Field>
+            )}
+            {theme.layout.heroStyle === "minimal" && (
+              <Field label="手機上的上下留白">
+                <div className="grid grid-cols-2 gap-1.5">
+                  {([
+                    { v: "same", label: "跟桌機一樣" },
+                    { v: "compact", label: "少" },
+                    { v: "normal", label: "跟預設" },
+                    { v: "spacious", label: "多" },
+                  ] as const).map((opt) => (
+                    <button
+                      key={opt.v}
+                      type="button"
+                      onClick={() => updateLayout({ heroMinimalPaddingMobile: opt.v })}
+                      aria-pressed={theme.layout.heroMinimalPaddingMobile === opt.v}
+                      className={`rounded-lg border py-2 text-xs transition ${
+                        theme.layout.heroMinimalPaddingMobile === opt.v
+                          ? "border-emerald-500 bg-emerald-50 text-emerald-900"
+                          : "border-stone-200 text-stone-600 hover:border-stone-400"
+                      }`}
+                    >
+                      {opt.label}
+                    </button>
+                  ))}
+                </div>
+                <p className="text-[10px] text-stone-500 mt-1">
+                  上面那格是同一把尺量兩種螢幕：桌機主標有七八十 px、上下各留那麼多撐得住；
+                  手機的字只有三十幾 px，同一份留白就是開頭一整屏幾乎全空、要捲一頁才看得到
+                  商品。想桌機留大片空、手機收緊的店在這裡選少；跟桌機一樣就照上面那格走。
+                  切到手機預覽看
                 </p>
               </Field>
             )}
