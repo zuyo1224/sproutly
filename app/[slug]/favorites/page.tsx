@@ -328,7 +328,7 @@ export default function FavoritesPage() {
             <Link
               key={p.id}
               href={`/${slug}/products/${p.id}`}
-              className="sproutly-card"
+              className="sproutly-card group"
               aria-label={`${p.name}，${formatPrice(p.price_cents, p.currency)}${stockAriaSuffix(p.stock)}`}
             >
               <div className="sproutly-card-image aspect-square relative">
@@ -372,15 +372,30 @@ export default function FavoritesPage() {
                   </svg>
                 </button>
                 {p.image_urls?.[0] ? (
-                  // eslint-disable-next-line @next/next/no-img-element
-                  <img
-                    src={p.image_urls[0]}
-                    alt={p.name}
-                    loading="lazy"
-                    className={`w-full h-full object-cover transition ${
-                      soldOut ? "opacity-55 grayscale" : ""
-                    }`}
-                  />
+                  <>
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img
+                      src={p.image_urls[0]}
+                      alt={p.name}
+                      loading="lazy"
+                      className={`w-full h-full object-cover transition ${
+                        soldOut ? "opacity-55 grayscale" : ""
+                      }`}
+                    />
+                    {/* 商家上傳超過一張圖時，滑到卡片上淡入第二張——跟 shop 逛街頁
+                        同一套語言，收藏頁複習時不用點進詳情頁就能多看一個角度。
+                        只有一張圖的不變；手機沒有 hover；售完的不做。 */}
+                    {!soldOut && p.image_urls[1] && (
+                      // eslint-disable-next-line @next/next/no-img-element
+                      <img
+                        src={p.image_urls[1]}
+                        alt=""
+                        aria-hidden="true"
+                        loading="lazy"
+                        className="absolute inset-0 w-full h-full object-cover opacity-0 transition-opacity duration-500 group-hover:opacity-100 group-focus-visible:opacity-100 motion-reduce:transition-none"
+                      />
+                    )}
+                  </>
                 ) : (
                   <div
                     className="w-full h-full flex items-center justify-center"

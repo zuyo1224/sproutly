@@ -3362,7 +3362,7 @@ export default async function StoreHomePage({
                   <Link
                     key={p.id}
                     href={`/${slug}/products/${p.id}`}
-                    className="sproutly-card"
+                    className="sproutly-card group"
                     aria-label={`${p.name}，${formatPrice(p.price_cents, p.currency)}${stockAriaSuffix(p.stock)}`}
                   >
                     <div className="sproutly-card-image aspect-square relative">
@@ -3381,17 +3381,34 @@ export default async function StoreHomePage({
                         </span>
                       )}
                       {p.image_urls?.[0] ? (
-                        <Image
-                          src={p.image_urls[0]}
-                          alt={p.name}
-                          fill
-                          sizes="(min-width: 768px) 350px, 50vw"
-                          quality={80}
-                          loading="lazy"
-                          className={`object-cover transition ${
-                            soldOut ? "opacity-55 grayscale" : ""
-                          }`}
-                        />
+                        <>
+                          <Image
+                            src={p.image_urls[0]}
+                            alt={p.name}
+                            fill
+                            sizes="(min-width: 768px) 350px, 50vw"
+                            quality={80}
+                            loading="lazy"
+                            className={`object-cover transition ${
+                              soldOut ? "opacity-55 grayscale" : ""
+                            }`}
+                          />
+                          {/* 商家上傳超過一張圖時，滑到卡片上淡入第二張——跟 shop
+                              逛街頁同一套語言，客人在首頁就能多看一個角度。只有一張
+                              圖的商品不變；手機沒有 hover，維持第一張；售完的不做。 */}
+                          {!soldOut && p.image_urls[1] && (
+                            <Image
+                              src={p.image_urls[1]}
+                              alt=""
+                              aria-hidden="true"
+                              fill
+                              sizes="(min-width: 768px) 350px, 50vw"
+                              quality={80}
+                              loading="lazy"
+                              className="object-cover opacity-0 transition-opacity duration-500 group-hover:opacity-100 group-focus-visible:opacity-100 motion-reduce:transition-none"
+                            />
+                          )}
+                        </>
                       ) : (
                         <div
                           className="w-full h-full flex items-center justify-center"
