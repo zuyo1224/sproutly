@@ -5537,6 +5537,7 @@ export function EditorWorkspace({
           const cardSurface = cur.cardSurface ?? null;
           const cardPadding = cur.cardPadding ?? null;
           const cardRadius = cur.cardRadius ?? null;
+          const cardShadow = cur.cardShadow ?? null;
           const cardLayout = cur.cardLayout ?? null;
           const cardMediaWidth = cur.cardMediaWidth ?? null;
           const mobileColumns = cur.mobileColumns ?? null;
@@ -8563,6 +8564,45 @@ export function EditorWorkspace({
                       <button
                         type="button"
                         onClick={() => patch({ cardRadius: null })}
+                        className="text-stone-500 hover:text-stone-800 underline"
+                      >
+                        清除
+                      </button>
+                    )}
+                  </div>
+                </Field>
+              )}
+              {/* 陰影跟圓角、內距同一個條件（有底或有框才看得到卡片的邊界）：
+                  上面兩格畫的是卡片的形狀，這格畫的是它浮不浮起來。 */}
+              {cardSurface && (
+                <Field label="卡片陰影">
+                  <div className="grid grid-cols-3 gap-1.5">
+                    {([
+                      { v: "none", label: "無" },
+                      { v: "soft", label: "輕" },
+                      { v: "strong", label: "明顯" },
+                    ] as const).map((opt) => (
+                      <button
+                        key={opt.v}
+                        type="button"
+                        onClick={() => patch({ cardShadow: opt.v })}
+                        aria-pressed={(cardShadow ?? "none") === opt.v}
+                        className={`rounded-lg border py-2 text-xs transition ${
+                          (cardShadow ?? "none") === opt.v
+                            ? "border-emerald-500 bg-emerald-50 text-emerald-900"
+                            : "border-stone-200 text-stone-600 hover:border-stone-400"
+                        }`}
+                      >
+                        {opt.label}
+                      </button>
+                    ))}
+                  </div>
+                  <div className="mt-1.5 flex items-center justify-between text-[11px] text-stone-500">
+                    <span>卡片靜止時浮起來多少（不選的話只有滑鼠移上去才有影子，手機看不到）</span>
+                    {cardShadow && (
+                      <button
+                        type="button"
+                        onClick={() => patch({ cardShadow: null })}
                         className="text-stone-500 hover:text-stone-800 underline"
                       >
                         清除

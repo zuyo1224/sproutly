@@ -1450,6 +1450,33 @@ export default async function PublicStoreLayout({
           box-shadow: none;
         }
 
+        /* 卡片陰影：editor 各 section panel「卡片陰影」三按鈕（無 / 輕 / 明顯），跟圓角、
+           內距一樣設了底或框之後才長出來。上面那組只在滑過時給卡片一層陰影，靜止時是完全
+           平貼在段落底色上的方塊——「面板」那檔的底是 currentColor 的 6%，淺底的店看不出
+           卡片跟背景的界線；手機根本沒有滑過這件事，那層陰影客人一輩子看不到。
+           要動的是卡片自己靜止的那層 box-shadow，段落上的 inline style 到不了卡片那層，
+           跟內距、圓角同一個處境同一個解法。
+           輕用 elev-2（照片原本那圈陰影的值，設了卡片外觀之後照片那圈被收掉，等於搬到
+           卡片外框上）、明顯用 elev-3（滑過時浮起的那一層）。
+           下面兩條是給「滑過卡片＝輕微」那檔補的：它原本把滑過的陰影收成 none（為平的卡片
+           寫的），設了這格之後要把靜止那層留著，不然滑上去反而變平。分量比它重一個屬性，
+           排在後面也壓得過。
+           沒設（或選「無」）就沒 attribute、整組規則不存在，卡片維持原本靜止時沒有陰影。 */
+        section[data-edit-target][data-card-surface][data-card-shadow="soft"] .sproutly-card {
+          box-shadow: var(--sproutly-elev-2);
+        }
+        section[data-edit-target][data-card-surface][data-card-shadow="strong"] .sproutly-card {
+          box-shadow: var(--sproutly-elev-3);
+        }
+        section[data-edit-target][data-card-surface][data-card-hover="calm"][data-card-shadow="soft"]
+          .sproutly-card:hover {
+          box-shadow: var(--sproutly-elev-2);
+        }
+        section[data-edit-target][data-card-surface][data-card-hover="calm"][data-card-shadow="strong"]
+          .sproutly-card:hover {
+          box-shadow: var(--sproutly-elev-3);
+        }
+
         /* 卡片排法：editor 各 section panel「卡片排法」兩按鈕（照片在上 / 照片在左）。
            站上每一段的卡片都是同一種排法——照片在上，品名、價錢、摘要在下面疊成一落。
            那是格子牆的排法，客人一眼掃過整片照片；但同一批商品換成「一列一張、照片在左、
