@@ -4,6 +4,8 @@ import { formString, formStringOrNull } from "@/lib/form-fields";
 import { requireUser } from "@/lib/require-user";
 import { uploadImage } from "@/lib/storage";
 import { yuanToCents } from "@/lib/format-price";
+// 調順序要先拿到整家店「照現在順序排好」的完整清單，破千的店不能只撈第一頁。
+import { fetchAllRows } from "@/lib/fetch-all-rows";
 import { redirect } from "next/navigation";
 
 const BUCKET = "sproutly-products";
@@ -289,4 +291,72 @@ export async function deleteProduct(slug: string, productId: string) {
   }
 
   redirect(`/dashboard/stores/${slug}/products`);
+}
+
+// 每次寫回 sort_order 同時發幾筆——Supabase 沒有「一次寫多列不同值」的 API，
+// 只能一列一支 update。全部序列跑，商品多的店按一次箭頭要等好幾秒；全部同時發
+// 又會把連線塞爆，所以切成小批。
+const REORDER_WRITE_CHUNK = 20;
+
+export async function moveProductOrder(
+  slug: string,
+  productId: string,
+  direction: "up" | "down",
+  returnQs: string
+) {
+  const { supabase, store } = await authorizedStore(slug);
+  const listUrl = `/dashboard/stores/${slug}/products${returnQs ? `?${returnQs}` : ""}`;
+
+  // 排序條件必須跟商品列表、跟客人端逛街頁的預設排序（sort_order 升冪、同值
+  // 再看新舊）逐字一樣，不然商家在後台看到的順序跟客人看到的對不起來，
+  // 「往上移一格」會移到別的地方去。分頁撈齊避免破千的店少算尾巴。
+  const rows = await fetchAllRows<{ id: string; sort_order: number | null }>(
+    async (from, to) =>
+      supabase
+        .from("sproutly_products")
+        .select("id, sort_order")
+        .eq("merchant_id", store.id)
+        .order("sort_order", { ascending: true })
+        .order("created_at", { ascending: false })
+        .order("id", { ascending: true })
+        .range(from, to)
+  );
+
+  const index = rows.findIndex((r) => r.id === productId);
+  const target = direction === "up" ? index - 1 : index + 1;
+  // 找不到這件、或已經在頭／尾：安靜跳回列表，不當成錯誤。兩個分頁同時開著時
+  // 別頁可能剛把它刪掉或移走，畫面上的箭頭本來就可能是過期的。
+  if (index < 0 || target < 0 || target >= rows.length) {
+    redirect(listUrl);
+  }
+
+  [rows[index], rows[target]] = [rows[target], rows[index]];
+
+  // 建店預設每件的 sort_order 都是 0（順序其實是靠新舊決定的），所以第一次調整
+  // 一定要把整批重新編號，之後每次就只剩被交換的那兩列真的要寫。
+  const pending = rows
+    .map((r, i) => ({ id: r.id, sortOrder: i }))
+    .filter((r, i) => rows[i].sort_order !== i);
+
+  for (let i = 0; i < pending.length; i += REORDER_WRITE_CHUNK) {
+    const chunk = pending.slice(i, i + REORDER_WRITE_CHUNK);
+    const results = await Promise.all(
+      chunk.map((r) =>
+        supabase
+          .from("sproutly_products")
+          .update({ sort_order: r.sortOrder })
+          .eq("id", r.id)
+          .eq("merchant_id", store.id)
+      )
+    );
+    const failed = results.find((res) => res.error);
+    if (failed?.error) {
+      redirect(
+        `/dashboard/stores/${slug}/products?error=` +
+          encodeURIComponent(failed.error.message)
+      );
+    }
+  }
+
+  redirect(listUrl);
 }

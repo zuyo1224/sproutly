@@ -4,7 +4,7 @@ import Link from "next/link";
 import { formatPrice } from "@/lib/format-price";
 import { isSoldOut, isLowStock } from "@/lib/product-stock";
 import { matchesProductSearch } from "@/lib/product-search";
-import { toggleProductActive } from "./actions";
+import { moveProductOrder, toggleProductActive } from "./actions";
 import { SubmitButton } from "@/app/_components/submit-button";
 // 商品撈整批要分頁撈齊，不然吃 Supabase 1000 列上限，見 fetch-all-rows。
 import { fetchAllRows } from "@/lib/fetch-all-rows";
@@ -109,9 +109,16 @@ export default async function ProductsListPage({
   const count = allProducts.length;
   const caption = filterActive
     ? `符合條件 ${visible.length} 件 · 全部 ${count} 件`
-    : count > 0
-      ? `${count} 件商品 · 點任一件編輯`
-      : "新增第一件商品讓店面活起來";
+    : count > 1
+      ? `${count} 件商品 · 點任一件編輯 · 右側箭頭調客人看到的先後`
+      : count > 0
+        ? `${count} 件商品 · 點任一件編輯`
+        : "新增第一件商品讓店面活起來";
+
+  // 上下箭頭只在「沒篩選、沒搜尋」的完整列表出現。篩過的列表上，畫面相鄰的兩件
+  // 在整家店的順序裡通常隔著好幾件，按「往上」會移到看不見的地方去，商家會以為
+  // 沒反應。與其做一套「跳過被篩掉的」規則，不如請商家先把條件清掉再調。
+  const canReorder = !filterActive && visible.length > 1;
 
   return (
     <div>
@@ -216,6 +223,12 @@ export default async function ProductsListPage({
               </Link>
             )}
           </form>
+
+          {filterActive && visible.length > 1 && (
+            <p className="text-xs text-emerald-900/50" style={{ lineHeight: 1.7 }}>
+              調整商品先後順序的箭頭要在完整列表才會出現，先按「清除」再調。
+            </p>
+          )}
         </div>
       )}
 
@@ -224,7 +237,7 @@ export default async function ProductsListPage({
           {/* row 從整張 <Link> 改成 div + 蓋滿的 overlay link：快速上下架的表單
               按鈕不能包在 <a> 裡（HTML 不允許、點按鈕也會觸發跳頁），改成連結
               absolute 蓋滿整列、按鈕自己 z-10 疊在上面，點卡片任一處照樣進編輯頁 */}
-          {visible.map((p) => (
+          {visible.map((p, i) => (
             <div
               key={p.id}
               className="relative bg-white rounded-2xl p-5 shadow-lg shadow-emerald-700/5 hover:shadow-xl hover:shadow-emerald-700/10 hover:-translate-y-0.5 transition flex items-center gap-4"
@@ -332,6 +345,56 @@ export default async function ProductsListPage({
                   </SubmitButton>
                 </form>
               </div>
+              {/* 調順序：以前商品在店裡的先後只能照建立時間，想把當季的那株推到
+                  第一排完全沒辦法。這裡兩顆箭頭直接換位置，客人逛街頁的預設順序
+                  跟這裡看到的是同一份，按完就是客人會看到的樣子。最上面那件沒有
+                  「往上」、最下面那件沒有「往下」，位置留著讓每列的寬度一樣 */}
+              {canReorder && (
+                <div className="relative z-10 flex-shrink-0 flex flex-col gap-1">
+                  {(
+                    [
+                      { dir: "up", glyph: "↑", word: "上", off: i === 0 },
+                      {
+                        dir: "down",
+                        glyph: "↓",
+                        word: "下",
+                        off: i === visible.length - 1,
+                      },
+                    ] as const
+                  ).map((b) =>
+                    b.off ? (
+                      <span
+                        key={b.dir}
+                        aria-hidden
+                        className="block w-7 h-7 rounded-lg border border-emerald-50 text-emerald-900/20 text-xs leading-[1.6rem] text-center"
+                      >
+                        {b.glyph}
+                      </span>
+                    ) : (
+                      <form
+                        key={b.dir}
+                        action={moveProductOrder.bind(
+                          null,
+                          slug,
+                          p.id,
+                          b.dir,
+                          listQs
+                        )}
+                      >
+                        <SubmitButton
+                          pendingText="…"
+                          className="block w-7 h-7 rounded-lg border border-emerald-100 text-emerald-900/70 text-xs hover:bg-emerald-50"
+                        >
+                          <span aria-hidden>{b.glyph}</span>
+                          <span className="sr-only">
+                            把 {p.name} 往{b.word}移一格
+                          </span>
+                        </SubmitButton>
+                      </form>
+                    )
+                  )}
+                </div>
+              )}
             </div>
           ))}
         </div>
