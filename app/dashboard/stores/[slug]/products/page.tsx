@@ -4,13 +4,17 @@ import Link from "next/link";
 import { formatPrice } from "@/lib/format-price";
 import { isSoldOut, isLowStock } from "@/lib/product-stock";
 import { matchesProductSearch } from "@/lib/product-search";
-import { moveProductOrder, toggleProductActive } from "./actions";
+import {
+  moveProductOrder,
+  setProductStock,
+  toggleProductActive,
+} from "./actions";
 import { SubmitButton } from "@/app/_components/submit-button";
 // 商品撈整批要分頁撈齊，不然吃 Supabase 1000 列上限，見 fetch-all-rows。
 import { fetchAllRows } from "@/lib/fetch-all-rows";
 
 type Params = Promise<{ slug: string }>;
-type SearchParams = Promise<{ q?: string; filter?: string }>;
+type SearchParams = Promise<{ q?: string; filter?: string; error?: string }>;
 
 type ProductRow = {
   id: string;
@@ -50,8 +54,11 @@ export default async function ProductsListPage({
   searchParams: SearchParams;
 }) {
   const { slug } = await params;
-  const { q: rawQuery, filter: rawFilter } = await searchParams;
+  const { q: rawQuery, filter: rawFilter, error: rawError } = await searchParams;
   const q = (rawQuery ?? "").trim();
+  // 列表上的快速動作（上下架、調順序、改庫存）出錯時會把訊息帶在網址上跳回來。
+  // 以前沒人讀這個值，商家按了沒反應也不知道為什麼，只能一直重按。
+  const errorMsg = (rawError ?? "").trim().slice(0, 200);
   const filter = STATUS_FILTERS.some((f) => f.key === rawFilter)
     ? rawFilter!
     : "all";
@@ -160,6 +167,16 @@ export default async function ProductsListPage({
           </Link>
         )}
       </div>
+
+      {errorMsg && (
+        <div
+          role="alert"
+          className="rounded-2xl border border-red-100 bg-red-50 px-4 py-3 mb-4 text-sm text-red-800"
+          style={{ lineHeight: 1.7 }}
+        >
+          {errorMsg}
+        </div>
+      )}
 
       {/* 狀態 chips + 搜尋 bar：跟訂單列表同一套操作語言，商品多了照樣一秒找到 */}
       {count > 0 && (
@@ -328,22 +345,51 @@ export default async function ProductsListPage({
                 {/* 快速上下架：以前要點進編輯頁、捲到勾選框、存檔才能停售一件，
                     臨時缺貨或補到貨時繞太遠。停售走低調外框、上架走實心綠，
                     跟這件商品「接下來會發生什麼」的重量一致 */}
-                <form
-                  action={toggleProductActive.bind(null, slug, p.id, listQs)}
-                  className="relative z-10 mt-2"
-                >
-                  <SubmitButton
-                    pendingText="切換中..."
-                    className={
-                      p.is_active
-                        ? "rounded-full border border-emerald-100 px-3 py-1 text-xs text-emerald-900/70 hover:bg-emerald-50"
-                        : "rounded-full bg-emerald-700 px-3 py-1 text-xs font-medium text-white hover:bg-emerald-800"
-                    }
-                  >
-                    {p.is_active ? "停售" : "上架"}
-                    <span className="sr-only">：{p.name}</span>
-                  </SubmitButton>
-                </form>
+                {/* 快速改庫存：補到貨、線下賣掉幾件，以前一樣得點進編輯頁改數字再退回來。
+                    只有本來就有在管庫存的商品才畫這一格（沒在管的留空欄位沒有意義，
+                    要開始管請進編輯頁填）。存完跳回同一個篩選＋搜尋，所以在「快沒貨」
+                    分頁把某件補滿，那件會從眼前的列表消失——跟上下架同一個行為。 */}
+                <div className="relative z-10 mt-2 flex flex-wrap items-center justify-end gap-1.5">
+                  {p.stock !== null && (
+                    <form
+                      action={setProductStock.bind(null, slug, p.id, listQs)}
+                      className="flex items-center gap-1"
+                    >
+                      <label className="sr-only" htmlFor={`stock-${p.id}`}>
+                        {p.name} 的庫存件數
+                      </label>
+                      <input
+                        id={`stock-${p.id}`}
+                        name="stock"
+                        type="number"
+                        min={0}
+                        step={1}
+                        defaultValue={p.stock}
+                        className="w-14 rounded-full border border-emerald-100 px-2 py-1 text-xs text-right tabular-nums outline-none focus:border-emerald-400 focus:ring-2 focus:ring-emerald-100 transition"
+                      />
+                      <SubmitButton
+                        pendingText="…"
+                        className="rounded-full border border-emerald-100 px-2.5 py-1 text-xs text-emerald-900/70 hover:bg-emerald-50"
+                      >
+                        存
+                        <span className="sr-only">{p.name} 的庫存</span>
+                      </SubmitButton>
+                    </form>
+                  )}
+                  <form action={toggleProductActive.bind(null, slug, p.id, listQs)}>
+                    <SubmitButton
+                      pendingText="切換中..."
+                      className={
+                        p.is_active
+                          ? "rounded-full border border-emerald-100 px-3 py-1 text-xs text-emerald-900/70 hover:bg-emerald-50"
+                          : "rounded-full bg-emerald-700 px-3 py-1 text-xs font-medium text-white hover:bg-emerald-800"
+                      }
+                    >
+                      {p.is_active ? "停售" : "上架"}
+                      <span className="sr-only">：{p.name}</span>
+                    </SubmitButton>
+                  </form>
+                </div>
               </div>
               {/* 調順序：以前商品在店裡的先後只能照建立時間，想把當季的那株推到
                   第一排完全沒辦法。這裡兩顆箭頭直接換位置，客人逛街頁的預設順序

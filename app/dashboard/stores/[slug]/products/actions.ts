@@ -264,6 +264,80 @@ export async function duplicateProduct(slug: string, productId: string) {
   redirect(`/dashboard/stores/${slug}/products/${copy.id}/edit?copied=1`);
 }
 
+// 庫存上限：DB 的 integer 欄位上限是 21 億多，商家手滑多打幾個 0 打爆的話
+// Postgres 會丟一串英文的原始錯誤回來，看不懂哪裡錯。先在這裡擋成中文訊息。
+const MAX_STOCK = 1_000_000;
+
+// 列表直接改庫存：補到貨、或線下賣掉幾件，以前都得點進商品編輯頁、捲過整個圖片區、
+// 改掉數字、按存檔、再退回列表——跟一鍵上下架、訂單一鍵推進是同一個痛點，只是這一格
+// 要打數字而不是按一下。
+//
+// 這裡刻意「不」做上下架那套「原值還是剛剛讀到那個才生效」的比對：上下架是翻面，
+// 帶著過期的舊值去翻會把別的分頁剛做的切換又蓋回去；改庫存是商家看著手上實際有幾件
+// 打一個絕對值進來，晚打的那個本來就該是對的，比對只會讓正常的修改被擋下來。
+//
+// 只做「改數字」這一格：欄位留空代表「不再管這件的庫存」（會變成永遠有貨），語意跟
+// 打錯字清空太像，留在編輯頁做，列表這裡直接擋下來。
+export async function setProductStock(
+  slug: string,
+  productId: string,
+  returnQs: string,
+  formData: FormData
+) {
+  const { supabase, store } = await authorizedStore(slug);
+  const listUrl = `/dashboard/stores/${slug}/products${returnQs ? `?${returnQs}` : ""}`;
+  // 出錯要跳回原本的篩選＋搜尋，只是多帶一個 error 讓列表把訊息顯出來，
+  // 不然商家會被丟回全部列表、還不知道剛剛那筆到底存進去沒有。
+  const errorUrl = (msg: string) => {
+    const sp = new URLSearchParams(returnQs);
+    sp.set("error", msg);
+    return `/dashboard/stores/${slug}/products?${sp.toString()}`;
+  };
+
+  const raw = formString(formData, "stock");
+  if (!raw) {
+    redirect(errorUrl("請填庫存數字。要改成不管這件的庫存，請進商品編輯頁把庫存清空"));
+  }
+
+  let stock: number | null;
+  try {
+    stock = parseStock(raw);
+  } catch (e) {
+    redirect(errorUrl(e instanceof Error ? e.message : "庫存輸入錯誤"));
+  }
+  if (stock! > MAX_STOCK) {
+    redirect(errorUrl(`庫存最多 ${MAX_STOCK} 件，確認一下是不是多打了幾個 0`));
+  }
+
+  const { data: product } = await supabase
+    .from("sproutly_products")
+    .select("id, stock")
+    .eq("id", productId)
+    .eq("merchant_id", store.id)
+    .maybeSingle();
+  // 找不到這件就安靜跳回列表：兩個分頁同時開著時，別頁可能剛把它刪掉，
+  // 這頁的欄位本來就可能是過期的，不當成錯誤。
+  if (!product) {
+    redirect(listUrl);
+  }
+  // 數字沒動就別白寫一趟 DB（商家點進欄位又原樣按存的情況很常見）。
+  if (product.stock === stock!) {
+    redirect(listUrl);
+  }
+
+  const { error } = await supabase
+    .from("sproutly_products")
+    .update({ stock: stock! })
+    .eq("id", productId)
+    .eq("merchant_id", store.id);
+
+  if (error) {
+    redirect(errorUrl(error.message));
+  }
+
+  redirect(listUrl);
+}
+
 export async function toggleProductActive(
   slug: string,
   productId: string,
