@@ -24,7 +24,7 @@ import {
   needsMemoryOrderSearch,
 } from "@/lib/order-search";
 import { fetchAllRows } from "@/lib/fetch-all-rows";
-import { advanceOrderStatus } from "./actions";
+import { advanceOrderStatus, markOrderPaid } from "./actions";
 import { SubmitButton } from "@/app/_components/submit-button";
 
 type Params = Promise<{ slug: string }>;
@@ -305,6 +305,34 @@ export default async function OrdersListPage({
     );
   }
 
+  // 一筆單右邊那顆「收款」按鈕：只畫在還沒收到錢的單上。已付款／已退款沒有這一格，
+  // 已取消的單也不畫（要把取消的單記成收到錢是特殊情況，留在詳情頁決定）。
+  // 走低調外框、配未付款那個 amber 色系，跟旁邊的流程按鈕分得開——這兩顆是兩條線，
+  // 一顆推流程（確認／出貨／完成）、一顆記錢，不是同一件事的兩步。
+  function markPaidButton(o: {
+    id: string;
+    status: string;
+    payment_status: string;
+  }) {
+    if (!isUnpaidOrder(o.payment_status) || o.status === "cancelled") return null;
+    return (
+      <form
+        action={markOrderPaid.bind(null, slug, o.id, o.payment_status, listQs)}
+        className="relative z-10"
+      >
+        <SubmitButton
+          pendingText="處理中..."
+          className="rounded-full border border-amber-200 px-3 py-1 text-xs text-amber-800 hover:bg-amber-50"
+        >
+          收款
+          <span className="sr-only">
+            把訂單 #{shortOrderId(o.id)} 標記為已付款
+          </span>
+        </SubmitButton>
+      </form>
+    );
+  }
+
   const matchCount = orders?.length ?? 0;
   const headerCaption = filterActive
     ? `符合條件 ${matchCount} 筆 · 全部 ${statusCounts.all} 筆`
@@ -554,14 +582,17 @@ export default async function OrdersListPage({
                     {itemsSummary(o.id)}
                   </div>
                 )}
-                <div className="flex items-center gap-2 mt-3">
+                <div className="flex flex-wrap items-center gap-2 mt-3">
                   <span
                     className={`inline-block text-xs px-2 py-1 rounded-full ${s.color}`}
                   >
                     {s.label}
                   </span>
                   <span className={`text-xs ${p.color}`}>{p.label}</span>
-                  <span className="ml-auto">{advanceButton(o)}</span>
+                  <span className="ml-auto flex items-center gap-2">
+                    {markPaidButton(o)}
+                    {advanceButton(o)}
+                  </span>
                 </div>
               </div>
             );
@@ -642,7 +673,8 @@ export default async function OrdersListPage({
                       {taipeiStampShort(o.created_at)}
                     </td>
                     <td className="px-5 py-4">
-                      <div className="flex items-center justify-end gap-3">
+                      <div className="flex items-center justify-end gap-2">
+                        {markPaidButton(o)}
                         {advanceButton(o)}
                         <Link
                           href={`/dashboard/stores/${slug}/orders/${o.id}`}
