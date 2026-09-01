@@ -54,6 +54,29 @@ async function uploadFiles(files: File[], merchantId: string): Promise<string[]>
   return urls;
 }
 
+type StoreClient = Awaited<ReturnType<typeof authorizedStore>>["supabase"];
+
+// 新商品該拿幾號：列表與客人端逛街頁的預設排序都是 sort_order 升冪、同值再照
+// 建立時間新到舊，所以剛上架的那件本來就露在最前面。建店預設每件都是 0，順序
+// 其實是靠 created_at 決勝負的；商家一按過箭頭調順序，整批就被重編成 0,1,2…，
+// 這時新商品若還是拿 0，就會跟原本的第一件同分，位置又要回頭靠建立時間才決定。
+// 直接給「目前最小值 − 1」：不管這家店有沒有調過順序，新商品都明確落在第一格，
+// 顯示位置跟以前一模一樣，但序號是它自己的，之後按箭頭不必再靠同分規則推。
+// 撈不到（空店、或查詢出錯）就退回 0，不讓排序這件小事擋住上架。
+async function topSortOrder(supabase: StoreClient, merchantId: string) {
+  const { data } = await supabase
+    .from("sproutly_products")
+    .select("sort_order")
+    .eq("merchant_id", merchantId)
+    // sort_order 允許為 null，Postgres 升冪排序把 null 放最後，所以這裡拿到的是
+    // 最小的非 null 值；整家店都是 null 時當成 0，新商品的 −1 一樣排在最前面。
+    .order("sort_order", { ascending: true })
+    .limit(1)
+    .maybeSingle();
+
+  return (data?.sort_order ?? 0) - 1;
+}
+
 export async function createProduct(slug: string, formData: FormData) {
   const baseRedirect = `/dashboard/stores/${slug}/products/new`;
   const { supabase, store } = await authorizedStore(slug);
@@ -97,6 +120,8 @@ export async function createProduct(slug: string, formData: FormData) {
     imageUrls = [imageUrlRaw];
   }
 
+  const sortOrder = await topSortOrder(supabase, store.id);
+
   const { error } = await supabase.from("sproutly_products").insert({
     merchant_id: store.id,
     name,
@@ -105,6 +130,7 @@ export async function createProduct(slug: string, formData: FormData) {
     currency: "TWD",
     image_urls: imageUrls,
     stock: stock!,
+    sort_order: sortOrder,
     is_active: isActive,
   });
 
