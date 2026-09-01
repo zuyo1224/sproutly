@@ -4,6 +4,8 @@ import Link from "next/link";
 import { formatPrice } from "@/lib/format-price";
 import { isSoldOut, isLowStock } from "@/lib/product-stock";
 import { matchesProductSearch } from "@/lib/product-search";
+import { toggleProductActive } from "./actions";
+import { SubmitButton } from "@/app/_components/submit-button";
 // 商品撈整批要分頁撈齊，不然吃 Supabase 1000 列上限，見 fetch-all-rows。
 import { fetchAllRows } from "@/lib/fetch-all-rows";
 
@@ -87,6 +89,13 @@ export default async function ProductsListPage({
   const visible = allProducts.filter(
     (p) => activeFilter.match(p) && (!q || matchesProductSearch(p, q))
   );
+
+  // 快速上下架按完要跳回「同一個篩選、同一個搜尋」的列表，不然商家在「停售中」
+  // 分頁按了上架，會被丟回全部列表、剛剛看到一半的清單整個不見。
+  const listQsParams = new URLSearchParams();
+  if (filter !== "all") listQsParams.set("filter", filter);
+  if (q) listQsParams.set("q", q);
+  const listQs = listQsParams.toString();
 
   function chipHref(key: string) {
     const sp = new URLSearchParams();
@@ -212,12 +221,20 @@ export default async function ProductsListPage({
 
       {visible.length > 0 ? (
         <div className="space-y-3">
+          {/* row 從整張 <Link> 改成 div + 蓋滿的 overlay link：快速上下架的表單
+              按鈕不能包在 <a> 裡（HTML 不允許、點按鈕也會觸發跳頁），改成連結
+              absolute 蓋滿整列、按鈕自己 z-10 疊在上面，點卡片任一處照樣進編輯頁 */}
           {visible.map((p) => (
-            <Link
+            <div
               key={p.id}
-              href={`/dashboard/stores/${slug}/products/${p.id}/edit`}
-              className="bg-white rounded-2xl p-5 shadow-lg shadow-emerald-700/5 hover:shadow-xl hover:shadow-emerald-700/10 hover:-translate-y-0.5 transition flex items-center gap-4 block"
+              className="relative bg-white rounded-2xl p-5 shadow-lg shadow-emerald-700/5 hover:shadow-xl hover:shadow-emerald-700/10 hover:-translate-y-0.5 transition flex items-center gap-4"
             >
+              <Link
+                href={`/dashboard/stores/${slug}/products/${p.id}/edit`}
+                className="absolute inset-0 rounded-2xl outline-none focus-visible:ring-2 focus-visible:ring-emerald-400"
+              >
+                <span className="sr-only">編輯 {p.name}</span>
+              </Link>
               <div className="w-16 h-16 rounded-xl bg-emerald-50 flex-shrink-0 overflow-hidden flex items-center justify-center">
                 {p.image_urls && p.image_urls.length > 0 ? (
                   // eslint-disable-next-line @next/next/no-img-element
@@ -295,8 +312,27 @@ export default async function ProductsListPage({
                     <span className="sr-only">庫存 {p.stock} 件</span>
                   </p>
                 ) : null}
+                {/* 快速上下架：以前要點進編輯頁、捲到勾選框、存檔才能停售一件，
+                    臨時缺貨或補到貨時繞太遠。停售走低調外框、上架走實心綠，
+                    跟這件商品「接下來會發生什麼」的重量一致 */}
+                <form
+                  action={toggleProductActive.bind(null, slug, p.id, listQs)}
+                  className="relative z-10 mt-2"
+                >
+                  <SubmitButton
+                    pendingText="切換中..."
+                    className={
+                      p.is_active
+                        ? "rounded-full border border-emerald-100 px-3 py-1 text-xs text-emerald-900/70 hover:bg-emerald-50"
+                        : "rounded-full bg-emerald-700 px-3 py-1 text-xs font-medium text-white hover:bg-emerald-800"
+                    }
+                  >
+                    {p.is_active ? "停售" : "上架"}
+                    <span className="sr-only">：{p.name}</span>
+                  </SubmitButton>
+                </form>
               </div>
-            </Link>
+            </div>
           ))}
         </div>
       ) : (

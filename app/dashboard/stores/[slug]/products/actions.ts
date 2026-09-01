@@ -236,6 +236,42 @@ export async function duplicateProduct(slug: string, productId: string) {
   redirect(`/dashboard/stores/${slug}/products/${copy.id}/edit?copied=1`);
 }
 
+export async function toggleProductActive(
+  slug: string,
+  productId: string,
+  returnQs: string
+) {
+  const { supabase, store } = await authorizedStore(slug);
+  const listUrl = `/dashboard/stores/${slug}/products${returnQs ? `?${returnQs}` : ""}`;
+
+  // 先讀當前狀態再翻面，而不是讓列表把「目標狀態」傳進來：兩個分頁同時開著
+  // 列表時，畫面上的狀態可能已經過期，帶目標值會把別頁剛做的切換又蓋回去。
+  const { data: product } = await supabase
+    .from("sproutly_products")
+    .select("id, is_active")
+    .eq("id", productId)
+    .eq("merchant_id", store.id)
+    .maybeSingle();
+  if (!product) {
+    redirect(listUrl);
+  }
+
+  const { error } = await supabase
+    .from("sproutly_products")
+    .update({ is_active: !product.is_active })
+    .eq("id", productId)
+    .eq("merchant_id", store.id);
+
+  if (error) {
+    redirect(
+      `/dashboard/stores/${slug}/products?error=` +
+        encodeURIComponent(error.message)
+    );
+  }
+
+  redirect(listUrl);
+}
+
 export async function deleteProduct(slug: string, productId: string) {
   const { supabase, store } = await authorizedStore(slug);
 
