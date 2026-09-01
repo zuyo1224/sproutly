@@ -155,6 +155,7 @@ type EditorTheme = {
     heroMinimalPadding: "compact" | "normal" | "spacious";
     heroMinimalPaddingMobile: "same" | "compact" | "normal" | "spacious";
     heroMinimalPadX: "narrow" | "normal" | "wide";
+    heroMinimalPadXMobile: "same" | "narrow" | "normal" | "wide";
     heroMinimalRule: "none" | "short" | "normal" | "long";
     heroMinimalRuleColor: string | null;
     heroMinimalAlign: "left" | "center" | "right";
@@ -1126,6 +1127,7 @@ export function EditorWorkspace({
           heroMinimalPadding: t.layout.heroMinimalPadding,
           heroMinimalPaddingMobile: t.layout.heroMinimalPaddingMobile,
           heroMinimalPadX: t.layout.heroMinimalPadX,
+          heroMinimalPadXMobile: t.layout.heroMinimalPadXMobile,
           heroMinimalRule: t.layout.heroMinimalRule,
           heroMinimalRuleColor: t.layout.heroMinimalRuleColor,
           heroMinimalAlign: t.layout.heroMinimalAlign,
@@ -4047,6 +4049,38 @@ export function EditorWorkspace({
                   「排多寬」那格給的是上限，電腦上才碰得到；手機螢幕比最窄那檔還窄，字離
                   螢幕邊多遠其實只由這格決定。窄是字幾乎貼到邊的那種大版面，寬是四周留一
                   大片白、中間一小團字的那種。整段連同短橫線、按鈕一起移，不會有一層對不齊
+                </p>
+              </Field>
+            )}
+            {theme.layout.heroStyle === "minimal" && (
+              <Field label="手機上離螢幕邊多遠">
+                <div className="grid grid-cols-2 gap-1.5">
+                  {([
+                    { v: "same", label: "跟桌機一樣" },
+                    { v: "narrow", label: "窄" },
+                    { v: "normal", label: "跟預設" },
+                    { v: "wide", label: "寬" },
+                  ] as const).map((opt) => (
+                    <button
+                      key={opt.v}
+                      type="button"
+                      onClick={() => updateLayout({ heroMinimalPadXMobile: opt.v })}
+                      aria-pressed={theme.layout.heroMinimalPadXMobile === opt.v}
+                      className={`rounded-lg border py-2 text-xs transition ${
+                        theme.layout.heroMinimalPadXMobile === opt.v
+                          ? "border-emerald-500 bg-emerald-50 text-emerald-900"
+                          : "border-stone-200 text-stone-600 hover:border-stone-400"
+                      }`}
+                    >
+                      {opt.label}
+                    </button>
+                  ))}
+                </div>
+                <p className="text-[10px] text-stone-500 mt-1">
+                  上面那格一按，手機跟電腦一起動。但這兩種螢幕要的其實不一樣：電腦上留一
+                  大片白很好看，同一份留白搬到手機，一行字被擠成三行、每行只剩五六個字。
+                  想電腦留白、手機收緊的店在這裡選窄；跟桌機一樣就照上面那格走。切到手機
+                  預覽看
                 </p>
               </Field>
             )}

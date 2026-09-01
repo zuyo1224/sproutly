@@ -778,6 +778,14 @@ export interface StoreTheme {
     //   normal  不覆寫（吃原本的 px-6 = 1.5rem）
     //   wide    clamp(2.5rem, 9vw, 6rem)
     heroMinimalPadX: "narrow" | "normal" | "wide"; // minimal 左右內距（預設 normal = 不覆寫）
+    // 上面那格的手機專用格。上面那格是裡層那個 div 的 inline padding，一寫手機桌機
+    // 一起蓋，手機插不進去；改成在 section 掛 attribute、規則寫在 layout.tsx 的 767px
+    // media query 裡（帶 !important 才蓋得掉 inline）。
+    //   same    不掛 attribute（跟上面那格走）
+    //   narrow  0.6rem（= 上面那格的 clamp 在手機寬度算出來的值）
+    //   normal  1.5rem（= 原本的 px-6）
+    //   wide    2.5rem（= 上面那格的 clamp 在手機寬度算出來的值）
+    heroMinimalPadXMobile: "same" | "narrow" | "normal" | "wide"; // minimal 左右內距（手機）（預設 same = 跟上面那格）
     // minimal 版型主標與按鈕之間那條短橫線。這個版型只有一段字，那條線是它唯一的
     // 圖形——它在做的是把上面的字跟下面的按鈕斷開，順便告訴人「這裡還沒完，往下有東西」。
     // 長度與顏色原本都寫死（48px、全站主色壓到半透明）。48px 是配「一行大主標」挑的，
@@ -1603,6 +1611,11 @@ function resolveLayout(raw: unknown): StoreTheme["layout"] {
       const v = l.heroMinimalPadX;
       if (v === "narrow" || v === "wide") return v;
       return "normal" as const;
+    })(),
+    heroMinimalPadXMobile: (() => {
+      const v = l.heroMinimalPadXMobile;
+      if (v === "narrow" || v === "normal" || v === "wide") return v;
+      return "same" as const;
     })(),
     heroMinimalRule: (() => {
       const v = l.heroMinimalRule;

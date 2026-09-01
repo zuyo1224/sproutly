@@ -2934,8 +2934,16 @@ export default async function StoreHomePage({
               {...(theme.layout.heroMinimalPaddingMobile !== "same"
                 ? { "data-hero-minimal-padding-mobile": theme.layout.heroMinimalPaddingMobile }
                 : {})}
+              // 「這段字離螢幕邊多遠」的手機那一格（heroMinimalPadXMobile）。上面那格是
+              // 裡層那個 div 的 inline padding，手機插不進去，同樣改成掛 attribute、
+              // 規則寫在 layout.tsx；attribute 掛在 section、規則再用後代選擇器指到裡層
+              // 那個 div。跟上面那格一樣就不掛，整條規則不存在，既有店家算出來一模一樣。
+              {...(theme.layout.heroMinimalPadXMobile !== "same"
+                ? { "data-hero-minimal-pad-x-mobile": theme.layout.heroMinimalPadXMobile }
+                : {})}
             >
               <div
+                data-hero-minimal-inner
                 className="max-w-3xl mx-auto px-6 text-center"
                 style={{ ...minimalWidthStyle, ...minimalPadXStyle, ...minimalAlignStyle }}
               >

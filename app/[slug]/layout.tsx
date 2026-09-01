@@ -2033,6 +2033,30 @@ export default async function PublicStoreLayout({
           }
         }
 
+        /* minimal 版型「這段字離螢幕邊多遠」的手機那一格（heroMinimalPadXMobile）。桌機
+           那格是公開頁裡層那個 div 的 inline paddingLeft / paddingRight，一寫手機桌機
+           一起蓋，手機那格插不進去；attribute 掛在外面的 section（inline style 在裡層，
+           掛不上去），這裡再用後代選擇器指回那個 div。帶 !important 是因為要贏的就是它
+           自己的 inline padding。
+           斷點用 767px：跟上下留白那格不同，這格原本是寫死的 px-6、沒有 sm 換檔，
+           不必跟 640 對齊，跟別處那幾組手機格（主標字級、雜誌版型間距）同一條線就好。
+           三個值是桌機那三檔的 clamp 在手機寬度算出來的數，同一把尺。
+           跟上面那格一樣 = 不掛 attribute，整組規則不存在，既有店家一個 px 都不動。 */
+        @media (max-width: 767px) {
+          section[data-hero-minimal-pad-x-mobile="narrow"] [data-hero-minimal-inner] {
+            padding-left: 0.6rem !important;
+            padding-right: 0.6rem !important;
+          }
+          section[data-hero-minimal-pad-x-mobile="normal"] [data-hero-minimal-inner] {
+            padding-left: 1.5rem !important;
+            padding-right: 1.5rem !important;
+          }
+          section[data-hero-minimal-pad-x-mobile="wide"] [data-hero-minimal-inner] {
+            padding-left: 2.5rem !important;
+            padding-right: 2.5rem !important;
+          }
+        }
+
         /* 主標字級的手機那一格（heroTaglineFontScaleMobile）。桌機那格動過 slider 時是
            h1 上的 inline fontSize，media query 插不進 inline，所以手機的值由公開頁算好
            clamp、塞進同一顆 h1 的 --hero-tagline-fs-m，這裡只負責在 767px 以下拿出來套。
