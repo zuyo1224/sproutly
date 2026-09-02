@@ -1564,6 +1564,35 @@ export default async function PublicStoreLayout({
           }
         }
 
+        /* 來坐坐那段的內距：跟引言卡同一個處境——整段就一塊資訊（地址、營業時間、電話
+           email、地圖疊成一直排），共用那組 8 / 14 / 22px 是照一列三四張的小卡挑的，套上去
+           會變成一整欄字四邊各貼著框 14px。所以這一段也另外接一組，三檔對應同樣那三顆
+           按鈕（收緊 / 跟預設 / 放寬），手機與 640px 以上各一份。
+           比引言卡收一點（那張卡中間只有一句大字，四周需要很多空；這塊是一疊要讀的資訊，
+           留太多會把地圖推到很下面）。三檔都寫的理由跟引言卡一樣：共用那組的收緊 / 放寬
+           多帶一個屬性選擇器、分量比較重，只寫基準會被壓回 8px。圓角照共用那組走。 */
+        section[data-edit-target][data-card-surface] .sproutly-visit-card {
+          padding: 2.5rem 1.75rem;
+        }
+        section[data-edit-target][data-card-surface][data-card-padding="tight"] .sproutly-visit-card {
+          padding: 1.5rem 1.25rem;
+        }
+        section[data-edit-target][data-card-surface][data-card-padding="loose"] .sproutly-visit-card {
+          padding: 4rem 2.75rem;
+        }
+        @media (min-width: 640px) {
+          section[data-edit-target][data-card-surface] .sproutly-visit-card {
+            padding: 3.5rem 3rem;
+          }
+          section[data-edit-target][data-card-surface][data-card-padding="tight"] .sproutly-visit-card {
+            padding: 2.25rem 2rem;
+          }
+          section[data-edit-target][data-card-surface][data-card-padding="loose"] .sproutly-visit-card {
+            padding: 5rem 4rem;
+          }
+        }
+
+
         /* 卡片圓角：editor 各 section panel「卡片圓角」三按鈕（直角 / 跟內距走 / 更圓），
            跟內距一樣設了底或框之後才長出來。上面那兩組把圓角綁在內距上，商家想單獨動
            四個角時只能靠改內距換——走硬邊排版的店要的是完全直角（收到最緊還是 8px 的圓），

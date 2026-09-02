@@ -5092,6 +5092,15 @@ export default async function StoreHomePage({
             data-content-align={visitStyle.contentAlignVal}
             data-hide-on={visitStyle.hideOnVal}
             data-media-radius={visitStyle.mediaRadiusVal}
+            data-card-hover={visitStyle.cardHoverVal}
+            data-card-surface={visitStyle.cardSurfaceVal}
+            data-card-padding={visitStyle.cardPaddingVal}
+            data-card-radius={visitStyle.cardRadiusVal}
+            data-card-shadow={visitStyle.cardShadowVal}
+            data-card-border-weight={visitStyle.cardBorderWeightVal}
+            data-card-border-tone={visitStyle.cardBorderToneVal}
+            data-card-border-style={visitStyle.cardBorderStyleVal}
+            data-card-panel-tone={visitStyle.cardPanelToneVal}
           >
             <div
               data-edit-drag={FREE_POS_KEYS.visitCard}
@@ -5114,121 +5123,134 @@ export default async function StoreHomePage({
                   : { textAlign: visitStyle.align }
               }
             >
-              <p
-                data-edit-text
-                data-edit-field="visitEyebrow"
-                className="sproutly-section-eyebrow text-[10px] tracking-[0.4em] uppercase mb-5"
-                style={{ color: eyebrowColor }}
-              >
-                {visitEyebrow}
-              </p>
-              <h2
-                data-edit-text
-                data-edit-field="visitTitle"
-                className="text-2xl sm:text-3xl md:text-4xl mb-4"
-                style={{
-                  color: "var(--store-heading-color, var(--store-text))",
-                  fontFamily: "var(--store-font)",
-                  fontWeight: "var(--heading-weight, 400)",
-                  letterSpacing: "var(--store-heading-track, var(--store-track, -0.01em))",
-                  lineHeight: "var(--heading-leading, 1.2)",
-                }}
-              >
-                {visitTitle}
-              </h2>
-              <div
-                className={`${visitDivider} mb-12`}
-                style={{
-                  width: "32px",
-                  height: "1px",
-                  background: accentColor,
-                  opacity: 0.5,
-                }}
-              />
-              {storeAddress && storeMapsHref && (
-                // 地址做成可點連結，手機點下去直接開地圖 App 帶導航，客人不用自己複製貼上。
-                // 跟聯絡頁的地址一致（contact/page.tsx），別讓兩頁一個能點一個不能點。
-                <a
-                  href={storeMapsHref}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="group inline-block hover:opacity-80 transition"
+              {/* 這一段沒有卡片可言：來坐坐的地址、營業時間、電話 email、地圖全部
+                  直接排在段落底上，沒有底也沒有框。所以「卡片外觀」那組七格對它從頭到尾
+                  是死的——編輯器右邊那四排按鈕按得動，畫面上什麼都不會變。其他段（商品、
+                  選集、慢讀區、數字、合作 logo、客人的話、常見問題、店家那句話）都接完了，
+                  這是最後一段。做法跟店家那句話那段（6c3f245）一樣：把整塊資訊包進一個
+                  .sproutly-card-box，商家一設底或框，這塊資訊就收成一張卡。
+                  拖動那層（外面那個 div）不動，卡片包在它裡面——那層在自由定位時帶著
+                  inline 的 padding，inline 壓得過任何規則，卡片內距那三顆按鈕會整組失效。
+                  不掛 .sproutly-card 的理由跟前幾段一樣：那個 class 帶著一組沒 attribute
+                  擋著的商品卡滑過動作（品名字距撐開、副文字變濃），套在店家資訊上會抖。
+                  沒設外觀就沒 attribute、整組規則不存在，這個 div 是裸的，既有店家逐像素不變。 */}
+              <div className="sproutly-card-box sproutly-visit-card">
+                <p
+                  data-edit-text
+                  data-edit-field="visitEyebrow"
+                  className="sproutly-section-eyebrow text-[10px] tracking-[0.4em] uppercase mb-5"
+                  style={{ color: eyebrowColor }}
                 >
-                  <span
-                    className="text-base leading-loose border-b border-current pb-0.5"
-                    style={{ color: "var(--store-text)" }}
-                  >
-                    {storeAddress}
-                  </span>
-                  <span
-                    className="block mt-3 text-[10px] tracking-[0.3em] uppercase"
-                    style={{ color: accentColor }}
-                  >
-                    開啟地圖導航 →
-                  </span>
-                </a>
-              )}
-              {businessHoursText && (
-                <div
-                  className="mt-4 text-sm whitespace-pre-line leading-loose"
-                  style={{ color: "var(--store-text-muted)" }}
-                >
-                  {businessHoursText}
-                </div>
-              )}
-              {(store.contact_phone || store.contact_email) && (
-                <div
-                  className={`mt-10 flex ${visitContactJustify} gap-8 text-sm tracking-wider`}
-                  style={{ color: "var(--store-text)" }}
-                >
-                  {/* 清得出乾淨目標（storePhone=telDigits、storeEmail=cleanEmail，上方結構化
-                      資料已算好）才掛 tel:／mailto: 連結；商家填「問我」這種非號碼／非 email 時
-                      telHref／mailHref 會退成陽春 "tel:"／"mailto:" 的死連結，這裡改成純文字
-                      顯示，字仍露出但不給客人一個點了沒用的連結。同 mapsHref／socialUrl 防呆線。 */}
-                  {store.contact_phone && (
-                    storePhone ? (
-                      <a
-                        href={telHref(store.contact_phone)}
-                        className="border-b border-current pb-0.5 hover:opacity-70 transition"
-                      >
-                        {store.contact_phone}
-                      </a>
-                    ) : (
-                      <span className="pb-0.5">{store.contact_phone}</span>
-                    )
-                  )}
-                  {store.contact_email && (
-                    storeEmail ? (
-                      <a
-                        href={mailHref(store.contact_email)}
-                        className="border-b border-current pb-0.5 hover:opacity-70 transition"
-                      >
-                        {store.contact_email}
-                      </a>
-                    ) : (
-                      <span className="pb-0.5">{store.contact_email}</span>
-                    )
-                  )}
-                </div>
-              )}
-              {theme.layout.mapEmbedUrl && (
-                <div
-                  className="mt-12 rounded-sm overflow-hidden border"
+                  {visitEyebrow}
+                </p>
+                <h2
+                  data-edit-text
+                  data-edit-field="visitTitle"
+                  className="text-2xl sm:text-3xl md:text-4xl mb-4"
                   style={{
-                    borderColor: theme.border,
-                    boxShadow: "var(--sproutly-elev-2)",
+                    color: "var(--store-heading-color, var(--store-text))",
+                    fontFamily: "var(--store-font)",
+                    fontWeight: "var(--heading-weight, 400)",
+                    letterSpacing: "var(--store-heading-track, var(--store-track, -0.01em))",
+                    lineHeight: "var(--heading-leading, 1.2)",
                   }}
                 >
-                  <iframe
-                    src={theme.layout.mapEmbedUrl}
-                    title="店面地圖"
-                    loading="lazy"
-                    referrerPolicy="no-referrer-when-downgrade"
-                    className="w-full aspect-[16/10] block"
-                    allowFullScreen
-                  />
-                </div>
-              )}
+                  {visitTitle}
+                </h2>
+                <div
+                  className={`${visitDivider} mb-12`}
+                  style={{
+                    width: "32px",
+                    height: "1px",
+                    background: accentColor,
+                    opacity: 0.5,
+                  }}
+                />
+                {storeAddress && storeMapsHref && (
+                  // 地址做成可點連結，手機點下去直接開地圖 App 帶導航，客人不用自己複製貼上。
+                  // 跟聯絡頁的地址一致（contact/page.tsx），別讓兩頁一個能點一個不能點。
+                  <a
+                    href={storeMapsHref}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="group inline-block hover:opacity-80 transition"
+                  >
+                    <span
+                      className="text-base leading-loose border-b border-current pb-0.5"
+                      style={{ color: "var(--store-text)" }}
+                    >
+                      {storeAddress}
+                    </span>
+                    <span
+                      className="block mt-3 text-[10px] tracking-[0.3em] uppercase"
+                      style={{ color: accentColor }}
+                    >
+                      開啟地圖導航 →
+                    </span>
+                  </a>
+                )}
+                {businessHoursText && (
+                  <div
+                    className="mt-4 text-sm whitespace-pre-line leading-loose"
+                    style={{ color: "var(--store-text-muted)" }}
+                  >
+                    {businessHoursText}
+                  </div>
+                )}
+                {(store.contact_phone || store.contact_email) && (
+                  <div
+                    className={`mt-10 flex ${visitContactJustify} gap-8 text-sm tracking-wider`}
+                    style={{ color: "var(--store-text)" }}
+                  >
+                    {/* 清得出乾淨目標（storePhone=telDigits、storeEmail=cleanEmail，上方結構化
+                        資料已算好）才掛 tel:／mailto: 連結；商家填「問我」這種非號碼／非 email 時
+                        telHref／mailHref 會退成陽春 "tel:"／"mailto:" 的死連結，這裡改成純文字
+                        顯示，字仍露出但不給客人一個點了沒用的連結。同 mapsHref／socialUrl 防呆線。 */}
+                    {store.contact_phone && (
+                      storePhone ? (
+                        <a
+                          href={telHref(store.contact_phone)}
+                          className="border-b border-current pb-0.5 hover:opacity-70 transition"
+                        >
+                          {store.contact_phone}
+                        </a>
+                      ) : (
+                        <span className="pb-0.5">{store.contact_phone}</span>
+                      )
+                    )}
+                    {store.contact_email && (
+                      storeEmail ? (
+                        <a
+                          href={mailHref(store.contact_email)}
+                          className="border-b border-current pb-0.5 hover:opacity-70 transition"
+                        >
+                          {store.contact_email}
+                        </a>
+                      ) : (
+                        <span className="pb-0.5">{store.contact_email}</span>
+                      )
+                    )}
+                  </div>
+                )}
+                {theme.layout.mapEmbedUrl && (
+                  <div
+                    className="mt-12 rounded-sm overflow-hidden border"
+                    style={{
+                      borderColor: theme.border,
+                      boxShadow: "var(--sproutly-elev-2)",
+                    }}
+                  >
+                    <iframe
+                      src={theme.layout.mapEmbedUrl}
+                      title="店面地圖"
+                      loading="lazy"
+                      referrerPolicy="no-referrer-when-downgrade"
+                      className="w-full aspect-[16/10] block"
+                      allowFullScreen
+                    />
+                  </div>
+                )}
+              </div>
             </div>
           </section>
           );
