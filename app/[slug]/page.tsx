@@ -3833,6 +3833,16 @@ export default async function StoreHomePage({
               : promiseStyle.align === "left"
               ? "mr-auto"
               : "mx-auto";
+          // 「卡片外觀」那組七格（底 / 框 / 內距 / 圓角 / 陰影 / 框線三格 / 底色深淺）接進
+          // 這一段。這段只有中間那一張引言卡，而它的底、框、陰影、內距、圓角五個值原本
+          // 全部寫死在下面那個 figure 的 inline style 與 Tailwind class 上——inline 壓得過
+          // 任何規則，編輯器右邊那四排按鈕按得動、畫面一動也不動，等於一整組死的控制。
+          // 跟客人的話那段（fe4006a）同一個處境同一個解法：五個值原樣搬進 layout.tsx 的
+          // .sproutly-promise-card，figure 掛 .sproutly-card-box，這裡接既有的
+          // sectionStyleFor 欄位發 attribute，沒新增 schema 欄位、actions.ts 不用動。
+          // 不掛 .sproutly-card 的理由也一樣：那個 class 還帶著一組沒 attribute 擋著的
+          // 商品卡滑過動作（品名字距撐開、副文字變濃），套在一句店家的話上會開始抖。
+          // 沒設外觀就沒 attribute，既有店家逐像素不變。
           return (
           <section
             className={`relative py-40 sm:py-56 ${animClass} ${promisePos ? "min-h-screen" : ""}`}
@@ -3861,6 +3871,15 @@ export default async function StoreHomePage({
             data-content-align={promiseStyle.contentAlignVal}
             data-hide-on={promiseStyle.hideOnVal}
             data-media-radius={promiseStyle.mediaRadiusVal}
+            data-card-hover={promiseStyle.cardHoverVal}
+            data-card-surface={promiseStyle.cardSurfaceVal}
+            data-card-padding={promiseStyle.cardPaddingVal}
+            data-card-radius={promiseStyle.cardRadiusVal}
+            data-card-shadow={promiseStyle.cardShadowVal}
+            data-card-border-weight={promiseStyle.cardBorderWeightVal}
+            data-card-border-tone={promiseStyle.cardBorderToneVal}
+            data-card-border-style={promiseStyle.cardBorderStyleVal}
+            data-card-panel-tone={promiseStyle.cardPanelToneVal}
           >
             <div
               className={
@@ -3883,12 +3902,7 @@ export default async function StoreHomePage({
               }
             >
               <figure
-                className="relative px-8 py-16 sm:px-16 sm:py-24 text-center rounded-sm"
-                style={{
-                  background: theme.surface,
-                  boxShadow: "var(--sproutly-elev-3)",
-                  border: `1px solid ${theme.border}`,
-                }}
+                className="sproutly-card-box sproutly-promise-card relative text-center"
               >
                 {/* 大引號 visual */}
                 <span

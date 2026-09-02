@@ -1402,6 +1402,37 @@ export default async function PublicStoreLayout({
           box-shadow: none;
         }
 
+        /* Promise 那段中間那張引言卡：跟上面客人的話那段同一個毛病，底、框、陰影、內距、
+           圓角五個值原本寫死在 page.tsx 那個 <figure> 上（background: theme.surface /
+           1px solid theme.border / elev-3 / px-8 py-16 sm:px-16 sm:py-24 / rounded-sm），
+           所以「卡片外觀」那組七格對這一段完全沒反應。五個值原樣搬進這兩條，
+           --store-surface 與 --store-border 就是 theme.surface 與 theme.border（見
+           _theme.ts 那份變數表），商家沒設外觀時算出來逐像素一樣。
+           內距不留在 class 上是因為 Tailwind 的 px-8 那組跟這一條一樣重（都是一個 class），
+           誰贏要看兩份樣式表誰排在後面——搬進來才確定得下來。 */
+        .sproutly-promise-card {
+          padding: 4rem 2rem;
+          border-radius: 2px;
+          background: var(--store-surface, #ffffff);
+          border: 1px solid var(--store-border, rgba(0,0,0,0.12));
+          box-shadow: var(--sproutly-elev-3);
+        }
+        @media (min-width: 640px) {
+          .sproutly-promise-card {
+            padding: 6rem 4rem;
+          }
+        }
+        /* 商家一設外觀就把原本那身打扮收掉，理由跟引言卡那條一樣：不收的話「一圈細框」
+           會變兩圈框、「淡底色」會變底＋框＋陰影，選「陰影：無」拿掉的也不是他看到的
+           那一層。內距不在這裡收——那組給的 8 / 14 / 22px 是照一列三四張的小卡挑的，
+           套在這張佔滿一整段、中間一句大字的卡上會變成字貼著框；另外拿一組尺寸接，
+           寫在那組後面（見底下「引言卡的內距」）。 */
+        section[data-edit-target][data-card-surface] .sproutly-promise-card {
+          background: transparent;
+          border: none;
+          box-shadow: none;
+        }
+
         /* 常見問題那段的每一題：原本是一條一條的橫線把題目隔開（每題上面一條、最後一題
            下面再補一條），線的顏色寫在 page.tsx 每個 li 的 inline style 上。跟引言卡同一
            個毛病——inline 壓得過任何規則，商家按「一圈細框」時框的顏色會被那個 inline 的
@@ -1502,6 +1533,35 @@ export default async function PublicStoreLayout({
         section[data-edit-target][data-card-surface][data-card-padding="loose"] :is(.sproutly-card,.sproutly-card-box) {
           padding: 22px;
           border-radius: 22px;
+        }
+
+        /* 引言卡的內距：Promise 那段只有一張卡，佔滿整段的寬、中間一句大字，上面那組的
+           8 / 14 / 22px 是照一列三四張的小卡挑的，套上去會變成一句大字四邊各貼著框 14px，
+           而且那兩個大引號是釘在卡片左上、右下各 2rem 的位置，內距一收就直接壓到字上。
+           所以這一段另外接一組尺寸，三檔對應同樣那三顆按鈕（收緊 / 跟預設 / 放寬），
+           手機與 640px 以上各一份（原本那張卡就是 2rem→4rem 這樣長的）。
+           三檔都寫是因為分量算法：上面那組的收緊 / 放寬帶了兩個屬性選擇器，比這裡只帶
+           一個的基準重，只寫基準的話商家一按收緊還是會掉回 8px。同樣重的就靠排在後面贏。
+           圓角照上面那組走，不另外接——一整塊大板子的四個角本來就該跟其他段的卡片同口徑。 */
+        section[data-edit-target][data-card-surface] .sproutly-promise-card {
+          padding: 4rem 2rem;
+        }
+        section[data-edit-target][data-card-surface][data-card-padding="tight"] .sproutly-promise-card {
+          padding: 2.5rem 1.5rem;
+        }
+        section[data-edit-target][data-card-surface][data-card-padding="loose"] .sproutly-promise-card {
+          padding: 5.5rem 3rem;
+        }
+        @media (min-width: 640px) {
+          section[data-edit-target][data-card-surface] .sproutly-promise-card {
+            padding: 6rem 4rem;
+          }
+          section[data-edit-target][data-card-surface][data-card-padding="tight"] .sproutly-promise-card {
+            padding: 3.5rem 2.5rem;
+          }
+          section[data-edit-target][data-card-surface][data-card-padding="loose"] .sproutly-promise-card {
+            padding: 8rem 5.5rem;
+          }
         }
 
         /* 卡片圓角：editor 各 section panel「卡片圓角」三按鈕（直角 / 跟內距走 / 更圓），
