@@ -4039,6 +4039,15 @@ export default async function StoreHomePage({
               data-media-radius={testimonialsStyle.mediaRadiusVal}
               data-grid-gap={testimonialsStyle.gridGapVal}
               data-mobile-cols={testimonialsStyle.mobileColumnsVal}
+              data-card-hover={testimonialsStyle.cardHoverVal}
+              data-card-surface={testimonialsStyle.cardSurfaceVal}
+              data-card-padding={testimonialsStyle.cardPaddingVal}
+              data-card-radius={testimonialsStyle.cardRadiusVal}
+              data-card-shadow={testimonialsStyle.cardShadowVal}
+              data-card-border-weight={testimonialsStyle.cardBorderWeightVal}
+              data-card-border-tone={testimonialsStyle.cardBorderToneVal}
+              data-card-border-style={testimonialsStyle.cardBorderStyleVal}
+              data-card-panel-tone={testimonialsStyle.cardPanelToneVal}
               data-card-title-scale={testimonialsStyle.cardTitleScaleVal}
               data-card-title-weight={testimonialsStyle.cardTitleWeightVal}
               data-card-title-leading={testimonialsStyle.cardTitleLeadingVal}
@@ -4146,14 +4155,19 @@ export default async function StoreHomePage({
                   : "md:grid-cols-3"
                 }`}>
                   {theme.layout.testimonials.slice(0, 6).map((t, i) => (
+                    // 這一格是「卡片外觀」那組七格要套的方塊（底 / 框 / 內距 / 圓角 /
+                    // 陰影 / 框線三格 / 底色深淺）。這段本來就長得像卡片，但那張卡的底、
+                    // 框、陰影、內距、圓角是寫死在 inline style 上的（inline 壓得過任何
+                    // 規則），編輯器那幾排按鈕對這一段按得動、畫面一動也不動。
+                    // 五個值原樣搬進 layout.tsx 的 .sproutly-quote-card，商家沒設外觀時
+                    // 算出來跟原本逐像素一樣（--store-bg / --store-border 就是 theme.bg
+                    // 與 theme.border，見 _theme.ts）。
+                    // 掛的是 card-box 不是 .sproutly-card——那個 class 還帶著一批沒有
+                    // attribute 擋著的商品卡動作（滑過時品名字距撐開、副文字變濃），這裡
+                    // 的品名是留言的人、描述是那段話，滑過去開始抖不是商家要的東西。
                     <figure
                       key={i}
-                      className="relative p-8 rounded-sm"
-                      style={{
-                        background: theme.bg,
-                        boxShadow: "var(--sproutly-elev-2)",
-                        border: `1px solid ${theme.border}`,
-                      }}
+                      className="sproutly-card-box sproutly-quote-card relative"
                     >
                       <span
                         aria-hidden="true"

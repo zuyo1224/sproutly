@@ -1373,6 +1373,35 @@ export default async function PublicStoreLayout({
           text-align: right;
         }
 
+        /* 客人的話那段的引言卡：底、框、陰影、內距、圓角原本是寫死在 page.tsx 那個
+           <figure> 的 inline style 上（background: theme.bg / 1px solid theme.border /
+           elev-2 / p-8 / rounded-sm）。inline 壓得過任何規則，所以「卡片外觀」那組七格
+           對這一段是完全沒反應的——編輯器裡四排按鈕按得動，畫面一動也不動，商家會以為
+           功能壞了。五個值原樣搬進這一條，--store-bg 與 --store-border 就是 theme.bg 與
+           theme.border（見 _theme.ts 那份變數表），商家沒設外觀時算出來逐像素一樣。
+           這段跟數字段、合作段不一樣的地方是它本來就長得像一張卡，所以多需要下面那條
+           歸零：商家按「淡底色」時要的是那一檔的底，而不是原本那圈框跟陰影再加一層底。 */
+        .sproutly-quote-card {
+          padding: 2rem;
+          border-radius: 2px;
+          background: var(--store-bg, #ffffff);
+          border: 1px solid var(--store-border, rgba(0,0,0,0.12));
+          box-shadow: var(--sproutly-elev-2);
+        }
+        /* 商家一設外觀就把原本那身打扮收掉，剩下的交給底下那一整組（底 / 框 / 內距 /
+           圓角 / 陰影 / 框線三格 / 底色深淺）——不收的話「一圈細框」會變成兩圈框（原本的
+           實色框加上新的淡色框）、「淡底色」會變成底＋框＋陰影，而選「陰影：無」的商家
+           拿掉的也不是他看到的那層。這一條的分量跟底下那組一樣重（都是
+           section[data-edit-target][data-card-surface] 加一個 class），靠排在它們前面
+           讓每一格各自蓋回自己那個屬性，沒被蓋到的就維持歸零後的樣子。
+           內距與圓角跟著回到那組的 14px：引言卡原本的 32px 是照這一段自己挑的，商家要
+           寬一點按「卡片內距：放寬」（22px）。 */
+        section[data-edit-target][data-card-surface] .sproutly-quote-card {
+          background: transparent;
+          border: none;
+          box-shadow: none;
+        }
+
         /* 卡片外觀：editor 各 section panel「卡片外觀」三按鈕（原樣 / 面板 / 外框）。
            站上的卡片一律是「照片 + 底下裸著的幾行字」直接浮在段落底色上，卡片自己沒有
            邊界——那是雜誌感的排法，商品少、留白多的時候好看；但欄數調到 3、4 欄之後，
