@@ -1402,6 +1402,44 @@ export default async function PublicStoreLayout({
           box-shadow: none;
         }
 
+        /* 常見問題那段的每一題：原本是一條一條的橫線把題目隔開（每題上面一條、最後一題
+           下面再補一條），線的顏色寫在 page.tsx 每個 li 的 inline style 上。跟引言卡同一
+           個毛病——inline 壓得過任何規則，商家按「一圈細框」時框的顏色會被那個 inline 的
+           顏色蓋掉；線的粗細又是 Tailwind 的 border-t 給的，收不乾淨就會變成「一張卡的
+           上面還橫著一條線」。所以線原樣搬進這一條，--store-border 就是 theme.border
+           （見 _theme.ts 那份變數表），商家沒設外觀時算出來逐像素一樣。 */
+        .sproutly-faq-item {
+          border-top: 1px solid var(--store-border, rgba(0,0,0,0.12));
+        }
+        .sproutly-faq-item:last-child {
+          border-bottom: 1px solid var(--store-border, rgba(0,0,0,0.12));
+        }
+        /* 商家一設外觀就把那幾條線收掉，剩下的交給底下那一整組。這條的分量壓得過上面
+           那兩條，也排在底下那組前面，所以每一格照樣各自蓋回自己那個屬性。 */
+        section[data-edit-target][data-card-surface] .sproutly-faq-item {
+          border: none;
+        }
+        /* 一題一張卡之後題跟題之間要留一截：原本是靠共用一條線接在一起的清單，卡片黏在
+           一起會變成一整塊分不出幾題。10px 是「看得出是分開的兩張、又還讀得出是同一組」
+           的距離，比段落自己的「卡片間距」小一號——那格調的是左右分欄的卡片，這段是直
+           著疊的。 */
+        section[data-edit-target][data-card-surface] .sproutly-faq-item + .sproutly-faq-item {
+          margin-top: 10px;
+        }
+        /* 題目那行原本上下各留 24px，是給客人點的範圍（整行都可以點開）。套上卡片之後
+           卡片自己那圈內距（14 / 8 / 22px）加在外面，兩個疊起來一題會胖到 76px 以上，
+           一整段拉得老長。收成 10px，加上卡片內距仍有 24px 以上可以點，手指按得到。
+           答案那段底下的留白同理跟著收，右邊那 32px 是原本讓字不要頂到加號的，卡片內距
+           已經接手，收成 8px。 */
+        section[data-edit-target][data-card-surface] .sproutly-faq-item .sproutly-faq-q {
+          padding-top: 10px;
+          padding-bottom: 10px;
+        }
+        section[data-edit-target][data-card-surface] .sproutly-faq-item .sproutly-faq-a {
+          padding-bottom: 10px;
+          padding-right: 8px;
+        }
+
         /* 卡片外觀：editor 各 section panel「卡片外觀」三按鈕（原樣 / 面板 / 外框）。
            站上的卡片一律是「照片 + 底下裸著的幾行字」直接浮在段落底色上，卡片自己沒有
            邊界——那是雜誌感的排法，商品少、留白多的時候好看；但欄數調到 3、4 欄之後，

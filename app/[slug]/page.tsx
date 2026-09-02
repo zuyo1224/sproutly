@@ -4298,6 +4298,15 @@ export default async function StoreHomePage({
               data-card-desc-leading={faqStyle.cardDescLeadingVal}
               data-card-desc-weight={faqStyle.cardDescWeightVal}
               data-card-desc-tracking={faqStyle.cardDescTrackingVal}
+              data-card-hover={faqStyle.cardHoverVal}
+              data-card-surface={faqStyle.cardSurfaceVal}
+              data-card-padding={faqStyle.cardPaddingVal}
+              data-card-radius={faqStyle.cardRadiusVal}
+              data-card-shadow={faqStyle.cardShadowVal}
+              data-card-border-weight={faqStyle.cardBorderWeightVal}
+              data-card-border-tone={faqStyle.cardBorderToneVal}
+              data-card-border-style={faqStyle.cardBorderStyleVal}
+              data-card-panel-tone={faqStyle.cardPanelToneVal}
             >
               <div
                 className="max-w-2xl mx-auto px-6 sm:px-12"
@@ -4379,13 +4388,21 @@ export default async function StoreHomePage({
                 </div>
                 )}
 
-                <ul className="divide-y" style={{ borderColor: theme.border }}>
+                {/* 隔開每一題的那幾條線搬進 layout.tsx 的 .sproutly-faq-item 了（原本是
+                    ul 的 divide-y 加 li 的 border-t / last:border-b，顏色寫在 inline）。
+                    搬的理由是「卡片外觀」那組七格：線的顏色掛在 inline 上會蓋掉商家按
+                    「一圈細框」時框的顏色，線的粗細掛在 class 上又收不乾淨，會變成卡片
+                    上面還橫著一條線。搬過去之後商家沒設外觀時算出來逐像素一樣。 */}
+                <ul>
                   {validFaqItems.map((item, i) => (
-                    <li
-                      key={i}
-                      style={{ borderColor: theme.border }}
-                      className="border-t last:border-b"
-                    >
+                    // 這一題就是「卡片外觀」那組七格要套的方塊（底 / 框 / 內距 / 圓角 /
+                    // 陰影 / 框線三格 / 底色深淺）。這段本來不是卡片、是一串靠橫線隔開的
+                    // 清單，題目一多就是一大片橫線，商家想讓每一題各自成一塊時原本沒有
+                    // 一格做得到——段落自己的「底色 / 外框 / 圓角 / 陰影」畫的是整段外圍。
+                    // 掛的是 card-box 不是 .sproutly-card，理由跟前幾段一樣：那個 class
+                    // 還帶著一批沒有 attribute 擋著的商品卡動作（滑過時品名字距撐開、
+                    // 副文字變濃），題目滑過去開始抖不是商家要的東西。
+                    <li key={i} className="sproutly-card-box sproutly-faq-item">
                       {/* 一進來攤開哪幾題：editor 常見問題 panel「一進來先攤開」三按鈕。
                           走 details 自己的 open 屬性、不繞 CSS——攤開與收起來要動的是元素
                           高度，用 CSS 只能做到把答案藏起來，客人點加號的時候那個展開就不會
@@ -4399,7 +4416,7 @@ export default async function StoreHomePage({
                         }
                       >
                         <summary
-                          className="flex items-center justify-between cursor-pointer py-6 list-none transition hover:opacity-80"
+                          className="sproutly-faq-q flex items-center justify-between cursor-pointer py-6 list-none transition hover:opacity-80"
                           style={{ color: "var(--store-text)" }}
                         >
                           <span
@@ -4432,7 +4449,7 @@ export default async function StoreHomePage({
                           data-edit-text
                           data-edit-field="faqAnswer"
                           data-edit-index={i}
-                          className="pb-7 pr-8 text-sm sm:text-base leading-[1.95]"
+                          className="sproutly-faq-a pb-7 pr-8 text-sm sm:text-base leading-[1.95]"
                           style={{ color: "var(--card-desc-color, var(--store-text-muted))" }}
                         >
                           {/* class 掛在每個段落上、不掛外面這層：「內文粗細 / 字距 / 大小」
