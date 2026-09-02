@@ -306,6 +306,16 @@ export interface StoreTheme {
     //    那組 data-body-weight）走的是段落內文，發不到 hero 這四個 <p> 上。
     //    只給 400 / 500 / 700（layout 載進來的三個字重），預設 normal 完全不覆寫。
     heroEyebrowWeight: "normal" | "medium" | "bold"; // 小標粗細（預設 normal = 不覆寫）
+    // 6. 行距。小標的字級、字距、顏色、大小寫、粗細五格補完之後，剩下的就是「這行字
+    //    換行時，上下兩行隔多遠」。四處 <p> 的 class 一個行距都沒寫，繼承的是最外層那個
+    //    1.5——那是給內文段落用的數字，而小標不是內文：它是一行 10px、字距撐到 0.4em 的
+    //    標籤。這件事平常看不出來，因為英文小標（NEW ARRIVALS）一行就放得下；中文小標
+    //    一旦長一點（「本月選物 · 春天的第一批」），手機上直接斷成兩行，1.5 配上 0.4em
+    //    的字距，兩行之間會鬆得像兩個不相干的標籤，而不是同一句話。
+    //    反過來把小標當落款、當年份用的商家會想要更鬆——一行字距很寬的小字，行距壓太緊
+    //    反而像疊在一起。base 只有 1.5 一個值（四處都一樣），所以這裡存絕對值：
+    //    收緊 1.2 / 舒展 2.0。預設不覆寫。
+    heroEyebrowLeading: "tight" | "normal" | "relaxed"; // 小標行距（預設 normal = 不覆寫）
     heroSubtitleFontScale: number;     // 副標字體 multiplier，0.6-1.8（預設 1.0）
     heroSubtitleColor: string | null;  // 副標顏色，hex；null = 用 theme.textMuted
     heroSubtitleAlign: "inherit" | "left" | "center" | "right"; // 副標對齊（inherit = 跟版型預設走，不覆寫）
@@ -445,6 +455,15 @@ export interface StoreTheme {
     // 「按鈕粗細」，套外層會讓這格連帶動到按鈕）。預設 normal = 繼承來的 400，沒設完全
     // 不覆寫、回 {}，既有店家的 byline 一個字都不會變。
     heroBylineWeight: "normal" | "medium" | "bold"; // byline 粗細（預設 normal = 不覆寫）
+    // byline 行距。字級、顏色、字距、大小寫、粗細五格都補完了，最後一個沒得動的是
+    // 換行後上下兩行的距離。那個 span 自己什麼都沒寫，行距是從最外層繼承的 1.5，
+    // 跟小標同一個出處、同一個問題：那是內文段落的數字，套在 10px 配 0.32em 字距的
+    // 一行落款上偏鬆。而 byline 比小標更容易換行——它是商家自己打的一句話
+    //（「由 XX 選件」「攝影 王小明」），雜誌版型那行左邊還要跟右邊的按鈕分掉寬度，
+    // 手機上兩行是常態。收緊會讓那兩行結成一塊像印章，舒展則讓它散開像頁尾註記。
+    // 跟小標同一組數字（收緊 1.2 / 舒展 2.0），一樣只套 byline 那個 span、不套外層
+    // 那條 flex（右邊的 CTA 有自己的幾格）。預設不覆寫。
+    heroBylineLeading: "tight" | "normal" | "relaxed"; // byline 行距（預設 normal = 不覆寫）
     // split 版型的圖文比例。原本寫死 md:grid-cols-2（50:50），而 50:50 只有在「圖是方的、
     // 文字只有一行主標」時才剛好；商家實際放的圖多半是直式商品照（左半被裁掉一大塊），
     // 或者反過來主標加副標加兩顆按鈕塞不進右半那欄、字級一大就開始換行成四五行。
@@ -1411,6 +1430,11 @@ function resolveLayout(raw: unknown): StoreTheme["layout"] {
       if (v === "normal" || v === "medium" || v === "bold") return v;
       return "normal" as const;
     })(),
+    heroEyebrowLeading: (() => {
+      const v = l.heroEyebrowLeading;
+      if (v === "tight" || v === "normal" || v === "relaxed") return v;
+      return "normal" as const;
+    })(),
     heroSubtitleFontScale: (() => {
       const v = l.heroSubtitleFontScale;
       if (typeof v !== "number" || !Number.isFinite(v)) return 1.0;
@@ -1478,6 +1502,11 @@ function resolveLayout(raw: unknown): StoreTheme["layout"] {
     heroBylineWeight: (() => {
       const v = l.heroBylineWeight;
       if (v === "normal" || v === "medium" || v === "bold") return v;
+      return "normal" as const;
+    })(),
+    heroBylineLeading: (() => {
+      const v = l.heroBylineLeading;
+      if (v === "tight" || v === "normal" || v === "relaxed") return v;
       return "normal" as const;
     })(),
     heroSplitRatio: (() => {

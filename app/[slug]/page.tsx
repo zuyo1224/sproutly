@@ -1732,6 +1732,16 @@ export default async function StoreHomePage({
               : theme.layout.heroEyebrowWeight === "medium"
               ? { fontWeight: 500 }
               : {};
+          // 小標行距。四處 class 一個行距都沒寫，繼承最外層那個 1.5——那是內文段落的
+          // 數字，小標卻是一行 10px、字距撐到 0.4em 的標籤。英文小標一行放得下所以看不
+          // 出來；中文小標長一點在手機上就斷成兩行，1.5 配 0.4em 會鬆得像兩個不相干的
+          // 標籤而不是同一句話。base 只有 1.5 一個值，存絕對值就夠；沒設回 {} 不覆寫。
+          const eyebrowLeadingStyle =
+            theme.layout.heroEyebrowLeading === "tight"
+              ? { lineHeight: 1.2 }
+              : theme.layout.heroEyebrowLeading === "relaxed"
+              ? { lineHeight: 2 }
+              : {};
           // 副標自訂顏色 / 字級（split / magazine / minimal 共用）
           const subtitleColor =
             theme.layout.heroSubtitleColor ?? theme.textMuted;
@@ -1925,6 +1935,16 @@ export default async function StoreHomePage({
               ? { fontWeight: 700 }
               : theme.layout.heroBylineWeight === "medium"
               ? { fontWeight: 500 }
+              : {};
+          // byline 行距。那個 span 自己沒寫行距，繼承的也是最外層的 1.5，跟小標同一個
+          // 出處同一個問題。byline 比小標更容易換行——它是商家自己打的一句話，那一行左邊
+          // 的落款還要跟右邊的按鈕分掉寬度，手機上兩行是常態。跟小標同一組數字；
+          // 一樣只套 byline 那個 span，不套外層那條 flex（右邊的 CTA 有自己的幾格）。
+          const bylineLeadingStyle =
+            theme.layout.heroBylineLeading === "tight"
+              ? { lineHeight: 1.2 }
+              : theme.layout.heroBylineLeading === "relaxed"
+              ? { lineHeight: 2 }
               : {};
 
           // 雜誌版型上下那兩條橫線的粗細與深淺。這兩條線是那個版型的骨架（上面框住小標
@@ -2135,6 +2155,7 @@ export default async function StoreHomePage({
                           ...eyebrowTrackStyle(0.4),
                           ...eyebrowCaseStyle,
                           ...eyebrowWeightStyle,
+                          ...eyebrowLeadingStyle,
                         }}
                       >
                         {theme.layout.heroEyebrow}
@@ -2151,6 +2172,7 @@ export default async function StoreHomePage({
                           ...eyebrowTrackStyle(0.4),
                           ...eyebrowCaseStyle,
                           ...eyebrowWeightStyle,
+                          ...eyebrowLeadingStyle,
                           ...heroTextGapBottom(1.5),
                         }}
                       >
@@ -2609,6 +2631,7 @@ export default async function StoreHomePage({
                         ...eyebrowTrackStyle(0.4),
                         ...eyebrowCaseStyle,
                         ...eyebrowWeightStyle,
+                        ...eyebrowLeadingStyle,
                         ...splitGapBottom(1.5),
                       }}
                     >
@@ -2774,6 +2797,7 @@ export default async function StoreHomePage({
                       ...eyebrowTrackStyle(0.32),
                       ...eyebrowCaseStyle,
                       ...eyebrowWeightStyle,
+                      ...eyebrowLeadingStyle,
                     }}
                   >
                     <span data-edit-text data-edit-field="heroEyebrow">
@@ -2878,6 +2902,7 @@ export default async function StoreHomePage({
                         ...bylineTrackStyle,
                         ...bylineCaseStyle,
                         ...bylineWeightStyle,
+                        ...bylineLeadingStyle,
                       }}
                     >
                       {heroMagazineByline}
@@ -3028,6 +3053,7 @@ export default async function StoreHomePage({
                     ...eyebrowTrackStyle(0.4),
                     ...eyebrowCaseStyle,
                     ...eyebrowWeightStyle,
+                    ...eyebrowLeadingStyle,
                     ...minimalGapBottom(2),
                   }}
                 >

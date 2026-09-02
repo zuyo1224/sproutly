@@ -108,6 +108,7 @@ type EditorTheme = {
     heroEyebrowColor: string | null;
     heroEyebrowCase: "upper" | "capitalize" | "none";
     heroEyebrowWeight: "normal" | "medium" | "bold";
+    heroEyebrowLeading: "tight" | "normal" | "relaxed";
     heroSubtitleFontScale: number;
     heroSubtitleColor: string | null;
     heroSubtitleAlign: "inherit" | "left" | "center" | "right";
@@ -124,6 +125,7 @@ type EditorTheme = {
     heroBylineTracking: "tight" | "normal" | "wide";
     heroBylineCase: "upper" | "capitalize" | "none";
     heroBylineWeight: "normal" | "medium" | "bold";
+    heroBylineLeading: "tight" | "normal" | "relaxed";
     heroSplitRatio: "image-narrow" | "normal" | "image-wide" | "photo";
     heroImageFocus: "top" | "center" | "bottom";
     heroImageFocusX: "left" | "center" | "right";
@@ -1081,6 +1083,7 @@ export function EditorWorkspace({
           heroEyebrowColor: t.layout.heroEyebrowColor,
           heroEyebrowCase: t.layout.heroEyebrowCase,
           heroEyebrowWeight: t.layout.heroEyebrowWeight,
+          heroEyebrowLeading: t.layout.heroEyebrowLeading,
           heroSubtitleFontScale: t.layout.heroSubtitleFontScale,
           heroSubtitleColor: t.layout.heroSubtitleColor,
           heroSubtitleAlign: t.layout.heroSubtitleAlign,
@@ -1097,6 +1100,7 @@ export function EditorWorkspace({
           heroBylineTracking: t.layout.heroBylineTracking,
           heroBylineCase: t.layout.heroBylineCase,
           heroBylineWeight: t.layout.heroBylineWeight,
+          heroBylineLeading: t.layout.heroBylineLeading,
           heroSplitRatio: t.layout.heroSplitRatio,
           heroImageFocus: t.layout.heroImageFocus,
           heroImageFocusX: t.layout.heroImageFocusX,
@@ -2107,6 +2111,35 @@ export function EditorWorkspace({
                 是第二個標題）兩條路，這格是「一樣小、一樣淡，但看得出是一行字」
               </p>
             </Field>
+            <Field label="小標行距">
+              <div className="grid grid-cols-3 gap-1.5">
+                {([
+                  { v: "tight", label: "收緊" },
+                  { v: "normal", label: "預設" },
+                  { v: "relaxed", label: "舒展" },
+                ] as const).map((opt) => (
+                  <button
+                    key={opt.v}
+                    type="button"
+                    onClick={() => updateLayout({ heroEyebrowLeading: opt.v })}
+                    aria-pressed={theme.layout.heroEyebrowLeading === opt.v}
+                    className={`rounded-lg border py-2 text-xs transition ${
+                      theme.layout.heroEyebrowLeading === opt.v
+                        ? "border-emerald-500 bg-emerald-50 text-emerald-900"
+                        : "border-stone-200 text-stone-600 hover:border-stone-400"
+                    }`}
+                  >
+                    {opt.label}
+                  </button>
+                ))}
+              </div>
+              <p className="text-[10px] text-stone-500 mt-1">
+                小標換行的時候，上下兩行隔多遠。打英文通常一行就放得下看不出來；中文的小標
+                長一點（「本月選物 · 春天的第一批」），手機上會斷成兩行，而它原本用的是內文
+                段落的行距，配上小標本來就很寬的字距，那兩行會鬆得像兩個不相干的標籤，
+                不像同一句話。收緊會讓它們結成一塊
+              </p>
+            </Field>
             <Field label="Tagline（主標）">
               <textarea
                 value={theme.tagline}
@@ -2615,6 +2648,35 @@ export function EditorWorkspace({
                 讀到它，上面的顏色那格只能拉深，拉深了又會跟同一行的其他字打架。這格是
                 「一樣的淡，但看得出是一行字」。反過來當落款用的話，選稍重配收緊的字距，
                 那幾個字會結成一塊像印章。右邊的按鈕不跟
+              </p>
+            </Field>
+            <Field label="byline 行距">
+              <div className="grid grid-cols-3 gap-1.5">
+                {([
+                  { v: "tight", label: "收緊" },
+                  { v: "normal", label: "預設" },
+                  { v: "relaxed", label: "舒展" },
+                ] as const).map((opt) => (
+                  <button
+                    key={opt.v}
+                    type="button"
+                    onClick={() => updateLayout({ heroBylineLeading: opt.v })}
+                    aria-pressed={theme.layout.heroBylineLeading === opt.v}
+                    className={`rounded-lg border py-2 text-xs transition ${
+                      theme.layout.heroBylineLeading === opt.v
+                        ? "border-emerald-500 bg-emerald-50 text-emerald-900"
+                        : "border-stone-200 text-stone-600 hover:border-stone-400"
+                    }`}
+                  >
+                    {opt.label}
+                  </button>
+                ))}
+              </div>
+              <p className="text-[10px] text-stone-500 mt-1">
+                那行字換行的時候，上下兩行隔多遠。byline 比上面的小標更容易換兩行——它是
+                你自己打的一句話，那一行左邊還要跟右邊的按鈕分掉寬度，手機上兩行是常態。
+                它原本用的是內文段落的行距，套在一行落款上偏鬆。收緊會讓那兩行結成一塊
+                像印章，舒展則像頁尾的註記。右邊的按鈕不跟
               </p>
             </Field>
             <Field label={`主標字體大小（${theme.layout.heroTaglineFontScale.toFixed(2)}x）`}>
