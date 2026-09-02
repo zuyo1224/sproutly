@@ -3901,8 +3901,9 @@ export default async function StoreHomePage({
                   : undefined
               }
             >
+              {/* 另外掛 sproutly-card-static：這塊點不下去，滑鼠移過去不該浮起來。見 layout.tsx。 */}
               <figure
-                className="sproutly-card-box sproutly-promise-card relative text-center"
+                className="sproutly-card-box sproutly-card-static sproutly-promise-card relative text-center"
               >
                 {/* 大引號 visual */}
                 <span
@@ -4179,9 +4180,10 @@ export default async function StoreHomePage({
                     // 掛的是 card-box 不是 .sproutly-card——那個 class 還帶著一批沒有
                     // attribute 擋著的商品卡動作（滑過時品名字距撐開、副文字變濃），這裡
                     // 的品名是留言的人、描述是那段話，滑過去開始抖不是商家要的東西。
+                    // 另外掛 sproutly-card-static：這塊點不下去，滑鼠移過去不該浮起來。見 layout.tsx。
                     <figure
                       key={i}
-                      className="sproutly-card-box sproutly-quote-card relative"
+                      className="sproutly-card-box sproutly-card-static sproutly-quote-card relative"
                     >
                       <span
                         aria-hidden="true"
@@ -4662,7 +4664,8 @@ export default async function StoreHomePage({
                     // 那個 class 還帶著一批沒有 attribute 擋著的商品卡動作（滑過時品名
                     // 字距撐開之類），這裡不要那些，見 layout.tsx 的說明。
                     // 這個 class 本身不畫任何東西，商家沒設外觀時整組規則不存在。
-                    <div key={i} className="sproutly-card-box space-y-3">
+                    // 另外掛 sproutly-card-static：這塊點不下去，滑鼠移過去不該浮起來。見 layout.tsx。
+                    <div key={i} className="sproutly-card-box sproutly-card-static space-y-3">
                       <p
                         data-edit-text
                         data-edit-field="statValue"
@@ -4837,7 +4840,8 @@ export default async function StoreHomePage({
                         {inner}
                       </a>
                     ) : (
-                      <div key={i} className="sproutly-card-box inline-block">
+                      // 另外掛 sproutly-card-static：這塊點不下去，滑鼠移過去不該浮起來。見 layout.tsx。
+                      <div key={i} className="sproutly-card-box sproutly-card-static inline-block">
                         {inner}
                       </div>
                     );
@@ -5134,7 +5138,8 @@ export default async function StoreHomePage({
                   不掛 .sproutly-card 的理由跟前幾段一樣：那個 class 帶著一組沒 attribute
                   擋著的商品卡滑過動作（品名字距撐開、副文字變濃），套在店家資訊上會抖。
                   沒設外觀就沒 attribute、整組規則不存在，這個 div 是裸的，既有店家逐像素不變。 */}
-              <div className="sproutly-card-box sproutly-visit-card">
+              {/* 另外掛 sproutly-card-static：這塊點不下去，滑鼠移過去不該浮起來。見 layout.tsx。 */}
+              <div className="sproutly-card-box sproutly-card-static sproutly-visit-card">
                 <p
                   data-edit-text
                   data-edit-field="visitEyebrow"

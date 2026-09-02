@@ -1613,13 +1613,24 @@ export default async function PublicStoreLayout({
           :is(.sproutly-card,.sproutly-card-box):hover .sproutly-card-image {
           transform: none;
         }
+        /* 下面兩條的 :not(.sproutly-card-static) 是給「點不下去的那幾塊」開的例外。
+           設了卡片外觀之後，滑鼠移到卡片上整張會往上浮一段、底下多一層陰影——那是
+           商品卡的動作，浮起來等於在說「這張可以點進去」。但掛 card-box 的方塊裡有
+           一半根本點不動：店家那句話、客人的話、數字、沒填連結的合作 logo、來坐坐那塊
+           店家資訊，滑上去浮一下、移開又掉回去，客人會以為是自己沒點到。
+           會動的那些照舊：常見問題每一題是點開收合的、合作 logo 有填連結那顆是連結，
+           商品卡（.sproutly-card）本來就整張可點，三種都不掛 static、動作一格不變。
+           分不掛 static 的方式是在 page.tsx 那邊標，不是在這裡列名單——同一個 class
+           在不同段落有時可點有時不可點（合作 logo 那格就是），CSS 這層看不出來。
+           「滑過卡片」那三顆按鈕商家還是照按，只是對點不下去的方塊按了不會有事；
+           沒設卡片外觀就沒 attribute、整組規則不存在，既有店家逐像素不變。 */
         section[data-edit-target][data-card-surface]:not([data-card-hover="none"])
-          :is(.sproutly-card,.sproutly-card-box):hover {
+          :is(.sproutly-card,.sproutly-card-box):not(.sproutly-card-static):hover {
           transform: translateY(-6px);
           box-shadow: var(--sproutly-elev-3);
         }
         section[data-edit-target][data-card-surface][data-card-hover="calm"]
-          :is(.sproutly-card,.sproutly-card-box):hover {
+          :is(.sproutly-card,.sproutly-card-box):not(.sproutly-card-static):hover {
           transform: translateY(-2px);
           box-shadow: none;
         }
@@ -1643,11 +1654,11 @@ export default async function PublicStoreLayout({
           box-shadow: var(--sproutly-elev-3);
         }
         section[data-edit-target][data-card-surface][data-card-hover="calm"][data-card-shadow="soft"]
-          :is(.sproutly-card,.sproutly-card-box):hover {
+          :is(.sproutly-card,.sproutly-card-box):not(.sproutly-card-static):hover {
           box-shadow: var(--sproutly-elev-2);
         }
         section[data-edit-target][data-card-surface][data-card-hover="calm"][data-card-shadow="strong"]
-          :is(.sproutly-card,.sproutly-card-box):hover {
+          :is(.sproutly-card,.sproutly-card-box):not(.sproutly-card-static):hover {
           box-shadow: var(--sproutly-elev-3);
         }
 
