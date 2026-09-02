@@ -1399,6 +1399,14 @@ export default async function PublicStoreLayout({
         section[data-edit-target][data-card-surface="outline"] .sproutly-card {
           border: 1px solid color-mix(in srgb, currentColor 16%, transparent);
         }
+        /* 底＋框那一檔：上面兩條各給一半，這檔兩個一起。底不重複用 6%——底跟線都從
+           currentColor 算，6% 的底配 16% 的線兩層差得太近，遠看是一塊邊緣糊掉的板子；
+           底收成 4%、線加到 22%，卡片才是「一塊淺板子被一條看得見的線收住邊」。
+           要另外的深淺照樣用底下那兩組（框線粗細 / 深淺 / 樣式、底色深淺），這檔全部可調。 */
+        section[data-edit-target][data-card-surface="both"] .sproutly-card {
+          background: color-mix(in srgb, currentColor 4%, transparent);
+          border: 1px solid color-mix(in srgb, currentColor 22%, transparent);
+        }
 
         /* 卡片內距：editor 各 section panel「卡片內距」三按鈕（收緊 / 跟預設 / 放寬），
            設了上面那個底或框之後才長出來。卡片裡的東西跟框之間留多少，上面那條寫死 14px
@@ -1478,7 +1486,7 @@ export default async function PublicStoreLayout({
         }
 
         /* 卡片框線粗細與深淺：editor 各 section panel 的「框線粗細」（照原本 / 中 / 粗）與
-           「框線深淺」（照原本 / 淡 / 明顯），只有「卡片外觀＝一圈細框」那一檔才長出來
+           「框線深淺」（照原本 / 淡 / 明顯），只有畫面上真的有那條線的兩檔（一圈細框 / 底＋框）才長出來
            （面板那檔畫的是底色，沒有線可以加粗或加深）。
            上面那條 outline 把線寫死成 1px 加 currentColor 的 16%——又細又淡，配站上預設那種
            留白多的排法剛好，但商家按下「外框」多半就是嫌卡片沒有邊界：3、4 欄的小卡排滿
@@ -1487,27 +1495,26 @@ export default async function PublicStoreLayout({
            粗細與深淺分兩格是因為兩件事會互相拖：3px 配 16% 是一條糊掉的灰帶不是框（粗線
            更需要色夠實才收得住邊），想要一條看得見但不搶戲的細框又不該連重量一起加。
            兩格各自只改 border 的一段（width 或 color），另一段照原樣；兩格都設就疊起來。
-           選擇器多帶一個 [data-card-surface="outline"]，分量比上面那條 outline 重，排在
-           後面也壓得過。沒設就沒 attribute，線維持原本的 1px 加 16%。 */
-        section[data-edit-target][data-card-surface="outline"][data-card-border-weight="medium"]
+           選擇器多帶一個 :is(outline, both)，分量跟上面那兩條一樣重，靠排在後面壓過。沒設就沒 attribute，線維持原本的 1px 加 16%。 */
+        section[data-edit-target]:is([data-card-surface="outline"],[data-card-surface="both"])[data-card-border-weight="medium"]
           .sproutly-card {
           border-width: 2px;
         }
-        section[data-edit-target][data-card-surface="outline"][data-card-border-weight="thick"]
+        section[data-edit-target]:is([data-card-surface="outline"],[data-card-surface="both"])[data-card-border-weight="thick"]
           .sproutly-card {
           border-width: 3px;
         }
-        section[data-edit-target][data-card-surface="outline"][data-card-border-tone="soft"]
+        section[data-edit-target]:is([data-card-surface="outline"],[data-card-surface="both"])[data-card-border-tone="soft"]
           .sproutly-card {
           border-color: color-mix(in srgb, currentColor 8%, transparent);
         }
-        section[data-edit-target][data-card-surface="outline"][data-card-border-tone="strong"]
+        section[data-edit-target]:is([data-card-surface="outline"],[data-card-surface="both"])[data-card-border-tone="strong"]
           .sproutly-card {
           border-color: color-mix(in srgb, currentColor 34%, transparent);
         }
 
         /* 卡片框線樣式：editor 各 section panel 的「框線樣式」（實線 / 虛線 / 點線），跟
-           上面兩格同一個條件——只有「卡片外觀＝一圈細框」那一檔才長出來。
+           上面兩格同一個條件——一圈細框與底＋框那兩檔才長出來。
            上面那條 outline 把 border-style 寫死成 solid，粗細與深淺再怎麼配，畫出來永遠是
            一圈規規矩矩的實線；那條線在版面上講的是「這是一張已經定案的卡」。虛線與點線
            講的是相反的話——預告、缺貨、還沒上架的佔位卡，站上目前只能靠文字寫「即將推出」，
@@ -1516,20 +1523,20 @@ export default async function PublicStoreLayout({
            橫線，兩個都到不了每張卡身上。
            跟上面兩格一樣只改 border 的一段（style），寬度與顏色照原樣，三格疊得起來——
            1px 的虛線遠看斷斷續續讀不出是虛的，配 2px 以上才成立。
-           選擇器同樣多帶一個 [data-card-surface="outline"] 壓過上面那條 outline。
+           選擇器同樣多帶一個 :is(outline, both)，靠排在後面壓過上面那兩條。
            沒設就沒 attribute，線維持原本的實線。 */
-        section[data-edit-target][data-card-surface="outline"][data-card-border-style="dashed"]
+        section[data-edit-target]:is([data-card-surface="outline"],[data-card-surface="both"])[data-card-border-style="dashed"]
           .sproutly-card {
           border-style: dashed;
         }
-        section[data-edit-target][data-card-surface="outline"][data-card-border-style="dotted"]
+        section[data-edit-target]:is([data-card-surface="outline"],[data-card-surface="both"])[data-card-border-style="dotted"]
           .sproutly-card {
           border-style: dotted;
         }
 
         /* 卡片底色深淺：editor 各 section panel 的「底色深淺」（照原本 / 淡 / 明顯），
-           條件跟上面那三格相反——只有「卡片外觀＝一塊底色面板」那一檔才長出來（一圈細框
-           那檔畫的是線，沒有底可以調深淺）。
+           條件跟上面那三格相反——有底的那兩檔（一塊底色面板 / 底＋框）才長出來（只有
+           一圈細框那檔畫的是線，沒有底可以調深淺）。
            上面那條 panel 把底寫死成 currentColor 的 6%。那個值是照站上預設那種奶油白底、
            深色字的段落挑的，換成商家自己的配色就常常不對：整段底色本來就是淺灰、米色那類
            的店，卡片那層 6% 疊上去幾乎跟背景同一色，商家按了面板卻看不出卡片在哪；反方向
@@ -1538,14 +1545,14 @@ export default async function PublicStoreLayout({
            淡那檔是「隱約分得出這是一張卡」（照片很滿的商品卡、照片牆，底重一點就跟照片
            打架）；明顯那檔是「卡片是一塊實實在在的板子」（字多照片少的段落，底夠實才撐得
            住整段文字）。
-           跟框線那三格一樣只改一個屬性（background），其他照原樣；選擇器多帶一個
-           [data-card-surface="panel"] 壓過上面那條 panel。
+           跟框線那三格一樣只改一個屬性（background），其他照原樣；選擇器多帶一個 :is(panel, both)，
+           靠排在後面壓過上面那兩條。
            沒設就沒 attribute，底維持原本的 6%。 */
-        section[data-edit-target][data-card-surface="panel"][data-card-panel-tone="soft"]
+        section[data-edit-target]:is([data-card-surface="panel"],[data-card-surface="both"])[data-card-panel-tone="soft"]
           .sproutly-card {
           background: color-mix(in srgb, currentColor 3%, transparent);
         }
-        section[data-edit-target][data-card-surface="panel"][data-card-panel-tone="strong"]
+        section[data-edit-target]:is([data-card-surface="panel"],[data-card-surface="both"])[data-card-panel-tone="strong"]
           .sproutly-card {
           background: color-mix(in srgb, currentColor 12%, transparent);
         }

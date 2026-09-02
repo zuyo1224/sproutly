@@ -719,8 +719,14 @@ export default async function StoreHomePage({
     // 跟卡片間距、卡片文字同一個處境同一個解法，attribute 讓 layout.tsx 補規則。
     // 顏色不在這裡算：底與框都走 currentColor 的淡色（見 layout.tsx），深底淺字的段落
     // 自動變成淺色，不用再挑一次。只掛在有卡片的四段。
-    const cardSurfaceVal: "panel" | "outline" | undefined =
-      s?.cardSurface === "panel" || s?.cardSurface === "outline" ? s.cardSurface : undefined;
+    // both 是底跟框一起上的那一檔，走同一個 attribute（layout.tsx 那條規則同時給
+    // background 與 border），下面那幾格的「有沒有邊界」條件對它一樣成立。
+    const cardSurfaceVal: "panel" | "outline" | "both" | undefined =
+      s?.cardSurface === "panel" ||
+      s?.cardSurface === "outline" ||
+      s?.cardSurface === "both"
+        ? s.cardSurface
+        : undefined;
     // 卡片內距：卡片裡的東西跟框之間留多少，那條 padding 寫在 layout.tsx 的卡片外觀規則裡
     // （寫死 14px），段落上的 inline style 一樣到不了卡片自己那層——同一個處境同一個解法。
     // 沒設底或框就不掛：卡片沒有邊界時內距是看不見的空白，掛了是死 attribute。
@@ -747,9 +753,10 @@ export default async function StoreHomePage({
     // 卡片框線粗細與深淺：那條 border 寫死在 layout.tsx 的 outline 那條規則上
     // （1px + currentColor 16%），段落上的 inline style 一樣到不了卡片自己那層——跟內距、
     // 圓角、陰影同一個處境同一個解法。
-    // 條件比上面那幾格再窄一層：只有「一圈細框」那一檔才掛。面板那檔畫的是底色、沒有線，
-    // 掛了是死 attribute；商家把外觀從框換成面板時這兩格在編輯器裡也一起收起來。
-    const cardOutlineOn = cardSurfaceVal === "outline";
+    // 條件比上面那幾格再窄一層：要畫面上真的有那條線才掛，也就是「一圈細框」與「底＋框」
+    // 這兩檔。面板那檔畫的是底色、沒有線，掛了是死 attribute；商家把外觀換成面板時這幾格
+    // 在編輯器裡也一起收起來。
+    const cardOutlineOn = cardSurfaceVal === "outline" || cardSurfaceVal === "both";
     const cardBorderWeightVal: "medium" | "thick" | undefined =
       cardOutlineOn &&
       (s?.cardBorderWeight === "medium" || s?.cardBorderWeight === "thick")
@@ -760,7 +767,7 @@ export default async function StoreHomePage({
         ? s.cardBorderTone
         : undefined;
     // 卡片框線樣式：那條 border 的 style 一樣寫死在 layout.tsx 的 outline 規則上（solid），
-    // 跟粗細、深淺同一個處境同一個解法，掛同一個「只有一圈細框才掛」的條件。
+    // 跟粗細、深淺同一個處境同一個解法，掛同一個「畫面上有線才掛」的條件。
     const cardBorderStyleVal: "dashed" | "dotted" | undefined =
       cardOutlineOn &&
       (s?.cardBorderStyle === "dashed" || s?.cardBorderStyle === "dotted")
@@ -768,9 +775,11 @@ export default async function StoreHomePage({
         : undefined;
     // 卡片底色深淺：面板那檔的底寫死在 layout.tsx 的 panel 規則上（currentColor 6%），
     // 段落上的 inline style 一樣到不了卡片自己那層——跟框線那三格同一個處境同一個解法，
-    // 只是條件相反：只有「一塊底色面板」那一檔才掛（框那檔畫的是線，沒有底可以調深淺）。
+    // 只是條件相反：要畫面上真的有那塊底才掛，也就是「一塊底色面板」與「底＋框」這兩檔
+    //（只有框那檔畫的是線，沒有底可以調深淺）。
+    const cardPanelOn = cardSurfaceVal === "panel" || cardSurfaceVal === "both";
     const cardPanelToneVal: "soft" | "strong" | undefined =
-      cardSurfaceVal === "panel" &&
+      cardPanelOn &&
       (s?.cardPanelTone === "soft" || s?.cardPanelTone === "strong")
         ? s.cardPanelTone
         : undefined;

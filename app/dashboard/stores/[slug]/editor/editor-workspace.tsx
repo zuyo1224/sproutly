@@ -8464,11 +8464,12 @@ export function EditorWorkspace({
                 </div>
               </Field>
               <Field label="卡片外觀">
-                <div className="grid grid-cols-3 gap-1.5">
+                <div className="grid grid-cols-4 gap-1.5">
                   {([
                     { v: "none", label: "原樣" },
                     { v: "panel", label: "淡底色" },
                     { v: "outline", label: "細框" },
+                    { v: "both", label: "底＋框" },
                   ] as const).map((opt) => (
                     <button
                       key={opt.v}
@@ -8486,7 +8487,7 @@ export function EditorWorkspace({
                   ))}
                 </div>
                 <div className="mt-1.5 flex items-center justify-between text-[11px] text-stone-500">
-                  <span>每張卡片有沒有自己的邊界（欄數多、品名長短不一時，有底或有框才分得出哪行字配哪張照片）</span>
+                  <span>每張卡片有沒有自己的邊界（欄數多、品名長短不一時，有底或有框才分得出哪行字配哪張照片；兩個一起上最像一般網購站的商品卡）</span>
                   {cardSurface && (
                     <button
                       type="button"
@@ -8615,9 +8616,9 @@ export function EditorWorkspace({
                   </div>
                 </Field>
               )}
-              {/* 框線這兩格的條件比上面幾格再窄一層：只有選了「一圈細框」才長出來，
-                  面板那檔畫的是底色、沒有線可以加粗或加深。 */}
-              {cardSurface === "outline" && (
+              {/* 框線這兩格的條件比上面幾格再窄一層：選了「一圈細框」或「底＋框」才長出來，
+                  面板那檔畫的是底色、沒有線可以加粗或加深；底＋框那檔有線，跟細框一起給。 */}
+              {(cardSurface === "outline" || cardSurface === "both") && (
                 <Field label="框線粗細">
                   <div className="grid grid-cols-3 gap-1.5">
                     {([
@@ -8654,7 +8655,7 @@ export function EditorWorkspace({
                   </div>
                 </Field>
               )}
-              {cardSurface === "outline" && (
+              {(cardSurface === "outline" || cardSurface === "both") && (
                 <Field label="框線深淺">
                   <div className="grid grid-cols-3 gap-1.5">
                     {([
@@ -8691,10 +8692,10 @@ export function EditorWorkspace({
                   </div>
                 </Field>
               )}
-              {/* 框線樣式：同樣只在「一圈細框」那一檔給——面板那檔畫的是底色，沒有線可以
+              {/* 框線樣式：同樣只在有線的兩檔給——面板那檔畫的是底色，沒有線可以
                   換成虛線或點線。實線講的是「這張卡已經定案」，虛線與點線是預告、缺貨、
                   佔位卡，以及拼貼、手作那類店要的語氣。 */}
-              {cardSurface === "outline" && (
+              {(cardSurface === "outline" || cardSurface === "both") && (
                 <Field label="框線樣式">
                   <div className="grid grid-cols-3 gap-1.5">
                     {([
@@ -8731,9 +8732,9 @@ export function EditorWorkspace({
                   </div>
                 </Field>
               )}
-              {/* 底色深淺：跟上面那三格相反的條件——只在「一塊底色面板」那一檔給。
+              {/* 底色深淺：跟上面那三格相反的條件——有底的兩檔（一塊底色面板 / 底＋框）才給。
                   那塊底寫死成 6%，淺底的店按了看不出卡片在哪、深底的店又亮得比照片還搶。 */}
-              {cardSurface === "panel" && (
+              {(cardSurface === "panel" || cardSurface === "both") && (
                 <Field label="底色深淺">
                   <div className="grid grid-cols-3 gap-1.5">
                     {([
