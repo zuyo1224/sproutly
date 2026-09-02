@@ -1386,24 +1386,34 @@ export default async function PublicStoreLayout({
            會變成框裡還有框；浮起改由整張卡做，不然照片會浮出卡片的內距、看起來像要
            掉出來。商家已經把「滑過卡片」設成不動的那一檔不補這個浮起（那正是他按掉的
            東西），設成輕微的沿用它那 2px。
-           沒設（或選「原樣」）就沒 attribute、整組規則不存在，既有店家的卡片一動不動。 */
-        section[data-edit-target][data-card-surface] .sproutly-card {
+           沒設（或選「原樣」）就沒 attribute、整組規則不存在，既有店家的卡片一動不動。
+
+           底下每一條的 :is(.sproutly-card, .sproutly-card-box) 是為了數字段與合作 logo 段：
+           那兩段一格一格的東西不是商品卡（沒有圖框、沒有品名價錢那疊字），所以本來就沒帶
+           .sproutly-card，這一整組七格對它們是完全沒反應的——編輯器裡按得動，畫面上什麼
+           都不會變。不直接把 .sproutly-card 補到那兩段身上是因為那個 class 還帶著一組跟
+           卡片外觀無關、而且沒有 attribute 擋著的規則（上面那批：滑過時品名字距撐開、
+           副文字變濃、按鈕浮現、圖框浮起），補了等於那兩段沒設任何東西也先變了樣。
+           .sproutly-card-box 只是「這一格是一個可以套底或套框的方塊」，不帶那些動作；
+           兩個名字寫進同一個 :is()，分量取自最重的那個＝跟原本的單一 class 一樣重，
+           排在後面的規則照樣壓得過前面的，既有四段一個像素都沒動。 */
+        section[data-edit-target][data-card-surface] :is(.sproutly-card,.sproutly-card-box) {
           padding: 14px;
           border-radius: 14px;
           transition: box-shadow 0.7s cubic-bezier(0.22, 1, 0.36, 1),
                       transform 0.7s cubic-bezier(0.22, 1, 0.36, 1);
         }
-        section[data-edit-target][data-card-surface="panel"] .sproutly-card {
+        section[data-edit-target][data-card-surface="panel"] :is(.sproutly-card,.sproutly-card-box) {
           background: color-mix(in srgb, currentColor 6%, transparent);
         }
-        section[data-edit-target][data-card-surface="outline"] .sproutly-card {
+        section[data-edit-target][data-card-surface="outline"] :is(.sproutly-card,.sproutly-card-box) {
           border: 1px solid color-mix(in srgb, currentColor 16%, transparent);
         }
         /* 底＋框那一檔：上面兩條各給一半，這檔兩個一起。底不重複用 6%——底跟線都從
            currentColor 算，6% 的底配 16% 的線兩層差得太近，遠看是一塊邊緣糊掉的板子；
            底收成 4%、線加到 22%，卡片才是「一塊淺板子被一條看得見的線收住邊」。
            要另外的深淺照樣用底下那兩組（框線粗細 / 深淺 / 樣式、底色深淺），這檔全部可調。 */
-        section[data-edit-target][data-card-surface="both"] .sproutly-card {
+        section[data-edit-target][data-card-surface="both"] :is(.sproutly-card,.sproutly-card-box) {
           background: color-mix(in srgb, currentColor 4%, transparent);
           border: 1px solid color-mix(in srgb, currentColor 22%, transparent);
         }
@@ -1418,11 +1428,11 @@ export default async function PublicStoreLayout({
            圓角跟著等比走（8 / 14 / 22px）：內距收緊還留 14px 的圓角，框的四角會比裡面的
            照片圓得多，變成兩個對不上的形狀。
            沒設（或選「跟預設」）就沒 attribute，維持上面那組 14px。 */
-        section[data-edit-target][data-card-surface][data-card-padding="tight"] .sproutly-card {
+        section[data-edit-target][data-card-surface][data-card-padding="tight"] :is(.sproutly-card,.sproutly-card-box) {
           padding: 8px;
           border-radius: 8px;
         }
-        section[data-edit-target][data-card-surface][data-card-padding="loose"] .sproutly-card {
+        section[data-edit-target][data-card-surface][data-card-padding="loose"] :is(.sproutly-card,.sproutly-card-box) {
           padding: 22px;
           border-radius: 22px;
         }
@@ -1433,27 +1443,27 @@ export default async function PublicStoreLayout({
            想要更圓的卡又得把內距一起放寬、卡片跟著變胖。這兩條只改 border-radius，內距
            那格照原樣。選擇器的分量跟上面那兩組一樣重，靠排在後面壓過它們算出來的圓角。
            沒設（或選「跟內距走」）就沒 attribute，維持原本 8 / 14 / 22px 那組。 */
-        section[data-edit-target][data-card-surface][data-card-radius="square"] .sproutly-card {
+        section[data-edit-target][data-card-surface][data-card-radius="square"] :is(.sproutly-card,.sproutly-card-box) {
           border-radius: 0;
         }
-        section[data-edit-target][data-card-surface][data-card-radius="round"] .sproutly-card {
+        section[data-edit-target][data-card-surface][data-card-radius="round"] :is(.sproutly-card,.sproutly-card-box) {
           border-radius: 26px;
         }
-        section[data-edit-target][data-card-surface] .sproutly-card .sproutly-card-image,
-        section[data-edit-target][data-card-surface] .sproutly-card:hover .sproutly-card-image {
+        section[data-edit-target][data-card-surface] :is(.sproutly-card,.sproutly-card-box) .sproutly-card-image,
+        section[data-edit-target][data-card-surface] :is(.sproutly-card,.sproutly-card-box):hover .sproutly-card-image {
           box-shadow: none;
         }
         section[data-edit-target][data-card-surface]:not([data-card-hover="none"])
-          .sproutly-card:hover .sproutly-card-image {
+          :is(.sproutly-card,.sproutly-card-box):hover .sproutly-card-image {
           transform: none;
         }
         section[data-edit-target][data-card-surface]:not([data-card-hover="none"])
-          .sproutly-card:hover {
+          :is(.sproutly-card,.sproutly-card-box):hover {
           transform: translateY(-6px);
           box-shadow: var(--sproutly-elev-3);
         }
         section[data-edit-target][data-card-surface][data-card-hover="calm"]
-          .sproutly-card:hover {
+          :is(.sproutly-card,.sproutly-card-box):hover {
           transform: translateY(-2px);
           box-shadow: none;
         }
@@ -1470,18 +1480,18 @@ export default async function PublicStoreLayout({
            寫的），設了這格之後要把靜止那層留著，不然滑上去反而變平。分量比它重一個屬性，
            排在後面也壓得過。
            沒設（或選「無」）就沒 attribute、整組規則不存在，卡片維持原本靜止時沒有陰影。 */
-        section[data-edit-target][data-card-surface][data-card-shadow="soft"] .sproutly-card {
+        section[data-edit-target][data-card-surface][data-card-shadow="soft"] :is(.sproutly-card,.sproutly-card-box) {
           box-shadow: var(--sproutly-elev-2);
         }
-        section[data-edit-target][data-card-surface][data-card-shadow="strong"] .sproutly-card {
+        section[data-edit-target][data-card-surface][data-card-shadow="strong"] :is(.sproutly-card,.sproutly-card-box) {
           box-shadow: var(--sproutly-elev-3);
         }
         section[data-edit-target][data-card-surface][data-card-hover="calm"][data-card-shadow="soft"]
-          .sproutly-card:hover {
+          :is(.sproutly-card,.sproutly-card-box):hover {
           box-shadow: var(--sproutly-elev-2);
         }
         section[data-edit-target][data-card-surface][data-card-hover="calm"][data-card-shadow="strong"]
-          .sproutly-card:hover {
+          :is(.sproutly-card,.sproutly-card-box):hover {
           box-shadow: var(--sproutly-elev-3);
         }
 
@@ -1497,19 +1507,19 @@ export default async function PublicStoreLayout({
            兩格各自只改 border 的一段（width 或 color），另一段照原樣；兩格都設就疊起來。
            選擇器多帶一個 :is(outline, both)，分量跟上面那兩條一樣重，靠排在後面壓過。沒設就沒 attribute，線維持原本的 1px 加 16%。 */
         section[data-edit-target]:is([data-card-surface="outline"],[data-card-surface="both"])[data-card-border-weight="medium"]
-          .sproutly-card {
+          :is(.sproutly-card,.sproutly-card-box) {
           border-width: 2px;
         }
         section[data-edit-target]:is([data-card-surface="outline"],[data-card-surface="both"])[data-card-border-weight="thick"]
-          .sproutly-card {
+          :is(.sproutly-card,.sproutly-card-box) {
           border-width: 3px;
         }
         section[data-edit-target]:is([data-card-surface="outline"],[data-card-surface="both"])[data-card-border-tone="soft"]
-          .sproutly-card {
+          :is(.sproutly-card,.sproutly-card-box) {
           border-color: color-mix(in srgb, currentColor 8%, transparent);
         }
         section[data-edit-target]:is([data-card-surface="outline"],[data-card-surface="both"])[data-card-border-tone="strong"]
-          .sproutly-card {
+          :is(.sproutly-card,.sproutly-card-box) {
           border-color: color-mix(in srgb, currentColor 34%, transparent);
         }
 
@@ -1526,11 +1536,11 @@ export default async function PublicStoreLayout({
            選擇器同樣多帶一個 :is(outline, both)，靠排在後面壓過上面那兩條。
            沒設就沒 attribute，線維持原本的實線。 */
         section[data-edit-target]:is([data-card-surface="outline"],[data-card-surface="both"])[data-card-border-style="dashed"]
-          .sproutly-card {
+          :is(.sproutly-card,.sproutly-card-box) {
           border-style: dashed;
         }
         section[data-edit-target]:is([data-card-surface="outline"],[data-card-surface="both"])[data-card-border-style="dotted"]
-          .sproutly-card {
+          :is(.sproutly-card,.sproutly-card-box) {
           border-style: dotted;
         }
 
@@ -1549,11 +1559,11 @@ export default async function PublicStoreLayout({
            靠排在後面壓過上面那兩條。
            沒設就沒 attribute，底維持原本的 6%。 */
         section[data-edit-target]:is([data-card-surface="panel"],[data-card-surface="both"])[data-card-panel-tone="soft"]
-          .sproutly-card {
+          :is(.sproutly-card,.sproutly-card-box) {
           background: color-mix(in srgb, currentColor 3%, transparent);
         }
         section[data-edit-target]:is([data-card-surface="panel"],[data-card-surface="both"])[data-card-panel-tone="strong"]
-          .sproutly-card {
+          :is(.sproutly-card,.sproutly-card-box) {
           background: color-mix(in srgb, currentColor 12%, transparent);
         }
 

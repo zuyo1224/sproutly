@@ -4496,6 +4496,15 @@ export default async function StoreHomePage({
               data-media-radius={statsStyle.mediaRadiusVal}
               data-grid-gap={statsStyle.gridGapVal}
               data-mobile-cols={statsStyle.mobileColumnsVal}
+              data-card-hover={statsStyle.cardHoverVal}
+              data-card-surface={statsStyle.cardSurfaceVal}
+              data-card-padding={statsStyle.cardPaddingVal}
+              data-card-radius={statsStyle.cardRadiusVal}
+              data-card-shadow={statsStyle.cardShadowVal}
+              data-card-border-weight={statsStyle.cardBorderWeightVal}
+              data-card-border-tone={statsStyle.cardBorderToneVal}
+              data-card-border-style={statsStyle.cardBorderStyleVal}
+              data-card-panel-tone={statsStyle.cardPanelToneVal}
               data-card-title-scale={statsStyle.cardTitleScaleVal}
               data-card-title-weight={statsStyle.cardTitleWeightVal}
               data-card-title-tracking={statsStyle.cardTitleTrackingVal}
@@ -4603,7 +4612,12 @@ export default async function StoreHomePage({
                   : "md:grid-cols-4"
                 }`}>
                   {theme.layout.stats.slice(0, 6).map((s, i) => (
-                    <div key={i} className="space-y-3">
+                    // 這一格是「卡片外觀」那組七格要套的方塊（底 / 框 / 內距 / 圓角 /
+                    // 陰影 / 框線 / 底色深淺）。掛的是 card-box 不是 .sproutly-card——
+                    // 那個 class 還帶著一批沒有 attribute 擋著的商品卡動作（滑過時品名
+                    // 字距撐開之類），這裡不要那些，見 layout.tsx 的說明。
+                    // 這個 class 本身不畫任何東西，商家沒設外觀時整組規則不存在。
+                    <div key={i} className="sproutly-card-box space-y-3">
                       <p
                         data-edit-text
                         data-edit-field="statValue"
@@ -4701,6 +4715,15 @@ export default async function StoreHomePage({
               data-grid-gap={partnersStyle.gridGapVal}
               data-partner-logo-scale={partnersStyle.partnerLogoScaleVal}
               data-partner-logo-opacity={partnersStyle.partnerLogoOpacityVal}
+              data-card-hover={partnersStyle.cardHoverVal}
+              data-card-surface={partnersStyle.cardSurfaceVal}
+              data-card-padding={partnersStyle.cardPaddingVal}
+              data-card-radius={partnersStyle.cardRadiusVal}
+              data-card-shadow={partnersStyle.cardShadowVal}
+              data-card-border-weight={partnersStyle.cardBorderWeightVal}
+              data-card-border-tone={partnersStyle.cardBorderToneVal}
+              data-card-border-style={partnersStyle.cardBorderStyleVal}
+              data-card-panel-tone={partnersStyle.cardPanelToneVal}
             >
               <div
                 className="sproutly-section-inner max-w-5xl mx-auto px-8 sm:px-12"
@@ -4753,18 +4776,23 @@ export default async function StoreHomePage({
                         style={{ filter: "var(--store-media-filter, grayscale(100%))" }}
                       />
                     );
+                    // 包住每個 logo 的那層掛 card-box，讓「卡片外觀」那組七格對這一段
+                    // 也有反應：一排裸著的 logo 直接躺在段落底色上時，深色底的店只看得到
+                    // 幾團浮著的白色形狀、淺色底的店那排轉黑白之後淡到像髒印子——媒體
+                    // 報導、合作品牌那種 logo 牆多半是一個一個放在淺色板子上排成一列。
+                    // 掛的是 card-box 不是 .sproutly-card，理由跟數字段同一個。
                     return p.href ? (
                       <a
                         key={i}
                         href={p.href}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="inline-block"
+                        className="sproutly-card-box inline-block"
                       >
                         {inner}
                       </a>
                     ) : (
-                      <div key={i} className="inline-block">
+                      <div key={i} className="sproutly-card-box inline-block">
                         {inner}
                       </div>
                     );
