@@ -799,6 +799,13 @@ export interface StoreTheme {
     // 壓半透明——半透明那層是為了讓沒挑色的店不被主色刺到，商家指定的顏色就是他要的）。
     heroMinimalRule: "none" | "short" | "normal" | "long"; // minimal 短橫線長度（預設 normal = 不覆寫）
     heroMinimalRuleColor: string | null; // minimal 短橫線顏色，hex；null = 全站主色壓半透明
+    // 那條短橫線的粗細。長度跟顏色都開了，厚度還是寫死的 1px——而這三件事是綁在一起看的：
+    // 96px 長的線配 1px，在一排放大的主標旁邊還是細得像沒對齊的痕跡；反過來挑了深色想
+    // 讓它真的看得見的店，1px 的深線又太像一條下劃線。雜誌版型那兩條橫線已經有一格
+    // 粗細（heroMagazineRuleWeight），split 的圖文分隔線也有，只有這一條沒有，而它是
+    // 這個版型唯一的圖形。三檔跟雜誌那格同一組數字 1 / 2 / 3px，再粗就不是線是色塊。
+    // 預設 normal 完全不覆寫（維持原本的 1px），既有店家算出來一模一樣。
+    heroMinimalRuleWeight: "normal" | "medium" | "thick"; // minimal 短橫線粗細（預設 normal = 1px）
     // minimal 版型「整段字靠哪邊」。前面幾格開的是這段字排多寬、上下留多少空、中間那條
     // 線多長什麼顏色，全部都在調「那一團字的框有多大」，可是字在框裡面靠哪一邊從頭到尾
     // 寫死置中（section 上一個 text-center，副標跟短橫線再各自 mx-auto 把自己推到中間）。
@@ -1623,6 +1630,11 @@ function resolveLayout(raw: unknown): StoreTheme["layout"] {
       return "normal" as const;
     })(),
     heroMinimalRuleColor: normalizeHexColor(l.heroMinimalRuleColor),
+    heroMinimalRuleWeight: (() => {
+      const v = l.heroMinimalRuleWeight;
+      if (v === "medium" || v === "thick") return v;
+      return "normal" as const;
+    })(),
     heroMinimalBg: normalizeHexColor(l.heroMinimalBg),
     heroMinimalGap: (() => {
       const v = l.heroMinimalGap;

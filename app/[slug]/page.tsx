@@ -2947,6 +2947,15 @@ export default async function StoreHomePage({
               ? "96px"
               : "48px";
           const minimalRuleColor = theme.layout.heroMinimalRuleColor;
+          // 那條線的厚度。長度跟顏色開了之後這是最後一個寫死的值（1px）：選了長的那檔
+          // 配放大的主標，1px 還是細得像沒對齊的痕跡；挑了深色想讓它出聲的店，1px 的
+          // 深線又像一條下劃線。三檔跟雜誌那兩條橫線同一組數字，跟預設不輸出（維持 1px）。
+          const minimalRuleHeight =
+            theme.layout.heroMinimalRuleWeight === "thick"
+              ? "3px"
+              : theme.layout.heroMinimalRuleWeight === "medium"
+              ? "2px"
+              : "1px";
           // 整段字靠哪邊。section 上寫死 text-center，副標與短橫線再各自 mx-auto——
           // 只改 text-align 的話字會靠邊、但那條線跟副標那塊還留在中間，變成各對各的，
           // 所以靠左 / 靠右時把那兩個 auto 一起蓋掉（inline 贏 class）。
@@ -3074,7 +3083,7 @@ export default async function StoreHomePage({
                     ...minimalBlockAlignStyle,
                     ...minimalGapTop(2.5),
                     width: minimalRuleWidth,
-                    height: "1px",
+                    height: minimalRuleHeight,
                     background: minimalRuleColor ?? theme.accent,
                     opacity: minimalRuleColor ? 1 : 0.5,
                   }}

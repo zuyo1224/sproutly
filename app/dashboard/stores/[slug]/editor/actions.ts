@@ -102,6 +102,7 @@ type EditorPayload = {
     heroMinimalPadXMobile?: string;
     heroMinimalRule?: string;
     heroMinimalRuleColor?: string | null;
+    heroMinimalRuleWeight?: string;
     heroMinimalAlign?: string;
     heroMinimalBg?: string | null;
     heroMinimalGap?: string;
@@ -719,6 +720,12 @@ export async function saveEditorState(slug: string, payload: EditorPayload) {
       const v = payload.layout.heroMinimalRule;
       if (v === "none" || v === "short" || v === "normal" || v === "long") {
         layoutPatch.heroMinimalRule = v;
+      }
+    }
+    if (payload.layout.heroMinimalRuleWeight !== undefined) {
+      const v = payload.layout.heroMinimalRuleWeight;
+      if (v === "normal" || v === "medium" || v === "thick") {
+        layoutPatch.heroMinimalRuleWeight = v;
       }
     }
     if (payload.layout.heroMinimalRuleColor !== undefined) {

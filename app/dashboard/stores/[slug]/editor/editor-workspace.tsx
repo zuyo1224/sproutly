@@ -158,6 +158,7 @@ type EditorTheme = {
     heroMinimalPadXMobile: "same" | "narrow" | "normal" | "wide";
     heroMinimalRule: "none" | "short" | "normal" | "long";
     heroMinimalRuleColor: string | null;
+    heroMinimalRuleWeight: "normal" | "medium" | "thick";
     heroMinimalAlign: "left" | "center" | "right";
     heroMinimalBg: string | null;
     heroMinimalGap: "tight" | "normal" | "loose";
@@ -1130,6 +1131,7 @@ export function EditorWorkspace({
           heroMinimalPadXMobile: t.layout.heroMinimalPadXMobile,
           heroMinimalRule: t.layout.heroMinimalRule,
           heroMinimalRuleColor: t.layout.heroMinimalRuleColor,
+          heroMinimalRuleWeight: t.layout.heroMinimalRuleWeight,
           heroMinimalAlign: t.layout.heroMinimalAlign,
           heroMinimalBg: t.layout.heroMinimalBg,
           heroMinimalGap: t.layout.heroMinimalGap,
@@ -4178,6 +4180,38 @@ export function EditorWorkspace({
                   下面的按鈕斷開。主標拉大或欄寬選寬的店，原本的長度在一整排大字底下細到
                   像沒擦乾淨的痕跡；主標只有兩三個字又選窄欄的店，它幾乎跟主標一樣長，
                   看起來像把字劃掉。只放一行店名、連按鈕都不要的話就選不顯示
+                </p>
+              </Field>
+            )}
+            {theme.layout.heroStyle === "minimal" &&
+              theme.layout.heroMinimalRule !== "none" && (
+              <Field label="短橫線粗細">
+                <div className="grid grid-cols-3 gap-1.5">
+                  {([
+                    { v: "normal", label: "跟預設" },
+                    { v: "medium", label: "粗" },
+                    { v: "thick", label: "更粗" },
+                  ] as const).map((opt) => (
+                    <button
+                      key={opt.v}
+                      type="button"
+                      onClick={() => updateLayout({ heroMinimalRuleWeight: opt.v })}
+                      aria-pressed={theme.layout.heroMinimalRuleWeight === opt.v}
+                      className={`rounded-lg border py-2 text-xs transition ${
+                        theme.layout.heroMinimalRuleWeight === opt.v
+                          ? "border-emerald-500 bg-emerald-50 text-emerald-900"
+                          : "border-stone-200 text-stone-600 hover:border-stone-400"
+                      }`}
+                    >
+                      {opt.label}
+                    </button>
+                  ))}
+                </div>
+                <p className="text-[10px] text-stone-500 mt-1">
+                  那條線有多厚。長度跟顏色都能挑了，厚度一直是最細的那一階：選了長的
+                  那檔又把主標放大的店，一條細線在一排大字底下還是像沒對齊的痕跡；
+                  挑了深色想讓它真的看得見的店，細的深線又像一條下劃線。粗細跟長度
+                  一起調才看得出這條線是「刻意的一筆」還是「一道痕」
                 </p>
               </Field>
             )}
