@@ -91,6 +91,44 @@ const SECTIONS_WITH_CARD_IMAGE: SectionKey[] = [
 // 配一行 caption，沒有「照片挪到文字左邊」這件事），規則也只落在 .sproutly-card 上。
 const SECTIONS_WITH_CARD_LAYOUT: SectionKey[] = ["collections", "featured", "journal"];
 
+// 「卡片間距」調的是卡片格線容器（.sproutly-card-grid）上的欄距與列距。page.tsx 只有七段
+// 有那個容器，也只在這七段的 section 上印 data-grid-gap；引言、常見問題、來坐坐那三段
+// 沒有格線（一整塊話、一題一題的收合、一欄店家資訊），attribute 沒印出去，那格按了畫面
+// 一個像素都不會動。
+const SECTIONS_WITH_CARD_GRID: SectionKey[] = [
+  "collections",
+  "featured",
+  "journal",
+  "testimonials",
+  "stats",
+  "partners",
+  "gallery",
+];
+
+// 「手機一列幾張」比上面那組再少一段：合作 logo 那排是 flex-wrap，一排排到滿自動換行、
+// 沒有欄數這回事，page.tsx 也就沒印 data-mobile-cols（layout.tsx 那條規則設的是
+// grid-template-columns，對 flex 容器本來就無效）。
+const SECTIONS_WITH_MOBILE_COLS: SectionKey[] = [
+  "collections",
+  "featured",
+  "journal",
+  "testimonials",
+  "stats",
+  "gallery",
+];
+
+// 「卡片標題行數」規則落在 .sproutly-card-title 上，但 page.tsx 只在商品卡 / 文章卡那三段
+// 印 data-card-title-lines（相簿是一張照片配一行 caption，那行掛的是描述不是標題）。
+// 客人的話、常見問題、數字那三段雖然也有 .sproutly-card-title，attribute 一樣沒印——
+// 要不要讓那幾段也能截行是另一件事（把一題答案截成一行等於把內容藏起來又沒地方展開），
+// 這裡先照既有做法：規則到不了的段落就不列。
+const SECTIONS_WITH_CARD_TITLE_LINES: SectionKey[] = ["collections", "featured", "journal"];
+
+// 「卡片描述行數」落在 .sproutly-card-desc：選物的副標、慢讀的摘要、相簿照片下那行 caption。
+// 精選那段品名底下擺的是價錢、沒掛這個 class，page.tsx 也沒印 data-card-desc-lines；
+// 客人的話、常見問題那兩段同上，有 class 但沒 attribute。
+const SECTIONS_WITH_CARD_DESC_LINES: SectionKey[] = ["collections", "journal", "gallery"];
+
 const ADDABLE_BLOCKS: { key: SectionKey; label: string; description: string }[] = [
   { key: "testimonials", label: "顧客評語", description: "3 個 quote card" },
   { key: "faq", label: "常見問題", description: "Accordion 展開式問答" },
@@ -8501,41 +8539,48 @@ export function EditorWorkspace({
               </Field>
                 </>
               )}
-              <Field label="卡片間距">
-                <div className="grid grid-cols-3 gap-1.5">
-                  {([
-                    { v: "tight", label: "緊湊" },
-                    { v: "normal", label: "預設" },
-                    { v: "loose", label: "寬鬆" },
-                  ] as const).map((opt) => (
-                    <button
-                      key={opt.v}
-                      type="button"
-                      onClick={() => patch({ gridGap: opt.v })}
-                      aria-pressed={(gridGap ?? "normal") === opt.v}
-                      className={`rounded-lg border py-2 text-xs transition ${
-                        (gridGap ?? "normal") === opt.v
-                          ? "border-emerald-500 bg-emerald-50 text-emerald-900"
-                          : "border-stone-200 text-stone-600 hover:border-stone-400"
-                      }`}
-                    >
-                      {opt.label}
-                    </button>
-                  ))}
-                </div>
-                <div className="mt-1.5 flex items-center justify-between text-[11px] text-stone-500">
-                  <span>調這一段卡片、照片彼此的距離（不是段落外圍的空白）</span>
-                  {gridGap && (
-                    <button
-                      type="button"
-                      onClick={() => patch({ gridGap: null })}
-                      className="text-stone-500 hover:text-stone-800 underline"
-                    >
-                      清除
-                    </button>
-                  )}
-                </div>
-              </Field>
+              {/* 「卡片間距」只在真的有卡片格線那七段列出來（見上面 SECTIONS_WITH_CARD_GRID）：
+                  引言、常見問題、來坐坐那三段沒有 .sproutly-card-grid、page.tsx 也沒印
+                  data-grid-gap，三顆按鈕在那邊按了畫面不會動。做法照「滑過卡片」「照片比例」
+                  那幾格——規則到不了的段落就不列，樣式本身一個字都沒改，以前在那三段按過的
+                  店值還留在資料裡（本來就沒效果）。 */}
+              {SECTIONS_WITH_CARD_GRID.includes(selectedSection) && (
+                <Field label="卡片間距">
+                  <div className="grid grid-cols-3 gap-1.5">
+                    {([
+                      { v: "tight", label: "緊湊" },
+                      { v: "normal", label: "預設" },
+                      { v: "loose", label: "寬鬆" },
+                    ] as const).map((opt) => (
+                      <button
+                        key={opt.v}
+                        type="button"
+                        onClick={() => patch({ gridGap: opt.v })}
+                        aria-pressed={(gridGap ?? "normal") === opt.v}
+                        className={`rounded-lg border py-2 text-xs transition ${
+                          (gridGap ?? "normal") === opt.v
+                            ? "border-emerald-500 bg-emerald-50 text-emerald-900"
+                            : "border-stone-200 text-stone-600 hover:border-stone-400"
+                        }`}
+                      >
+                        {opt.label}
+                      </button>
+                    ))}
+                  </div>
+                  <div className="mt-1.5 flex items-center justify-between text-[11px] text-stone-500">
+                    <span>調這一段卡片、照片彼此的距離（不是段落外圍的空白）</span>
+                    {gridGap && (
+                      <button
+                        type="button"
+                        onClick={() => patch({ gridGap: null })}
+                        className="text-stone-500 hover:text-stone-800 underline"
+                      >
+                        清除
+                      </button>
+                    )}
+                  </div>
+                </Field>
+              )}
               {/* 「滑過卡片」只在真的有可以滑的卡片那幾段列出來（見上面
                   SECTIONS_WITHOUT_HOVER_CARDS 的說明）：引言、客人的話、數字、來坐坐
                   那四段一格一格的東西都點不下去，滑過的動作在那邊本來就被擋掉了，
@@ -9010,114 +9055,126 @@ export function EditorWorkspace({
               )}
               </>
               )}
-              <Field label="手機一列幾張">
-                <div className="grid grid-cols-3 gap-1.5">
-                  {([
-                    { v: "auto", label: "跟預設" },
-                    { v: "one", label: "一張" },
-                    { v: "two", label: "兩張" },
-                  ] as const).map((opt) => (
-                    <button
-                      key={opt.v}
-                      type="button"
-                      onClick={() => patch({ mobileColumns: opt.v })}
-                      aria-pressed={(mobileColumns ?? "auto") === opt.v}
-                      className={`rounded-lg border py-2 text-xs transition ${
-                        (mobileColumns ?? "auto") === opt.v
-                          ? "border-emerald-500 bg-emerald-50 text-emerald-900"
-                          : "border-stone-200 text-stone-600 hover:border-stone-400"
-                      }`}
-                    >
-                      {opt.label}
-                    </button>
-                  ))}
-                </div>
-                <div className="mt-1.5 flex items-center justify-between text-[11px] text-stone-500">
-                  <span>只管手機畫面（上面那個「一列幾張」調的是桌機）。小商品用兩張一次看得多，主打商品、橫幅照片用一張看得清楚</span>
-                  {mobileColumns && (
-                    <button
-                      type="button"
-                      onClick={() => patch({ mobileColumns: null })}
-                      className="text-stone-500 hover:text-stone-800 underline"
-                    >
-                      清除
-                    </button>
-                  )}
-                </div>
-              </Field>
-              <Field label="卡片標題行數">
-                <div className="grid grid-cols-4 gap-1.5">
-                  {([
-                    { v: "auto", label: "跟預設" },
-                    { v: "one", label: "一行" },
-                    { v: "two", label: "兩行" },
-                    { v: "full", label: "完整" },
-                  ] as const).map((opt) => (
-                    <button
-                      key={opt.v}
-                      type="button"
-                      onClick={() => patch({ cardTitleLines: opt.v })}
-                      aria-pressed={(cardTitleLines ?? "auto") === opt.v}
-                      className={`rounded-lg border py-2 text-xs transition ${
-                        (cardTitleLines ?? "auto") === opt.v
-                          ? "border-emerald-500 bg-emerald-50 text-emerald-900"
-                          : "border-stone-200 text-stone-600 hover:border-stone-400"
-                      }`}
-                    >
-                      {opt.label}
-                    </button>
-                  ))}
-                </div>
-                <div className="mt-1.5 flex items-center justify-between text-[11px] text-stone-500">
-                  <span>卡片上那行品名（或文章標題）最多顯示幾行。精選商品原本只顯示一行，品名帶規格的選「完整」才看得完；標題長短不一撐得卡片高低不齊時選固定行數</span>
-                  {cardTitleLines && (
-                    <button
-                      type="button"
-                      onClick={() => patch({ cardTitleLines: null })}
-                      className="text-stone-500 hover:text-stone-800 underline"
-                    >
-                      清除
-                    </button>
-                  )}
-                </div>
-              </Field>
-              <Field label="卡片描述行數">
-                <div className="grid grid-cols-5 gap-1.5">
-                  {([
-                    { v: "auto", label: "跟預設" },
-                    { v: "one", label: "一行" },
-                    { v: "two", label: "兩行" },
-                    { v: "three", label: "三行" },
-                    { v: "full", label: "完整" },
-                  ] as const).map((opt) => (
-                    <button
-                      key={opt.v}
-                      type="button"
-                      onClick={() => patch({ cardDescLines: opt.v })}
-                      aria-pressed={(cardDescLines ?? "auto") === opt.v}
-                      className={`rounded-lg border py-2 text-xs transition ${
-                        (cardDescLines ?? "auto") === opt.v
-                          ? "border-emerald-500 bg-emerald-50 text-emerald-900"
-                          : "border-stone-200 text-stone-600 hover:border-stone-400"
-                      }`}
-                    >
-                      {opt.label}
-                    </button>
-                  ))}
-                </div>
-                <div className="mt-1.5 flex items-center justify-between text-[11px] text-stone-500">
-                  <span>品名底下那段描述最多顯示幾行（選物的副標、慢讀的摘要）。描述長短不一撐得同一列卡片高低不齊時選固定行數；精選商品那段底下是價錢，不受這格影響</span>
-                  {cardDescLines && (
-                    <button
-                      type="button"
-                      onClick={() => patch({ cardDescLines: null })}
-                      className="text-stone-500 hover:text-stone-800 underline"
-                    >
-                      清除
-                    </button>
-                  )}
-                </div>
-              </Field>
+              {/* 合作 logo 那段不列（見上面 SECTIONS_WITH_MOBILE_COLS）：那排是 flex-wrap
+                  排到滿自動換行，沒有欄數可設。 */}
+              {SECTIONS_WITH_MOBILE_COLS.includes(selectedSection) && (
+                <Field label="手機一列幾張">
+                  <div className="grid grid-cols-3 gap-1.5">
+                    {([
+                      { v: "auto", label: "跟預設" },
+                      { v: "one", label: "一張" },
+                      { v: "two", label: "兩張" },
+                    ] as const).map((opt) => (
+                      <button
+                        key={opt.v}
+                        type="button"
+                        onClick={() => patch({ mobileColumns: opt.v })}
+                        aria-pressed={(mobileColumns ?? "auto") === opt.v}
+                        className={`rounded-lg border py-2 text-xs transition ${
+                          (mobileColumns ?? "auto") === opt.v
+                            ? "border-emerald-500 bg-emerald-50 text-emerald-900"
+                            : "border-stone-200 text-stone-600 hover:border-stone-400"
+                        }`}
+                      >
+                        {opt.label}
+                      </button>
+                    ))}
+                  </div>
+                  <div className="mt-1.5 flex items-center justify-between text-[11px] text-stone-500">
+                    <span>只管手機畫面（上面那個「一列幾張」調的是桌機）。小商品用兩張一次看得多，主打商品、橫幅照片用一張看得清楚</span>
+                    {mobileColumns && (
+                      <button
+                        type="button"
+                        onClick={() => patch({ mobileColumns: null })}
+                        className="text-stone-500 hover:text-stone-800 underline"
+                      >
+                        清除
+                      </button>
+                    )}
+                  </div>
+                </Field>
+              )}
+              {/* 只有印了 data-card-title-lines 的三段列（見上面
+                  SECTIONS_WITH_CARD_TITLE_LINES）。 */}
+              {SECTIONS_WITH_CARD_TITLE_LINES.includes(selectedSection) && (
+                <Field label="卡片標題行數">
+                  <div className="grid grid-cols-4 gap-1.5">
+                    {([
+                      { v: "auto", label: "跟預設" },
+                      { v: "one", label: "一行" },
+                      { v: "two", label: "兩行" },
+                      { v: "full", label: "完整" },
+                    ] as const).map((opt) => (
+                      <button
+                        key={opt.v}
+                        type="button"
+                        onClick={() => patch({ cardTitleLines: opt.v })}
+                        aria-pressed={(cardTitleLines ?? "auto") === opt.v}
+                        className={`rounded-lg border py-2 text-xs transition ${
+                          (cardTitleLines ?? "auto") === opt.v
+                            ? "border-emerald-500 bg-emerald-50 text-emerald-900"
+                            : "border-stone-200 text-stone-600 hover:border-stone-400"
+                        }`}
+                      >
+                        {opt.label}
+                      </button>
+                    ))}
+                  </div>
+                  <div className="mt-1.5 flex items-center justify-between text-[11px] text-stone-500">
+                    <span>卡片上那行品名（或文章標題）最多顯示幾行。精選商品原本只顯示一行，品名帶規格的選「完整」才看得完；標題長短不一撐得卡片高低不齊時選固定行數</span>
+                    {cardTitleLines && (
+                      <button
+                        type="button"
+                        onClick={() => patch({ cardTitleLines: null })}
+                        className="text-stone-500 hover:text-stone-800 underline"
+                      >
+                        清除
+                      </button>
+                    )}
+                  </div>
+                </Field>
+              )}
+              {/* 只有印了 data-card-desc-lines 的三段列（見上面
+                  SECTIONS_WITH_CARD_DESC_LINES）。 */}
+              {SECTIONS_WITH_CARD_DESC_LINES.includes(selectedSection) && (
+                <Field label="卡片描述行數">
+                  <div className="grid grid-cols-5 gap-1.5">
+                    {([
+                      { v: "auto", label: "跟預設" },
+                      { v: "one", label: "一行" },
+                      { v: "two", label: "兩行" },
+                      { v: "three", label: "三行" },
+                      { v: "full", label: "完整" },
+                    ] as const).map((opt) => (
+                      <button
+                        key={opt.v}
+                        type="button"
+                        onClick={() => patch({ cardDescLines: opt.v })}
+                        aria-pressed={(cardDescLines ?? "auto") === opt.v}
+                        className={`rounded-lg border py-2 text-xs transition ${
+                          (cardDescLines ?? "auto") === opt.v
+                            ? "border-emerald-500 bg-emerald-50 text-emerald-900"
+                            : "border-stone-200 text-stone-600 hover:border-stone-400"
+                        }`}
+                      >
+                        {opt.label}
+                      </button>
+                    ))}
+                  </div>
+                  <div className="mt-1.5 flex items-center justify-between text-[11px] text-stone-500">
+                    <span>品名底下那段描述最多顯示幾行（選物的副標、慢讀的摘要）。描述長短不一撐得同一列卡片高低不齊時選固定行數；精選商品那段底下是價錢，不受這格影響</span>
+                    {cardDescLines && (
+                      <button
+                        type="button"
+                        onClick={() => patch({ cardDescLines: null })}
+                        className="text-stone-500 hover:text-stone-800 underline"
+                      >
+                        清除
+                      </button>
+                    )}
+                  </div>
+                </Field>
+              )}
               <Field label="卡片標題字級">
                 <div className="grid grid-cols-3 gap-1.5">
                   {([
