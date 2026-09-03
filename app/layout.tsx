@@ -1,10 +1,20 @@
 import type { Metadata, Viewport } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Hanken_Grotesk, Noto_Sans_TC, Geist_Mono } from "next/font/google";
 import "./globals.css";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
+// Botanic Lab 字型系統：拉丁標題/介面用 Hanken Grotesk（幾何 grotesk，現代乾淨），
+// 中文內文用 Noto Sans TC，資料/價格/網址這類等寬資訊保留 Geist Mono。
+const hankenGrotesk = Hanken_Grotesk({
+  variable: "--font-hanken",
   subsets: ["latin"],
+  display: "swap",
+});
+
+const notoSansTC = Noto_Sans_TC({
+  variable: "--font-noto-tc",
+  weight: ["400", "500", "700", "900"],
+  subsets: ["latin"],
+  display: "swap",
 });
 
 const geistMono = Geist_Mono({
@@ -36,10 +46,7 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: [
-    { media: "(prefers-color-scheme: light)", color: "#f0fdf4" },
-    { media: "(prefers-color-scheme: dark)", color: "#10b981" },
-  ],
+  themeColor: "#ffffff",
   colorScheme: "light",
 };
 
@@ -51,7 +58,7 @@ export default function RootLayout({
   return (
     <html
       lang="zh-Hant-TW"
-      className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
+      className={`${hankenGrotesk.variable} ${notoSansTC.variable} ${geistMono.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col">{children}</body>
     </html>

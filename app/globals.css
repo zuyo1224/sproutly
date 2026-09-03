@@ -1,45 +1,115 @@
 @import "tailwindcss";
 
+/* ───────────────────────────────────────────────────────────────
+   Botanic Lab — Sproutly 全站設計系統
+   純白底 · 墨綠近黑 · 鮮活葉綠 · 草綠 accent。現代、乾淨、科技 maker。
+   全站 emerald-* / lime-* class 在下方 @theme 被重新定義成這套色相，
+   改這一處 → 29 個檔、340+ 處用色一起換臉，元件不必逐個動。
+   ─────────────────────────────────────────────────────────────── */
+
 :root {
   --background: #ffffff;
-  --foreground: #171717;
+  --foreground: #15241b; /* 墨綠近黑，取代純黑 #171717 */
+
+  /* Botanic Lab 品牌主色（給少數要直接吃變數的地方用） */
+  --sproutly-paper: #ffffff;
+  --sproutly-ink: #15241b; /* 墨綠近黑 — 標題 / 主文字 */
+  --sproutly-leaf: #2e7d52; /* 鮮活葉綠 — 主行動 */
+  --sproutly-sprout: #7aa82e; /* 草綠 accent — 發芽點綴 */
 
   /* Layered elevation tokens — 全站共用（卡片 / hero / button） */
   --sproutly-elev-1:
-    0 1px 2px rgba(0, 0, 0, 0.04),
-    0 2px 8px -2px rgba(0, 0, 0, 0.04);
+    0 1px 2px rgba(21, 36, 27, 0.04),
+    0 2px 8px -2px rgba(21, 36, 27, 0.05);
   --sproutly-elev-2:
-    0 1px 2px rgba(0, 0, 0, 0.04),
-    0 4px 14px -4px rgba(0, 0, 0, 0.06),
-    0 16px 32px -16px rgba(0, 0, 0, 0.06);
+    0 1px 2px rgba(21, 36, 27, 0.04),
+    0 4px 14px -4px rgba(21, 36, 27, 0.07),
+    0 16px 32px -16px rgba(21, 36, 27, 0.07);
   --sproutly-elev-3:
-    0 2px 4px rgba(0, 0, 0, 0.05),
-    0 12px 28px -8px rgba(0, 0, 0, 0.08),
-    0 32px 56px -24px rgba(0, 0, 0, 0.12);
+    0 2px 4px rgba(21, 36, 27, 0.05),
+    0 12px 28px -8px rgba(21, 36, 27, 0.09),
+    0 32px 56px -24px rgba(21, 36, 27, 0.13);
   --sproutly-elev-4:
-    0 4px 8px rgba(0, 0, 0, 0.06),
-    0 24px 40px -12px rgba(0, 0, 0, 0.12),
-    0 48px 80px -32px rgba(0, 0, 0, 0.18);
+    0 4px 8px rgba(21, 36, 27, 0.06),
+    0 24px 40px -12px rgba(21, 36, 27, 0.13),
+    0 48px 80px -32px rgba(21, 36, 27, 0.18);
+}
+
+/* ── 重映射 Tailwind 預設色階 → Botanic Lab ──
+   emerald = 葉綠主軸（H≈150，自然不螢光）；lime = sprout 草綠點綴（H≈80）。
+   現有元件寫的是 emerald-900 / emerald-700 / lime-600… 全部自動換成這套。 */
+@theme {
+  --color-emerald-50: #eef6f0;
+  --color-emerald-100: #d6eadd;
+  --color-emerald-200: #afd6bd;
+  --color-emerald-300: #7fbc97;
+  --color-emerald-400: #4f9d6e;
+  --color-emerald-500: #2e7d52; /* leaf 鮮活葉綠 */
+  --color-emerald-600: #25663f;
+  --color-emerald-700: #1d4f33; /* 主按鈕 */
+  --color-emerald-800: #173e29;
+  --color-emerald-900: #15241b; /* 墨綠近黑 — 主文字 */
+  --color-emerald-950: #0c1610;
+
+  --color-lime-50: #f4f8ea;
+  --color-lime-100: #e6f0ce;
+  --color-lime-200: #d0e3a4;
+  --color-lime-300: #b5d173;
+  --color-lime-400: #9dbf4d;
+  --color-lime-500: #7aa82e; /* sprout 草綠 accent */
+  --color-lime-600: #638a22;
+  --color-lime-700: #4e6d1c;
+  --color-lime-800: #3e5618;
+  --color-lime-900: #2f3f14;
+  --color-lime-950: #1a2409;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
+  --font-sans: var(--font-hanken), var(--font-noto-tc);
   --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  /* 拉丁 → Hanken Grotesk；中文 → Noto Sans TC（Apple 裝置 fallback PingFang TC）。
+     修掉舊版寫死的 Arial（等於載了字型卻沒用、中文掉回系統預設）。 */
+  font-family:
+    var(--font-hanken), var(--font-noto-tc), "PingFang TC", "Noto Sans TC",
+    system-ui, sans-serif;
+}
+
+/* 首頁 hero 進場 —— 只動 transform / opacity（GPU 友善），spring 式 easing。
+   莖芽從基線往上抽長，標題與行動鍵依序浮現。reduced-motion 由下方防護網接管。 */
+@keyframes sprout-grow {
+  from {
+    transform: scaleY(0);
+  }
+  to {
+    transform: scaleY(1);
+  }
+}
+
+@keyframes rise-in {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.anim-sprout {
+  transform-origin: bottom center;
+  animation: sprout-grow 0.9s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.anim-rise {
+  animation: rise-in 0.7s cubic-bezier(0.22, 1, 0.36, 1) both;
 }
 
 /* 把動效全網關小 —— 客人在系統設定裡開了「減少動態效果」（前庭不適、暈眩、
