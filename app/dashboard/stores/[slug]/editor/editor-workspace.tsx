@@ -1060,14 +1060,6 @@ export function EditorWorkspace({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [theme]);
 
-  function moveSection(from: number, to: number) {
-    if (to < 0 || to >= theme.layout.sectionOrder.length) return;
-    const next = [...theme.layout.sectionOrder];
-    const [moved] = next.splice(from, 1);
-    next.splice(to, 0, moved);
-    updateLayout({ sectionOrder: next });
-  }
-
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 4 } }),
     useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates })
