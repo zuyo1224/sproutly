@@ -287,7 +287,7 @@ export default async function OrdersListPage({
     if (!next || !verb) return null;
     return (
       <form
-        action={advanceOrderStatus.bind(null, slug, o.id, o.status, listQs)}
+        action={advanceOrderStatus.bind(null, slug, o.id, o.status, listQs, "")}
         className="relative z-10"
       >
         <SubmitButton

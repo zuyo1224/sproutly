@@ -2,7 +2,7 @@ import { requireUser } from "@/lib/require-user";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import { resolveTheme } from "@/app/[slug]/_theme";
-import { updateOrderStatus } from "./orders/[orderId]/actions";
+import { advanceOrderStatus } from "./orders/actions";
 
 type Params = Promise<{ slug: string }>;
 
@@ -738,15 +738,23 @@ export default async function StoreInsightsPage({
                     </span>
                   </Link>
                   {isPending && (
+                    // 以前這裡直接呼叫詳情頁那支 updateOrderStatus，按完會把商家從
+                    // 店面首頁丟去這筆單的詳情頁——首頁這顆「快速確認」的用意是掃過
+                    // 近期訂單隨手處理，結果按一下反而離開了正在看的首頁，跟訂單/
+                    // 商品列表那幾顆「按完留在原地」的快速動作不同調。改用訂單列表
+                    // 同一支 advanceOrderStatus（待確認→已確認，同一條推進邏輯、同樣
+                    // 防連點兩次生效），多帶 returnTo 指回店面首頁，按完還在首頁上。
                     <form
-                      action={updateOrderStatus.bind(null, slug, o.id)}
+                      action={advanceOrderStatus.bind(
+                        null,
+                        slug,
+                        o.id,
+                        o.status,
+                        "",
+                        `/dashboard/stores/${slug}`
+                      )}
                       className="flex-shrink-0"
                     >
-                      <input
-                        type="hidden"
-                        name="status"
-                        value="confirmed"
-                      />
                       <button
                         type="submit"
                         className="text-xs px-3 py-1.5 rounded-full bg-emerald-700 text-white hover:bg-emerald-800 transition font-medium shadow-sm"

@@ -15,7 +15,14 @@ export async function advanceOrderStatus(
   // 按鈕畫出來當下這筆單是什麼狀態。帶著它是為了兩個分頁同時開列表的情況：另一頁
   // 剛把單推到已出貨，這頁畫面還停在「確認」，若不比對就會照按照推，一下跳兩格。
   fromStatus: string,
-  returnQs: string
+  returnQs: string,
+  // 成功／原地不動時要跳回哪裡：空字串就退回訂單列表（帶著 returnQs）；店面首頁的
+  // 「近期訂單」小工具也用同一顆按鈕做同一件事，按完不該把商家從首頁丟去訂單列表或
+  // 單筆詳情頁——傳這個路徑讓它按完留在首頁。出錯仍然導去訂單列表顯示錯誤，跟原本
+  // 一樣。（型別上寫成必填字串而不是可選：這是 server action、靠 .bind 固定參數，
+  // 可選參數在只 bind 前 4 個值的呼叫端會讓 TS 把它當成表單的 formData 型別檢查，
+  // 兩邊對不上就編譯不過。）
+  returnTo: string
 ) {
   const { supabase, user } = await requireUser();
 
@@ -27,7 +34,8 @@ export async function advanceOrderStatus(
     .maybeSingle();
   if (!store) redirect("/dashboard");
 
-  const listUrl = `/dashboard/stores/${slug}/orders${returnQs ? `?${returnQs}` : ""}`;
+  const defaultListUrl = `/dashboard/stores/${slug}/orders${returnQs ? `?${returnQs}` : ""}`;
+  const listUrl = returnTo ? returnTo : defaultListUrl;
 
   const { data: current } = await supabase
     .from("sproutly_orders")
