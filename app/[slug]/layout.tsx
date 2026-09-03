@@ -711,7 +711,7 @@ export default async function PublicStoreLayout({
 
         /* 區段標題字級：editor 各 section panel「標題大小」三按鈕（小 0.85 / 預設 1 / 大 1.25）。
            這條規則以前是「所有 section h2 一律 font-size: calc(1em * var(--store-heading-scale, 1))」
-           ——沒設定的店家也吃得到，而 1em 是相對「上一層」的字級，不是 h2 自己的。這個 <style>
+           ——沒設定的店家也吃得到，而 1em 是相對「上一層」的字級，不是 h2 自己的。這個 CSS
            沒有包在 @layer 裡，Tailwind v4 的工具類全在 @layer utilities，沒分層的一律贏有分層的，
            所以 h2 上的 text-3xl / text-4xl 全被蓋掉：每間店的區段標題都縮成內文大小（實測該是
            30px 的標題渲染出來 16px），標題跟內文分不出來；設了「大」也只是內文的 1.25 倍。
@@ -786,13 +786,13 @@ export default async function PublicStoreLayout({
            標題挑的：中文換到第二行時上下兩行的筆畫幾乎貼在一起。
            底下那條「區段內文行高」刻意跳過 h1-h3（標題行高跟字級綁在一起，跟內文一起拉開
            會散掉），所以標題這邊要自己一條。同樣走 data attribute：沒設就整條規則不存在，
-           各段維持自己 class 附帶的那個值。這份 <style> 沒包在 @layer，蓋得過 leading-* class。
+           各段維持自己 class 附帶的那個值。這份 CSS 沒包在 @layer，蓋得過 leading-* class。
            排除 hero — hero 主標自成一組控制，跟標題粗細、底線那幾條同一個範圍。
            收緊給 1.1 不給更小：中文的字在行框裡本來就佔滿，1.0 以下上下兩行會疊到筆畫。
            跟粗細同一個處境：慢讀 / 好評 / 常見問題 / 數字 / 相簿 / 來訪那六段的 h2 在 inline
            style 裡寫死 lineHeight 1.2，inline 贏過這裡，只寫 line-height 這一格對那六段是死的。
            一起寫出 --heading-leading，page.tsx 改讀 var(--heading-leading, 1.2)；選物與精選
-           那幾個 h2 的行距在 class 上（這份 <style> 沒包 @layer，蓋得過），本來就吃得到。 */
+           那幾個 h2 的行距在 class 上（這份 CSS 沒包 @layer，蓋得過），本來就吃得到。 */
         section[data-edit-target]:not([data-edit-target="hero"])[data-heading-leading="tight"] h2 {
           line-height: 1.1;
           --heading-leading: 1.1;
@@ -861,7 +861,7 @@ export default async function PublicStoreLayout({
            之類 Tailwind class，元素自己的 class 一律蓋掉繼承值。結果商家把行高調成舒展，
            畫面上會動的只有極少數沒帶 leading class 的字，段落本身紋風不動；這控制點得動、
            存得進去，看起來就是壞的（跟區段字體 693459c、標題大小 5f18af9 同一個毛病）。
-           這份 <style> 沒包在 @layer，Tailwind v4 的工具類全在 @layer utilities，沒分層的
+           這份 CSS 沒包在 @layer，Tailwind v4 的工具類全在 @layer utilities，沒分層的
            一律贏有分層的，所以這幾條規則蓋得過 leading-* class。
            只套內文元素（段落 / 條列 / 引言 / 圖說），不碰 h1-h3 —— 標題的行高是設計上跟
            字級綁在一起的（大標 1.05、卡片標題 1.4），跟著內文一起拉開會散掉；商家要調
@@ -879,7 +879,7 @@ export default async function PublicStoreLayout({
            同進退：商家想做報紙與雜誌最常見的「標題置中、內文靠左」（長段落靠左才好讀，
            置中的長文每行起點都在跳），只能整段改對齊、標題跟著跑掉，等於做不到。
            改不了的原因跟行高那組一樣：段落自己帶 text-center / text-left class，元素自己的
-           class 一律蓋掉繼承來的值，光在容器上換 inline text-align 動不了它們。這份 <style>
+           class 一律蓋掉繼承來的值，光在容器上換 inline text-align 動不了它們。這份 CSS
            沒包在 @layer，Tailwind v4 的工具類全在 @layer utilities，沒分層的贏有分層的，所以
            這幾條規則蓋得過 text-* class。
            只套內文元素（段落 / 條列 / 引言 / 圖說），跟行高那組同一份選擇器：標題留給
@@ -1237,7 +1237,7 @@ export default async function PublicStoreLayout({
            下字的兩層式 logo、圓形品牌章，同樣 48px 高只有中間一小塊是字，客人認不出是誰。
            反過來只放兩三個大廠 logo 撐場面的店，48px 在一整排空白裡小得像註腳。
            三個寬度各給一個值，跟原本那三個 class 一樣的斷點：只寫一個高度的話，手機上會直接
-           吃到桌機那個值，一排 logo 把窄螢幕擠到自動換行。這份 <style> 沒包在 @layer，選擇器
+           吃到桌機那個值，一排 logo 把窄螢幕擠到自動換行。這份 CSS 沒包在 @layer，選擇器
            又比 class 精確，蓋得過 h-8 那組。沒設就沒 attribute、整條規則不存在。 */
         section[data-edit-target][data-partner-logo-scale="small"] .sproutly-partner-logo {
           height: 1.5rem;
@@ -1939,7 +1939,7 @@ export default async function PublicStoreLayout({
            要蓋掉的是品名那行自己帶的 text-base / text-lg class：段落上調字級的那幾欄，
            「標題大小」動的是大標、「全網站字體大小」動的是內文那一層、「小標字級」動的是
            eyebrow，都到不了卡片裡的 h3——跟小標字級那組同一個處境同一個解法，attribute 讓
-           這裡補一條更精確的規則（這份 <style> 沒包在 @layer，贏在 @layer utilities 的
+           這裡補一條更精確的規則（這份 CSS 沒包在 @layer，贏在 @layer utilities 的
            Tailwind 工具類）。
            用 zoom 不用 font-size：三段的 16 / 18 / 20px 是各段自己挑的差別，寫死一個
            font-size 會把三種拉成同一級（跟小標字級那組同一個理由）。zoom 連著行高與底下
@@ -1987,7 +1987,7 @@ export default async function PublicStoreLayout({
            figcaption / dd 上（見上面那段），卡片裡的品名是 h3、整組跳過；「卡片行距」動的
            是卡片裡不同行之間那截 margin（照片到品名、品名到價錢），同一行字自己換行不歸它
            管；「卡片標題字級」換的是字多大，行距是跟著字級走的比例。
-           規則落在 .sproutly-card-title，這份 <style> 沒包在 @layer、贏得過 Tailwind 的
+           規則落在 .sproutly-card-title，這份 CSS 沒包在 @layer、贏得過 Tailwind 的
            leading-[1.4] 與字級 class 自帶的行高，一條規則就蓋得過去。
            寫死一個值不等比：行距本來就是 unitless 的比例，三段之間 1.4 與 1.56 的差是字級
            class 附帶的、不是誰刻意設計的層次——跟卡片行距那格（同一張卡上幾截距離有主次，
@@ -2057,7 +2057,7 @@ export default async function PublicStoreLayout({
            的是價錢，不掛這個 class，不受影響。
            寫死不等比（跟品名那組同一個理由）：1.43 與 1.85 的差是兩段各自的 class 附帶的，
            不是刻意設計的層次，這格要的就是兩段一起落到同一個密度。leading-[1.85] 是 Tailwind
-           class，這份 <style> 沒包在 @layer，蓋得過去。 */
+           class，這份 CSS 沒包在 @layer，蓋得過去。 */
         section[data-edit-target][data-card-desc-leading="tight"] .sproutly-card-desc {
           line-height: 1.4;
         }
@@ -2074,7 +2074,7 @@ export default async function PublicStoreLayout({
            它再退一點也只能整段調深淺，沒辦法只動粗細。
            規則落在 .sproutly-card-desc，跟字級、行距、行數那幾組同一個範圍：精選那段同一個
            位置放的是價錢，不掛這個 class，而且價錢自己有一格粗細，不受影響。
-           選物與慢讀那兩段的 inline style 只有顏色，粗細是 class 那層的預設，這份 <style>
+           選物與慢讀那兩段的 inline style 只有顏色，粗細是 class 那層的預設，這份 CSS
            沒包在 @layer，直接蓋得過去；顧客評語那段的引言把 400 寫在自己的 inline style 上
            （inline 壓得過任何 CSS 規則），所以跟品名那組一樣多給一條 --card-desc-weight，
            讓寫在 inline 的那行也跟著這格走。沒設就沒變數，那行照樣讀 fallback 的 400。
@@ -2157,7 +2157,7 @@ export default async function PublicStoreLayout({
            段落最上面那行小標早就有這一格（data-eyebrow-track），那條規則落在段落自己的
            eyebrow 上，到不了卡片裡；「字距」那欄設的是整段，這幾行自己帶著 0.3em / 0.4em
            動都不動。
-           兩條規則：一條蓋 class 上的字距（這份 <style> 沒包在 @layer，贏得過 Tailwind 的
+           兩條規則：一條蓋 class 上的字距（這份 CSS 沒包在 @layer，贏得過 Tailwind 的
            tracking-[0.3em]），一條給 --card-micro-track 讓精選那行寫在 inline style 裡的
            「剩 N」也跟著走（inline 蓋不過，只能繞變數，跟卡片標題粗細那組同一個作法）。
            收緊給 0.12em 不給 0：這種小字的樣式標誌就是那個比內文寬的字距，收到 0 會變成
@@ -2208,7 +2208,7 @@ export default async function PublicStoreLayout({
            給四個值不是三個，跟小標粗細那組同一個理由：精選那行本來就是 500，只給「跟預設
            / 中黑 / 粗」的話它沒有一顆按鈕退得回 400，對最需要這格的那一段等於是壞的。
            不必繞 CSS variable：這幾行的粗細寫在 class 上（inline style 只有顏色與字距），
-           這份 <style> 沒包在 @layer，一條規則就蓋得過去——跟卡片描述、卡片價錢那兩組同一
+           這份 CSS 沒包在 @layer，一條規則就蓋得過去——跟卡片描述、卡片價錢那兩組同一
            個處境，不像品名那組得靠變數傳。
            400 / 500 / 700 都是這支 layout 已經載進來的字重，不給 300 那種細的：沒載的字重
            瀏覽器會拿常規去假變細，10px 的中文筆畫直接糊成一團，比原本更看不清楚。 */
@@ -2233,7 +2233,7 @@ export default async function PublicStoreLayout({
            而且商家改字沒用——轉換發生在畫面上不在資料裡，輸入框看到的還是自己打的小寫。
            要蓋掉的是那幾行自己帶的 uppercase class（段落那層沒有一欄傳得下去），跟卡片小字
            字級、字距、行距、粗細同一個處境同一個解法：attribute 讓這裡補一條更精確的規則壓
-           過去（這份 <style> 沒包在 @layer，贏在 @layer utilities 的 Tailwind 工具類）。
+           過去（這份 CSS 沒包在 @layer，贏在 @layer utilities 的 Tailwind 工具類）。
            三檔裡留「全大寫」是因為那幾行本來就是 uppercase，少了這一檔按過 capitalize 之後
            沒有一顆按鈕退得回原本的樣子（跟卡片小字粗細留「跟預設」同一個理由）。它是「照原本
            的」那一檔，按下去等於把這一欄清掉，所以這裡只有另外兩檔有規則。
@@ -2274,7 +2274,7 @@ export default async function PublicStoreLayout({
         /* 滿版版型「Hero 高度」的手機那一格（heroHeightMobile）。桌機那格是 class 上的
            min-h-[60vh] / min-h-[80vh] / min-h-screen，手機桌機同一個值——同一張照片手機
            滿寬顯示比桌機高得多、字又小一半，桌機剛好的高度到手機常常不是被硬撐一大截
-           空色塊、就是想撐反而不夠。跟雜誌那組同一招：只管 767px 以下、贏在這份 <style>
+           空色塊、就是想撐反而不夠。跟雜誌那組同一招：只管 767px 以下、贏在這份 CSS
            沒包 @layer。auto 那檔把桌機的 min-height 清回 0，手機照內容長（桌機的 flex /
            grow 還掛著，但沒有多出來的高度可分，算出來跟自適應一樣）。三個高度檔要自己補
            flex 直排 + 文字段 grow——桌機選自適應時 page.tsx 不掛那兩個 class，沒補的話
@@ -2310,7 +2310,7 @@ export default async function PublicStoreLayout({
         /* minimal 版型「上下留白」的手機那一格（heroMinimalPaddingMobile）。桌機那格是
            公開頁 section 上的 inline paddingTop / paddingBottom，一寫手機桌機一起蓋，
            手機那格插不進去；改成掛 attribute、在這裡蓋回來。帶 !important 是因為要贏的
-           是同一個 section 的 inline padding——這份 <style> 沒包 @layer，不帶只贏得過
+           是同一個 section 的 inline padding——這份 CSS 沒包 @layer，不帶只贏得過
            class（沒挑桌機那格時的 py-40 sm:py-56）。
            斷點用 639px 不是別處那組的 767px：原本的 py-40 sm:py-56 就是在 640px 換檔，
            跟著 sm 走，「跟桌機一樣」那檔（不掛 attribute）在 640-767px 才不會被這組
@@ -2358,7 +2358,7 @@ export default async function PublicStoreLayout({
         /* 主標字級的手機那一格（heroTaglineFontScaleMobile）。桌機那格動過 slider 時是
            h1 上的 inline fontSize，media query 插不進 inline，所以手機的值由公開頁算好
            clamp、塞進同一顆 h1 的 --hero-tagline-fs-m，這裡只負責在 767px 以下拿出來套。
-           帶 !important 是因為要贏的是同一顆 h1 的 inline fontSize——這份 <style> 沒包
+           帶 !important 是因為要贏的是同一顆 h1 的 inline fontSize——這份 CSS 沒包
            @layer 只贏得過 class（桌機 slider 沒動過時的 text-3xl sm:text-4xl 那組），
            贏不過 inline。跟桌機一樣 = 不掛 attribute，這條規則匹配不到，兩端照舊。 */
         @media (max-width: 767px) {
@@ -2370,7 +2370,7 @@ export default async function PublicStoreLayout({
         /* split 版型圖文比例：editor Hero panel「圖文比例」三按鈕（圖窄 / 跟預設 / 圖寬）。
            欄寬字串由公開頁算好（已把「圖在右」的 order 反轉考慮進去）從 inline style 的
            --store-hero-split 進來，這裡只負責讓它蓋過 Tailwind 的 md:grid-cols-2——同樣
-           贏在這份 <style> 沒包 @layer。
+           贏在這份 CSS 沒包 @layer。
            只在 md 以上寫規則：手機的 split 是圖上文下的單欄堆疊（grid-cols-1），欄寬對它
            沒有意義，硬套會把圖擠成一條。
            跟預設那一檔不輸出 attribute 也不輸出變數，整條規則不存在，既有店家的 50:50
@@ -2415,7 +2415,7 @@ export default async function PublicStoreLayout({
 
         /* split 版型文字欄左右內距：editor Hero panel「文字欄左右留白」三按鈕
            （窄 / 跟預設 / 寬）。值由公開頁算好從 inline style 的 --store-hero-split-pad
-           進來，這裡負責蓋掉那欄 class 上的 md:px-16 lg:px-24——同樣贏在這份 <style>
+           進來，這裡負責蓋掉那欄 class 上的 md:px-16 lg:px-24——同樣贏在這份 CSS
            沒包 @layer。
            只寫在 md 以上：手機的 split 是單欄堆疊，那時候的 px-8 是全站左右邊界（跟
            導覽列與後面每一段對齊），改掉這一段就會變成整頁唯一沒對齊的一段。
@@ -2430,7 +2430,7 @@ export default async function PublicStoreLayout({
 
         /* split 版型文字欄手機上下留白：editor Hero panel「手機上文字段上下留白」三按鈕
            （窄 / 跟預設 / 寬）。值由公開頁算好從 inline style 的 --store-hero-split-pady
-           進來，這裡負責蓋掉那欄 class 上的 py-20——同樣贏在這份 <style> 沒包 @layer。
+           進來，這裡負責蓋掉那欄 class 上的 py-20——同樣贏在這份 CSS 沒包 @layer。
            只寫在 767px 以下：平板以上 class 上是 md:py-0，那個 0 是刻意的（那時候字在
            欄裡的高度歸「文字靠哪」那格用 justify-content 分），套上內距會讓靠上 / 靠下
            對不到照片的上下緣。左右那格剛好相反（只寫在 md 以上），兩格管的是不同方向、
@@ -2513,7 +2513,7 @@ export default async function PublicStoreLayout({
            寫成 CSS 而不是 inline 的 minHeight，是因為 inline 會連手機那個 min-h-[80vh]
            一起蓋掉，得再補一條把它還原，不如讓斷點自己管。
            選 element + attribute 兩層，贏得過 Tailwind 那個單一 class（同樣贏在這份
-           <style> 沒包 @layer）。
+           CSS 沒包 @layer）。
            這一組只管 md 以上；手機那份（跟著內容 0 / 七成螢幕 70vh）寫在上面
            max-width: 767px 那組裡，跟列高的規則放一起。
            跟預設那一檔不輸出 attribute，整條規則不存在，既有店家的整屏原樣留著。 */
@@ -2583,7 +2583,7 @@ export default async function PublicStoreLayout({
            原本沒有一格動得到：「卡片標題粗細」動的是品名那行（h3）、「標題粗細」動的是
            段落大標、「卡片價錢字級」只換大小、「卡片副文字深淺」動的是那層透明度。
            跟卡片標題粗細那組不同，這行沒有 inline 的 font-weight（品名那行有，所以那組得
-           繞 --card-title-weight 變數），這份 <style> 沒包在 @layer、贏得過 Tailwind 的
+           繞 --card-title-weight 變數），這份 CSS 沒包在 @layer、贏得過 Tailwind 的
            工具類，一條規則就蓋得過去，不用再多一個變數。
            400 / 500 / 700 都是這支 layout 已經載進來的字重，不給 300 那種細的——沒載的
            字重瀏覽器會拿常規去假變細，中文筆畫糊掉，跟卡片標題粗細那組同一個理由。
@@ -2728,7 +2728,7 @@ export default async function PublicStoreLayout({
            串小標、兩行大標之後三行黏成一團，分不出誰是標題；反過來只有兩三個字的短標題，中間
            空著會讓小標飄在上面像跟這段沒關係。
            要蓋掉的是那兩行自己帶的 mb-* / mt-* class，段落上的 inline style 傳不下去，改容器
-           也動不了它們——跟卡片那幾組同一個處境同一個解法。這份 <style> 沒包在 @layer，
+           也動不了它們——跟卡片那幾組同一個處境同一個解法。這份 CSS 沒包在 @layer，
            Tailwind v4 的工具類全在 @layer utilities，沒分層的贏有分層的，所以蓋得過。
            一樣用 clamp 不寫死：原本那些 mb/mt 在手機上就已經偏擠，收緊寫死會黏成一塊。
            規則只落在小標與大標底下那行，大標自己不動（它的位置由上下兩段距離決定）。 */
@@ -2753,7 +2753,7 @@ export default async function PublicStoreLayout({
            要蓋掉的是那行自己帶的 tracking-[0.4em] class——段落上的「字距」那欄設的是整段的
            inline letter-spacing，元素自己的 class 一律蓋掉繼承來的值，所以整段調字距時小標
            是唯一動都不動的那行。跟標題塊裡面那組同一個處境同一個解法，attribute 讓這裡補
-           一條更精確的規則壓過去（這份 <style> 沒包在 @layer，贏在 @layer utilities 的
+           一條更精確的規則壓過去（這份 CSS 沒包在 @layer，贏在 @layer utilities 的
            Tailwind 工具類）。
            收緊給 0.12em 不給 0：小標的樣式標誌就是那個比內文寬的字距，收到 0 會像漏排版。
            不用 clamp：字距的單位是 em，本來就跟著字級走，手機上字小、撐開的絕對值自然跟著
@@ -2774,7 +2774,7 @@ export default async function PublicStoreLayout({
            10px 也撐不起來。
            要蓋掉的是那行自己帶的 text-[10px] class：段落上調字級的那幾欄，「標題大小」動的
            是大標、「全網站字體大小」動的是內文那一層，都到不了它——跟上面那組同一個處境
-           同一個解法，attribute 讓這裡補一條更精確的規則（這份 <style> 沒包在 @layer，
+           同一個解法，attribute 讓這裡補一條更精確的規則（這份 CSS 沒包在 @layer，
            贏在 @layer utilities 的 Tailwind 工具類）。
            用 zoom 不用 font-size：10px 與 11px 是各段自己挑的差別，寫死一個 font-size 會把
            兩種拉成同一級（跟內文字級那組同一個理由）。zoom 連著底下那截 margin 一起縮放，
@@ -2792,7 +2792,7 @@ export default async function PublicStoreLayout({
            400。400 那批在 10px 加 0.4em 字距之下筆畫細到在淺底上幾乎看不見；500 那批又是用
            全站主色印的，在大標旁邊搶得比大標前面，退不回配角。
            要蓋的東西兩段不一樣，所以兩條規則一組：一條落在 .sproutly-section-eyebrow 上蓋掉
-           繼承來的 400（這份 <style> 沒包在 @layer，贏得過 Tailwind 工具類），一條在 section
+           繼承來的 400（這份 CSS 沒包在 @layer，贏得過 Tailwind 工具類），一條在 section
            上設 --eyebrow-weight，讓那兩行寫在 inline style 裡的 500 跟著走——inline 的優先度
            連 CSS 規則都壓不過，只能繞變數（跟卡片品名字距同一招）。那兩行的 fontWeight 改讀
            var(--eyebrow-weight, 500)，沒設時變數不存在、fallback 就是原本的 500。
@@ -2850,7 +2850,7 @@ export default async function PublicStoreLayout({
            「Journal 慢讀」只有前半被改。而且商家改字沒用——轉換發生在畫面上不在資料裡，輸入框
            看到的還是自己打的小寫。
            要蓋掉的是那行自己帶的 uppercase class（段落那層沒有一欄傳得下去），跟小標字距、字級
-           同一個處境同一個解法：attribute 讓這裡補一條更精確的規則壓過去（這份 <style> 沒包在
+           同一個處境同一個解法：attribute 讓這裡補一條更精確的規則壓過去（這份 CSS 沒包在
            @layer，贏在 @layer utilities 的 Tailwind 工具類）。
            三檔裡留「全大寫」是因為那十六行本來就是 uppercase，少了這一檔按過 capitalize 之後
            沒有一顆按鈕退得回原本的樣子（跟小標粗細留「常規」同一個理由）。它是「照原本的」那一
