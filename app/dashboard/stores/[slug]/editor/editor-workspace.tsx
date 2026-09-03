@@ -228,9 +228,10 @@ const SECTIONS_WITH_SECTION_HEAD: SectionKey[] = [
   "gallery",
 ];
 
-// 「標題塊裡面」調的是那塊標題裡面——小標跟大標之間、大標跟底下那行引言之間。比上面那組
-// 再少一段合作 logo：那段有小標，但 page.tsx 就是沒印 data-heading-inner，規則到不了。
-// 要不要補印是另一件事，這裡照既有做法：規則到不了的段落就不列。
+// 「標題塊裡面」調的是那塊標題裡面——小標跟大標之間、大標跟底下那行引言之間。合作 logo
+// 那段沒有大標跟引言，只有一行小標直接接卡片格線，但規則落在 .sproutly-section-eyebrow
+// 上（不靠 .sproutly-section-sub），單獨調小標底下那段距離一樣有效，page.tsx 已補印
+// data-heading-inner，所以跟著列進來。
 const SECTIONS_WITH_HEADING_INNER: SectionKey[] = [
   "collections",
   "featured",
@@ -238,6 +239,7 @@ const SECTIONS_WITH_HEADING_INNER: SectionKey[] = [
   "testimonials",
   "faq",
   "stats",
+  "partners",
   "gallery",
 ];
 
@@ -7047,7 +7049,7 @@ export function EditorWorkspace({
                 </div>
               </Field>
               )}
-              {/* 「標題塊裡面」比上面那格再少一段合作 logo（見上面 SECTIONS_WITH_HEADING_INNER）。 */}
+              {/* 「標題塊裡面」跟上面那格同一批段落，合作 logo 也在內（見上面 SECTIONS_WITH_HEADING_INNER）。 */}
               {SECTIONS_WITH_HEADING_INNER.includes(selectedSection) && (
               <Field label="標題塊裡面">
                 <div className="grid grid-cols-3 gap-1.5">

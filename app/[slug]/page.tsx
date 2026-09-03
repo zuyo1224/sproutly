@@ -4788,6 +4788,7 @@ export default async function StoreHomePage({
               data-eyebrow-leading={partnersStyle.eyebrowLeadingVal}
               data-eyebrow-case={partnersStyle.eyebrowCaseVal}
               data-heading-gap={partnersStyle.headingGapVal}
+              data-heading-inner={partnersStyle.headingInnerGapVal}
               data-line-height={partnersStyle.lineHeightVal}
               data-section-filter={partnersStyle.filterVal}
               data-body-align={partnersStyle.bodyAlignVal}
