@@ -4106,6 +4106,12 @@ export default async function StoreHomePage({
               data-card-desc-leading={testimonialsStyle.cardDescLeadingVal}
               data-card-desc-weight={testimonialsStyle.cardDescWeightVal}
               data-card-desc-tracking={testimonialsStyle.cardDescTrackingVal}
+              // 這段的 .sproutly-card-desc 是留言本身（blockquote）。一列三張卡各自長短
+              // 不一時下緣參差得比商品卡明顯——一則兩行、隔壁六行，卡片外觀設成面板或框的
+              // 時候三個框高矮差一截。行數那格的規則本來就抓得到這段（class 在、只差
+              // attribute 沒印），補上就能用。品名那行放的是留言的人名字、本來就一行，
+              // 所以 data-card-title-lines 不補。
+              data-card-desc-lines={testimonialsStyle.cardDescLinesVal}
               data-card-micro-scale={testimonialsStyle.cardMicroScaleVal}
               data-card-micro-tracking={testimonialsStyle.cardMicroTrackingVal}
               data-card-micro-leading={testimonialsStyle.cardMicroLeadingVal}

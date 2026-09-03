@@ -124,10 +124,16 @@ const SECTIONS_WITH_MOBILE_COLS: SectionKey[] = [
 // 這裡先照既有做法：規則到不了的段落就不列。
 const SECTIONS_WITH_CARD_TITLE_LINES: SectionKey[] = ["collections", "featured", "journal"];
 
-// 「卡片描述行數」落在 .sproutly-card-desc：選物的副標、慢讀的摘要、相簿照片下那行 caption。
-// 精選那段品名底下擺的是價錢、沒掛這個 class，page.tsx 也沒印 data-card-desc-lines；
-// 客人的話、常見問題那兩段同上，有 class 但沒 attribute。
-const SECTIONS_WITH_CARD_DESC_LINES: SectionKey[] = ["collections", "journal", "gallery"];
+// 「卡片描述行數」落在 .sproutly-card-desc：選物的副標、慢讀的摘要、相簿照片下那行
+// caption、客人的話那段的留言本身。精選那段品名底下擺的是價錢、沒掛這個 class，page.tsx
+// 也沒印 data-card-desc-lines。常見問題那段有 class 但故意不印：那行是問題的答案，截成一行
+// 等於把內容藏起來又沒地方展開。
+const SECTIONS_WITH_CARD_DESC_LINES: SectionKey[] = [
+  "collections",
+  "journal",
+  "gallery",
+  "testimonials",
+];
 
 // 底下這幾組是卡片裡「一行字長什麼樣」那批（字級 / 粗細 / 字距 / 行距 / 用色）。跟上面幾組
 // 一樣兩頭對過：規則全落在 layout.tsx 的 .sproutly-card-title / -desc / -micro / -price 上，
