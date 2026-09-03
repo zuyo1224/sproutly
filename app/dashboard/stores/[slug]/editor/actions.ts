@@ -172,6 +172,7 @@ type EditorPayload = {
     footerWordsLabel?: string;
     footerFollowLabel?: string;
     footerTrackLabel?: string;
+    footerVisitLabel?: string;
     journalCardLabel?: string;
     journalCards?: Array<{ eyebrow?: string; title?: string; excerpt?: string }>;
     collectionItems?: Array<{ key?: string; title?: string; subtitle?: string }>;
@@ -1084,6 +1085,10 @@ export async function saveEditorState(slug: string, payload: EditorPayload) {
     if (payload.homepage.footerTrackLabel !== undefined) {
       const v = String(payload.homepage.footerTrackLabel).trim().slice(0, 60);
       hpPatch.footerTrackLabel = v || null;
+    }
+    if (payload.homepage.footerVisitLabel !== undefined) {
+      const v = String(payload.homepage.footerVisitLabel).trim().slice(0, 60);
+      hpPatch.footerVisitLabel = v || null;
     }
     if (payload.homepage.journalCardLabel !== undefined) {
       const v = String(payload.homepage.journalCardLabel).trim().slice(0, 60);

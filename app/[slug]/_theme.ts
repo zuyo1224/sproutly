@@ -198,6 +198,11 @@ export interface StoreTheme {
     shopTitle: string | null;
     footerWordsLabel: string | null;   // 頁尾 tagline 上方小標（預設 Words）
     footerFollowLabel: string | null;  // 頁尾社群區小標（預設 Follow）
+    // 頁尾店面資訊（地址 / 電話 / 營業時間）那一塊上方的小標。同一排的 Words / Follow /
+    // Track 三個小標早就能改，唯獨這個寫死在 layout.tsx 裡——想把「Visit」換成「來店」、
+    // 或把「店面資訊」改成「工作室」的店一格都沒有，雙擊也不會亮。跟另外三個同口徑：
+    // 空白 / 沒設就退回預設，既有店家的頁尾一個字都不動。
+    footerVisitLabel: string | null;   // 頁尾店面資訊小標（預設 Visit · 店面資訊）
     footerTrackLabel: string | null;   // 頁尾訂單追蹤連結文字（預設 Track · 訂單追蹤）
     enableAnimation: boolean;
   };
@@ -1090,6 +1095,7 @@ export const HOMEPAGE_DEFAULTS = {
   shopTitle: "所有商品",
   footerWordsLabel: "Words",
   footerFollowLabel: "Follow",
+  footerVisitLabel: "Visit · 店面資訊",
   footerTrackLabel: "Track · 訂單追蹤",
 };
 
@@ -1980,6 +1986,10 @@ function resolveHomepage(raw: unknown): StoreTheme["homepage"] {
     footerTrackLabel:
       typeof h.footerTrackLabel === "string" && h.footerTrackLabel.trim()
         ? h.footerTrackLabel.trim()
+        : null,
+    footerVisitLabel:
+      typeof h.footerVisitLabel === "string" && h.footerVisitLabel.trim()
+        ? h.footerVisitLabel.trim()
         : null,
     enableAnimation: h.enableAnimation === false ? false : true, // default true
   };

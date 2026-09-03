@@ -3076,6 +3076,8 @@ export default async function PublicStoreLayout({
                   style={{ background: fAccent, opacity: 0.6 }}
                 />
                 <span
+                  data-edit-text
+                  data-edit-field="footerVisitLabel"
                   className="font-medium uppercase"
                   style={{
                     color: fMuted,
@@ -3083,7 +3085,7 @@ export default async function PublicStoreLayout({
                     letterSpacing: "0.4em",
                   }}
                 >
-                  Visit · 店面資訊
+                  {theme.homepage.footerVisitLabel || HOMEPAGE_DEFAULTS.footerVisitLabel}
                 </span>
                 <span
                   className="h-px w-10"

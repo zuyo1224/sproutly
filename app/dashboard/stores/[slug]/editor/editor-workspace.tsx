@@ -409,6 +409,7 @@ type EditorTheme = {
     footerWordsLabel: string;
     footerFollowLabel: string;
     footerTrackLabel: string;
+    footerVisitLabel: string;
     journalCardLabel: string;
     journalCards: Array<{ eyebrow: string; title: string; excerpt: string }>;
   };
@@ -797,6 +798,8 @@ export function EditorWorkspace({
           updateHomepage({ footerFollowLabel: value });
         } else if (msg.field === "footerTrackLabel") {
           updateHomepage({ footerTrackLabel: value });
+        } else if (msg.field === "footerVisitLabel") {
+          updateHomepage({ footerVisitLabel: value });
         } else if (typeof msg.index === "number" && Number.isInteger(msg.index) && msg.index >= 0) {
           // 清單卡片欄位：訊息多帶 index 說是第幾筆。
           // 這個 effect deps 是 []，closure 裡的 theme 是掛載當下的舊值，
@@ -10902,7 +10905,7 @@ export function EditorWorkspace({
         {activeTab === "content" && (
           <PanelSection title="頁尾（Footer）">
             <p className="text-[11px] text-stone-500 leading-relaxed -mt-2">
-              頁尾 tagline、社群連結上方的小標，與訂單追蹤連結文字。空白會用預設值。
+              頁尾 tagline、店面資訊、社群連結上方的小標，與訂單追蹤連結文字。空白會用預設值。
             </p>
             <Field label="tagline 上方小標">
               <input
@@ -10913,6 +10916,18 @@ export function EditorWorkspace({
                 }
                 maxLength={60}
                 placeholder="Words"
+                className="w-full rounded-lg border border-stone-200 px-3 py-2 text-sm"
+              />
+            </Field>
+            <Field label="店面資訊小標">
+              <input
+                type="text"
+                value={theme.homepage.footerVisitLabel}
+                onChange={(e) =>
+                  updateHomepage({ footerVisitLabel: e.target.value })
+                }
+                maxLength={60}
+                placeholder="Visit · 店面資訊"
                 className="w-full rounded-lg border border-stone-200 px-3 py-2 text-sm"
               />
             </Field>
