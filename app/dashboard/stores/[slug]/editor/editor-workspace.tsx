@@ -73,6 +73,24 @@ const SECTIONS_WITHOUT_HOVER_CARDS: SectionKey[] = [
   "visit",
 ];
 
+// 卡片格線那四段（選物 / 精選 / 慢讀 / 相簿）才有照片框（.sproutly-card-image）：
+// page.tsx 只在這四段的 section 上印 data-media-aspect / focus / focus-x / fit /
+// frame-bg 與 data-card-text，layout.tsx 那幾條規則也全落在圖框或 .sproutly-card 裡的
+// 文字上。其他段一格一格的東西是 card-box（引言、客人的話、常見問題、數字、合作 logo、
+// 來坐坐），沒有圖框也沒有 .sproutly-card，attribute 根本沒印出去——那幾格在那些段
+// 按下去畫面一個像素都不會動。
+const SECTIONS_WITH_CARD_IMAGE: SectionKey[] = [
+  "collections",
+  "featured",
+  "journal",
+  "gallery",
+];
+
+// 「卡片排法（照片在上 / 左 / 右）」跟跟著它長出來的「照片佔寬」比上面那組再少一段：
+// 相簿是純照片牆，page.tsx 沒有印 data-card-layout / data-card-media-width（一張照片
+// 配一行 caption，沒有「照片挪到文字左邊」這件事），規則也只落在 .sproutly-card 上。
+const SECTIONS_WITH_CARD_LAYOUT: SectionKey[] = ["collections", "featured", "journal"];
+
 const ADDABLE_BLOCKS: { key: SectionKey; label: string; description: string }[] = [
   { key: "testimonials", label: "顧客評語", description: "3 個 quote card" },
   { key: "faq", label: "常見問題", description: "Accordion 展開式問答" },
@@ -8199,6 +8217,12 @@ export function EditorWorkspace({
                   )}
                 </div>
               </Field>
+              {/* 底下這四格（比例 / 取景 / 左右取景 / 完整度，跟著完整度長出來的框底色）
+                  動的都是卡片格線裡那個圖框（見上面 SECTIONS_WITH_CARD_IMAGE），只在有圖框
+                  的四段列出來。上面「照片圓角」那格照舊每段都列——它另外有一條落在段落裡
+                  一般 img 上的規則，合作 logo 那排也吃得到。 */}
+              {SECTIONS_WITH_CARD_IMAGE.includes(selectedSection) && (
+              <>
               <Field label="照片比例">
                 <div className="grid grid-cols-4 gap-1.5">
                   {([
@@ -8399,6 +8423,8 @@ export function EditorWorkspace({
                   </div>
                 </Field>
               )}
+              </>
+              )}
               {/* 這兩格只在合作夥伴那段列出來：規則落在那排 logo 上，別段沒有這種 img，
                   擺出來會是按了畫面不動的死按鈕（其他段的卡片照片歸上面那四格管）。 */}
               {selectedSection === "partners" && (
@@ -8554,6 +8580,9 @@ export function EditorWorkspace({
                 </div>
               </Field>
               )}
+              {/* 「卡片文字」規則落在 .sproutly-card 裡的每個文字元素上，
+                  data-card-text 也只印在有卡片格線的那四段。 */}
+              {SECTIONS_WITH_CARD_IMAGE.includes(selectedSection) && (
               <Field label="卡片文字">
                 <div className="grid grid-cols-4 gap-1.5">
                   {([
@@ -8590,6 +8619,7 @@ export function EditorWorkspace({
                   )}
                 </div>
               </Field>
+              )}
               <Field label="卡片外觀">
                 <div className="grid grid-cols-4 gap-1.5">
                   {([
@@ -8898,6 +8928,12 @@ export function EditorWorkspace({
                   </div>
                 </Field>
               )}
+              {/* 「卡片排法 / 照片佔寬」只在照片配文字的那三段列出來（見上面
+                  SECTIONS_WITH_CARD_LAYOUT）：相簿是純照片牆、page.tsx 沒掛
+                  data-card-layout，其他段一格一格的是 card-box、沒有 .sproutly-card，
+                  規則兩邊都到不了，按了畫面不會有事。 */}
+              {SECTIONS_WITH_CARD_LAYOUT.includes(selectedSection) && (
+              <>
               <Field label="卡片排法">
                 <div className="grid grid-cols-3 gap-1.5">
                   {([
@@ -8971,6 +9007,8 @@ export function EditorWorkspace({
                     )}
                   </div>
                 </Field>
+              )}
+              </>
               )}
               <Field label="手機一列幾張">
                 <div className="grid grid-cols-3 gap-1.5">
