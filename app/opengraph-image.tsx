@@ -1,6 +1,12 @@
 import { ImageResponse } from "next/og";
 
-export const alt = "Sproutly · 讓你的小生意發芽";
+// Botanic Lab 品牌色（跟 globals.css 的 --sproutly-* 同一套，ImageResponse 走 Satori
+// 渲染、讀不到 CSS var，這裡照抄成字面值）。
+const INK = "#15241b";
+const LEAF = "#2e7d52";
+const SPROUT = "#7aa82e";
+
+export const alt = "Sproutly · 讓你的小生意長成自己的店";
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
 
@@ -15,43 +21,26 @@ export default async function Image() {
           flexDirection: "column",
           justifyContent: "space-between",
           padding: "84px 96px",
-          background:
-            "linear-gradient(135deg, #ecfdf5 0%, #ffffff 55%, #f7fee7 100%)",
-          color: "#064e3b",
+          background: "#ffffff",
+          color: INK,
           fontFamily:
             "ui-sans-serif, system-ui, -apple-system, 'PingFang TC', 'Noto Sans TC', sans-serif",
           position: "relative",
           overflow: "hidden",
         }}
       >
-        {/* 右上角光暈（emerald 圓） */}
+        {/* 實驗室方格底紋 —— 跟首頁同一套紋理，不用漸層當底 */}
         <div
           style={{
             position: "absolute",
-            top: -180,
-            right: -120,
-            width: 480,
-            height: 480,
-            borderRadius: "50%",
-            background:
-              "radial-gradient(circle at 30% 30%, rgba(16,185,129,0.32) 0%, rgba(16,185,129,0) 70%)",
-          }}
-        />
-        {/* 左下角光暈（lime 圓） */}
-        <div
-          style={{
-            position: "absolute",
-            bottom: -200,
-            left: -160,
-            width: 520,
-            height: 520,
-            borderRadius: "50%",
-            background:
-              "radial-gradient(circle at 50% 50%, rgba(132,204,22,0.22) 0%, rgba(132,204,22,0) 70%)",
+            inset: 0,
+            backgroundImage:
+              "radial-gradient(circle at 1px 1px, rgba(21,36,27,0.06) 1.5px, transparent 0)",
+            backgroundSize: "32px 32px",
           }}
         />
 
-        {/* Header：品牌 + eyebrow */}
+        {/* Header：SproutMark + 品牌名 + eyebrow */}
         <div
           style={{
             display: "flex",
@@ -60,23 +49,41 @@ export default async function Image() {
             position: "relative",
           }}
         >
-          <div
-            style={{
-              fontSize: 36,
-              fontWeight: 700,
-              letterSpacing: "-0.02em",
-              color: "#064e3b",
-            }}
-          >
-            Sproutly
+          <div style={{ display: "flex", alignItems: "center", gap: 14 }}>
+            <svg width="34" height="42" viewBox="0 0 32 40" fill="none">
+              <path
+                d="M16 39 V19"
+                stroke={INK}
+                strokeWidth="2.2"
+                strokeLinecap="round"
+              />
+              <path
+                d="M16 24C11.5 24 7 21 5.5 14.5C12 13.5 15.5 18 16 24Z"
+                fill={LEAF}
+              />
+              <path
+                d="M16 21C20 20.5 24 17 24.5 10C18.5 11 15.5 15.5 16 21Z"
+                fill={SPROUT}
+              />
+            </svg>
+            <div
+              style={{
+                fontSize: 36,
+                fontWeight: 700,
+                letterSpacing: "-0.02em",
+                color: INK,
+              }}
+            >
+              Sproutly
+            </div>
           </div>
           <div
             style={{
-              fontSize: 18,
-              letterSpacing: "0.4em",
+              fontSize: 16,
+              letterSpacing: "0.32em",
               textTransform: "uppercase",
-              color: "#047857",
-              opacity: 0.7,
+              color: LEAF,
+              opacity: 0.75,
             }}
           >
             For Small Makers
@@ -88,42 +95,35 @@ export default async function Image() {
           style={{
             display: "flex",
             flexDirection: "column",
-            gap: 20,
+            gap: 22,
             position: "relative",
           }}
         >
           <div
             style={{
-              fontSize: 28,
-              letterSpacing: "0.32em",
+              fontSize: 22,
+              letterSpacing: "0.28em",
               textTransform: "uppercase",
-              color: "#047857",
-              opacity: 0.78,
+              color: LEAF,
+              opacity: 0.85,
             }}
           >
-            Build a home for your craft
+            Early Access · 為台灣小商家而生
           </div>
           <div
             style={{
-              fontSize: 116,
+              fontSize: 108,
               fontWeight: 600,
-              lineHeight: 1.05,
-              letterSpacing: "-0.025em",
-              color: "#064e3b",
+              lineHeight: 1.14,
+              letterSpacing: "-0.02em",
+              color: INK,
               display: "flex",
               flexDirection: "column",
             }}
           >
-            <span>讓你的小生意</span>
-            <span
-              style={{
-                background:
-                  "linear-gradient(120deg, #047857 0%, #65a30d 100%)",
-                backgroundClip: "text",
-                color: "transparent",
-              }}
-            >
-              在這裡發芽
+            <span>讓你的小生意，</span>
+            <span>
+              長成自己的<span style={{ color: LEAF }}>店</span>。
             </span>
           </div>
         </div>
@@ -140,20 +140,20 @@ export default async function Image() {
           <div
             style={{
               fontSize: 26,
-              color: "#065f46",
-              opacity: 0.78,
+              color: INK,
+              opacity: 0.6,
               maxWidth: 720,
               lineHeight: 1.4,
             }}
           >
-            為台灣小商家打造的線上店面 · 商品、訂單、付款，整齊收在你的網址。
+            商品、訂單、付款，整齊收在你自己的網址。不用懂程式，五分鐘把生意種上線。
           </div>
           <div
             style={{
               fontSize: 20,
               letterSpacing: "0.18em",
-              color: "#047857",
-              opacity: 0.7,
+              color: LEAF,
+              opacity: 0.75,
             }}
           >
             sproutly.app
