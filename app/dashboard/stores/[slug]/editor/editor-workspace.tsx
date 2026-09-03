@@ -192,6 +192,49 @@ const SECTIONS_WITH_CARD_ROW_GAP: SectionKey[] = [
 // 「卡片副文字深淺」動的是 .sproutly-card-meta 那層透明度，只有選物與精選那兩段印 attribute。
 const SECTIONS_WITH_CARD_META_TONE: SectionKey[] = ["collections", "featured"];
 
+// 「內容欄寬 / 內容欄位置 / 內容欄內距」這三格動的都是段落裡那道內容欄
+// （.sproutly-section-inner）——字跟卡片實際排在多寬的那道欄。常見問題、店家那句話、
+// 來坐坐這三段沒有那道欄：一題一題的收合直接排在段落裡，引言與店家資訊各自是一整塊。
+// page.tsx 也就沒在這三段印 data-content-width / -align-x / -pad-x，class 跟 attribute
+// 兩頭都不在，那三格在那三段按下去畫面一個像素都不會動。
+// （上面那格「區段寬度」收的是整段的底色跟外框畫到哪，走的是別條路、每段都有效，照舊每段都列。）
+const SECTIONS_WITH_CONTENT_COLUMN: SectionKey[] = [
+  "collections",
+  "featured",
+  "journal",
+  "testimonials",
+  "stats",
+  "partners",
+  "gallery",
+];
+
+// 「標題與內容」調的是這段最上面那塊標題（.sproutly-section-head）跟底下內容之間空多少。
+// 店家那句話、來坐坐那兩段沒有那塊標題——引言本身就是內容、來坐坐是一欄店家資訊直接排開，
+// page.tsx 沒印 data-heading-gap，那格在這兩段按了不會有事。
+const SECTIONS_WITH_SECTION_HEAD: SectionKey[] = [
+  "collections",
+  "featured",
+  "journal",
+  "testimonials",
+  "faq",
+  "stats",
+  "partners",
+  "gallery",
+];
+
+// 「標題塊裡面」調的是那塊標題裡面——小標跟大標之間、大標跟底下那行引言之間。比上面那組
+// 再少一段合作 logo：那段有小標，但 page.tsx 就是沒印 data-heading-inner，規則到不了。
+// 要不要補印是另一件事，這裡照既有做法：規則到不了的段落就不列。
+const SECTIONS_WITH_HEADING_INNER: SectionKey[] = [
+  "collections",
+  "featured",
+  "journal",
+  "testimonials",
+  "faq",
+  "stats",
+  "gallery",
+];
+
 const ADDABLE_BLOCKS: { key: SectionKey; label: string; description: string }[] = [
   { key: "testimonials", label: "顧客評語", description: "3 個 quote card" },
   { key: "faq", label: "常見問題", description: "Accordion 展開式問答" },
@@ -6956,6 +6999,9 @@ export function EditorWorkspace({
                   )}
                 </div>
               </Field>
+              {/* 「標題與內容」調的是最上面那塊標題跟底下內容之間的距離（見上面
+                  SECTIONS_WITH_SECTION_HEAD），只在真的有那塊標題的八段列出來。 */}
+              {SECTIONS_WITH_SECTION_HEAD.includes(selectedSection) && (
               <Field label="標題與內容">
                 <div className="grid grid-cols-3 gap-1.5">
                   {([
@@ -6991,6 +7037,9 @@ export function EditorWorkspace({
                   )}
                 </div>
               </Field>
+              )}
+              {/* 「標題塊裡面」比上面那格再少一段合作 logo（見上面 SECTIONS_WITH_HEADING_INNER）。 */}
+              {SECTIONS_WITH_HEADING_INNER.includes(selectedSection) && (
               <Field label="標題塊裡面">
                 <div className="grid grid-cols-3 gap-1.5">
                   {([
@@ -7026,6 +7075,7 @@ export function EditorWorkspace({
                   )}
                 </div>
               </Field>
+              )}
               <Field label="小標字距">
                 <div className="grid grid-cols-3 gap-1.5">
                   {([
@@ -7840,6 +7890,9 @@ export function EditorWorkspace({
                   滿版 寬度撐滿 · 置中 1100px · 窄欄 760px。配背景色 + 陰影 + 圓角就成置中的卡片式區段
                 </p>
               </Field>
+              {/* 「內容欄寬 / 內容欄位置 / 內容欄內距」這三格動的都是段落裡那道內容欄
+                  （見上面 SECTIONS_WITH_CONTENT_COLUMN），只在真的有那道欄的七段列出來。 */}
+              {SECTIONS_WITH_CONTENT_COLUMN.includes(selectedSection) && (
               <Field label="內容欄寬">
                 <div className="grid grid-cols-4 gap-1.5">
                   {([
@@ -7867,6 +7920,8 @@ export function EditorWorkspace({
                   這一段的字跟卡片排多寬。上面那格「區段寬度」收的是這一段的底色跟外框畫到哪，裡面的字跟卡片不會跟著動，這格才是。窄 768px · 照原本 1024px（照片牆 1152px）· 寬 1280px · 滿版 排到畫面左右邊界為止。卡片調成 4 欄、或想讓照片牆變成跨頁大圖時用這格
                 </p>
               </Field>
+              )}
+              {SECTIONS_WITH_CONTENT_COLUMN.includes(selectedSection) && (
               <Field label="內容欄位置">
                 <div className="grid grid-cols-3 gap-1.5">
                   {([
@@ -7893,6 +7948,8 @@ export function EditorWorkspace({
                   上面那格排出來的欄擺在這一段的哪一邊。平常置中；把欄寬設成窄之後選靠左，字會貼著跟導覽列同一道左邊界起排（雜誌常見的收法）。跟「區段對齊」不一樣——那格是欄裡每行字各自靠哪邊，這格是整道欄搬家。欄寬選滿版時欄已經佔滿，這格看不出差別
                 </p>
               </Field>
+              )}
+              {SECTIONS_WITH_CONTENT_COLUMN.includes(selectedSection) && (
               <Field label="內容欄內距">
                 <div className="grid grid-cols-3 gap-1.5">
                   {([
@@ -7919,6 +7976,7 @@ export function EditorWorkspace({
                   這道欄自己左右兩側留多少空白。照原本是跟導覽列、商品同一道邊界（手機 32px · 電腦 48px）。欄寬選了滿版之後，字跟卡片離畫面邊多遠就是這格在管：照片牆想幾乎頂到邊選收窄；想讓整段四周留一大片白、字只佔中間選加寬。手機上會自動縮小一點，不會擠成一條
                 </p>
               </Field>
+              )}
               <Field label="區段外距">
                 <div className="grid grid-cols-3 gap-1.5">
                   {([
