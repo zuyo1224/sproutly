@@ -129,6 +129,69 @@ const SECTIONS_WITH_CARD_TITLE_LINES: SectionKey[] = ["collections", "featured",
 // 客人的話、常見問題那兩段同上，有 class 但沒 attribute。
 const SECTIONS_WITH_CARD_DESC_LINES: SectionKey[] = ["collections", "journal", "gallery"];
 
+// 底下這幾組是卡片裡「一行字長什麼樣」那批（字級 / 粗細 / 字距 / 行距 / 用色）。跟上面幾組
+// 一樣兩頭對過：規則全落在 layout.tsx 的 .sproutly-card-title / -desc / -micro / -price 上，
+// 而 page.tsx 只在特定幾段的 section 印對應的 attribute（用色那四格是走 CSS 變數，但變數只有
+// 那幾段的文字 inline color 讀得到，效果範圍一樣）。沒印到的段落按下去畫面一個像素都不會動。
+
+// 品名那行的字級 / 粗細 / 字距 / 用色：商品卡三段之外，客人的話（那句話上面的人名）、
+// 常見問題（每一題的題目）、數字（大數字本身）也掛著 .sproutly-card-title 且有印 attribute。
+// 沒有的是引言、來坐坐、合作 logo、相簿——相簿那行 caption 掛的是描述不是標題。
+const SECTIONS_WITH_CARD_TITLE_TEXT: SectionKey[] = [
+  "collections",
+  "featured",
+  "journal",
+  "testimonials",
+  "faq",
+  "stats",
+];
+
+// 品名的行距比上面那組少一段數字：那段的 section 上印了字級 / 粗細 / 字距，就是沒印
+// data-card-title-leading（大數字本來就只有一行，換行這件事不存在）。要不要補印是另一件事，
+// 這裡照既有做法：規則到不了的段落就不列。
+const SECTIONS_WITH_CARD_TITLE_LEADING: SectionKey[] = [
+  "collections",
+  "featured",
+  "journal",
+  "testimonials",
+  "faq",
+];
+
+// 描述那段的字級 / 行距 / 粗細 / 字距 / 用色：選物的副標、慢讀的摘要、相簿照片下那行 caption、
+// 客人的話那段引言、常見問題展開後的答案。精選那段品名底下擺的是價錢、沒掛這個 class。
+const SECTIONS_WITH_CARD_DESC_TEXT: SectionKey[] = [
+  "collections",
+  "journal",
+  "testimonials",
+  "faq",
+  "gallery",
+];
+
+// 小字那幾行（選物的「看更多」、精選的庫存提示、慢讀的分類標籤、客人的話的頭銜、數字的標籤）
+// 的字級 / 字距 / 行距 / 粗細 / 用色 / 大小寫：只有這五段印 data-card-micro-*。
+const SECTIONS_WITH_CARD_MICRO_TEXT: SectionKey[] = [
+  "collections",
+  "featured",
+  "journal",
+  "testimonials",
+  "stats",
+];
+
+// 價錢那行只有精選商品那段有（其他段落根本沒有價錢這個東西）。
+const SECTIONS_WITH_CARD_PRICE: SectionKey[] = ["featured"];
+
+// 「卡片行距」調的是卡片裡上下兩行之間的距離，規則是靠各段先宣告 --card-row-gap-base 才乘得
+// 上去，page.tsx 也只在有卡片格線那四段印 data-card-row-gap。
+const SECTIONS_WITH_CARD_ROW_GAP: SectionKey[] = [
+  "collections",
+  "featured",
+  "journal",
+  "gallery",
+];
+
+// 「卡片副文字深淺」動的是 .sproutly-card-meta 那層透明度，只有選物與精選那兩段印 attribute。
+const SECTIONS_WITH_CARD_META_TONE: SectionKey[] = ["collections", "featured"];
+
 const ADDABLE_BLOCKS: { key: SectionKey; label: string; description: string }[] = [
   { key: "testimonials", label: "顧客評語", description: "3 個 quote card" },
   { key: "faq", label: "常見問題", description: "Accordion 展開式問答" },
@@ -9175,778 +9238,822 @@ export function EditorWorkspace({
                   </div>
                 </Field>
               )}
-              <Field label="卡片標題字級">
-                <div className="grid grid-cols-3 gap-1.5">
-                  {([
-                    { v: "small", label: "小" },
-                    { v: "default", label: "跟預設" },
-                    { v: "large", label: "大" },
-                  ] as const).map((opt) => (
-                    <button
-                      key={opt.v}
-                      type="button"
-                      onClick={() => patch({ cardTitleScale: opt.v })}
-                      aria-pressed={(cardTitleScale ?? "default") === opt.v}
-                      className={`rounded-lg border py-2 text-xs transition ${
-                        (cardTitleScale ?? "default") === opt.v
-                          ? "border-emerald-500 bg-emerald-50 text-emerald-900"
-                          : "border-stone-200 text-stone-600 hover:border-stone-400"
-                      }`}
-                    >
-                      {opt.label}
-                    </button>
-                  ))}
-                </div>
-                <div className="mt-1.5 flex items-center justify-between text-[11px] text-stone-500">
-                  <span>卡片上那行品名（或文章標題）本身多大，上面兩格管的是它佔幾行。卡片變寬（欄數少、照片在左）時選大，一列四張的小卡選小</span>
-                  {cardTitleScale && (
-                    <button
-                      type="button"
-                      onClick={() => patch({ cardTitleScale: null })}
-                      className="text-stone-500 hover:text-stone-800 underline"
-                    >
-                      清除
-                    </button>
-                  )}
-                </div>
-              </Field>
-              <Field label="卡片標題粗細">
-                <div className="grid grid-cols-3 gap-1.5">
-                  {([
-                    { v: "normal", label: "常規" },
-                    { v: "medium", label: "中黑" },
-                    { v: "bold", label: "粗" },
-                  ] as const).map((opt) => (
-                    <button
-                      key={opt.v}
-                      type="button"
-                      onClick={() => patch({ cardTitleWeight: opt.v })}
-                      aria-pressed={(cardTitleWeight ?? "normal") === opt.v}
-                      className={`rounded-lg border py-2 text-xs transition ${
-                        (cardTitleWeight ?? "normal") === opt.v
-                          ? "border-emerald-500 bg-emerald-50 text-emerald-900"
-                          : "border-stone-200 text-stone-600 hover:border-stone-400"
-                      }`}
-                    >
-                      {opt.label}
-                    </button>
-                  ))}
-                </div>
-                <div className="mt-1.5 flex items-center justify-between text-[11px] text-stone-500">
-                  <span>上一格管的是品名多大，這格管的是它多粗。品名跟底下的描述、價錢分不出主次時選中黑或粗（「標題粗細」那格動的是段落大標，不是卡片裡這行）</span>
-                  {cardTitleWeight && (
-                    <button
-                      type="button"
-                      onClick={() => patch({ cardTitleWeight: null })}
-                      className="text-stone-500 hover:text-stone-800 underline"
-                    >
-                      清除
-                    </button>
-                  )}
-                </div>
-              </Field>
-              <Field label="卡片標題行距">
-                <div className="grid grid-cols-3 gap-1.5">
-                  {([
-                    { v: "tight", label: "收緊" },
-                    { v: "normal", label: "跟預設" },
-                    { v: "loose", label: "拉開" },
-                  ] as const).map((opt) => (
-                    <button
-                      key={opt.v}
-                      type="button"
-                      onClick={() => patch({ cardTitleLeading: opt.v })}
-                      aria-pressed={(cardTitleLeading ?? "normal") === opt.v}
-                      className={`rounded-lg border py-2 text-xs transition ${
-                        (cardTitleLeading ?? "normal") === opt.v
-                          ? "border-emerald-500 bg-emerald-50 text-emerald-900"
-                          : "border-stone-200 text-stone-600 hover:border-stone-400"
-                      }`}
-                    >
-                      {opt.label}
-                    </button>
-                  ))}
-                </div>
-                <div className="mt-1.5 flex items-center justify-between text-[11px] text-stone-500">
-                  <span>品名排到兩行以上時，上下兩行之間隔多遠（品名只有一行的話這格看不出差別）。「卡片標題行數」選了兩行或完整、或品名本來就長的段落才用得到：兩行中文黏在一起就拉開，字級調大之後間隙太空就收緊。「卡片行距」那格調的是品名跟照片、價錢之間，不是同一行字自己換行</span>
-                  {cardTitleLeading && (
-                    <button
-                      type="button"
-                      onClick={() => patch({ cardTitleLeading: null })}
-                      className="text-stone-500 hover:text-stone-800 underline"
-                    >
-                      清除
-                    </button>
-                  )}
-                </div>
-              </Field>
-              <Field label="卡片品名字距">
-                <div className="grid grid-cols-3 gap-1.5">
-                  {([
-                    { v: "tight", label: "收緊" },
-                    { v: "normal", label: "跟預設" },
-                    { v: "wide", label: "撐開" },
-                  ] as const).map((opt) => (
-                    <button
-                      key={opt.v}
-                      type="button"
-                      onClick={() => patch({ cardTitleTracking: opt.v })}
-                      aria-pressed={(cardTitleTracking ?? "normal") === opt.v}
-                      className={`rounded-lg border py-2 text-xs transition ${
-                        (cardTitleTracking ?? "normal") === opt.v
-                          ? "border-emerald-500 bg-emerald-50 text-emerald-900"
-                          : "border-stone-200 text-stone-600 hover:border-stone-400"
-                      }`}
-                    >
-                      {opt.label}
-                    </button>
-                  ))}
-                </div>
-                <div className="mt-1.5 flex items-center justify-between text-[11px] text-stone-500">
-                  <span>品名同一行裡，字與字之間空多少。筆畫多的中文品名（像「觀葉植物」）字級一大就會跟隔壁黏在一起，撐開一點看得清楚；只有兩三個字的短品名撐開會更像選物店。上一格「卡片標題行距」調的是換行之後上下隔多遠，這格是同一行左右之間。只動品名，描述、價錢與那幾行小字不跟著變</span>
-                  {cardTitleTracking && (
-                    <button
-                      type="button"
-                      onClick={() => patch({ cardTitleTracking: null })}
-                      className="text-stone-500 hover:text-stone-800 underline"
-                    >
-                      清除
-                    </button>
-                  )}
-                </div>
-              </Field>
-              <Field label="卡片品名用色">
-                <div className="grid grid-cols-3 gap-1.5">
-                  {([
-                    { v: "default", label: "預設" },
-                    { v: "accent", label: "主色" },
-                    { v: "muted", label: "柔和" },
-                  ] as const).map((opt) => (
-                    <button
-                      key={opt.v}
-                      type="button"
-                      onClick={() => patch({ cardTitleTone: opt.v })}
-                      aria-pressed={(cardTitleTone ?? "default") === opt.v}
-                      className={`rounded-lg border py-2 text-xs transition ${
-                        (cardTitleTone ?? "default") === opt.v
-                          ? "border-emerald-500 bg-emerald-50 text-emerald-900"
-                          : "border-stone-200 text-stone-600 hover:border-stone-400"
-                      }`}
-                    >
-                      {opt.label}
-                    </button>
-                  ))}
-                </div>
-                <div className="mt-1.5 flex items-center justify-between text-[11px] text-stone-500">
-                  <span>卡片上那行品名是什麼顏色。三段的品名本來都跟內文同深，整張卡上沒有一個顏色的落點，品名跟底下的描述、價錢只差在字大一點；換成主色能讓客人掃過一列卡片時先看到商品名，柔和則是讓品名退半階、把重量留給照片。上面幾格動的是字多大、多粗、隔多遠，都不換顏色。只動品名，描述、價錢與那幾行小字不跟著變</span>
-                  {cardTitleTone && (
-                    <button
-                      type="button"
-                      onClick={() => patch({ cardTitleTone: null })}
-                      className="text-stone-500 hover:text-stone-800 underline"
-                    >
-                      清除
-                    </button>
-                  )}
-                </div>
-              </Field>
-              <Field label="卡片描述字級">
-                <div className="grid grid-cols-3 gap-1.5">
-                  {([
-                    { v: "small", label: "小" },
-                    { v: "default", label: "跟預設" },
-                    { v: "large", label: "大" },
-                  ] as const).map((opt) => (
-                    <button
-                      key={opt.v}
-                      type="button"
-                      onClick={() => patch({ cardDescScale: opt.v })}
-                      aria-pressed={(cardDescScale ?? "default") === opt.v}
-                      className={`rounded-lg border py-2 text-xs transition ${
-                        (cardDescScale ?? "default") === opt.v
-                          ? "border-emerald-500 bg-emerald-50 text-emerald-900"
-                          : "border-stone-200 text-stone-600 hover:border-stone-400"
-                      }`}
-                    >
-                      {opt.label}
-                    </button>
-                  ))}
-                </div>
-                <div className="mt-1.5 flex items-center justify-between text-[11px] text-stone-500">
-                  <span>品名底下那段描述本身多大（選物的副標、慢讀的摘要）。想讓摘要真的被讀完選大，品名調大之後想讓描述退一步選小；精選商品那段底下是價錢，不受這格影響</span>
-                  {cardDescScale && (
-                    <button
-                      type="button"
-                      onClick={() => patch({ cardDescScale: null })}
-                      className="text-stone-500 hover:text-stone-800 underline"
-                    >
-                      清除
-                    </button>
-                  )}
-                </div>
-              </Field>
-              <Field label="卡片描述行距">
-                <div className="grid grid-cols-3 gap-1.5">
-                  {([
-                    { v: "tight", label: "收緊" },
-                    { v: "normal", label: "跟預設" },
-                    { v: "loose", label: "拉開" },
-                  ] as const).map((opt) => (
-                    <button
-                      key={opt.v}
-                      type="button"
-                      onClick={() => patch({ cardDescLeading: opt.v })}
-                      aria-pressed={(cardDescLeading ?? "normal") === opt.v}
-                      className={`rounded-lg border py-2 text-xs transition ${
-                        (cardDescLeading ?? "normal") === opt.v
-                          ? "border-emerald-500 bg-emerald-50 text-emerald-900"
-                          : "border-stone-200 text-stone-600 hover:border-stone-400"
-                      }`}
-                    >
-                      {opt.label}
-                    </button>
-                  ))}
-                </div>
-                <div className="mt-1.5 flex items-center justify-between text-[11px] text-stone-500">
-                  <span>那段描述排到第二行以後，上下兩行之間隔多遠。原本選物那邊照英文短句的密度排（兩行中文會黏在一起，選拉開）、慢讀那邊排得比較鬆（一段話會散開，選收緊）。「卡片行距」那格調的是描述跟品名、照片之間，不是同一段字自己換行</span>
-                  {cardDescLeading && (
-                    <button
-                      type="button"
-                      onClick={() => patch({ cardDescLeading: null })}
-                      className="text-stone-500 hover:text-stone-800 underline"
-                    >
-                      清除
-                    </button>
-                  )}
-                </div>
-              </Field>
-              <Field label="卡片描述粗細">
-                <div className="grid grid-cols-3 gap-1.5">
-                  {([
-                    { v: "normal", label: "常規" },
-                    { v: "medium", label: "中黑" },
-                    { v: "bold", label: "粗" },
-                  ] as const).map((opt) => (
-                    <button
-                      key={opt.v}
-                      type="button"
-                      onClick={() => patch({ cardDescWeight: opt.v })}
-                      aria-pressed={(cardDescWeight ?? "normal") === opt.v}
-                      className={`rounded-lg border py-2 text-xs transition ${
-                        (cardDescWeight ?? "normal") === opt.v
-                          ? "border-emerald-500 bg-emerald-50 text-emerald-900"
-                          : "border-stone-200 text-stone-600 hover:border-stone-400"
-                      }`}
-                    >
-                      {opt.label}
-                    </button>
-                  ))}
-                </div>
-                <div className="mt-1.5 flex items-center justify-between text-[11px] text-stone-500">
-                  <span>那段描述的筆畫多粗。原本是最細的一級、又被「卡片副文字深淺」淡過一層，慢讀那種客人真的要讀的摘要在卡片上輕得像圖說，想讓它站出來選中黑或粗；小卡上描述只是一句副標、想讓品名獨大就留常規</span>
-                  {cardDescWeight && (
-                    <button
-                      type="button"
-                      onClick={() => patch({ cardDescWeight: null })}
-                      className="text-stone-500 hover:text-stone-800 underline"
-                    >
-                      清除
-                    </button>
-                  )}
-                </div>
-              </Field>
-              <Field label="卡片描述字距">
-                <div className="grid grid-cols-3 gap-1.5">
-                  {([
-                    { v: "tight", label: "收緊" },
-                    { v: "normal", label: "跟預設" },
-                    { v: "wide", label: "撐開" },
-                  ] as const).map((opt) => (
-                    <button
-                      key={opt.v}
-                      type="button"
-                      onClick={() => patch({ cardDescTracking: opt.v })}
-                      aria-pressed={(cardDescTracking ?? "normal") === opt.v}
-                      className={`rounded-lg border py-2 text-xs transition ${
-                        (cardDescTracking ?? "normal") === opt.v
-                          ? "border-emerald-500 bg-emerald-50 text-emerald-900"
-                          : "border-stone-200 text-stone-600 hover:border-stone-400"
-                      }`}
-                    >
-                      {opt.label}
-                    </button>
-                  ))}
-                </div>
-                <div className="mt-1.5 flex items-center justify-between text-[11px] text-stone-500">
-                  <span>那段描述同一行裡，字與字之間空多少。把品名字距撐開之後，底下那句副標還是原本的密度，一鬆一緊疊在同一張卡上——這格讓描述跟得上；慢讀那種一整段的摘要收緊一點能多塞回半行。只動描述，品名、價錢與那幾行小字不跟著變</span>
-                  {cardDescTracking && (
-                    <button
-                      type="button"
-                      onClick={() => patch({ cardDescTracking: null })}
-                      className="text-stone-500 hover:text-stone-800 underline"
-                    >
-                      清除
-                    </button>
-                  )}
-                </div>
-              </Field>
-              <Field label="卡片描述用色">
-                <div className="grid grid-cols-3 gap-1.5">
-                  {([
-                    { v: "default", label: "跟預設" },
-                    { v: "accent", label: "主色" },
-                    { v: "text", label: "跟品名同深" },
-                  ] as const).map((opt) => (
-                    <button
-                      key={opt.v}
-                      type="button"
-                      onClick={() => patch({ cardDescTone: opt.v })}
-                      aria-pressed={(cardDescTone ?? "default") === opt.v}
-                      className={`rounded-lg border py-2 text-xs transition ${
-                        (cardDescTone ?? "default") === opt.v
-                          ? "border-emerald-500 bg-emerald-50 text-emerald-900"
-                          : "border-stone-200 text-stone-600 hover:border-stone-400"
-                      }`}
-                    >
-                      {opt.label}
-                    </button>
-                  ))}
-                </div>
-                <div className="mt-1.5 flex items-center justify-between text-[11px] text-stone-500">
-                  <span>前面三格動的是那段描述多大、行距多開、多粗，這格動的是它什麼顏色。描述現在固定比品名淡一階（選物那段外面還多淡一層），放大、加粗都追不上那個淺灰——慢讀那種摘要才是客人要讀完的段落，選「跟品名同深」就不再退在後面；想讓副標帶點品牌感選「主色」</span>
-                  {cardDescTone && (
-                    <button
-                      type="button"
-                      onClick={() => patch({ cardDescTone: null })}
-                      className="text-stone-500 hover:text-stone-800 underline"
-                    >
-                      清除
-                    </button>
-                  )}
-                </div>
-              </Field>
-              <Field label="卡片小字字級">
-                <div className="grid grid-cols-3 gap-1.5">
-                  {([
-                    { v: "small", label: "小" },
-                    { v: "default", label: "跟預設" },
-                    { v: "large", label: "大" },
-                  ] as const).map((opt) => (
-                    <button
-                      key={opt.v}
-                      type="button"
-                      onClick={() => patch({ cardMicroScale: opt.v })}
-                      aria-pressed={(cardMicroScale ?? "default") === opt.v}
-                      className={`rounded-lg border py-2 text-xs transition ${
-                        (cardMicroScale ?? "default") === opt.v
-                          ? "border-emerald-500 bg-emerald-50 text-emerald-900"
-                          : "border-stone-200 text-stone-600 hover:border-stone-400"
-                      }`}
-                    >
-                      {opt.label}
-                    </button>
-                  ))}
-                </div>
-                <div className="mt-1.5 flex items-center justify-between text-[11px] text-stone-500">
-                  <span>卡片上那幾行全大寫的小字多大（選物卡片底下的「看更多」、慢讀卡片的分類與標籤、精選商品價錢底下的「剩 N」）。那行只有 10px，是照英文挑的，中文擠在裡面會糊成一條灰線看不出是字，選大能救回來</span>
-                  {cardMicroScale && (
-                    <button
-                      type="button"
-                      onClick={() => patch({ cardMicroScale: null })}
-                      className="text-stone-500 hover:text-stone-800 underline"
-                    >
-                      清除
-                    </button>
-                  )}
-                </div>
-              </Field>
-              <Field label="卡片小字字距">
-                <div className="grid grid-cols-3 gap-1.5">
-                  {([
-                    { v: "tight", label: "收緊" },
-                    { v: "normal", label: "跟預設" },
-                    { v: "wide", label: "撐開" },
-                  ] as const).map((opt) => (
-                    <button
-                      key={opt.v}
-                      type="button"
-                      onClick={() => patch({ cardMicroTracking: opt.v })}
-                      aria-pressed={(cardMicroTracking ?? "normal") === opt.v}
-                      className={`rounded-lg border py-2 text-xs transition ${
-                        (cardMicroTracking ?? "normal") === opt.v
-                          ? "border-emerald-500 bg-emerald-50 text-emerald-900"
-                          : "border-stone-200 text-stone-600 hover:border-stone-400"
-                      }`}
-                    >
-                      {opt.label}
-                    </button>
-                  ))}
-                </div>
-                <div className="mt-1.5 flex items-center justify-between text-[11px] text-stone-500">
-                  <span>上一格那幾行小字，字跟字之間空多少。那個間隙是照英文短詞挑的，中文放進去會變成一個個站開的單字、在手機上還會被撐到換行——中文小字選收緊，英文短詞想要雜誌感選撐開</span>
-                  {cardMicroTracking && (
-                    <button
-                      type="button"
-                      onClick={() => patch({ cardMicroTracking: null })}
-                      className="text-stone-500 hover:text-stone-800 underline"
-                    >
-                      清除
-                    </button>
-                  )}
-                </div>
-              </Field>
-              <Field label="卡片小字行距">
-                <div className="grid grid-cols-3 gap-1.5">
-                  {([
-                    { v: "tight", label: "收緊" },
-                    { v: "normal", label: "跟預設" },
-                    { v: "loose", label: "拉開" },
-                  ] as const).map((opt) => (
-                    <button
-                      key={opt.v}
-                      type="button"
-                      onClick={() => patch({ cardMicroLeading: opt.v })}
-                      aria-pressed={(cardMicroLeading ?? "normal") === opt.v}
-                      className={`rounded-lg border py-2 text-xs transition ${
-                        (cardMicroLeading ?? "normal") === opt.v
-                          ? "border-emerald-500 bg-emerald-50 text-emerald-900"
-                          : "border-stone-200 text-stone-600 hover:border-stone-400"
-                      }`}
-                    >
-                      {opt.label}
-                    </button>
-                  ))}
-                </div>
-                <div className="mt-1.5 flex items-center justify-between text-[11px] text-stone-500">
-                  <span>同樣那幾行小字排到第二行時，上下兩行隔多遠。它們沒有自己的行距、跟著整段內文走（那是給一整段文字挑的值），套在那麼小的字上兩行之間空得比字還高——分類、標籤打長一點就會換行，選收緊讓兩行貼回一組</span>
-                  {cardMicroLeading && (
-                    <button
-                      type="button"
-                      onClick={() => patch({ cardMicroLeading: null })}
-                      className="text-stone-500 hover:text-stone-800 underline"
-                    >
-                      清除
-                    </button>
-                  )}
-                </div>
-              </Field>
-              <Field label="卡片小字粗細">
-                <div className="grid grid-cols-4 gap-1.5">
-                  {([
-                    { v: "normal", label: "跟預設" },
-                    { v: "light", label: "常規" },
-                    { v: "medium", label: "中黑" },
-                    { v: "bold", label: "粗" },
-                  ] as const).map((opt) => (
-                    <button
-                      key={opt.v}
-                      type="button"
-                      onClick={() => patch({ cardMicroWeight: opt.v })}
-                      aria-pressed={(cardMicroWeight ?? "normal") === opt.v}
-                      className={`rounded-lg border py-2 text-xs transition ${
-                        (cardMicroWeight ?? "normal") === opt.v
-                          ? "border-emerald-500 bg-emerald-50 text-emerald-900"
-                          : "border-stone-200 text-stone-600 hover:border-stone-400"
-                      }`}
-                    >
-                      {opt.label}
-                    </button>
-                  ))}
-                </div>
-                <div className="mt-1.5 flex items-center justify-between text-[11px] text-stone-500">
-                  <span>同樣那幾行小字的筆畫多粗。「看更多」、分類、標籤那三行是最細的一級，10px 又撐開字距，在淺色底上看起來像一條灰線不像字，想讓客人看得出那裡可以點選「中黑」或「粗」；精選商品那行「剩 N」本來就比較重、又是琥珀色，想讓它退成一句提示選「常規」</span>
-                  {cardMicroWeight && (
-                    <button
-                      type="button"
-                      onClick={() => patch({ cardMicroWeight: null })}
-                      className="text-stone-500 hover:text-stone-800 underline"
-                    >
-                      清除
-                    </button>
-                  )}
-                </div>
-              </Field>
-              <Field label="卡片小字用色">
-                <div className="grid grid-cols-4 gap-1.5">
-                  {([
-                    { v: "normal", label: "跟預設" },
-                    { v: "accent", label: "主色" },
-                    { v: "text", label: "跟品名同深" },
-                    { v: "muted", label: "淡" },
-                  ] as const).map((opt) => (
-                    <button
-                      key={opt.v}
-                      type="button"
-                      onClick={() => patch({ cardMicroTone: opt.v })}
-                      aria-pressed={(cardMicroTone ?? "normal") === opt.v}
-                      className={`rounded-lg border py-2 text-xs transition ${
-                        (cardMicroTone ?? "normal") === opt.v
-                          ? "border-emerald-500 bg-emerald-50 text-emerald-900"
-                          : "border-stone-200 text-stone-600 hover:border-stone-400"
-                      }`}
-                    >
-                      {opt.label}
-                    </button>
-                  ))}
-                </div>
-                <div className="mt-1.5 flex items-center justify-between text-[11px] text-stone-500">
-                  <span>前面三格動的是那幾行小字多大、字距多開、多粗，這格動的是它們什麼顏色。那幾行現在各是各的顏色：「看更多」跟慢讀的分類用主色、慢讀底下的標籤是淡灰、精選那行「剩 N」是橘色的警示色（跟店的配色沒關係）。主色深就跟品名撞在一起、主色亮在淺底上看不見、橘色那行又比價錢還搶——想讓整張卡的小字統一，四個都會一起換</span>
-                  {cardMicroTone && (
-                    <button
-                      type="button"
-                      onClick={() => patch({ cardMicroTone: null })}
-                      className="text-stone-500 hover:text-stone-800 underline"
-                    >
-                      清除
-                    </button>
-                  )}
-                </div>
-              </Field>
-              <Field label="卡片小字大小寫">
-                <div className="grid grid-cols-3 gap-1.5">
-                  {([
-                    { v: "upper", label: "全大寫" },
-                    { v: "capitalize", label: "字首大寫" },
-                    { v: "none", label: "照原樣" },
-                  ] as const).map((opt) => (
-                    <button
-                      key={opt.v}
-                      type="button"
-                      onClick={() => patch({ cardMicroCase: opt.v })}
-                      aria-pressed={(cardMicroCase ?? "upper") === opt.v}
-                      className={`rounded-lg border py-2 text-xs transition ${
-                        (cardMicroCase ?? "upper") === opt.v
-                          ? "border-emerald-500 bg-emerald-50 text-emerald-900"
-                          : "border-stone-200 text-stone-600 hover:border-stone-400"
-                      }`}
-                    >
-                      {opt.label}
-                    </button>
-                  ))}
-                </div>
-                <div className="mt-1.5 flex items-center justify-between text-[11px] text-stone-500">
-                  <span>同樣那幾行小字的英文字母要不要被轉成大寫。前面五格調的是它們多大、字距多開、換行後隔多遠、多粗、什麼顏色，這格調的是字形本身。那幾行一律轉全大寫，中文沒有大小寫、按了不會動；打英文就會被整行拉大寫——「Shop all」變 SHOP ALL、自己訂的分類標籤（Care 照顧只有前半被改）、好評那行的職稱或 IG 帳號，想照自己打的樣子顯示選「照原樣」（改輸入框裡的字沒用，大寫是顯示的時候才轉的）</span>
-                  {cardMicroCase && (
-                    <button
-                      type="button"
-                      onClick={() => patch({ cardMicroCase: null })}
-                      className="text-stone-500 hover:text-stone-800 underline"
-                    >
-                      清除
-                    </button>
-                  )}
-                </div>
-              </Field>
-              <Field label="卡片價錢字級">
-                <div className="grid grid-cols-3 gap-1.5">
-                  {([
-                    { v: "small", label: "小" },
-                    { v: "default", label: "跟預設" },
-                    { v: "large", label: "大" },
-                  ] as const).map((opt) => (
-                    <button
-                      key={opt.v}
-                      type="button"
-                      onClick={() => patch({ cardPriceScale: opt.v })}
-                      aria-pressed={(cardPriceScale ?? "default") === opt.v}
-                      className={`rounded-lg border py-2 text-xs transition ${
-                        (cardPriceScale ?? "default") === opt.v
-                          ? "border-emerald-500 bg-emerald-50 text-emerald-900"
-                          : "border-stone-200 text-stone-600 hover:border-stone-400"
-                      }`}
-                    >
-                      {opt.label}
-                    </button>
-                  ))}
-                </div>
-                <div className="mt-1.5 flex items-center justify-between text-[11px] text-stone-500">
-                  <span>精選商品卡片上那行價錢多大。價錢只有 14px、比品名還小一級，客人在首頁掃過去常常正是在找它；品名調大之後想讓價錢跟上也是這格。只有精選商品那段的卡片有價錢，其他段不受影響</span>
-                  {cardPriceScale && (
-                    <button
-                      type="button"
-                      onClick={() => patch({ cardPriceScale: null })}
-                      className="text-stone-500 hover:text-stone-800 underline"
-                    >
-                      清除
-                    </button>
-                  )}
-                </div>
-              </Field>
-              <Field label="卡片價錢粗細">
-                <div className="grid grid-cols-3 gap-1.5">
-                  {([
-                    { v: "normal", label: "常規" },
-                    { v: "medium", label: "中黑" },
-                    { v: "bold", label: "粗" },
-                  ] as const).map((opt) => (
-                    <button
-                      key={opt.v}
-                      type="button"
-                      onClick={() => patch({ cardPriceWeight: opt.v })}
-                      aria-pressed={(cardPriceWeight ?? "normal") === opt.v}
-                      className={`rounded-lg border py-2 text-xs transition ${
-                        (cardPriceWeight ?? "normal") === opt.v
-                          ? "border-emerald-500 bg-emerald-50 text-emerald-900"
-                          : "border-stone-200 text-stone-600 hover:border-stone-400"
-                      }`}
-                    >
-                      {opt.label}
-                    </button>
-                  ))}
-                </div>
-                <div className="mt-1.5 flex items-center justify-between text-[11px] text-stone-500">
-                  <span>上一格管的是價錢多大，這格管的是它多粗。想讓價錢一眼看得到，加粗比放大省——不會把卡片下半撐開，也不用改顏色；反過來想讓首頁先講商品不先講價，就留常規。同樣只有精選商品那段的卡片有價錢</span>
-                  {cardPriceWeight && (
-                    <button
-                      type="button"
-                      onClick={() => patch({ cardPriceWeight: null })}
-                      className="text-stone-500 hover:text-stone-800 underline"
-                    >
-                      清除
-                    </button>
-                  )}
-                </div>
-              </Field>
-              <Field label="卡片價錢字距">
-                <div className="grid grid-cols-3 gap-1.5">
-                  {([
-                    { v: "tight", label: "收緊" },
-                    { v: "normal", label: "跟預設" },
-                    { v: "wide", label: "撐開" },
-                  ] as const).map((opt) => (
-                    <button
-                      key={opt.v}
-                      type="button"
-                      onClick={() => patch({ cardPriceTracking: opt.v })}
-                      aria-pressed={(cardPriceTracking ?? "normal") === opt.v}
-                      className={`rounded-lg border py-2 text-xs transition ${
-                        (cardPriceTracking ?? "normal") === opt.v
-                          ? "border-emerald-500 bg-emerald-50 text-emerald-900"
-                          : "border-stone-200 text-stone-600 hover:border-stone-400"
-                      }`}
-                    >
-                      {opt.label}
-                    </button>
-                  ))}
-                </div>
-                <div className="mt-1.5 flex items-center justify-between text-[11px] text-stone-500">
-                  <span>那行價錢同一行裡，數字與數字之間空多少。把品名字距撐開之後，貼在底下的價錢還是原本的密度，一鬆一緊疊在同一張卡上——這格讓價錢跟得上；撐開一點也有實體標價牌那種數字隔開的味道。只動價錢，品名、描述與那幾行小字不跟著變</span>
-                  {cardPriceTracking && (
-                    <button
-                      type="button"
-                      onClick={() => patch({ cardPriceTracking: null })}
-                      className="text-stone-500 hover:text-stone-800 underline"
-                    >
-                      清除
-                    </button>
-                  )}
-                </div>
-              </Field>
-              <Field label="卡片價錢用色">
-                <div className="grid grid-cols-3 gap-1.5">
-                  {([
-                    { v: "default", label: "預設" },
-                    { v: "accent", label: "主色" },
-                    { v: "text", label: "跟品名同深" },
-                  ] as const).map((opt) => (
-                    <button
-                      key={opt.v}
-                      type="button"
-                      onClick={() => patch({ cardPriceTone: opt.v })}
-                      aria-pressed={(cardPriceTone ?? "default") === opt.v}
-                      className={`rounded-lg border py-2 text-xs transition ${
-                        (cardPriceTone ?? "default") === opt.v
-                          ? "border-emerald-500 bg-emerald-50 text-emerald-900"
-                          : "border-stone-200 text-stone-600 hover:border-stone-400"
-                      }`}
-                    >
-                      {opt.label}
-                    </button>
-                  ))}
-                </div>
-                <div className="mt-1.5 flex items-center justify-between text-[11px] text-stone-500">
-                  <span>前面兩格動的是價錢多大、多粗，這格動的是它什麼顏色。那行本來比品名淡一階，是整張卡上最淡的一行，可是一株賣多少常常正是客人在首頁在找的東西——換成主色或跟品名同深，掃過一列卡片時才看得到。「卡片副文字深淺」動的是那層透明度，跟這格是兩回事，可以疊著用。只有精選商品那段的卡片有價錢</span>
-                  {cardPriceTone && (
-                    <button
-                      type="button"
-                      onClick={() => patch({ cardPriceTone: null })}
-                      className="text-stone-500 hover:text-stone-800 underline"
-                    >
-                      清除
-                    </button>
-                  )}
-                </div>
-              </Field>
-              <Field label="卡片行距">
-                <div className="grid grid-cols-3 gap-1.5">
-                  {([
-                    { v: "tight", label: "收緊" },
-                    { v: "normal", label: "跟預設" },
-                    { v: "loose", label: "放寬" },
-                  ] as const).map((opt) => (
-                    <button
-                      key={opt.v}
-                      type="button"
-                      onClick={() => patch({ cardRowGap: opt.v })}
-                      aria-pressed={(cardRowGap ?? "normal") === opt.v}
-                      className={`rounded-lg border py-2 text-xs transition ${
-                        (cardRowGap ?? "normal") === opt.v
-                          ? "border-emerald-500 bg-emerald-50 text-emerald-900"
-                          : "border-stone-200 text-stone-600 hover:border-stone-400"
-                      }`}
-                    >
-                      {opt.label}
-                    </button>
-                  ))}
-                </div>
-                <div className="mt-1.5 flex items-center justify-between text-[11px] text-stone-500">
-                  <span>同一張卡片裡上下幾行之間隔多遠（照片到品名、品名到描述或價錢、描述到底下那行小字）。卡片變寬、四行字散在一片空白裡就收緊，字調大之後幾行黏成一團就放寬；幾行之間原本的遠近會照比例保留，不會被拉成一樣</span>
-                  {cardRowGap && (
-                    <button
-                      type="button"
-                      onClick={() => patch({ cardRowGap: null })}
-                      className="text-stone-500 hover:text-stone-800 underline"
-                    >
-                      清除
-                    </button>
-                  )}
-                </div>
-              </Field>
-              <Field label="卡片副文字深淺">
-                <div className="grid grid-cols-3 gap-1.5">
-                  {([
-                    { v: "muted", label: "更淡" },
-                    { v: "default", label: "跟預設" },
-                    { v: "strong", label: "加深" },
-                  ] as const).map((opt) => (
-                    <button
-                      key={opt.v}
-                      type="button"
-                      onClick={() => patch({ cardMetaTone: opt.v })}
-                      aria-pressed={(cardMetaTone ?? "default") === opt.v}
-                      className={`rounded-lg border py-2 text-xs transition ${
-                        (cardMetaTone ?? "default") === opt.v
-                          ? "border-emerald-500 bg-emerald-50 text-emerald-900"
-                          : "border-stone-200 text-stone-600 hover:border-stone-400"
-                      }`}
-                    >
-                      {opt.label}
-                    </button>
-                  ))}
-                </div>
-                <div className="mt-1.5 flex items-center justify-between text-[11px] text-stone-500">
-                  <span>卡片上品名底下那行有多濃（選物的副標、精選商品的價錢）。那行現在被淡了兩次，實際只剩不到五成，字放大了還是一行讀不太到的淺灰——想讓客人在首頁一眼看到價錢就選加深；想讓卡片先講品名、價錢退到後面就選更淡。慢讀那段的摘要不受這格影響</span>
-                  {cardMetaTone && (
-                    <button
-                      type="button"
-                      onClick={() => patch({ cardMetaTone: null })}
-                      className="text-stone-500 hover:text-stone-800 underline"
-                    >
-                      清除
-                    </button>
-                  )}
-                </div>
-              </Field>
+              {SECTIONS_WITH_CARD_TITLE_TEXT.includes(selectedSection) && (
+                <Field label="卡片標題字級">
+                  <div className="grid grid-cols-3 gap-1.5">
+                    {([
+                      { v: "small", label: "小" },
+                      { v: "default", label: "跟預設" },
+                      { v: "large", label: "大" },
+                    ] as const).map((opt) => (
+                      <button
+                        key={opt.v}
+                        type="button"
+                        onClick={() => patch({ cardTitleScale: opt.v })}
+                        aria-pressed={(cardTitleScale ?? "default") === opt.v}
+                        className={`rounded-lg border py-2 text-xs transition ${
+                          (cardTitleScale ?? "default") === opt.v
+                            ? "border-emerald-500 bg-emerald-50 text-emerald-900"
+                            : "border-stone-200 text-stone-600 hover:border-stone-400"
+                        }`}
+                      >
+                        {opt.label}
+                      </button>
+                    ))}
+                  </div>
+                  <div className="mt-1.5 flex items-center justify-between text-[11px] text-stone-500">
+                    <span>卡片上那行品名（或文章標題）本身多大，上面兩格管的是它佔幾行。卡片變寬（欄數少、照片在左）時選大，一列四張的小卡選小</span>
+                    {cardTitleScale && (
+                      <button
+                        type="button"
+                        onClick={() => patch({ cardTitleScale: null })}
+                        className="text-stone-500 hover:text-stone-800 underline"
+                      >
+                        清除
+                      </button>
+                    )}
+                  </div>
+                </Field>
+              )}
+              {SECTIONS_WITH_CARD_TITLE_TEXT.includes(selectedSection) && (
+                <Field label="卡片標題粗細">
+                  <div className="grid grid-cols-3 gap-1.5">
+                    {([
+                      { v: "normal", label: "常規" },
+                      { v: "medium", label: "中黑" },
+                      { v: "bold", label: "粗" },
+                    ] as const).map((opt) => (
+                      <button
+                        key={opt.v}
+                        type="button"
+                        onClick={() => patch({ cardTitleWeight: opt.v })}
+                        aria-pressed={(cardTitleWeight ?? "normal") === opt.v}
+                        className={`rounded-lg border py-2 text-xs transition ${
+                          (cardTitleWeight ?? "normal") === opt.v
+                            ? "border-emerald-500 bg-emerald-50 text-emerald-900"
+                            : "border-stone-200 text-stone-600 hover:border-stone-400"
+                        }`}
+                      >
+                        {opt.label}
+                      </button>
+                    ))}
+                  </div>
+                  <div className="mt-1.5 flex items-center justify-between text-[11px] text-stone-500">
+                    <span>上一格管的是品名多大，這格管的是它多粗。品名跟底下的描述、價錢分不出主次時選中黑或粗（「標題粗細」那格動的是段落大標，不是卡片裡這行）</span>
+                    {cardTitleWeight && (
+                      <button
+                        type="button"
+                        onClick={() => patch({ cardTitleWeight: null })}
+                        className="text-stone-500 hover:text-stone-800 underline"
+                      >
+                        清除
+                      </button>
+                    )}
+                  </div>
+                </Field>
+              )}
+              {SECTIONS_WITH_CARD_TITLE_LEADING.includes(selectedSection) && (
+                <Field label="卡片標題行距">
+                  <div className="grid grid-cols-3 gap-1.5">
+                    {([
+                      { v: "tight", label: "收緊" },
+                      { v: "normal", label: "跟預設" },
+                      { v: "loose", label: "拉開" },
+                    ] as const).map((opt) => (
+                      <button
+                        key={opt.v}
+                        type="button"
+                        onClick={() => patch({ cardTitleLeading: opt.v })}
+                        aria-pressed={(cardTitleLeading ?? "normal") === opt.v}
+                        className={`rounded-lg border py-2 text-xs transition ${
+                          (cardTitleLeading ?? "normal") === opt.v
+                            ? "border-emerald-500 bg-emerald-50 text-emerald-900"
+                            : "border-stone-200 text-stone-600 hover:border-stone-400"
+                        }`}
+                      >
+                        {opt.label}
+                      </button>
+                    ))}
+                  </div>
+                  <div className="mt-1.5 flex items-center justify-between text-[11px] text-stone-500">
+                    <span>品名排到兩行以上時，上下兩行之間隔多遠（品名只有一行的話這格看不出差別）。「卡片標題行數」選了兩行或完整、或品名本來就長的段落才用得到：兩行中文黏在一起就拉開，字級調大之後間隙太空就收緊。「卡片行距」那格調的是品名跟照片、價錢之間，不是同一行字自己換行</span>
+                    {cardTitleLeading && (
+                      <button
+                        type="button"
+                        onClick={() => patch({ cardTitleLeading: null })}
+                        className="text-stone-500 hover:text-stone-800 underline"
+                      >
+                        清除
+                      </button>
+                    )}
+                  </div>
+                </Field>
+              )}
+              {SECTIONS_WITH_CARD_TITLE_TEXT.includes(selectedSection) && (
+                <Field label="卡片品名字距">
+                  <div className="grid grid-cols-3 gap-1.5">
+                    {([
+                      { v: "tight", label: "收緊" },
+                      { v: "normal", label: "跟預設" },
+                      { v: "wide", label: "撐開" },
+                    ] as const).map((opt) => (
+                      <button
+                        key={opt.v}
+                        type="button"
+                        onClick={() => patch({ cardTitleTracking: opt.v })}
+                        aria-pressed={(cardTitleTracking ?? "normal") === opt.v}
+                        className={`rounded-lg border py-2 text-xs transition ${
+                          (cardTitleTracking ?? "normal") === opt.v
+                            ? "border-emerald-500 bg-emerald-50 text-emerald-900"
+                            : "border-stone-200 text-stone-600 hover:border-stone-400"
+                        }`}
+                      >
+                        {opt.label}
+                      </button>
+                    ))}
+                  </div>
+                  <div className="mt-1.5 flex items-center justify-between text-[11px] text-stone-500">
+                    <span>品名同一行裡，字與字之間空多少。筆畫多的中文品名（像「觀葉植物」）字級一大就會跟隔壁黏在一起，撐開一點看得清楚；只有兩三個字的短品名撐開會更像選物店。上一格「卡片標題行距」調的是換行之後上下隔多遠，這格是同一行左右之間。只動品名，描述、價錢與那幾行小字不跟著變</span>
+                    {cardTitleTracking && (
+                      <button
+                        type="button"
+                        onClick={() => patch({ cardTitleTracking: null })}
+                        className="text-stone-500 hover:text-stone-800 underline"
+                      >
+                        清除
+                      </button>
+                    )}
+                  </div>
+                </Field>
+              )}
+              {SECTIONS_WITH_CARD_TITLE_TEXT.includes(selectedSection) && (
+                <Field label="卡片品名用色">
+                  <div className="grid grid-cols-3 gap-1.5">
+                    {([
+                      { v: "default", label: "預設" },
+                      { v: "accent", label: "主色" },
+                      { v: "muted", label: "柔和" },
+                    ] as const).map((opt) => (
+                      <button
+                        key={opt.v}
+                        type="button"
+                        onClick={() => patch({ cardTitleTone: opt.v })}
+                        aria-pressed={(cardTitleTone ?? "default") === opt.v}
+                        className={`rounded-lg border py-2 text-xs transition ${
+                          (cardTitleTone ?? "default") === opt.v
+                            ? "border-emerald-500 bg-emerald-50 text-emerald-900"
+                            : "border-stone-200 text-stone-600 hover:border-stone-400"
+                        }`}
+                      >
+                        {opt.label}
+                      </button>
+                    ))}
+                  </div>
+                  <div className="mt-1.5 flex items-center justify-between text-[11px] text-stone-500">
+                    <span>卡片上那行品名是什麼顏色。三段的品名本來都跟內文同深，整張卡上沒有一個顏色的落點，品名跟底下的描述、價錢只差在字大一點；換成主色能讓客人掃過一列卡片時先看到商品名，柔和則是讓品名退半階、把重量留給照片。上面幾格動的是字多大、多粗、隔多遠，都不換顏色。只動品名，描述、價錢與那幾行小字不跟著變</span>
+                    {cardTitleTone && (
+                      <button
+                        type="button"
+                        onClick={() => patch({ cardTitleTone: null })}
+                        className="text-stone-500 hover:text-stone-800 underline"
+                      >
+                        清除
+                      </button>
+                    )}
+                  </div>
+                </Field>
+              )}
+              {SECTIONS_WITH_CARD_DESC_TEXT.includes(selectedSection) && (
+                <Field label="卡片描述字級">
+                  <div className="grid grid-cols-3 gap-1.5">
+                    {([
+                      { v: "small", label: "小" },
+                      { v: "default", label: "跟預設" },
+                      { v: "large", label: "大" },
+                    ] as const).map((opt) => (
+                      <button
+                        key={opt.v}
+                        type="button"
+                        onClick={() => patch({ cardDescScale: opt.v })}
+                        aria-pressed={(cardDescScale ?? "default") === opt.v}
+                        className={`rounded-lg border py-2 text-xs transition ${
+                          (cardDescScale ?? "default") === opt.v
+                            ? "border-emerald-500 bg-emerald-50 text-emerald-900"
+                            : "border-stone-200 text-stone-600 hover:border-stone-400"
+                        }`}
+                      >
+                        {opt.label}
+                      </button>
+                    ))}
+                  </div>
+                  <div className="mt-1.5 flex items-center justify-between text-[11px] text-stone-500">
+                    <span>品名底下那段描述本身多大（選物的副標、慢讀的摘要）。想讓摘要真的被讀完選大，品名調大之後想讓描述退一步選小；精選商品那段底下是價錢，不受這格影響</span>
+                    {cardDescScale && (
+                      <button
+                        type="button"
+                        onClick={() => patch({ cardDescScale: null })}
+                        className="text-stone-500 hover:text-stone-800 underline"
+                      >
+                        清除
+                      </button>
+                    )}
+                  </div>
+                </Field>
+              )}
+              {SECTIONS_WITH_CARD_DESC_TEXT.includes(selectedSection) && (
+                <Field label="卡片描述行距">
+                  <div className="grid grid-cols-3 gap-1.5">
+                    {([
+                      { v: "tight", label: "收緊" },
+                      { v: "normal", label: "跟預設" },
+                      { v: "loose", label: "拉開" },
+                    ] as const).map((opt) => (
+                      <button
+                        key={opt.v}
+                        type="button"
+                        onClick={() => patch({ cardDescLeading: opt.v })}
+                        aria-pressed={(cardDescLeading ?? "normal") === opt.v}
+                        className={`rounded-lg border py-2 text-xs transition ${
+                          (cardDescLeading ?? "normal") === opt.v
+                            ? "border-emerald-500 bg-emerald-50 text-emerald-900"
+                            : "border-stone-200 text-stone-600 hover:border-stone-400"
+                        }`}
+                      >
+                        {opt.label}
+                      </button>
+                    ))}
+                  </div>
+                  <div className="mt-1.5 flex items-center justify-between text-[11px] text-stone-500">
+                    <span>那段描述排到第二行以後，上下兩行之間隔多遠。原本選物那邊照英文短句的密度排（兩行中文會黏在一起，選拉開）、慢讀那邊排得比較鬆（一段話會散開，選收緊）。「卡片行距」那格調的是描述跟品名、照片之間，不是同一段字自己換行</span>
+                    {cardDescLeading && (
+                      <button
+                        type="button"
+                        onClick={() => patch({ cardDescLeading: null })}
+                        className="text-stone-500 hover:text-stone-800 underline"
+                      >
+                        清除
+                      </button>
+                    )}
+                  </div>
+                </Field>
+              )}
+              {SECTIONS_WITH_CARD_DESC_TEXT.includes(selectedSection) && (
+                <Field label="卡片描述粗細">
+                  <div className="grid grid-cols-3 gap-1.5">
+                    {([
+                      { v: "normal", label: "常規" },
+                      { v: "medium", label: "中黑" },
+                      { v: "bold", label: "粗" },
+                    ] as const).map((opt) => (
+                      <button
+                        key={opt.v}
+                        type="button"
+                        onClick={() => patch({ cardDescWeight: opt.v })}
+                        aria-pressed={(cardDescWeight ?? "normal") === opt.v}
+                        className={`rounded-lg border py-2 text-xs transition ${
+                          (cardDescWeight ?? "normal") === opt.v
+                            ? "border-emerald-500 bg-emerald-50 text-emerald-900"
+                            : "border-stone-200 text-stone-600 hover:border-stone-400"
+                        }`}
+                      >
+                        {opt.label}
+                      </button>
+                    ))}
+                  </div>
+                  <div className="mt-1.5 flex items-center justify-between text-[11px] text-stone-500">
+                    <span>那段描述的筆畫多粗。原本是最細的一級、又被「卡片副文字深淺」淡過一層，慢讀那種客人真的要讀的摘要在卡片上輕得像圖說，想讓它站出來選中黑或粗；小卡上描述只是一句副標、想讓品名獨大就留常規</span>
+                    {cardDescWeight && (
+                      <button
+                        type="button"
+                        onClick={() => patch({ cardDescWeight: null })}
+                        className="text-stone-500 hover:text-stone-800 underline"
+                      >
+                        清除
+                      </button>
+                    )}
+                  </div>
+                </Field>
+              )}
+              {SECTIONS_WITH_CARD_DESC_TEXT.includes(selectedSection) && (
+                <Field label="卡片描述字距">
+                  <div className="grid grid-cols-3 gap-1.5">
+                    {([
+                      { v: "tight", label: "收緊" },
+                      { v: "normal", label: "跟預設" },
+                      { v: "wide", label: "撐開" },
+                    ] as const).map((opt) => (
+                      <button
+                        key={opt.v}
+                        type="button"
+                        onClick={() => patch({ cardDescTracking: opt.v })}
+                        aria-pressed={(cardDescTracking ?? "normal") === opt.v}
+                        className={`rounded-lg border py-2 text-xs transition ${
+                          (cardDescTracking ?? "normal") === opt.v
+                            ? "border-emerald-500 bg-emerald-50 text-emerald-900"
+                            : "border-stone-200 text-stone-600 hover:border-stone-400"
+                        }`}
+                      >
+                        {opt.label}
+                      </button>
+                    ))}
+                  </div>
+                  <div className="mt-1.5 flex items-center justify-between text-[11px] text-stone-500">
+                    <span>那段描述同一行裡，字與字之間空多少。把品名字距撐開之後，底下那句副標還是原本的密度，一鬆一緊疊在同一張卡上——這格讓描述跟得上；慢讀那種一整段的摘要收緊一點能多塞回半行。只動描述，品名、價錢與那幾行小字不跟著變</span>
+                    {cardDescTracking && (
+                      <button
+                        type="button"
+                        onClick={() => patch({ cardDescTracking: null })}
+                        className="text-stone-500 hover:text-stone-800 underline"
+                      >
+                        清除
+                      </button>
+                    )}
+                  </div>
+                </Field>
+              )}
+              {SECTIONS_WITH_CARD_DESC_TEXT.includes(selectedSection) && (
+                <Field label="卡片描述用色">
+                  <div className="grid grid-cols-3 gap-1.5">
+                    {([
+                      { v: "default", label: "跟預設" },
+                      { v: "accent", label: "主色" },
+                      { v: "text", label: "跟品名同深" },
+                    ] as const).map((opt) => (
+                      <button
+                        key={opt.v}
+                        type="button"
+                        onClick={() => patch({ cardDescTone: opt.v })}
+                        aria-pressed={(cardDescTone ?? "default") === opt.v}
+                        className={`rounded-lg border py-2 text-xs transition ${
+                          (cardDescTone ?? "default") === opt.v
+                            ? "border-emerald-500 bg-emerald-50 text-emerald-900"
+                            : "border-stone-200 text-stone-600 hover:border-stone-400"
+                        }`}
+                      >
+                        {opt.label}
+                      </button>
+                    ))}
+                  </div>
+                  <div className="mt-1.5 flex items-center justify-between text-[11px] text-stone-500">
+                    <span>前面三格動的是那段描述多大、行距多開、多粗，這格動的是它什麼顏色。描述現在固定比品名淡一階（選物那段外面還多淡一層），放大、加粗都追不上那個淺灰——慢讀那種摘要才是客人要讀完的段落，選「跟品名同深」就不再退在後面；想讓副標帶點品牌感選「主色」</span>
+                    {cardDescTone && (
+                      <button
+                        type="button"
+                        onClick={() => patch({ cardDescTone: null })}
+                        className="text-stone-500 hover:text-stone-800 underline"
+                      >
+                        清除
+                      </button>
+                    )}
+                  </div>
+                </Field>
+              )}
+              {SECTIONS_WITH_CARD_MICRO_TEXT.includes(selectedSection) && (
+                <Field label="卡片小字字級">
+                  <div className="grid grid-cols-3 gap-1.5">
+                    {([
+                      { v: "small", label: "小" },
+                      { v: "default", label: "跟預設" },
+                      { v: "large", label: "大" },
+                    ] as const).map((opt) => (
+                      <button
+                        key={opt.v}
+                        type="button"
+                        onClick={() => patch({ cardMicroScale: opt.v })}
+                        aria-pressed={(cardMicroScale ?? "default") === opt.v}
+                        className={`rounded-lg border py-2 text-xs transition ${
+                          (cardMicroScale ?? "default") === opt.v
+                            ? "border-emerald-500 bg-emerald-50 text-emerald-900"
+                            : "border-stone-200 text-stone-600 hover:border-stone-400"
+                        }`}
+                      >
+                        {opt.label}
+                      </button>
+                    ))}
+                  </div>
+                  <div className="mt-1.5 flex items-center justify-between text-[11px] text-stone-500">
+                    <span>卡片上那幾行全大寫的小字多大（選物卡片底下的「看更多」、慢讀卡片的分類與標籤、精選商品價錢底下的「剩 N」）。那行只有 10px，是照英文挑的，中文擠在裡面會糊成一條灰線看不出是字，選大能救回來</span>
+                    {cardMicroScale && (
+                      <button
+                        type="button"
+                        onClick={() => patch({ cardMicroScale: null })}
+                        className="text-stone-500 hover:text-stone-800 underline"
+                      >
+                        清除
+                      </button>
+                    )}
+                  </div>
+                </Field>
+              )}
+              {SECTIONS_WITH_CARD_MICRO_TEXT.includes(selectedSection) && (
+                <Field label="卡片小字字距">
+                  <div className="grid grid-cols-3 gap-1.5">
+                    {([
+                      { v: "tight", label: "收緊" },
+                      { v: "normal", label: "跟預設" },
+                      { v: "wide", label: "撐開" },
+                    ] as const).map((opt) => (
+                      <button
+                        key={opt.v}
+                        type="button"
+                        onClick={() => patch({ cardMicroTracking: opt.v })}
+                        aria-pressed={(cardMicroTracking ?? "normal") === opt.v}
+                        className={`rounded-lg border py-2 text-xs transition ${
+                          (cardMicroTracking ?? "normal") === opt.v
+                            ? "border-emerald-500 bg-emerald-50 text-emerald-900"
+                            : "border-stone-200 text-stone-600 hover:border-stone-400"
+                        }`}
+                      >
+                        {opt.label}
+                      </button>
+                    ))}
+                  </div>
+                  <div className="mt-1.5 flex items-center justify-between text-[11px] text-stone-500">
+                    <span>上一格那幾行小字，字跟字之間空多少。那個間隙是照英文短詞挑的，中文放進去會變成一個個站開的單字、在手機上還會被撐到換行——中文小字選收緊，英文短詞想要雜誌感選撐開</span>
+                    {cardMicroTracking && (
+                      <button
+                        type="button"
+                        onClick={() => patch({ cardMicroTracking: null })}
+                        className="text-stone-500 hover:text-stone-800 underline"
+                      >
+                        清除
+                      </button>
+                    )}
+                  </div>
+                </Field>
+              )}
+              {SECTIONS_WITH_CARD_MICRO_TEXT.includes(selectedSection) && (
+                <Field label="卡片小字行距">
+                  <div className="grid grid-cols-3 gap-1.5">
+                    {([
+                      { v: "tight", label: "收緊" },
+                      { v: "normal", label: "跟預設" },
+                      { v: "loose", label: "拉開" },
+                    ] as const).map((opt) => (
+                      <button
+                        key={opt.v}
+                        type="button"
+                        onClick={() => patch({ cardMicroLeading: opt.v })}
+                        aria-pressed={(cardMicroLeading ?? "normal") === opt.v}
+                        className={`rounded-lg border py-2 text-xs transition ${
+                          (cardMicroLeading ?? "normal") === opt.v
+                            ? "border-emerald-500 bg-emerald-50 text-emerald-900"
+                            : "border-stone-200 text-stone-600 hover:border-stone-400"
+                        }`}
+                      >
+                        {opt.label}
+                      </button>
+                    ))}
+                  </div>
+                  <div className="mt-1.5 flex items-center justify-between text-[11px] text-stone-500">
+                    <span>同樣那幾行小字排到第二行時，上下兩行隔多遠。它們沒有自己的行距、跟著整段內文走（那是給一整段文字挑的值），套在那麼小的字上兩行之間空得比字還高——分類、標籤打長一點就會換行，選收緊讓兩行貼回一組</span>
+                    {cardMicroLeading && (
+                      <button
+                        type="button"
+                        onClick={() => patch({ cardMicroLeading: null })}
+                        className="text-stone-500 hover:text-stone-800 underline"
+                      >
+                        清除
+                      </button>
+                    )}
+                  </div>
+                </Field>
+              )}
+              {SECTIONS_WITH_CARD_MICRO_TEXT.includes(selectedSection) && (
+                <Field label="卡片小字粗細">
+                  <div className="grid grid-cols-4 gap-1.5">
+                    {([
+                      { v: "normal", label: "跟預設" },
+                      { v: "light", label: "常規" },
+                      { v: "medium", label: "中黑" },
+                      { v: "bold", label: "粗" },
+                    ] as const).map((opt) => (
+                      <button
+                        key={opt.v}
+                        type="button"
+                        onClick={() => patch({ cardMicroWeight: opt.v })}
+                        aria-pressed={(cardMicroWeight ?? "normal") === opt.v}
+                        className={`rounded-lg border py-2 text-xs transition ${
+                          (cardMicroWeight ?? "normal") === opt.v
+                            ? "border-emerald-500 bg-emerald-50 text-emerald-900"
+                            : "border-stone-200 text-stone-600 hover:border-stone-400"
+                        }`}
+                      >
+                        {opt.label}
+                      </button>
+                    ))}
+                  </div>
+                  <div className="mt-1.5 flex items-center justify-between text-[11px] text-stone-500">
+                    <span>同樣那幾行小字的筆畫多粗。「看更多」、分類、標籤那三行是最細的一級，10px 又撐開字距，在淺色底上看起來像一條灰線不像字，想讓客人看得出那裡可以點選「中黑」或「粗」；精選商品那行「剩 N」本來就比較重、又是琥珀色，想讓它退成一句提示選「常規」</span>
+                    {cardMicroWeight && (
+                      <button
+                        type="button"
+                        onClick={() => patch({ cardMicroWeight: null })}
+                        className="text-stone-500 hover:text-stone-800 underline"
+                      >
+                        清除
+                      </button>
+                    )}
+                  </div>
+                </Field>
+              )}
+              {SECTIONS_WITH_CARD_MICRO_TEXT.includes(selectedSection) && (
+                <Field label="卡片小字用色">
+                  <div className="grid grid-cols-4 gap-1.5">
+                    {([
+                      { v: "normal", label: "跟預設" },
+                      { v: "accent", label: "主色" },
+                      { v: "text", label: "跟品名同深" },
+                      { v: "muted", label: "淡" },
+                    ] as const).map((opt) => (
+                      <button
+                        key={opt.v}
+                        type="button"
+                        onClick={() => patch({ cardMicroTone: opt.v })}
+                        aria-pressed={(cardMicroTone ?? "normal") === opt.v}
+                        className={`rounded-lg border py-2 text-xs transition ${
+                          (cardMicroTone ?? "normal") === opt.v
+                            ? "border-emerald-500 bg-emerald-50 text-emerald-900"
+                            : "border-stone-200 text-stone-600 hover:border-stone-400"
+                        }`}
+                      >
+                        {opt.label}
+                      </button>
+                    ))}
+                  </div>
+                  <div className="mt-1.5 flex items-center justify-between text-[11px] text-stone-500">
+                    <span>前面三格動的是那幾行小字多大、字距多開、多粗，這格動的是它們什麼顏色。那幾行現在各是各的顏色：「看更多」跟慢讀的分類用主色、慢讀底下的標籤是淡灰、精選那行「剩 N」是橘色的警示色（跟店的配色沒關係）。主色深就跟品名撞在一起、主色亮在淺底上看不見、橘色那行又比價錢還搶——想讓整張卡的小字統一，四個都會一起換</span>
+                    {cardMicroTone && (
+                      <button
+                        type="button"
+                        onClick={() => patch({ cardMicroTone: null })}
+                        className="text-stone-500 hover:text-stone-800 underline"
+                      >
+                        清除
+                      </button>
+                    )}
+                  </div>
+                </Field>
+              )}
+              {SECTIONS_WITH_CARD_MICRO_TEXT.includes(selectedSection) && (
+                <Field label="卡片小字大小寫">
+                  <div className="grid grid-cols-3 gap-1.5">
+                    {([
+                      { v: "upper", label: "全大寫" },
+                      { v: "capitalize", label: "字首大寫" },
+                      { v: "none", label: "照原樣" },
+                    ] as const).map((opt) => (
+                      <button
+                        key={opt.v}
+                        type="button"
+                        onClick={() => patch({ cardMicroCase: opt.v })}
+                        aria-pressed={(cardMicroCase ?? "upper") === opt.v}
+                        className={`rounded-lg border py-2 text-xs transition ${
+                          (cardMicroCase ?? "upper") === opt.v
+                            ? "border-emerald-500 bg-emerald-50 text-emerald-900"
+                            : "border-stone-200 text-stone-600 hover:border-stone-400"
+                        }`}
+                      >
+                        {opt.label}
+                      </button>
+                    ))}
+                  </div>
+                  <div className="mt-1.5 flex items-center justify-between text-[11px] text-stone-500">
+                    <span>同樣那幾行小字的英文字母要不要被轉成大寫。前面五格調的是它們多大、字距多開、換行後隔多遠、多粗、什麼顏色，這格調的是字形本身。那幾行一律轉全大寫，中文沒有大小寫、按了不會動；打英文就會被整行拉大寫——「Shop all」變 SHOP ALL、自己訂的分類標籤（Care 照顧只有前半被改）、好評那行的職稱或 IG 帳號，想照自己打的樣子顯示選「照原樣」（改輸入框裡的字沒用，大寫是顯示的時候才轉的）</span>
+                    {cardMicroCase && (
+                      <button
+                        type="button"
+                        onClick={() => patch({ cardMicroCase: null })}
+                        className="text-stone-500 hover:text-stone-800 underline"
+                      >
+                        清除
+                      </button>
+                    )}
+                  </div>
+                </Field>
+              )}
+              {SECTIONS_WITH_CARD_PRICE.includes(selectedSection) && (
+                <Field label="卡片價錢字級">
+                  <div className="grid grid-cols-3 gap-1.5">
+                    {([
+                      { v: "small", label: "小" },
+                      { v: "default", label: "跟預設" },
+                      { v: "large", label: "大" },
+                    ] as const).map((opt) => (
+                      <button
+                        key={opt.v}
+                        type="button"
+                        onClick={() => patch({ cardPriceScale: opt.v })}
+                        aria-pressed={(cardPriceScale ?? "default") === opt.v}
+                        className={`rounded-lg border py-2 text-xs transition ${
+                          (cardPriceScale ?? "default") === opt.v
+                            ? "border-emerald-500 bg-emerald-50 text-emerald-900"
+                            : "border-stone-200 text-stone-600 hover:border-stone-400"
+                        }`}
+                      >
+                        {opt.label}
+                      </button>
+                    ))}
+                  </div>
+                  <div className="mt-1.5 flex items-center justify-between text-[11px] text-stone-500">
+                    <span>精選商品卡片上那行價錢多大。價錢只有 14px、比品名還小一級，客人在首頁掃過去常常正是在找它；品名調大之後想讓價錢跟上也是這格。只有精選商品那段的卡片有價錢，其他段不受影響</span>
+                    {cardPriceScale && (
+                      <button
+                        type="button"
+                        onClick={() => patch({ cardPriceScale: null })}
+                        className="text-stone-500 hover:text-stone-800 underline"
+                      >
+                        清除
+                      </button>
+                    )}
+                  </div>
+                </Field>
+              )}
+              {SECTIONS_WITH_CARD_PRICE.includes(selectedSection) && (
+                <Field label="卡片價錢粗細">
+                  <div className="grid grid-cols-3 gap-1.5">
+                    {([
+                      { v: "normal", label: "常規" },
+                      { v: "medium", label: "中黑" },
+                      { v: "bold", label: "粗" },
+                    ] as const).map((opt) => (
+                      <button
+                        key={opt.v}
+                        type="button"
+                        onClick={() => patch({ cardPriceWeight: opt.v })}
+                        aria-pressed={(cardPriceWeight ?? "normal") === opt.v}
+                        className={`rounded-lg border py-2 text-xs transition ${
+                          (cardPriceWeight ?? "normal") === opt.v
+                            ? "border-emerald-500 bg-emerald-50 text-emerald-900"
+                            : "border-stone-200 text-stone-600 hover:border-stone-400"
+                        }`}
+                      >
+                        {opt.label}
+                      </button>
+                    ))}
+                  </div>
+                  <div className="mt-1.5 flex items-center justify-between text-[11px] text-stone-500">
+                    <span>上一格管的是價錢多大，這格管的是它多粗。想讓價錢一眼看得到，加粗比放大省——不會把卡片下半撐開，也不用改顏色；反過來想讓首頁先講商品不先講價，就留常規。同樣只有精選商品那段的卡片有價錢</span>
+                    {cardPriceWeight && (
+                      <button
+                        type="button"
+                        onClick={() => patch({ cardPriceWeight: null })}
+                        className="text-stone-500 hover:text-stone-800 underline"
+                      >
+                        清除
+                      </button>
+                    )}
+                  </div>
+                </Field>
+              )}
+              {SECTIONS_WITH_CARD_PRICE.includes(selectedSection) && (
+                <Field label="卡片價錢字距">
+                  <div className="grid grid-cols-3 gap-1.5">
+                    {([
+                      { v: "tight", label: "收緊" },
+                      { v: "normal", label: "跟預設" },
+                      { v: "wide", label: "撐開" },
+                    ] as const).map((opt) => (
+                      <button
+                        key={opt.v}
+                        type="button"
+                        onClick={() => patch({ cardPriceTracking: opt.v })}
+                        aria-pressed={(cardPriceTracking ?? "normal") === opt.v}
+                        className={`rounded-lg border py-2 text-xs transition ${
+                          (cardPriceTracking ?? "normal") === opt.v
+                            ? "border-emerald-500 bg-emerald-50 text-emerald-900"
+                            : "border-stone-200 text-stone-600 hover:border-stone-400"
+                        }`}
+                      >
+                        {opt.label}
+                      </button>
+                    ))}
+                  </div>
+                  <div className="mt-1.5 flex items-center justify-between text-[11px] text-stone-500">
+                    <span>那行價錢同一行裡，數字與數字之間空多少。把品名字距撐開之後，貼在底下的價錢還是原本的密度，一鬆一緊疊在同一張卡上——這格讓價錢跟得上；撐開一點也有實體標價牌那種數字隔開的味道。只動價錢，品名、描述與那幾行小字不跟著變</span>
+                    {cardPriceTracking && (
+                      <button
+                        type="button"
+                        onClick={() => patch({ cardPriceTracking: null })}
+                        className="text-stone-500 hover:text-stone-800 underline"
+                      >
+                        清除
+                      </button>
+                    )}
+                  </div>
+                </Field>
+              )}
+              {SECTIONS_WITH_CARD_PRICE.includes(selectedSection) && (
+                <Field label="卡片價錢用色">
+                  <div className="grid grid-cols-3 gap-1.5">
+                    {([
+                      { v: "default", label: "預設" },
+                      { v: "accent", label: "主色" },
+                      { v: "text", label: "跟品名同深" },
+                    ] as const).map((opt) => (
+                      <button
+                        key={opt.v}
+                        type="button"
+                        onClick={() => patch({ cardPriceTone: opt.v })}
+                        aria-pressed={(cardPriceTone ?? "default") === opt.v}
+                        className={`rounded-lg border py-2 text-xs transition ${
+                          (cardPriceTone ?? "default") === opt.v
+                            ? "border-emerald-500 bg-emerald-50 text-emerald-900"
+                            : "border-stone-200 text-stone-600 hover:border-stone-400"
+                        }`}
+                      >
+                        {opt.label}
+                      </button>
+                    ))}
+                  </div>
+                  <div className="mt-1.5 flex items-center justify-between text-[11px] text-stone-500">
+                    <span>前面兩格動的是價錢多大、多粗，這格動的是它什麼顏色。那行本來比品名淡一階，是整張卡上最淡的一行，可是一株賣多少常常正是客人在首頁在找的東西——換成主色或跟品名同深，掃過一列卡片時才看得到。「卡片副文字深淺」動的是那層透明度，跟這格是兩回事，可以疊著用。只有精選商品那段的卡片有價錢</span>
+                    {cardPriceTone && (
+                      <button
+                        type="button"
+                        onClick={() => patch({ cardPriceTone: null })}
+                        className="text-stone-500 hover:text-stone-800 underline"
+                      >
+                        清除
+                      </button>
+                    )}
+                  </div>
+                </Field>
+              )}
+              {SECTIONS_WITH_CARD_ROW_GAP.includes(selectedSection) && (
+                <Field label="卡片行距">
+                  <div className="grid grid-cols-3 gap-1.5">
+                    {([
+                      { v: "tight", label: "收緊" },
+                      { v: "normal", label: "跟預設" },
+                      { v: "loose", label: "放寬" },
+                    ] as const).map((opt) => (
+                      <button
+                        key={opt.v}
+                        type="button"
+                        onClick={() => patch({ cardRowGap: opt.v })}
+                        aria-pressed={(cardRowGap ?? "normal") === opt.v}
+                        className={`rounded-lg border py-2 text-xs transition ${
+                          (cardRowGap ?? "normal") === opt.v
+                            ? "border-emerald-500 bg-emerald-50 text-emerald-900"
+                            : "border-stone-200 text-stone-600 hover:border-stone-400"
+                        }`}
+                      >
+                        {opt.label}
+                      </button>
+                    ))}
+                  </div>
+                  <div className="mt-1.5 flex items-center justify-between text-[11px] text-stone-500">
+                    <span>同一張卡片裡上下幾行之間隔多遠（照片到品名、品名到描述或價錢、描述到底下那行小字）。卡片變寬、四行字散在一片空白裡就收緊，字調大之後幾行黏成一團就放寬；幾行之間原本的遠近會照比例保留，不會被拉成一樣</span>
+                    {cardRowGap && (
+                      <button
+                        type="button"
+                        onClick={() => patch({ cardRowGap: null })}
+                        className="text-stone-500 hover:text-stone-800 underline"
+                      >
+                        清除
+                      </button>
+                    )}
+                  </div>
+                </Field>
+              )}
+              {SECTIONS_WITH_CARD_META_TONE.includes(selectedSection) && (
+                <Field label="卡片副文字深淺">
+                  <div className="grid grid-cols-3 gap-1.5">
+                    {([
+                      { v: "muted", label: "更淡" },
+                      { v: "default", label: "跟預設" },
+                      { v: "strong", label: "加深" },
+                    ] as const).map((opt) => (
+                      <button
+                        key={opt.v}
+                        type="button"
+                        onClick={() => patch({ cardMetaTone: opt.v })}
+                        aria-pressed={(cardMetaTone ?? "default") === opt.v}
+                        className={`rounded-lg border py-2 text-xs transition ${
+                          (cardMetaTone ?? "default") === opt.v
+                            ? "border-emerald-500 bg-emerald-50 text-emerald-900"
+                            : "border-stone-200 text-stone-600 hover:border-stone-400"
+                        }`}
+                      >
+                        {opt.label}
+                      </button>
+                    ))}
+                  </div>
+                  <div className="mt-1.5 flex items-center justify-between text-[11px] text-stone-500">
+                    <span>卡片上品名底下那行有多濃（選物的副標、精選商品的價錢）。那行現在被淡了兩次，實際只剩不到五成，字放大了還是一行讀不太到的淺灰——想讓客人在首頁一眼看到價錢就選加深；想讓卡片先講品名、價錢退到後面就選更淡。慢讀那段的摘要不受這格影響</span>
+                    {cardMetaTone && (
+                      <button
+                        type="button"
+                        onClick={() => patch({ cardMetaTone: null })}
+                        className="text-stone-500 hover:text-stone-800 underline"
+                      >
+                        清除
+                      </button>
+                    )}
+                  </div>
+                </Field>
+              )}
               <Field label="底紋">
                 <div className="grid grid-cols-4 gap-1.5">
                   {([
