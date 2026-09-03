@@ -60,6 +60,19 @@ type StatItem = { value: string; label: string };
 type PartnerItem = { name: string; logoUrl: string; href: string | null };
 type GalleryItem = { url: string; caption: string | null };
 
+// 這四段裡一格一格的東西全都是點不下去的方塊（店家那句話、客人的話、數字、來坐坐那塊
+// 店家資訊），page.tsx 那邊都掛了 sproutly-card-static，layout.tsx 的滑過規則整組把它們
+// 排除掉；它們也沒有 .sproutly-card（照片放大、標題撐開、按鈕浮現那組動作也不歸它們）。
+// 也就是說「滑過卡片」那三顆按鈕在這四段按下去，畫面上不會有任何一個像素改變。
+// 其他段留著：常見問題每一題是點開收合的、合作 logo 有填連結那顆是連結，選物 / 精選 /
+// 慢讀 / 相簿那四段是整張可點的商品卡。
+const SECTIONS_WITHOUT_HOVER_CARDS: SectionKey[] = [
+  "promise",
+  "testimonials",
+  "stats",
+  "visit",
+];
+
 const ADDABLE_BLOCKS: { key: SectionKey; label: string; description: string }[] = [
   { key: "testimonials", label: "顧客評語", description: "3 個 quote card" },
   { key: "faq", label: "常見問題", description: "Accordion 展開式問答" },
@@ -8497,6 +8510,14 @@ export function EditorWorkspace({
                   )}
                 </div>
               </Field>
+              {/* 「滑過卡片」只在真的有可以滑的卡片那幾段列出來（見上面
+                  SECTIONS_WITHOUT_HOVER_CARDS 的說明）：引言、客人的話、數字、來坐坐
+                  那四段一格一格的東西都點不下去，滑過的動作在那邊本來就被擋掉了，
+                  按鈕擺著是按了畫面不動的死按鈕。做法照上面「合作 logo 大小 / 濃淡」
+                  那兩格——規則到不了的段落就不列。
+                  收起來的只是這格 UI，樣式本身一個字都沒改：以前在這四段按過的店，
+                  值還留在資料裡，只是它從頭到尾就沒有畫面上的效果。 */}
+              {!SECTIONS_WITHOUT_HOVER_CARDS.includes(selectedSection) && (
               <Field label="滑過卡片">
                 <div className="grid grid-cols-3 gap-1.5">
                   {([
@@ -8532,6 +8553,7 @@ export function EditorWorkspace({
                   )}
                 </div>
               </Field>
+              )}
               <Field label="卡片文字">
                 <div className="grid grid-cols-4 gap-1.5">
                   {([
