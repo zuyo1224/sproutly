@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import Link from "next/link";
 import { resolveTheme } from "@/app/[slug]/_theme";
 import { advanceOrderStatus } from "./orders/actions";
+import { SubmitButton } from "@/app/_components/submit-button";
 
 type Params = Promise<{ slug: string }>;
 
@@ -755,14 +756,16 @@ export default async function StoreInsightsPage({
                       )}
                       className="flex-shrink-0"
                     >
-                      <button
-                        type="submit"
-                        className="text-xs px-3 py-1.5 rounded-full bg-emerald-700 text-white hover:bg-emerald-800 transition font-medium shadow-sm"
-                        title="一鍵確認訂單"
+                      {/* 跟訂單列表那顆快速按鈕同一個 SubmitButton：送出中 disabled，
+                          連點兩下不會送出兩次，文字也一起換成「處理中...」。 */}
+                      <SubmitButton
+                        pendingText="處理中..."
+                        className="text-xs px-3 py-1.5 rounded-full bg-emerald-700 text-white hover:bg-emerald-800 font-medium shadow-sm"
                       >
                         確認{" "}
                         <span aria-hidden="true">✓</span>
-                      </button>
+                        <span className="sr-only">訂單 #{shortOrderId(o.id)}</span>
+                      </SubmitButton>
                     </form>
                   )}
                 </div>
