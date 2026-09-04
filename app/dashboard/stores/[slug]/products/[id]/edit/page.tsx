@@ -379,12 +379,12 @@ export default async function EditProductPage({
               >
                 確定要刪除「{product.name}」嗎？此動作無法復原。
               </p>
-              <button
-                type="submit"
-                className="mt-4 rounded-full bg-red-600 px-6 py-2.5 text-white text-sm font-medium hover:bg-red-700 transition tracking-tight"
+              <SubmitButton
+                pendingText="刪除中..."
+                className="mt-4 rounded-full bg-red-600 px-6 py-2.5 text-white text-sm font-medium hover:bg-red-700 tracking-tight"
               >
                 確定刪除
-              </button>
+              </SubmitButton>
             </div>
           </details>
         </form>
