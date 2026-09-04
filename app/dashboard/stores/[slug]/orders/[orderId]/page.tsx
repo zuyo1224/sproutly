@@ -18,6 +18,7 @@ import {
 } from "@/lib/order-labels";
 import { telHref, mailHref } from "@/lib/contact-href";
 import { siteBaseUrl } from "@/lib/store-schema";
+import { isUuid } from "@/lib/uuid";
 
 type Params = Promise<{ slug: string; orderId: string }>;
 type SearchParams = Promise<{ error?: string; saved?: string }>;
@@ -43,6 +44,8 @@ export default async function OrderDetailPage({
   searchParams: SearchParams;
 }) {
   const { slug, orderId } = await params;
+  // 網址上的訂單 id 不是 UUID 就直接 404，別拿去查 uuid 欄位（見 lib/uuid.ts）。
+  if (!isUuid(orderId)) notFound();
   const { error, saved } = await searchParams;
 
   const { supabase, user } = await requireUser();

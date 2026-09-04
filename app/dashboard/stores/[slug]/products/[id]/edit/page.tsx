@@ -6,6 +6,7 @@ import { SubmitButton } from "@/app/_components/submit-button";
 import { ImageFilePicker } from "@/app/_components/image-file-picker";
 import { UnsavedChangesGuard } from "@/app/_components/unsaved-changes-guard";
 import { currencySymbol } from "@/lib/format-price";
+import { isUuid } from "@/lib/uuid";
 
 type Params = Promise<{ slug: string; id: string }>;
 type SearchParams = Promise<{ error?: string; copied?: string }>;
@@ -32,6 +33,8 @@ export default async function EditProductPage({
   searchParams: SearchParams;
 }) {
   const { slug, id } = await params;
+  // 網址上的商品 id 不是 UUID 就直接 404，別拿去查 uuid 欄位（見 lib/uuid.ts）。
+  if (!isUuid(id)) notFound();
   const { error, copied } = await searchParams;
 
   const { supabase, user } = await requireUser();
