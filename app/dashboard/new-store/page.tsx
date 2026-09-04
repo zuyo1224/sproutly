@@ -2,6 +2,13 @@ import Link from "next/link";
 import { requireUser } from "@/lib/require-user";
 import { createStore } from "./actions";
 import { SubmitButton } from "@/app/_components/submit-button";
+import {
+  MAX_STORE_ADDRESS_LEN,
+  MAX_STORE_DESC_LEN,
+  MAX_STORE_EMAIL_LEN,
+  MAX_STORE_NAME_LEN,
+  MAX_STORE_PHONE_LEN,
+} from "@/lib/store-limits";
 
 type SearchParams = Promise<{ error?: string }>;
 
@@ -109,6 +116,7 @@ export default async function NewStorePage({
               <input
                 id="store-name"
                 name="name"
+                maxLength={MAX_STORE_NAME_LEN}
                 type="text"
                 required
                 aria-required="true"
@@ -180,6 +188,7 @@ export default async function NewStorePage({
               <textarea
                 id="store-description"
                 name="description"
+                maxLength={MAX_STORE_DESC_LEN}
                 rows={3}
                 placeholder="一兩句話介紹你的店，例如：來自台北的小型植物選物店，專注稀有觀葉與多肉。"
                 className="w-full rounded-xl border border-emerald-100 px-4 py-3 text-emerald-950 placeholder:text-emerald-900/30 outline-none focus:border-emerald-400 focus:ring-2 focus:ring-emerald-100 transition resize-none"
@@ -204,6 +213,7 @@ export default async function NewStorePage({
                 <input
                   id="store-phone"
                   name="contact_phone"
+                  maxLength={MAX_STORE_PHONE_LEN}
                   type="tel"
                   placeholder="0912-345-678"
                   className="w-full rounded-xl border border-emerald-100 px-4 py-3 text-emerald-950 placeholder:text-emerald-900/30 outline-none focus:border-emerald-400 focus:ring-2 focus:ring-emerald-100 transition"
@@ -225,6 +235,7 @@ export default async function NewStorePage({
                 <input
                   id="store-email"
                   name="contact_email"
+                  maxLength={MAX_STORE_EMAIL_LEN}
                   type="email"
                   placeholder="hi@example.com"
                   className="w-full rounded-xl border border-emerald-100 px-4 py-3 text-emerald-950 placeholder:text-emerald-900/30 outline-none focus:border-emerald-400 focus:ring-2 focus:ring-emerald-100 transition"
@@ -248,6 +259,7 @@ export default async function NewStorePage({
               <input
                 id="store-address"
                 name="address"
+                maxLength={MAX_STORE_ADDRESS_LEN}
                 type="text"
                 placeholder="台北市大安區 ... "
                 className="w-full rounded-xl border border-emerald-100 px-4 py-3 text-emerald-950 placeholder:text-emerald-900/30 outline-none focus:border-emerald-400 focus:ring-2 focus:ring-emerald-100 transition"

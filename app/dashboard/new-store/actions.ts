@@ -1,5 +1,6 @@
 "use server";
 import { formString, formStringOrNull } from "@/lib/form-fields";
+import { storeTextLimitError } from "@/lib/store-limits";
 
 import { requireUser } from "@/lib/require-user";
 import { redirect } from "next/navigation";
@@ -33,6 +34,17 @@ export async function createStore(formData: FormData) {
 
   if (!name) {
     redirect("/dashboard/new-store?error=" + encodeURIComponent("請填店名"));
+  }
+  // 五個文字欄位的字數上限（表單 maxLength 吃同一份數字，這裡是伺服器端真正擋下）
+  const tooLong = storeTextLimitError({
+    name,
+    description,
+    contact_phone,
+    contact_email,
+    address,
+  });
+  if (tooLong) {
+    redirect("/dashboard/new-store?error=" + encodeURIComponent(tooLong));
   }
   if (!slug) {
     redirect("/dashboard/new-store?error=" + encodeURIComponent("請填店面網址"));

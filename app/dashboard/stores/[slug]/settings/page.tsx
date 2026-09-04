@@ -4,6 +4,13 @@ import { requireUser } from "@/lib/require-user";
 import { updateStore } from "./actions";
 import { SubmitButton } from "@/app/_components/submit-button";
 import {
+  MAX_STORE_ADDRESS_LEN,
+  MAX_STORE_DESC_LEN,
+  MAX_STORE_EMAIL_LEN,
+  MAX_STORE_NAME_LEN,
+  MAX_STORE_PHONE_LEN,
+} from "@/lib/store-limits";
+import {
   PRESETS,
   PRESET_LABELS,
   FONT_LABELS,
@@ -224,6 +231,7 @@ export default async function StoreSettingsPage({
             </label>
             <input
               name="name"
+              maxLength={MAX_STORE_NAME_LEN}
               type="text"
               required
               aria-required="true"
@@ -238,6 +246,7 @@ export default async function StoreSettingsPage({
             </label>
             <textarea
               name="description"
+              maxLength={MAX_STORE_DESC_LEN}
               rows={3}
               defaultValue={store.description ?? ""}
               className="w-full rounded-xl border border-emerald-100 px-4 py-3 outline-none focus:border-emerald-400 focus:ring-2 focus:ring-emerald-100 transition resize-none"
@@ -268,6 +277,7 @@ export default async function StoreSettingsPage({
               </label>
               <input
                 name="contact_phone"
+                maxLength={MAX_STORE_PHONE_LEN}
                 type="tel"
                 defaultValue={store.contact_phone ?? ""}
                 placeholder="0912-345-678"
@@ -280,6 +290,7 @@ export default async function StoreSettingsPage({
               </label>
               <input
                 name="contact_email"
+                maxLength={MAX_STORE_EMAIL_LEN}
                 type="email"
                 defaultValue={store.contact_email ?? ""}
                 placeholder="hi@example.com"
@@ -294,6 +305,7 @@ export default async function StoreSettingsPage({
             </label>
             <input
               name="address"
+              maxLength={MAX_STORE_ADDRESS_LEN}
               type="text"
               defaultValue={store.address ?? ""}
               placeholder="台北市 ..."
