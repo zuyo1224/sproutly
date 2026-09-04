@@ -25,6 +25,7 @@ import {
   type HeroImageBounds,
 } from "@/lib/hero-image-bounds";
 import { AssetPicker } from "@/app/_components/asset-picker";
+import { socialUrl } from "@/lib/contact-href";
 import { EditorAIChat } from "./editor-ai-chat";
 import {
   HERO_ZOOM_MIN,
@@ -5131,17 +5132,28 @@ export function EditorWorkspace({
                         ✦
                       </button>
                     </div>
+                    {/* 存檔端（actions.ts）只收得下 http(s):// 或漏 scheme 的真網域，其餘存 null，
+                        商家事後在店面看不到連結卻不知道為什麼。所以這格輸入時就用同一支
+                        socialUrl 先判一次，判不過立刻提示。刻意不用 type="url"：瀏覽器的
+                        url 驗證會擋掉「instagram.com/foo」這種漏 https:// 但存檔端會補回的好連結。 */}
                     <input
                       type="text"
+                      inputMode="url"
                       value={p.href ?? ""}
                       onChange={(e) =>
                         updateListItem<PartnerItem>("partners", i, {
                           href: e.target.value || null,
                         })
                       }
-                      placeholder="連結（選填）"
+                      placeholder="連結（選填，貼完整網址 https://…）"
                       className="w-full rounded border border-stone-200 px-2 py-1.5 text-xs font-mono"
                     />
+                    {p.href && p.href.trim() && !socialUrl(p.href) && (
+                      <p className="text-[10px] text-amber-800 bg-amber-50 border border-amber-200 rounded-lg px-2 py-1.5">
+                        這串存檔後不會變成連結，logo 會照常顯示但點不了。請貼完整網址，例如
+                        https://www.example.com/shop。
+                      </p>
+                    )}
                   </div>
                 ))}
               </div>
