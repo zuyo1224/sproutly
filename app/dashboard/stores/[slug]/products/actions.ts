@@ -24,9 +24,25 @@ async function authorizedStore(slug: string) {
   return { supabase, store };
 }
 
+// 價格上限（元）：DB 的 price_cents 是 integer，上限 21 億多「分」、換成元只有兩千
+// 一百多萬。商家手滑多打幾個 0（或想拿超大數字當「面議」）就會打爆，Postgres 丟一串
+// 英文「value out of range for type integer」回來，看不懂哪裡錯。先在這裡擋成中文。
+// 一千萬元離 DB 上限還有一倍空間，台灣小店也不會有單件破千萬的商品。
+const MAX_PRICE_YUAN = 10_000_000;
+
+// 庫存上限：同一個 integer 欄位、同一種打爆法。以前只有列表那格「直接改庫存」擋，
+// 新增／編輯頁走的是這支 parseStock，沒擋，同一個數字在列表被中文攔下、在編輯頁卻
+// 噴英文原始錯誤。收進 parse 函式讓三條路同一套。
+const MAX_STOCK = 1_000_000;
+
 function parsePrice(raw: string): number {
   const n = Number(raw);
   if (!Number.isFinite(n) || n < 0) throw new Error("價格必須是非負數");
+  if (n > MAX_PRICE_YUAN) {
+    throw new Error(
+      `價格最多 ${MAX_PRICE_YUAN.toLocaleString("zh-TW")} 元，確認一下是不是多打了幾個 0`
+    );
+  }
   return n;
 }
 
@@ -40,6 +56,9 @@ function parseStock(raw: string): number | null {
   // 跟 lib/product-quantity 的 isValidQty（Number.isInteger 同時擋 NaN／小數／負數）
   // 同一個態度，這裡在插入前就攔下、換成看得懂的中文訊息。
   if (!Number.isInteger(n) || n < 0) throw new Error("庫存必須是非負整數或留空");
+  if (n > MAX_STOCK) {
+    throw new Error(`庫存最多 ${MAX_STOCK.toLocaleString("zh-TW")} 件，確認一下是不是多打了幾個 0`);
+  }
   return n;
 }
 
@@ -264,10 +283,6 @@ export async function duplicateProduct(slug: string, productId: string) {
   redirect(`/dashboard/stores/${slug}/products/${copy.id}/edit?copied=1`);
 }
 
-// 庫存上限：DB 的 integer 欄位上限是 21 億多，商家手滑多打幾個 0 打爆的話
-// Postgres 會丟一串英文的原始錯誤回來，看不懂哪裡錯。先在這裡擋成中文訊息。
-const MAX_STOCK = 1_000_000;
-
 // 列表直接改庫存：補到貨、或線下賣掉幾件，以前都得點進商品編輯頁、捲過整個圖片區、
 // 改掉數字、按存檔、再退回列表——跟一鍵上下架、訂單一鍵推進是同一個痛點，只是這一格
 // 要打數字而不是按一下。
@@ -299,14 +314,12 @@ export async function setProductStock(
     redirect(errorUrl("請填庫存數字。要改成不管這件的庫存，請進商品編輯頁把庫存清空"));
   }
 
+  // 上限檢查跟新增／編輯頁一起收在 parseStock 裡，三條路同一句中文。
   let stock: number | null;
   try {
     stock = parseStock(raw);
   } catch (e) {
     redirect(errorUrl(e instanceof Error ? e.message : "庫存輸入錯誤"));
-  }
-  if (stock! > MAX_STOCK) {
-    redirect(errorUrl(`庫存最多 ${MAX_STOCK} 件，確認一下是不是多打了幾個 0`));
   }
 
   const { data: product } = await supabase
