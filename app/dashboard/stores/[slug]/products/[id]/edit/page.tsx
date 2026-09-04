@@ -7,6 +7,7 @@ import { ImageFilePicker } from "@/app/_components/image-file-picker";
 import { UnsavedChangesGuard } from "@/app/_components/unsaved-changes-guard";
 import { currencySymbol } from "@/lib/format-price";
 import { isUuid } from "@/lib/uuid";
+import { MAX_PRICE_YUAN, MAX_STOCK } from "@/lib/product-limits";
 
 type Params = Promise<{ slug: string; id: string }>;
 type SearchParams = Promise<{ error?: string; copied?: string }>;
@@ -179,6 +180,7 @@ export default async function EditProductPage({
                 type="number"
                 inputMode="numeric"
                 min="0"
+                max={MAX_PRICE_YUAN}
                 step="1"
                 required
                 aria-required="true"
@@ -200,6 +202,7 @@ export default async function EditProductPage({
                 type="number"
                 inputMode="numeric"
                 min="0"
+                max={MAX_STOCK}
                 step="1"
                 defaultValue={product.stock ?? ""}
                 placeholder="留空 = 不追蹤庫存"

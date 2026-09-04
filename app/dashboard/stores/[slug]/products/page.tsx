@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import Link from "next/link";
 import { formatPrice } from "@/lib/format-price";
 import { isSoldOut, isLowStock } from "@/lib/product-stock";
+import { MAX_STOCK } from "@/lib/product-limits";
 import { matchesProductSearch } from "@/lib/product-search";
 import {
   moveProductOrder,
@@ -363,6 +364,7 @@ export default async function ProductsListPage({
                         name="stock"
                         type="number"
                         min={0}
+                        max={MAX_STOCK}
                         step={1}
                         defaultValue={p.stock}
                         className="w-14 rounded-full border border-emerald-100 px-2 py-1 text-xs text-right tabular-nums outline-none focus:border-emerald-400 focus:ring-2 focus:ring-emerald-100 transition"

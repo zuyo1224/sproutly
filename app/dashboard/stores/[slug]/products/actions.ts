@@ -4,6 +4,7 @@ import { formString, formStringOrNull } from "@/lib/form-fields";
 import { requireUser } from "@/lib/require-user";
 import { uploadImage } from "@/lib/storage";
 import { yuanToCents } from "@/lib/format-price";
+import { MAX_PRICE_YUAN, MAX_STOCK } from "@/lib/product-limits";
 // 調順序要先拿到整家店「照現在順序排好」的完整清單，破千的店不能只撈第一頁。
 import { fetchAllRows } from "@/lib/fetch-all-rows";
 import { redirect } from "next/navigation";
@@ -24,16 +25,8 @@ async function authorizedStore(slug: string) {
   return { supabase, store };
 }
 
-// 價格上限（元）：DB 的 price_cents 是 integer，上限 21 億多「分」、換成元只有兩千
-// 一百多萬。商家手滑多打幾個 0（或想拿超大數字當「面議」）就會打爆，Postgres 丟一串
-// 英文「value out of range for type integer」回來，看不懂哪裡錯。先在這裡擋成中文。
-// 一千萬元離 DB 上限還有一倍空間，台灣小店也不會有單件破千萬的商品。
-const MAX_PRICE_YUAN = 10_000_000;
-
-// 庫存上限：同一個 integer 欄位、同一種打爆法。以前只有列表那格「直接改庫存」擋，
-// 新增／編輯頁走的是這支 parseStock，沒擋，同一個數字在列表被中文攔下、在編輯頁卻
-// 噴英文原始錯誤。收進 parse 函式讓三條路同一套。
-const MAX_STOCK = 1_000_000;
+// 價格／庫存上限的數字本體在 lib/product-limits（表單的 max 屬性也吃同一份），
+// 這裡負責在伺服器端真正擋下、丟中文訊息。
 
 function parsePrice(raw: string): number {
   const n = Number(raw);
