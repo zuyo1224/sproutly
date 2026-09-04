@@ -1,6 +1,6 @@
 "use server";
 import { formString, formStringOrNull } from "@/lib/form-fields";
-import { storeTextLimitError } from "@/lib/store-limits";
+import { storeTextLimitError, storeThemeTextLimitError } from "@/lib/store-limits";
 
 import { requireUser } from "@/lib/require-user";
 import { uploadImage } from "@/lib/storage";
@@ -185,6 +185,30 @@ export async function updateStore(slug: string, formData: FormData) {
     sectionOrder,
   };
 
+  // theme 文案欄位的字數上限（跟視覺編輯器 slice 的數字同一份，見 lib/store-limits）。
+  // 放在圖片上傳之後是既有順序的代價：真要省那趟上傳可再往前搬，但這些欄位裡有幾個
+  // （collectionItems、layout 副標）要等上面組好才拿得到。
+  const social = {
+    instagram: formStringOrNull(formData, "social_instagram"),
+    facebook: formStringOrNull(formData, "social_facebook"),
+    line: formStringOrNull(formData, "social_line"),
+  };
+  const themeTooLong = storeThemeTextLimitError({
+    tagline,
+    heroEyebrow: layout.heroEyebrow,
+    heroSubtitle: layout.heroSubtitle,
+    collectionsIntro: homepage.collectionsIntro,
+    collectionItems,
+    promise: homepage.promise,
+    visitTitle: homepage.visitTitle,
+    businessHours: businessHoursText,
+    faq: faqText,
+    social,
+  });
+  if (themeTooLong) {
+    redirect(baseRedirect + "?error=" + encodeURIComponent(themeTooLong));
+  }
+
   const theme = {
     preset,
     font,
@@ -199,13 +223,7 @@ export async function updateStore(slug: string, formData: FormData) {
       faq: formData.get("section_faq") === "on",
       social: formData.get("section_social") === "on",
     },
-    social: {
-      instagram:
-        formStringOrNull(formData, "social_instagram"),
-      facebook:
-        formStringOrNull(formData, "social_facebook"),
-      line: formStringOrNull(formData, "social_line"),
-    },
+    social,
     tagline,
     collections: existingCollections,
     homepage,

@@ -1,5 +1,15 @@
 "use server";
 
+import {
+  MAX_COLLECTION_SUBTITLE_LEN,
+  MAX_COLLECTION_TITLE_LEN,
+  MAX_COLLECTIONS_INTRO_LEN,
+  MAX_HERO_EYEBROW_LEN,
+  MAX_HERO_SUBTITLE_LEN,
+  MAX_PROMISE_LEN,
+  MAX_THEME_TAGLINE_LEN,
+  MAX_VISIT_TITLE_LEN,
+} from "@/lib/store-limits";
 import { requireUser } from "@/lib/require-user";
 import {
   clampHeroZoom,
@@ -217,7 +227,7 @@ export async function saveEditorState(slug: string, payload: EditorPayload) {
     if (hex) merged.accent = hex;
   }
   if (payload.tagline !== undefined) {
-    merged.tagline = String(payload.tagline).slice(0, 500);
+    merged.tagline = String(payload.tagline).slice(0, MAX_THEME_TAGLINE_LEN);
   }
   if (payload.heroUrl !== undefined) {
     merged.hero_url = payload.heroUrl ? String(payload.heroUrl).slice(0, 500) : null;
@@ -234,10 +244,10 @@ export async function saveEditorState(slug: string, payload: EditorPayload) {
       layoutPatch.heroStyle = payload.layout.heroStyle;
     }
     if (payload.layout.heroEyebrow !== undefined) {
-      layoutPatch.heroEyebrow = String(payload.layout.heroEyebrow).slice(0, 200);
+      layoutPatch.heroEyebrow = String(payload.layout.heroEyebrow).slice(0, MAX_HERO_EYEBROW_LEN);
     }
     if (payload.layout.heroSubtitle !== undefined) {
-      layoutPatch.heroSubtitle = String(payload.layout.heroSubtitle).slice(0, 1000);
+      layoutPatch.heroSubtitle = String(payload.layout.heroSubtitle).slice(0, MAX_HERO_SUBTITLE_LEN);
     }
     if (payload.layout.heroImageSide) {
       layoutPatch.heroImageSide =
@@ -951,7 +961,7 @@ export async function saveEditorState(slug: string, payload: EditorPayload) {
     const existingHomepage = (existing.homepage as Record<string, unknown>) ?? {};
     const hpPatch: Record<string, unknown> = { ...existingHomepage };
     if (payload.homepage.promise !== undefined) {
-      hpPatch.promise = String(payload.homepage.promise).slice(0, 2000);
+      hpPatch.promise = String(payload.homepage.promise).slice(0, MAX_PROMISE_LEN);
     }
     if (payload.homepage.promiseEyebrow !== undefined) {
       const v = String(payload.homepage.promiseEyebrow).trim().slice(0, 60);
@@ -972,7 +982,7 @@ export async function saveEditorState(slug: string, payload: EditorPayload) {
     if (payload.homepage.collectionsIntro !== undefined) {
       hpPatch.collectionsIntro = String(payload.homepage.collectionsIntro).slice(
         0,
-        500
+        MAX_COLLECTIONS_INTRO_LEN
       );
     }
     if (payload.homepage.collectionsEyebrow !== undefined) {
@@ -980,7 +990,7 @@ export async function saveEditorState(slug: string, payload: EditorPayload) {
       hpPatch.collectionsEyebrow = v || null;
     }
     if (payload.homepage.visitTitle !== undefined) {
-      hpPatch.visitTitle = String(payload.homepage.visitTitle).slice(0, 100);
+      hpPatch.visitTitle = String(payload.homepage.visitTitle).slice(0, MAX_VISIT_TITLE_LEN);
     }
     if (payload.homepage.visitEyebrow !== undefined) {
       const v = String(payload.homepage.visitEyebrow).trim().slice(0, 60);
@@ -1118,8 +1128,8 @@ export async function saveEditorState(slug: string, payload: EditorPayload) {
         .filter((c) => c && typeof c === "object")
         .map((c) => ({
           key: String(c.key ?? "").trim().slice(0, 40),
-          title: String(c.title ?? "").trim().slice(0, 60),
-          subtitle: String(c.subtitle ?? "").trim().slice(0, 80),
+          title: String(c.title ?? "").trim().slice(0, MAX_COLLECTION_TITLE_LEN),
+          subtitle: String(c.subtitle ?? "").trim().slice(0, MAX_COLLECTION_SUBTITLE_LEN),
         }))
         .filter((c) => c.key && c.title)
         .slice(0, 6);

@@ -9,6 +9,17 @@ import {
   MAX_STORE_EMAIL_LEN,
   MAX_STORE_NAME_LEN,
   MAX_STORE_PHONE_LEN,
+  MAX_THEME_TAGLINE_LEN,
+  MAX_HERO_EYEBROW_LEN,
+  MAX_HERO_SUBTITLE_LEN,
+  MAX_COLLECTIONS_INTRO_LEN,
+  MAX_COLLECTION_TITLE_LEN,
+  MAX_COLLECTION_SUBTITLE_LEN,
+  MAX_PROMISE_LEN,
+  MAX_VISIT_TITLE_LEN,
+  MAX_BUSINESS_HOURS_LEN,
+  MAX_FAQ_TEXT_LEN,
+  MAX_SOCIAL_URL_LEN,
 } from "@/lib/store-limits";
 import {
   PRESETS,
@@ -337,6 +348,7 @@ export default async function StoreSettingsPage({
             <textarea
               name="business_hours"
               rows={5}
+              maxLength={MAX_BUSINESS_HOURS_LEN}
               defaultValue={businessHoursText}
               placeholder={"週一 - 週五 10:00-19:00\n週六 11:00-20:00\n週日 公休"}
               className="w-full rounded-xl border border-emerald-100 px-4 py-3 outline-none focus:border-emerald-400 focus:ring-2 focus:ring-emerald-100 transition resize-none font-mono text-sm"
@@ -356,6 +368,7 @@ export default async function StoreSettingsPage({
             <textarea
               name="faq"
               rows={10}
+              maxLength={MAX_FAQ_TEXT_LEN}
               defaultValue={faqText}
               placeholder={
                 "Q: 有出貨到外島嗎？\nA: 有，但外島地區運費另計。\n\nQ: 可以面交嗎？\nA: 可以，地點為台北車站。"
@@ -596,6 +609,7 @@ A: 可以，地點為台北車站。`}</pre>
                   id="social_instagram"
                   name="social_instagram"
                   type="url"
+                  maxLength={MAX_SOCIAL_URL_LEN}
                   defaultValue={theme.social.instagram ?? ""}
                   placeholder="https://www.instagram.com/your-store"
                   className="flex-1 rounded-lg border border-emerald-100 px-3 py-2 outline-none focus:border-emerald-400 transition text-sm"
@@ -607,6 +621,7 @@ A: 可以，地點為台北車站。`}</pre>
                   id="social_facebook"
                   name="social_facebook"
                   type="url"
+                  maxLength={MAX_SOCIAL_URL_LEN}
                   defaultValue={theme.social.facebook ?? ""}
                   placeholder="https://www.facebook.com/your-store"
                   className="flex-1 rounded-lg border border-emerald-100 px-3 py-2 outline-none focus:border-emerald-400 transition text-sm"
@@ -618,6 +633,7 @@ A: 可以，地點為台北車站。`}</pre>
                   id="social_line"
                   name="social_line"
                   type="url"
+                  maxLength={MAX_SOCIAL_URL_LEN}
                   defaultValue={theme.social.line ?? ""}
                   placeholder="https://line.me/R/ti/p/@xxx"
                   className="flex-1 rounded-lg border border-emerald-100 px-3 py-2 outline-none focus:border-emerald-400 transition text-sm"
@@ -633,6 +649,7 @@ A: 可以，地點為台北車站。`}</pre>
             <input
               name="theme_tagline"
               type="text"
+              maxLength={MAX_THEME_TAGLINE_LEN}
               defaultValue={theme.tagline ?? ""}
               placeholder="例如：手作好物，從生活開始"
               className="w-full rounded-xl border border-emerald-100 px-4 py-3 outline-none focus:border-emerald-400 focus:ring-2 focus:ring-emerald-100 transition"
@@ -666,6 +683,7 @@ A: 可以，地點為台北車站。`}</pre>
             <textarea
               name="hp_collections_intro"
               rows={2}
+              maxLength={MAX_COLLECTIONS_INTRO_LEN}
               defaultValue={
                 theme.homepage.collectionsIntro ??
                 HOMEPAGE_DEFAULTS.collectionsIntro
@@ -700,6 +718,7 @@ A: 可以，地點為台北車站。`}</pre>
                     <input
                       name={`hp_collection_${def.key}_title`}
                       type="text"
+                      maxLength={MAX_COLLECTION_TITLE_LEN}
                       defaultValue={title}
                       placeholder={def.title}
                       className="rounded-lg border border-emerald-100 px-3 py-2 outline-none focus:border-emerald-400 transition text-sm"
@@ -707,6 +726,7 @@ A: 可以，地點為台北車站。`}</pre>
                     <input
                       name={`hp_collection_${def.key}_subtitle`}
                       type="text"
+                      maxLength={MAX_COLLECTION_SUBTITLE_LEN}
                       defaultValue={subtitle}
                       placeholder={def.subtitle}
                       className="rounded-lg border border-emerald-100 px-3 py-2 outline-none focus:border-emerald-400 transition text-sm"
@@ -724,6 +744,7 @@ A: 可以，地點為台北車站。`}</pre>
             <textarea
               name="hp_promise"
               rows={4}
+              maxLength={MAX_PROMISE_LEN}
               defaultValue={theme.homepage.promise ?? HOMEPAGE_DEFAULTS.promise}
               placeholder={HOMEPAGE_DEFAULTS.promise}
               className="w-full rounded-xl border border-emerald-100 px-4 py-3 outline-none focus:border-emerald-400 focus:ring-2 focus:ring-emerald-100 transition resize-none"
@@ -737,6 +758,7 @@ A: 可以，地點為台北車站。`}</pre>
             <input
               name="hp_visit_title"
               type="text"
+              maxLength={MAX_VISIT_TITLE_LEN}
               defaultValue={
                 theme.homepage.visitTitle ?? HOMEPAGE_DEFAULTS.visitTitle
               }
@@ -819,6 +841,7 @@ A: 可以，地點為台北車站。`}</pre>
                 id="layout_hero_eyebrow"
                 name="layout_hero_eyebrow"
                 type="text"
+                maxLength={MAX_HERO_EYEBROW_LEN}
                 defaultValue={theme.layout.heroEyebrow ?? ""}
                 placeholder="Est. 2019 / Issue 03 / Spring Collection..."
                 className="w-full rounded-xl border border-emerald-100 bg-white px-4 py-3 text-sm outline-none focus:border-emerald-400 focus:ring-2 focus:ring-emerald-100"
@@ -861,6 +884,7 @@ A: 可以，地點為台北車站。`}</pre>
               name="layout_hero_subtitle"
               defaultValue={theme.layout.heroSubtitle ?? ""}
               rows={2}
+              maxLength={MAX_HERO_SUBTITLE_LEN}
               placeholder="一段詩意的副標，給 Split / Magazine / Minimal 用..."
               className="w-full rounded-xl border border-emerald-100 bg-white px-4 py-3 text-sm outline-none focus:border-emerald-400 focus:ring-2 focus:ring-emerald-100 resize-none"
             />

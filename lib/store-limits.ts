@@ -53,3 +53,90 @@ export function storeTextLimitError(fields: StoreTextFields): string | null {
   }
   return null;
 }
+
+// ---------------------------------------------------------------------------
+// theme JSON 裡的文案欄位。這批欄位有兩個入口：視覺編輯器（editor/actions.ts 收 JSON
+// payload，超長直接 slice 截掉）跟店面設定頁（settings/actions.ts 收 FormData）。以前
+// 編輯器那邊每個欄位各寫死一個數字、設定頁完全沒擋，讀取端 resolveTheme 也只 trim 不截，
+// 同一個欄位從編輯器進去最多 500 字、從設定頁進去無上限。現在兩支 action 都 import 這裡，
+// 數字只有一份。
+//
+// 數字沿用編輯器原本的：底部標語 500、Hero 小標 200、Hero 副標 1000、選物提案中標 500、
+// 提案卡標題 60／副標 80、Promise 2000、來店標題 100。營業時間 2000（一行一筆，三十行
+// 綽綽有餘）與 FAQ 5000（自由格式問答，約 15 組）是設定頁獨有的欄位，編輯器沒有對應；
+// 社群連結 500 跟編輯器裡所有 URL 欄位（logo／hero／partner href）同數字。
+export const MAX_THEME_TAGLINE_LEN = 500;
+export const MAX_HERO_EYEBROW_LEN = 200;
+export const MAX_HERO_SUBTITLE_LEN = 1000;
+export const MAX_COLLECTIONS_INTRO_LEN = 500;
+export const MAX_COLLECTION_TITLE_LEN = 60;
+export const MAX_COLLECTION_SUBTITLE_LEN = 80;
+export const MAX_PROMISE_LEN = 2000;
+export const MAX_VISIT_TITLE_LEN = 100;
+export const MAX_BUSINESS_HOURS_LEN = 2000;
+export const MAX_FAQ_TEXT_LEN = 5000;
+export const MAX_SOCIAL_URL_LEN = 500;
+
+type StoreThemeTextFields = {
+  tagline: string | null;
+  heroEyebrow: string | null;
+  heroSubtitle: string | null;
+  collectionsIntro: string | null;
+  collectionItems: { title: string; subtitle: string }[];
+  promise: string | null;
+  visitTitle: string | null;
+  businessHours: string;
+  faq: string;
+  social: { instagram: string | null; facebook: string | null; line: string | null };
+};
+
+/**
+ * 店面設定頁的文案欄位版 storeTextLimitError：回傳第一個超限欄位的中文訊息，全部合格回
+ * null。設定頁跟編輯器對「太長」的處理不同（編輯器 slice 截掉、設定頁退回給商家改），
+ * 因為 FormData 那條路商家看得到錯誤訊息，截掉反而會讓人以為存好了。
+ */
+export function storeThemeTextLimitError(f: StoreThemeTextFields): string | null {
+  const over = (v: string | null, max: number) => !!v && v.length > max;
+  if (over(f.tagline, MAX_THEME_TAGLINE_LEN)) {
+    return `底部標語最多 ${MAX_THEME_TAGLINE_LEN} 個字`;
+  }
+  if (over(f.heroEyebrow, MAX_HERO_EYEBROW_LEN)) {
+    return `Hero 小標最多 ${MAX_HERO_EYEBROW_LEN} 個字`;
+  }
+  if (over(f.heroSubtitle, MAX_HERO_SUBTITLE_LEN)) {
+    return `Hero 副標最多 ${MAX_HERO_SUBTITLE_LEN.toLocaleString("zh-TW")} 個字`;
+  }
+  if (over(f.collectionsIntro, MAX_COLLECTIONS_INTRO_LEN)) {
+    return `選物提案中標最多 ${MAX_COLLECTIONS_INTRO_LEN} 個字`;
+  }
+  for (const c of f.collectionItems) {
+    if (c.title.length > MAX_COLLECTION_TITLE_LEN) {
+      return `提案卡標題最多 ${MAX_COLLECTION_TITLE_LEN} 個字`;
+    }
+    if (c.subtitle.length > MAX_COLLECTION_SUBTITLE_LEN) {
+      return `提案卡副標最多 ${MAX_COLLECTION_SUBTITLE_LEN} 個字`;
+    }
+  }
+  if (over(f.promise, MAX_PROMISE_LEN)) {
+    return `Promise 承諾文字最多 ${MAX_PROMISE_LEN.toLocaleString("zh-TW")} 個字`;
+  }
+  if (over(f.visitTitle, MAX_VISIT_TITLE_LEN)) {
+    return `來店標題最多 ${MAX_VISIT_TITLE_LEN} 個字`;
+  }
+  if (f.businessHours.length > MAX_BUSINESS_HOURS_LEN) {
+    return `營業時間最多 ${MAX_BUSINESS_HOURS_LEN.toLocaleString("zh-TW")} 個字`;
+  }
+  if (f.faq.length > MAX_FAQ_TEXT_LEN) {
+    return `常見問題最多 ${MAX_FAQ_TEXT_LEN.toLocaleString("zh-TW")} 個字`;
+  }
+  for (const [label, v] of [
+    ["Instagram", f.social.instagram],
+    ["Facebook", f.social.facebook],
+    ["LINE", f.social.line],
+  ] as const) {
+    if (over(v, MAX_SOCIAL_URL_LEN)) {
+      return `${label} 連結最多 ${MAX_SOCIAL_URL_LEN} 個字`;
+    }
+  }
+  return null;
+}
