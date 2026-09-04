@@ -76,13 +76,11 @@ export async function updateStore(slug: string, formData: FormData) {
   const accent = safeHex(String(formData.get("theme_accent") ?? ""), "");
   const tagline = formStringOrNull(formData, "theme_tagline");
 
-  // logo / hero：優先上傳，沒上傳就保留原值 / 用 URL 欄
+  // logo / hero：設定頁只收「上傳檔案」跟「移除」勾選，沒上傳就保留原值。
+  // 貼網址那條路在視覺編輯器（editor/actions.ts 的 heroUrl / logoUrl，有 500 字上限），
+  // 設定頁的表單從第一版起就沒有 URL 輸入框，這裡不再讀 theme_logo_url / theme_hero_url。
   const logoFile = formData.get("theme_logo_file") as File | null;
   const heroFile = formData.get("theme_hero_file") as File | null;
-  const logoUrlInput =
-    formStringOrNull(formData, "theme_logo_url");
-  const heroUrlInput =
-    formStringOrNull(formData, "theme_hero_url");
 
   const existingTheme = (store.theme as Record<string, unknown>) ?? {};
   let logoUrl = (existingTheme.logo_url as string | undefined) ?? null;
@@ -95,8 +93,6 @@ export async function updateStore(slug: string, formData: FormData) {
       const msg = e instanceof Error ? e.message : "Logo 上傳失敗";
       redirect(baseRedirect + "?error=" + encodeURIComponent(msg));
     }
-  } else if (logoUrlInput) {
-    logoUrl = logoUrlInput;
   }
 
   if (heroFile && heroFile.size > 0) {
@@ -106,8 +102,6 @@ export async function updateStore(slug: string, formData: FormData) {
       const msg = e instanceof Error ? e.message : "Hero 圖上傳失敗";
       redirect(baseRedirect + "?error=" + encodeURIComponent(msg));
     }
-  } else if (heroUrlInput) {
-    heroUrl = heroUrlInput;
   }
 
   // 移除按鈕
