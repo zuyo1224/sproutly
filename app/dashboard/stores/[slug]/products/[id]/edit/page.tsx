@@ -7,7 +7,12 @@ import { ImageFilePicker } from "@/app/_components/image-file-picker";
 import { UnsavedChangesGuard } from "@/app/_components/unsaved-changes-guard";
 import { currencySymbol } from "@/lib/format-price";
 import { isUuid } from "@/lib/uuid";
-import { MAX_PRICE_YUAN, MAX_STOCK } from "@/lib/product-limits";
+import {
+  MAX_PRICE_YUAN,
+  MAX_STOCK,
+  MAX_PRODUCT_NAME_LEN,
+  MAX_PRODUCT_DESC_LEN,
+} from "@/lib/product-limits";
 
 type Params = Promise<{ slug: string; id: string }>;
 type SearchParams = Promise<{ error?: string; copied?: string }>;
@@ -156,6 +161,7 @@ export default async function EditProductPage({
               type="text"
               required
               aria-required="true"
+              maxLength={MAX_PRODUCT_NAME_LEN}
               defaultValue={product.name}
               className="w-full rounded-xl border border-emerald-100 px-4 py-3 text-emerald-950 placeholder:text-emerald-900/30 outline-none focus:border-emerald-400 focus:ring-2 focus:ring-emerald-100 transition"
             />
@@ -219,6 +225,7 @@ export default async function EditProductPage({
               id="description"
               name="description"
               rows={4}
+              maxLength={MAX_PRODUCT_DESC_LEN}
               defaultValue={product.description ?? ""}
               className="w-full rounded-xl border border-emerald-100 px-4 py-3 text-emerald-950 placeholder:text-emerald-900/30 outline-none focus:border-emerald-400 focus:ring-2 focus:ring-emerald-100 transition resize-none"
               style={{ lineHeight: 1.7 }}

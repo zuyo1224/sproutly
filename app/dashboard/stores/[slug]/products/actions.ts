@@ -4,7 +4,12 @@ import { formString, formStringOrNull } from "@/lib/form-fields";
 import { requireUser } from "@/lib/require-user";
 import { uploadImage } from "@/lib/storage";
 import { yuanToCents } from "@/lib/format-price";
-import { MAX_PRICE_YUAN, MAX_STOCK } from "@/lib/product-limits";
+import {
+  MAX_PRICE_YUAN,
+  MAX_STOCK,
+  MAX_PRODUCT_NAME_LEN,
+  MAX_PRODUCT_DESC_LEN,
+} from "@/lib/product-limits";
 // 調順序要先拿到整家店「照現在順序排好」的完整清單，破千的店不能只撈第一頁。
 import { fetchAllRows } from "@/lib/fetch-all-rows";
 import { redirect } from "next/navigation";
@@ -53,6 +58,18 @@ function parseStock(raw: string): number | null {
     throw new Error(`庫存最多 ${MAX_STOCK.toLocaleString("zh-TW")} 件，確認一下是不是多打了幾個 0`);
   }
   return n;
+}
+
+// 品名／描述的字數上限，跟價格／庫存同一套：數字在 lib/product-limits（表單的 maxLength
+// 也吃同一份），這裡在伺服器端真正擋下。空品名的檢查留在呼叫端（那句訊息跟其他必填
+// 欄位同一組），這裡只管「太長」。
+function assertTextLimits(name: string, description: string | null) {
+  if (name.length > MAX_PRODUCT_NAME_LEN) {
+    throw new Error(`商品名稱最多 ${MAX_PRODUCT_NAME_LEN} 個字，長一點的說明放到描述欄`);
+  }
+  if (description && description.length > MAX_PRODUCT_DESC_LEN) {
+    throw new Error(`商品描述最多 ${MAX_PRODUCT_DESC_LEN.toLocaleString("zh-TW")} 個字`);
+  }
 }
 
 async function uploadFiles(files: File[], merchantId: string): Promise<string[]> {
@@ -112,6 +129,7 @@ export async function createProduct(slug: string, formData: FormData) {
   let price: number;
   let stock: number | null;
   try {
+    assertTextLimits(name, description);
     price = parsePrice(priceRaw);
     stock = parseStock(stockRaw);
   } catch (e) {
@@ -192,6 +210,7 @@ export async function updateProduct(
   let price: number;
   let stock: number | null;
   try {
+    assertTextLimits(name, description);
     price = parsePrice(priceRaw);
     stock = parseStock(stockRaw);
   } catch (e) {
@@ -250,11 +269,17 @@ export async function duplicateProduct(slug: string, productId: string) {
   // 不是要讓店面同時出現兩件一模一樣的在賣。名稱加「（副本）」讓列表分得出
   // 哪件是剛複製的；圖片直接沿用同一批網址不重新上傳，商家編輯時想換再換。
   // sort_order 照抄，副本才會排在原件旁邊，不會掉到列表最尾端找不到。
+  // 原件品名已經頂到上限時，加了「（副本）」會超過 MAX_PRODUCT_NAME_LEN，商家開副本
+  // 的編輯頁一按儲存就被退回「名稱太長」、還搞不懂自己沒改什麼；先把原名截到留得下
+  // 後綴的長度，副本從一開始就在上限內。
+  const COPY_SUFFIX = "（副本）";
+  const copyName =
+    original.name.slice(0, MAX_PRODUCT_NAME_LEN - COPY_SUFFIX.length) + COPY_SUFFIX;
   const { data: copy, error } = await supabase
     .from("sproutly_products")
     .insert({
       merchant_id: store.id,
-      name: `${original.name}（副本）`,
+      name: copyName,
       description: original.description,
       price_cents: original.price_cents,
       currency: original.currency,

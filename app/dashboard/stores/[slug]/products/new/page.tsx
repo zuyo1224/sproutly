@@ -5,7 +5,12 @@ import { createProduct } from "../actions";
 import { SubmitButton } from "@/app/_components/submit-button";
 import { ImageFilePicker } from "@/app/_components/image-file-picker";
 import { UnsavedChangesGuard } from "@/app/_components/unsaved-changes-guard";
-import { MAX_PRICE_YUAN, MAX_STOCK } from "@/lib/product-limits";
+import {
+  MAX_PRICE_YUAN,
+  MAX_STOCK,
+  MAX_PRODUCT_NAME_LEN,
+  MAX_PRODUCT_DESC_LEN,
+} from "@/lib/product-limits";
 
 type Params = Promise<{ slug: string }>;
 type SearchParams = Promise<{ error?: string }>;
@@ -116,6 +121,7 @@ export default async function NewProductPage({
               type="text"
               required
               aria-required="true"
+              maxLength={MAX_PRODUCT_NAME_LEN}
               placeholder="例如：龜背芋 6 吋盆"
               className="w-full rounded-xl border border-emerald-100 px-4 py-3 text-emerald-950 placeholder:text-emerald-900/30 outline-none focus:border-emerald-400 focus:ring-2 focus:ring-emerald-100 transition"
             />
@@ -178,6 +184,7 @@ export default async function NewProductPage({
               id="description"
               name="description"
               rows={4}
+              maxLength={MAX_PRODUCT_DESC_LEN}
               placeholder="尺寸、照顧方式、特色說明..."
               className="w-full rounded-xl border border-emerald-100 px-4 py-3 text-emerald-950 placeholder:text-emerald-900/30 outline-none focus:border-emerald-400 focus:ring-2 focus:ring-emerald-100 transition resize-none"
               style={{ lineHeight: 1.7 }}
