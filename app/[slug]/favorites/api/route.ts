@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
+import { isUuid } from "@/lib/uuid";
 
 type Params = Promise<{ slug: string }>;
 
@@ -10,10 +11,22 @@ export async function GET(
   const { slug } = await params;
   const url = new URL(request.url);
   const idsParam = url.searchParams.get("ids") ?? "";
-  const ids = idsParam
-    .split(",")
-    .map((s) => s.trim())
-    .filter(Boolean);
+  // ids 來自客人瀏覽器的 localStorage（購物車／收藏／最近看過）或任何人打的網址，
+  // 不保證是正規 UUID。商品 id 欄位是 uuid：只要清單裡混進一個不是 UUID 的字串，
+  // 下面 .in("id", ids) 整句查詢會被 Postgres 打回（22P02），data 變 null、這支回空
+  // 陣列——購物車頁／收藏頁看起來像整批商品都下架了，而且三個呼叫端都設計成
+  // 「API 至少回一筆才清幽靈 id」，那個壞 id 就永遠留在 localStorage，每次載入都
+  // 把整車有效商品一起拖成空白，客人清不掉也不知道發生什麼事。先把不是 UUID 的
+  // 濾掉（順便去重，同一個 id 重複帶進來查詢字串只是變長），只拿合法的去查；
+  // 壞 id 查不到，呼叫端的幽靈清理這回終於能把它掃掉。
+  const ids = Array.from(
+    new Set(
+      idsParam
+        .split(",")
+        .map((s) => s.trim())
+        .filter((s) => s && isUuid(s))
+    )
+  );
 
   if (ids.length === 0) {
     return NextResponse.json([]);
