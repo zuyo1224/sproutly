@@ -9,6 +9,7 @@ import { ShippingFields } from "./shipping-fields";
 import { CheckoutFormMemory } from "./form-memory";
 import { QTY_MIN, QTY_MAX } from "@/lib/product-quantity";
 import { clampToStock } from "@/lib/product-stock";
+import { isUuid } from "@/lib/uuid";
 
 type Params = Promise<{ slug: string }>;
 type SearchParams = Promise<{
@@ -39,7 +40,9 @@ export default async function CheckoutPage({
     QTY_MIN;
   const error = sp.error;
 
-  if (!productId) notFound();
+  // ?product_id= 是客人可改的查詢字串，不是 UUID 就直接 404，別拿去查 uuid 欄位
+  // 白吃一次 22P02 錯誤（見 lib/uuid.ts）。
+  if (!productId || !isUuid(productId)) notFound();
 
   const supabase = await createClient();
   const { data: store } = await supabase

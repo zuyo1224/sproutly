@@ -16,6 +16,7 @@ import {
 import { telHref, mailHref } from "@/lib/contact-href";
 import { Confetti } from "@/app/_components/confetti";
 import { CopyOrderId } from "@/app/_components/copy-order-id";
+import { isUuid } from "@/lib/uuid";
 import { RememberOrder } from "@/app/_components/remember-order";
 import { PrintButton } from "@/app/_components/print-button";
 
@@ -34,6 +35,8 @@ export default async function OrderSuccessPage({
   params: Params;
 }) {
   const { slug, orderId } = await params;
+  // 網址上的訂單 id 不是 UUID 就直接 404，別拿去查 uuid 欄位（見 lib/uuid.ts）。
+  if (!isUuid(orderId)) notFound();
   const supabase = await createClient();
   const { data: store } = await supabase
     .from("sproutly_merchants")

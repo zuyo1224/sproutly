@@ -25,6 +25,7 @@ import { formatPrice, productOfferFieldsForSchema } from "@/lib/format-price";
 import { availabilityForSchema } from "@/lib/availability-schema";
 import { absoluteImageUrls } from "@/lib/image-url";
 import { QTY_MAX } from "@/lib/product-quantity";
+import { isUuid } from "@/lib/uuid";
 
 export async function generateMetadata({
   params,
@@ -32,6 +33,10 @@ export async function generateMetadata({
   params: Params;
 }): Promise<Metadata> {
   const { slug, id } = await params;
+  // 網址上的 id 不是 UUID 就別進資料庫：products.id 是 uuid 欄位，亂打的字串
+  // 會讓 PostgREST 回 22P02 錯誤，結果一樣是查不到，但白打一趟、Supabase log
+  // 還多一條錯誤（見 lib/uuid.ts）。
+  if (!isUuid(id)) return {};
   const supabase = await createClient();
   const { data: store } = await supabase
     .from("sproutly_merchants")
@@ -87,6 +92,8 @@ export default async function PublicProductPage({
   params: Params;
 }) {
   const { slug, id } = await params;
+  // 同 generateMetadata：不是 UUID 直接 404，不進資料庫。
+  if (!isUuid(id)) notFound();
   const supabase = await createClient();
 
   const { data: store } = await supabase

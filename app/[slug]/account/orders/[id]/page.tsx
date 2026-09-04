@@ -18,6 +18,7 @@ import { telHref, mailHref } from "@/lib/contact-href";
 import { PrintButton } from "@/app/_components/print-button";
 import { CopyOrderId } from "@/app/_components/copy-order-id";
 import { ReorderButton } from "@/app/_components/reorder-button";
+import { isUuid } from "@/lib/uuid";
 
 // 蓋掉父層 account/layout 的「會員中心」，單筆訂單分頁顯示「訂單明細」。
 export const metadata: Metadata = { title: "訂單明細" };
@@ -37,6 +38,8 @@ export default async function CustomerOrderDetailPage({
   params: Params;
 }) {
   const { slug, id } = await params;
+  // 網址上的訂單 id 不是 UUID 就直接 404，別拿去查 uuid 欄位（見 lib/uuid.ts）。
+  if (!isUuid(id)) notFound();
   const supabase = await createClient();
   const { data: store } = await supabase
     .from("sproutly_merchants")
