@@ -6,7 +6,7 @@ import { createClient } from "@/lib/supabase/server";
 import { jsonLdHtml } from "@/lib/json-ld";
 import { resolveTheme, HOMEPAGE_DEFAULTS, HOMEPAGE_DEFAULT_COLLECTIONS, JOURNAL_CARD_DEFAULTS } from "./_theme";
 import { buildStoreJsonLd, buildFaqJsonLd, siteBaseUrl, storeSchemaId } from "@/lib/store-schema";
-import { telHref, mailHref, telDigits, cleanEmail, mapsHref } from "@/lib/contact-href";
+import { telHref, mailHref, telDigits, cleanEmail, mapsHref, socialUrl } from "@/lib/contact-href";
 import { isSoldOut, isLowStock, bySoldOutLast, stockAriaSuffix } from "@/lib/product-stock";
 import { FREE_POS_KEYS } from "@/lib/free-positions";
 import {
@@ -4870,10 +4870,15 @@ export default async function StoreHomePage({
                     // 幾團浮著的白色形狀、淺色底的店那排轉黑白之後淡到像髒印子——媒體
                     // 報導、合作品牌那種 logo 牆多半是一個一個放在淺色板子上排成一列。
                     // 掛的是 card-box 不是 .sproutly-card，理由跟數字段同一個。
-                    return p.href ? (
+                    // 合作夥伴連結跟頁尾社群連結走同一支 socialUrl 清：只有 http(s)://
+                    // 或漏 scheme 的真網域才掛 <a>。編輯器寫入端（editor/actions.ts）
+                    // 已經先清過一次，這裡再過一次是保護 DB 裡更早存進去、沒清過的舊資料
+                    // ——這欄是商家自己填的字串，直接塞進 href 就有機會變成 javascript: 連結。
+                    const partnerHref = socialUrl(p.href);
+                    return partnerHref ? (
                       <a
                         key={i}
-                        href={p.href}
+                        href={partnerHref}
                         target="_blank"
                         rel="noopener noreferrer"
                         className="sproutly-card-box inline-block"

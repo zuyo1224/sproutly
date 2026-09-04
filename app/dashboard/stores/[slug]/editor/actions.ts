@@ -11,6 +11,7 @@ import {
   MAX_VISIT_TITLE_LEN,
 } from "@/lib/store-limits";
 import { requireUser } from "@/lib/require-user";
+import { socialUrl } from "@/lib/contact-href";
 import {
   clampHeroZoom,
   clampHeroFontScale,
@@ -304,7 +305,10 @@ export async function saveEditorState(slug: string, payload: EditorPayload) {
         .map((p) => ({
           name: String(p.name ?? "").slice(0, 100).trim(),
           logoUrl: String(p.logoUrl ?? "").slice(0, 500).trim(),
-          href: p.href ? String(p.href).slice(0, 500).trim() : null,
+          // 只存得下 http(s):// 或漏 scheme 的真網域（跟頁尾社群連結同一支 socialUrl），
+          // 其他字串（javascript:、純帳號、亂填）一律存 null；公開頁那顆 logo 就變成
+          // 點不下去的靜態卡，不會掛一個壞掉或危險的連結。
+          href: p.href ? socialUrl(String(p.href).slice(0, 500)) : null,
         }))
         .filter((p) => p.name && p.logoUrl)
         .slice(0, 12);
