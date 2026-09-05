@@ -9,7 +9,9 @@ import {
   MAX_STOCK,
   MAX_PRODUCT_NAME_LEN,
   MAX_PRODUCT_DESC_LEN,
+  MAX_IMAGE_URL_LEN,
 } from "@/lib/product-limits";
+import { isOptimizableImageSrc } from "@/lib/image-url";
 // 調順序要先拿到整家店「照現在順序排好」的完整清單，破千的店不能只撈第一頁。
 import { fetchAllRows } from "@/lib/fetch-all-rows";
 import { redirect } from "next/navigation";
@@ -147,6 +149,26 @@ export async function createProduct(slug: string, formData: FormData) {
     }
   }
   if (imageUrls.length === 0 && imageUrlRaw) {
+    // 這串會原封不動進店面 <img src>。用公開頁同一支 isOptimizableImageSrc 判：不是 https://
+    // 開頭的完整網址（http:// 在 https 店面會被瀏覽器當混合內容擋掉、漏協定或不是網址的字
+    // 根本抓不到）就直接退回，不要存一張注定開天窗的圖進 DB 讓商家事後在店面找哪裡壞。
+    // 表單那格輸入時已經同一支判斷即時提示，這裡是繞過瀏覽器也擋得住的那一層。
+    if (imageUrlRaw.length > MAX_IMAGE_URL_LEN) {
+      redirect(
+        baseRedirect +
+          "?error=" +
+          encodeURIComponent(`圖片網址最多 ${MAX_IMAGE_URL_LEN} 個字`),
+      );
+    }
+    if (!isOptimizableImageSrc(imageUrlRaw)) {
+      redirect(
+        baseRedirect +
+          "?error=" +
+          encodeURIComponent(
+            "圖片網址要是 https:// 開頭的完整網址（例如 https://example.com/photo.jpg），這串店面會顯示不出圖",
+          ),
+      );
+    }
     imageUrls = [imageUrlRaw];
   }
 

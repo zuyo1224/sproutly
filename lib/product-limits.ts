@@ -27,3 +27,10 @@ export const MAX_STOCK = 1_000_000;
 // 跟瀏覽器 maxLength 的算法一致，不會出現「瀏覽器放行、伺服器退回」。
 export const MAX_PRODUCT_NAME_LEN = 100;
 export const MAX_PRODUCT_DESC_LEN = 2000;
+
+// 「貼網路圖片 URL」那格的長度上限。DB 的 image_urls 是 text[]，塞多長都不會爆，問題是
+// 這串會原封不動進店面 <img src>、Product 結構化資料的 image、og:image：一串幾萬字的
+// 網址沒有任何圖床會回應，只會讓 HTML 變肥。2048 是各家瀏覽器與 CDN 都穩吃的長度，
+// 一般圖床連結幾十到幾百字，簽名過的暫時網址也在一千字內。表單 maxLength 與
+// Server Action 用同一個數字。
+export const MAX_IMAGE_URL_LEN = 2048;

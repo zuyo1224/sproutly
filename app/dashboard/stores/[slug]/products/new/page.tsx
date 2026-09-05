@@ -4,12 +4,14 @@ import { requireUser } from "@/lib/require-user";
 import { createProduct } from "../actions";
 import { SubmitButton } from "@/app/_components/submit-button";
 import { ImageFilePicker } from "@/app/_components/image-file-picker";
+import { ImageUrlHintInput } from "@/app/_components/image-url-hint-input";
 import { UnsavedChangesGuard } from "@/app/_components/unsaved-changes-guard";
 import {
   MAX_PRICE_YUAN,
   MAX_STOCK,
   MAX_PRODUCT_NAME_LEN,
   MAX_PRODUCT_DESC_LEN,
+  MAX_IMAGE_URL_LEN,
 } from "@/lib/product-limits";
 
 type Params = Promise<{ slug: string }>;
@@ -213,13 +215,17 @@ export default async function NewProductPage({
               >
                 或貼網路圖片 URL（進階，沒上傳檔案時生效）
               </summary>
-              <input
-                name="image_url"
-                type="url"
-                aria-label="商品圖片網址"
-                placeholder="https://..."
-                className="mt-3 w-full rounded-xl border border-emerald-100 px-4 py-3 text-emerald-950 placeholder:text-emerald-900/30 outline-none focus:border-emerald-400 focus:ring-2 focus:ring-emerald-100 transition text-sm"
-              />
+              {/* 刻意不用 type="url"：瀏覽器只擋「不是網址」、不擋 http://，而 https 店面載
+                  http:// 圖會被當混合內容擋掉一樣開天窗。改用會即時提示的輸入框，跟寫入端
+                  同一支 isOptimizableImageSrc 判，判不過當場講、送出也會被擋。 */}
+              <div className="mt-3">
+                <ImageUrlHintInput
+                  name="image_url"
+                  placeholder="https://..."
+                  maxLength={MAX_IMAGE_URL_LEN}
+                  className="w-full rounded-xl border border-emerald-100 px-4 py-3 text-emerald-950 placeholder:text-emerald-900/30 outline-none focus:border-emerald-400 focus:ring-2 focus:ring-emerald-100 transition text-sm"
+                />
+              </div>
             </details>
           </div>
 
