@@ -2,6 +2,7 @@ import Link from "next/link";
 import { requireUser } from "@/lib/require-user";
 import { createStore } from "./actions";
 import { SubmitButton } from "@/app/_components/submit-button";
+import { ContactHintInput } from "@/app/_components/contact-hint-input";
 import {
   MAX_STORE_ADDRESS_LEN,
   MAX_STORE_DESC_LEN,
@@ -210,11 +211,15 @@ export default async function NewStorePage({
                 >
                   Phone · 聯絡電話
                 </label>
-                <input
+                {/* 跟店面設定頁同一支：輸入時就用公開頁的 telDigits / cleanEmail 判一次，
+                    判不過立刻提示「存了但客人點不了」；不用 type="tel" / type="email"
+                    的原因見 contact-hint-input.tsx 開頭註解 */}
+                <ContactHintInput
+                  kind="phone"
                   id="store-phone"
                   name="contact_phone"
                   maxLength={MAX_STORE_PHONE_LEN}
-                  type="tel"
+                  defaultValue=""
                   placeholder="0912-345-678"
                   className="w-full rounded-xl border border-emerald-100 px-4 py-3 text-emerald-950 placeholder:text-emerald-900/30 outline-none focus:border-emerald-400 focus:ring-2 focus:ring-emerald-100 transition"
                 />
@@ -232,11 +237,12 @@ export default async function NewStorePage({
                 >
                   Email · 聯絡信箱
                 </label>
-                <input
+                <ContactHintInput
+                  kind="email"
                   id="store-email"
                   name="contact_email"
                   maxLength={MAX_STORE_EMAIL_LEN}
-                  type="email"
+                  defaultValue=""
                   placeholder="hi@example.com"
                   className="w-full rounded-xl border border-emerald-100 px-4 py-3 text-emerald-950 placeholder:text-emerald-900/30 outline-none focus:border-emerald-400 focus:ring-2 focus:ring-emerald-100 transition"
                 />
