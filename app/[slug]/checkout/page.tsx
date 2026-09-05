@@ -19,6 +19,7 @@ type SearchParams = Promise<{
 }>;
 
 import { formatPrice } from "@/lib/format-price";
+import { displayableImageUrls } from "@/lib/image-url";
 
 export default async function CheckoutPage({
   params,
@@ -70,6 +71,8 @@ export default async function CheckoutPage({
     quantity
   );
   const total = product.price_cents * effectiveQty;
+  // 摘要縮圖先濾掉店面注定顯示不出的舊值（http://、半截網址、空白），跟逛街頁同一條線。
+  const thumb = displayableImageUrls(product.image_urls)[0];
   const placeBound = placeOrder.bind(null, slug);
 
   return (
@@ -460,10 +463,10 @@ export default async function CheckoutPage({
                   border: "1px solid var(--store-border, rgba(0,0,0,0.08))",
                 }}
               >
-                {product.image_urls?.[0] ? (
+                {thumb ? (
                   // eslint-disable-next-line @next/next/no-img-element
                   <img
-                    src={product.image_urls[0]}
+                    src={thumb}
                     alt={product.name}
                     loading="lazy"
                     className="w-full h-full object-cover"

@@ -18,6 +18,7 @@ type Product = {
 import { formatPrice } from "@/lib/format-price";
 import { isSoldOut, isLowStock, stockAriaSuffix } from "@/lib/product-stock";
 import { getFavoriteIds, setFavoriteIds } from "@/lib/favorites";
+import { displayableImageUrls } from "@/lib/image-url";
 
 export default function FavoritesPage() {
   const params = useParams();
@@ -324,6 +325,7 @@ export default function FavoritesPage() {
         <div className="grid grid-cols-2 md:grid-cols-3 gap-x-6 sm:gap-x-10 gap-y-16">
           {products.map((p, i) => {
             const soldOut = isSoldOut(p.stock);
+            const imgs = displayableImageUrls(p.image_urls);
             return (
             <Link
               key={p.id}
@@ -371,11 +373,11 @@ export default function FavoritesPage() {
                     <path d="m6 6 12 12" />
                   </svg>
                 </button>
-                {p.image_urls?.[0] ? (
+                {imgs[0] ? (
                   <>
                     {/* eslint-disable-next-line @next/next/no-img-element */}
                     <img
-                      src={p.image_urls[0]}
+                      src={imgs[0]}
                       alt={p.name}
                       loading="lazy"
                       className={`w-full h-full object-cover transition ${
@@ -385,10 +387,10 @@ export default function FavoritesPage() {
                     {/* 商家上傳超過一張圖時，滑到卡片上淡入第二張——跟 shop 逛街頁
                         同一套語言，收藏頁複習時不用點進詳情頁就能多看一個角度。
                         只有一張圖的不變；手機沒有 hover；售完的不做。 */}
-                    {!soldOut && p.image_urls[1] && (
+                    {!soldOut && imgs[1] && (
                       // eslint-disable-next-line @next/next/no-img-element
                       <img
-                        src={p.image_urls[1]}
+                        src={imgs[1]}
                         alt=""
                         aria-hidden="true"
                         loading="lazy"

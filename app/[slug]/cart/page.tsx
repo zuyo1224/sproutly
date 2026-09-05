@@ -20,6 +20,7 @@ import { formatPrice } from "@/lib/format-price";
 import { isSoldOut } from "@/lib/product-stock";
 import { QTY_MAX } from "@/lib/product-quantity";
 import { fetchProductsByIds } from "@/lib/fetch-products-by-ids";
+import { displayableImageUrls } from "@/lib/image-url";
 
 export default function CartPage() {
   const params = useParams();
@@ -324,6 +325,8 @@ export default function CartPage() {
               // 結帳才被退回。
               const maxQty = p.stock == null ? QTY_MAX : Math.min(p.stock, QTY_MAX);
               const atStockLimit = p.stock != null && qty >= p.stock;
+              // 縮圖先濾掉店面注定顯示不出的舊值（http://、半截網址、空白），跟逛街頁同一條線。
+              const thumb = displayableImageUrls(p.image_urls)[0];
               return (
               <div
                 key={p.id}
@@ -340,10 +343,10 @@ export default function CartPage() {
                     background: "var(--store-surface, rgba(0,0,0,0.04))",
                   }}
                 >
-                  {p.image_urls?.[0] && (
+                  {thumb && (
                     // eslint-disable-next-line @next/next/no-img-element
                     <img
-                      src={p.image_urls[0]}
+                      src={thumb}
                       alt={p.name}
                       loading="lazy"
                       className="w-full h-full object-cover"

@@ -14,6 +14,7 @@ type Product = {
 };
 
 import { formatPrice } from "@/lib/format-price";
+import { displayableImageUrls } from "@/lib/image-url";
 
 export function SearchOverlay({ slug }: { slug: string }) {
   const [open, setOpen] = useState(false);
@@ -450,6 +451,7 @@ export function SearchOverlay({ slug }: { slug: string }) {
                 // 客人搜到一株、點進去才發現沒了會白跑。售完整列去彩、縮圖蓋角標，
                 // 快沒貨補一行琥珀色「剩 N」。
                 const soldOut = isSoldOut(p.stock);
+                const imgs = displayableImageUrls(p.image_urls);
                 const lowStock = isLowStock(p.stock);
                 return (
                 <Link
@@ -490,10 +492,10 @@ export function SearchOverlay({ slug }: { slug: string }) {
                         售完
                       </span>
                     )}
-                    {p.image_urls?.[0] && (
+                    {imgs[0] && (
                       // eslint-disable-next-line @next/next/no-img-element
                       <img
-                        src={p.image_urls[0]}
+                        src={imgs[0]}
                         alt={p.name}
                         loading="lazy"
                         className={`w-full h-full object-cover ${

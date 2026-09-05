@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
-import { isOptimizableImageSrc } from "@/lib/image-url";
+import { displayableImageUrls, isOptimizableImageSrc } from "@/lib/image-url";
 import { createClient } from "@/lib/supabase/server";
 import { jsonLdHtml } from "@/lib/json-ld";
 import { resolveTheme, HOMEPAGE_DEFAULTS, HOMEPAGE_DEFAULT_COLLECTIONS, JOURNAL_CARD_DEFAULTS } from "./_theme";
@@ -3484,6 +3484,7 @@ export default async function StoreHomePage({
               }`}>
                 {featuredProducts.map((p) => {
                   const soldOut = isSoldOut(p.stock);
+                  const imgs = displayableImageUrls(p.image_urls);
                   return (
                   <Link
                     key={p.id}
@@ -3506,11 +3507,11 @@ export default async function StoreHomePage({
                           售完
                         </span>
                       )}
-                      {p.image_urls?.[0] ? (
+                      {imgs[0] ? (
                         <>
                           <Image
-                            src={p.image_urls[0]}
-                            unoptimized={!isOptimizableImageSrc(p.image_urls[0])}
+                            src={imgs[0]}
+                            unoptimized={!isOptimizableImageSrc(imgs[0])}
                             alt={p.name}
                             fill
                             sizes="(min-width: 768px) 350px, 50vw"
@@ -3523,10 +3524,10 @@ export default async function StoreHomePage({
                           {/* 商家上傳超過一張圖時，滑到卡片上淡入第二張——跟 shop
                               逛街頁同一套語言，客人在首頁就能多看一個角度。只有一張
                               圖的商品不變；手機沒有 hover，維持第一張；售完的不做。 */}
-                          {!soldOut && p.image_urls[1] && (
+                          {!soldOut && imgs[1] && (
                             <Image
-                              src={p.image_urls[1]}
-                              unoptimized={!isOptimizableImageSrc(p.image_urls[1])}
+                              src={imgs[1]}
+                              unoptimized={!isOptimizableImageSrc(imgs[1])}
                               alt=""
                               aria-hidden="true"
                               fill

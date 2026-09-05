@@ -4,7 +4,7 @@ import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { jsonLdHtml } from "@/lib/json-ld";
 import { siteBaseUrl, buildBreadcrumbJsonLd } from "@/lib/store-schema";
-import { absoluteImageUrls } from "@/lib/image-url";
+import { absoluteImageUrls, displayableImageUrls } from "@/lib/image-url";
 import { resolveTheme, HOMEPAGE_DEFAULTS } from "../_theme";
 import { RecentlyViewed } from "@/app/_components/recently-viewed";
 import { AutoSubmitOnChange } from "@/app/_components/auto-submit-on-change";
@@ -362,6 +362,7 @@ export default async function ShopPage({
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-x-6 sm:gap-x-10 gap-y-16">
           {products.map((p) => {
             const soldOut = isSoldOut(p.stock);
+            const imgs = displayableImageUrls(p.image_urls);
             return (
             <Link
               key={p.id}
@@ -384,11 +385,11 @@ export default async function ShopPage({
                     售完
                   </span>
                 )}
-                {p.image_urls?.[0] ? (
+                {imgs[0] ? (
                   <>
                     {/* eslint-disable-next-line @next/next/no-img-element */}
                     <img
-                      src={p.image_urls[0]}
+                      src={imgs[0]}
                       alt={p.name}
                       className={`w-full h-full object-cover transition ${
                         soldOut ? "opacity-55 grayscale" : ""
@@ -399,10 +400,10 @@ export default async function ShopPage({
                         詳情頁就能多看一個角度（實體店拿起來翻一面的那個動作）。
                         只疊在第一張上面淡入淡出，不動排版；手機沒有 hover，維持
                         第一張不變。售完的商品不做，沒貨的東西不需要再導購。 */}
-                    {!soldOut && p.image_urls[1] && (
+                    {!soldOut && imgs[1] && (
                       // eslint-disable-next-line @next/next/no-img-element
                       <img
-                        src={p.image_urls[1]}
+                        src={imgs[1]}
                         alt=""
                         aria-hidden="true"
                         loading="lazy"

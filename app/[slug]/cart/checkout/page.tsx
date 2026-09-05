@@ -23,6 +23,7 @@ type Product = {
 
 import { formatPrice } from "@/lib/format-price";
 import { fetchProductsByIds } from "@/lib/fetch-products-by-ids";
+import { displayableImageUrls } from "@/lib/image-url";
 
 // 送出後「連線出狀況、看不出單有沒有成立」時給客人的話。不能寫成「送出失敗」——
 // 逾時／閘道錯誤發生時訂單很可能已經在資料庫裡了，叫客人重送就會下成兩張；也不能
@@ -191,7 +192,9 @@ export default function CartCheckoutPage() {
     const qty = cartRef.current.find((c) => c.productId === p.id)?.qty ?? 0;
     // 夾取規則與單品結帳頁共用，見 clampToStock。
     const { effectiveQty, soldOut, clamped } = clampToStock(p.stock, qty);
-    return { product: p, qty, effectiveQty, soldOut, clamped };
+    // 摘要縮圖先濾掉店面注定顯示不出的舊值（http://、半截網址、空白），跟逛街頁同一條線。
+    const thumb = displayableImageUrls(p.image_urls)[0];
+    return { product: p, qty, effectiveQty, soldOut, clamped, thumb };
   });
   // 摘要的小計／總計／件數一律吃夾過的數量，畫面上的數字才跟真正能下的單一致。
   const total = itemRows.reduce(
@@ -802,10 +805,10 @@ export default function CartCheckoutPage() {
                       border: "1px solid var(--store-border, rgba(0,0,0,0.08))",
                     }}
                   >
-                    {r.product.image_urls?.[0] ? (
+                    {r.thumb ? (
                       // eslint-disable-next-line @next/next/no-img-element
                       <img
-                        src={r.product.image_urls[0]}
+                        src={r.thumb}
                         alt={r.product.name}
                         loading="lazy"
                         className="w-full h-full object-cover"

@@ -610,6 +610,7 @@ export default async function PublicProductPage({
               // 跟收藏頁、首頁精選、shop 逛街頁同一套語言：售完角標 + 圖片灰階壓暗、
               // 剩 3 件以下琥珀色提示，讓人在點進去前就分得出哪幾株沒了。
               const soldOut = isSoldOut(p.stock);
+              const imgs = displayableImageUrls(p.image_urls);
               return (
               <Link
                 key={p.id}
@@ -636,11 +637,11 @@ export default async function PublicProductPage({
                       售完
                     </span>
                   )}
-                  {p.image_urls?.[0] ? (
+                  {imgs[0] ? (
                     <>
                       {/* eslint-disable-next-line @next/next/no-img-element */}
                       <img
-                        src={p.image_urls[0]}
+                        src={imgs[0]}
                         alt={p.name}
                         loading="lazy"
                         className={`w-full h-full object-cover group-hover:scale-105 transition duration-700 ${
@@ -650,10 +651,10 @@ export default async function PublicProductPage({
                       {/* 跟 shop 逛街頁同一套：有第二張圖就在滑過時淡入，客人不用
                           點進去就能多看一個角度。縮放跟到第一張（同一組 group-hover
                           scale），交叉淡出時兩張才對得齊。售完的不做。 */}
-                      {!soldOut && p.image_urls[1] && (
+                      {!soldOut && imgs[1] && (
                         // eslint-disable-next-line @next/next/no-img-element
                         <img
-                          src={p.image_urls[1]}
+                          src={imgs[1]}
                           alt=""
                           aria-hidden="true"
                           loading="lazy"
