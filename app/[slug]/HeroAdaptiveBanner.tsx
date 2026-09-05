@@ -1,6 +1,7 @@
 "use client";
 
 import Image from "next/image";
+import { isOptimizableImageSrc } from "@/lib/image-url";
 import { useEffect, useState } from "react";
 import {
   detectHeroImageBounds,
@@ -84,6 +85,7 @@ export default function HeroAdaptiveBanner({
   const image = (
     <Image
       src={url}
+      unoptimized={!isOptimizableImageSrc(url)}
       alt={alt}
       fill
       sizes="100vw"

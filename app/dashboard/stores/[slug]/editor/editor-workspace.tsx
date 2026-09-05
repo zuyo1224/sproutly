@@ -27,6 +27,7 @@ import {
 import { AssetPicker } from "@/app/_components/asset-picker";
 import { socialUrl } from "@/lib/contact-href";
 import { cleanMapEmbedUrl } from "@/lib/map-embed-url";
+import { isOptimizableImageSrc } from "@/lib/image-url";
 import { EditorAIChat } from "./editor-ai-chat";
 import {
   HERO_ZOOM_MIN,
@@ -5249,6 +5250,15 @@ export function EditorWorkspace({
                       placeholder="圖片 URL（https://...）"
                       className="w-full rounded border border-stone-200 px-2 py-1.5 text-xs font-mono"
                     />
+                    {/* 公開頁這張走 next/image，只吃 https:// 開頭的完整網址。判不過的字串
+                        （http://、漏 https://、不是網址）店面那張會開天窗，以前還會讓整個
+                        首頁打不開，所以輸入時就用公開頁同一支 isOptimizableImageSrc 判一次、
+                        當場講清楚，不要等商家自己去店面找哪張壞掉。 */}
+                    {g.url.trim() && !isOptimizableImageSrc(g.url) && (
+                      <p className="text-[11px] leading-snug text-amber-700">
+                        這格要貼 https:// 開頭的完整圖片網址，現在這串店面會顯示不出這張圖
+                      </p>
+                    )}
                     <input
                       type="text"
                       value={g.caption ?? ""}

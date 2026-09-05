@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
+import { isOptimizableImageSrc } from "@/lib/image-url";
 import { createClient } from "@/lib/supabase/server";
 import { jsonLdHtml } from "@/lib/json-ld";
 import { resolveTheme, HOMEPAGE_DEFAULTS, HOMEPAGE_DEFAULT_COLLECTIONS, JOURNAL_CARD_DEFAULTS } from "./_theme";
@@ -2578,6 +2579,7 @@ export default async function StoreHomePage({
                 >
                   <Image
                     src={theme.heroUrl}
+                    unoptimized={!isOptimizableImageSrc(theme.heroUrl)}
                     alt={store.name}
                     fill
                     priority
@@ -3295,6 +3297,7 @@ export default async function StoreHomePage({
                     <div className="sproutly-card-image aspect-[3/4] relative">
                       <Image
                         src={c.image}
+                        unoptimized={!isOptimizableImageSrc(c.image)}
                         alt={c.title}
                         fill
                         sizes="(min-width: 640px) 600px, 50vw"
@@ -3507,6 +3510,7 @@ export default async function StoreHomePage({
                         <>
                           <Image
                             src={p.image_urls[0]}
+                            unoptimized={!isOptimizableImageSrc(p.image_urls[0])}
                             alt={p.name}
                             fill
                             sizes="(min-width: 768px) 350px, 50vw"
@@ -3522,6 +3526,7 @@ export default async function StoreHomePage({
                           {!soldOut && p.image_urls[1] && (
                             <Image
                               src={p.image_urls[1]}
+                              unoptimized={!isOptimizableImageSrc(p.image_urls[1])}
                               alt=""
                               aria-hidden="true"
                               fill
@@ -3786,6 +3791,7 @@ export default async function StoreHomePage({
                       {fallbackImage ? (
                         <Image
                           src={fallbackImage}
+                          unoptimized={!isOptimizableImageSrc(fallbackImage)}
                           alt=""
                           fill
                           sizes="(min-width: 640px) 400px, 100vw"
@@ -5068,6 +5074,7 @@ export default async function StoreHomePage({
                       <div className="sproutly-card-image aspect-square relative">
                         <Image
                           src={g.url}
+                          unoptimized={!isOptimizableImageSrc(g.url)}
                           alt={g.caption ?? ""}
                           fill
                           sizes="(min-width: 768px) 350px, 50vw"
