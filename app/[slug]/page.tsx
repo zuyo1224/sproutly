@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
-import { displayableImageUrls, isOptimizableImageSrc } from "@/lib/image-url";
+import { displayableImageUrls, isOptimizableImageSrc, isPastedRemoteImageUrl } from "@/lib/image-url";
 import { createClient } from "@/lib/supabase/server";
 import { jsonLdHtml } from "@/lib/json-ld";
 import { resolveTheme, HOMEPAGE_DEFAULTS, HOMEPAGE_DEFAULT_COLLECTIONS, JOURNAL_CARD_DEFAULTS } from "./_theme";
@@ -1553,6 +1553,25 @@ export default async function StoreHomePage({
       "query-input": "required name=search_term_string",
     },
   };
+
+  // 合作 logo 與相簿要掛給客人看的清單：先把「店面注定顯示不出來」的那幾張挑掉。
+  //
+  // 這兩格的值全是商家在編輯器手貼、或從素材庫挑進來的 https 網址（_theme 沒塞任何
+  // 站內預設圖），編輯器那兩格（6dd925a、8d86d20）已經用同一支 isPastedRemoteImageUrl
+  // 在框下提示「店面會顯示不出來」，但 DB 裡更早存進去的 http://、漏網域的半截網址還是
+  // 原樣掛上公開頁：http:// 在 https 店面被當混合內容擋掉、「/logo.png」去抓 sproutly 自己
+  // 網域下不存在的檔，客人看到的是一塊破圖框。相簿走 <Image> 雖有 unoptimized 保險（整頁
+  // 不會 500），破圖框照樣掛；合作 logo 是普通 <img> 連保險都沒有。
+  //
+  // 相簿要保留原本的索引：圖說雙擊改字靠 data-edit-index 對回 layout.gallery 第幾筆，
+  // 濾掉一張之後若用 map 的新序號，改字會改到別張。跟選物提案卡 c.index 同一招。
+  // 全部濾光就當這段沒有內容，走原本 length > 0 的守門不多一個狀態，跟後台標記口徑一致。
+  const visiblePartners = theme.layout.partners.filter((p) =>
+    isPastedRemoteImageUrl(p.logoUrl),
+  );
+  const visibleGallery = theme.layout.gallery
+    .map((g, index) => ({ ...g, index }))
+    .filter((g) => isPastedRemoteImageUrl(g.url));
 
   return (
     <>
@@ -4764,7 +4783,7 @@ export default async function StoreHomePage({
 
         {/* === Partners（optional block：合作夥伴 logos 灰階） === */}
         {theme.layout.sectionOrder.includes("partners") &&
-          theme.layout.partners.length > 0 && (() => {
+          visiblePartners.length > 0 && (() => {
             const partnersPos = theme.layout.freePositions[FREE_POS_KEYS.partnersEyebrow] ?? null;
             const partnersFree = partnersPos !== null;
             const partnersStyle = sectionStyleFor("partners");
@@ -4853,7 +4872,7 @@ export default async function StoreHomePage({
                 </p>
                 )}
                 <div className={`sproutly-card-grid flex flex-wrap items-center ${partnersJustify} gap-8 sm:gap-12 md:gap-16`}>
-                  {theme.layout.partners.slice(0, 12).map((p, i) => {
+                  {visiblePartners.slice(0, 12).map((p, i) => {
                     const inner = (
                       // eslint-disable-next-line @next/next/no-img-element
                       <img
@@ -4907,7 +4926,7 @@ export default async function StoreHomePage({
 
         {/* === Gallery（optional block：3 欄圖片網格） === */}
         {theme.layout.sectionOrder.includes("gallery") &&
-          theme.layout.gallery.length > 0 && (() => {
+          visibleGallery.length > 0 && (() => {
             const galleryPos = theme.layout.freePositions[FREE_POS_KEYS.galleryIntro] ?? null;
             const galleryFree = galleryPos !== null;
             const galleryStyle = sectionStyleFor("gallery");
@@ -5067,9 +5086,9 @@ export default async function StoreHomePage({
                   : theme.layout.galleryColumns === 4 ? "md:grid-cols-4"
                   : "md:grid-cols-3"
                 }`}>
-                  {theme.layout.gallery.slice(0, 12).map((g, i) => (
+                  {visibleGallery.slice(0, 12).map((g) => (
                     <figure
-                      key={i}
+                      key={g.index}
                       className="sproutly-card"
                     >
                       <div className="sproutly-card-image aspect-square relative">
@@ -5088,7 +5107,7 @@ export default async function StoreHomePage({
                         <figcaption
                           data-edit-text
                           data-edit-field="galleryCaption"
-                          data-edit-index={i}
+                          data-edit-index={g.index}
                           // 相簿這張卡只有圖說這一行字，角色就是卡片描述。行數這格這裡
                           // 留著（長短不一的圖說會把同一列的圖框推得高低不齊，正是那格
                           // 要解的），卡片行距也留著——mt-3 剛好等於那條規則的 0.75rem 基準
