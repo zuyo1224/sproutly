@@ -8,6 +8,7 @@ import {
   clampFreePos,
 } from "@/lib/theme-scale";
 import { normalizeHexColor } from "@/lib/hex-color";
+import { cleanMapEmbedUrl } from "@/lib/map-embed-url";
 import {
   normalizeHeroImageBounds,
   type HeroImageBounds,
@@ -1340,10 +1341,10 @@ function resolveLayout(raw: unknown): StoreTheme["layout"] {
     stats,
     partners,
     gallery,
+    // 公開頁直接把這串掛成 <iframe src>，讀取端再過一次白名單（跟存檔端同一支 helper），
+    // 更早存進 DB、沒經過檢查的舊值也不會變成任意網站的 iframe。
     mapEmbedUrl:
-      typeof l.mapEmbedUrl === "string" && l.mapEmbedUrl.trim()
-        ? l.mapEmbedUrl.trim()
-        : null,
+      typeof l.mapEmbedUrl === "string" ? cleanMapEmbedUrl(l.mapEmbedUrl) : null,
     heroZoom: (() => {
       const z = l.heroZoom;
       if (typeof z !== "number" || !Number.isFinite(z)) return 1.0;

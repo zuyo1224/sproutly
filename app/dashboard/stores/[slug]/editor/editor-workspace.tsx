@@ -26,6 +26,7 @@ import {
 } from "@/lib/hero-image-bounds";
 import { AssetPicker } from "@/app/_components/asset-picker";
 import { socialUrl } from "@/lib/contact-href";
+import { cleanMapEmbedUrl } from "@/lib/map-embed-url";
 import { EditorAIChat } from "./editor-ai-chat";
 import {
   HERO_ZOOM_MIN,
@@ -4928,22 +4929,34 @@ export function EditorWorkspace({
                 className="w-full rounded-lg border border-stone-200 px-3 py-2 text-sm"
               />
             </Field>
-            <Field label="Google Maps embed URL">
+            <Field label="Google Maps 嵌入網址">
+              {/* 存檔端（actions.ts）只收 google.com/maps/embed 開頭的網址，判不過就不寫 DB，
+                  商家看到的是「已儲存」、重新整理後才發現地圖沒換。所以輸入時就用同一支
+                  cleanMapEmbedUrl 先判一次：貼整段 <iframe> HTML 會當場換成裡面的網址，
+                  貼到分享連結（maps.app.goo.gl）之類判不過的就在框下提示。 */}
               <input
                 type="text"
+                inputMode="url"
                 value={theme.layout.mapEmbedUrl ?? ""}
-                onChange={(e) =>
+                onChange={(e) => {
+                  const raw = e.target.value.trim();
+                  const cleaned = cleanMapEmbedUrl(raw);
                   updateLayout({
-                    mapEmbedUrl: e.target.value.trim() || null,
-                  })
-                }
+                    mapEmbedUrl: cleaned ?? (raw || null),
+                  });
+                }}
                 placeholder="https://www.google.com/maps/embed?pb=..."
                 className="w-full rounded-lg border border-stone-200 px-3 py-2 text-xs font-mono"
               />
+              {theme.layout.mapEmbedUrl && !cleanMapEmbedUrl(theme.layout.mapEmbedUrl) && (
+                <p className="mt-2 text-[11px] text-amber-800 bg-amber-50 border border-amber-200 rounded-lg px-3 py-2 leading-relaxed">
+                  這串存檔後不會變成地圖，店面會繼續用上一次存好的。請用「嵌入地圖」給的網址（google.com/maps/embed
+                  開頭），不是「複製連結」那種 maps.app.goo.gl 短網址。
+                </p>
+              )}
               <p className="mt-2 text-[11px] text-stone-500 leading-relaxed">
-                Google Maps 找你的店面 → 分享 → 嵌入地圖 → 複製{" "}
-                <code className="px-1 bg-stone-100 rounded">src=</code>{" "}
-                內的 URL（必須是 google.com/maps/embed 開頭）
+                Google Maps 找你的店面 → 分享 → 嵌入地圖 → 複製 HTML，整段直接貼進來就好，
+                會自動只留下裡面的網址。
               </p>
             </Field>
             <p className="text-xs text-stone-500 leading-relaxed pt-2 border-t border-stone-100">

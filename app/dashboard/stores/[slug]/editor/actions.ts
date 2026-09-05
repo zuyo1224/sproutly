@@ -12,6 +12,7 @@ import {
 } from "@/lib/store-limits";
 import { requireUser } from "@/lib/require-user";
 import { socialUrl } from "@/lib/contact-href";
+import { cleanMapEmbedUrl } from "@/lib/map-embed-url";
 import {
   clampHeroZoom,
   clampHeroFontScale,
@@ -315,14 +316,15 @@ export async function saveEditorState(slug: string, payload: EditorPayload) {
     }
     if (payload.layout.mapEmbedUrl !== undefined) {
       const v = payload.layout.mapEmbedUrl;
-      // 只接受 google maps embed URL，防 user 貼任意 iframe src
+      // 只接受 google.com/maps/embed 開頭的嵌入網址，防商家貼任意 iframe src。
+      // 判斷跟讀取端 resolveTheme、編輯器輸入框的即時提示共用 lib/map-embed-url 那一支，
+      // 整段 <iframe> HTML 貼過來也會挖出裡面的 src 照收。清空存 null；有字但判不過
+      // 就不動 DB（店面繼續用上一次存好的那張地圖），編輯器那格會即時提示商家貼錯了。
       if (v === null || v === "") {
         layoutPatch.mapEmbedUrl = null;
-      } else if (
-        typeof v === "string" &&
-        /^https:\/\/(www\.)?google\.com\/maps\/embed/i.test(v)
-      ) {
-        layoutPatch.mapEmbedUrl = v.slice(0, 1000).trim();
+      } else if (typeof v === "string") {
+        const cleaned = cleanMapEmbedUrl(v);
+        if (cleaned) layoutPatch.mapEmbedUrl = cleaned;
       }
     }
     if (payload.layout.heroZoom !== undefined) {
