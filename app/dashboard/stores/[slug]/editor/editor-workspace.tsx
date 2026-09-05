@@ -27,7 +27,7 @@ import {
 import { AssetPicker } from "@/app/_components/asset-picker";
 import { socialUrl } from "@/lib/contact-href";
 import { cleanMapEmbedUrl } from "@/lib/map-embed-url";
-import { isOptimizableImageSrc } from "@/lib/image-url";
+import { isPastedRemoteImageUrl } from "@/lib/image-url";
 import { EditorAIChat } from "./editor-ai-chat";
 import {
   HERO_ZOOM_MIN,
@@ -5252,9 +5252,12 @@ export function EditorWorkspace({
                     />
                     {/* 公開頁這張走 next/image，只吃 https:// 開頭的完整網址。判不過的字串
                         （http://、漏 https://、不是網址）店面那張會開天窗，以前還會讓整個
-                        首頁打不開，所以輸入時就用公開頁同一支 isOptimizableImageSrc 判一次、
-                        當場講清楚，不要等商家自己去店面找哪張壞掉。 */}
-                    {g.url.trim() && !isOptimizableImageSrc(g.url) && (
+                        首頁打不開，所以輸入時就判一次、當場講清楚，不要等商家自己去店面
+                        找哪張壞掉。用的是商品「貼網路圖片 URL」那格同一支 isPastedRemoteImageUrl
+                        （只認 https:// 完整網址），不用渲染端的 isOptimizableImageSrc：那支會放行
+                        「/photo.jpg」站內路徑，但相簿沒有程式自己塞的預設圖、值全是商家手貼，
+                        這種半截網址店面一樣抓不到，放行了提示就跟文案「要 https://」對不上。 */}
+                    {g.url.trim() && !isPastedRemoteImageUrl(g.url) && (
                       <p className="text-[11px] leading-snug text-amber-700">
                         這格要貼 https:// 開頭的完整圖片網址，現在這串店面會顯示不出這張圖
                       </p>
