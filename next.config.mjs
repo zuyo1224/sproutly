@@ -1,3 +1,6 @@
+// 這是唯一一份 next.config。Next 找設定檔的順序是 .js → .mjs → .ts，先找到就停，
+// 之前並存的 next.config.ts 從沒被載入過（裡面也沒有下面的 qualities 登記），已刪掉，
+// 不要再另開一份 .ts，改設定只改這裡。
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   experimental: {
