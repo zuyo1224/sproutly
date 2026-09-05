@@ -34,6 +34,7 @@ import {
 } from "@/app/[slug]/_theme";
 import { AIEditPanel } from "@/app/_components/ai-edit-panel";
 import { UnsavedChangesGuard } from "@/app/_components/unsaved-changes-guard";
+import { SocialUrlInput } from "@/app/_components/social-url-input";
 
 type Params = Promise<{ slug: string }>;
 type SearchParams = Promise<{ error?: string; saved?: string }>;
@@ -603,40 +604,37 @@ A: 可以，地點為台北車站。`}</pre>
               社群連結（會出現在頁尾，只有勾選「頁尾社群連結」才顯示）
             </label>
             <div className="space-y-2">
-              <div className="flex items-center gap-2">
-                <label htmlFor="social_instagram" className="text-xs text-emerald-900/60 w-20">Instagram</label>
-                <input
+              <div className="flex items-start gap-2">
+                <label htmlFor="social_instagram" className="text-xs text-emerald-900/60 w-20 pt-2.5">Instagram</label>
+                <SocialUrlInput
                   id="social_instagram"
                   name="social_instagram"
-                  type="url"
                   maxLength={MAX_SOCIAL_URL_LEN}
                   defaultValue={theme.social.instagram ?? ""}
                   placeholder="https://www.instagram.com/your-store"
-                  className="flex-1 rounded-lg border border-emerald-100 px-3 py-2 outline-none focus:border-emerald-400 transition text-sm"
+                  className="w-full rounded-lg border border-emerald-100 px-3 py-2 outline-none focus:border-emerald-400 transition text-sm"
                 />
               </div>
-              <div className="flex items-center gap-2">
-                <label htmlFor="social_facebook" className="text-xs text-emerald-900/60 w-20">Facebook</label>
-                <input
+              <div className="flex items-start gap-2">
+                <label htmlFor="social_facebook" className="text-xs text-emerald-900/60 w-20 pt-2.5">Facebook</label>
+                <SocialUrlInput
                   id="social_facebook"
                   name="social_facebook"
-                  type="url"
                   maxLength={MAX_SOCIAL_URL_LEN}
                   defaultValue={theme.social.facebook ?? ""}
                   placeholder="https://www.facebook.com/your-store"
-                  className="flex-1 rounded-lg border border-emerald-100 px-3 py-2 outline-none focus:border-emerald-400 transition text-sm"
+                  className="w-full rounded-lg border border-emerald-100 px-3 py-2 outline-none focus:border-emerald-400 transition text-sm"
                 />
               </div>
-              <div className="flex items-center gap-2">
-                <label htmlFor="social_line" className="text-xs text-emerald-900/60 w-20">LINE OA</label>
-                <input
+              <div className="flex items-start gap-2">
+                <label htmlFor="social_line" className="text-xs text-emerald-900/60 w-20 pt-2.5">LINE OA</label>
+                <SocialUrlInput
                   id="social_line"
                   name="social_line"
-                  type="url"
                   maxLength={MAX_SOCIAL_URL_LEN}
                   defaultValue={theme.social.line ?? ""}
                   placeholder="https://line.me/R/ti/p/@xxx"
-                  className="flex-1 rounded-lg border border-emerald-100 px-3 py-2 outline-none focus:border-emerald-400 transition text-sm"
+                  className="w-full rounded-lg border border-emerald-100 px-3 py-2 outline-none focus:border-emerald-400 transition text-sm"
                 />
               </div>
             </div>
