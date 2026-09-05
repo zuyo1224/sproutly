@@ -217,7 +217,7 @@ export default async function NewProductPage({
               </summary>
               {/* 刻意不用 type="url"：瀏覽器只擋「不是網址」、不擋 http://，而 https 店面載
                   http:// 圖會被當混合內容擋掉一樣開天窗。改用會即時提示的輸入框，跟寫入端
-                  同一支 isOptimizableImageSrc 判，判不過當場講、送出也會被擋。 */}
+                  同一支 isPastedRemoteImageUrl 判（只認 https:// 完整網址），判不過當場講、送出也會被擋。 */}
               <div className="mt-3">
                 <ImageUrlHintInput
                   name="image_url"

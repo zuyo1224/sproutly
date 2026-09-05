@@ -55,3 +55,24 @@ export function isOptimizableImageSrc(src: string | null | undefined): boolean {
     return false;
   }
 }
+
+// 商家在後台「貼網路圖片 URL」那格填的字串，能不能收進 image_urls。
+//
+// 跟上面 isOptimizableImageSrc 的差別：那支是渲染端保險，站內路徑（「/logo.png」）也放行，
+// 因為程式自己塞的預設圖就是走站內路徑。但商家手貼的字串沒有這種情況——「/photo.jpg」
+// 對商家來說多半是漏了網域的半截網址，寫入端放行了，店面會去抓 sproutly 自己網域底下
+// 根本不存在的檔，那張圖照樣開天窗，而且表單提示文案講的是「要 https:// 開頭」，跟實際
+// 放行的範圍對不上。所以這格另開一支：只認 https:// 開頭、URL 解析得過的絕對網址，
+// 寫入端（products/actions.ts）與輸入框即時提示（ImageUrlHintInput）共用，兩邊口徑一致。
+// 站內預設圖、DB 裡的舊值不經過這條，渲染端仍由 isOptimizableImageSrc 兜底。
+export function isPastedRemoteImageUrl(src: string | null | undefined): boolean {
+  if (typeof src !== "string") return false;
+  const s = src.trim();
+  if (!s) return false;
+  try {
+    const u = new URL(s);
+    return u.protocol === "https:" && u.hostname !== "";
+  } catch {
+    return false;
+  }
+}

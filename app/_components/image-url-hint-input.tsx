@@ -1,10 +1,10 @@
 "use client";
 
 import { useState } from "react";
-import { isOptimizableImageSrc } from "@/lib/image-url";
+import { isPastedRemoteImageUrl } from "@/lib/image-url";
 
-// 商品新增頁「貼網路圖片 URL」那格用的輸入框：輸入時就用公開頁同一支
-// isOptimizableImageSrc 判一次，判不過立刻在框下提示。
+// 商品新增頁「貼網路圖片 URL」那格用的輸入框：輸入時就用寫入端同一支
+// isPastedRemoteImageUrl 判一次（只認 https:// 開頭的完整網址），判不過立刻在框下提示。
 //
 // 為什麼要這層：這格原本是 type="url"，瀏覽器內建驗證只擋「不是網址」，不擋 http://。
 // 店面本身是 https，http:// 的圖會被瀏覽器當混合內容擋掉，那張一定開天窗；漏了 https://
@@ -14,6 +14,8 @@ import { isOptimizableImageSrc } from "@/lib/image-url";
 // 所以比照視覺編輯器相簿那格（editor-workspace.tsx）與電話／Email 那支 ContactHintInput
 // 的做法：改 type="text" 搭 inputMode="url" 讓手機一樣跳網址鍵盤，輸入時就講清楚。
 // 寫入端 products/actions.ts 用同一支判斷擋，這裡只是讓商家不用送出才知道。
+// 不用渲染端那支 isOptimizableImageSrc：它連「/photo.jpg」站內路徑都放行，但商家手貼的
+// 站內路徑多半是漏了網域的半截網址，店面抓不到，提示文案講「要 https://」也對不上。
 export function ImageUrlHintInput({
   id,
   name,
@@ -28,7 +30,7 @@ export function ImageUrlHintInput({
   className: string;
 }) {
   const [value, setValue] = useState("");
-  const showHint = value.trim() !== "" && !isOptimizableImageSrc(value);
+  const showHint = value.trim() !== "" && !isPastedRemoteImageUrl(value);
   const hintId = `${id ?? name}-hint`;
 
   return (
