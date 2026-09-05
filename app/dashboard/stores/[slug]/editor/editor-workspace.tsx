@@ -5146,6 +5146,18 @@ export function EditorWorkspace({
                         ✦
                       </button>
                     </div>
+                    {/* 這格跟相簿那格一樣是商家手貼的字串，公開頁雖然走普通 <img>（不會像
+                        next/image 那樣整頁 500），但 https 店面載 http:// 的 logo 會被瀏覽器當
+                        混合內容擋掉、「/logo.png」這種漏了網域的半截網址會去抓 sproutly 自己
+                        網域下不存在的檔，那顆 logo 一樣開天窗；商家在自己的瀏覽器多半照樣看
+                        得到，找不到哪裡壞。所以輸入時就用相簿／商品那格同一支
+                        isPastedRemoteImageUrl 判一次（只認 https:// 完整網址），判不過當場講。
+                        從圖庫挑的是 Supabase Storage 的 https 公開網址，判得過不會誤標。 */}
+                    {p.logoUrl.trim() && !isPastedRemoteImageUrl(p.logoUrl) && (
+                      <p className="text-[11px] leading-snug text-amber-700">
+                        這格要貼 https:// 開頭的完整圖片網址，現在這串店面會顯示不出這顆 logo
+                      </p>
+                    )}
                     {/* 存檔端（actions.ts）只收得下 http(s):// 或漏 scheme 的真網域，其餘存 null，
                         商家事後在店面看不到連結卻不知道為什麼。所以這格輸入時就用同一支
                         socialUrl 先判一次，判不過立刻提示。刻意不用 type="url"：瀏覽器的
