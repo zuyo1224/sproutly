@@ -34,7 +34,7 @@ import {
 } from "@/app/[slug]/_theme";
 import { AIEditPanel } from "@/app/_components/ai-edit-panel";
 import { UnsavedChangesGuard } from "@/app/_components/unsaved-changes-guard";
-import { SocialUrlInput } from "@/app/_components/social-url-input";
+import { ContactHintInput } from "@/app/_components/contact-hint-input";
 
 type Params = Promise<{ slug: string }>;
 type SearchParams = Promise<{ error?: string; saved?: string }>;
@@ -287,10 +287,10 @@ export default async function StoreSettingsPage({
               <label className="block text-sm font-medium text-emerald-900 mb-1.5">
                 電話
               </label>
-              <input
+              <ContactHintInput
+                kind="phone"
                 name="contact_phone"
                 maxLength={MAX_STORE_PHONE_LEN}
-                type="tel"
                 defaultValue={store.contact_phone ?? ""}
                 placeholder="0912-345-678"
                 className="w-full rounded-xl border border-emerald-100 px-4 py-3 outline-none focus:border-emerald-400 focus:ring-2 focus:ring-emerald-100 transition"
@@ -300,10 +300,10 @@ export default async function StoreSettingsPage({
               <label className="block text-sm font-medium text-emerald-900 mb-1.5">
                 Email
               </label>
-              <input
+              <ContactHintInput
+                kind="email"
                 name="contact_email"
                 maxLength={MAX_STORE_EMAIL_LEN}
-                type="email"
                 defaultValue={store.contact_email ?? ""}
                 placeholder="hi@example.com"
                 className="w-full rounded-xl border border-emerald-100 px-4 py-3 outline-none focus:border-emerald-400 focus:ring-2 focus:ring-emerald-100 transition"
@@ -606,7 +606,8 @@ A: 可以，地點為台北車站。`}</pre>
             <div className="space-y-2">
               <div className="flex items-start gap-2">
                 <label htmlFor="social_instagram" className="text-xs text-emerald-900/60 w-20 pt-2.5">Instagram</label>
-                <SocialUrlInput
+                <ContactHintInput
+                  kind="social"
                   id="social_instagram"
                   name="social_instagram"
                   maxLength={MAX_SOCIAL_URL_LEN}
@@ -617,7 +618,8 @@ A: 可以，地點為台北車站。`}</pre>
               </div>
               <div className="flex items-start gap-2">
                 <label htmlFor="social_facebook" className="text-xs text-emerald-900/60 w-20 pt-2.5">Facebook</label>
-                <SocialUrlInput
+                <ContactHintInput
+                  kind="social"
                   id="social_facebook"
                   name="social_facebook"
                   maxLength={MAX_SOCIAL_URL_LEN}
@@ -628,7 +630,8 @@ A: 可以，地點為台北車站。`}</pre>
               </div>
               <div className="flex items-start gap-2">
                 <label htmlFor="social_line" className="text-xs text-emerald-900/60 w-20 pt-2.5">LINE OA</label>
-                <SocialUrlInput
+                <ContactHintInput
+                  kind="social"
                   id="social_line"
                   name="social_line"
                   maxLength={MAX_SOCIAL_URL_LEN}
