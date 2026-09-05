@@ -23,7 +23,7 @@ type Params = Promise<{ slug: string; id: string }>;
 
 import { formatPrice, productOfferFieldsForSchema } from "@/lib/format-price";
 import { availabilityForSchema } from "@/lib/availability-schema";
-import { absoluteImageUrls } from "@/lib/image-url";
+import { absoluteImageUrls, displayableImageUrls } from "@/lib/image-url";
 import { QTY_MAX } from "@/lib/product-quantity";
 import { isUuid } from "@/lib/uuid";
 
@@ -133,9 +133,11 @@ export default async function PublicProductPage({
     .sort(bySoldOutLast)
     .slice(0, 4);
 
-  const images: string[] = product.image_urls ?? [];
+  // 掛給客人看的圖先過 displayableImageUrls：DB 裡舊的 http://、漏網域的半截網址、
+  // 空白字串在 https 店面上注定是破圖框（後台編輯頁對這些張已標「店面顯示不出來」），
+  // 這裡直接不掛，少一張總比整頁主視覺開天窗好。全濾光就走下面原本的「沒有圖」佔位格。
+  const images: string[] = displayableImageUrls(product.image_urls);
   const primaryImage = images[0] ?? null;
-  const extraImages = images.slice(1);
   const inStock = !isSoldOut(product.stock);
   const maxQty = product.stock !== null ? Math.min(product.stock, QTY_MAX) : QTY_MAX;
   // 庫存狀態給 Google：頁面上 stock ≤ 3 就亮「剩 N」琥珀色提示，結構化資料也跟著走——
@@ -152,7 +154,8 @@ export default async function PublicProductPage({
 
   // 餵給 Google 的商品圖只放絕對網址：商家圖片清單可能混進空白列或相對路徑，
   // schema.org 的 image 收到這些值會讓整段 Product rich result 失效。先濾乾淨，
-  // 全濾光（一張合法的都沒有）就省略此欄，不送空陣列。頁面渲染照舊吃原始 images。
+  // 全濾光（一張合法的都沒有）就省略此欄，不送空陣列。images 已先過 displayableImageUrls
+  // （只剩 https 完整網址），這裡再過一次是保留原本的去重與只認絕對網址的語意。
   const schemaImages = absoluteImageUrls(images);
 
   const productJsonLd = {

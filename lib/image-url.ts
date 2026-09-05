@@ -76,3 +76,32 @@ export function isPastedRemoteImageUrl(src: string | null | undefined): boolean 
     return false;
   }
 }
+
+// 商品詳情頁要掛給客人看的圖片清單：把 image_urls 裡「店面注定顯示不出來」的那幾張先挑掉。
+//
+// 為什麼要這層：後台商品編輯頁（e71ebb1）已經會對 image_urls 每張用 isPastedRemoteImageUrl
+// 判一次、判不過標「店面顯示不出來」，但那只是讓商家看得見，DB 裡更早存進去的 http://、
+// 漏網域的半截網址、空白字串還是原樣進了公開頁的 ImageCarousel 與主圖。這些值在 https 店面
+// 上一定壞：http:// 被瀏覽器當混合內容擋掉、「/photo.jpg」去抓 sproutly 自己網域下不存在的檔、
+// 「  」是一張空 src。客人端一張破圖框比少一張圖難看得多，尤其詳情頁第一張就是整頁的主視覺。
+//
+// 所以這裡只留 isPastedRemoteImageUrl 判得過的（https:// 完整網址），去前後空白、去重、
+// 保持商家原本排序（第一張仍是主圖）。全部濾光就回空陣列，呼叫端照原本「沒有圖」的
+// 版位走（詳情頁本來就有 images.length === 0 的佔位格），不會多出一個新狀態。
+// 跟 absoluteImageUrls 的差別：那支是餵 Google／社群用、http:// 也放行；這支是給客人看的
+// 那一端，口徑跟後台標記那條一致，商家在後台看到標記的那幾張，店面就真的不掛。
+export function displayableImageUrls(
+  urls: (string | null | undefined)[] | null | undefined,
+): string[] {
+  if (!Array.isArray(urls)) return [];
+  const seen = new Set<string>();
+  const out: string[] = [];
+  for (const raw of urls) {
+    if (!isPastedRemoteImageUrl(raw)) continue;
+    const u = (raw as string).trim();
+    if (seen.has(u)) continue;
+    seen.add(u);
+    out.push(u);
+  }
+  return out;
+}
