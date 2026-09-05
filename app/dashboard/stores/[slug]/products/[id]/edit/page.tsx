@@ -7,6 +7,7 @@ import { ImageFilePicker } from "@/app/_components/image-file-picker";
 import { UnsavedChangesGuard } from "@/app/_components/unsaved-changes-guard";
 import { currencySymbol } from "@/lib/format-price";
 import { isUuid } from "@/lib/uuid";
+import { isPastedRemoteImageUrl } from "@/lib/image-url";
 import {
   MAX_PRICE_YUAN,
   MAX_STOCK,
@@ -66,6 +67,15 @@ export default async function EditProductPage({
   const duplicateBound = duplicateProduct.bind(null, slug, product.id);
   const price = (product.price_cents / 100).toFixed(0);
   const imageCount = product.image_urls?.length ?? 0;
+  // 店面掛不出來的圖：DB 裡更早存進去的 http:// 或漏了網域的半截網址。後台這頁是普通
+  // <img>、瀏覽器本機多半照樣顯示得出來，商家看不出哪張有問題；但 https 店面載 http://
+  // 圖會被當混合內容擋掉、半截網址會去抓 sproutly 自己網域底下不存在的檔，那張開天窗。
+  // 寫入端（貼網址那格）現在已經用同一支 isPastedRemoteImageUrl 擋了，這裡是讓舊值有
+  // 地方被看見：判不過就在縮圖上標出來、下面多一句提醒，讓商家勾掉重上傳。
+  // 上傳走 Supabase Storage 的公開網址是 https，判得過，不會被誤標。
+  const brokenImageCount = (product.image_urls ?? []).filter(
+    (u: string) => !isPastedRemoteImageUrl(u),
+  ).length;
   // 價格 label 跟著這件商品實際的幣別走，非台幣的商品不再硬寫 NT$（共用 currencySymbol）
   const currencyLabel = currencySymbol(product.currency);
 
@@ -263,9 +273,19 @@ export default async function EditProductPage({
                         value={url}
                         className="absolute top-2 right-2 w-5 h-5 rounded text-red-600 bg-white focus:ring-2 focus:ring-red-100 cursor-pointer"
                       />
+                      {!isPastedRemoteImageUrl(url) && (
+                        <span
+                          className="absolute inset-x-2 bottom-2 px-2 py-1 rounded-lg bg-amber-500 text-white text-center leading-tight"
+                          style={{ fontSize: "0.6875rem" }}
+                        >
+                          店面顯示不出來
+                        </span>
+                      )}
                       {idx === 0 && (
                         <span
-                          className="absolute bottom-2 left-2 px-2 py-0.5 rounded-full bg-emerald-700 text-white"
+                          className={`absolute left-2 px-2 py-0.5 rounded-full bg-emerald-700 text-white ${
+                            isPastedRemoteImageUrl(url) ? "bottom-2" : "top-2"
+                          }`}
                           style={{
                             fontSize: "0.625rem",
                             letterSpacing: "0.3em",
@@ -284,6 +304,15 @@ export default async function EditProductPage({
                 >
                   第一張是主圖。要換主圖：刪掉現在主圖，剩下的第一張會自動變主圖
                 </p>
+                {brokenImageCount > 0 && (
+                  <p
+                    className="mt-2 text-amber-700"
+                    style={{ fontSize: "0.8125rem", lineHeight: 1.7 }}
+                  >
+                    有 {brokenImageCount} 張標了「店面顯示不出來」：網址不是 https://
+                    開頭的完整網址，客人在店面會看到空白。建議勾掉刪除，再用下面的上傳補回來。
+                  </p>
+                )}
               </div>
             )}
 

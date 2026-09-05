@@ -13,6 +13,8 @@ import {
 import { SubmitButton } from "@/app/_components/submit-button";
 // 商品撈整批要分頁撈齊，不然吃 Supabase 1000 列上限，見 fetch-all-rows。
 import { fetchAllRows } from "@/lib/fetch-all-rows";
+// 主圖網址判不過（http:// 或半截網址）就在縮圖角落標一個琥珀點，點進編輯頁看詳細。
+import { isPastedRemoteImageUrl } from "@/lib/image-url";
 
 type Params = Promise<{ slug: string }>;
 type SearchParams = Promise<{ q?: string; filter?: string; error?: string }>;
@@ -266,14 +268,24 @@ export default async function ProductsListPage({
               >
                 <span className="sr-only">編輯 {p.name}</span>
               </Link>
-              <div className="w-16 h-16 rounded-xl bg-emerald-50 flex-shrink-0 overflow-hidden flex items-center justify-center">
+              <div className="relative w-16 h-16 rounded-xl bg-emerald-50 flex-shrink-0 overflow-hidden flex items-center justify-center">
                 {p.image_urls && p.image_urls.length > 0 ? (
-                  // eslint-disable-next-line @next/next/no-img-element
-                  <img
-                    src={p.image_urls[0]}
-                    alt={p.name}
-                    className="w-full h-full object-cover"
-                  />
+                  <>
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img
+                      src={p.image_urls[0]}
+                      alt={p.name}
+                      className="w-full h-full object-cover"
+                    />
+                    {!isPastedRemoteImageUrl(p.image_urls[0]) && (
+                      <span
+                        title="主圖在店面顯示不出來，點進去看"
+                        className="absolute top-1 right-1 w-2.5 h-2.5 rounded-full bg-amber-500 ring-2 ring-white"
+                      >
+                        <span className="sr-only">主圖在店面顯示不出來</span>
+                      </span>
+                    )}
+                  </>
                 ) : (
                   <span
                     aria-hidden
