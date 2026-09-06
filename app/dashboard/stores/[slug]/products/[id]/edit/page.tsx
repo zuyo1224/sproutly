@@ -266,9 +266,12 @@ export default async function EditProductPage({
                   現有圖片（勾選打勾的會被刪除）
                 </p>
                 <div className="grid grid-cols-3 sm:grid-cols-4 gap-2.5">
+                  {/* key 帶上索引：image_urls 平常不會有重複值（上傳各自一條 storage 路徑、貼網址只在新增時一張），
+                      但 DB 手動塞值或種子資料撞到同一串時，只用 url 當 key React 會警告且格子會互相蓋掉。
+                      勾刪那格的 value 仍是 url，actions.ts 是照網址值比對，重複的那幾張會一起被刪，這是合理的。 */}
                   {product.image_urls.map((url: string, idx: number) => (
                     <label
-                      key={url}
+                      key={`${idx}-${url}`}
                       className="relative group cursor-pointer"
                     >
                       {/* eslint-disable-next-line @next/next/no-img-element */}
