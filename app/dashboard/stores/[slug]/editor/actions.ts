@@ -1129,7 +1129,12 @@ export async function saveEditorState(slug: string, payload: EditorPayload) {
         ? payload.homepage.collectionItems
         : [];
       // 空標題的卡照 settings 頁同款規則丟掉（空標題 = 不顯示這個提案）；
-      // 上限 6 跟固定六個情境 key 對齊
+      // 上限 6 跟固定六個情境 key 對齊。
+      // 同一個 key 只留第一筆：key 是店面首頁 map 這六張卡的 React key，settings 頁
+      // 是照固定六個 key 組出來的不會重複，但這條 payload 是客戶端送什麼收什麼，
+      // 重複的 key 存進 DB 會讓店面 React 警告、卡片互相蓋掉。讀取端 _theme.ts
+      // resolveHomepage 也同款去重，這裡先擋住不讓髒資料進 DB。
+      const seenCollectionKeys = new Set<string>();
       hpPatch.collectionItems = arr
         .filter((c) => c && typeof c === "object")
         .map((c) => ({
@@ -1138,6 +1143,11 @@ export async function saveEditorState(slug: string, payload: EditorPayload) {
           subtitle: String(c.subtitle ?? "").trim().slice(0, MAX_COLLECTION_SUBTITLE_LEN),
         }))
         .filter((c) => c.key && c.title)
+        .filter((c) => {
+          if (seenCollectionKeys.has(c.key)) return false;
+          seenCollectionKeys.add(c.key);
+          return true;
+        })
         .slice(0, 6);
     }
     merged.homepage = hpPatch;

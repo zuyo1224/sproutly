@@ -1824,6 +1824,11 @@ function resolveLayout(raw: unknown): StoreTheme["layout"] {
 function resolveHomepage(raw: unknown): StoreTheme["homepage"] {
   const h = (raw && typeof raw === "object" ? raw : {}) as Record<string, unknown>;
   const itemsRaw = Array.isArray(h.collectionItems) ? h.collectionItems : [];
+  // 同一個 key 只留第一筆。key 是這六張卡對到 theme.collections 情境照的鍵，也是
+  // 店面首頁 map 時的 React key；DB 手動塞值或舊資料撞 key，React 會警告、卡片互相
+  // 蓋掉。編輯器寫入端（editor/actions.ts）也同款去重，這裡是所有讀 theme 的地方
+  // （店面、編輯器、設定頁）共用的最後一道，兩邊看到的排序與張數才會一致。
+  const seenCollectionKeys = new Set<string>();
   const items = itemsRaw
     .filter((c) => c && typeof c === "object")
     .map((c) => {
@@ -1834,7 +1839,12 @@ function resolveHomepage(raw: unknown): StoreTheme["homepage"] {
         subtitle: typeof obj.subtitle === "string" ? obj.subtitle.trim() : "",
       };
     })
-    .filter((c) => c.key && c.title);
+    .filter((c) => c.key && c.title)
+    .filter((c) => {
+      if (seenCollectionKeys.has(c.key)) return false;
+      seenCollectionKeys.add(c.key);
+      return true;
+    });
   const journalCardsRaw = Array.isArray(h.journalCards) ? h.journalCards : [];
   const journalCards = journalCardsRaw
     .filter((c) => c && typeof c === "object")
