@@ -4,7 +4,7 @@ import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { jsonLdHtml } from "@/lib/json-ld";
 import { siteBaseUrl, buildBreadcrumbJsonLd } from "@/lib/store-schema";
-import { absoluteImageUrls, displayableImageUrls } from "@/lib/image-url";
+import { displayableImageUrls } from "@/lib/image-url";
 import { resolveTheme, HOMEPAGE_DEFAULTS } from "../_theme";
 import { RecentlyViewed } from "@/app/_components/recently-viewed";
 import { AutoSubmitOnChange } from "@/app/_components/auto-submit-on-change";
@@ -189,10 +189,12 @@ export default async function ShopPage({
               "@type": "Product",
               name: p.name,
               url: `${BASE_URL}/${slug}/products/${p.id}`,
-              // 跟商品詳情頁、首頁同一條防呆線：image_urls 第一張可能是空白或相對路徑，
-              // 直接放會讓這筆 Product 在 ItemList 裡失效。走 absoluteImageUrls 清過，
-              // 清不出乾淨絕對網址就省略此欄（頁面卡片渲染照舊吃原始 image_urls）。
-              image: absoluteImageUrls(p.image_urls)[0] ?? undefined,
+              // 餵 Google 的圖跟下面卡片實際掛的同一張：走 displayableImageUrls 取第一張，
+              // 跟商品詳情頁的 JSON-LD 同一口徑。原本走 absoluteImageUrls 會多放行 http://，
+              // 那張在 https 店面上被當混合內容擋掉、卡片不掛，結構化資料卻指著它，Google
+              // 對照頁面會發現圖不在頁上。空白列、相對路徑照樣擋掉，一張合法的都沒有就
+              // 省略此欄，不讓這筆 Product 在 ItemList 裡失效。
+              image: displayableImageUrls(p.image_urls)[0] ?? undefined,
               offers: {
                 "@type": "Offer",
                 // 幣別／價格／價格有效期／全新狀態走共用 helper，跟商品詳情頁同一份

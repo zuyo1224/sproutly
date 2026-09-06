@@ -60,10 +60,13 @@ export async function generateMetadata({
   // 而非退回「商品名 · 售價」。先 trim，全空白就當沒填、走預設摘要。
   const description =
     product.description?.trim().slice(0, 160) || `${product.name} · ${priceLabel}`;
-  // OG／Twitter 預覽圖只認絕對網址：商家圖片清單裡可能混進空白列或相對路徑，
-  // 取第一張前先濾掉這些（原本 image_urls?.[0] 連「  」空白字串都當有效，會讓
-  // og:image 指向一串空白、分享出去開天窗）。
-  const image = absoluteImageUrls(product.image_urls)[0] ?? null;
+  // OG／Twitter 預覽圖取「客人在頁面上實際看到的主圖」：走 displayableImageUrls，跟下面
+  // 頁面主圖與 Product JSON-LD 同一支。原本走 absoluteImageUrls 會多放行 http://，但
+  // https 店面上 http:// 那張被瀏覽器當混合內容擋掉、頁面根本不掛，分享出去的預覽圖
+  // 卻是它——點進來看到的主圖跟預覽對不上，第一張是舊 http:// 值的商品尤其明顯。
+  // displayableImageUrls 本身就只留 https 完整網址、去空白、去重（是 absoluteImageUrls
+  // 的子集），空白列與相對路徑照樣擋掉，全濾光就跟原本一樣不放 og:image。
+  const image = displayableImageUrls(product.image_urls)[0] ?? null;
 
   return {
     title: `${product.name} · ${priceLabel}`,

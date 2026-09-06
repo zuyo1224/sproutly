@@ -1,7 +1,7 @@
 import type { MetadataRoute } from "next";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { resolveTheme } from "@/app/[slug]/_theme";
-import { absoluteImageUrls } from "@/lib/image-url";
+import { absoluteImageUrls, displayableImageUrls } from "@/lib/image-url";
 import { siteBaseUrl } from "@/lib/store-schema";
 // 整批撈店家/商品要分頁撈齊，不然吃 Supabase 1000 列上限，見 fetch-all-rows。
 import { fetchAllRows } from "@/lib/fetch-all-rows";
@@ -112,9 +112,11 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     const slug = storeBySlug.get(product.merchant_id);
     if (!slug) continue;
     // 商品照片一併進 sitemap，Google 才知道每個商品頁有哪幾張圖可收錄。
-    // 跟 Product JSON-LD／OG image 同一條防呆：只放清乾淨的絕對網址，
-    // 混進的空白列或相對路徑不放進 <image:loc>，免得整筆 sitemap image 失效。
-    const images = absoluteImageUrls(product.image_urls);
+    // 放的是詳情頁「實際掛出來」的那幾張：走 displayableImageUrls，跟詳情頁主圖、
+    // 輪播、Product JSON-LD、og:image 同一口徑。原本走 absoluteImageUrls 會多報 http://
+    // 那幾張，但那些在 https 店面上被當混合內容擋掉、頁面不掛，sitemap 卻叫 Google 去
+    // 商品頁收一張頁上沒有的圖。空白列、相對路徑照樣不進 <image:loc>，免得整筆失效。
+    const images = displayableImageUrls(product.image_urls);
     entries.push({
       url: `${BASE_URL}/${slug}/products/${product.id}`,
       lastModified: product.updated_at ? new Date(product.updated_at) : now,

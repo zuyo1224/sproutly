@@ -88,8 +88,11 @@ export function isPastedRemoteImageUrl(src: string | null | undefined): boolean 
 // 所以這裡只留 isPastedRemoteImageUrl 判得過的（https:// 完整網址），去前後空白、去重、
 // 保持商家原本排序（第一張仍是主圖）。全部濾光就回空陣列，呼叫端照原本「沒有圖」的
 // 版位走（詳情頁本來就有 images.length === 0 的佔位格），不會多出一個新狀態。
-// 跟 absoluteImageUrls 的差別：那支是餵 Google／社群用、http:// 也放行；這支是給客人看的
-// 那一端，口徑跟後台標記那條一致，商家在後台看到標記的那幾張，店面就真的不掛。
+// 跟 absoluteImageUrls 的差別：那支只認「是不是絕對網址」、http:// 也放行，留給 heroUrl／
+// logoUrl 這類不經 isPastedRemoteImageUrl 寫入的欄位；這支是給客人看的那一端，口徑跟後台
+// 標記那條一致，商家在後台看到標記的那幾張，店面就真的不掛。商品圖餵 Google／社群的幾處
+// （詳情頁 og:image 與 JSON-LD、逛街頁 ItemList、sitemap）也走這支：對外報的圖要跟頁面
+// 實際掛的是同一批，不能報一張頁上根本沒有的 http:// 圖。
 export function displayableImageUrls(
   urls: (string | null | undefined)[] | null | undefined,
 ): string[] {
