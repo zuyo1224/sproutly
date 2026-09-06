@@ -78,6 +78,14 @@ export default async function EditProductPage({
   const brokenImageCount = (product.image_urls ?? []).filter(
     (u: string) => !isPastedRemoteImageUrl(u),
   ).length;
+  // 客人實際看到的主圖是第幾張：店面（5e6c204／55a8fa7）是走 displayableImageUrls 取第一張，
+  // 等於原排序裡第一個判得過的。第一張判得過時就是 0、跟「Cover」那格同一張，不用多講；
+  // 第一張判不過時商家看著「Cover」標籤會以為客人看到的是它，其實店面掛的是後面這張，
+  // 所以在那格另標「店面主圖」、下面那句「第一張是主圖」也改講實況。全部判不過回 -1，
+  // 店面落「沒有圖」佔位格，同樣講清楚。
+  const storefrontCoverIdx = (product.image_urls ?? []).findIndex(
+    (u: string) => isPastedRemoteImageUrl(u),
+  );
   // 價格 label 跟著這件商品實際的幣別走，非台幣的商品不再硬寫 NT$（共用 currencySymbol）
   const currencyLabel = currencySymbol(product.currency);
 
@@ -297,6 +305,18 @@ export default async function EditProductPage({
                           Cover
                         </span>
                       )}
+                      {storefrontCoverIdx > 0 && idx === storefrontCoverIdx && (
+                        <span
+                          className="absolute left-2 bottom-2 px-2 py-0.5 rounded-full bg-emerald-700 text-white"
+                          style={{
+                            fontSize: "0.625rem",
+                            letterSpacing: "0.2em",
+                          }}
+                          title="第一張店面不會放，客人現在看到的主圖是這張"
+                        >
+                          店面主圖
+                        </span>
+                      )}
                     </label>
                   ))}
                 </div>
@@ -304,7 +324,11 @@ export default async function EditProductPage({
                   className="mt-3 text-emerald-900/55"
                   style={{ fontSize: "0.8125rem", lineHeight: 1.7 }}
                 >
-                  第一張是主圖。要換主圖：刪掉現在主圖，剩下的第一張會自動變主圖
+                  {storefrontCoverIdx === 0
+                    ? "第一張是主圖。要換主圖：刪掉現在主圖，剩下的第一張會自動變主圖"
+                    : storefrontCoverIdx > 0
+                      ? `第一張店面不會放，客人現在看到的主圖是第 ${storefrontCoverIdx + 1} 張（標「店面主圖」那格）。要換主圖：勾掉刪除前面判不過的，剩下的第一張會自動變主圖`
+                      : "每一張店面都不會放，客人現在看到的是「沒有圖」的佔位格。勾掉刪除這幾張，再用下面的上傳補回來"}
                 </p>
                 {brokenImageCount > 0 && (
                   <p
