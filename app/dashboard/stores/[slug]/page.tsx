@@ -28,6 +28,9 @@ import {
 // 全店訂單與品項的查詢走分頁撈齊（Supabase 一次最多回約 1000 列，
 // 一次 select 整家店在訂單/品項破千後會默默少算，見 fetch-all-rows）。
 import { fetchAllRows } from "@/lib/fetch-all-rows";
+// 庫存不足卡片的縮圖跟後台商品列表（4403bbc）、店面八處卡片（5e6c204）同一支：
+// DB 裡舊的 http:// 或半截網址店面是跳過不掛，商家這裡也要看到客人實際看到的那張。
+import { displayableImageUrls } from "@/lib/image-url";
 
 type OrderSummaryRow = {
   id: string;
@@ -639,17 +642,21 @@ export default async function StoreInsightsPage({
             </div>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-            {lowStockProducts.map((p) => (
+            {lowStockProducts.map((p) => {
+              // 第一張判不過、後面有判得過的，客人看到的主圖是後面那張，這裡掛同一張；
+              // 全部判不過就落原本的「—」佔位格，跟店面「沒有圖」是同一個狀態。
+              const thumb = displayableImageUrls(p.image_urls)[0] ?? null;
+              return (
               <Link
                 key={p.id}
                 href={`/dashboard/stores/${slug}/products/${p.id}/edit`}
                 className="flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-amber-50/60 transition group"
               >
                 <div className="w-10 h-10 rounded-lg bg-emerald-50 flex-shrink-0 overflow-hidden flex items-center justify-center">
-                  {p.image_urls && p.image_urls.length > 0 ? (
+                  {thumb ? (
                     // eslint-disable-next-line @next/next/no-img-element
                     <img
-                      src={p.image_urls[0]}
+                      src={thumb}
                       alt={p.name}
                       className="w-full h-full object-cover"
                     />
@@ -677,7 +684,8 @@ export default async function StoreInsightsPage({
                   補貨 →
                 </span>
               </Link>
-            ))}
+              );
+            })}
           </div>
         </section>
       )}
