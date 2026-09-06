@@ -5152,10 +5152,12 @@ export function EditorWorkspace({
                         網域下不存在的檔，那顆 logo 一樣開天窗；商家在自己的瀏覽器多半照樣看
                         得到，找不到哪裡壞。所以輸入時就用相簿／商品那格同一支
                         isPastedRemoteImageUrl 判一次（只認 https:// 完整網址），判不過當場講。
+                        公開頁（53d235e）現在對判不過的 logo 是直接跳過不掛、不是掛一塊破圖，
+                        所以文案講「不會放」，跟店面實際行為同一口徑。
                         從圖庫挑的是 Supabase Storage 的 https 公開網址，判得過不會誤標。 */}
                     {p.logoUrl.trim() && !isPastedRemoteImageUrl(p.logoUrl) && (
                       <p className="text-[11px] leading-snug text-amber-700">
-                        這格要貼 https:// 開頭的完整圖片網址，現在這串店面會顯示不出這顆 logo
+                        這格要貼 https:// 開頭的完整圖片網址，現在這串店面不會放這顆 logo
                       </p>
                     )}
                     {/* 存檔端（actions.ts）只收得下 http(s):// 或漏 scheme 的真網域，其餘存 null，
@@ -5268,10 +5270,12 @@ export function EditorWorkspace({
                         找哪張壞掉。用的是商品「貼網路圖片 URL」那格同一支 isPastedRemoteImageUrl
                         （只認 https:// 完整網址），不用渲染端的 isOptimizableImageSrc：那支會放行
                         「/photo.jpg」站內路徑，但相簿沒有程式自己塞的預設圖、值全是商家手貼，
-                        這種半截網址店面一樣抓不到，放行了提示就跟文案「要 https://」對不上。 */}
+                        這種半截網址店面一樣抓不到，放行了提示就跟文案「要 https://」對不上。
+                        公開頁（53d235e）現在對判不過的相簿圖是直接跳過不掛、不是掛一塊破圖，
+                        所以文案講「不會放」，跟店面實際行為同一口徑。 */}
                     {g.url.trim() && !isPastedRemoteImageUrl(g.url) && (
                       <p className="text-[11px] leading-snug text-amber-700">
-                        這格要貼 https:// 開頭的完整圖片網址，現在這串店面會顯示不出這張圖
+                        這格要貼 https:// 開頭的完整圖片網址，現在這串店面不會放這張圖
                       </p>
                     )}
                     <input

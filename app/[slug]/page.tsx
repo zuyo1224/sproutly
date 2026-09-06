@@ -1558,7 +1558,7 @@ export default async function StoreHomePage({
   //
   // 這兩格的值全是商家在編輯器手貼、或從素材庫挑進來的 https 網址（_theme 沒塞任何
   // 站內預設圖），編輯器那兩格（6dd925a、8d86d20）已經用同一支 isPastedRemoteImageUrl
-  // 在框下提示「店面會顯示不出來」，但 DB 裡更早存進去的 http://、漏網域的半截網址還是
+  // 在框下提示「店面不會放」，但 DB 裡更早存進去的 http://、漏網域的半截網址還是
   // 原樣掛上公開頁：http:// 在 https 店面被當混合內容擋掉、「/logo.png」去抓 sproutly 自己
   // 網域下不存在的檔，客人看到的是一塊破圖框。相簿走 <Image> 雖有 unoptimized 保險（整頁
   // 不會 500），破圖框照樣掛；合作 logo 是普通 <img> 連保險都沒有。

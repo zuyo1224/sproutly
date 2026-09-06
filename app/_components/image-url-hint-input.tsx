@@ -53,7 +53,7 @@ export function ImageUrlHintInput({
           id={hintId}
           className="text-xs text-amber-800 bg-amber-50 border border-amber-200 rounded-lg px-3 py-2"
         >
-          這格要貼 https:// 開頭的完整圖片網址（例如 {placeholder}），現在這串店面會顯示不出這張圖，送出時也會被擋下。
+          這格要貼 https:// 開頭的完整圖片網址（例如 {placeholder}），現在這串店面不會放這張圖，送出時也會被擋下。
         </p>
       )}
     </div>

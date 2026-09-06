@@ -134,7 +134,7 @@ export default async function PublicProductPage({
     .slice(0, 4);
 
   // 掛給客人看的圖先過 displayableImageUrls：DB 裡舊的 http://、漏網域的半截網址、
-  // 空白字串在 https 店面上注定是破圖框（後台編輯頁對這些張已標「店面顯示不出來」），
+  // 空白字串在 https 店面上注定是破圖框（後台編輯頁對這些張已標「店面不會放這張」），
   // 這裡直接不掛，少一張總比整頁主視覺開天窗好。全濾光就走下面原本的「沒有圖」佔位格。
   const images: string[] = displayableImageUrls(product.image_urls);
   const primaryImage = images[0] ?? null;

@@ -279,10 +279,10 @@ export default async function ProductsListPage({
                     />
                     {!isPastedRemoteImageUrl(p.image_urls[0]) && (
                       <span
-                        title="主圖在店面顯示不出來，點進去看"
+                        title="這張主圖店面不會放，點進去看"
                         className="absolute top-1 right-1 w-2.5 h-2.5 rounded-full bg-amber-500 ring-2 ring-white"
                       >
-                        <span className="sr-only">主圖在店面顯示不出來</span>
+                        <span className="sr-only">這張主圖店面不會放</span>
                       </span>
                     )}
                   </>

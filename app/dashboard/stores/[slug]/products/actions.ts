@@ -166,7 +166,7 @@ export async function createProduct(slug: string, formData: FormData) {
         baseRedirect +
           "?error=" +
           encodeURIComponent(
-            "圖片網址要是 https:// 開頭的完整網址（例如 https://example.com/photo.jpg），這串店面會顯示不出圖",
+            "圖片網址要是 https:// 開頭的完整網址（例如 https://example.com/photo.jpg），這串店面不會放這張圖",
           ),
       );
     }
