@@ -13,8 +13,12 @@ import {
 import { SubmitButton } from "@/app/_components/submit-button";
 // 商品撈整批要分頁撈齊，不然吃 Supabase 1000 列上限，見 fetch-all-rows。
 import { fetchAllRows } from "@/lib/fetch-all-rows";
-// 主圖網址判不過（http:// 或半截網址）就在縮圖角落標一個琥珀點，點進編輯頁看詳細。
-import { isPastedRemoteImageUrl } from "@/lib/image-url";
+// 列表縮圖改吃 displayableImageUrls 的第一張，跟店面卡片（5e6c204）同一支：DB 裡舊的
+// http:// 或半截網址店面是直接跳過不掛，主圖判不過時客人看到的主圖其實是後面第一張判得過
+// 的，商家在這裡看到的縮圖要跟客人一樣，不然對著列表找不到哪件商品「圖不對」。
+// 有任何一張判不過就在縮圖角落標一個琥珀點（張數跟編輯頁的 brokenImageCount 同一算法），
+// 點進編輯頁看是哪幾張。
+import { displayableImageUrls, isPastedRemoteImageUrl } from "@/lib/image-url";
 
 type Params = Promise<{ slug: string }>;
 type SearchParams = Promise<{ q?: string; filter?: string; error?: string }>;
@@ -257,7 +261,16 @@ export default async function ProductsListPage({
           {/* row 從整張 <Link> 改成 div + 蓋滿的 overlay link：快速上下架的表單
               按鈕不能包在 <a> 裡（HTML 不允許、點按鈕也會觸發跳頁），改成連結
               absolute 蓋滿整列、按鈕自己 z-10 疊在上面，點卡片任一處照樣進編輯頁 */}
-          {visible.map((p, i) => (
+          {visible.map((p, i) => {
+            // 縮圖跟店面卡片同一支 displayableImageUrls 取第一張：第一張判不過、後面
+            // 有判得過的，客人看到的主圖就是後面那張，商家這裡也要看到同一張。
+            // 全部判不過就落「No Image」佔位格，跟店面「沒有圖」是同一個狀態。
+            const thumb = displayableImageUrls(p.image_urls)[0] ?? null;
+            const brokenCount = (p.image_urls ?? []).filter(
+              (u) => !isPastedRemoteImageUrl(u),
+            ).length;
+            const brokenTitle = `有 ${brokenCount} 張圖店面不會放，點進去看`;
+            return (
             <div
               key={p.id}
               className="relative bg-white rounded-2xl p-5 shadow-lg shadow-emerald-700/5 hover:shadow-xl hover:shadow-emerald-700/10 hover:-translate-y-0.5 transition flex items-center gap-4"
@@ -269,23 +282,13 @@ export default async function ProductsListPage({
                 <span className="sr-only">編輯 {p.name}</span>
               </Link>
               <div className="relative w-16 h-16 rounded-xl bg-emerald-50 flex-shrink-0 overflow-hidden flex items-center justify-center">
-                {p.image_urls && p.image_urls.length > 0 ? (
-                  <>
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img
-                      src={p.image_urls[0]}
-                      alt={p.name}
-                      className="w-full h-full object-cover"
-                    />
-                    {!isPastedRemoteImageUrl(p.image_urls[0]) && (
-                      <span
-                        title="這張主圖店面不會放，點進去看"
-                        className="absolute top-1 right-1 w-2.5 h-2.5 rounded-full bg-amber-500 ring-2 ring-white"
-                      >
-                        <span className="sr-only">這張主圖店面不會放</span>
-                      </span>
-                    )}
-                  </>
+                {thumb ? (
+                  /* eslint-disable-next-line @next/next/no-img-element */
+                  <img
+                    src={thumb}
+                    alt={p.name}
+                    className="w-full h-full object-cover"
+                  />
                 ) : (
                   <span
                     aria-hidden
@@ -293,6 +296,14 @@ export default async function ProductsListPage({
                     style={{ fontSize: "0.625rem", letterSpacing: "0.3em" }}
                   >
                     No Image
+                  </span>
+                )}
+                {brokenCount > 0 && (
+                  <span
+                    title={brokenTitle}
+                    className="absolute top-1 right-1 w-2.5 h-2.5 rounded-full bg-amber-500 ring-2 ring-white"
+                  >
+                    <span className="sr-only">{brokenTitle}</span>
                   </span>
                 )}
               </div>
@@ -456,7 +467,8 @@ export default async function ProductsListPage({
                 </div>
               )}
             </div>
-          ))}
+            );
+          })}
         </div>
       ) : (
         <div className="bg-white rounded-3xl p-12 sm:p-16 text-center shadow-xl shadow-emerald-700/5">
