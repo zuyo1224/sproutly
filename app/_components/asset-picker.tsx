@@ -53,7 +53,6 @@ export function AssetPicker({
       load("", 1);
       setTimeout(() => inputRef.current?.focus(), 50);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [open]);
 
   useEffect(() => {
