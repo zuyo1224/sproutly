@@ -11,9 +11,13 @@
 //
 // 注意：「要不要放這段 Store」的判斷仍留在各頁——首頁一律放，聯絡頁只在真的有任一聯絡
 // 資訊時才放（空店面不丟空殼給 Google）。這支只負責把資料組成乾淨的 Store 物件。
-import { parseBusinessHoursToSpec } from "./business-hours-schema";
-import { telDigits, cleanEmail, socialUrl } from "./contact-href";
-import { displayableImageUrl } from "./image-url";
+// import 帶 .ts 副檔名：這支有 store-schema.test.ts 用 Node 原生剝型別直接跑，Node 解析 ESM
+// 不補副檔名，寫 "./business-hours-schema" 會 ERR_MODULE_NOT_FOUND；tsconfig 已開
+// allowImportingTsExtensions，Next 的 bundler 也照常解析。之前有測試的 image-url／contact-href／
+// fetch-all-rows 都是不 import 任何同層模組的葉節點，所以沒撞到這條。
+import { parseBusinessHoursToSpec } from "./business-hours-schema.ts";
+import { telDigits, cleanEmail, socialUrl } from "./contact-href.ts";
+import { displayableImageUrl } from "./image-url.ts";
 
 // 網站基底網址：店面同時掛在短網址（sproutly-drab）與 Vercel 長網址底下，結構化資料
 // 與 canonical 都得指同一個基底，否則 Google 當成兩個重複頁面。各頁原本各自寫一份
