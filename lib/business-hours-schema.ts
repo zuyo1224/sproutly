@@ -271,6 +271,15 @@ function is24Hours(text: string): boolean {
   return /24\s*\/\s*7|24\s*(?:小時|時|h|hr)|二十四\s*小時|全天候?/i.test(text);
 }
 
+// 「週末公休／假日休／closed weekends」這類「反向」的週末片語。findClosedDays 用它判要不要扣
+// 週六日；findOpenDays 用它先把這些片語從文字剔掉，剩下的「週末／weekends」才算正向的營業日字樣
+// （不然「週末公休 10:00-18:00」裡的「週末」兩字也會被當成寫了營業日）。兩邊共用同一條，
+// 免得改一邊漏一邊。帶 g 是給 replace 用；判有沒有用 search（不受 lastIndex 影響）。
+const WEEKEND_CLOSED_CN =
+  /(?:週末|周末|假日|例假日?|國定假日)\s*(?:公休|店休|休館|休息|休|不營業|不開)/g;
+const WEEKEND_CLOSED_EN =
+  /clos(?:e|ed)\b[\s:,&/]*weekends?\b|\bweekends?\b[\s:,&/]*clos(?:e|ed)\b/gi;
+
 // 收集「週X公休／週X休／週X店休」這種明講休息的星期，後面要從營業日扣掉。
 function findClosedDays(text: string): Set<number> {
   const closed = new Set<number>();
@@ -301,11 +310,7 @@ function findClosedDays(text: string): Set<number> {
   // 漏掉的話「每日 10:00-18:00，週末公休」會被當成全週營業，反而把錯的營業時間
   // 丟給搜尋引擎（週六日明明休卻標有開）。週末＝週六(5)＋週日(6)，明講休才扣，
   // 中間只允許空白（「週末 10-18 公休」這種前後矛盾的就不視為休、保持保守）。
-  const weekendClosed =
-    /(?:週末|周末|假日|例假日?|國定假日)\s*(?:公休|店休|休館|休息|休|不營業|不開)/.test(
-      text
-    );
-  if (weekendClosed) {
+  if (text.search(WEEKEND_CLOSED_CN) !== -1) {
     closed.add(5);
     closed.add(6);
   }
@@ -332,17 +337,28 @@ function findClosedDays(text: string): Set<number> {
     collectEnClosed(m[1]);
   }
   // 「Closed weekends / weekends closed」整段休週末。
-  if (/clos(?:e|ed)\b[\s:,&/]*weekends?\b|\bweekends?\b[\s:,&/]*clos(?:e|ed)\b/.test(lc)) {
+  if (lc.search(WEEKEND_CLOSED_EN) !== -1) {
     closed.add(5);
     closed.add(6);
   }
   return closed;
 }
 
-// 從文字判斷「營業日」的基底集合。判不出來回 null（呼叫端就整段不輸出）。
+// 從文字判斷「營業日」的基底集合。三種結果，呼叫端要分開看：
+//   - 有幾天       → 就是這幾天（已扣掉明講的公休日）。
+//   - 空陣列 []    → 文字裡「有寫營業日字樣」，但全部被公休扣光（「週末 10-18，週末公休」
+//                    「Weekends 10-6, closed weekends」這種前後矛盾的寫法）。這是「寫了但矛盾」，
+//                    不是「沒寫」，呼叫端不該再拿「只寫公休就推定其餘都開」那條去補。
+//   - null         → 完全判不出星期（呼叫端可視情況退而推定，或整段不輸出）。
 function findOpenDays(text: string, closed: Set<number>): number[] | null {
   const all = [0, 1, 2, 3, 4, 5, 6];
   const minusClosed = (days: number[]) => days.filter((d) => !closed.has(d));
+  // 「週末／weekends」是唯一一個正向（營業）與反向（公休）會用同一個詞的星期字樣：
+  // 「週末公休」裡也有「週末」兩字。先把反向片語剔掉，剩下的才算「寫了週末營業」。
+  // 星期字（週一、Mon）沒這問題——findClosedDays 已把它們收進 closed，minusClosed 會處理。
+  const positive = text.replace(WEEKEND_CLOSED_CN, "").replace(WEEKEND_CLOSED_EN, "");
+  // 有正向週末字樣、卻被公休扣到一天不剩 → 記下來，最後回 [] 而不是 null。
+  let weekendContradicted = false;
 
   // 0) 英文星期（文青／英文風店家：「Mon-Fri 10am-6pm」「Saturday & Sunday」「Daily」）。
   // 跟 AM/PM 同理，這類店常用英文打營業時間，原本 findOpenDays 只認中文星期字、整段判不出
@@ -371,9 +387,10 @@ function findOpenDays(text: string, closed: Set<number>): number[] | null {
     if (/\b(?:daily|every\s*day|everyday|all\s*week|7\s*days(?:\s*a\s*week)?)\b/i.test(text))
       return minusClosed(all);
     if (/\bweekdays?\b/i.test(text)) return minusClosed([0, 1, 2, 3, 4]);
-    if (/\bweekends?\b/i.test(text)) {
+    if (/\bweekends?\b/i.test(positive)) {
       const weekend = minusClosed([5, 6]);
       if (weekend.length > 0) return weekend;
+      weekendContradicted = true;
     }
     // 逐一列出：Mon, Wed, Fri / Saturday and Sunday。排掉已標公休的。
     const enSingles = new Set<number>();
@@ -420,11 +437,15 @@ function findOpenDays(text: string, closed: Set<number>): number[] | null {
   // 結果整段判不出星期而不輸出，等於少餵一段正確的營業時間給搜尋引擎（正是這支要避免的）。
   // 週末＝週六(5)＋週日(6)。寫「週六、日 10-18」這種用星期字的版本下面第 5 條本來就接得到，
   // 這裡專補只寫「週末」兩個字的版本。只認語意明確的「週末／周末」，不認模糊的「假日」
-  // （「國定假日」未必等於週六日，認了會放錯）。若同時又寫「週末公休」，closed 已含 5/6、
-  // minusClosed 會把兩天扣光成空 → 落到下面回 null，維持保守不誤標成有營業。
-  if (/週末|周末/.test(text)) {
+  // （「國定假日」未必等於週六日，認了會放錯）。若同時又寫「週末公休」（「週末 10-18，
+  // 週末公休」），closed 已含 5/6、minusClosed 會把兩天扣光成空——這時不能直接回 null：
+  // 呼叫端看到 null 又看到 closed 非空，會走「只寫公休就推定其餘都開」那條，把一段前後
+  // 矛盾的文字變成「週一到週五 10-18」餵給搜尋引擎。所以記下矛盾、繼續往下看第 5 條有沒有
+  // 逐一列出的星期（「週末公休，週一、三、五 10-18」這種正常寫法要接得到），都沒有才回 []。
+  if (/週末|周末/.test(positive)) {
     const weekend = minusClosed([5, 6]);
     if (weekend.length > 0) return weekend;
+    weekendContradicted = true;
   }
 
   // 5) 逐一列出的星期（週一、週三、週五），排掉被標成休息的那些。
@@ -443,8 +464,9 @@ function findOpenDays(text: string, closed: Set<number>): number[] | null {
   }
   if (singles.size > 0) return [...singles].sort((a, b) => a - b);
 
-  // 6) 判不出星期 → 不輸出。
-  return null;
+  // 6) 判不出星期 → null。但若前面有正向週末字樣被公休扣光（矛盾寫法），回 [] 告訴呼叫端
+  //    「有寫、只是自相矛盾」，別再退而推定。
+  return weekendContradicted ? [] : null;
 }
 
 export function parseBusinessHoursToSpec(
@@ -483,6 +505,8 @@ export function parseBusinessHoursToSpec(
   //      「其餘 10:00-18:00」走 findOpenDays 第 3 條取全週扣公休是同一個推定，只差連接詞。
   // 兩者皆無（沒寫星期又沒寫公休）才是真的不可靠，維持保守不放（所以下面條件要求 closed 非空
   // 或 24 小時店；closed 全空又非 24 小時時 openDays 留 null）。
+  // 注意 findOpenDays 回 [] 跟回 null 不同：[] 是「有寫營業日、但跟公休自相矛盾」（「週末 10-18，
+  // 週末公休」），不進這條推定、直接落到下面 length === 0 回 null，寧可不放也不放一段猜的。
   let openDays = findOpenDays(text, closed);
   if (!openDays && (closed.size > 0 || open24)) {
     openDays = [0, 1, 2, 3, 4, 5, 6].filter((d) => !closed.has(d));

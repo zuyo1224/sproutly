@@ -168,6 +168,21 @@ describe("parseBusinessHoursToSpec：公休扣除", () => {
     ]);
   });
 
+  it("「週末 10-18，週末公休」自相矛盾 → null，不退成週一到週五", () => {
+    // 有寫「週末營業」又寫「週末公休」，兩天被扣光。以前 findOpenDays 回 null 後，那條
+    // 「只寫公休就推定其餘都開」的 fallback 會接手變成週一到週五——一段前後矛盾的文字
+    // 變成一段猜的營業時間餵給 Google。現在寧可不放。
+    assert.equal(parseBusinessHoursToSpec("週末 10:00-18:00，週末公休"), null);
+    assert.equal(parseBusinessHoursToSpec("周末公休，周末 10:00-18:00"), null);
+  });
+
+  it("「週末公休」加逐一列出的星期（週一、三、五）仍照列出的天", () => {
+    // 剔掉「週末公休」後沒有正向週末字樣，第 5 條逐列規則要接得到，不能被矛盾判斷誤殺。
+    assert.deepEqual(parseBusinessHoursToSpec("週末公休，週一、三、五 10:00-18:00"), [
+      spec(["Monday", "Wednesday", "Friday"], "10:00", "18:00"),
+    ]);
+  });
+
   it("「週末 10-18 公休」這種夾著時間的不視為休", () => {
     assert.deepEqual(parseBusinessHoursToSpec("週末 10:00-18:00 公休"), [
       spec(["Saturday", "Sunday"], "10:00", "18:00"),
@@ -348,6 +363,17 @@ describe("parseBusinessHoursToSpec：英文 AM/PM 與英文星期", () => {
     ]);
     assert.deepEqual(parseBusinessHoursToSpec("Daily 10:00-18:00, closed weekends"), [
       spec(WEEKDAYS, "10:00", "18:00"),
+    ]);
+  });
+
+  it("「Weekends 10-6, closed weekends」自相矛盾 → null，不退成 Mon-Fri", () => {
+    assert.equal(parseBusinessHoursToSpec("Weekends 10:00-18:00, closed weekends"), null);
+    assert.equal(parseBusinessHoursToSpec("Closed weekends. Weekend 10:00-18:00"), null);
+  });
+
+  it("「Closed weekends」加逐一列出的星期（Mon, Wed）仍照列出的天", () => {
+    assert.deepEqual(parseBusinessHoursToSpec("Closed weekends. Mon, Wed 10:00-18:00"), [
+      spec(["Monday", "Wednesday"], "10:00", "18:00"),
     ]);
   });
 
