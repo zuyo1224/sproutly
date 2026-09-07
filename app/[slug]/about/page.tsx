@@ -3,6 +3,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { jsonLdHtml } from "@/lib/json-ld";
+import { displayableImageUrl } from "@/lib/image-url";
 import { siteBaseUrl, buildBreadcrumbJsonLd, buildFaqJsonLd } from "@/lib/store-schema";
 import { resolveTheme, HOMEPAGE_DEFAULTS } from "../_theme";
 import { StoreEmptyState } from "@/app/_components/store-empty-state";
@@ -37,7 +38,11 @@ export async function generateMetadata({
 
   const theme = resolveTheme(store.theme);
   const ogTitle = `${title} · ${store.name}`;
-  const ogImage = theme.heroUrl || theme.logoUrl || null;
+  // 分享預覽圖跟店面 layout、聯絡頁同一口徑：只報「店面真的掛得出來」的那張
+  // （https:// 完整網址），hero 判不過退 logo，都判不過就跟沒圖一樣不放。以前這裡
+  // 原字串直塞，http:// 或半截網址的舊值分享出去卡片開天窗。
+  const ogImage =
+    displayableImageUrl(theme.heroUrl) ?? displayableImageUrl(theme.logoUrl);
   return {
     ...base,
     openGraph: {
@@ -148,13 +153,11 @@ export default async function AboutPage({ params }: { params: Params }) {
     <>
       <script
         type="application/ld+json"
-        // eslint-disable-next-line react/no-danger
         dangerouslySetInnerHTML={{ __html: jsonLdHtml(breadcrumbJsonLd) }}
       />
       {faqJsonLd && (
         <script
           type="application/ld+json"
-          // eslint-disable-next-line react/no-danger
           dangerouslySetInnerHTML={{ __html: jsonLdHtml(faqJsonLd) }}
         />
       )}

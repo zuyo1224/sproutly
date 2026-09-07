@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { resolveTheme } from "../_theme";
+import { displayableImageUrl } from "@/lib/image-url";
 
 type Params = Promise<{ slug: string }>;
 
@@ -26,7 +27,9 @@ export async function GET(
   }
 
   const theme = resolveTheme(store.theme);
-  const logoUrl = theme.logoUrl;
+  // 主畫面圖示只掛判得過的 logo（https:// 完整網址，跟 layout 的 icons 同一口徑）：
+  // http:// 或半截網址的舊值裝置抓不到，加到主畫面會是一塊空白，不如退回平台 favicon。
+  const logoUrl = displayableImageUrl(theme.logoUrl);
 
   const manifest = {
     name: store.name,

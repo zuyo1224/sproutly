@@ -172,13 +172,11 @@ export default async function ContactPage({ params }: { params: Params }) {
     <main className="max-w-3xl mx-auto px-6 sm:px-10 py-20 sm:py-28">
       <script
         type="application/ld+json"
-        // eslint-disable-next-line react/no-danger
         dangerouslySetInnerHTML={{ __html: jsonLdHtml(breadcrumbJsonLd) }}
       />
       {hasContactData && (
         <script
           type="application/ld+json"
-          // eslint-disable-next-line react/no-danger
           dangerouslySetInnerHTML={{ __html: jsonLdHtml(contactJsonLd) }}
         />
       )}

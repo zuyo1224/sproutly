@@ -4,7 +4,7 @@ import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { jsonLdHtml } from "@/lib/json-ld";
 import { siteBaseUrl, buildBreadcrumbJsonLd } from "@/lib/store-schema";
-import { displayableImageUrls } from "@/lib/image-url";
+import { displayableImageUrls, displayableImageUrl } from "@/lib/image-url";
 import { resolveTheme, HOMEPAGE_DEFAULTS } from "../_theme";
 import { RecentlyViewed } from "@/app/_components/recently-viewed";
 import { AutoSubmitOnChange } from "@/app/_components/auto-submit-on-change";
@@ -46,7 +46,11 @@ export async function generateMetadata({
 
   const theme = resolveTheme(store.theme);
   const ogTitle = `${title} · ${store.name}`;
-  const ogImage = theme.heroUrl || theme.logoUrl || null;
+  // 分享預覽圖跟店面 layout、聯絡頁同一口徑：只報「店面真的掛得出來」的那張
+  // （https:// 完整網址），hero 判不過退 logo，都判不過就跟沒圖一樣不放。以前這裡
+  // 原字串直塞，http:// 或半截網址的舊值分享出去卡片開天窗。
+  const ogImage =
+    displayableImageUrl(theme.heroUrl) ?? displayableImageUrl(theme.logoUrl);
   return {
     ...base,
     openGraph: {
@@ -213,13 +217,11 @@ export default async function ShopPage({
     <main className="max-w-6xl mx-auto px-6 sm:px-10 py-20 sm:py-28">
       <script
         type="application/ld+json"
-        // eslint-disable-next-line react/no-danger
         dangerouslySetInnerHTML={{ __html: jsonLdHtml(breadcrumbJsonLd) }}
       />
       {itemListJsonLd && (
         <script
           type="application/ld+json"
-          // eslint-disable-next-line react/no-danger
           dangerouslySetInnerHTML={{ __html: jsonLdHtml(itemListJsonLd) }}
         />
       )}

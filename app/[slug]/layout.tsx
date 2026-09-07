@@ -62,7 +62,9 @@ export async function generateMetadata({
   // logo，兩張都判不過就跟以前沒圖時一樣不放。跟 sitemap、Store JSON-LD 同一口徑。
   const ogImage =
     displayableImageUrl(theme.heroUrl) ?? displayableImageUrl(theme.logoUrl);
-  const iconUrl = theme.logoUrl;
+  // 分頁圖示（favicon／apple icon）同樣只掛判得過的 logo：判不過就整組不給，
+  // Next 退回 app/ 底下的平台預設圖示，總比掛一個瀏覽器抓不到的網址好。
+  const iconUrl = displayableImageUrl(theme.logoUrl);
 
   return {
     title: {
