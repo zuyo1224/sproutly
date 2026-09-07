@@ -1,7 +1,7 @@
 import type { MetadataRoute } from "next";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { resolveTheme } from "@/app/[slug]/_theme";
-import { absoluteImageUrls, displayableImageUrls } from "@/lib/image-url";
+import { displayableImageUrls } from "@/lib/image-url";
 import { siteBaseUrl } from "@/lib/store-schema";
 // 整批撈店家/商品要分頁撈齊，不然吃 Supabase 1000 列上限，見 fetch-all-rows。
 import { fetchAllRows } from "@/lib/fetch-all-rows";
@@ -63,8 +63,11 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
     // 把店面主視覺帶進 sitemap，Google 圖片搜尋能一起收這張首圖。
     // image sitemap 的 <image:loc> 規定要絕對網址，heroUrl 是商家在後台填的，
-    // 可能是相對路徑或一串空白，先用同一條「只放絕對網址」的防呆濾過。
-    const heroImages = absoluteImageUrls([theme.heroUrl]);
+    // 可能是相對路徑或一串空白。走 displayableImageUrls，跟下面商品圖、店面 og:image、
+    // Store JSON-LD 同一口徑：只報 https:// 完整網址。以前走 absoluteImageUrls 會多報
+    // http://，但 https 店面上那張被瀏覽器當混合內容擋掉、首頁根本沒掛，報給 Google
+    // 的卻是它。
+    const heroImages = displayableImageUrls([theme.heroUrl]);
 
     entries.push({
       url: `${BASE_URL}/${store.slug}`,

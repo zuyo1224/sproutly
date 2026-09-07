@@ -3,6 +3,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { jsonLdHtml } from "@/lib/json-ld";
+import { displayableImageUrl } from "@/lib/image-url";
 import { buildStoreJsonLd, buildBreadcrumbJsonLd, siteBaseUrl } from "@/lib/store-schema";
 import { telHref, mailHref, telDigits, cleanEmail, mapsHref } from "@/lib/contact-href";
 import { resolveTheme, HOMEPAGE_DEFAULTS } from "../_theme";
@@ -38,7 +39,9 @@ export async function generateMetadata({
 
   const theme = resolveTheme(store.theme);
   const ogTitle = `${title} · ${store.name}`;
-  const ogImage = theme.heroUrl || theme.logoUrl || null;
+  // 跟店面 layout 的 og:image 同一口徑：只報 https:// 完整網址，hero 判不過退到 logo。
+  const ogImage =
+    displayableImageUrl(theme.heroUrl) ?? displayableImageUrl(theme.logoUrl);
   return {
     ...base,
     openGraph: {

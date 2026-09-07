@@ -20,6 +20,7 @@ import { EditorClickBridge } from "@/app/_components/editor-click-bridge";
 import { StoreNavLink } from "@/app/_components/store-nav-link";
 import { StoreMobileNav } from "@/app/_components/store-mobile-nav";
 import { BackToTop } from "@/app/_components/back-to-top";
+import { displayableImageUrl } from "@/lib/image-url";
 
 const RESERVED = new Set([
   "api",
@@ -55,7 +56,12 @@ export async function generateMetadata({
   const trimmedDescription = store.description?.trim();
   const description =
     trimmedDescription || `${store.name} · 在 Sproutly 上的線上店面`;
-  const ogImage = theme.heroUrl || theme.logoUrl || null;
+  // 分享預覽圖只報「店面真的掛得出來」的那張：heroUrl／logoUrl 走 displayableImageUrl
+  // （只認 https:// 完整網址），http:// 或半截網址的舊值在 https 店面上被瀏覽器擋掉、
+  // 頁面根本沒掛，以前卻原樣塞進 og:image，分享出去的卡片開天窗。hero 判不過就退到
+  // logo，兩張都判不過就跟以前沒圖時一樣不放。跟 sitemap、Store JSON-LD 同一口徑。
+  const ogImage =
+    displayableImageUrl(theme.heroUrl) ?? displayableImageUrl(theme.logoUrl);
   const iconUrl = theme.logoUrl;
 
   return {

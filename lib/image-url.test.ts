@@ -15,6 +15,7 @@ import assert from "node:assert/strict";
 import {
   absoluteImageUrls,
   displayableImageUrls,
+  displayableImageUrl,
   isOptimizableImageSrc,
   isPastedRemoteImageUrl,
 } from "./image-url.ts";
@@ -132,5 +133,23 @@ describe("displayableImageUrls（店面實際掛的那批：只留 isPastedRemot
     const input = ["http://a.example/old.jpg", "https://a.example/2.jpg", "/photo.jpg", "https://a.example/1.jpg", "  "];
     const broken = input.filter((u) => !isPastedRemoteImageUrl(u)).length;
     assert.equal(broken + displayableImageUrls(input).length, input.length);
+  });
+});
+
+describe("displayableImageUrl（heroUrl／logoUrl 單值版）", () => {
+  it("https:// 完整網址去前後空白後原樣回", () => {
+    assert.equal(displayableImageUrl("  https://a.example/hero.jpg  "), "https://a.example/hero.jpg");
+  });
+
+  it("http://、站內相對路徑、空白、null、undefined 都回 null（不是 undefined）", () => {
+    for (const v of ["http://a.example/hero.jpg", "/hero.jpg", "//a.example/hero.jpg", "   ", "", null, undefined, "abc"]) {
+      assert.strictEqual(displayableImageUrl(v), null, `input=${JSON.stringify(v)}`);
+    }
+  });
+
+  it("跟 displayableImageUrls([x])[0] 同口徑", () => {
+    for (const v of ["https://a.example/1.jpg", "http://a.example/1.jpg", "/x.jpg", " https://b.example/2.png "]) {
+      assert.strictEqual(displayableImageUrl(v), displayableImageUrls([v])[0] ?? null);
+    }
   });
 });

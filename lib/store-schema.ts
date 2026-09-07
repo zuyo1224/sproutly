@@ -2,7 +2,7 @@
 //
 // 為什麼集中到這裡：首頁（app/[slug]/page.tsx）和聯絡頁（app/[slug]/contact/page.tsx）
 // 各自手拼一份幾乎一模一樣的 Store JSON-LD——同樣的 @id、name、url，同樣對描述 trim、
-// 對 image／logo 走 absoluteImageUrls、對電話走 telDigits、對 Email 走 cleanEmail、
+// 對 image／logo 走 displayableImageUrl、對電話走 telDigits、對 Email 走 cleanEmail、
 // 對地址組 PostalAddress、對社群走 socialUrl、對營業時間走 parseBusinessHoursToSpec。
 // 聯絡頁的註解自己都寫「跟首頁那份用同一套欄位」——兩份靠人工維持一致，改一頁忘了
 // 另一頁，餵給 Google 的店家資料就兩頁對不上（少一個 sameAs、少一段營業時間都會）。
@@ -13,7 +13,7 @@
 // 資訊時才放（空店面不丟空殼給 Google）。這支只負責把資料組成乾淨的 Store 物件。
 import { parseBusinessHoursToSpec } from "./business-hours-schema";
 import { telDigits, cleanEmail, socialUrl } from "./contact-href";
-import { absoluteImageUrls } from "./image-url";
+import { displayableImageUrl } from "./image-url";
 
 // 網站基底網址：店面同時掛在短網址（sproutly-drab）與 Vercel 長網址底下，結構化資料
 // 與 canonical 都得指同一個基底，否則 Google 當成兩個重複頁面。各頁原本各自寫一份
@@ -64,11 +64,13 @@ export function buildStoreJsonLd(input: {
   const description = input.description?.trim();
   if (description) jsonLd.description = description;
 
-  // image／logo 走 absoluteImageUrls（去空白＋只留 http(s) 絕對網址）：heroUrl／logoUrl
-  // 是商家貼的，可能是相對路徑或一串空白，直接放會餵無效圖讓 Store rich result 失效。
-  const image = absoluteImageUrls([input.heroUrl])[0];
+  // image／logo 走 displayableImageUrl（去空白＋只留 https:// 完整網址）：heroUrl／logoUrl
+  // 是商家填的，可能是相對路徑或一串空白，直接放會餵無效圖讓 Store rich result 失效。
+  // 以前走 absoluteImageUrls 會多放行 http://，但 https 店面上那張被瀏覽器當混合內容
+  // 擋掉、頁面根本沒掛，報給 Google 的卻是它；改成跟 sitemap、og:image 同一口徑。
+  const image = displayableImageUrl(input.heroUrl);
   if (image) jsonLd.image = image;
-  const logo = absoluteImageUrls([input.logoUrl])[0];
+  const logo = displayableImageUrl(input.logoUrl);
   if (logo) jsonLd.logo = logo;
 
   // 電話／Email 走跟畫面撥號／寫信連結同一份清理，給 Google 的號碼／位址不會跟頁面對不上。

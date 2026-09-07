@@ -88,11 +88,12 @@ export function isPastedRemoteImageUrl(src: string | null | undefined): boolean 
 // 所以這裡只留 isPastedRemoteImageUrl 判得過的（https:// 完整網址），去前後空白、去重、
 // 保持商家原本排序（第一張仍是主圖）。全部濾光就回空陣列，呼叫端照原本「沒有圖」的
 // 版位走（詳情頁本來就有 images.length === 0 的佔位格），不會多出一個新狀態。
-// 跟 absoluteImageUrls 的差別：那支只認「是不是絕對網址」、http:// 也放行，留給 heroUrl／
-// logoUrl 這類不經 isPastedRemoteImageUrl 寫入的欄位；這支是給客人看的那一端，口徑跟後台
-// 標記那條一致，商家在後台看到標記的那幾張，店面就真的不掛。商品圖餵 Google／社群的幾處
-// （詳情頁 og:image 與 JSON-LD、逛街頁 ItemList、sitemap）也走這支：對外報的圖要跟頁面
-// 實際掛的是同一批，不能報一張頁上根本沒有的 http:// 圖。
+// 跟 absoluteImageUrls 的差別：那支只認「是不是絕對網址」、http:// 也放行；這支是給客人看
+// 的那一端，口徑跟後台標記那條一致，商家在後台看到標記的那幾張，店面就真的不掛。餵給
+// Google／社群的幾處（商品詳情頁 og:image 與 JSON-LD、逛街頁 ItemList、sitemap 商品圖與
+// 店面主視覺、店面 og:image、Store JSON-LD 的 image／logo）也走這支或下面的單值版：對外
+// 報的圖要跟頁面實際掛的是同一批，不能報一張頁上根本沒有的 http:// 圖。absoluteImageUrls
+// 現在只剩商品 JSON-LD 那處保留原本語意再過一次，新 code 一律走這支。
 export function displayableImageUrls(
   urls: (string | null | undefined)[] | null | undefined,
 ): string[] {
@@ -107,4 +108,17 @@ export function displayableImageUrls(
     out.push(u);
   }
   return out;
+}
+
+// 單一欄位版：heroUrl／logoUrl 這種只有一個值的欄位用。
+//
+// 為什麼另開一支：hero 與 logo 不像商品圖是陣列，各處要用時都得寫
+// displayableImageUrls([x])[0] ?? null 這串，五個檔各抄一次容易有一處漏了 ?? null 變成
+// undefined 塞進 JSON-LD。收成一支後口徑跟 displayableImageUrls 完全一樣（只認 https://
+// 完整網址、去前後空白），判不過回 null，呼叫端照原本「沒有圖」的路走。
+// 寫入端（editor/actions.ts 的 hero_url／logo_url）也用這支：那兩欄的 UI 只能從圖庫挑
+// （Supabase Storage、Pexels，都是 https），payload 若帶了別的東西就是手打請求或舊值，
+// 存進去店面也掛不出來，不如寫入時就擋，後台跟店面才不會各說各話。
+export function displayableImageUrl(src: string | null | undefined): string | null {
+  return displayableImageUrls([src])[0] ?? null;
 }

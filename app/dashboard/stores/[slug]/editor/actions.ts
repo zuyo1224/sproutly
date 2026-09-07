@@ -21,6 +21,7 @@ import {
   clampFreePos,
 } from "@/lib/theme-scale";
 import { normalizeHexColor } from "@/lib/hex-color";
+import { displayableImageUrl } from "@/lib/image-url";
 import { normalizeHeroImageBounds } from "@/lib/hero-image-bounds";
 import {
   sanitizeSectionStyles,
@@ -231,11 +232,25 @@ export async function saveEditorState(slug: string, payload: EditorPayload) {
   if (payload.tagline !== undefined) {
     merged.tagline = String(payload.tagline).slice(0, MAX_THEME_TAGLINE_LEN);
   }
+  // hero／logo：空值就是「移除」，存 null；有值就先用 displayableImageUrl 判一次，
+  // 只收 https:// 完整網址（去前後空白、500 字上限）。編輯器這兩格只能從圖庫挑
+  // （Supabase Storage、Pexels 都是 https），正常操作不會送出別的東西；會送出 http://
+  // 或半截網址的只有手打的請求。以前照單全收，https 店面上 http:// 被瀏覽器當混合
+  // 內容擋掉、「/hero.jpg」去抓 sproutly 自己網域下不存在的檔，那張圖開天窗、後台又
+  // 看不出哪裡壞。判不過就不動原值，跟上面 primary／accent 的 sanitizeHex 同一態度。
   if (payload.heroUrl !== undefined) {
-    merged.hero_url = payload.heroUrl ? String(payload.heroUrl).slice(0, 500) : null;
+    if (!payload.heroUrl) merged.hero_url = null;
+    else {
+      const u = displayableImageUrl(String(payload.heroUrl).slice(0, 500));
+      if (u) merged.hero_url = u;
+    }
   }
   if (payload.logoUrl !== undefined) {
-    merged.logo_url = payload.logoUrl ? String(payload.logoUrl).slice(0, 500) : null;
+    if (!payload.logoUrl) merged.logo_url = null;
+    else {
+      const u = displayableImageUrl(String(payload.logoUrl).slice(0, 500));
+      if (u) merged.logo_url = u;
+    }
   }
 
   if (payload.layout) {
