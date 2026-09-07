@@ -16,6 +16,7 @@ import {
   absoluteImageUrls,
   displayableImageUrls,
   displayableImageUrl,
+  imageMimeTypeFromUrl,
   isOptimizableImageSrc,
   isPastedRemoteImageUrl,
 } from "./image-url.ts";
@@ -151,5 +152,69 @@ describe("displayableImageUrl（heroUrl／logoUrl 單值版）", () => {
     for (const v of ["https://a.example/1.jpg", "http://a.example/1.jpg", "/x.jpg", " https://b.example/2.png "]) {
       assert.strictEqual(displayableImageUrl(v), displayableImageUrls([v])[0] ?? null);
     }
+  });
+});
+
+describe("imageMimeTypeFromUrl（webmanifest icons[].type：從副檔名推，認不出回 null）", () => {
+  it("八種常見副檔名對到對應 MIME，jpg 與 jpeg 都是 image/jpeg", () => {
+    const cases: [string, string][] = [
+      ["https://a.example/logo.png", "image/png"],
+      ["https://a.example/logo.jpg", "image/jpeg"],
+      ["https://a.example/logo.jpeg", "image/jpeg"],
+      ["https://a.example/logo.webp", "image/webp"],
+      ["https://a.example/logo.gif", "image/gif"],
+      ["https://a.example/logo.svg", "image/svg+xml"],
+      ["https://a.example/logo.avif", "image/avif"],
+      ["/favicon.ico", "image/x-icon"],
+    ];
+    for (const [input, expected] of cases) {
+      assert.equal(imageMimeTypeFromUrl(input), expected, `input=${input}`);
+    }
+  });
+
+  it("副檔名不分大小寫", () => {
+    assert.equal(imageMimeTypeFromUrl("https://a.example/LOGO.PNG"), "image/png");
+    assert.equal(imageMimeTypeFromUrl("https://a.example/logo.JpG"), "image/jpeg");
+  });
+
+  it("只看 pathname：Pexels 那種 .jpeg 後面接 query 的網址、帶 hash 的都判得出來", () => {
+    assert.equal(
+      imageMimeTypeFromUrl("https://images.pexels.com/photos/1/pexels-photo-1.jpeg?auto=compress&cs=tinysrgb&w=1260"),
+      "image/jpeg",
+    );
+    assert.equal(imageMimeTypeFromUrl("https://a.example/logo.webp#top"), "image/webp");
+    // query 裡的 .png 不算副檔名
+    assert.strictEqual(imageMimeTypeFromUrl("https://a.example/render?file=logo.png"), null);
+  });
+
+  it("Supabase Storage 那種多層路徑，只看最後一段的副檔名", () => {
+    assert.equal(
+      imageMimeTypeFromUrl("https://x.supabase.co/storage/v1/object/public/store-assets/abc/logo-2.webp"),
+      "image/webp",
+    );
+    // 路徑中段有點、最後一段沒副檔名 → null
+    assert.strictEqual(imageMimeTypeFromUrl("https://x.supabase.co/v1.2/object/logo"), null);
+  });
+
+  it("沒副檔名、只有點、點在結尾、不認得的副檔名、非網址、空白、null、undefined 都回 null（不是 undefined）", () => {
+    for (const v of [
+      "https://a.example/logo",
+      "https://a.example/.png",
+      "https://a.example/logo.",
+      "https://a.example/logo.bmp",
+      "https://a.example/logo.pdf",
+      "https://a.example/",
+      "not a url at all",
+      "   ",
+      "",
+      null,
+      undefined,
+    ]) {
+      assert.strictEqual(imageMimeTypeFromUrl(v), null, `input=${JSON.stringify(v)}`);
+    }
+  });
+
+  it("去前後空白後再判", () => {
+    assert.equal(imageMimeTypeFromUrl("  https://a.example/logo.png  "), "image/png");
   });
 });

@@ -122,3 +122,44 @@ export function displayableImageUrls(
 export function displayableImageUrl(src: string | null | undefined): string | null {
   return displayableImageUrls([src])[0] ?? null;
 }
+
+// 從圖片網址的副檔名推 MIME type，給 web manifest 的 icons[].type 用。
+//
+// 為什麼要這支：各店 site.webmanifest 的 icons 之前把 type 寫死 image/png，但 logo 是商家從
+// 圖庫挑的——Supabase Storage 上傳什麼副檔名就是什麼（jpg、webp、svg 都有），Pexels 給的
+// 一律是 .jpeg。manifest 規格裡 type 是「提示」，瀏覽器拿到 image/png 卻抓回 jpeg 時，
+// Chromium 會照實際內容解碼、Safari 與部分 Android 啟動器則可能直接跳過這個圖示，
+// 加到主畫面就是一塊空白或退回平台 favicon，而後台完全看不出來。填錯不如不填：
+// 規格允許省略 type，瀏覽器會用回應的 Content-Type 自己判。
+//
+// 只看 URL 的 pathname、忽略 query 與 hash（Pexels 的 .jpeg 後面接一串 ?auto=compress&w=…），
+// 副檔名不分大小寫；認得的只有幾種瀏覽器真的會拿來當圖示的格式，其他一律回 null，
+// 呼叫端看到 null 就不放 type 這個 key。不是網址（URL 解析失敗）也回 null。
+const IMAGE_MIME_BY_EXT: Record<string, string> = {
+  png: "image/png",
+  jpg: "image/jpeg",
+  jpeg: "image/jpeg",
+  webp: "image/webp",
+  gif: "image/gif",
+  svg: "image/svg+xml",
+  avif: "image/avif",
+  ico: "image/x-icon",
+};
+
+export function imageMimeTypeFromUrl(src: string | null | undefined): string | null {
+  if (typeof src !== "string") return null;
+  const s = src.trim();
+  if (!s) return null;
+  let pathname: string;
+  try {
+    // 站內相對路徑（/favicon.ico）也要判得出來，補一個假 base 只為了讓 URL 幫忙切掉 query／hash
+    pathname = new URL(s, "https://placeholder.invalid").pathname;
+  } catch {
+    return null;
+  }
+  const lastSegment = pathname.split("/").pop() ?? "";
+  const dot = lastSegment.lastIndexOf(".");
+  if (dot <= 0 || dot === lastSegment.length - 1) return null;
+  const ext = lastSegment.slice(dot + 1).toLowerCase();
+  return IMAGE_MIME_BY_EXT[ext] ?? null;
+}

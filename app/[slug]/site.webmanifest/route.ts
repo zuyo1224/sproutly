@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { resolveTheme } from "../_theme";
-import { displayableImageUrl } from "@/lib/image-url";
+import { displayableImageUrl, imageMimeTypeFromUrl } from "@/lib/image-url";
 
 type Params = Promise<{ slug: string }>;
 
@@ -30,6 +30,10 @@ export async function GET(
   // 主畫面圖示只掛判得過的 logo（https:// 完整網址，跟 layout 的 icons 同一口徑）：
   // http:// 或半截網址的舊值裝置抓不到，加到主畫面會是一塊空白，不如退回平台 favicon。
   const logoUrl = displayableImageUrl(theme.logoUrl);
+  // type 從副檔名推（Storage 上傳的 jpg／webp／svg、Pexels 的 .jpeg 都不是 png），
+  // 認不出就整個 key 不放：manifest 規格允許省略，瀏覽器會用回應的 Content-Type 判，
+  // 填錯反而可能讓 Safari／部分 Android 啟動器跳過這個圖示。
+  const logoType = imageMimeTypeFromUrl(logoUrl);
 
   const manifest = {
     name: store.name,
@@ -48,7 +52,7 @@ export async function GET(
           {
             src: logoUrl,
             sizes: "any",
-            type: "image/png",
+            ...(logoType ? { type: logoType } : {}),
           },
         ]
       : [
