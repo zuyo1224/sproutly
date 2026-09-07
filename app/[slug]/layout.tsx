@@ -72,6 +72,11 @@ export async function generateMetadata({
   const icon = iconUrl
     ? { url: iconUrl, ...(iconType ? { type: iconType } : {}) }
     : null;
+  // apple-touch-icon 只吃點陣圖（png／jpg），iOS Safari 拿到 svg 不會畫，加到主畫面
+  // 會是一塊空白方塊，而且靜靜失敗、後台看不出來。logo 是 svg 就不掛 apple 那組：
+  // 沒有 apple-touch-icon 時 iOS 退回用頁面截圖當圖示，至少不是空白。分頁圖示
+  // （icon／shortcut）照掛，桌機瀏覽器都吃 svg。副檔名認不出的仍照掛，讓裝置自己判。
+  const appleIcon = iconType === "image/svg+xml" ? null : icon;
 
   return {
     title: {
@@ -85,7 +90,7 @@ export async function generateMetadata({
       ? {
           icon,
           shortcut: icon,
-          apple: icon,
+          ...(appleIcon ? { apple: appleIcon } : {}),
         }
       : undefined,
     openGraph: {
