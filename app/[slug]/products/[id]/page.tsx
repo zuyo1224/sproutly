@@ -206,12 +206,10 @@ export default async function PublicProductPage({
     <main className="max-w-6xl mx-auto px-6 sm:px-10 py-20 sm:py-28">
       <script
         type="application/ld+json"
-        // eslint-disable-next-line react/no-danger
         dangerouslySetInnerHTML={{ __html: jsonLdHtml(productJsonLd) }}
       />
       <script
         type="application/ld+json"
-        // eslint-disable-next-line react/no-danger
         dangerouslySetInnerHTML={{ __html: jsonLdHtml(breadcrumbJsonLd) }}
       />
       {/* 可見的麵包屑導覽 — 跟上面 BreadcrumbList 結構化資料一致，
