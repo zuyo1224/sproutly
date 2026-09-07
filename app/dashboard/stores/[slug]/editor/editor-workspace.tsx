@@ -3220,8 +3220,8 @@ export function EditorWorkspace({
                               <button
                                 type="button"
                                 onClick={() => {
-                                  const { [key]: _, ...rest } =
-                                    theme.layout.freePositions;
+                                  const rest = { ...theme.layout.freePositions };
+                                  delete rest[key];
                                   updateLayout({ freePositions: rest });
                                 }}
                                 className="w-full rounded-lg border border-stone-200 text-stone-700 text-xs py-2 hover:bg-stone-50 transition"
