@@ -20,7 +20,7 @@ import { EditorClickBridge } from "@/app/_components/editor-click-bridge";
 import { StoreNavLink } from "@/app/_components/store-nav-link";
 import { StoreMobileNav } from "@/app/_components/store-mobile-nav";
 import { BackToTop } from "@/app/_components/back-to-top";
-import { displayableImageUrl } from "@/lib/image-url";
+import { displayableImageUrl, imageMimeTypeFromUrl } from "@/lib/image-url";
 
 const RESERVED = new Set([
   "api",
@@ -64,7 +64,14 @@ export async function generateMetadata({
     displayableImageUrl(theme.heroUrl) ?? displayableImageUrl(theme.logoUrl);
   // 分頁圖示（favicon／apple icon）同樣只掛判得過的 logo：判不過就整組不給，
   // Next 退回 app/ 底下的平台預設圖示，總比掛一個瀏覽器抓不到的網址好。
+  // type 跟 site.webmanifest 同一口徑：從副檔名推（Storage 上傳的 jpg／webp／svg、
+  // Pexels 的 .jpeg 都不是 png），推得出就讓 <link rel="icon"> 帶 type 屬性，瀏覽器
+  // 不用先抓回來才知道能不能解；認不出就整個 type 不放，讓瀏覽器照回應的 Content-Type 判。
   const iconUrl = displayableImageUrl(theme.logoUrl);
+  const iconType = imageMimeTypeFromUrl(iconUrl);
+  const icon = iconUrl
+    ? { url: iconUrl, ...(iconType ? { type: iconType } : {}) }
+    : null;
 
   return {
     title: {
@@ -74,11 +81,11 @@ export async function generateMetadata({
     description,
     // 各店自己的 web manifest：加到主畫面顯示店名＋店家 logo，不再是平台「Sproutly」
     manifest: `/${slug}/site.webmanifest`,
-    icons: iconUrl
+    icons: icon
       ? {
-          icon: iconUrl,
-          shortcut: iconUrl,
-          apple: iconUrl,
+          icon,
+          shortcut: icon,
+          apple: icon,
         }
       : undefined,
     openGraph: {
