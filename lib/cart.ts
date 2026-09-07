@@ -1,6 +1,6 @@
 // 客戶端購物車 helpers（localStorage based，per-store key）
 
-import { QTY_MIN, QTY_MAX } from "@/lib/product-quantity";
+import { QTY_MIN, QTY_MAX } from "./product-quantity.ts";
 
 export type CartItem = {
   productId: string;

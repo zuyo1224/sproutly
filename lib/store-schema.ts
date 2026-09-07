@@ -11,10 +11,10 @@
 //
 // 注意：「要不要放這段 Store」的判斷仍留在各頁——首頁一律放，聯絡頁只在真的有任一聯絡
 // 資訊時才放（空店面不丟空殼給 Google）。這支只負責把資料組成乾淨的 Store 物件。
-// import 帶 .ts 副檔名：這支有 store-schema.test.ts 用 Node 原生剝型別直接跑，Node 解析 ESM
-// 不補副檔名，寫 "./business-hours-schema" 會 ERR_MODULE_NOT_FOUND；tsconfig 已開
-// allowImportingTsExtensions，Next 的 bundler 也照常解析。之前有測試的 image-url／contact-href／
-// fetch-all-rows 都是不 import 任何同層模組的葉節點，所以沒撞到這條。
+// import 帶 .ts 副檔名：lib/ 底下互相引用一律寫 "./xxx.ts"（不用 "@/lib/xxx" 也不省副檔名）。
+// 原因是 npm test 用 Node 原生剝型別直接跑 lib/**/*.test.ts，Node 解析 ESM 不補副檔名、也不認
+// tsconfig 的 @/ 別名，少一個就 ERR_MODULE_NOT_FOUND；tsconfig 已開 allowImportingTsExtensions，
+// Next 的 bundler 也照常解析。這條慣例在 lib/ 全檔已統一，之後補測試不用再逐檔撞一次。
 import { parseBusinessHoursToSpec } from "./business-hours-schema.ts";
 import { telDigits, cleanEmail, socialUrl } from "./contact-href.ts";
 import { displayableImageUrl } from "./image-url.ts";

@@ -11,7 +11,7 @@
 //   賣完（≤ 0，含資料怪掉的負數）       → OutOfStock
 //   剩 1-3 件                           → LimitedAvailability（卡片上亮「剩 N」琥珀提示）
 //
-import { isSoldOut, LOW_STOCK_THRESHOLD } from "./product-stock";
+import { isSoldOut, LOW_STOCK_THRESHOLD } from "./product-stock.ts";
 
 // LOW_STOCK_THRESHOLD（畫面「剩 N」與這裡 LimitedAvailability 共用的門檻）已移到
 // product-stock 跟 isSoldOut/isLowStock 放一起，當缺貨判斷的單一來源。這裡 re-export

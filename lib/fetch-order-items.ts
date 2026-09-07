@@ -1,5 +1,5 @@
 import type { createClient } from "@/lib/supabase/server";
-import { fetchAllRows } from "@/lib/fetch-all-rows";
+import { fetchAllRows } from "./fetch-all-rows.ts";
 
 type ServerClient = Awaited<ReturnType<typeof createClient>>;
 

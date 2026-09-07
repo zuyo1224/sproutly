@@ -1,5 +1,5 @@
-import { phoneDigits } from "./phone-match";
-import { normalizeSearchText } from "./search-normalize";
+import { phoneDigits } from "./phone-match.ts";
+import { normalizeSearchText } from "./search-normalize.ts";
 
 // 客人列表關鍵字比對（姓名 / Email / 電話）單一來源。
 //

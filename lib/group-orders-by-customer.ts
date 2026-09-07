@@ -12,7 +12,7 @@
 // 只看得到 customer_id 與 customer_phone，所以用泛型收下任何帶這兩個欄位的訂單，
 // 原本各自的 OrderRow 型別都能直接套進來、回傳的 Map 也還是原本的訂單型別。
 
-import { phoneDigits } from "./phone-match";
+import { phoneDigits } from "./phone-match.ts";
 
 type CustomerGroupable = {
   customer_id: string | null;

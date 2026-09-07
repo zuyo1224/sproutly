@@ -11,7 +11,7 @@
 //
 // 收成這一份之後：欄位與合法值只寫在 SECTION_STYLE_ENUMS，型別由它推出來，讀寫兩層都呼叫
 // 同一支 sanitizeSectionStyles。加一個控制＝在這裡加一行，剩下的是編輯器要不要給 UI。
-import { normalizeHexColor } from "./hex-color";
+import { normalizeHexColor } from "./hex-color.ts";
 
 // 每個欄位的合法值。第一個值不一定是預設——「沒設定」在這套系統裡是「這個 key 不存在」，
 // 不是某個特定值（editor 端把等同預設的選擇 delete 掉，公開頁沒讀到就整條樣式不套）。

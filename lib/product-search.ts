@@ -12,7 +12,7 @@
 // matchesProductDescription 兩支原子述詞給它做分流。description 可能為 null，比對前
 // 補空字串（維持原本 (description ?? "") 行為）；query 由呼叫端自行決定空字串時是否
 // 略過整個 filter，這支只負責「單一商品是否命中」。
-import { normalizeSearchText } from "./search-normalize";
+import { normalizeSearchText } from "./search-normalize.ts";
 
 type ProductSearchFields = { name: string; description: string | null };
 

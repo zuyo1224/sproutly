@@ -7,7 +7,7 @@
 //
 // 判斷交給算的，不交給商家再挑一次顏色：多一個要挑的值，挑錯（挑到跟底色同色）就又
 // 回到看不見。只在算出來真的不夠時才換掉，夠的段落一個像素都不動。
-import { normalizeHexColor } from "./hex-color";
+import { normalizeHexColor } from "./hex-color.ts";
 
 // sRGB 單一通道轉線性值（WCAG 2.x 的 relative luminance 定義）。
 function channelToLinear(value: number): number {

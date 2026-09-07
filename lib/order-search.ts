@@ -1,5 +1,5 @@
-import { phoneDigits } from "./phone-match";
-import { normalizeSearchText } from "./search-normalize";
+import { phoneDigits } from "./phone-match.ts";
+import { normalizeSearchText } from "./search-normalize.ts";
 
 // 後台訂單「用關鍵字搜姓名／電話／Email」單一來源。訂單列表頁與匯出 route 是同一份
 // 訂單名單的兩個出口，兩邊都吃同一個搜尋字串 q，也都該用同一套「比對哪些欄位、怎麼
