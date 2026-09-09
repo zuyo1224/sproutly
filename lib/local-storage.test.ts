@@ -207,10 +207,23 @@ describe("cart：加、改、刪、數、清", () => {
     ]);
   });
 
-  it("addToCart 傳 0 件存進去的是 0，但讀回來會被夾成 1", () => {
+  it("addToCart 傳 0、負數、NaN 存進去的就是 1（入口就夾，存的跟讀回的一樣）", () => {
     addToCart("shop", "p1", 0);
-    assert.deepEqual(rawJson("sproutly_cart_shop"), [{ productId: "p1", qty: 0 }]);
-    assert.deepEqual(getCart("shop"), [{ productId: "p1", qty: 1 }]);
+    addToCart("shop", "p2", -5);
+    addToCart("shop", "p3", Number.NaN);
+    assert.deepEqual(rawJson("sproutly_cart_shop"), [
+      { productId: "p1", qty: 1 },
+      { productId: "p2", qty: 1 },
+      { productId: "p3", qty: 1 },
+    ]);
+    assert.deepEqual(getCart("shop"), rawJson("sproutly_cart_shop"));
+  });
+
+  it("addToCart 小數往下取整、累加時傳負數不會把既有數量扣掉", () => {
+    addToCart("shop", "p1", 2.9);
+    assert.deepEqual(getCart("shop"), [{ productId: "p1", qty: 2 }]);
+    addToCart("shop", "p1", -3);
+    assert.deepEqual(rawJson("sproutly_cart_shop"), [{ productId: "p1", qty: 3 }]);
   });
 
   it("updateQty 改數量、超量卡 99、0 或負數等於移除", () => {

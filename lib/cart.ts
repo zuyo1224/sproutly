@@ -39,13 +39,23 @@ export function setCart(slug: string, items: CartItem[]) {
   }
 }
 
+// 「加幾件」在入口就夾成 1-99 的整數，跟 getCart 讀回時同一口徑。
+// 以前只卡上限：傳 0、負數、小數、NaN 會原樣寫進 localStorage，讀回才被夾成 1，
+// 等於存的跟看到的不一樣；傳負數還會把既有數量往下扣到 0 或負的。
+function normalizeAddQty(qty: number): number {
+  const n = Math.floor(Number(qty));
+  if (!Number.isFinite(n)) return QTY_MIN;
+  return Math.min(Math.max(n, QTY_MIN), QTY_MAX);
+}
+
 export function addToCart(slug: string, productId: string, qty = 1) {
   const items = getCart(slug);
+  const add = normalizeAddQty(qty);
   const existing = items.find((i) => i.productId === productId);
   if (existing) {
-    existing.qty = Math.min(existing.qty + qty, QTY_MAX);
+    existing.qty = Math.min(existing.qty + add, QTY_MAX);
   } else {
-    items.push({ productId, qty: Math.min(qty, QTY_MAX) });
+    items.push({ productId, qty: add });
   }
   setCart(slug, items);
 }
