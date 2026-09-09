@@ -243,6 +243,41 @@ describe("cart：加、改、刪、數、清", () => {
     assert.deepEqual(getCart("shop"), [{ productId: "p2", qty: QTY_MAX }]);
   });
 
+  // 小數與 NaN：以前 updateQty 只卡上限，2.5 會原樣寫進 localStorage（讀回被夾成 2，
+  // 存的跟畫面上的不一樣）、NaN 因為「NaN <= 0」是 false 也被當有效數量寫進去，
+  // JSON 存成 null、讀回變成 1。這兩條把修好的口徑寫死。
+  it("updateQty 小數往下取整後才存，存進去的跟讀回來的一樣", () => {
+    setCart("shop", [{ productId: "p1", qty: 1 }]);
+    updateQty("shop", "p1", 2.9);
+    assert.deepEqual(rawJson("sproutly_cart_shop"), [{ productId: "p1", qty: 2 }]);
+    assert.deepEqual(getCart("shop"), [{ productId: "p1", qty: 2 }]);
+  });
+
+  it("updateQty 收到 0 到 1 之間的小數當成移除", () => {
+    setCart("shop", [{ productId: "p1", qty: 3 }]);
+    updateQty("shop", "p1", 0.5);
+    assert.deepEqual(getCart("shop"), []);
+  });
+
+  it("updateQty 收到不是數字的值時什麼都不做，也不廣播", () => {
+    setCart("shop", [{ productId: "p1", qty: 3 }]);
+    let fired = 0;
+    const onChange = () => {
+      fired += 1;
+    };
+    fakeWindow.addEventListener("sproutly-cart-changed", onChange);
+    try {
+      updateQty("shop", "p1", NaN);
+      updateQty("shop", "p1", Number.POSITIVE_INFINITY);
+      updateQty("shop", "p1", "三" as unknown as number);
+      assert.equal(fired, 0);
+      assert.deepEqual(rawJson("sproutly_cart_shop"), [{ productId: "p1", qty: 3 }]);
+      assert.deepEqual(getCart("shop"), [{ productId: "p1", qty: 3 }]);
+    } finally {
+      fakeWindow.removeEventListener("sproutly-cart-changed", onChange);
+    }
+  });
+
   it("updateQty 找不到商品時什麼都不做，也不廣播", () => {
     setCart("shop", [{ productId: "p1", qty: 1 }]);
     let fired = 0;

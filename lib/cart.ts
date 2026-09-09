@@ -48,6 +48,16 @@ function normalizeAddQty(qty: number): number {
   return Math.min(Math.max(n, QTY_MIN), QTY_MAX);
 }
 
+// 「改成幾件」的入口清洗。跟 normalizeAddQty 分開是因為這裡的 0 與負數有意義
+// （等於把這筆從購物車拿掉），不能一律夾到 1。回傳 null 代表「這個值不是數字，
+// 什麼都別動」。
+function normalizeNewQty(qty: number): number | "remove" | null {
+  const n = Math.floor(Number(qty));
+  if (!Number.isFinite(n)) return null;
+  if (n <= 0) return "remove";
+  return Math.min(n, QTY_MAX);
+}
+
 export function addToCart(slug: string, productId: string, qty = 1) {
   const items = getCart(slug);
   const add = normalizeAddQty(qty);
@@ -60,12 +70,19 @@ export function addToCart(slug: string, productId: string, qty = 1) {
   setCart(slug, items);
 }
 
+// 以前這裡只做 Math.min(qty, QTY_MAX)：小數會原樣寫進 localStorage（存 2.5、讀回
+// 被 getCart 夾成 2，畫面上的數字跟存的不一樣），NaN 因為「NaN <= 0」是 false 也會
+// 被當成有效數量寫進去，JSON 存成 null、讀回變成 1——這兩種都是 addToCart 早就修過
+// 的同一類問題，只有這支還沒補。現在三個寫入口（addToCart／updateQty／getCart 讀回
+// 時的清洗）都是同一口徑：整數、1-99。
 export function updateQty(slug: string, productId: string, qty: number) {
+  const next = normalizeNewQty(qty);
+  if (next === null) return;
   const items = getCart(slug);
   const idx = items.findIndex((i) => i.productId === productId);
   if (idx === -1) return;
-  if (qty <= 0) items.splice(idx, 1);
-  else items[idx].qty = Math.min(qty, QTY_MAX);
+  if (next === "remove") items.splice(idx, 1);
+  else items[idx].qty = next;
   setCart(slug, items);
 }
 
