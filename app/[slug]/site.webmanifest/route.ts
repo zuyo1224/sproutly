@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { resolveTheme } from "../_theme";
 import { displayableImageUrl, imageMimeTypeFromUrl } from "@/lib/image-url";
+import { PLATFORM_MANIFEST_ICONS } from "@/lib/platform-icons";
 
 type Params = Promise<{ slug: string }>;
 
@@ -61,6 +62,11 @@ export async function GET(
             sizes: "any",
             type: "image/x-icon",
           },
+          // 沒 logo 的店退到平台圖示。只放在這條沒 logo 的路上：有 logo 的店若也列
+          // 平台這兩張，Android 挑圖示時會偏好標明尺寸的那個，主畫面就變成 Sproutly
+          // 的芽而不是店家自己。favicon.ico 不能單獨撐著——Android 要 192 以上的
+          // 點陣圖才肯讓客人把店面裝到主畫面。
+          ...PLATFORM_MANIFEST_ICONS,
         ],
   };
 
