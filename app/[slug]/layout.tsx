@@ -73,10 +73,16 @@ export async function generateMetadata({
     ? { url: iconUrl, ...(iconType ? { type: iconType } : {}) }
     : null;
   // apple-touch-icon 只吃點陣圖（png／jpg），iOS Safari 拿到 svg 不會畫，加到主畫面
-  // 會是一塊空白方塊，而且靜靜失敗、後台看不出來。logo 是 svg 就不掛 apple 那組：
-  // 沒有 apple-touch-icon 時 iOS 退回用頁面截圖當圖示，至少不是空白。分頁圖示
+  // 會是一塊空白方塊，而且靜靜失敗、後台看不出來。logo 是 svg 就退到平台的
+  // app/apple-icon.tsx（build 時畫好的 180×180 png）：至少是 Sproutly 的芽，不是空白
+  // 也不是 iOS 退回的頁面截圖。要明講而不是省略：Next 只在整條路徑都沒設過 icons 時
+  // 才自動套 file-based 圖示，這裡一設 icons，省略 apple 就是真的沒有。分頁圖示
   // （icon／shortcut）照掛，桌機瀏覽器都吃 svg。副檔名認不出的仍照掛，讓裝置自己判。
-  const appleIcon = iconType === "image/svg+xml" ? null : icon;
+  const platformAppleIcon = {
+    url: "/apple-icon",
+    type: "image/png",
+    sizes: "180x180",
+  };
 
   return {
     title: {
@@ -90,7 +96,7 @@ export async function generateMetadata({
       ? {
           icon,
           shortcut: icon,
-          ...(appleIcon ? { apple: appleIcon } : {}),
+          apple: iconType === "image/svg+xml" ? platformAppleIcon : icon,
         }
       : undefined,
     openGraph: {
