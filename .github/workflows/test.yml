@@ -1,0 +1,30 @@
+# 每次 push 到 main 或開 PR 時跑 lib 底下的 node:test（目前 438 條）。
+# 只接 test，不接 lint：eslint 還有 15 個既有錯誤，接上去會整條紅。
+# Node 用 24：package.json 的 test 腳本靠 Node 原生剝 TypeScript 型別
+# （node --test "lib/**/*.test.ts"），22 以前跑不起來。
+name: test
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: test-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci
+      - run: npm test
