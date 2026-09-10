@@ -1,5 +1,14 @@
-# 每次 push 到 main 或開 PR 時跑 lib 底下的 node:test（目前 438 條）。
-# 只接 test，不接 lint：eslint 還有 15 個既有錯誤，接上去會整條紅。
+# 每次 push 到 main 或開 PR 時跑兩關：型別檢查與 lib 底下的 node:test（目前 615 條）。
+#
+# 型別檢查要另外跑，是因為 npm test 走 Node 原生剝 TypeScript 型別——它只是把
+# 型別註記拿掉就執行，不會驗型別對不對。所以測試全過不代表 code 編得起來，
+# 過去型別錯誤只有本機 npm run build 或 Vercel 部署時才會冒出來，太晚。
+# tsc 不需要先 next build：tsconfig 的 include 有列 .next/types，但那幾條在
+# CI 沒 build 過時就是空的，實測拿掉 .next 整包跑 tsc 一樣乾淨（約 4 秒）。
+#
+# 仍然不接 lint：eslint 還有 15 個既有錯誤（都是 react-hooks 那批
+# setState-in-effect），接上去會整條紅，等那批清掉再說。
+#
 # Node 用 24：package.json 的 test 腳本靠 Node 原生剝 TypeScript 型別
 # （node --test "lib/**/*.test.ts"），22 以前跑不起來。
 name: test
@@ -27,4 +36,6 @@ jobs:
           node-version: 24
           cache: npm
       - run: npm ci
+      # 型別先驗：型別錯了，測試就算過也只是「剝掉型別後剛好能跑」。
+      - run: npm run typecheck
       - run: npm test
