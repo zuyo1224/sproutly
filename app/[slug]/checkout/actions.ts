@@ -5,7 +5,8 @@ import { normalizeEmail } from "@/lib/email-normalize";
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { redirect } from "next/navigation";
-import { encodeShippingIntoNote, SHIPPING_LABELS, isSelectablePaymentMethod, shippingDetailError } from "@/lib/order-labels";
+import { encodeShippingIntoNote } from "@/lib/order-labels";
+import { checkoutFieldsError } from "@/lib/checkout-fields";
 import { QTY_MIN, QTY_MAX, isValidQty } from "@/lib/product-quantity";
 import { decrementStock, restoreStock } from "@/lib/stock-restore";
 
@@ -34,28 +35,18 @@ export async function placeOrder(slug: string, formData: FormData) {
   if (!isValidQty(quantity)) {
     redirect(baseRedirect + "&error=" + encodeURIComponent(`數量必須是 ${QTY_MIN}-${QTY_MAX}`));
   }
-  if (!customerName) {
-    redirect(baseRedirect + "&error=" + encodeURIComponent("請填收件人姓名"));
-  }
-  if (!customerPhone) {
-    redirect(baseRedirect + "&error=" + encodeURIComponent("請填聯絡電話"));
-  }
-  // 合法性看 isSelectablePaymentMethod（名單上且未停用），不吃顯示用的 PAYMENT_LABELS——
-  // 那份含停用中的信用卡，拿來當白名單會把「即將推出」的金流放行（緣由見該檔說明）。
-  if (!isSelectablePaymentMethod(paymentMethod)) {
-    redirect(baseRedirect + "&error=" + encodeURIComponent("請選擇付款方式"));
-  }
-  if (!shippingMethod || !SHIPPING_LABELS[shippingMethod]) {
-    redirect(baseRedirect + "&error=" + encodeURIComponent("請選擇配送方式"));
-  }
-  // 超商取貨必須填門市、宅配必須填地址（規則與訊息收在 shippingDetailError 單一來源）
-  const shippingErr = shippingDetailError(
+  // 收件人那幾格（姓名、電話、付款、配送、門市／地址）的條件與訊息跟購物車結帳同一份，
+  // 收在 lib/checkout-fields（為什麼要收成一份，見該檔說明）。
+  const fieldsErr = checkoutFieldsError({
+    customerName,
+    customerPhone,
+    paymentMethod,
     shippingMethod,
     shippingStoreName,
-    shippingAddress
-  );
-  if (shippingErr) {
-    redirect(baseRedirect + "&error=" + encodeURIComponent(shippingErr));
+    shippingAddress,
+  });
+  if (fieldsErr) {
+    redirect(baseRedirect + "&error=" + encodeURIComponent(fieldsErr));
   }
 
   const supabase = await createClient();

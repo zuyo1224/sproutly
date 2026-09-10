@@ -1,12 +1,8 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
-import {
-  encodeShippingIntoNote,
-  isSelectablePaymentMethod,
-  SHIPPING_LABELS,
-  shippingDetailError,
-} from "@/lib/order-labels";
+import { encodeShippingIntoNote } from "@/lib/order-labels";
+import { checkoutFieldsError } from "@/lib/checkout-fields";
 import { parseCartPayload } from "@/lib/cart-payload";
 import { normalizeEmail } from "@/lib/email-normalize";
 import { decrementStock, restoreStock } from "@/lib/stock-restore";
@@ -35,14 +31,21 @@ export async function POST(
   const userNote = String(fd.get("note") ?? "").trim() || null;
   const cartItemsRaw = String(fd.get("cart_items") ?? "").trim();
 
-  if (!customerName) return NextResponse.json({ error: "請填收件人姓名" }, { status: 400 });
-  if (!customerPhone) return NextResponse.json({ error: "請填電話" }, { status: 400 });
-  // 合法性看 isSelectablePaymentMethod（名單上且未停用），不吃顯示用的 PAYMENT_LABELS——
-  // 那份含停用中的信用卡，拿來當白名單會把「即將推出」的金流放行（緣由見該檔說明）。
-  if (!isSelectablePaymentMethod(paymentMethod))
-    return NextResponse.json({ error: "請選擇付款方式" }, { status: 400 });
-  if (!shippingMethod || !SHIPPING_LABELS[shippingMethod])
-    return NextResponse.json({ error: "請選擇配送方式" }, { status: 400 });
+  // 收件人那幾格（姓名、電話、付款、配送、門市／地址）的條件與訊息跟單品結帳同一份，
+  // 收在 lib/checkout-fields（為什麼要收成一份，見該檔說明）。門市／地址那條原本排在
+  // 購物車內容檢查後面，現在跟其他表單欄位一起排在前面：兩種都不合格時客人先看到的
+  // 會從「購物車內容有誤」變成「請填地址」，先講他改得動的那格。
+  const fieldsErr = checkoutFieldsError({
+    customerName,
+    customerPhone,
+    paymentMethod,
+    shippingMethod,
+    shippingStoreName,
+    shippingAddress,
+  });
+  if (fieldsErr) {
+    return NextResponse.json({ error: fieldsErr }, { status: 400 });
+  }
 
   // 不信任 client 傳來的購物車：解讀與檢查的口徑全收在 lib/cart-payload
   // （為什麼每一條都不能放行，見該檔說明）。
@@ -51,15 +54,6 @@ export async function POST(
     return NextResponse.json({ error: cart.error }, { status: 400 });
   }
   const cartItems = cart.items;
-
-  const shippingErr = shippingDetailError(
-    shippingMethod,
-    shippingStoreName,
-    shippingAddress
-  );
-  if (shippingErr) {
-    return NextResponse.json({ error: shippingErr }, { status: 400 });
-  }
 
   const supabase = await createClient();
   const { data: store } = await supabase
