@@ -10,6 +10,7 @@ import { checkoutFieldsError } from "@/lib/checkout-fields";
 import { QTY_MIN, QTY_MAX, isValidQty } from "@/lib/product-quantity";
 import { decrementStock, restoreStock } from "@/lib/stock-restore";
 import { insufficientStockError, stockConflictError } from "@/lib/product-stock";
+import { buildOrderRow, buildOrderItemRow } from "@/lib/order-rows";
 
 export async function placeOrder(slug: string, formData: FormData) {
   const productId = formString(formData, "product_id");
@@ -111,22 +112,23 @@ export async function placeOrder(slug: string, formData: FormData) {
   const customerId = userData.user?.id ?? null;
 
   const totalCents = product.price_cents * quantity;
+  // 訂單那一列的欄位與初始狀態跟購物車結帳同一份，收在 lib/order-rows（原因見該檔說明）。
   const { data: order, error: orderError } = await admin
     .from("sproutly_orders")
-    .insert({
-      merchant_id: store.id,
-      customer_id: customerId,
-      customer_name: customerName,
-      customer_phone: customerPhone,
-      customer_email: customerEmail,
-      shipping_address: shippingAddress,
-      note: finalNote,
-      total_cents: totalCents,
-      currency: product.currency,
-      status: "pending",
-      payment_method: paymentMethod,
-      payment_status: "unpaid",
-    })
+    .insert(
+      buildOrderRow({
+        merchantId: store.id,
+        customerId,
+        customerName,
+        customerPhone,
+        customerEmail,
+        shippingAddress,
+        note: finalNote,
+        totalCents,
+        currency: product.currency,
+        paymentMethod,
+      })
+    )
     .select("id")
     .single();
 
@@ -144,13 +146,7 @@ export async function placeOrder(slug: string, formData: FormData) {
 
   const { error: itemError } = await admin
     .from("sproutly_order_items")
-    .insert({
-      order_id: order.id,
-      product_id: product.id,
-      name_snapshot: product.name,
-      price_cents_snapshot: product.price_cents,
-      quantity,
-    });
+    .insert(buildOrderItemRow({ orderId: order.id, product, quantity }));
 
   if (itemError) {
     await admin.from("sproutly_orders").delete().eq("id", order.id);

@@ -8,6 +8,7 @@ import { normalizeEmail } from "@/lib/email-normalize";
 import { formString, formStringOrNull } from "@/lib/form-fields";
 import { decrementStock, restoreStock } from "@/lib/stock-restore";
 import { insufficientStockError, stockConflictError } from "@/lib/product-stock";
+import { buildOrderRow, buildOrderItemRow } from "@/lib/order-rows";
 
 type Params = Promise<{ slug: string }>;
 
@@ -128,22 +129,23 @@ export async function POST(
   const { data: userData } = await supabaseUser.auth.getUser();
   const customerId = userData.user?.id ?? null;
 
+  // 訂單那一列的欄位與初始狀態跟單品結帳同一份，收在 lib/order-rows（原因見該檔說明）。
   const { data: order, error: orderError } = await admin
     .from("sproutly_orders")
-    .insert({
-      merchant_id: store.id,
-      customer_id: customerId,
-      customer_name: customerName,
-      customer_phone: customerPhone,
-      customer_email: customerEmail,
-      shipping_address: shippingAddress,
-      note: finalNote,
-      total_cents: totalCents,
-      currency,
-      status: "pending",
-      payment_method: paymentMethod,
-      payment_status: "unpaid",
-    })
+    .insert(
+      buildOrderRow({
+        merchantId: store.id,
+        customerId,
+        customerName,
+        customerPhone,
+        customerEmail,
+        shippingAddress,
+        note: finalNote,
+        totalCents,
+        currency,
+        paymentMethod,
+      })
+    )
     .select("id")
     .single();
 
@@ -158,13 +160,7 @@ export async function POST(
   // 建 order_items
   const orderItemsData = cartItems.map((item) => {
     const p = products.find((x) => x.id === item.productId)!;
-    return {
-      order_id: order.id,
-      product_id: p.id,
-      name_snapshot: p.name,
-      price_cents_snapshot: p.price_cents,
-      quantity: item.qty,
-    };
+    return buildOrderItemRow({ orderId: order.id, product: p, quantity: item.qty });
   });
   const { error: itemsErr } = await admin
     .from("sproutly_order_items")
