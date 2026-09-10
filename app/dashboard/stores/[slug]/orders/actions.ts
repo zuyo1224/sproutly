@@ -3,6 +3,7 @@
 import { requireUser } from "@/lib/require-user";
 import { redirect } from "next/navigation";
 import { nextOrderStatus, isUnpaidOrder } from "@/lib/order-labels";
+import { orderStatusUpdates, orderPaymentUpdates } from "@/lib/order-timestamps";
 
 // 訂單列表上的「往下一步推一格」。跟詳情頁那支 updateOrderStatus 是兩件事：那支是
 // 五選一的下拉（能跳著改、能取消、能同時改付款），這支只做流程上的下一格，讓商家
@@ -53,12 +54,9 @@ export async function advanceOrderStatus(
     redirect(listUrl);
   }
 
-  // 出貨時間章的規則跟詳情頁逐字一樣：只在真的切進「已出貨」而且還沒蓋過時蓋，
-  // 免得同一筆單之後又被推一次，出貨時間被改寫成後來的時間。
-  const updates: Record<string, unknown> = { status: next };
-  if (next === "shipped" && !current.shipped_at) {
-    updates.shipped_at = new Date().toISOString();
-  }
+  // 出貨時間章的規則跟詳情頁同一份（lib/order-timestamps）：只在真的切進「已出貨」而且
+  // 還沒蓋過時蓋，免得同一筆單之後又被推一次，出貨時間被改寫成後來的時間。
+  const updates = orderStatusUpdates(current, next);
 
   // 「原狀態還是剛剛讀到的那個才生效」：連按兩下、或別的分頁同時操作時，第二發
   // 會因為狀態已經不是舊值而整筆不中，不會一路把單推過頭。
@@ -126,12 +124,9 @@ export async function markOrderPaid(
     redirect(listUrl);
   }
 
-  // 付款時間章的規則跟詳情頁逐字一樣：只在還沒蓋過時蓋，免得之前付過又退款、現在再標
-  // 一次已付款時把原本的付款時間改寫成今天。
-  const updates: Record<string, unknown> = { payment_status: "paid" };
-  if (!current.paid_at) {
-    updates.paid_at = new Date().toISOString();
-  }
+  // 付款時間章的規則跟詳情頁同一份（lib/order-timestamps）：只在還沒蓋過時蓋，免得之前
+  // 付過又退款、現在再標一次已付款時把原本的付款時間改寫成今天。
+  const updates = orderPaymentUpdates(current, "paid");
 
   // 「原付款狀態還是剛剛讀到的那個才生效」：連按兩下、或別的分頁同時操作時，第二發
   // 會因為值已經不是舊的而整筆不中。
