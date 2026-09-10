@@ -11,6 +11,7 @@ import { parseStock, readProductForm } from "@/lib/product-form";
 import { isPastedRemoteImageUrl } from "@/lib/image-url";
 // 調順序要先拿到整家店「照現在順序排好」的完整清單，破千的店不能只撈第一頁。
 import { fetchAllRows } from "@/lib/fetch-all-rows";
+import { withErrorParam } from "@/lib/redirect-url";
 import { redirect } from "next/navigation";
 
 const BUCKET = "sproutly-products";
@@ -263,11 +264,9 @@ export async function setProductStock(
   const listUrl = `/dashboard/stores/${slug}/products${returnQs ? `?${returnQs}` : ""}`;
   // 出錯要跳回原本的篩選＋搜尋，只是多帶一個 error 讓列表把訊息顯出來，
   // 不然商家會被丟回全部列表、還不知道剛剛那筆到底存進去沒有。
-  const errorUrl = (msg: string) => {
-    const sp = new URLSearchParams(returnQs);
-    sp.set("error", msg);
-    return `/dashboard/stores/${slug}/products?${sp.toString()}`;
-  };
+  // 組法跟站上其他「出錯跳回去」同一份（lib/redirect-url）：error 是設定不是附加，
+  // returnQs 本來就有 error 也只會有一個。
+  const errorUrl = (msg: string) => withErrorParam(listUrl, msg);
 
   const raw = formString(formData, "stock");
   if (!raw) {

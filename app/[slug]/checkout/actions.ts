@@ -11,6 +11,7 @@ import { QTY_MIN, QTY_MAX, isValidQty } from "@/lib/product-quantity";
 import { decrementStock, restoreStock } from "@/lib/stock-restore";
 import { insufficientStockError, stockConflictError } from "@/lib/product-stock";
 import { buildOrderRow, buildOrderItemRow } from "@/lib/order-rows";
+import { buildRedirectUrl, withErrorParam } from "@/lib/redirect-url";
 
 export async function placeOrder(slug: string, formData: FormData) {
   const productId = formString(formData, "product_id");
@@ -29,13 +30,19 @@ export async function placeOrder(slug: string, formData: FormData) {
   const shippingStoreName =
     formStringOrNull(formData, "shipping_store_name");
 
-  const baseRedirect = `/${slug}/checkout?product_id=${productId}&qty=${qtyRaw}`;
+  // product_id 與 qty 都是客人送出的值，接進網址前一律編碼（見 lib/redirect-url）：
+  // 以前直接字串接，欄位裡夾一個 & 就能自己多長出一個 error 參數，把假訊息顯在
+  // 這家店的結帳頁上。
+  const baseRedirect = buildRedirectUrl(`/${slug}/checkout`, {
+    product_id: productId,
+    qty: qtyRaw,
+  });
 
   if (!productId) redirect(`/${slug}`);
 
   const quantity = Number(qtyRaw);
   if (!isValidQty(quantity)) {
-    redirect(baseRedirect + "&error=" + encodeURIComponent(`數量必須是 ${QTY_MIN}-${QTY_MAX}`));
+    redirect(withErrorParam(baseRedirect, `數量必須是 ${QTY_MIN}-${QTY_MAX}`));
   }
   // 收件人那幾格（姓名、電話、付款、配送、門市／地址）的條件與訊息跟購物車結帳同一份，
   // 收在 lib/checkout-fields（為什麼要收成一份，見該檔說明）。
@@ -48,7 +55,7 @@ export async function placeOrder(slug: string, formData: FormData) {
     shippingAddress,
   });
   if (fieldsErr) {
-    redirect(baseRedirect + "&error=" + encodeURIComponent(fieldsErr));
+    redirect(withErrorParam(baseRedirect, fieldsErr));
   }
 
   const supabase = await createClient();
@@ -69,15 +76,11 @@ export async function placeOrder(slug: string, formData: FormData) {
     .eq("is_active", true)
     .maybeSingle();
   if (!product) {
-    redirect(baseRedirect + "&error=" + encodeURIComponent("商品已下架"));
+    redirect(withErrorParam(baseRedirect, "商品已下架"));
   }
 
   if (product.stock !== null && product.stock < quantity) {
-    redirect(
-      baseRedirect +
-        "&error=" +
-        encodeURIComponent(insufficientStockError(product.stock))
-    );
+    redirect(withErrorParam(baseRedirect, insufficientStockError(product.stock)));
   }
 
   // Atomic 庫存扣減（重讀重試防超賣，跟別的客人撞單不再直接退回，見 decrementStock）
@@ -87,13 +90,12 @@ export async function placeOrder(slug: string, formData: FormData) {
     const dec = await decrementStock(admin, product.id, quantity);
     if (!dec.ok) {
       redirect(
-        baseRedirect +
-          "&error=" +
-          encodeURIComponent(
-            dec.reason === "insufficient"
-              ? insufficientStockError(dec.stock)
-              : stockConflictError()
-          )
+        withErrorParam(
+          baseRedirect,
+          dec.reason === "insufficient"
+            ? insufficientStockError(dec.stock)
+            : stockConflictError()
+        )
       );
     }
     stockDecremented = dec.decremented;
@@ -138,9 +140,7 @@ export async function placeOrder(slug: string, formData: FormData) {
       await restoreStock(admin, productId, quantity);
     }
     redirect(
-      baseRedirect +
-        "&error=" +
-        encodeURIComponent("訂單建立失敗：" + (orderError?.message ?? ""))
+      withErrorParam(baseRedirect, "訂單建立失敗：" + (orderError?.message ?? ""))
     );
   }
 
@@ -153,11 +153,7 @@ export async function placeOrder(slug: string, formData: FormData) {
     if (stockDecremented) {
       await restoreStock(admin, productId, quantity);
     }
-    redirect(
-      baseRedirect +
-        "&error=" +
-        encodeURIComponent("訂單明細建立失敗：" + itemError.message)
-    );
+    redirect(withErrorParam(baseRedirect, "訂單明細建立失敗：" + itemError.message));
   }
 
   redirect(`/${slug}/checkout/success/${order.id}`);
