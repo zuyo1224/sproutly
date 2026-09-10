@@ -7,7 +7,7 @@ import {
   SHIPPING_LABELS,
   shippingDetailError,
 } from "@/lib/order-labels";
-import { isValidQty } from "@/lib/product-quantity";
+import { parseCartPayload } from "@/lib/cart-payload";
 import { normalizeEmail } from "@/lib/email-normalize";
 import { decrementStock, restoreStock } from "@/lib/stock-restore";
 
@@ -44,31 +44,13 @@ export async function POST(
   if (!shippingMethod || !SHIPPING_LABELS[shippingMethod])
     return NextResponse.json({ error: "請選擇配送方式" }, { status: 400 });
 
-  let parsedCart: unknown;
-  try {
-    parsedCart = JSON.parse(cartItemsRaw);
-    if (!Array.isArray(parsedCart) || parsedCart.length === 0) throw new Error();
-  } catch {
-    return NextResponse.json({ error: "購物車是空的" }, { status: 400 });
+  // 不信任 client 傳來的購物車：解讀與檢查的口徑全收在 lib/cart-payload
+  // （為什麼每一條都不能放行，見該檔說明）。
+  const cart = parseCartPayload(cartItemsRaw);
+  if (!cart.ok) {
+    return NextResponse.json({ error: cart.error }, { status: 400 });
   }
-
-  // 不信任 client 傳來的數量：必須是 1-99 的整數，否則拒絕。
-  // （沒這層的話，前端被改成 qty: -5 會讓總額算成負數、庫存反而被加回去）
-  const cartItems: { productId: string; qty: number }[] = [];
-  const seenIds = new Set<string>();
-  for (const raw of parsedCart) {
-    const productId = typeof raw?.productId === "string" ? raw.productId : "";
-    const qty = Number(raw?.qty);
-    if (
-      !productId ||
-      !isValidQty(qty) ||
-      seenIds.has(productId)
-    ) {
-      return NextResponse.json({ error: "購物車內容有誤，請重新確認" }, { status: 400 });
-    }
-    seenIds.add(productId);
-    cartItems.push({ productId, qty });
-  }
+  const cartItems = cart.items;
 
   const shippingErr = shippingDetailError(
     shippingMethod,
