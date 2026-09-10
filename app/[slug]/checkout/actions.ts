@@ -9,6 +9,7 @@ import { encodeShippingIntoNote } from "@/lib/order-labels";
 import { checkoutFieldsError } from "@/lib/checkout-fields";
 import { QTY_MIN, QTY_MAX, isValidQty } from "@/lib/product-quantity";
 import { decrementStock, restoreStock } from "@/lib/stock-restore";
+import { insufficientStockError } from "@/lib/product-stock";
 
 export async function placeOrder(slug: string, formData: FormData) {
   const productId = formString(formData, "product_id");
@@ -74,11 +75,7 @@ export async function placeOrder(slug: string, formData: FormData) {
     redirect(
       baseRedirect +
         "&error=" +
-        encodeURIComponent(
-          product.stock === 0
-            ? "商品已售完"
-            : `庫存只剩 ${product.stock} 件`
-        )
+        encodeURIComponent(insufficientStockError(product.stock))
     );
   }
 
@@ -93,9 +90,7 @@ export async function placeOrder(slug: string, formData: FormData) {
           "&error=" +
           encodeURIComponent(
             dec.reason === "insufficient"
-              ? dec.stock <= 0
-                ? "商品已售完"
-                : `庫存只剩 ${dec.stock} 件`
+              ? insufficientStockError(dec.stock)
               : "剛剛有其他客人下單，庫存已變動，請重新確認"
           )
       );

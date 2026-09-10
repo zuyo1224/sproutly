@@ -75,3 +75,24 @@ export function clampToStock(
 export function bySoldOutLast<T extends { stock: number | null }>(a: T, b: T): number {
   return Number(isSoldOut(a.stock)) - Number(isSoldOut(b.stock));
 }
+
+// 「這件買不到了」要對客人講哪一句的單一來源。
+//
+// 站上有三處在講同一件事，各抄各的、講法還不一樣：
+// - 單品結帳的送出前檢查：`stock === 0 ? "商品已售完" : "庫存只剩 N 件"`
+// - 單品結帳的扣庫存失敗：`dec.stock <= 0 ? "商品已售完" : "庫存只剩 N 件"`
+// - 購物車結帳的扣庫存失敗：`「品名」庫存不足，剩 N`
+//
+// 兩個問題。一是同一間店的兩個結帳入口對同一件事講不同的話：從商品頁直接買會看到
+// 「庫存只剩 2 件」，從購物車結帳看到的是「『龜背芋』庫存不足，剩 2」。二是單品那條
+// 送出前檢查只認 `=== 0`，庫存被超賣扣成負數時會冒出「庫存只剩 -2 件」這種句子——
+// 全站其他地方（isSoldOut、餵 Google 的 availability）早就是「<= 0 都算售完」，只有
+// 這句沒跟上。收成這一支之後三處吃同一條，負庫存一律講售完。
+//
+// 帶品名是給購物車用的：一次結好幾件，不講是哪一件客人不知道要回去改哪一格。單品那條
+// 整頁就那一件商品，不帶品名，句子維持原本的「商品已售完」。
+export function insufficientStockError(stock: number, productName?: string | null): string {
+  const subject = productName ? `「${productName}」` : "商品";
+  if (isSoldOut(stock)) return `${subject}已售完`;
+  return `${productName ? subject : ""}庫存只剩 ${stock} 件`;
+}

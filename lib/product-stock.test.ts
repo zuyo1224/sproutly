@@ -13,6 +13,7 @@ import {
   stockAriaSuffix,
   clampToStock,
   bySoldOutLast,
+  insufficientStockError,
 } from "./product-stock.ts";
 
 describe("isSoldOut", () => {
@@ -94,5 +95,39 @@ describe("bySoldOutLast", () => {
     assert.equal(bySoldOutLast({ stock: 0 }, { stock: -5 }), 0);
     assert.ok(bySoldOutLast({ stock: 0 }, { stock: 1 }) > 0);
     assert.ok(bySoldOutLast({ stock: 1 }, { stock: 0 }) < 0);
+  });
+});
+
+// 客人買不到那一刻唯一會看到的一句話：講錯（例如冒出「庫存只剩 -2 件」）就是把資料庫的
+// 壞資料直接貼到客人臉上，講得跟另一個入口不一樣則是同一間店兩種口氣。這裡把「售完講
+// 哪句、剩 N 講哪句、帶不帶品名、負庫存算售完」寫死，三個呼叫端共用同一份。
+describe("insufficientStockError", () => {
+  it("不帶品名時售完講「商品已售完」，剩 N 講件數", () => {
+    assert.equal(insufficientStockError(0), "商品已售完");
+    assert.equal(insufficientStockError(2), "庫存只剩 2 件");
+    assert.equal(insufficientStockError(1), "庫存只剩 1 件");
+  });
+
+  it("帶品名時把品名放在句首，購物車一次好幾件才知道是哪一件", () => {
+    assert.equal(insufficientStockError(0, "龜背芋"), "「龜背芋」已售完");
+    assert.equal(insufficientStockError(2, "龜背芋"), "「龜背芋」庫存只剩 2 件");
+  });
+
+  it("超賣扣成負數一律講售完，不會冒出「庫存只剩 -2 件」", () => {
+    assert.equal(insufficientStockError(-2), "商品已售完");
+    assert.equal(insufficientStockError(-2, "龜背芋"), "「龜背芋」已售完");
+  });
+
+  it("品名是空字串或 null 時當沒帶，退回不帶品名的句子", () => {
+    assert.equal(insufficientStockError(0, ""), "商品已售完");
+    assert.equal(insufficientStockError(2, null), "庫存只剩 2 件");
+    assert.equal(insufficientStockError(2, undefined), "庫存只剩 2 件");
+  });
+
+  it("售完的判斷走 isSoldOut，跟全站缺貨定義同一條", () => {
+    for (const stock of [0, -1, -99]) {
+      assert.equal(isSoldOut(stock), true);
+      assert.ok(insufficientStockError(stock).endsWith("已售完"));
+    }
   });
 });

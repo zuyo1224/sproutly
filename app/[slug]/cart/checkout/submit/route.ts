@@ -6,6 +6,7 @@ import { checkoutFieldsError } from "@/lib/checkout-fields";
 import { parseCartPayload } from "@/lib/cart-payload";
 import { normalizeEmail } from "@/lib/email-normalize";
 import { decrementStock, restoreStock } from "@/lib/stock-restore";
+import { insufficientStockError } from "@/lib/product-stock";
 
 type Params = Promise<{ slug: string }>;
 
@@ -99,7 +100,7 @@ export async function POST(
         }
         if (dec.reason === "insufficient") {
           return NextResponse.json({
-            error: `「${product.name}」庫存不足，剩 ${dec.stock}`,
+            error: insufficientStockError(dec.stock, product.name),
           }, { status: 400 });
         }
         return NextResponse.json({
