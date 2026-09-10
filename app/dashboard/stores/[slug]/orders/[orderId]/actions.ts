@@ -6,6 +6,7 @@ import { redirect } from "next/navigation";
 import { ORDER_STATUSES, PAYMENT_STATUSES } from "@/lib/order-labels";
 import { adjustStock } from "@/lib/stock-restore";
 import { orderStatusUpdates, orderPaymentUpdates } from "@/lib/order-timestamps";
+import { withErrorParam } from "@/lib/redirect-url";
 
 // 收狀態更新時的合法值跟訂單列表 chip、詳情下拉、匯出白名單同一條 canonical 順序。
 const ALLOWED_STATUS = new Set(ORDER_STATUSES);
@@ -67,14 +68,18 @@ export async function updateOrderStatus(
 
   if (error) {
     redirect(
-      `/dashboard/stores/${slug}/orders/${orderId}?error=` +
-        encodeURIComponent(error.message)
+      withErrorParam(
+        `/dashboard/stores/${slug}/orders/${orderId}`,
+        error.message,
+      ),
     );
   }
   if (!changed || changed.length === 0) {
     redirect(
-      `/dashboard/stores/${slug}/orders/${orderId}?error=` +
-        encodeURIComponent("訂單剛被更新過（可能在別的視窗），請重新確認再操作")
+      withErrorParam(
+        `/dashboard/stores/${slug}/orders/${orderId}`,
+        "訂單剛被更新過（可能在別的視窗），請重新確認再操作",
+      ),
     );
   }
 

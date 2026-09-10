@@ -4,6 +4,7 @@ import { requireUser } from "@/lib/require-user";
 import { redirect } from "next/navigation";
 import { nextOrderStatus, isUnpaidOrder } from "@/lib/order-labels";
 import { orderStatusUpdates, orderPaymentUpdates } from "@/lib/order-timestamps";
+import { withErrorParam } from "@/lib/redirect-url";
 
 // 訂單列表上的「往下一步推一格」。跟詳情頁那支 updateOrderStatus 是兩件事：那支是
 // 五選一的下拉（能跳著改、能取消、能同時改付款），這支只做流程上的下一格，讓商家
@@ -69,10 +70,7 @@ export async function advanceOrderStatus(
     .select("id");
 
   if (error) {
-    redirect(
-      `/dashboard/stores/${slug}/orders?error=` +
-        encodeURIComponent(error.message)
-    );
+    redirect(withErrorParam(`/dashboard/stores/${slug}/orders`, error.message));
   }
   // 沒中就是被別處搶先改過了，跳回列表讓商家看到現在真正的狀態。
   if (!changed || changed.length === 0) {
@@ -139,10 +137,7 @@ export async function markOrderPaid(
     .select("id");
 
   if (error) {
-    redirect(
-      `/dashboard/stores/${slug}/orders?error=` +
-        encodeURIComponent(error.message)
-    );
+    redirect(withErrorParam(`/dashboard/stores/${slug}/orders`, error.message));
   }
   // 沒中就是被別處搶先改過了，跳回列表讓商家看到現在真正的狀態。
   if (!changed || changed.length === 0) {

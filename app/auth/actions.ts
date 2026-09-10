@@ -5,6 +5,7 @@ import { normalizeEmail } from "@/lib/email-normalize";
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { redirect } from "next/navigation";
+import { withErrorParam } from "@/lib/redirect-url";
 
 export async function signUp(formData: FormData) {
   const email = normalizeEmail(formString(formData, "email"));
@@ -12,10 +13,10 @@ export async function signUp(formData: FormData) {
   const name = formString(formData, "name");
 
   if (!email || !password) {
-    redirect("/signup?error=" + encodeURIComponent("請填寫 email 與密碼"));
+    redirect(withErrorParam("/signup", "請填寫 email 與密碼"));
   }
   if (password.length < 6) {
-    redirect("/signup?error=" + encodeURIComponent("密碼至少 6 個字"));
+    redirect(withErrorParam("/signup", "密碼至少 6 個字"));
   }
 
   // 用 service_role 直接建 user 並標記 email 已驗證（跳過確認信流程）
@@ -34,7 +35,7 @@ export async function signUp(formData: FormData) {
   if (createError && /already.*registered|already.*exists/i.test(createError.message)) {
     const { data: list, error: listError } = await admin.auth.admin.listUsers();
     if (listError) {
-      redirect("/signup?error=" + encodeURIComponent(listError.message));
+      redirect(withErrorParam("/signup", listError.message));
     }
     const existing = list?.users?.find((u) => u.email === email);
     if (existing) {
@@ -49,16 +50,13 @@ export async function signUp(formData: FormData) {
         }
       );
       if (updateError) {
-        redirect("/signup?error=" + encodeURIComponent(updateError.message));
+        redirect(withErrorParam("/signup", updateError.message));
       }
     } else {
-      redirect(
-        "/signup?error=" +
-          encodeURIComponent("帳號狀態異常，請換 email 或聯絡管理員")
-      );
+      redirect(withErrorParam("/signup", "帳號狀態異常，請換 email 或聯絡管理員"));
     }
   } else if (createError) {
-    redirect("/signup?error=" + encodeURIComponent(createError.message));
+    redirect(withErrorParam("/signup", createError.message));
   }
 
   // 建好之後自動登入
@@ -69,7 +67,7 @@ export async function signUp(formData: FormData) {
   });
 
   if (signInError) {
-    redirect("/login?error=" + encodeURIComponent(signInError.message));
+    redirect(withErrorParam("/login", signInError.message));
   }
 
   redirect("/dashboard");
@@ -80,14 +78,14 @@ export async function signIn(formData: FormData) {
   const password = String(formData.get("password") ?? "");
 
   if (!email || !password) {
-    redirect("/login?error=" + encodeURIComponent("請填寫 email 與密碼"));
+    redirect(withErrorParam("/login", "請填寫 email 與密碼"));
   }
 
   const supabase = await createClient();
   const { error } = await supabase.auth.signInWithPassword({ email, password });
 
   if (error) {
-    redirect("/login?error=" + encodeURIComponent(error.message));
+    redirect(withErrorParam("/login", error.message));
   }
 
   redirect("/dashboard");

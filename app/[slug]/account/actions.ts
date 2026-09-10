@@ -5,6 +5,7 @@ import { normalizeEmail } from "@/lib/email-normalize";
 import { createClient } from "@/lib/supabase/server";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
+import { withErrorParam } from "@/lib/redirect-url";
 
 export async function sendCustomerMagicLink(formData: FormData) {
   const email = normalizeEmail(formString(formData, "email"));
@@ -12,9 +13,7 @@ export async function sendCustomerMagicLink(formData: FormData) {
   const next = String(formData.get("next") ?? `/${slug}/account`).trim();
 
   if (!email || !slug) {
-    redirect(
-      `/${slug}/account/login?error=${encodeURIComponent("請填寫 email")}`
-    );
+    redirect(withErrorParam(`/${slug}/account/login`, "請填寫 email"));
   }
 
   const h = await headers();
@@ -34,9 +33,7 @@ export async function sendCustomerMagicLink(formData: FormData) {
   });
 
   if (error) {
-    redirect(
-      `/${slug}/account/login?error=${encodeURIComponent(error.message)}`
-    );
+    redirect(withErrorParam(`/${slug}/account/login`, error.message));
   }
 
   redirect(`/${slug}/account/login?sent=1&email=${encodeURIComponent(email)}`);

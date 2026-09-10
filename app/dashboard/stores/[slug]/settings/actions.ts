@@ -6,6 +6,7 @@ import { requireUser } from "@/lib/require-user";
 import { uploadImage } from "@/lib/storage";
 import { normalizeHexColor } from "@/lib/hex-color";
 import { redirect } from "next/navigation";
+import { withErrorParam } from "@/lib/redirect-url";
 
 const PRESETS = new Set(["editorial", "plant-zen", "nordic", "aesop", "modern"]);
 const FONTS = new Set([
@@ -48,7 +49,7 @@ export async function updateStore(slug: string, formData: FormData) {
   const isPublished = formData.get("is_published") === "on";
 
   if (!name) {
-    redirect(baseRedirect + "?error=" + encodeURIComponent("店名不能空"));
+    redirect(withErrorParam(baseRedirect, "店名不能空"));
   }
   // 五個文字欄位的字數上限（表單 maxLength 吃同一份數字，這裡是伺服器端真正擋下）
   const tooLong = storeTextLimitError({
@@ -59,7 +60,7 @@ export async function updateStore(slug: string, formData: FormData) {
     address,
   });
   if (tooLong) {
-    redirect(baseRedirect + "?error=" + encodeURIComponent(tooLong));
+    redirect(withErrorParam(baseRedirect, tooLong));
   }
 
   // 視覺風格相關
@@ -91,7 +92,7 @@ export async function updateStore(slug: string, formData: FormData) {
       logoUrl = await uploadImage(logoFile, "sproutly-products", `logos/${store.id}`);
     } catch (e) {
       const msg = e instanceof Error ? e.message : "Logo 上傳失敗";
-      redirect(baseRedirect + "?error=" + encodeURIComponent(msg));
+      redirect(withErrorParam(baseRedirect, msg));
     }
   }
 
@@ -100,7 +101,7 @@ export async function updateStore(slug: string, formData: FormData) {
       heroUrl = await uploadImage(heroFile, "sproutly-products", `heroes/${store.id}`);
     } catch (e) {
       const msg = e instanceof Error ? e.message : "Hero 圖上傳失敗";
-      redirect(baseRedirect + "?error=" + encodeURIComponent(msg));
+      redirect(withErrorParam(baseRedirect, msg));
     }
   }
 
@@ -200,7 +201,7 @@ export async function updateStore(slug: string, formData: FormData) {
     social,
   });
   if (themeTooLong) {
-    redirect(baseRedirect + "?error=" + encodeURIComponent(themeTooLong));
+    redirect(withErrorParam(baseRedirect, themeTooLong));
   }
 
   const theme = {
@@ -243,7 +244,7 @@ export async function updateStore(slug: string, formData: FormData) {
     .eq("id", store.id);
 
   if (error) {
-    redirect(baseRedirect + "?error=" + encodeURIComponent(error.message));
+    redirect(withErrorParam(baseRedirect, error.message));
   }
 
   redirect(baseRedirect + "?saved=1");

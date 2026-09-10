@@ -1,5 +1,6 @@
 import { createClient } from "@/lib/supabase/server";
 import { NextResponse } from "next/server";
+import { withErrorParam } from "@/lib/redirect-url";
 
 export async function GET(request: Request) {
   const { searchParams, origin } = new URL(request.url);
@@ -9,9 +10,7 @@ export async function GET(request: Request) {
   const slug = searchParams.get("slug");
 
   if (!code) {
-    return NextResponse.redirect(
-      `${origin}/login?error=${encodeURIComponent("確認連結無效或已過期")}`
-    );
+    return NextResponse.redirect(withErrorParam(`${origin}/login`, "確認連結無效或已過期"));
   }
 
   const supabase = await createClient();
@@ -20,12 +19,10 @@ export async function GET(request: Request) {
   if (error) {
     if (kind === "customer" && slug) {
       return NextResponse.redirect(
-        `${origin}/${slug}/account/login?error=${encodeURIComponent(error.message)}`
+        withErrorParam(`${origin}/${slug}/account/login`, error.message),
       );
     }
-    return NextResponse.redirect(
-      `${origin}/login?error=${encodeURIComponent(error.message)}`
-    );
+    return NextResponse.redirect(withErrorParam(`${origin}/login`, error.message));
   }
 
   // 客人流程：upsert sproutly_customers，然後跳回客人指定的 next
