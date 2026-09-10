@@ -5,6 +5,7 @@ import { encodeShippingIntoNote } from "@/lib/order-labels";
 import { checkoutFieldsError } from "@/lib/checkout-fields";
 import { parseCartPayload } from "@/lib/cart-payload";
 import { normalizeEmail } from "@/lib/email-normalize";
+import { formString, formStringOrNull } from "@/lib/form-fields";
 import { decrementStock, restoreStock } from "@/lib/stock-restore";
 import { insufficientStockError, stockConflictError } from "@/lib/product-stock";
 
@@ -17,20 +18,17 @@ export async function POST(
   const { slug } = await params;
   const fd = await request.formData();
 
-  const customerName = String(fd.get("customer_name") ?? "").trim();
-  const customerPhone = String(fd.get("customer_phone") ?? "").trim();
+  // 取值走 lib/form-fields 的同一份 helper，跟單品結帳（[slug]/checkout/actions）一致。
+  const customerName = formString(fd, "customer_name");
+  const customerPhone = formString(fd, "customer_phone");
   const customerEmail =
-    normalizeEmail(String(fd.get("customer_email") ?? "")) || null;
-  const shippingMethod =
-    String(fd.get("shipping_method") ?? "").trim() || null;
-  const shippingStoreName =
-    String(fd.get("shipping_store_name") ?? "").trim() || null;
-  const shippingAddress =
-    String(fd.get("shipping_address") ?? "").trim() || null;
-  const paymentMethod =
-    String(fd.get("payment_method") ?? "").trim() || null;
-  const userNote = String(fd.get("note") ?? "").trim() || null;
-  const cartItemsRaw = String(fd.get("cart_items") ?? "").trim();
+    normalizeEmail(formStringOrNull(fd, "customer_email")) || null;
+  const shippingMethod = formStringOrNull(fd, "shipping_method");
+  const shippingStoreName = formStringOrNull(fd, "shipping_store_name");
+  const shippingAddress = formStringOrNull(fd, "shipping_address");
+  const paymentMethod = formStringOrNull(fd, "payment_method");
+  const userNote = formStringOrNull(fd, "note");
+  const cartItemsRaw = formString(fd, "cart_items");
 
   // 收件人那幾格（姓名、電話、付款、配送、門市／地址）的條件與訊息跟單品結帳同一份，
   // 收在 lib/checkout-fields（為什麼要收成一份，見該檔說明）。門市／地址那條原本排在
