@@ -1,16 +1,13 @@
 "use server";
-import { formString, formStringOrNull } from "@/lib/form-fields";
+import { formString } from "@/lib/form-fields";
 
 import { requireUser } from "@/lib/require-user";
 import { uploadImage } from "@/lib/storage";
 import { yuanToCents } from "@/lib/format-price";
-import {
-  MAX_PRICE_YUAN,
-  MAX_STOCK,
-  MAX_PRODUCT_NAME_LEN,
-  MAX_PRODUCT_DESC_LEN,
-  MAX_IMAGE_URL_LEN,
-} from "@/lib/product-limits";
+import { MAX_PRODUCT_NAME_LEN, MAX_IMAGE_URL_LEN } from "@/lib/product-limits";
+// 讀商品表單那幾格、擋空品名／空價格／字數／價格／庫存：新增與編輯同一支，
+// 兩條路徑不會再各自長出一套說法。
+import { parseStock, readProductForm } from "@/lib/product-form";
 import { isPastedRemoteImageUrl } from "@/lib/image-url";
 // 調順序要先拿到整家店「照現在順序排好」的完整清單，破千的店不能只撈第一頁。
 import { fetchAllRows } from "@/lib/fetch-all-rows";
@@ -30,48 +27,6 @@ async function authorizedStore(slug: string) {
   if (!store) redirect("/dashboard");
 
   return { supabase, store };
-}
-
-// 價格／庫存上限的數字本體在 lib/product-limits（表單的 max 屬性也吃同一份），
-// 這裡負責在伺服器端真正擋下、丟中文訊息。
-
-function parsePrice(raw: string): number {
-  const n = Number(raw);
-  if (!Number.isFinite(n) || n < 0) throw new Error("價格必須是非負數");
-  if (n > MAX_PRICE_YUAN) {
-    throw new Error(
-      `價格最多 ${MAX_PRICE_YUAN.toLocaleString("zh-TW")} 元，確認一下是不是多打了幾個 0`
-    );
-  }
-  return n;
-}
-
-function parseStock(raw: string): number | null {
-  if (raw === "") return null;
-  const n = Number(raw);
-  // 必須是非負整數：庫存欄只在瀏覽器端靠 <input type="number" step="1"> 擋小數，
-  // 那層驗證能被繞過（停用 JS 直接送表單、或行動裝置數字鍵盤本來就打得出小數點）。
-  // 沒有這條，"5.5" 會通過這裡、一路送進 DB 的 integer 欄位，Postgres 直接丟出
-  // 「invalid input syntax for type integer」這種原始錯誤字串給商家看，看不懂哪裡錯。
-  // 跟 lib/product-quantity 的 isValidQty（Number.isInteger 同時擋 NaN／小數／負數）
-  // 同一個態度，這裡在插入前就攔下、換成看得懂的中文訊息。
-  if (!Number.isInteger(n) || n < 0) throw new Error("庫存必須是非負整數或留空");
-  if (n > MAX_STOCK) {
-    throw new Error(`庫存最多 ${MAX_STOCK.toLocaleString("zh-TW")} 件，確認一下是不是多打了幾個 0`);
-  }
-  return n;
-}
-
-// 品名／描述的字數上限，跟價格／庫存同一套：數字在 lib/product-limits（表單的 maxLength
-// 也吃同一份），這裡在伺服器端真正擋下。空品名的檢查留在呼叫端（那句訊息跟其他必填
-// 欄位同一組），這裡只管「太長」。
-function assertTextLimits(name: string, description: string | null) {
-  if (name.length > MAX_PRODUCT_NAME_LEN) {
-    throw new Error(`商品名稱最多 ${MAX_PRODUCT_NAME_LEN} 個字，長一點的說明放到描述欄`);
-  }
-  if (description && description.length > MAX_PRODUCT_DESC_LEN) {
-    throw new Error(`商品描述最多 ${MAX_PRODUCT_DESC_LEN.toLocaleString("zh-TW")} 個字`);
-  }
 }
 
 async function uploadFiles(files: File[], merchantId: string): Promise<string[]> {
@@ -112,32 +67,14 @@ export async function createProduct(slug: string, formData: FormData) {
   const baseRedirect = `/dashboard/stores/${slug}/products/new`;
   const { supabase, store } = await authorizedStore(slug);
 
-  const name = formString(formData, "name");
-  const description =
-    formStringOrNull(formData, "description");
-  const priceRaw = formString(formData, "price");
-  const stockRaw = formString(formData, "stock");
   const imageUrlRaw = formString(formData, "image_url");
-  const isActive = formData.get("is_active") === "on";
   const imageFiles = formData.getAll("image_files") as File[];
 
-  if (!name) {
-    redirect(baseRedirect + "?error=" + encodeURIComponent("請填商品名稱"));
+  const form = readProductForm(formData);
+  if (!form.ok) {
+    redirect(baseRedirect + "?error=" + encodeURIComponent(form.error));
   }
-  if (!priceRaw) {
-    redirect(baseRedirect + "?error=" + encodeURIComponent("請填價格"));
-  }
-
-  let price: number;
-  let stock: number | null;
-  try {
-    assertTextLimits(name, description);
-    price = parsePrice(priceRaw);
-    stock = parseStock(stockRaw);
-  } catch (e) {
-    const msg = e instanceof Error ? e.message : "輸入錯誤";
-    redirect(baseRedirect + "?error=" + encodeURIComponent(msg));
-  }
+  const { name, description, price, stock, isActive } = form.value;
 
   let imageUrls: string[] = [];
   if (imageFiles.length > 0) {
@@ -179,10 +116,10 @@ export async function createProduct(slug: string, formData: FormData) {
     merchant_id: store.id,
     name,
     description,
-    price_cents: yuanToCents(price!),
+    price_cents: yuanToCents(price),
     currency: "TWD",
     image_urls: imageUrls,
-    stock: stock!,
+    stock,
     sort_order: sortOrder,
     is_active: isActive,
   });
@@ -212,34 +149,16 @@ export async function updateProduct(
     redirect(`/dashboard/stores/${slug}/products`);
   }
 
-  const name = formString(formData, "name");
-  const description =
-    formStringOrNull(formData, "description");
-  const priceRaw = formString(formData, "price");
-  const stockRaw = formString(formData, "stock");
-  const isActive = formData.get("is_active") === "on";
   const imageFiles = formData.getAll("image_files") as File[];
   const removeImageUrls = new Set(
     formData.getAll("remove_image_urls").map(String)
   );
 
-  if (!name) {
-    redirect(baseRedirect + "?error=" + encodeURIComponent("請填商品名稱"));
+  const form = readProductForm(formData);
+  if (!form.ok) {
+    redirect(baseRedirect + "?error=" + encodeURIComponent(form.error));
   }
-  if (!priceRaw) {
-    redirect(baseRedirect + "?error=" + encodeURIComponent("請填價格"));
-  }
-
-  let price: number;
-  let stock: number | null;
-  try {
-    assertTextLimits(name, description);
-    price = parsePrice(priceRaw);
-    stock = parseStock(stockRaw);
-  } catch (e) {
-    const msg = e instanceof Error ? e.message : "輸入錯誤";
-    redirect(baseRedirect + "?error=" + encodeURIComponent(msg));
-  }
+  const { name, description, price, stock, isActive } = form.value;
 
   const existingImages: string[] = existing.image_urls ?? [];
   const remaining = existingImages.filter((u) => !removeImageUrls.has(u));
@@ -261,9 +180,9 @@ export async function updateProduct(
     .update({
       name,
       description,
-      price_cents: yuanToCents(price!),
+      price_cents: yuanToCents(price),
       image_urls: finalImages,
-      stock: stock!,
+      stock,
       is_active: isActive,
     })
     .eq("id", productId);
