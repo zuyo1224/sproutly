@@ -17,6 +17,7 @@ import {
   shortOrderId,
 } from "@/lib/order-labels";
 import { telHref, mailHref } from "@/lib/contact-href";
+import { buildUrl } from "@/lib/url";
 import { siteBaseUrl } from "@/lib/store-schema";
 import { isUuid } from "@/lib/uuid";
 
@@ -115,9 +116,10 @@ export default async function OrderDetailPage({
     paymentStatus: order.payment_status,
     // 帶上編號＋電話（結帳成功頁同款），客人點開直接看到自己的單；
     // 光桿 /track 只會落在空白查詢表單，客人得自己手打編號跟電話。
-    trackUrl: `${baseUrl}/${slug}/track?id=${shortId}&phone=${encodeURIComponent(
-      order.customer_phone
-    )}`,
+    trackUrl: buildUrl(`${baseUrl}/${slug}/track`, {
+      id: shortId,
+      phone: order.customer_phone,
+    }),
   });
 
   return (

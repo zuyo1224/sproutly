@@ -19,6 +19,7 @@ import { formatPrice } from "@/lib/format-price";
 import { isSoldOut, isLowStock, stockAriaSuffix } from "@/lib/product-stock";
 import { getFavoriteIds, setFavoriteIds } from "@/lib/favorites";
 import { displayableImageUrls } from "@/lib/image-url";
+import { buildUrl } from "@/lib/url";
 
 export default function FavoritesPage() {
   const params = useParams();
@@ -48,7 +49,7 @@ export default function FavoritesPage() {
       }
       try {
         const res = await fetch(
-          `/${slug}/favorites/api?ids=${encodeURIComponent(ids.join(","))}`,
+          buildUrl(`/${slug}/favorites/api`, { ids: ids.join(",") }),
           { cache: "no-store" }
         );
         if (!res.ok) throw new Error(`favorites api ${res.status}`);

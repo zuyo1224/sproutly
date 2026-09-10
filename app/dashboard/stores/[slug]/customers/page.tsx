@@ -24,11 +24,12 @@ import {
   isAccountGroupKey,
 } from "@/lib/group-orders-by-customer";
 import { fetchCustomerOrders } from "@/lib/fetch-customer-orders";
+import { buildUrl } from "@/lib/url";
 
 // 點客人 → 帶他的電話（沒有就 email / 姓名）去訂單列表用既有的 ?q= 篩出他的所有單
 function customerOrdersHref(slug: string, r: CustomerRow) {
   const needle = (r.phone && r.phone !== "unknown" ? r.phone : "") || r.email || r.name;
-  return `/dashboard/stores/${slug}/orders?q=${encodeURIComponent(needle)}`;
+  return buildUrl(`/dashboard/stores/${slug}/orders`, { q: needle });
 }
 
 type CustomerRow = {

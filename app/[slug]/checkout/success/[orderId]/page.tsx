@@ -28,6 +28,7 @@ export const metadata: Metadata = { title: "訂單成立" };
 import { formatPrice } from "@/lib/format-price";
 // 下單／付款／出貨時間的「年 月 日 時:分」跟會員訂單詳情頁共用同一份（見 format-date.ts）。
 import { taipeiStampLong as formatDateTime } from "@/lib/format-date";
+import { buildUrl } from "@/lib/url";
 
 export default async function OrderSuccessPage({
   params,
@@ -574,9 +575,7 @@ export default async function OrderSuccessPage({
         <CopyOrderId shortId={shortId} />
         ，跟店家確認付款、或之後{" "}
         <Link
-          href={`/${slug}/track?id=${shortId}&phone=${encodeURIComponent(
-            order.customer_phone
-          )}`}
+          href={buildUrl(`/${slug}/track`, { id: shortId, phone: order.customer_phone })}
           className="sproutly-link"
           style={{ color: theme.accent }}
         >

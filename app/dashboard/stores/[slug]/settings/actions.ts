@@ -6,7 +6,7 @@ import { requireUser } from "@/lib/require-user";
 import { uploadImage } from "@/lib/storage";
 import { normalizeHexColor } from "@/lib/hex-color";
 import { redirect } from "next/navigation";
-import { withErrorParam } from "@/lib/redirect-url";
+import { buildUrl, withErrorParam } from "@/lib/url";
 
 const PRESETS = new Set(["editorial", "plant-zen", "nordic", "aesop", "modern"]);
 const FONTS = new Set([
@@ -247,5 +247,5 @@ export async function updateStore(slug: string, formData: FormData) {
     redirect(withErrorParam(baseRedirect, error.message));
   }
 
-  redirect(baseRedirect + "?saved=1");
+  redirect(buildUrl(baseRedirect, { saved: 1 }));
 }

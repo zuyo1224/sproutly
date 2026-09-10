@@ -5,7 +5,7 @@ import { normalizeEmail } from "@/lib/email-normalize";
 import { createClient } from "@/lib/supabase/server";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
-import { withErrorParam } from "@/lib/redirect-url";
+import { buildUrl, withErrorParam } from "@/lib/url";
 
 export async function sendCustomerMagicLink(formData: FormData) {
   const email = normalizeEmail(formString(formData, "email"));
@@ -21,7 +21,11 @@ export async function sendCustomerMagicLink(formData: FormData) {
   const proto = h.get("x-forwarded-proto") ?? (host.startsWith("localhost") ? "http" : "https");
   const origin = `${proto}://${host}`;
 
-  const callbackUrl = `${origin}/auth/callback?next=${encodeURIComponent(next)}&kind=customer&slug=${encodeURIComponent(slug)}`;
+  const callbackUrl = buildUrl(`${origin}/auth/callback`, {
+    next,
+    kind: "customer",
+    slug,
+  });
 
   const supabase = await createClient();
   const { error } = await supabase.auth.signInWithOtp({
@@ -36,7 +40,7 @@ export async function sendCustomerMagicLink(formData: FormData) {
     redirect(withErrorParam(`/${slug}/account/login`, error.message));
   }
 
-  redirect(`/${slug}/account/login?sent=1&email=${encodeURIComponent(email)}`);
+  redirect(buildUrl(`/${slug}/account/login`, { sent: 1, email }));
 }
 
 export async function customerSignOut(formData: FormData) {

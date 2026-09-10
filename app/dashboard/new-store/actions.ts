@@ -4,7 +4,7 @@ import { storeTextLimitError } from "@/lib/store-limits";
 
 import { requireUser } from "@/lib/require-user";
 import { redirect } from "next/navigation";
-import { withErrorParam } from "@/lib/redirect-url";
+import { withErrorParam } from "@/lib/url";
 
 // app/ 底下的頂層靜態路由段（含 Next 自動掛在根路徑的 metadata 圖），
 // 靜態段優先於 [slug]，slug 撞名整間店面會被平台頁蓋掉、永遠打不開

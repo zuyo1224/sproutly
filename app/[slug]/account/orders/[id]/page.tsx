@@ -31,6 +31,7 @@ import {
   taipeiStampLong as formatDateTime,
   taipeiStampMonthDay,
 } from "@/lib/format-date";
+import { buildUrl } from "@/lib/url";
 
 export default async function CustomerOrderDetailPage({
   params,
@@ -55,7 +56,7 @@ export default async function CustomerOrderDetailPage({
   const user = userData.user;
   if (!user) {
     redirect(
-      `/${slug}/account/login?next=${encodeURIComponent(`/${slug}/account/orders/${id}`)}`
+      buildUrl(`/${slug}/account/login`, { next: `/${slug}/account/orders/${id}` })
     );
   }
 

@@ -6,6 +6,7 @@ import { getRecentOrders, type RecentOrder } from "@/lib/recent-orders";
 
 import { formatPrice } from "@/lib/format-price";
 import { taipeiDateMonthDay } from "@/lib/format-date";
+import { buildUrl } from "@/lib/url";
 
 function formatDate(iso: string) {
   // localStorage 來的字串可能壞掉，先擋掉 Invalid Date 再交給共用格式化（會回空字串）。
@@ -65,7 +66,7 @@ export function RecentOrdersList({ slug }: { slug: string }) {
             }}
           >
             <Link
-              href={`/${slug}/track?id=${encodeURIComponent(o.shortId)}&phone=${encodeURIComponent(o.phone)}`}
+              href={buildUrl(`/${slug}/track`, { id: o.shortId, phone: o.phone })}
               className="flex items-baseline justify-between gap-4 py-3.5 transition hover:opacity-70"
             >
               <span className="min-w-0">

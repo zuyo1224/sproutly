@@ -11,6 +11,7 @@ import {
 
 import { formatPrice } from "@/lib/format-price";
 import { isSoldOut, isLowStock, stockAriaSuffix } from "@/lib/product-stock";
+import { buildUrl } from "@/lib/url";
 
 // 「最近看過」一排。兩種用法：
 //  1. 商品詳情頁底部 — 傳 current，先讀出之前看過的清單顯示（自然排除當前這株），
@@ -58,7 +59,7 @@ export function RecentlyViewed({
     if (ids.length === 0) return;
     let aborted = false;
     fetch(
-      `/${slug}/favorites/api?ids=${encodeURIComponent(ids.join(","))}`,
+      buildUrl(`/${slug}/favorites/api`, { ids: ids.join(",") }),
       { cache: "no-store" }
     )
       .then((r) => (r.ok ? r.json() : Promise.reject(new Error())))

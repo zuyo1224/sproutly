@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
+import { buildUrl } from "@/lib/url";
 
 type AssetPhoto = {
   id: number;
@@ -68,7 +69,7 @@ export function AssetPicker({
     setError(null);
     try {
       const r = await fetch(
-        `/api/asset-search?q=${encodeURIComponent(q)}&page=${p}`
+        buildUrl("/api/asset-search", { q, page: p })
       );
       const data = await r.json();
       if (!r.ok) {

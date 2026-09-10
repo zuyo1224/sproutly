@@ -4,6 +4,7 @@ import { createClient } from "@/lib/supabase/server";
 import { resolveTheme } from "../_theme";
 import { customerSignOut } from "./actions";
 import { ACTIVE_ORDER_STATUSES } from "@/lib/order-labels";
+import { buildUrl } from "@/lib/url";
 
 type Params = Promise<{ slug: string }>;
 
@@ -27,7 +28,7 @@ export default async function CustomerAccountHome({
   const { data: userData } = await supabase.auth.getUser();
   const user = userData.user;
   if (!user) {
-    redirect(`/${slug}/account/login?next=${encodeURIComponent(`/${slug}/account`)}`);
+    redirect(buildUrl(`/${slug}/account/login`, { next: `/${slug}/account` }));
   }
 
   const { data: customer } = await supabase

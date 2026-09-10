@@ -11,7 +11,7 @@ import { QTY_MIN, QTY_MAX, isValidQty } from "@/lib/product-quantity";
 import { decrementStock, restoreStock } from "@/lib/stock-restore";
 import { insufficientStockError, stockConflictError } from "@/lib/product-stock";
 import { buildOrderRow, buildOrderItemRow } from "@/lib/order-rows";
-import { buildRedirectUrl, withErrorParam } from "@/lib/redirect-url";
+import { buildUrl, withErrorParam } from "@/lib/url";
 
 export async function placeOrder(slug: string, formData: FormData) {
   const productId = formString(formData, "product_id");
@@ -30,10 +30,10 @@ export async function placeOrder(slug: string, formData: FormData) {
   const shippingStoreName =
     formStringOrNull(formData, "shipping_store_name");
 
-  // product_id 與 qty 都是客人送出的值，接進網址前一律編碼（見 lib/redirect-url）：
+  // product_id 與 qty 都是客人送出的值，接進網址前一律編碼（見 lib/url）：
   // 以前直接字串接，欄位裡夾一個 & 就能自己多長出一個 error 參數，把假訊息顯在
   // 這家店的結帳頁上。
-  const baseRedirect = buildRedirectUrl(`/${slug}/checkout`, {
+  const baseRedirect = buildUrl(`/${slug}/checkout`, {
     product_id: productId,
     qty: qtyRaw,
   });

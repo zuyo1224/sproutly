@@ -15,6 +15,7 @@ type Product = {
 
 import { formatPrice } from "@/lib/format-price";
 import { displayableImageUrls } from "@/lib/image-url";
+import { buildUrl } from "@/lib/url";
 
 export function SearchOverlay({ slug }: { slug: string }) {
   const [open, setOpen] = useState(false);
@@ -84,7 +85,7 @@ export function SearchOverlay({ slug }: { slug: string }) {
         } else if (query) {
           window.location.href =
             results.length > 0
-              ? `/${slug}/shop?q=${encodeURIComponent(query)}`
+              ? buildUrl(`/${slug}/shop`, { q: query })
               : `/${slug}/shop`;
         }
       }
@@ -130,7 +131,7 @@ export function SearchOverlay({ slug }: { slug: string }) {
     const t = setTimeout(async () => {
       try {
         const res = await fetch(
-          `/${slug}/search/api?q=${encodeURIComponent(q.trim())}`,
+          buildUrl(`/${slug}/search/api`, { q: q.trim() }),
           { cache: "no-store" }
         );
         if (!res.ok) throw new Error(`search failed: ${res.status}`);
@@ -558,7 +559,7 @@ export function SearchOverlay({ slug }: { slug: string }) {
                   且能排序＋只看有貨——給一條過去的橋，把快搜接上能篩選的完整列表。 */}
               {!loading && results.length > 0 && (
                 <Link
-                  href={`/${slug}/shop?q=${encodeURIComponent(q.trim())}`}
+                  href={buildUrl(`/${slug}/shop`, { q: q.trim() })}
                   onClick={() => setOpen(false)}
                   id="sproutly-search-opt-bridge"
                   role="option"

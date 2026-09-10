@@ -5,7 +5,7 @@ import { normalizeEmail } from "@/lib/email-normalize";
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { redirect } from "next/navigation";
-import { withErrorParam } from "@/lib/redirect-url";
+import { withErrorParam } from "@/lib/url";
 
 export async function signUp(formData: FormData) {
   const email = normalizeEmail(formString(formData, "email"));

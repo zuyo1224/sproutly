@@ -1,45 +1,45 @@
-// lib/redirect-url.ts 的行為固定測試：buildRedirectUrl（組跳轉網址）、
+// lib/url.ts 的行為固定測試：buildUrl（組一條帶查詢字串的網址）、
 // withErrorParam（把錯誤訊息掛上去）。
 //
-// 為什麼要有這份：這兩支是「出錯跳回去，把中文訊息顯在紅色橫幅」那條路唯一的組網址
-// 來源，改壞了不會噴錯，只會在某個表單出錯的那一刻才看得出來——訊息整句不見、跳到
-// 半截網址、或最糟的：客人送出的欄位值裡帶一個 `&`，自己在店家的結帳頁上多長出一個
-// error 參數，把假訊息（「請改匯款到…」）顯成像店家講的話。原本各處字串接的寫法就是
-// 這樣漏的（見 redirect-url.ts 開頭），所以把每條邊界寫死在這裡。
+// 為什麼要有這份：站上每一條自己組的網址（跳轉、連結、前端打自家介面）都從這兩支出來，
+// 改壞了不會噴錯，只會在某個表單出錯的那一刻才看得出來——訊息整句不見、跳到半截網址、
+// 或最糟的：客人送出的欄位值裡帶一個 `&`，自己在店家的結帳頁上多長出一個 error 參數，
+// 把假訊息（「請改匯款到…」）顯成像店家講的話。原本各處字串接的寫法就是這樣漏的
+// （見 url.ts 開頭），所以把每條邊界寫死在這裡。
 // 跟其他 lib 測試同一套：node:test + node:assert，import 一律帶 .ts。
 import { describe, it } from "node:test";
 import assert from "node:assert/strict";
-import { buildRedirectUrl, withErrorParam } from "./redirect-url.ts";
+import { buildUrl, withErrorParam } from "./url.ts";
 
-describe("buildRedirectUrl", () => {
+describe("buildUrl", () => {
   it("沒有參數就只回路徑，不留一個孤單的問號", () => {
-    assert.equal(buildRedirectUrl("/plantae/checkout", {}), "/plantae/checkout");
+    assert.equal(buildUrl("/plantae/checkout", {}), "/plantae/checkout");
   });
 
   it("一般情況：照給的順序組成查詢字串", () => {
     assert.equal(
-      buildRedirectUrl("/plantae/checkout", { product_id: "abc", qty: "2" }),
+      buildUrl("/plantae/checkout", { product_id: "abc", qty: "2" }),
       "/plantae/checkout?product_id=abc&qty=2",
     );
   });
 
   it("數字值轉成字串", () => {
-    assert.equal(buildRedirectUrl("/x", { qty: 3 }), "/x?qty=3");
+    assert.equal(buildUrl("/x", { qty: 3 }), "/x?qty=3");
   });
 
   it("null / undefined 的參數整個不帶", () => {
     assert.equal(
-      buildRedirectUrl("/x", { a: "1", b: null, c: undefined }),
+      buildUrl("/x", { a: "1", b: null, c: undefined }),
       "/x?a=1",
     );
   });
 
   it("空字串是有意義的值，照樣帶上去", () => {
-    assert.equal(buildRedirectUrl("/x", { q: "" }), "/x?q=");
+    assert.equal(buildUrl("/x", { q: "" }), "/x?q=");
   });
 
   it("值裡的 & 被編碼，長不出第二個參數（客人送 product_id 夾帶假訊息那條路）", () => {
-    const url = buildRedirectUrl("/plantae/checkout", {
+    const url = buildUrl("/plantae/checkout", {
       product_id: "abc&error=請改匯款到別的帳戶",
       qty: "1",
     });
@@ -51,14 +51,38 @@ describe("buildRedirectUrl", () => {
   });
 
   it("值裡的 # 被編碼，後面那段不會被當成錨點丟掉", () => {
-    const url = buildRedirectUrl("/x", { q: "5#號盆" });
+    const url = buildUrl("/x", { q: "5#號盆" });
     assert.ok(!url.includes("#"), url);
     assert.equal(new URLSearchParams(url.split("?")[1]).get("q"), "5#號盆");
   });
 
   it("中文與空白編碼後讀回來一個字不差", () => {
-    const url = buildRedirectUrl("/x", { q: "龜背芋 大盆" });
+    const url = buildUrl("/x", { q: "龜背芋 大盆" });
     assert.equal(new URLSearchParams(url.split("?")[1]).get("q"), "龜背芋 大盆");
+  });
+
+  it("值是一條回跳路徑（登入完要回哪頁）：斜線不編也讀得回原樣", () => {
+    const url = buildUrl("/plantae/account/login", { next: "/plantae/account/orders" });
+    assert.equal(readParam(url, "next"), "/plantae/account/orders");
+  });
+
+  it("值是逗號串起來的 id 清單（收藏補資料）：讀回來還能照逗號切回原本幾筆", () => {
+    const ids = ["a1", "b2", "c3"];
+    const url = buildUrl("/plantae/favorites/api", { ids: ids.join(",") });
+    assert.deepEqual(readParam(url, "ids")!.split(","), ids);
+  });
+
+  it("path 是完整網址也照組（寄出去的登入信要帶絕對網址）", () => {
+    const url = buildUrl("https://sproutly.tw/auth/callback", {
+      next: "/plantae/account",
+      kind: "customer",
+      slug: "plantae",
+    });
+    const parsed = new URL(url);
+    assert.equal(parsed.origin + parsed.pathname, "https://sproutly.tw/auth/callback");
+    assert.equal(parsed.searchParams.get("next"), "/plantae/account");
+    assert.equal(parsed.searchParams.get("kind"), "customer");
+    assert.equal(parsed.searchParams.get("slug"), "plantae");
   });
 });
 

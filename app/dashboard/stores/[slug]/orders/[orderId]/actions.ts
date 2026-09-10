@@ -6,7 +6,7 @@ import { redirect } from "next/navigation";
 import { ORDER_STATUSES, PAYMENT_STATUSES } from "@/lib/order-labels";
 import { adjustStock } from "@/lib/stock-restore";
 import { orderStatusUpdates, orderPaymentUpdates } from "@/lib/order-timestamps";
-import { withErrorParam } from "@/lib/redirect-url";
+import { withErrorParam } from "@/lib/url";
 
 // 收狀態更新時的合法值跟訂單列表 chip、詳情下拉、匯出白名單同一條 canonical 順序。
 const ALLOWED_STATUS = new Set(ORDER_STATUSES);

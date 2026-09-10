@@ -79,6 +79,7 @@ const SORT_OPTIONS: { value: string; label: string }[] = [
 
 import { formatPrice, productOfferFieldsForSchema } from "@/lib/format-price";
 import { availabilityForSchema } from "@/lib/availability-schema";
+import { buildUrl } from "@/lib/url";
 
 export default async function ShopPage({
   params,
@@ -526,7 +527,7 @@ export default async function ShopPage({
                   別讓客人為了看缺貨結果連搜尋字一起清掉、再從頭打一次。 */}
               {q && inStock && (
                 <Link
-                  href={`/${slug}/shop?q=${encodeURIComponent(q)}`}
+                  href={buildUrl(`/${slug}/shop`, { q })}
                   className="sproutly-link inline-block text-[0.75rem] uppercase font-medium"
                   style={{ letterSpacing: "0.3em" }}
                   data-default-line="true"

@@ -48,6 +48,7 @@ function statusPillStyle(status: string, theme: ReturnType<typeof resolveTheme>)
 
 import { formatPrice } from "@/lib/format-price";
 import { taipeiDateLong } from "@/lib/format-date";
+import { buildUrl } from "@/lib/url";
 
 export default async function CustomerOrdersPage({
   params,
@@ -69,9 +70,7 @@ export default async function CustomerOrdersPage({
   const { data: userData } = await supabase.auth.getUser();
   const user = userData.user;
   if (!user) {
-    redirect(
-      `/${slug}/account/login?next=${encodeURIComponent(`/${slug}/account/orders`)}`
-    );
+    redirect(buildUrl(`/${slug}/account/login`, { next: `/${slug}/account/orders` }));
   }
 
   type Order = {
