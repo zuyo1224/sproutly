@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { PHOTO_FILE_ACCEPT } from "@/lib/upload-image-type";
 
 type Preview = { url: string; name: string; size: number };
 
@@ -56,7 +57,7 @@ export function ImageFilePicker({
         name={name}
         type="file"
         multiple
-        accept="image/jpeg,image/png,image/webp,image/gif"
+        accept={PHOTO_FILE_ACCEPT}
         onChange={handleChange}
         className={className}
       />

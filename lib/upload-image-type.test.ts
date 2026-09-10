@@ -10,6 +10,8 @@
 import { describe, it } from "node:test";
 import assert from "node:assert/strict";
 import {
+  LOGO_FILE_ACCEPT,
+  PHOTO_FILE_ACCEPT,
   UNSUPPORTED_IMAGE_ERROR,
   uploadImageContentType,
   uploadImageExtension,
@@ -97,5 +99,52 @@ describe("uploadImageContentType", () => {
   it("回報的型別前後有空白時去掉空白再判", () => {
     assert.equal(uploadImageContentType("png", "  image/png  "), "image/png");
     assert.equal(uploadImageContentType("png", "   "), "image/png");
+  });
+});
+
+describe("選檔框的 accept 清單", () => {
+  // 副檔名 → 選檔框那串裡對應的寫法。uploadImageContentType 推出來的就是這個值，
+  // 所以直接借它，兩邊不會各維護一份對照表。
+  const typeOf = (ext: string) => uploadImageContentType(ext, "");
+  const listOf = (accept: string) => accept.split(",");
+
+  it("兩串裡的每一種型別，後端都真的收得下", () => {
+    // 反過來的方向才是會出事的那邊：選檔框端出一種後端會擋的格式，商家選得到、
+    // 送出去卻被回一句「格式只支援…」。
+    const backendTypes = new Set(
+      ["jpg", "jpeg", "png", "webp", "gif", "svg"].map(typeOf),
+    );
+    for (const accept of [LOGO_FILE_ACCEPT, PHOTO_FILE_ACCEPT]) {
+      for (const type of listOf(accept)) {
+        assert.ok(backendTypes.has(type), `${type} 後端不收`);
+      }
+    }
+  });
+
+  it("兩串都沒有空白、沒有重複，逗號分隔照 accept 的寫法", () => {
+    for (const accept of [LOGO_FILE_ACCEPT, PHOTO_FILE_ACCEPT]) {
+      assert.ok(!/\s/.test(accept), `${accept} 有空白`);
+      const list = listOf(accept);
+      assert.equal(new Set(list).size, list.length);
+      for (const type of list) {
+        assert.ok(type.startsWith("image/"), `${type} 不是圖片型別`);
+      }
+    }
+  });
+
+  it("logo 那串收 svg，照片那串不收（照片走 next/image 最佳化，svg 會變破圖）", () => {
+    assert.ok(listOf(LOGO_FILE_ACCEPT).includes("image/svg+xml"));
+    assert.ok(!listOf(PHOTO_FILE_ACCEPT).includes("image/svg+xml"));
+  });
+
+  it("差別只有 svg 一項，其餘四種兩串都有", () => {
+    for (const ext of ["jpg", "png", "webp", "gif"]) {
+      assert.ok(listOf(LOGO_FILE_ACCEPT).includes(typeOf(ext)), ext);
+      assert.ok(listOf(PHOTO_FILE_ACCEPT).includes(typeOf(ext)), ext);
+    }
+    assert.equal(
+      listOf(LOGO_FILE_ACCEPT).length,
+      listOf(PHOTO_FILE_ACCEPT).length + 1,
+    );
   });
 });

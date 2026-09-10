@@ -35,6 +35,10 @@ import {
 import { AIEditPanel } from "@/app/_components/ai-edit-panel";
 import { UnsavedChangesGuard } from "@/app/_components/unsaved-changes-guard";
 import { ContactHintInput } from "@/app/_components/contact-hint-input";
+import {
+  LOGO_FILE_ACCEPT,
+  PHOTO_FILE_ACCEPT,
+} from "@/lib/upload-image-type";
 
 type Params = Promise<{ slug: string }>;
 type SearchParams = Promise<{ error?: string; saved?: string }>;
@@ -533,7 +537,7 @@ A: 可以，地點為台北車站。`}</pre>
             <input
               name="theme_logo_file"
               type="file"
-              accept="image/jpeg,image/png,image/webp,image/svg+xml"
+              accept={LOGO_FILE_ACCEPT}
               className="block w-full text-sm text-emerald-900/80 file:mr-4 file:py-2.5 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-medium file:bg-emerald-50 file:text-emerald-800 hover:file:bg-emerald-100 file:transition"
             />
             <p className="mt-1.5 text-xs text-emerald-900/50">
@@ -566,7 +570,7 @@ A: 可以，地點為台北車站。`}</pre>
             <input
               name="theme_hero_file"
               type="file"
-              accept="image/jpeg,image/png,image/webp"
+              accept={PHOTO_FILE_ACCEPT}
               className="block w-full text-sm text-emerald-900/80 file:mr-4 file:py-2.5 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-medium file:bg-emerald-50 file:text-emerald-800 hover:file:bg-emerald-100 file:transition"
             />
             <p className="mt-1.5 text-xs text-emerald-900/50">
