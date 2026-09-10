@@ -1,7 +1,10 @@
 import { createAdminClient } from "@/lib/supabase/admin";
 import { randomUUID } from "node:crypto";
-
-const ALLOWED_EXT = ["jpg", "jpeg", "png", "webp", "gif", "svg"];
+import {
+  UNSUPPORTED_IMAGE_ERROR,
+  uploadImageContentType,
+  uploadImageExtension,
+} from "@/lib/upload-image-type";
 
 export async function uploadImage(
   file: File,
@@ -9,19 +12,13 @@ export async function uploadImage(
   pathPrefix: string
 ): Promise<string> {
   const admin = createAdminClient();
-  const ext = (file.name.split(".").pop() || "jpg").toLowerCase();
-  if (!ALLOWED_EXT.includes(ext)) {
-    throw new Error("圖片格式只支援 jpg / png / webp / gif / svg");
+  const ext = uploadImageExtension(file.name);
+  if (!ext) {
+    throw new Error(UNSUPPORTED_IMAGE_ERROR);
   }
   const path = `${pathPrefix}/${randomUUID()}.${ext}`;
   const buffer = Buffer.from(await file.arrayBuffer());
-  const contentType =
-    file.type ||
-    (ext === "jpg"
-      ? "image/jpeg"
-      : ext === "svg"
-        ? "image/svg+xml"
-        : `image/${ext}`);
+  const contentType = uploadImageContentType(ext, file.type);
   const { error } = await admin.storage.from(bucket).upload(path, buffer, {
     contentType,
     upsert: false,
