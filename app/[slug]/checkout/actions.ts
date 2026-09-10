@@ -9,7 +9,7 @@ import { encodeShippingIntoNote } from "@/lib/order-labels";
 import { checkoutFieldsError } from "@/lib/checkout-fields";
 import { QTY_MIN, QTY_MAX, isValidQty } from "@/lib/product-quantity";
 import { decrementStock, restoreStock } from "@/lib/stock-restore";
-import { insufficientStockError } from "@/lib/product-stock";
+import { insufficientStockError, stockConflictError } from "@/lib/product-stock";
 
 export async function placeOrder(slug: string, formData: FormData) {
   const productId = formString(formData, "product_id");
@@ -91,7 +91,7 @@ export async function placeOrder(slug: string, formData: FormData) {
           encodeURIComponent(
             dec.reason === "insufficient"
               ? insufficientStockError(dec.stock)
-              : "剛剛有其他客人下單，庫存已變動，請重新確認"
+              : stockConflictError()
           )
       );
     }

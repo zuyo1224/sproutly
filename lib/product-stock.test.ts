@@ -14,6 +14,7 @@ import {
   clampToStock,
   bySoldOutLast,
   insufficientStockError,
+  stockConflictError,
 } from "./product-stock.ts";
 
 describe("isSoldOut", () => {
@@ -129,5 +130,34 @@ describe("insufficientStockError", () => {
       assert.equal(isSoldOut(stock), true);
       assert.ok(insufficientStockError(stock).endsWith("已售完"));
     }
+  });
+});
+
+// 撞單（decrementStock 重試用完仍搶不到那一列）是兩個結帳入口都會走到的分支，
+// 而且客人只看得到這一句。這裡把「帶不帶品名」與「兩個入口講同一句」寫死。
+describe("stockConflictError", () => {
+  it("不帶品名時就是單品結帳原本那句", () => {
+    assert.equal(
+      stockConflictError(),
+      "剛剛有其他客人下單，庫存已變動，請重新確認"
+    );
+  });
+
+  it("帶品名時把品名放句首，購物車一次好幾件才知道是哪一件", () => {
+    assert.equal(
+      stockConflictError("龜背芋"),
+      "「龜背芋」剛剛有其他客人下單，庫存已變動，請重新確認"
+    );
+  });
+
+  it("品名是空字串或 null 時當沒帶，退回不帶品名的句子", () => {
+    assert.equal(stockConflictError(""), stockConflictError());
+    assert.equal(stockConflictError(null), stockConflictError());
+    assert.equal(stockConflictError(undefined), stockConflictError());
+  });
+
+  it("跟「庫存不足」是兩句不同的話，不能混用", () => {
+    assert.notEqual(stockConflictError("龜背芋"), insufficientStockError(0, "龜背芋"));
+    assert.ok(!stockConflictError().includes("售完"));
   });
 });

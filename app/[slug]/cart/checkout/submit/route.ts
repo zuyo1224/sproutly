@@ -6,7 +6,7 @@ import { checkoutFieldsError } from "@/lib/checkout-fields";
 import { parseCartPayload } from "@/lib/cart-payload";
 import { normalizeEmail } from "@/lib/email-normalize";
 import { decrementStock, restoreStock } from "@/lib/stock-restore";
-import { insufficientStockError } from "@/lib/product-stock";
+import { insufficientStockError, stockConflictError } from "@/lib/product-stock";
 
 type Params = Promise<{ slug: string }>;
 
@@ -103,8 +103,11 @@ export async function POST(
             error: insufficientStockError(dec.stock, product.name),
           }, { status: 400 });
         }
+        // 撞單那句跟單品結帳同一份（收在 lib/product-stock，為什麼統一成這句見該檔
+        // 說明）：說法從「庫存剛被搶光，請重試」改成「剛剛有其他客人下單，庫存已變動，
+        // 請重新確認」。回應碼維持 409。
         return NextResponse.json({
-          error: `「${product.name}」庫存剛被搶光，請重試`,
+          error: stockConflictError(product.name),
         }, { status: 409 });
       }
       if (dec.decremented) {

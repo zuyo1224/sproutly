@@ -96,3 +96,22 @@ export function insufficientStockError(stock: number, productName?: string | nul
   if (isSoldOut(stock)) return `${subject}已售完`;
   return `${productName ? subject : ""}庫存只剩 ${stock} 件`;
 }
+
+// 「扣庫存時跟別人撞單」要對客人講哪一句的單一來源。
+//
+// decrementStock 內部已經重讀重試過（見 stock-restore），走到 reason: "conflict"
+// 代表重試都用完還是搶不到那一列——不是庫存不夠（那條走 insufficientStockError），
+// 而是同一秒有別人也在扣同一件。這種情況兩個結帳入口原本各講各的：
+// - 單品結帳：「剛剛有其他客人下單，庫存已變動，請重新確認」
+// - 購物車結帳：「『品名』庫存剛被搶光，請重試」
+//
+// 跟 insufficientStockError 收成一份的理由一樣：同一間店的兩個入口對同一件事講不同
+// 的話。這次統一採單品那句——「請重試」在這裡是錯的指示（重試該做的事底層已經做完了，
+// 客人再按一次多半還是撞），客人真正該做的是回去看一眼現在還剩幾件再決定。
+//
+// 帶品名一樣是給購物車用的（一次結好幾件要講是哪一件）；單品那條整頁就一件商品，
+// 不帶品名，句子維持原本的樣子。
+export function stockConflictError(productName?: string | null): string {
+  const prefix = productName ? `「${productName}」` : "";
+  return `${prefix}剛剛有其他客人下單，庫存已變動，請重新確認`;
+}
