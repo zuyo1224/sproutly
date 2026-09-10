@@ -1,11 +1,11 @@
-// 客人裝置上三份「小抄」的行為固定測試：lib/cart（購物車）、lib/favorites（收藏）、
-// lib/recent-products（最近看過）。三支都是 localStorage based、per-store key，
-// 而且都是「讀回來時順便清洗」：JSON 壞掉、型別不對、數量超出範圍，一律在讀的那一刻
-// 修掉或丟掉，頁面上永遠只看到乾淨的陣列。
+// 客人裝置上四份「小抄」的行為固定測試：lib/cart（購物車）、lib/favorites（收藏）、
+// lib/recent-products（最近看過）、lib/recent-orders（最近下的單）。四支都是
+// localStorage based、per-store key，而且都是「讀回來時順便清洗」：JSON 壞掉、型別不對、
+// 數量超出範圍，一律在讀的那一刻修掉或丟掉，頁面上永遠只看到乾淨的陣列。
 //
-// 為什麼要有這份：這三支沒有後端，改壞了不會噴錯，只會在客人的瀏覽器裡安靜地出事——
-// 購物車徽章顯示 NaN、A 店開收藏頁把 B 店收藏清光、最近看過列出 NT$ 0。之前每一種
-// 都真的發生過、修過（見各檔案頂端註解），所以把修好的邊界寫死在這裡。
+// 為什麼要有這份：這四支沒有後端，改壞了不會噴錯，只會在客人的瀏覽器裡安靜地出事——
+// 購物車徽章顯示 NaN、A 店開收藏頁把 B 店收藏清光、最近看過列出 NT$ 0、查單頁把別家店的
+// 訂單編號帶進來。前三種都真的發生過、修過（見各檔案頂端註解），所以把修好的邊界寫死在這裡。
 //
 // Node 沒有 window / localStorage，這裡用 EventTarget 當 window、用 Map 當 localStorage
 // 裝到 globalThis 上；每個 it 開頭都清空，測完把 globalThis 還原，不影響其他測試檔。
@@ -31,6 +31,7 @@ import {
   rememberProduct,
   removeRecentProducts,
 } from "./recent-products.ts";
+import { getRecentOrders, rememberOrder } from "./recent-orders.ts";
 import { QTY_MAX } from "./product-quantity.ts";
 
 type FakeStorage = {
@@ -482,6 +483,142 @@ describe("recent-products：最近看過小抄", () => {
       );
       assert.deepEqual(getRecentProducts("shop"), []);
       assert.equal(removeRecentProducts("shop", ["p1"]), false);
+    } finally {
+      g.window = fakeWindow;
+    }
+  });
+});
+
+// lib/recent-orders：成功頁只給客人看一次訂單編號，抄不到就只能回頭問店家。這支把
+// 短碼＋查單電話記在客人自己的裝置上，查訂單頁才能一鍵帶入。壞法跟前三支同一類，
+// 但後果更痛：清洗放鬆，totalCents 是字串就流到 formatPrice 顯示「NT$ 0」；
+// 去重壞掉，成功頁一重整同一筆訂單就疊一列；上限或順序反了，最舊的單擠掉最新的那筆。
+describe("recent-orders：這台裝置上的最近訂單小抄", () => {
+  const sample = {
+    shortId: "A1B2C3D4",
+    phone: "0912345678",
+    totalCents: 199000,
+    currency: "TWD",
+    createdAt: "2026-09-10T02:00:00.000Z",
+  };
+
+  it("沒存過、空字串、壞 JSON、不是陣列，一律回空陣列", () => {
+    assert.deepEqual(getRecentOrders("shop"), []);
+    storage.setItem("sproutly_recent_orders_shop", "");
+    assert.deepEqual(getRecentOrders("shop"), []);
+    storage.setItem("sproutly_recent_orders_shop", "{not json");
+    assert.deepEqual(getRecentOrders("shop"), []);
+    storage.setItem("sproutly_recent_orders_shop", JSON.stringify(sample));
+    assert.deepEqual(getRecentOrders("shop"), []);
+  });
+
+  it("記一筆、讀回來一模一樣，並且存進 per-store key", () => {
+    rememberOrder("shop", sample);
+    assert.deepEqual(getRecentOrders("shop"), [sample]);
+    assert.deepEqual(rawJson("sproutly_recent_orders_shop"), [sample]);
+  });
+
+  it("各店隔離：A 店記的單不會出現在 B 店的查單頁", () => {
+    rememberOrder("a", sample);
+    assert.equal(getRecentOrders("a").length, 1);
+    assert.deepEqual(getRecentOrders("b"), []);
+  });
+
+  it("缺欄位或型別不對的整筆丟掉（短碼、電話、幣別、時間都必須是字串）", () => {
+    storage.setItem(
+      "sproutly_recent_orders_shop",
+      JSON.stringify([
+        null,
+        { ...sample, shortId: 12345678 },
+        { ...sample, phone: 912345678 },
+        { ...sample, currency: null },
+        { ...sample, createdAt: 1757462400000 },
+        { ...sample, totalCents: undefined },
+        sample,
+      ])
+    );
+    assert.deepEqual(getRecentOrders("shop"), [sample]);
+  });
+
+  it("totalCents 是數字字串就轉回真數字，算不出數字的整筆丟掉（金額不顯示 NT$ 0）", () => {
+    storage.setItem(
+      "sproutly_recent_orders_shop",
+      JSON.stringify([
+        { ...sample, shortId: "STR", totalCents: "199000" },
+        { ...sample, shortId: "NAN", totalCents: "免費" },
+        { ...sample, shortId: "OBJ", totalCents: { cents: 199000 } },
+      ])
+    );
+    const got = getRecentOrders("shop");
+    assert.deepEqual(
+      got.map((o) => o.shortId),
+      ["STR"]
+    );
+    assert.equal(got[0].totalCents, 199000);
+    assert.equal(typeof got[0].totalCents, "number");
+  });
+
+  it("totalCents 是 null 會被當成 0 存活下來（Number(null) 有限，現況如此）", () => {
+    storage.setItem(
+      "sproutly_recent_orders_shop",
+      JSON.stringify([{ ...sample, totalCents: null }])
+    );
+    assert.deepEqual(getRecentOrders("shop"), [{ ...sample, totalCents: 0 }]);
+  });
+
+  it("同一筆訂單重複記（成功頁重整、查單頁再查）只留一列，且提到最前面", () => {
+    rememberOrder("shop", sample);
+    rememberOrder("shop", { ...sample, shortId: "OTHER123" });
+    rememberOrder("shop", { ...sample, totalCents: 250000 });
+    const got = getRecentOrders("shop");
+    assert.equal(got.length, 2);
+    assert.deepEqual(
+      got.map((o) => o.shortId),
+      [sample.shortId, "OTHER123"]
+    );
+    assert.equal(got[0].totalCents, 250000);
+  });
+
+  it("最新記的排最前面", () => {
+    rememberOrder("shop", { ...sample, shortId: "FIRST" });
+    rememberOrder("shop", { ...sample, shortId: "SECOND" });
+    assert.deepEqual(
+      getRecentOrders("shop").map((o) => o.shortId),
+      ["SECOND", "FIRST"]
+    );
+  });
+
+  it("最多留 10 筆，滿了之後掉的是最舊那筆", () => {
+    for (let i = 1; i <= 13; i += 1) {
+      rememberOrder("shop", { ...sample, shortId: `ORDER${i}` });
+    }
+    const got = getRecentOrders("shop");
+    assert.equal(got.length, 10);
+    assert.equal(got[0].shortId, "ORDER13");
+    assert.equal(got[9].shortId, "ORDER4");
+  });
+
+  it("localStorage 讀或寫丟例外都安靜吞掉，不擋下單也不讓查單頁整頁掛掉", () => {
+    const readBoom = makeStorage();
+    readBoom.getItem = () => {
+      throw new Error("SecurityError");
+    };
+    g.localStorage = readBoom;
+    assert.deepEqual(getRecentOrders("shop"), []);
+
+    const writeBoom = makeStorage();
+    writeBoom.setItem = () => {
+      throw new Error("QuotaExceededError");
+    };
+    g.localStorage = writeBoom;
+    assert.doesNotThrow(() => rememberOrder("shop", sample));
+  });
+
+  it("沒有 window 時 getRecentOrders 回空陣列", () => {
+    g.window = undefined;
+    try {
+      storage.setItem("sproutly_recent_orders_shop", JSON.stringify([sample]));
+      assert.deepEqual(getRecentOrders("shop"), []);
     } finally {
       g.window = fakeWindow;
     }
