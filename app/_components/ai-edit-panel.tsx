@@ -1,25 +1,11 @@
 "use client";
 
 import { useState, useRef } from "react";
-import { truncateText } from "@/lib/truncate-text";
-
-type ThemePatch = {
-  primary?: string;
-  accent?: string;
-  tagline?: string;
-  layout?: {
-    heroStyle?: string;
-    heroEyebrow?: string;
-    heroSubtitle?: string;
-    heroImageSide?: string;
-    sectionOrder?: string[];
-  };
-  homepage?: {
-    promise?: string;
-    collectionsIntro?: string;
-    visitTitle?: string;
-  };
-};
+import {
+  FULL_PATCH_LABELS,
+  summarizeThemePatch,
+  type ThemePatch,
+} from "@/lib/theme-patch-summary";
 
 type Message = {
   role: "user" | "ai";
@@ -76,7 +62,7 @@ export function AIEditPanel({
       }
       const aiMsg: Message = {
         role: "ai",
-        text: summarizePatch(data.patch),
+        text: summarizeThemePatch(data.patch, FULL_PATCH_LABELS, 60),
         patch: data.patch,
         ts: Date.now(),
       };
@@ -250,30 +236,4 @@ export function AIEditPanel({
       </form>
     </aside>
   );
-}
-
-function summarizePatch(patch: ThemePatch | undefined): string {
-  if (!patch || typeof patch !== "object") return "（無變動）";
-  const lines: string[] = [];
-  if (patch.primary) lines.push(`主色 → ${patch.primary}`);
-  if (patch.accent) lines.push(`Accent → ${patch.accent}`);
-  if (patch.tagline !== undefined)
-    lines.push(`Tagline → ${truncateText(patch.tagline, 60)}`);
-  if (patch.layout?.heroStyle) lines.push(`Hero 樣式 → ${patch.layout.heroStyle}`);
-  if (patch.layout?.heroEyebrow !== undefined)
-    lines.push(`Hero Eyebrow → ${truncateText(patch.layout.heroEyebrow, 60)}`);
-  if (patch.layout?.heroSubtitle !== undefined)
-    lines.push(`Hero 副標 → ${truncateText(patch.layout.heroSubtitle, 60)}`);
-  if (patch.layout?.heroImageSide)
-    lines.push(`Hero 圖位置 → ${patch.layout.heroImageSide}`);
-  if (patch.layout?.sectionOrder?.length)
-    lines.push(`Section 順序 → ${patch.layout.sectionOrder.join(",")}`);
-  if (patch.homepage?.promise !== undefined)
-    lines.push(`Promise → ${truncateText(patch.homepage.promise, 60)}`);
-  if (patch.homepage?.collectionsIntro !== undefined)
-    lines.push(`選物 intro → ${truncateText(patch.homepage.collectionsIntro, 60)}`);
-  if (patch.homepage?.visitTitle !== undefined)
-    lines.push(`Visit 標題 → ${truncateText(patch.homepage.visitTitle, 60)}`);
-  if (lines.length === 0) return "（沒解析到要改的欄位）";
-  return lines.join("\n");
 }
