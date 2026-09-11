@@ -1174,13 +1174,13 @@ export function resolveTheme(raw: unknown): StoreTheme {
 
   const fontKey: FontKey = isFontKey(t.font) ? t.font : base.font;
 
-  const sections = (t.sections && typeof t.sections === "object"
-    ? (t.sections as Record<string, unknown>)
-    : {}) as Record<string, boolean>;
+  // 兩張表只轉成「鍵是字串、值不知道是什麼」；下面每一格都各自 typeof／=== 檢查，
+  // 不再假裝 jsonb 裡存的一定是 boolean／string（舊資料或手改 DB 塞錯型別就會被當沒填）
+  const sections: Record<string, unknown> =
+    t.sections && typeof t.sections === "object" ? (t.sections as Record<string, unknown>) : {};
 
-  const social = (t.social && typeof t.social === "object"
-    ? (t.social as Record<string, unknown>)
-    : {}) as Record<string, string>;
+  const social: Record<string, unknown> =
+    t.social && typeof t.social === "object" ? (t.social as Record<string, unknown>) : {};
 
   return {
     preset,
