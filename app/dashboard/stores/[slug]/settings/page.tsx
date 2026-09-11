@@ -31,6 +31,7 @@ import {
   HERO_STYLES,
 } from "@/app/[slug]/_theme";
 import { PRESET_KEYS, FONT_KEYS } from "@/lib/theme-keys";
+import { jsonbText } from "@/lib/jsonb-text";
 import { AIEditPanel } from "@/app/_components/ai-edit-panel";
 import { UnsavedChangesGuard } from "@/app/_components/unsaved-changes-guard";
 import { ContactHintInput } from "@/app/_components/contact-hint-input";
@@ -64,14 +65,8 @@ export default async function StoreSettingsPage({
 
   const updateBound = updateStore.bind(null, slug);
 
-  const businessHoursText =
-    typeof store.business_hours === "object" && store.business_hours !== null
-      ? ((store.business_hours as { text?: string }).text ?? "")
-      : "";
-  const faqText =
-    typeof store.faq === "object" && store.faq !== null
-      ? ((store.faq as { text?: string }).text ?? "")
-      : "";
+  const businessHoursText = jsonbText(store.business_hours);
+  const faqText = jsonbText(store.faq);
 
   const theme = resolveTheme(store.theme);
 

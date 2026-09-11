@@ -5,6 +5,7 @@ import { createClient } from "@/lib/supabase/server";
 import { jsonLdHtml } from "@/lib/json-ld";
 import { displayableImageUrl } from "@/lib/image-url";
 import { siteBaseUrl, buildBreadcrumbJsonLd, buildFaqJsonLd } from "@/lib/store-schema";
+import { jsonbText } from "@/lib/jsonb-text";
 import { resolveTheme, HOMEPAGE_DEFAULTS } from "../_theme";
 import { StoreEmptyState } from "@/app/_components/store-empty-state";
 
@@ -76,10 +77,7 @@ export default async function AboutPage({ params }: { params: Params }) {
   const theme = resolveTheme(store.theme);
   if (!theme.sections.about && !theme.sections.faq) notFound();
 
-  const faqText =
-    typeof store.faq === "object" && store.faq !== null
-      ? ((store.faq as { text?: string }).text ?? "")
-      : "";
+  const faqText = jsonbText(store.faq);
 
   const faqItems: { question: string; answer: string }[] = [];
   if (faqText && theme.sections.faq) {

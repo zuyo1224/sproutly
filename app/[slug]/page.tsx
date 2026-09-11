@@ -37,6 +37,7 @@ export async function generateMetadata({
 }
 
 import { formatPrice } from "@/lib/format-price";
+import { jsonbText } from "@/lib/jsonb-text";
 
 export default async function StoreHomePage({
   params,
@@ -68,10 +69,7 @@ export default async function StoreHomePage({
   // 買不到的。在已排好的清單上再把售完那批整批往下挪（JS sort 穩定，有貨的維持原順序）。
   featuredProducts?.sort(bySoldOutLast);
 
-  const businessHoursText =
-    typeof store.business_hours === "object" && store.business_hours !== null
-      ? ((store.business_hours as { text?: string }).text ?? "")
-      : "";
+  const businessHoursText = jsonbText(store.business_hours);
 
   // ===== 首頁文案：商家自訂優先，沒設用 default =====
   const heroTagline =

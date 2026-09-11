@@ -31,6 +31,7 @@ import { fetchAllRows } from "@/lib/fetch-all-rows";
 // 庫存不足卡片的縮圖跟後台商品列表（4403bbc）、店面八處卡片（5e6c204）同一支：
 // DB 裡舊的 http:// 或半截網址店面是跳過不掛，商家這裡也要看到客人實際看到的那張。
 import { displayableImageUrls } from "@/lib/image-url";
+import { jsonbText } from "@/lib/jsonb-text";
 
 type OrderSummaryRow = {
   id: string;
@@ -67,10 +68,7 @@ export default async function StoreInsightsPage({
   if (!store) notFound();
 
   const theme = resolveTheme(store.theme);
-  const businessHoursText =
-    typeof store.business_hours === "object" && store.business_hours !== null
-      ? ((store.business_hours as { text?: string }).text ?? "")
-      : "";
+  const businessHoursText = jsonbText(store.business_hours);
 
   // 過去 30 天訂單 + 商品數 + 全部訂單摘要（用來算統計）
   const now = new Date();

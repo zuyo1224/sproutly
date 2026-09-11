@@ -6,6 +6,7 @@ import { jsonLdHtml } from "@/lib/json-ld";
 import { displayableImageUrl } from "@/lib/image-url";
 import { buildStoreJsonLd, buildBreadcrumbJsonLd, siteBaseUrl } from "@/lib/store-schema";
 import { telHref, mailHref, telDigits, cleanEmail, mapsHref } from "@/lib/contact-href";
+import { jsonbText } from "@/lib/jsonb-text";
 import { resolveTheme, HOMEPAGE_DEFAULTS } from "../_theme";
 import { StoreEmptyState } from "@/app/_components/store-empty-state";
 
@@ -75,10 +76,7 @@ export default async function ContactPage({ params }: { params: Params }) {
   const theme = resolveTheme(store.theme);
   if (!theme.sections.contact && !theme.sections.hours) notFound();
 
-  const businessHoursText =
-    typeof store.business_hours === "object" && store.business_hours !== null
-      ? ((store.business_hours as { text?: string }).text ?? "")
-      : "";
+  const businessHoursText = jsonbText(store.business_hours);
 
   const blocks: { kind: "phone" | "email" | "address" | "hours"; label: string; latin: string; value: string; href?: string; external?: boolean }[] = [];
   if (theme.sections.contact) {

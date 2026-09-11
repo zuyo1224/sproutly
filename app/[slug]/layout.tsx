@@ -21,6 +21,7 @@ import { StoreNavLink } from "@/app/_components/store-nav-link";
 import { StoreMobileNav } from "@/app/_components/store-mobile-nav";
 import { BackToTop } from "@/app/_components/back-to-top";
 import { displayableImageUrl, imageMimeTypeFromUrl } from "@/lib/image-url";
+import { jsonbText } from "@/lib/jsonb-text";
 
 const RESERVED = new Set([
   "api",
@@ -207,10 +208,7 @@ export default async function PublicStoreLayout({
   // 全站頁尾，讓客人不論逛到哪一頁、捲到底都看得到，不用再特地點進聯絡頁。
   // 顯示與否沿用聯絡頁同一組 section 開關（商家關掉 contact / hours 區段
   // 就不該從頁尾外洩），只放有填的欄位。
-  const businessHoursText =
-    typeof store.business_hours === "object" && store.business_hours !== null
-      ? ((store.business_hours as { text?: string }).text ?? "").trim()
-      : "";
+  const businessHoursText = jsonbText(store.business_hours).trim();
   // address / contact_phone 先 trim 再判斷：商家只打了空白時，原始字串是 truthy，
   // 頁尾會冒出「店面資訊」區塊，裡面是一個連到「Google Maps 搜尋一串空白」的隱形
   // 連結、和一個只剩 tel: 的壞電話連結。trim 後只剩空字串就當沒填、整塊不顯示，
