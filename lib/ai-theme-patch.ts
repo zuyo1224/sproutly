@@ -7,32 +7,12 @@
 // 這裡把「只留認得的欄位、值不合法就丟掉」寫死，route 只回過了這關的東西。
 //
 // 型別是 ThemePatch（lib/theme-patch-summary）那份，這裡不另開；heroStyle 與 sectionOrder
-// 的合法值清單跟編輯器 actions.ts 的 HERO_STYLES / SECTION_KEYS 同一份口徑（11 個
-// section，是設定頁 6 個的超集）。
+// 的合法值直接用 lib/theme-keys 那份正本（跟編輯器存檔同口徑：11 個 section，是設定頁
+// 6 個的超集）。
 
 import { normalizeHexColor } from "./hex-color.ts";
+import { isHeroStyle, isSectionKey } from "./theme-keys.ts";
 import type { ThemePatch } from "./theme-patch-summary.ts";
-
-export const AI_PATCH_HERO_STYLES = new Set([
-  "full-image",
-  "split",
-  "minimal",
-  "magazine",
-]);
-
-export const AI_PATCH_SECTION_KEYS = new Set([
-  "hero",
-  "collections",
-  "featured",
-  "journal",
-  "promise",
-  "testimonials",
-  "faq",
-  "stats",
-  "partners",
-  "gallery",
-  "visit",
-]);
 
 // 模型偶爾會把 JSON 包在 ```json … ``` 裡，剝掉再交給 JSON.parse。
 export function stripJsonFence(raw: string): string {
@@ -68,8 +48,7 @@ export function sanitizeThemePatch(input: unknown): ThemePatch | null {
   if (isPlainObject(input.layout)) {
     const l = input.layout;
     const layout: NonNullable<ThemePatch["layout"]> = {};
-    if (typeof l.heroStyle === "string" && AI_PATCH_HERO_STYLES.has(l.heroStyle))
-      layout.heroStyle = l.heroStyle;
+    if (isHeroStyle(l.heroStyle)) layout.heroStyle = l.heroStyle;
     const eyebrow = pickString(l.heroEyebrow);
     if (eyebrow !== undefined) layout.heroEyebrow = eyebrow;
     const subtitle = pickString(l.heroSubtitle);
@@ -79,8 +58,7 @@ export function sanitizeThemePatch(input: unknown): ThemePatch | null {
     if (Array.isArray(l.sectionOrder)) {
       const order: string[] = [];
       for (const k of l.sectionOrder) {
-        if (typeof k === "string" && AI_PATCH_SECTION_KEYS.has(k) && !order.includes(k))
-          order.push(k);
+        if (isSectionKey(k) && !order.includes(k)) order.push(k);
       }
       if (order.length) layout.sectionOrder = order;
     }

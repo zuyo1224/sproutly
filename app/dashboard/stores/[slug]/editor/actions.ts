@@ -27,9 +27,7 @@ import {
   sanitizeSectionStyles,
   type SectionStyle,
 } from "@/lib/section-style-schema";
-
-const HERO_STYLES = new Set(["full-image", "split", "minimal", "magazine"]);
-const SECTION_KEYS = ["hero", "collections", "featured", "journal", "promise", "testimonials", "faq", "stats", "partners", "gallery", "visit"];
+import { DEFAULT_SECTION_ORDER, isHeroStyle, isSectionKey } from "@/lib/theme-keys";
 
 type EditorPayload = {
   primary?: string;
@@ -257,7 +255,7 @@ export async function saveEditorState(slug: string, payload: EditorPayload) {
     const existingLayout = (existing.layout as Record<string, unknown>) ?? {};
     const layoutPatch: Record<string, unknown> = { ...existingLayout };
 
-    if (payload.layout.heroStyle && HERO_STYLES.has(payload.layout.heroStyle)) {
+    if (isHeroStyle(payload.layout.heroStyle)) {
       layoutPatch.heroStyle = payload.layout.heroStyle;
     }
     if (payload.layout.heroEyebrow !== undefined) {
@@ -273,13 +271,11 @@ export async function saveEditorState(slug: string, payload: EditorPayload) {
     if (payload.layout.sectionOrder) {
       const order: string[] = [];
       for (const k of payload.layout.sectionOrder) {
-        if (typeof k === "string" && SECTION_KEYS.includes(k) && !order.includes(k)) {
-          order.push(k);
-        }
+        if (isSectionKey(k) && !order.includes(k)) order.push(k);
       }
       // 基本必要 6 個 section（DEFAULT_SECTION_ORDER）沒在 user order 就 append
       // testimonials 不 auto-append（商家自己加才會出現）
-      for (const k of ["hero", "collections", "featured", "journal", "promise", "visit"]) {
+      for (const k of DEFAULT_SECTION_ORDER) {
         if (!order.includes(k)) order.push(k);
       }
       layoutPatch.sectionOrder = order;

@@ -17,15 +17,21 @@ import {
   sanitizeSectionStyles,
   type SectionStyle,
 } from "@/lib/section-style-schema";
+import {
+  DEFAULT_SECTION_ORDER,
+  isHeroStyle,
+  isSectionKey,
+  type HeroStyle,
+  type SectionKey,
+} from "@/lib/theme-keys";
 
 export type PresetKey = "editorial" | "plant-zen" | "nordic" | "aesop" | "modern";
 
 // Hero 4 種 layout variants - 對應 Wix 拖拉編輯器內常見 hero 模板
-export type HeroStyle =
-  | "full-image"      // 全屏圖 + tagline overlay（既有預設）
-  | "split"           // 左圖右文 / 右圖左文 50:50
-  | "minimal"         // 純文字 hero，無圖，大字 tagline + 副標
-  | "magazine";       // 雜誌封面風：上方 metadata、中間大字、下方 byline
+// （full-image 全屏圖 + tagline overlay／split 左圖右文 50:50／minimal 純文字大字／
+// magazine 雜誌封面）。合法值正本在 lib/theme-keys，這裡 re-export 讓既有 import 路徑不變。
+export type { HeroStyle, SectionKey };
+export { DEFAULT_SECTION_ORDER };
 export const HERO_STYLES: { key: HeroStyle; label: string; description: string }[] = [
   { key: "full-image", label: "全屏沉浸", description: "整屏背景圖 + 文字 overlay，最有沉浸感" },
   { key: "split", label: "左右分割", description: "左圖右文（或右圖左文），編輯雜誌風" },
@@ -33,27 +39,8 @@ export const HERO_STYLES: { key: HeroStyle; label: string; description: string }
   { key: "magazine", label: "雜誌封面", description: "上 metadata + 中央大字 + 下 byline" },
 ];
 
-// Section 排序（商家可調順序，部分 section 也可隱藏）
-export type SectionKey =
-  | "hero"
-  | "collections"
-  | "featured"
-  | "journal"
-  | "promise"
-  | "testimonials"
-  | "faq"
-  | "stats"
-  | "partners"
-  | "gallery"
-  | "visit";
-export const DEFAULT_SECTION_ORDER: SectionKey[] = [
-  "hero",
-  "collections",
-  "featured",
-  "journal",
-  "promise",
-  "visit",
-];
+// Section 排序（商家可調順序，部分 section 也可隱藏）；SectionKey 與
+// DEFAULT_SECTION_ORDER 見上面 re-export（正本 lib/theme-keys）。
 export const SECTION_LABELS: Record<SectionKey, string> = {
   hero: "Hero（首屏）",
   collections: "選物提案",
@@ -1230,31 +1217,13 @@ export function resolveTheme(raw: unknown): StoreTheme {
 
 function resolveLayout(raw: unknown): StoreTheme["layout"] {
   const l = (raw && typeof raw === "object" ? raw : {}) as Record<string, unknown>;
-  const heroStyle = (typeof l.heroStyle === "string" &&
-    HERO_STYLES.some((h) => h.key === l.heroStyle)
-    ? l.heroStyle
-    : "full-image") as HeroStyle;
+  const heroStyle: HeroStyle = isHeroStyle(l.heroStyle) ? l.heroStyle : "full-image";
   const heroImageSide =
     l.heroImageSide === "right" ? "right" : "left";
   const orderRaw = Array.isArray(l.sectionOrder) ? l.sectionOrder : [];
-  const validKeys = new Set<SectionKey>([
-    "hero",
-    "collections",
-    "featured",
-    "journal",
-    "promise",
-    "testimonials",
-    "faq",
-    "stats",
-    "partners",
-    "gallery",
-    "visit",
-  ]);
   const order: SectionKey[] = [];
   for (const k of orderRaw) {
-    if (typeof k === "string" && validKeys.has(k as SectionKey) && !order.includes(k as SectionKey)) {
-      order.push(k as SectionKey);
-    }
+    if (isSectionKey(k) && !order.includes(k)) order.push(k);
   }
   // DEFAULT_SECTION_ORDER（基本必要 section）沒在 user order 內就 append
   // testimonials 不在 DEFAULT 內，商家手動加才會出現

@@ -42,20 +42,13 @@ import {
 import { FREE_POS_KEYS, SECTION_DRAG_ELEMENT, stripLegacyFreePositions } from "@/lib/free-positions";
 import type { SectionStyle } from "@/app/[slug]/_theme";
 import { applySectionStylePatch, type SectionStylePatch } from "@/lib/section-style-schema";
-
-type SectionKey =
-  | "hero"
-  | "collections"
-  | "featured"
-  | "journal"
-  | "promise"
-  | "testimonials"
-  | "faq"
-  | "stats"
-  | "partners"
-  | "gallery"
-  | "visit";
-type HeroStyle = "full-image" | "split" | "minimal" | "magazine";
+import {
+  HERO_STYLE_KEYS,
+  SECTION_KEYS,
+  isSectionKey,
+  type HeroStyle,
+  type SectionKey,
+} from "@/lib/theme-keys";
 
 type Testimonial = { quote: string; author: string; role: string | null };
 type FaqItem = { question: string; answer: string };
@@ -520,13 +513,7 @@ export function EditorWorkspace({
     fields: EditorTheme["layout"]["sectionStyles"][string];
   } | null>(null);
   // 合法 SectionKey 白名單，過濾 localStorage 殘留的舊 key（schema 變化後保護）
-  const SECTION_KEYS_SET = useMemo(
-    () => new Set<SectionKey>([
-      "hero", "collections", "featured", "journal", "promise",
-      "testimonials", "faq", "stats", "partners", "gallery", "visit",
-    ]),
-    [],
-  );
+  const SECTION_KEYS_SET = useMemo(() => new Set<SectionKey>(SECTION_KEYS), []);
   const STYLE_CLIPBOARD_KEY = "sproutly:editor:style-clipboard:v1";
   // mount 時從 localStorage 讀回 clipboard
   useEffect(() => {
@@ -676,21 +663,8 @@ export function EditorWorkspace({
       if (typeof e.data !== "object" || !e.data) return;
       const msg = e.data as { type?: string; target?: string; field?: string; value?: string; index?: number };
       if (msg.type === "sproutly-edit-click" && typeof msg.target === "string") {
-        const validKeys = [
-          "hero",
-          "collections",
-          "featured",
-          "journal",
-          "promise",
-          "testimonials",
-          "faq",
-          "stats",
-          "partners",
-          "gallery",
-          "visit",
-        ] as const;
-        if ((validKeys as readonly string[]).includes(msg.target)) {
-          setSelectedSection(msg.target as SectionKey);
+        if (isSectionKey(msg.target)) {
+          setSelectedSection(msg.target);
           setActiveTab("section");
           // 不自動開左邊 popover — user 多次說「擋住」。
           // 反過來：user 在 iframe 點 section 就「關掉」 popover，因為他在
@@ -1912,7 +1886,7 @@ export function EditorWorkspace({
                 }
                 className="w-full rounded-lg border border-stone-200 px-3 py-2 text-sm"
               >
-                {(["full-image", "split", "minimal", "magazine"] as HeroStyle[]).map(
+                {HERO_STYLE_KEYS.map(
                   (k) => (
                     <option key={k} value={k}>
                       {HERO_STYLE_LABELS[k]}
