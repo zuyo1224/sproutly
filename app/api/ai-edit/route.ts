@@ -4,6 +4,7 @@
 
 import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
+import { parseAiThemePatch } from "@/lib/ai-theme-patch";
 
 const SYSTEM_PROMPT = `你是 Sproutly 商家建站平台的 AI 助手，幫商家用自然語言調整店面設計。
 
@@ -133,24 +134,23 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "AI 沒回內容" }, { status: 502 });
     }
 
-    // 試著 parse JSON（AI 可能 wrap 在 ```json 內）
-    const cleaned = raw
-      .trim()
-      .replace(/^```(?:json)?\n?/i, "")
-      .replace(/\n?```$/i, "")
-      .trim();
-    let patch: unknown;
-    try {
-      patch = JSON.parse(cleaned);
-    } catch {
+    // 剝 ```json 圍欄 → parse → 只留認得的欄位與合法值（lib/ai-theme-patch）
+    const parsed = parseAiThemePatch(raw);
+    if (!parsed.ok) {
       return NextResponse.json(
-        { error: "AI 回的不是合法 JSON", raw: cleaned.slice(0, 300) },
+        {
+          error:
+            parsed.reason === "invalid-json"
+              ? "AI 回的不是合法 JSON"
+              : "AI 回的不是 theme patch",
+          raw: parsed.cleaned.slice(0, 300),
+        },
         { status: 502 }
       );
     }
 
     return NextResponse.json({
-      patch,
+      patch: parsed.patch,
       usage: orData.usage ?? null,
     });
   } catch (e) {
