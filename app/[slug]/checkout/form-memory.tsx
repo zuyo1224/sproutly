@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef } from "react";
+import { isPlainObject } from "@/lib/is-plain-object";
 
 // 結帳表單的「打過的字不清空」防呆。單品結帳走 server action：送出後只要 server 端
 // 退回（庫存剛被別的客人買走、商品下架、訂單建立失敗），redirect 回這頁只帶得回
@@ -111,7 +112,7 @@ export function CheckoutFormMemory({
       try {
         const raw = sessionStorage.getItem(key);
         const parsed = raw ? JSON.parse(raw) : null;
-        if (parsed && typeof parsed === "object" && !Array.isArray(parsed)) {
+        if (isPlainObject(parsed)) {
           saved = parsed;
         }
       } catch {

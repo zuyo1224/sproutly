@@ -21,6 +21,7 @@ import {
   clampFreePos,
 } from "@/lib/theme-scale";
 import { normalizeHexColor } from "@/lib/hex-color";
+import { isPlainObject } from "@/lib/is-plain-object";
 import { displayableImageUrl } from "@/lib/image-url";
 import { normalizeHeroImageBounds } from "@/lib/hero-image-bounds";
 import {
@@ -293,7 +294,7 @@ export async function saveEditorState(slug: string, payload: EditorPayload) {
     }
     if (payload.layout.testimonials !== undefined && Array.isArray(payload.layout.testimonials)) {
       layoutPatch.testimonials = payload.layout.testimonials
-        .filter((t) => t && typeof t === "object")
+        .filter(isPlainObject)
         .map((t) => ({
           quote: String(t.quote ?? "").slice(0, 500).trim(),
           author: String(t.author ?? "").slice(0, 100).trim(),
@@ -304,7 +305,7 @@ export async function saveEditorState(slug: string, payload: EditorPayload) {
     }
     if (payload.layout.faqItems !== undefined && Array.isArray(payload.layout.faqItems)) {
       layoutPatch.faqItems = payload.layout.faqItems
-        .filter((f) => f && typeof f === "object")
+        .filter(isPlainObject)
         .map((f) => ({
           question: String(f.question ?? "").slice(0, 300).trim(),
           answer: String(f.answer ?? "").slice(0, 2000).trim(),
@@ -314,7 +315,7 @@ export async function saveEditorState(slug: string, payload: EditorPayload) {
     }
     if (payload.layout.stats !== undefined && Array.isArray(payload.layout.stats)) {
       layoutPatch.stats = payload.layout.stats
-        .filter((s) => s && typeof s === "object")
+        .filter(isPlainObject)
         .map((s) => ({
           value: String(s.value ?? "").slice(0, 30).trim(),
           label: String(s.label ?? "").slice(0, 60).trim(),
@@ -324,7 +325,7 @@ export async function saveEditorState(slug: string, payload: EditorPayload) {
     }
     if (payload.layout.partners !== undefined && Array.isArray(payload.layout.partners)) {
       layoutPatch.partners = payload.layout.partners
-        .filter((p) => p && typeof p === "object")
+        .filter(isPlainObject)
         .map((p) => ({
           name: String(p.name ?? "").slice(0, 100).trim(),
           logoUrl: String(p.logoUrl ?? "").slice(0, 500).trim(),
@@ -956,10 +957,10 @@ export async function saveEditorState(slug: string, payload: EditorPayload) {
     if (payload.layout.freePositions !== undefined) {
       const fp = payload.layout.freePositions;
       const sanitized: Record<string, { x: number; y: number }> = {};
-      if (fp && typeof fp === "object" && !Array.isArray(fp)) {
+      if (isPlainObject(fp)) {
         for (const [k, v] of Object.entries(fp)) {
           if (!k || typeof k !== "string" || k.length > 60) continue;
-          if (!v || typeof v !== "object") continue;
+          if (!isPlainObject(v)) continue;
           const x = v.x;
           const y = v.y;
           if (typeof x !== "number" || typeof y !== "number") continue;
@@ -974,7 +975,7 @@ export async function saveEditorState(slug: string, payload: EditorPayload) {
     }
     if (payload.layout.gallery !== undefined && Array.isArray(payload.layout.gallery)) {
       layoutPatch.gallery = payload.layout.gallery
-        .filter((g) => g && typeof g === "object")
+        .filter(isPlainObject)
         .map((g) => ({
           url: String(g.url ?? "").slice(0, 500).trim(),
           caption: g.caption ? String(g.caption).slice(0, 200).trim() : null,
@@ -1137,7 +1138,7 @@ export async function saveEditorState(slug: string, payload: EditorPayload) {
         ? payload.homepage.journalCards
         : [];
       hpPatch.journalCards = arr
-        .filter((c) => c && typeof c === "object")
+        .filter(isPlainObject)
         .map((c) => ({
           eyebrow: String(c.eyebrow ?? "").trim().slice(0, 40),
           title: String(c.title ?? "").trim().slice(0, 80),
@@ -1158,7 +1159,7 @@ export async function saveEditorState(slug: string, payload: EditorPayload) {
       // resolveHomepage 也同款去重，這裡先擋住不讓髒資料進 DB。
       const seenCollectionKeys = new Set<string>();
       hpPatch.collectionItems = arr
-        .filter((c) => c && typeof c === "object")
+        .filter(isPlainObject)
         .map((c) => ({
           key: String(c.key ?? "").trim().slice(0, 40),
           title: String(c.title ?? "").trim().slice(0, MAX_COLLECTION_TITLE_LEN),

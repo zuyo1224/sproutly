@@ -28,6 +28,7 @@ import { AssetPicker } from "@/app/_components/asset-picker";
 import { socialUrl } from "@/lib/contact-href";
 import { cleanMapEmbedUrl } from "@/lib/map-embed-url";
 import { isPastedRemoteImageUrl } from "@/lib/image-url";
+import { isPlainObject } from "@/lib/is-plain-object";
 import { EditorAIChat } from "./editor-ai-chat";
 import {
   HERO_ZOOM_MIN,
@@ -528,12 +529,10 @@ export function EditorWorkspace({
       if (!raw) return;
       const parsed = JSON.parse(raw);
       if (
-        parsed &&
-        typeof parsed === "object" &&
+        isPlainObject(parsed) &&
         // 用 lib/theme-keys 的 guard 過濾 localStorage 殘留的舊 key（schema 變化後保護）
         isSectionKey(parsed.source) &&
-        parsed.fields &&
-        typeof parsed.fields === "object"
+        isPlainObject(parsed.fields)
       ) {
         setStyleClipboard({ source: parsed.source, fields: parsed.fields });
       }
