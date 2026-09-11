@@ -16,6 +16,13 @@ import { redirect } from "next/navigation";
 
 const BUCKET = "sproutly-products";
 
+// 列表上三個就地操作（改庫存、上下架、調順序）成功或出錯都要跳回「商家原本停留
+// 的那一頁」：returnQs 是列表頁組好的篩選＋搜尋查詢字串（filter、q），原樣接回去。
+// 空字串就是不帶篩選的全部列表。
+function productListUrl(slug: string, returnQs: string): string {
+  return `/dashboard/stores/${slug}/products${returnQs ? `?${returnQs}` : ""}`;
+}
+
 async function authorizedStore(slug: string) {
   const { supabase, user } = await requireUser();
 
@@ -260,7 +267,7 @@ export async function setProductStock(
   formData: FormData
 ) {
   const { supabase, store } = await authorizedStore(slug);
-  const listUrl = `/dashboard/stores/${slug}/products${returnQs ? `?${returnQs}` : ""}`;
+  const listUrl = productListUrl(slug, returnQs);
   // 出錯要跳回原本的篩選＋搜尋，只是多帶一個 error 讓列表把訊息顯出來，
   // 不然商家會被丟回全部列表、還不知道剛剛那筆到底存進去沒有。
   // 組法跟站上其他「出錯跳回去」同一份（lib/url）：error 是設定不是附加，
@@ -315,7 +322,7 @@ export async function toggleProductActive(
   returnQs: string
 ) {
   const { supabase, store } = await authorizedStore(slug);
-  const listUrl = `/dashboard/stores/${slug}/products${returnQs ? `?${returnQs}` : ""}`;
+  const listUrl = productListUrl(slug, returnQs);
 
   // 先讀當前狀態再翻面，而不是讓列表把「目標狀態」傳進來：兩個分頁同時開著
   // 列表時，畫面上的狀態可能已經過期，帶目標值會把別頁剛做的切換又蓋回去。
@@ -335,13 +342,11 @@ export async function toggleProductActive(
     .eq("id", productId)
     .eq("merchant_id", store.id);
 
+  // 出錯跳回時同樣保留篩選＋搜尋（跟改庫存同一套）：以前這裡跳回不帶查詢字串的
+  // 全部列表，商家在「只看下架」或搜到某件時按上架失敗，紅字是顯了，人卻被丟回
+  // 第一頁全部商品，得重新篩一次才找得到剛剛那件再試。
   if (error) {
-    redirect(
-      withErrorParam(
-        `/dashboard/stores/${slug}/products`,
-        error.message,
-      ),
-    );
+    redirect(withErrorParam(listUrl, error.message));
   }
 
   redirect(listUrl);
@@ -380,7 +385,7 @@ export async function moveProductOrder(
   returnQs: string
 ) {
   const { supabase, store } = await authorizedStore(slug);
-  const listUrl = `/dashboard/stores/${slug}/products${returnQs ? `?${returnQs}` : ""}`;
+  const listUrl = productListUrl(slug, returnQs);
 
   // 排序條件必須跟商品列表、跟客人端逛街頁的預設排序（sort_order 升冪、同值
   // 再看新舊）逐字一樣，不然商家在後台看到的順序跟客人看到的對不起來，
@@ -425,13 +430,9 @@ export async function moveProductOrder(
       )
     );
     const failed = results.find((res) => res.error);
+    // 同上下架：出錯也跳回原本的篩選＋搜尋，不把商家丟回全部列表。
     if (failed?.error) {
-      redirect(
-        withErrorParam(
-          `/dashboard/stores/${slug}/products`,
-          failed.error.message,
-        ),
-      );
+      redirect(withErrorParam(listUrl, failed.error.message));
     }
   }
 
