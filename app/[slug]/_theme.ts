@@ -25,6 +25,7 @@ import {
   isHeroStyle,
   isLeading,
   isSectionKey,
+  isTextCase,
   isTracking,
   type AlignX,
   type FontWeight,
@@ -32,6 +33,7 @@ import {
   type HeroStyle,
   type Leading,
   type SectionKey,
+  type TextCase,
   type Tracking,
 } from "@/lib/theme-keys";
 
@@ -297,7 +299,7 @@ export interface StoreTheme {
     //    「EST. 2019」；打自己的英文店名（Plantae Market）也會被拉成 PLANTAE MARKET，
     //    而店名的大小寫通常是 logo 的一部分，被改掉等於招牌被改。商家原本沒有任何一格
     //    能把它關掉——連改字都沒用，因為轉換發生在畫面上不在資料裡（輸入框裡還是小寫）。
-    heroEyebrowCase: "upper" | "capitalize" | "none"; // 小標大小寫（預設 upper = 原本的 uppercase）
+    heroEyebrowCase: TextCase; // 小標大小寫（預設 upper = 原本的 uppercase）
     // 5. 粗細。小標的字級、字距、顏色、大小寫四格都補完了，唯獨「有多重」沒有——四處
     //    <p> 的 class 只有 text-[10px] tracking-[0.4em] uppercase，一個 font-weight 都沒寫，
     //    繼承的是內文的 400。全站最小的那行字（10px）配上全站最鬆的字距（0.4em）再配上
@@ -440,7 +442,7 @@ export interface StoreTheme {
     // 少了它按過「字首大寫」之後沒有一顆按鈕退得回原樣（跟小標那格同一個理由）。
     // 兩格都是沒設就完全不覆寫、回 {}，既有店家的 byline 一個字都不會變。
     heroBylineTracking: Tracking; // byline 字距（預設 normal = 不加減）
-    heroBylineCase: "upper" | "capitalize" | "none"; // byline 大小寫（預設 upper = 原本的 uppercase）
+    heroBylineCase: TextCase; // byline 大小寫（預設 upper = 原本的 uppercase）
     // byline 的粗細。字級、顏色、字距、大小寫四格開完之後，byline 剩最後一個沒得動的
     // 參數——那行字有多重。它自己一個 font-weight 都沒寫，繼承的是內文的 400，而 hero 上
     // 每一個其他元素都已經有粗細可調（主標、副標、小標、按鈕），只剩這一行沒有。
@@ -1385,11 +1387,7 @@ function resolveLayout(raw: unknown): StoreTheme["layout"] {
     })(),
     heroEyebrowTracking: isTracking(l.heroEyebrowTracking) ? l.heroEyebrowTracking : "normal",
     heroEyebrowColor: normalizeHexColor(l.heroEyebrowColor),
-    heroEyebrowCase: (() => {
-      const v = l.heroEyebrowCase;
-      if (v === "upper" || v === "capitalize" || v === "none") return v;
-      return "upper" as const;
-    })(),
+    heroEyebrowCase: isTextCase(l.heroEyebrowCase) ? l.heroEyebrowCase : "upper",
     heroEyebrowWeight: isFontWeight(l.heroEyebrowWeight) ? l.heroEyebrowWeight : "normal",
     heroEyebrowLeading: isLeading(l.heroEyebrowLeading) ? l.heroEyebrowLeading : "normal",
     heroSubtitleFontScale: (() => {
@@ -1425,11 +1423,7 @@ function resolveLayout(raw: unknown): StoreTheme["layout"] {
     })(),
     heroBylineColor: normalizeHexColor(l.heroBylineColor),
     heroBylineTracking: isTracking(l.heroBylineTracking) ? l.heroBylineTracking : "normal",
-    heroBylineCase: (() => {
-      const v = l.heroBylineCase;
-      if (v === "upper" || v === "capitalize" || v === "none") return v;
-      return "upper" as const;
-    })(),
+    heroBylineCase: isTextCase(l.heroBylineCase) ? l.heroBylineCase : "upper",
     heroBylineWeight: isFontWeight(l.heroBylineWeight) ? l.heroBylineWeight : "normal",
     heroBylineLeading: isLeading(l.heroBylineLeading) ? l.heroBylineLeading : "normal",
     heroSplitRatio: (() => {

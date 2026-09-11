@@ -53,6 +53,7 @@ import {
   type HeroStyle,
   type Leading,
   type SectionKey,
+  type TextCase,
   type Tracking,
 } from "@/lib/theme-keys";
 
@@ -289,7 +290,7 @@ type EditorTheme = {
     heroEyebrowFontScale: number;
     heroEyebrowTracking: Tracking;
     heroEyebrowColor: string | null;
-    heroEyebrowCase: "upper" | "capitalize" | "none";
+    heroEyebrowCase: TextCase;
     heroEyebrowWeight: FontWeight;
     heroEyebrowLeading: Leading;
     heroSubtitleFontScale: number;
@@ -306,7 +307,7 @@ type EditorTheme = {
     heroBylineFontScale: number;
     heroBylineColor: string | null;
     heroBylineTracking: Tracking;
-    heroBylineCase: "upper" | "capitalize" | "none";
+    heroBylineCase: TextCase;
     heroBylineWeight: FontWeight;
     heroBylineLeading: Leading;
     heroSplitRatio: "image-narrow" | "normal" | "image-wide" | "photo";

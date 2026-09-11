@@ -9,10 +9,12 @@ import {
   FONT_WEIGHT_KEYS,
   TRACKING_KEYS,
   LEADING_KEYS,
+  TEXT_CASE_KEYS,
   isAlignX,
   isFontWeight,
   isTracking,
   isLeading,
+  isTextCase,
   isHeroStyle,
   isHeroImageSide,
   isSectionKey,
@@ -84,4 +86,17 @@ test("Hero 文字三張三檔清單：粗細 / 字距 / 行距，清單外與非
   assert.equal(isLeading(""), false);
   assert.equal(isFontWeight(undefined), false);
   assert.equal(isTracking(null), false);
+});
+
+test("Hero 小標 / byline 大小寫三檔：upper / capitalize / none，按鈕那格的 default 不算", () => {
+  assert.deepEqual([...TEXT_CASE_KEYS], ["upper", "capitalize", "none"]);
+  for (const k of TEXT_CASE_KEYS) assert.equal(isTextCase(k), true);
+  // heroCtaCase 的 "default"（照各版型原本）是那格自己的一檔，不在這張清單
+  assert.equal(isTextCase("default"), false);
+  assert.equal(isTextCase("uppercase"), false);
+  assert.equal(isTextCase("lower"), false);
+  assert.equal(isTextCase("Upper"), false);
+  assert.equal(isTextCase(""), false);
+  assert.equal(isTextCase(undefined), false);
+  assert.equal(isTextCase(null), false);
 });

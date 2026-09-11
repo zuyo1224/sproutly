@@ -66,6 +66,19 @@ export function isLeading(value: unknown): value is Leading {
   return typeof value === "string" && (LEADING_KEYS as readonly string[]).includes(value);
 }
 
+// Hero 小標與 byline 的大小寫三檔：upper（照原本的全大寫）/ capitalize（字首大寫）/
+// none（照商家打的）。兩格以前在公開頁 _theme.ts 的 type 與 resolveLayout、編輯器
+// editor-workspace 的 type、存檔 actions.ts 的 === 三連判斷各抄一份，共八處。
+// 按鈕那格（heroCtaCase）是 default/capitalize/none：預設「照各版型原本」不是「全大寫」
+//（滿版圖那兩顆按鈕的 base 本來就沒轉大寫），少的是 upper 這檔不是名字不同，語意不一樣，
+// 不併進來。section 樣式那套的 eyebrowCase 值也一樣，正本在 lib/section-style-schema。
+export const TEXT_CASE_KEYS = ["upper", "capitalize", "none"] as const;
+export type TextCase = (typeof TEXT_CASE_KEYS)[number];
+
+export function isTextCase(value: unknown): value is TextCase {
+  return typeof value === "string" && (TEXT_CASE_KEYS as readonly string[]).includes(value);
+}
+
 export const SECTION_KEYS = [
   "hero",
   "collections",

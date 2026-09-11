@@ -35,6 +35,7 @@ import {
   isHeroStyle,
   isLeading,
   isSectionKey,
+  isTextCase,
   isTracking,
 } from "@/lib/theme-keys";
 
@@ -449,7 +450,7 @@ export async function saveEditorState(slug: string, payload: EditorPayload) {
     }
     if (payload.layout.heroEyebrowCase !== undefined) {
       const v = payload.layout.heroEyebrowCase;
-      if (v === "upper" || v === "capitalize" || v === "none") {
+      if (isTextCase(v)) {
         layoutPatch.heroEyebrowCase = v;
       }
     }
@@ -560,7 +561,7 @@ export async function saveEditorState(slug: string, payload: EditorPayload) {
     }
     if (payload.layout.heroBylineCase !== undefined) {
       const v = payload.layout.heroBylineCase;
-      if (v === "upper" || v === "capitalize" || v === "none") {
+      if (isTextCase(v)) {
         layoutPatch.heroBylineCase = v;
       }
     }
