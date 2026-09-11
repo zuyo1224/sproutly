@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useRef } from "react";
+import { truncateText } from "@/lib/truncate-text";
 
 type ThemePatch = {
   primary?: string;
@@ -257,27 +258,22 @@ function summarizePatch(patch: ThemePatch | undefined): string {
   if (patch.primary) lines.push(`主色 → ${patch.primary}`);
   if (patch.accent) lines.push(`Accent → ${patch.accent}`);
   if (patch.tagline !== undefined)
-    lines.push(`Tagline → ${trunc(patch.tagline)}`);
+    lines.push(`Tagline → ${truncateText(patch.tagline, 60)}`);
   if (patch.layout?.heroStyle) lines.push(`Hero 樣式 → ${patch.layout.heroStyle}`);
   if (patch.layout?.heroEyebrow !== undefined)
-    lines.push(`Hero Eyebrow → ${trunc(patch.layout.heroEyebrow)}`);
+    lines.push(`Hero Eyebrow → ${truncateText(patch.layout.heroEyebrow, 60)}`);
   if (patch.layout?.heroSubtitle !== undefined)
-    lines.push(`Hero 副標 → ${trunc(patch.layout.heroSubtitle)}`);
+    lines.push(`Hero 副標 → ${truncateText(patch.layout.heroSubtitle, 60)}`);
   if (patch.layout?.heroImageSide)
     lines.push(`Hero 圖位置 → ${patch.layout.heroImageSide}`);
   if (patch.layout?.sectionOrder?.length)
     lines.push(`Section 順序 → ${patch.layout.sectionOrder.join(",")}`);
   if (patch.homepage?.promise !== undefined)
-    lines.push(`Promise → ${trunc(patch.homepage.promise)}`);
+    lines.push(`Promise → ${truncateText(patch.homepage.promise, 60)}`);
   if (patch.homepage?.collectionsIntro !== undefined)
-    lines.push(`選物 intro → ${trunc(patch.homepage.collectionsIntro)}`);
+    lines.push(`選物 intro → ${truncateText(patch.homepage.collectionsIntro, 60)}`);
   if (patch.homepage?.visitTitle !== undefined)
-    lines.push(`Visit 標題 → ${trunc(patch.homepage.visitTitle)}`);
+    lines.push(`Visit 標題 → ${truncateText(patch.homepage.visitTitle, 60)}`);
   if (lines.length === 0) return "（沒解析到要改的欄位）";
   return lines.join("\n");
-}
-
-function trunc(s: string, n = 60): string {
-  if (s.length <= n) return s;
-  return s.slice(0, n) + "…";
 }

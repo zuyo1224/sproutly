@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useRef } from "react";
+import { truncateText } from "@/lib/truncate-text";
 
 type ThemePatch = {
   primary?: string;
@@ -166,25 +167,20 @@ function summarize(patch: ThemePatch | undefined): string {
   const lines: string[] = [];
   if (patch.primary) lines.push(`主色 → ${patch.primary}`);
   if (patch.accent) lines.push(`Accent → ${patch.accent}`);
-  if (patch.tagline !== undefined) lines.push(`Tagline → ${trunc(patch.tagline)}`);
+  if (patch.tagline !== undefined) lines.push(`Tagline → ${truncateText(patch.tagline, 50)}`);
   if (patch.layout?.heroStyle) lines.push(`Hero → ${patch.layout.heroStyle}`);
   if (patch.layout?.heroEyebrow !== undefined)
-    lines.push(`Eyebrow → ${trunc(patch.layout.heroEyebrow)}`);
+    lines.push(`Eyebrow → ${truncateText(patch.layout.heroEyebrow, 50)}`);
   if (patch.layout?.heroSubtitle !== undefined)
-    lines.push(`副標 → ${trunc(patch.layout.heroSubtitle)}`);
+    lines.push(`副標 → ${truncateText(patch.layout.heroSubtitle, 50)}`);
   if (patch.layout?.sectionOrder?.length)
     lines.push(`順序 → ${patch.layout.sectionOrder.join(",")}`);
   if (patch.homepage?.promise !== undefined)
-    lines.push(`Promise → ${trunc(patch.homepage.promise)}`);
+    lines.push(`Promise → ${truncateText(patch.homepage.promise, 50)}`);
   if (patch.homepage?.collectionsIntro !== undefined)
-    lines.push(`選物 intro → ${trunc(patch.homepage.collectionsIntro)}`);
+    lines.push(`選物 intro → ${truncateText(patch.homepage.collectionsIntro, 50)}`);
   if (patch.homepage?.visitTitle !== undefined)
-    lines.push(`Visit → ${trunc(patch.homepage.visitTitle)}`);
+    lines.push(`Visit → ${truncateText(patch.homepage.visitTitle, 50)}`);
   if (lines.length === 0) return "（沒解析到欄位）";
   return lines.join("\n");
-}
-
-function trunc(s: string, n = 50): string {
-  if (s.length <= n) return s;
-  return s.slice(0, n) + "…";
 }
