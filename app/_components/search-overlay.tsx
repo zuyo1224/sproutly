@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { isSoldOut, isLowStock, stockAriaSuffix } from "@/lib/product-stock";
 
 type Product = {
@@ -18,6 +19,7 @@ import { displayableImageUrls } from "@/lib/image-url";
 import { buildUrl } from "@/lib/url";
 
 export function SearchOverlay({ slug }: { slug: string }) {
+  const router = useRouter();
   const [open, setOpen] = useState(false);
   const [q, setQ] = useState("");
   const [results, setResults] = useState<Product[]>([]);
@@ -79,20 +81,28 @@ export function SearchOverlay({ slug }: { slug: string }) {
       } else if (e.key === "Enter") {
         // 反白在商品上就開商品；停在最後那條橋、或搜不到時的空狀態，都帶去 /shop
         // 完整列表（有字帶 ?q= 可排序篩庫存，沒結果就純逛全部），鍵盤族不再卡在面板裡。
+        // 走 router.push 而不是硬改 window.location：滑鼠點結果是 <Link> 站內換頁，
+        // 鍵盤按 Enter 卻整頁重載——同一個動作兩種體驗，重載那條白畫面一閃、
+        // 導覽列與店面主題全部重畫。換頁前先把面板關掉，body 的捲動鎖才會解開，
+        // 不然新頁面到了卻捲不動。
         const query = q.trim();
-        if (selectedIdx < results.length && results[selectedIdx]) {
-          window.location.href = `/${slug}/products/${results[selectedIdx].id}`;
-        } else if (query) {
-          window.location.href =
-            results.length > 0
-              ? buildUrl(`/${slug}/shop`, { q: query })
-              : `/${slug}/shop`;
+        const target =
+          selectedIdx < results.length && results[selectedIdx]
+            ? `/${slug}/products/${results[selectedIdx].id}`
+            : query
+              ? results.length > 0
+                ? buildUrl(`/${slug}/shop`, { q: query })
+                : `/${slug}/shop`
+              : null;
+        if (target) {
+          setOpen(false);
+          router.push(target);
         }
       }
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, [open, results, selectedIdx, slug, q]);
+  }, [open, results, selectedIdx, slug, q, router]);
 
   useEffect(() => {
     if (open) {
