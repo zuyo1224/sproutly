@@ -79,6 +79,25 @@ export function isTextCase(value: unknown): value is TextCase {
   return typeof value === "string" && (TEXT_CASE_KEYS as readonly string[]).includes(value);
 }
 
+// 風格底五種與字體六種。以前各手抄三份：公開頁 _theme.ts 的 type PresetKey / FontKey、
+// resolveTheme 內 `t.preset in PRESETS` 後 as 硬轉、設定頁存檔 actions.ts 自己的兩個 Set；
+// 設定頁選單還各有一處 Object.keys(...) as XKey[]。PRESETS / PRESET_LABELS / FONT_LABELS
+// 那幾張表留在 _theme.ts（它們帶 CSS 變數與色票，屬於渲染端），型別寫成 Record<PresetKey, …>
+// 所以這裡多一個 key 那邊少填會被 tsc 抓到；清單順序就是設定頁選單的顯示順序。
+export const PRESET_KEYS = ["editorial", "plant-zen", "nordic", "aesop", "modern"] as const;
+export type PresetKey = (typeof PRESET_KEYS)[number];
+
+export function isPresetKey(value: unknown): value is PresetKey {
+  return typeof value === "string" && (PRESET_KEYS as readonly string[]).includes(value);
+}
+
+export const FONT_KEYS = ["cormorant", "playfair", "inter", "noto", "noto-serif", "lora"] as const;
+export type FontKey = (typeof FONT_KEYS)[number];
+
+export function isFontKey(value: unknown): value is FontKey {
+  return typeof value === "string" && (FONT_KEYS as readonly string[]).includes(value);
+}
+
 export const SECTION_KEYS = [
   "hero",
   "collections",

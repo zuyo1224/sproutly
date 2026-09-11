@@ -10,11 +10,15 @@ import {
   TRACKING_KEYS,
   LEADING_KEYS,
   TEXT_CASE_KEYS,
+  PRESET_KEYS,
+  FONT_KEYS,
   isAlignX,
   isFontWeight,
   isTracking,
   isLeading,
   isTextCase,
+  isPresetKey,
+  isFontKey,
   isHeroStyle,
   isHeroImageSide,
   isSectionKey,
@@ -99,4 +103,20 @@ test("Hero 小標 / byline 大小寫三檔：upper / capitalize / none，按鈕�
   assert.equal(isTextCase(""), false);
   assert.equal(isTextCase(undefined), false);
   assert.equal(isTextCase(null), false);
+});
+
+test("風格底五種與字體六種都算合法，清單外、大小寫不同與非字串不算", () => {
+  assert.deepEqual([...PRESET_KEYS], ["editorial", "plant-zen", "nordic", "aesop", "modern"]);
+  for (const k of PRESET_KEYS) assert.equal(isPresetKey(k), true);
+  assert.equal(isPresetKey("Aesop"), false);
+  assert.equal(isPresetKey("plant_zen"), false);
+  assert.equal(isPresetKey(""), false);
+  assert.equal(isPresetKey(undefined), false);
+
+  assert.deepEqual([...FONT_KEYS], ["cormorant", "playfair", "inter", "noto", "noto-serif", "lora"]);
+  for (const k of FONT_KEYS) assert.equal(isFontKey(k), true);
+  assert.equal(isFontKey("Inter"), false);
+  assert.equal(isFontKey("noto_serif"), false);
+  assert.equal(isFontKey(null), false);
+  assert.equal(isFontKey(1), false);
 });

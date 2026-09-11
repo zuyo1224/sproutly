@@ -7,17 +7,7 @@ import { uploadImage } from "@/lib/storage";
 import { normalizeHexColor } from "@/lib/hex-color";
 import { redirect } from "next/navigation";
 import { buildUrl, withErrorParam } from "@/lib/url";
-import { DEFAULT_SECTION_ORDER, isHeroImageSide, isHeroStyle } from "@/lib/theme-keys";
-
-const PRESETS = new Set(["editorial", "plant-zen", "nordic", "aesop", "modern"]);
-const FONTS = new Set([
-  "cormorant",
-  "playfair",
-  "inter",
-  "noto",
-  "noto-serif",
-  "lora",
-]);
+import { DEFAULT_SECTION_ORDER, isFontKey, isHeroImageSide, isHeroStyle, isPresetKey } from "@/lib/theme-keys";
 
 function safeHex(input: string, fallback: string): string {
   return normalizeHexColor(input) ?? fallback;
@@ -66,10 +56,10 @@ export async function updateStore(slug: string, formData: FormData) {
 
   // 視覺風格相關
   const presetRaw = String(formData.get("theme_preset") ?? "aesop");
-  const preset = PRESETS.has(presetRaw) ? presetRaw : "aesop";
+  const preset = isPresetKey(presetRaw) ? presetRaw : "aesop";
 
   const fontRaw = String(formData.get("theme_font") ?? "inter");
-  const font = FONTS.has(fontRaw) ? fontRaw : "inter";
+  const font = isFontKey(fontRaw) ? fontRaw : "inter";
 
   const primary = safeHex(
     String(formData.get("theme_primary") ?? ""),

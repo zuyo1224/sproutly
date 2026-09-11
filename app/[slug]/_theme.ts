@@ -35,9 +35,14 @@ import {
   type SectionKey,
   type TextCase,
   type Tracking,
+  type PresetKey,
+  type FontKey,
+  isPresetKey,
+  isFontKey,
 } from "@/lib/theme-keys";
 
-export type PresetKey = "editorial" | "plant-zen" | "nordic" | "aesop" | "modern";
+// 風格底與字體的合法值清單正本在 lib/theme-keys，這裡照舊 re-export 讓設定頁的 import 路徑不變。
+export type { PresetKey, FontKey };
 
 // Hero 4 種 layout variants - 對應 Wix 拖拉編輯器內常見 hero 模板
 // （full-image 全屏圖 + tagline overlay／split 左圖右文 50:50／minimal 純文字大字／
@@ -122,14 +127,6 @@ export interface GalleryItem {
   url: string;
   caption: string | null;
 }
-export type FontKey =
-  | "cormorant"
-  | "playfair"
-  | "inter"
-  | "noto"
-  | "noto-serif"
-  | "lora";
-
 // 單一個 section 的元素級樣式覆寫。欄位表與合法值的單一來源在 lib/section-style-schema，
 // 讀回（這裡）與存檔（editor actions）走同一支 sanitize，型別也由同一份欄位表推出來。
 // 這裡照舊 re-export，公開頁與編輯器現有的 import 路徑不變。
@@ -1172,14 +1169,10 @@ export const FONT_LABELS: Record<FontKey, { label: string; family: string }> = {
 // 從 store.theme jsonb 計算最終主題（preset + 微調）
 export function resolveTheme(raw: unknown): StoreTheme {
   const t = (raw && typeof raw === "object" ? raw : {}) as Record<string, unknown>;
-  const preset = (typeof t.preset === "string" && t.preset in PRESETS
-    ? t.preset
-    : "aesop") as PresetKey;
+  const preset: PresetKey = isPresetKey(t.preset) ? t.preset : "aesop";
   const base = PRESETS[preset];
 
-  const fontKey = (typeof t.font === "string" && t.font in FONT_LABELS
-    ? t.font
-    : base.font) as FontKey;
+  const fontKey: FontKey = isFontKey(t.font) ? t.font : base.font;
 
   const sections = (t.sections && typeof t.sections === "object"
     ? (t.sections as Record<string, unknown>)

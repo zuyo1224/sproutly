@@ -29,9 +29,8 @@ import {
   HOMEPAGE_DEFAULTS,
   HOMEPAGE_DEFAULT_COLLECTIONS,
   HERO_STYLES,
-  type PresetKey,
-  type FontKey,
 } from "@/app/[slug]/_theme";
+import { PRESET_KEYS, FONT_KEYS } from "@/lib/theme-keys";
 import { AIEditPanel } from "@/app/_components/ai-edit-panel";
 import { UnsavedChangesGuard } from "@/app/_components/unsaved-changes-guard";
 import { ContactHintInput } from "@/app/_components/contact-hint-input";
@@ -418,7 +417,7 @@ A: 可以，地點為台北車站。`}</pre>
               選風格底
             </label>
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-              {(Object.keys(PRESETS) as PresetKey[]).map((key) => {
+              {PRESET_KEYS.map((key) => {
                 const p = PRESETS[key];
                 const meta = PRESET_LABELS[key];
                 return (
@@ -504,7 +503,7 @@ A: 可以，地點為台北車站。`}</pre>
               defaultValue={theme.font}
               className="w-full rounded-xl border border-emerald-100 px-4 py-3 outline-none focus:border-emerald-400 focus:ring-2 focus:ring-emerald-100 transition bg-white"
             >
-              {(Object.keys(FONT_LABELS) as FontKey[]).map((key) => (
+              {FONT_KEYS.map((key) => (
                 <option key={key} value={key}>
                   {FONT_LABELS[key].label}
                 </option>
