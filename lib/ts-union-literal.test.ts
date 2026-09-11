@@ -1,7 +1,7 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { tsUnionLiteral } from "./ts-union-literal.ts";
-import { HERO_STYLE_KEYS, DEFAULT_SECTION_ORDER } from "./theme-keys.ts";
+import { HERO_STYLE_KEYS, HERO_IMAGE_SIDES, DEFAULT_SECTION_ORDER } from "./theme-keys.ts";
 
 test("多個值用 | 串起、每個值加雙引號", () => {
   assert.equal(tsUnionLiteral(["a", "b", "c"]), '"a" | "b" | "c"');
@@ -32,4 +32,8 @@ test("sectionOrder 預設 6 個生成結果跟以前手打的提示逐字相同"
     tsUnionLiteral(DEFAULT_SECTION_ORDER),
     '"hero" | "collections" | "featured" | "journal" | "promise" | "visit"'
   );
+});
+
+test("heroImageSide 兩個值生成結果跟以前手打的提示逐字相同", () => {
+  assert.equal(tsUnionLiteral(HERO_IMAGE_SIDES), '"left" | "right"');
 });

@@ -45,7 +45,9 @@ import { applySectionStylePatch, type SectionStylePatch } from "@/lib/section-st
 import {
   HERO_STYLE_KEYS,
   SECTION_KEYS,
+  isHeroImageSide,
   isSectionKey,
+  type HeroImageSide,
   type HeroStyle,
   type SectionKey,
 } from "@/lib/theme-keys";
@@ -260,7 +262,7 @@ type EditorTheme = {
     heroStyle: HeroStyle;
     heroEyebrow: string | null;
     heroSubtitle: string | null;
-    heroImageSide: "left" | "right";
+    heroImageSide: HeroImageSide;
     sectionOrder: SectionKey[];
     testimonials: Testimonial[];
     faqItems: FaqItem[];
@@ -1648,7 +1650,7 @@ export function EditorWorkspace({
                 if (l.heroStyle) patchObj.heroStyle = l.heroStyle as HeroStyle;
                 if (l.heroEyebrow !== undefined) patchObj.heroEyebrow = l.heroEyebrow;
                 if (l.heroSubtitle !== undefined) patchObj.heroSubtitle = l.heroSubtitle;
-                if (l.heroImageSide) patchObj.heroImageSide = l.heroImageSide as "left" | "right";
+                if (isHeroImageSide(l.heroImageSide)) patchObj.heroImageSide = l.heroImageSide;
                 if (l.sectionOrder && Array.isArray(l.sectionOrder)) {
                   patchObj.sectionOrder = l.sectionOrder as SectionKey[];
                 }

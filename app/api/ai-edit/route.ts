@@ -5,13 +5,14 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { parseAiThemePatch } from "@/lib/ai-theme-patch";
-import { HERO_STYLE_KEYS, DEFAULT_SECTION_ORDER } from "@/lib/theme-keys";
+import { HERO_STYLE_KEYS, HERO_IMAGE_SIDES, DEFAULT_SECTION_ORDER } from "@/lib/theme-keys";
 import { tsUnionLiteral } from "@/lib/ts-union-literal";
 
 // 提示裡給模型看的合法值從 lib/theme-keys 那份正本生成，不再手打；多一種版型時
 // 程式認得、模型也會被告知。sectionOrder 這裡刻意只給預設 6 個（跟設定頁一致），
 // 另外 5 個手動加的 section 要不要開給 AI 排是另一個未定的問題，不在這裡改。
 const HERO_STYLE_UNION = tsUnionLiteral(HERO_STYLE_KEYS);
+const HERO_IMAGE_SIDE_UNION = tsUnionLiteral(HERO_IMAGE_SIDES);
 const SECTION_KEY_UNION = tsUnionLiteral(DEFAULT_SECTION_ORDER);
 
 const SYSTEM_PROMPT = `你是 Sproutly 商家建站平台的 AI 助手，幫商家用自然語言調整店面設計。
@@ -31,7 +32,7 @@ const SYSTEM_PROMPT = `你是 Sproutly 商家建站平台的 AI 助手，幫商�
     heroStyle?: ${HERO_STYLE_UNION};
     heroEyebrow?: string;
     heroSubtitle?: string;
-    heroImageSide?: "left" | "right";
+    heroImageSide?: ${HERO_IMAGE_SIDE_UNION};
     sectionOrder?: (${SECTION_KEY_UNION})[];
   };
   homepage?: {

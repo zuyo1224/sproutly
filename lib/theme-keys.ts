@@ -17,6 +17,16 @@ export function isHeroStyle(value: unknown): value is HeroStyle {
   return typeof value === "string" && (HERO_STYLE_KEYS as readonly string[]).includes(value);
 }
 
+// split 版型的圖放哪一邊。以前 "left" | "right" 這對值也是手抄：公開頁 _theme.ts 的
+// type 與 resolveLayout、編輯器與設定頁存檔的 === "right" 三元式、AI 助手 lib/ai-theme-patch
+// 的 || 判斷、ai-edit 提示字串裡那行。一樣收成一份。
+export const HERO_IMAGE_SIDES = ["left", "right"] as const;
+export type HeroImageSide = (typeof HERO_IMAGE_SIDES)[number];
+
+export function isHeroImageSide(value: unknown): value is HeroImageSide {
+  return typeof value === "string" && (HERO_IMAGE_SIDES as readonly string[]).includes(value);
+}
+
 export const SECTION_KEYS = [
   "hero",
   "collections",

@@ -11,7 +11,7 @@
 // 6 個的超集）。
 
 import { normalizeHexColor } from "./hex-color.ts";
-import { isHeroStyle, isSectionKey } from "./theme-keys.ts";
+import { isHeroImageSide, isHeroStyle, isSectionKey } from "./theme-keys.ts";
 import type { ThemePatch } from "./theme-patch-summary.ts";
 
 // 模型偶爾會把 JSON 包在 ```json … ``` 裡，剝掉再交給 JSON.parse。
@@ -53,8 +53,7 @@ export function sanitizeThemePatch(input: unknown): ThemePatch | null {
     if (eyebrow !== undefined) layout.heroEyebrow = eyebrow;
     const subtitle = pickString(l.heroSubtitle);
     if (subtitle !== undefined) layout.heroSubtitle = subtitle;
-    if (l.heroImageSide === "left" || l.heroImageSide === "right")
-      layout.heroImageSide = l.heroImageSide;
+    if (isHeroImageSide(l.heroImageSide)) layout.heroImageSide = l.heroImageSide;
     if (Array.isArray(l.sectionOrder)) {
       const order: string[] = [];
       for (const k of l.sectionOrder) {

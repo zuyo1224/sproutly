@@ -19,8 +19,10 @@ import {
 } from "@/lib/section-style-schema";
 import {
   DEFAULT_SECTION_ORDER,
+  isHeroImageSide,
   isHeroStyle,
   isSectionKey,
+  type HeroImageSide,
   type HeroStyle,
   type SectionKey,
 } from "@/lib/theme-keys";
@@ -30,7 +32,7 @@ export type PresetKey = "editorial" | "plant-zen" | "nordic" | "aesop" | "modern
 // Hero 4 種 layout variants - 對應 Wix 拖拉編輯器內常見 hero 模板
 // （full-image 全屏圖 + tagline overlay／split 左圖右文 50:50／minimal 純文字大字／
 // magazine 雜誌封面）。合法值正本在 lib/theme-keys，這裡 re-export 讓既有 import 路徑不變。
-export type { HeroStyle, SectionKey };
+export type { HeroImageSide, HeroStyle, SectionKey };
 export { DEFAULT_SECTION_ORDER };
 export const HERO_STYLES: { key: HeroStyle; label: string; description: string }[] = [
   { key: "full-image", label: "全屏沉浸", description: "整屏背景圖 + 文字 overlay，最有沉浸感" },
@@ -198,7 +200,7 @@ export interface StoreTheme {
     heroStyle: HeroStyle;
     heroSubtitle: string | null;       // minimal / magazine 用副標
     heroEyebrow: string | null;        // magazine top metadata
-    heroImageSide: "left" | "right";   // split 用
+    heroImageSide: HeroImageSide;      // split 用
     sectionOrder: SectionKey[];
     testimonials: Testimonial[];       // 顧客評語（optional block）
     faqItems: FaqItem[];               // 首頁 FAQ（optional block）
@@ -1218,8 +1220,7 @@ export function resolveTheme(raw: unknown): StoreTheme {
 function resolveLayout(raw: unknown): StoreTheme["layout"] {
   const l = (raw && typeof raw === "object" ? raw : {}) as Record<string, unknown>;
   const heroStyle: HeroStyle = isHeroStyle(l.heroStyle) ? l.heroStyle : "full-image";
-  const heroImageSide =
-    l.heroImageSide === "right" ? "right" : "left";
+  const heroImageSide: HeroImageSide = isHeroImageSide(l.heroImageSide) ? l.heroImageSide : "left";
   const orderRaw = Array.isArray(l.sectionOrder) ? l.sectionOrder : [];
   const order: SectionKey[] = [];
   for (const k of orderRaw) {

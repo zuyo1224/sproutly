@@ -7,7 +7,7 @@ import { uploadImage } from "@/lib/storage";
 import { normalizeHexColor } from "@/lib/hex-color";
 import { redirect } from "next/navigation";
 import { buildUrl, withErrorParam } from "@/lib/url";
-import { DEFAULT_SECTION_ORDER, isHeroStyle } from "@/lib/theme-keys";
+import { DEFAULT_SECTION_ORDER, isHeroImageSide, isHeroStyle } from "@/lib/theme-keys";
 
 const PRESETS = new Set(["editorial", "plant-zen", "nordic", "aesop", "modern"]);
 const FONTS = new Set([
@@ -152,7 +152,7 @@ export async function updateStore(slug: string, formData: FormData) {
   const heroStyle = isHeroStyle(heroStyleRaw) ? heroStyleRaw : "full-image";
 
   const heroImageSideRaw = String(formData.get("layout_hero_image_side") ?? "left");
-  const heroImageSide = heroImageSideRaw === "right" ? "right" : "left";
+  const heroImageSide = isHeroImageSide(heroImageSideRaw) ? heroImageSideRaw : "left";
 
   // 設定頁的排序 UI 只列基本 6 個 section（沒有編輯器那五個可加的區塊），所以這裡
   // 也只認這 6 個；編輯器存檔那邊認的是完整 11 個（lib/theme-keys 的 SECTION_KEYS）。

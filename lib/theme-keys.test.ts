@@ -2,9 +2,11 @@ import { test } from "node:test";
 import assert from "node:assert/strict";
 import {
   HERO_STYLE_KEYS,
+  HERO_IMAGE_SIDES,
   SECTION_KEYS,
   DEFAULT_SECTION_ORDER,
   isHeroStyle,
+  isHeroImageSide,
   isSectionKey,
 } from "./theme-keys.ts";
 
@@ -14,6 +16,16 @@ test("hero 四種版型都算合法，清單外與非字串不算", () => {
   assert.equal(isHeroStyle(""), false);
   assert.equal(isHeroStyle(undefined), false);
   assert.equal(isHeroStyle(1), false);
+});
+
+test("hero 圖位置只有 left / right 兩種，清單外與非字串不算", () => {
+  assert.deepEqual([...HERO_IMAGE_SIDES], ["left", "right"]);
+  for (const k of HERO_IMAGE_SIDES) assert.equal(isHeroImageSide(k), true);
+  assert.equal(isHeroImageSide("top"), false);
+  assert.equal(isHeroImageSide("Left"), false);
+  assert.equal(isHeroImageSide(""), false);
+  assert.equal(isHeroImageSide(undefined), false);
+  assert.equal(isHeroImageSide(null), false);
 });
 
 test("11 個 section 都算合法，清單外與非字串不算", () => {

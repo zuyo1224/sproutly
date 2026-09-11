@@ -27,7 +27,7 @@ import {
   sanitizeSectionStyles,
   type SectionStyle,
 } from "@/lib/section-style-schema";
-import { DEFAULT_SECTION_ORDER, isHeroStyle, isSectionKey } from "@/lib/theme-keys";
+import { DEFAULT_SECTION_ORDER, isHeroImageSide, isHeroStyle, isSectionKey } from "@/lib/theme-keys";
 
 type EditorPayload = {
   primary?: string;
@@ -265,8 +265,9 @@ export async function saveEditorState(slug: string, payload: EditorPayload) {
       layoutPatch.heroSubtitle = String(payload.layout.heroSubtitle).slice(0, MAX_HERO_SUBTITLE_LEN);
     }
     if (payload.layout.heroImageSide) {
-      layoutPatch.heroImageSide =
-        payload.layout.heroImageSide === "right" ? "right" : "left";
+      layoutPatch.heroImageSide = isHeroImageSide(payload.layout.heroImageSide)
+        ? payload.layout.heroImageSide
+        : "left";
     }
     if (payload.layout.sectionOrder) {
       const order: string[] = [];
