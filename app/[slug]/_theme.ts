@@ -8,6 +8,7 @@ import {
   clampFreePos,
 } from "@/lib/theme-scale";
 import { normalizeHexColor } from "@/lib/hex-color";
+import { isPlainObject } from "@/lib/is-plain-object";
 import { cleanMapEmbedUrl } from "@/lib/map-embed-url";
 import {
   normalizeHeroImageBounds,
@@ -1168,7 +1169,7 @@ export const FONT_LABELS: Record<FontKey, { label: string; family: string }> = {
 
 // 從 store.theme jsonb 計算最終主題（preset + 微調）
 export function resolveTheme(raw: unknown): StoreTheme {
-  const t = (raw && typeof raw === "object" ? raw : {}) as Record<string, unknown>;
+  const t: Record<string, unknown> = isPlainObject(raw) ? raw : {};
   const preset: PresetKey = isPresetKey(t.preset) ? t.preset : "aesop";
   const base = PRESETS[preset];
 
@@ -1176,11 +1177,9 @@ export function resolveTheme(raw: unknown): StoreTheme {
 
   // 兩張表只轉成「鍵是字串、值不知道是什麼」；下面每一格都各自 typeof／=== 檢查，
   // 不再假裝 jsonb 裡存的一定是 boolean／string（舊資料或手改 DB 塞錯型別就會被當沒填）
-  const sections: Record<string, unknown> =
-    t.sections && typeof t.sections === "object" ? (t.sections as Record<string, unknown>) : {};
+  const sections: Record<string, unknown> = isPlainObject(t.sections) ? t.sections : {};
 
-  const social: Record<string, unknown> =
-    t.social && typeof t.social === "object" ? (t.social as Record<string, unknown>) : {};
+  const social: Record<string, unknown> = isPlainObject(t.social) ? t.social : {};
 
   return {
     preset,
@@ -1208,9 +1207,9 @@ export function resolveTheme(raw: unknown): StoreTheme {
     },
     tagline: typeof t.tagline === "string" && t.tagline ? t.tagline : null,
     collections:
-      t.collections && typeof t.collections === "object"
+      isPlainObject(t.collections)
         ? Object.fromEntries(
-            Object.entries(t.collections as Record<string, unknown>).filter(
+            Object.entries(t.collections).filter(
               ([, v]) => typeof v === "string" && v.length > 0
             ) as [string, string][]
           )
@@ -1221,7 +1220,7 @@ export function resolveTheme(raw: unknown): StoreTheme {
 }
 
 function resolveLayout(raw: unknown): StoreTheme["layout"] {
-  const l = (raw && typeof raw === "object" ? raw : {}) as Record<string, unknown>;
+  const l: Record<string, unknown> = isPlainObject(raw) ? raw : {};
   const heroStyle: HeroStyle = isHeroStyle(l.heroStyle) ? l.heroStyle : "full-image";
   const heroImageSide: HeroImageSide = isHeroImageSide(l.heroImageSide) ? l.heroImageSide : "left";
   const orderRaw = Array.isArray(l.sectionOrder) ? l.sectionOrder : [];
@@ -1237,9 +1236,8 @@ function resolveLayout(raw: unknown): StoreTheme["layout"] {
   // testimonials array sanitize
   const testimonialsRaw = Array.isArray(l.testimonials) ? l.testimonials : [];
   const testimonials: Testimonial[] = testimonialsRaw
-    .filter((t) => t && typeof t === "object")
-    .map((t) => {
-      const obj = t as Record<string, unknown>;
+    .filter(isPlainObject)
+    .map((obj) => {
       const quote = typeof obj.quote === "string" ? obj.quote.trim() : "";
       const author = typeof obj.author === "string" ? obj.author.trim() : "";
       const role = typeof obj.role === "string" && obj.role.trim() ? obj.role.trim() : null;
@@ -1250,9 +1248,8 @@ function resolveLayout(raw: unknown): StoreTheme["layout"] {
   // faqItems array sanitize
   const faqRaw = Array.isArray(l.faqItems) ? l.faqItems : [];
   const faqItems: FaqItem[] = faqRaw
-    .filter((f) => f && typeof f === "object")
-    .map((f) => {
-      const obj = f as Record<string, unknown>;
+    .filter(isPlainObject)
+    .map((obj) => {
       const question = typeof obj.question === "string" ? obj.question.trim() : "";
       const answer = typeof obj.answer === "string" ? obj.answer.trim() : "";
       return { question, answer };
@@ -1262,9 +1259,8 @@ function resolveLayout(raw: unknown): StoreTheme["layout"] {
   // stats sanitize
   const statsRaw = Array.isArray(l.stats) ? l.stats : [];
   const stats: StatItem[] = statsRaw
-    .filter((s) => s && typeof s === "object")
-    .map((s) => {
-      const obj = s as Record<string, unknown>;
+    .filter(isPlainObject)
+    .map((obj) => {
       const value = typeof obj.value === "string" ? obj.value.trim() : "";
       const label = typeof obj.label === "string" ? obj.label.trim() : "";
       return { value, label };
@@ -1274,9 +1270,8 @@ function resolveLayout(raw: unknown): StoreTheme["layout"] {
   // partners sanitize
   const partnersRaw = Array.isArray(l.partners) ? l.partners : [];
   const partners: PartnerItem[] = partnersRaw
-    .filter((p) => p && typeof p === "object")
-    .map((p) => {
-      const obj = p as Record<string, unknown>;
+    .filter(isPlainObject)
+    .map((obj) => {
       const name = typeof obj.name === "string" ? obj.name.trim() : "";
       const logoUrl = typeof obj.logoUrl === "string" ? obj.logoUrl.trim() : "";
       const href = typeof obj.href === "string" && obj.href.trim() ? obj.href.trim() : null;
@@ -1287,9 +1282,8 @@ function resolveLayout(raw: unknown): StoreTheme["layout"] {
   // gallery sanitize
   const galleryRaw = Array.isArray(l.gallery) ? l.gallery : [];
   const gallery: GalleryItem[] = galleryRaw
-    .filter((g) => g && typeof g === "object")
-    .map((g) => {
-      const obj = g as Record<string, unknown>;
+    .filter(isPlainObject)
+    .map((obj) => {
       const url = typeof obj.url === "string" ? obj.url.trim() : "";
       const caption =
         typeof obj.caption === "string" && obj.caption.trim() ? obj.caption.trim() : null;
@@ -1677,10 +1671,9 @@ function resolveLayout(raw: unknown): StoreTheme["layout"] {
       // 1. unified freePositions Record (preferred new path)
       const fp = l.freePositions;
       const result: Record<string, { x: number; y: number }> = {};
-      if (fp && typeof fp === "object" && !Array.isArray(fp)) {
-        for (const [k, v] of Object.entries(fp as Record<string, unknown>)) {
-          if (!v || typeof v !== "object") continue;
-          const obj = v as Record<string, unknown>;
+      if (isPlainObject(fp)) {
+        for (const [k, obj] of Object.entries(fp)) {
+          if (!isPlainObject(obj)) continue;
           const x = typeof obj.x === "number" ? obj.x : NaN;
           const y = typeof obj.y === "number" ? obj.y : NaN;
           if (!Number.isFinite(x) || !Number.isFinite(y)) continue;
@@ -1692,10 +1685,9 @@ function resolveLayout(raw: unknown): StoreTheme["layout"] {
       }
       // 2. legacy fallback：把舊 heroTaglinePosition 自動 migrate 到 freePositions["hero-tagline"]
       const legacy = (l as { heroTaglinePosition?: unknown }).heroTaglinePosition;
-      if (legacy && typeof legacy === "object" && !result["hero-tagline"]) {
-        const obj = legacy as Record<string, unknown>;
-        const x = typeof obj.x === "number" ? obj.x : NaN;
-        const y = typeof obj.y === "number" ? obj.y : NaN;
+      if (isPlainObject(legacy) && !result["hero-tagline"]) {
+        const x = typeof legacy.x === "number" ? legacy.x : NaN;
+        const y = typeof legacy.y === "number" ? legacy.y : NaN;
         if (Number.isFinite(x) && Number.isFinite(y)) {
           result["hero-tagline"] = {
             x: clampFreePos(x),
@@ -1709,7 +1701,7 @@ function resolveLayout(raw: unknown): StoreTheme["layout"] {
 }
 
 function resolveHomepage(raw: unknown): StoreTheme["homepage"] {
-  const h = (raw && typeof raw === "object" ? raw : {}) as Record<string, unknown>;
+  const h: Record<string, unknown> = isPlainObject(raw) ? raw : {};
   const itemsRaw = Array.isArray(h.collectionItems) ? h.collectionItems : [];
   // 同一個 key 只留第一筆。key 是這六張卡對到 theme.collections 情境照的鍵，也是
   // 店面首頁 map 時的 React key；DB 手動塞值或舊資料撞 key，React 會警告、卡片互相
@@ -1717,9 +1709,8 @@ function resolveHomepage(raw: unknown): StoreTheme["homepage"] {
   // （店面、編輯器、設定頁）共用的最後一道，兩邊看到的排序與張數才會一致。
   const seenCollectionKeys = new Set<string>();
   const items = itemsRaw
-    .filter((c) => c && typeof c === "object")
-    .map((c) => {
-      const obj = c as Record<string, unknown>;
+    .filter(isPlainObject)
+    .map((obj) => {
       return {
         key: typeof obj.key === "string" ? obj.key : "",
         title: typeof obj.title === "string" ? obj.title.trim() : "",
@@ -1734,9 +1725,8 @@ function resolveHomepage(raw: unknown): StoreTheme["homepage"] {
     });
   const journalCardsRaw = Array.isArray(h.journalCards) ? h.journalCards : [];
   const journalCards = journalCardsRaw
-    .filter((c) => c && typeof c === "object")
-    .map((c) => {
-      const obj = c as Record<string, unknown>;
+    .filter(isPlainObject)
+    .map((obj) => {
       return {
         eyebrow: typeof obj.eyebrow === "string" ? obj.eyebrow.trim() : "",
         title: typeof obj.title === "string" ? obj.title.trim() : "",

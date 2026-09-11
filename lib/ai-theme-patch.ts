@@ -11,6 +11,7 @@
 // 6 個的超集）。
 
 import { normalizeHexColor } from "./hex-color.ts";
+import { isPlainObject } from "./is-plain-object.ts";
 import { isHeroImageSide, isHeroStyle, isSectionKey } from "./theme-keys.ts";
 import type { ThemePatch } from "./theme-patch-summary.ts";
 
@@ -21,10 +22,6 @@ export function stripJsonFence(raw: string): string {
     .replace(/^```(?:json)?\n?/i, "")
     .replace(/\n?```$/i, "")
     .trim();
-}
-
-function isPlainObject(v: unknown): v is Record<string, unknown> {
-  return typeof v === "object" && v !== null && !Array.isArray(v);
 }
 
 // 商家自己寫的文案：是字串就收（空字串也收，他可能就是要清掉），其餘型別丟掉。
