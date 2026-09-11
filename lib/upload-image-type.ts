@@ -11,10 +11,18 @@
 // 後台三個選檔框「打開檔案總管時預先篩掉哪些檔」的清單也收在這裡（見檔尾兩個常數），
 // 免得選檔框放行的範圍跟這支收的範圍各說各話。
 
+import { sniffImageType, type ImageSignature } from "./image-signature.ts";
+
 const ALLOWED_EXT = ["jpg", "jpeg", "png", "webp", "gif", "svg"];
 
 export const UNSUPPORTED_IMAGE_ERROR =
   "圖片格式只支援 jpg / png / webp / gif / svg";
+
+// 檔名看起來是圖片、內容卻不是站上收的任何一種格式時回商家的那句。
+// 特別點名 HEIC：iPhone 照片經 LINE、AirDrop 或改名後叫 xxx.jpg 內容還是 HEIC，
+// 是這關最常擋到的情況，商家看到訊息要知道該怎麼做，不是只知道「被擋了」。
+export const NOT_IMAGE_CONTENT_ERROR =
+  "這個檔案的內容不是支援的圖片格式（可能是改過副檔名，或 iPhone 的 HEIC 照片），請另存成 jpg / png / webp 再上傳";
 
 // 從檔名取副檔名。不在清單裡回 null（呼叫端據此回 UNSUPPORTED_IMAGE_ERROR）。
 //
@@ -41,6 +49,54 @@ export function uploadImageContentType(
   if (ext === "jpg" || ext === "jpeg") return "image/jpeg";
   if (ext === "svg") return "image/svg+xml";
   return `image/${ext}`;
+}
+
+// 檔名副檔名 → 內容簽名的對照：jpg 與 jpeg 是同一種內容，其餘一對一。
+const SIGNATURE_OF_EXT: Record<string, ImageSignature> = {
+  jpg: "jpeg",
+  jpeg: "jpeg",
+  png: "png",
+  webp: "webp",
+  gif: "gif",
+  svg: "svg",
+};
+
+// 內容簽名 → 存檔路徑要用的副檔名。jpeg 存成 jpg（跟站上其他地方習慣一致）。
+const EXT_OF_SIGNATURE: Record<ImageSignature, string> = {
+  jpeg: "jpg",
+  png: "png",
+  webp: "webp",
+  gif: "gif",
+  svg: "svg",
+};
+
+export type ResolvedUploadImage =
+  | { ok: true; ext: string; contentType: string }
+  | { ok: false; error: string };
+
+// 上傳前把「檔名」與「內容」兩關一起過，決定這個檔存不存、存成什麼副檔名、標什麼型別。
+//
+// 順序：先看檔名（跟以前一樣，清單外直接回 UNSUPPORTED_IMAGE_ERROR），再看內容開頭幾個
+// byte（lib/image-signature）。內容認不出來就擋，回 NOT_IMAGE_CONTENT_ERROR。
+//
+// 檔名跟內容說法不一致時（.jpg 裡面是 webp、.png 裡面是 jpeg——從 IG、網頁另存下來的圖
+// 很常這樣），以內容為準：路徑結尾與型別都照內容寫，瀏覽器回報的 file.type 也不再參考。
+// 這種檔以前是放行的，現在還是放行，只是存對格式；商家不會多被擋。
+// 一致時維持原本的推法（uploadImageContentType：瀏覽器回報的 image/ 型別優先）。
+export function resolveUploadImageType(
+  fileName: string,
+  bytes: Uint8Array,
+  reportedType: string | null | undefined,
+): ResolvedUploadImage {
+  const ext = uploadImageExtension(fileName);
+  if (!ext) return { ok: false, error: UNSUPPORTED_IMAGE_ERROR };
+  const signature = sniffImageType(bytes);
+  if (!signature) return { ok: false, error: NOT_IMAGE_CONTENT_ERROR };
+  if (SIGNATURE_OF_EXT[ext] !== signature) {
+    const realExt = EXT_OF_SIGNATURE[signature];
+    return { ok: true, ext: realExt, contentType: uploadImageContentType(realExt, null) };
+  }
+  return { ok: true, ext, contentType: uploadImageContentType(ext, reportedType) };
 }
 
 // 後台選檔框（<input type="file"> 的 accept）要預先篩出哪些檔。

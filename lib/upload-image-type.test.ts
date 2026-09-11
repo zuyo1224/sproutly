@@ -11,11 +11,19 @@ import { describe, it } from "node:test";
 import assert from "node:assert/strict";
 import {
   LOGO_FILE_ACCEPT,
+  NOT_IMAGE_CONTENT_ERROR,
   PHOTO_FILE_ACCEPT,
   UNSUPPORTED_IMAGE_ERROR,
+  resolveUploadImageType,
   uploadImageContentType,
   uploadImageExtension,
 } from "./upload-image-type.ts";
+
+const JPEG = new Uint8Array([0xff, 0xd8, 0xff, 0xe0]);
+const PNG = new Uint8Array([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a]);
+const WEBP = new Uint8Array(Array.from("RIFF\0\0\0\0WEBP", (c) => c.charCodeAt(0)));
+const HEIC = new Uint8Array(Array.from("\0\0\0\x18ftypheic", (c) => c.charCodeAt(0)));
+const SVG = new TextEncoder().encode("<svg></svg>");
 
 describe("uploadImageExtension", () => {
   it("清單上的六種副檔名都收", () => {
@@ -99,6 +107,79 @@ describe("uploadImageContentType", () => {
   it("回報的型別前後有空白時去掉空白再判", () => {
     assert.equal(uploadImageContentType("png", "  image/png  "), "image/png");
     assert.equal(uploadImageContentType("png", "   "), "image/png");
+  });
+});
+
+describe("resolveUploadImageType（檔名與內容兩關一起過）", () => {
+  it("檔名與內容一致：照檔名的副檔名存，型別照瀏覽器回報的推", () => {
+    assert.deepEqual(resolveUploadImageType("photo.png", PNG, "image/png"), {
+      ok: true,
+      ext: "png",
+      contentType: "image/png",
+    });
+    // jpg 與 jpeg 都算跟 jpeg 內容一致，副檔名照檔名寫、不硬改
+    assert.deepEqual(resolveUploadImageType("photo.jpeg", JPEG, ""), {
+      ok: true,
+      ext: "jpeg",
+      contentType: "image/jpeg",
+    });
+    assert.deepEqual(resolveUploadImageType("logo.svg", SVG, "image/svg+xml"), {
+      ok: true,
+      ext: "svg",
+      contentType: "image/svg+xml",
+    });
+  });
+
+  it("檔名清單外的先擋，還沒看內容（訊息維持原本那句）", () => {
+    assert.deepEqual(resolveUploadImageType("photo.heic", HEIC, "image/heic"), {
+      ok: false,
+      error: UNSUPPORTED_IMAGE_ERROR,
+    });
+    assert.deepEqual(resolveUploadImageType("photo.bmp", PNG, ""), {
+      ok: false,
+      error: UNSUPPORTED_IMAGE_ERROR,
+    });
+  });
+
+  it("檔名是 .jpg 但內容是 HEIC：擋下來，訊息點名 HEIC 該怎麼處理", () => {
+    // 這是這關最主要的目的。以前這種檔被標成 image/jpeg 存進去，客人看到破圖框。
+    const result = resolveUploadImageType("IMG_0001.jpg", HEIC, "image/jpeg");
+    assert.deepEqual(result, { ok: false, error: NOT_IMAGE_CONTENT_ERROR });
+    assert.match(NOT_IMAGE_CONTENT_ERROR, /HEIC/);
+  });
+
+  it("內容是 pdf、純文字或空檔一律擋", () => {
+    const pdf = new TextEncoder().encode("%PDF-1.4");
+    assert.equal(resolveUploadImageType("scan.png", pdf, "image/png").ok, false);
+    assert.equal(resolveUploadImageType("x.jpg", new Uint8Array(0), "image/jpeg").ok, false);
+  });
+
+  it("檔名與內容不一致（.jpg 裡面是 webp）：以內容為準，路徑與型別都照內容寫", () => {
+    // 從 IG、網頁另存下來的圖常這樣。以前放行且標成 image/jpeg，現在照樣放行但存對。
+    assert.deepEqual(resolveUploadImageType("photo.jpg", WEBP, "image/jpeg"), {
+      ok: true,
+      ext: "webp",
+      contentType: "image/webp",
+    });
+    // 反過來 .png 裡面是 jpeg：存成 jpg（不是 jpeg），跟站上其他地方的習慣一致
+    assert.deepEqual(resolveUploadImageType("photo.png", JPEG, "image/png"), {
+      ok: true,
+      ext: "jpg",
+      contentType: "image/jpeg",
+    });
+  });
+
+  it("不一致時瀏覽器回報的型別不再參考（回報 image/png 內容卻是 webp，仍標 image/webp）", () => {
+    const result = resolveUploadImageType("photo.png", WEBP, "image/png");
+    assert.equal(result.ok && result.contentType, "image/webp");
+  });
+
+  it("沒有檔名的 File（當 jpg 放行的那條）內容也要真的是 jpeg 才收", () => {
+    assert.equal(resolveUploadImageType("", JPEG, "").ok, true);
+    assert.deepEqual(resolveUploadImageType("", HEIC, ""), {
+      ok: false,
+      error: NOT_IMAGE_CONTENT_ERROR,
+    });
   });
 });
 
