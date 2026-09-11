@@ -6,7 +6,13 @@ import {
   HERO_IMAGE_SIDES,
   SECTION_KEYS,
   DEFAULT_SECTION_ORDER,
+  FONT_WEIGHT_KEYS,
+  TRACKING_KEYS,
+  LEADING_KEYS,
   isAlignX,
+  isFontWeight,
+  isTracking,
+  isLeading,
   isHeroStyle,
   isHeroImageSide,
   isSectionKey,
@@ -59,4 +65,23 @@ test("水平對齊只有 left / center / right 三種，清單外與非字串不
   assert.equal(isAlignX(""), false);
   assert.equal(isAlignX(undefined), false);
   assert.equal(isAlignX(null), false);
+});
+
+test("Hero 文字三張三檔清單：粗細 / 字距 / 行距，清單外與非字串不算", () => {
+  assert.deepEqual([...FONT_WEIGHT_KEYS], ["normal", "medium", "bold"]);
+  assert.deepEqual([...TRACKING_KEYS], ["tight", "normal", "wide"]);
+  assert.deepEqual([...LEADING_KEYS], ["tight", "normal", "relaxed"]);
+  for (const k of FONT_WEIGHT_KEYS) assert.equal(isFontWeight(k), true);
+  for (const k of TRACKING_KEYS) assert.equal(isTracking(k), true);
+  for (const k of LEADING_KEYS) assert.equal(isLeading(k), true);
+  // 按鈕粗細的 "default" 不在清單裡，是 heroCtaWeight 那格自己多的一檔
+  assert.equal(isFontWeight("default"), false);
+  assert.equal(isFontWeight("light"), false);
+  // 字距的 wide 與行距的 relaxed 不能互通
+  assert.equal(isTracking("relaxed"), false);
+  assert.equal(isLeading("wide"), false);
+  assert.equal(isTracking("Tight"), false);
+  assert.equal(isLeading(""), false);
+  assert.equal(isFontWeight(undefined), false);
+  assert.equal(isTracking(null), false);
 });

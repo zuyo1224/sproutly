@@ -20,13 +20,19 @@ import {
 import {
   DEFAULT_SECTION_ORDER,
   isAlignX,
+  isFontWeight,
   isHeroImageSide,
   isHeroStyle,
+  isLeading,
   isSectionKey,
+  isTracking,
   type AlignX,
+  type FontWeight,
   type HeroImageSide,
   type HeroStyle,
+  type Leading,
   type SectionKey,
+  type Tracking,
 } from "@/lib/theme-keys";
 
 export type PresetKey = "editorial" | "plant-zen" | "nordic" | "aesop" | "modern";
@@ -242,7 +248,7 @@ export interface StoreTheme {
     // 去假變細，中文筆畫糊掉——跟段落大標、卡片那幾格同一個理由。
     // 四種版型一起套（不像對齊只在 full-image 生效）：粗細不動位置，split / magazine /
     // minimal 的版面配置一格都不會被翻掉，沒設定的店家照樣算出 400、跟現在一模一樣。
-    heroTaglineWeight: "normal" | "medium" | "bold"; // 主標粗細（預設 normal = 400）
+    heroTaglineWeight: FontWeight; // 主標粗細（預設 normal = 400）
     // 主標字距（tight 收緊 / normal 預設 / wide 撐開）。四種版型的主標各自寫死一個
     // letterSpacing：整版圖片 0.02em、左右分割 -0.01em、雜誌 -0.02em、極簡 -0.015em。
     // 那四個值是照英文主標調的——負字距把字往內收，拉丁字母本來就有側邊空隙，收一點更緊實；
@@ -254,7 +260,7 @@ export interface StoreTheme {
     // --store-heading-track 變數，hero 主標的字距寫在自己的 inline style 裡，變數餵不進去。
     // 存的是相對量不是絕對值：收緊 -0.03em、撐開 +0.05em，各加在該版型原本那個數字上，
     // 四種版型的手感差異保留下來，預設值算出來跟現在一模一樣。
-    heroTaglineTracking: "tight" | "normal" | "wide"; // 主標字距（預設 normal = 不加減）
+    heroTaglineTracking: Tracking; // 主標字距（預設 normal = 不加減）
     // 主標行距（上下兩行之間隔多遠）。四種版型各在 class 上寫死一個 leading-[]：滿版圖
     // 1.6、split 1.15、雜誌 1.05、極簡 1.2。那四個數字是照英文主標挑的——拉丁字母有大量
     // 上下伸出的筆畫（b d f g p y），行距壓到 1.05 還看得出行與行的界線；中文是等高方塊字，
@@ -264,7 +270,7 @@ export interface StoreTheme {
     // 直接斷成三行。字級、顏色、對齊、粗細、字距都給了，行與行之間的距離是最後一個沒得動的。
     // 存的是相對倍率不是絕對值——四種版型原本的手感差異保留，收緊 ×0.85、舒展 ×1.25，
     // 收緊那邊壓到 1.0 就不再往下（低於 1.0 中文的字會真的疊到上一行）。預設不覆寫。
-    heroTaglineLeading: "tight" | "normal" | "relaxed"; // 主標行距（預設 normal = 不覆寫）
+    heroTaglineLeading: Leading; // 主標行距（預設 normal = 不覆寫）
     // Hero eyebrow 小標（主標上面那行全大寫小字）。四種版型都會渲染它，但它是 hero 這組
     // 控制裡唯一一個字級 / 字距 / 顏色全部寫死、商家一格都動不到的元素——主標有五格、
     // 副標有三格、照片有縮放與高度，小標零格。而它是客人由上往下讀到的第一行字。
@@ -282,7 +288,7 @@ export interface StoreTheme {
     // 字級與字距存的是相對量：沒設定的店家算出來跟現在一模一樣（scale 1.0 不覆寫 class，
     // 字距加減零也不覆寫），四種版型原本的手感差異（0.4 / 0.32em）保留下來。
     heroEyebrowFontScale: number;      // 小標字體 multiplier，0.6-1.8（預設 1.0 = 不覆寫）
-    heroEyebrowTracking: "tight" | "normal" | "wide"; // 小標字距（預設 normal = 不加減）
+    heroEyebrowTracking: Tracking; // 小標字距（預設 normal = 不加減）
     heroEyebrowColor: string | null;   // 小標顏色，hex；null = 各版型原本的值（主色 / 淡文字色）
     // 4. 大小寫。五處 class 一律 uppercase，跟 10px、0.4em 是同一個設計決定的三個面向
     //    （全大寫 + 極小 + 撐開字距 = 編輯設計裡的 eyebrow 標準寫法），但前面兩個都補了控制、
@@ -302,7 +308,7 @@ export interface StoreTheme {
     //    加重量是唯一「一樣小、一樣淡、但看得出來是字」的做法，而全站字重控制（各區段
     //    那組 data-body-weight）走的是段落內文，發不到 hero 這四個 <p> 上。
     //    只給 400 / 500 / 700（layout 載進來的三個字重），預設 normal 完全不覆寫。
-    heroEyebrowWeight: "normal" | "medium" | "bold"; // 小標粗細（預設 normal = 不覆寫）
+    heroEyebrowWeight: FontWeight; // 小標粗細（預設 normal = 不覆寫）
     // 6. 行距。小標的字級、字距、顏色、大小寫、粗細五格補完之後，剩下的就是「這行字
     //    換行時，上下兩行隔多遠」。四處 <p> 的 class 一個行距都沒寫，繼承的是最外層那個
     //    1.5——那是給內文段落用的數字，而小標不是內文：它是一行 10px、字距撐到 0.4em 的
@@ -312,7 +318,7 @@ export interface StoreTheme {
     //    反過來把小標當落款、當年份用的商家會想要更鬆——一行字距很寬的小字，行距壓太緊
     //    反而像疊在一起。base 只有 1.5 一個值（四處都一樣），所以這裡存絕對值：
     //    收緊 1.2 / 舒展 2.0。預設不覆寫。
-    heroEyebrowLeading: "tight" | "normal" | "relaxed"; // 小標行距（預設 normal = 不覆寫）
+    heroEyebrowLeading: Leading; // 小標行距（預設 normal = 不覆寫）
     heroSubtitleFontScale: number;     // 副標字體 multiplier，0.6-1.8（預設 1.0）
     heroSubtitleColor: string | null;  // 副標顏色，hex；null = 用 theme.textMuted
     heroSubtitleAlign: "inherit" | AlignX; // 副標對齊（inherit = 跟版型預設走，不覆寫）
@@ -327,8 +333,8 @@ export interface StoreTheme {
     // 調深（整段一起變重）或字級放大（hero 整塊變高），沒有一格只加一點重量。
     // 反過來雜誌 / 極簡版型的副標是斜體引文，撐開字距能讓它更像引文、更不像內文。
     // 兩個都是沒設就完全不覆寫（回 {}），既有店家算出來一模一樣。
-    heroSubtitleWeight: "normal" | "medium" | "bold"; // 副標粗細（預設 normal = 不覆寫）
-    heroSubtitleTracking: "tight" | "normal" | "wide"; // 副標字距（預設 normal = 不覆寫）
+    heroSubtitleWeight: FontWeight; // 副標粗細（預設 normal = 不覆寫）
+    heroSubtitleTracking: Tracking; // 副標字距（預設 normal = 不覆寫）
     // 副標行距。五處副標的 class 一律 leading-[1.9]，跟主標不一樣的是這裡四種版型完全
     // 沒有差別——1.9 是「內文段落」的行距，套在只有兩三行、字級 1rem 上下的副標上偏鬆，
     // 那兩三行會散開成一整塊灰色，反而搶了主標的位置。雜誌 / 極簡版型的副標是斜體引文，
@@ -336,7 +342,7 @@ export interface StoreTheme {
     // 各段內文早就有「行距」可調，但那條規則走 section 的 data-line-height，hero 整段
     // 不發那個 attribute（跟副標粗細 / 字距同一個原因），所以副標吃不到。
     // base 只有 1.9 一個值，所以這裡存絕對值：收緊 1.55 / 舒展 2.2。預設不覆寫。
-    heroSubtitleLeading: "tight" | "normal" | "relaxed"; // 副標行距（預設 normal = 不覆寫）
+    heroSubtitleLeading: Leading; // 副標行距（預設 normal = 不覆寫）
     // Hero 按鈕（CTA）的文字大小。主標五格、副標五格、小標四格都補完了，客人真正要按的
     // 那一顆反而沒有一格——五處的字級全寫死，而且三種寫法各不相同：滿版圖是一行帶底線的
     // 連結（text-sm，0.875rem）、split 與極簡是 .sproutly-btn-lg（0.875rem，寫在 layout 的
@@ -371,7 +377,7 @@ export interface StoreTheme {
     // 差異保留；收緊那邊壓到 0 就不再往下（負字距會讓中文筆畫互相咬住）。大小寫的預設是
     // 「照版型原本」不是「全大寫」——三處的 base 本來就不一致（滿版圖那兩處根本沒轉大寫），
     // 寫死一個 upper 當預設會在存檔的當下把滿版圖那顆改掉。兩格都是沒設就完全不覆寫。
-    heroCtaTracking: "tight" | "normal" | "wide"; // 按鈕字距（預設 normal = 不加減）
+    heroCtaTracking: Tracking; // 按鈕字距（預設 normal = 不加減）
     heroCtaCase: "default" | "capitalize" | "none"; // 按鈕大小寫（預設 default = 照各版型原本）
     // Hero 按鈕的粗細。大小、字距、大小寫三格開完之後，按鈕那組字剩最後一個寫死的參數——
     // 字有多重。六處的 base 一樣是兩種寫法：藥丸型那三顆（split 兩顆 + 極簡那顆）吃
@@ -386,7 +392,7 @@ export interface StoreTheme {
     // 一個值當預設會在商家存檔的當下把其中一種改掉。只給 400 / 500 / 700 三檔：layout
     // 載進來的就這三個字重，其他的瀏覽器會拿常規去假造，中文筆畫糊掉（跟主標粗細、副標
     // 粗細那幾格同一個理由）。沒設就完全不覆寫、回 {}，既有店家算出來一模一樣。
-    heroCtaWeight: "default" | "normal" | "medium" | "bold"; // 按鈕粗細（預設 default = 照各版型原本）
+    heroCtaWeight: "default" | FontWeight; // 按鈕粗細（預設 default = 照各版型原本）
     // 按鈕顏色。大小、字距、大小寫、粗細開完之後，按鈕上唯一還寫死的就是顏色，而顏色
     // 是這顆東西「看起來能不能按」最主要的訊號——前面四格能做的只有把字弄大弄粗，弄到
     // 最後還是一顆跟旁邊主標同色的字。六處的底是兩件不同的事：連結型那三處（滿版圖的
@@ -433,7 +439,7 @@ export interface StoreTheme {
     // 就不再往下（負字距會讓中文筆畫互相咬住）。大小寫的預設留「照原本的全大寫」那一檔，
     // 少了它按過「字首大寫」之後沒有一顆按鈕退得回原樣（跟小標那格同一個理由）。
     // 兩格都是沒設就完全不覆寫、回 {}，既有店家的 byline 一個字都不會變。
-    heroBylineTracking: "tight" | "normal" | "wide"; // byline 字距（預設 normal = 不加減）
+    heroBylineTracking: Tracking; // byline 字距（預設 normal = 不加減）
     heroBylineCase: "upper" | "capitalize" | "none"; // byline 大小寫（預設 upper = 原本的 uppercase）
     // byline 的粗細。字級、顏色、字距、大小寫四格開完之後，byline 剩最後一個沒得動的
     // 參數——那行字有多重。它自己一個 font-weight 都沒寫，繼承的是內文的 400，而 hero 上
@@ -451,7 +457,7 @@ export interface StoreTheme {
     // 跟前面四格同一個判斷：只套 byline 那個 span，不套外層那條 flex（右邊的 CTA 有自己的
     // 「按鈕粗細」，套外層會讓這格連帶動到按鈕）。預設 normal = 繼承來的 400，沒設完全
     // 不覆寫、回 {}，既有店家的 byline 一個字都不會變。
-    heroBylineWeight: "normal" | "medium" | "bold"; // byline 粗細（預設 normal = 不覆寫）
+    heroBylineWeight: FontWeight; // byline 粗細（預設 normal = 不覆寫）
     // byline 行距。字級、顏色、字距、大小寫、粗細五格都補完了，最後一個沒得動的是
     // 換行後上下兩行的距離。那個 span 自己什麼都沒寫，行距是從最外層繼承的 1.5，
     // 跟小標同一個出處、同一個問題：那是內文段落的數字，套在 10px 配 0.32em 字距的
@@ -460,7 +466,7 @@ export interface StoreTheme {
     // 手機上兩行是常態。收緊會讓那兩行結成一塊像印章，舒展則讓它散開像頁尾註記。
     // 跟小標同一組數字（收緊 1.2 / 舒展 2.0），一樣只套 byline 那個 span、不套外層
     // 那條 flex（右邊的 CTA 有自己的幾格）。預設不覆寫。
-    heroBylineLeading: "tight" | "normal" | "relaxed"; // byline 行距（預設 normal = 不覆寫）
+    heroBylineLeading: Leading; // byline 行距（預設 normal = 不覆寫）
     // split 版型的圖文比例。原本寫死 md:grid-cols-2（50:50），而 50:50 只有在「圖是方的、
     // 文字只有一行主標」時才剛好；商家實際放的圖多半是直式商品照（左半被裁掉一大塊），
     // 或者反過來主標加副標加兩顆按鈕塞不進右半那欄、字級一大就開始換行成四五行。
@@ -1369,47 +1375,23 @@ function resolveLayout(raw: unknown): StoreTheme["layout"] {
     })(),
     heroTaglineColor: normalizeHexColor(l.heroTaglineColor),
     heroTaglineAlign: isAlignX(l.heroTaglineAlign) ? l.heroTaglineAlign : "left",
-    heroTaglineWeight: (() => {
-      const v = l.heroTaglineWeight;
-      if (v === "normal" || v === "medium" || v === "bold") return v;
-      return "normal" as const;
-    })(),
-    heroTaglineTracking: (() => {
-      const v = l.heroTaglineTracking;
-      if (v === "tight" || v === "normal" || v === "wide") return v;
-      return "normal" as const;
-    })(),
-    heroTaglineLeading: (() => {
-      const v = l.heroTaglineLeading;
-      if (v === "tight" || v === "normal" || v === "relaxed") return v;
-      return "normal" as const;
-    })(),
+    heroTaglineWeight: isFontWeight(l.heroTaglineWeight) ? l.heroTaglineWeight : "normal",
+    heroTaglineTracking: isTracking(l.heroTaglineTracking) ? l.heroTaglineTracking : "normal",
+    heroTaglineLeading: isLeading(l.heroTaglineLeading) ? l.heroTaglineLeading : "normal",
     heroEyebrowFontScale: (() => {
       const v = l.heroEyebrowFontScale;
       if (typeof v !== "number" || !Number.isFinite(v)) return 1.0;
       return clampHeroFontScale(v);
     })(),
-    heroEyebrowTracking: (() => {
-      const v = l.heroEyebrowTracking;
-      if (v === "tight" || v === "normal" || v === "wide") return v;
-      return "normal" as const;
-    })(),
+    heroEyebrowTracking: isTracking(l.heroEyebrowTracking) ? l.heroEyebrowTracking : "normal",
     heroEyebrowColor: normalizeHexColor(l.heroEyebrowColor),
     heroEyebrowCase: (() => {
       const v = l.heroEyebrowCase;
       if (v === "upper" || v === "capitalize" || v === "none") return v;
       return "upper" as const;
     })(),
-    heroEyebrowWeight: (() => {
-      const v = l.heroEyebrowWeight;
-      if (v === "normal" || v === "medium" || v === "bold") return v;
-      return "normal" as const;
-    })(),
-    heroEyebrowLeading: (() => {
-      const v = l.heroEyebrowLeading;
-      if (v === "tight" || v === "normal" || v === "relaxed") return v;
-      return "normal" as const;
-    })(),
+    heroEyebrowWeight: isFontWeight(l.heroEyebrowWeight) ? l.heroEyebrowWeight : "normal",
+    heroEyebrowLeading: isLeading(l.heroEyebrowLeading) ? l.heroEyebrowLeading : "normal",
     heroSubtitleFontScale: (() => {
       const v = l.heroSubtitleFontScale;
       if (typeof v !== "number" || !Number.isFinite(v)) return 1.0;
@@ -1417,42 +1399,24 @@ function resolveLayout(raw: unknown): StoreTheme["layout"] {
     })(),
     heroSubtitleColor: normalizeHexColor(l.heroSubtitleColor),
     heroSubtitleAlign: isAlignX(l.heroSubtitleAlign) ? l.heroSubtitleAlign : "inherit",
-    heroSubtitleWeight: (() => {
-      const v = l.heroSubtitleWeight;
-      if (v === "normal" || v === "medium" || v === "bold") return v;
-      return "normal" as const;
-    })(),
-    heroSubtitleTracking: (() => {
-      const v = l.heroSubtitleTracking;
-      if (v === "tight" || v === "normal" || v === "wide") return v;
-      return "normal" as const;
-    })(),
-    heroSubtitleLeading: (() => {
-      const v = l.heroSubtitleLeading;
-      if (v === "tight" || v === "normal" || v === "relaxed") return v;
-      return "normal" as const;
-    })(),
+    heroSubtitleWeight: isFontWeight(l.heroSubtitleWeight) ? l.heroSubtitleWeight : "normal",
+    heroSubtitleTracking: isTracking(l.heroSubtitleTracking) ? l.heroSubtitleTracking : "normal",
+    heroSubtitleLeading: isLeading(l.heroSubtitleLeading) ? l.heroSubtitleLeading : "normal",
     heroCtaFontScale: (() => {
       const v = l.heroCtaFontScale;
       if (typeof v !== "number" || !Number.isFinite(v)) return 1.0;
       return clampHeroFontScale(v);
     })(),
-    heroCtaTracking: (() => {
-      const v = l.heroCtaTracking;
-      if (v === "tight" || v === "normal" || v === "wide") return v;
-      return "normal" as const;
-    })(),
+    heroCtaTracking: isTracking(l.heroCtaTracking) ? l.heroCtaTracking : "normal",
     heroCtaCase: (() => {
       const v = l.heroCtaCase;
       if (v === "default" || v === "capitalize" || v === "none") return v;
       return "default" as const;
     })(),
-    heroCtaWeight: (() => {
-      const v = l.heroCtaWeight;
-      if (v === "default" || v === "normal" || v === "medium" || v === "bold")
-        return v;
-      return "default" as const;
-    })(),
+    heroCtaWeight:
+      l.heroCtaWeight === "default" || isFontWeight(l.heroCtaWeight)
+        ? l.heroCtaWeight
+        : "default",
     heroCtaColor: normalizeHexColor(l.heroCtaColor),
     heroBylineFontScale: (() => {
       const v = l.heroBylineFontScale;
@@ -1460,26 +1424,14 @@ function resolveLayout(raw: unknown): StoreTheme["layout"] {
       return clampHeroFontScale(v);
     })(),
     heroBylineColor: normalizeHexColor(l.heroBylineColor),
-    heroBylineTracking: (() => {
-      const v = l.heroBylineTracking;
-      if (v === "tight" || v === "normal" || v === "wide") return v;
-      return "normal" as const;
-    })(),
+    heroBylineTracking: isTracking(l.heroBylineTracking) ? l.heroBylineTracking : "normal",
     heroBylineCase: (() => {
       const v = l.heroBylineCase;
       if (v === "upper" || v === "capitalize" || v === "none") return v;
       return "upper" as const;
     })(),
-    heroBylineWeight: (() => {
-      const v = l.heroBylineWeight;
-      if (v === "normal" || v === "medium" || v === "bold") return v;
-      return "normal" as const;
-    })(),
-    heroBylineLeading: (() => {
-      const v = l.heroBylineLeading;
-      if (v === "tight" || v === "normal" || v === "relaxed") return v;
-      return "normal" as const;
-    })(),
+    heroBylineWeight: isFontWeight(l.heroBylineWeight) ? l.heroBylineWeight : "normal",
+    heroBylineLeading: isLeading(l.heroBylineLeading) ? l.heroBylineLeading : "normal",
     heroSplitRatio: (() => {
       const v = l.heroSplitRatio;
       if (v === "image-narrow" || v === "image-wide" || v === "photo") return v;

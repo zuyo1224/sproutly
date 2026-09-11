@@ -27,7 +27,16 @@ import {
   sanitizeSectionStyles,
   type SectionStyle,
 } from "@/lib/section-style-schema";
-import { DEFAULT_SECTION_ORDER, isAlignX, isHeroImageSide, isHeroStyle, isSectionKey } from "@/lib/theme-keys";
+import {
+  DEFAULT_SECTION_ORDER,
+  isAlignX,
+  isFontWeight,
+  isHeroImageSide,
+  isHeroStyle,
+  isLeading,
+  isSectionKey,
+  isTracking,
+} from "@/lib/theme-keys";
 
 type EditorPayload = {
   primary?: string;
@@ -401,19 +410,19 @@ export async function saveEditorState(slug: string, payload: EditorPayload) {
     }
     if (payload.layout.heroTaglineWeight !== undefined) {
       const v = payload.layout.heroTaglineWeight;
-      if (v === "normal" || v === "medium" || v === "bold") {
+      if (isFontWeight(v)) {
         layoutPatch.heroTaglineWeight = v;
       }
     }
     if (payload.layout.heroTaglineTracking !== undefined) {
       const v = payload.layout.heroTaglineTracking;
-      if (v === "tight" || v === "normal" || v === "wide") {
+      if (isTracking(v)) {
         layoutPatch.heroTaglineTracking = v;
       }
     }
     if (payload.layout.heroTaglineLeading !== undefined) {
       const v = payload.layout.heroTaglineLeading;
-      if (v === "tight" || v === "normal" || v === "relaxed") {
+      if (isLeading(v)) {
         layoutPatch.heroTaglineLeading = v;
       }
     }
@@ -425,7 +434,7 @@ export async function saveEditorState(slug: string, payload: EditorPayload) {
     }
     if (payload.layout.heroEyebrowTracking !== undefined) {
       const v = payload.layout.heroEyebrowTracking;
-      if (v === "tight" || v === "normal" || v === "wide") {
+      if (isTracking(v)) {
         layoutPatch.heroEyebrowTracking = v;
       }
     }
@@ -446,13 +455,13 @@ export async function saveEditorState(slug: string, payload: EditorPayload) {
     }
     if (payload.layout.heroEyebrowWeight !== undefined) {
       const v = payload.layout.heroEyebrowWeight;
-      if (v === "normal" || v === "medium" || v === "bold") {
+      if (isFontWeight(v)) {
         layoutPatch.heroEyebrowWeight = v;
       }
     }
     if (payload.layout.heroEyebrowLeading !== undefined) {
       const v = payload.layout.heroEyebrowLeading;
-      if (v === "tight" || v === "normal" || v === "relaxed") {
+      if (isLeading(v)) {
         layoutPatch.heroEyebrowLeading = v;
       }
     }
@@ -479,19 +488,19 @@ export async function saveEditorState(slug: string, payload: EditorPayload) {
     }
     if (payload.layout.heroSubtitleWeight !== undefined) {
       const v = payload.layout.heroSubtitleWeight;
-      if (v === "normal" || v === "medium" || v === "bold") {
+      if (isFontWeight(v)) {
         layoutPatch.heroSubtitleWeight = v;
       }
     }
     if (payload.layout.heroSubtitleTracking !== undefined) {
       const v = payload.layout.heroSubtitleTracking;
-      if (v === "tight" || v === "normal" || v === "wide") {
+      if (isTracking(v)) {
         layoutPatch.heroSubtitleTracking = v;
       }
     }
     if (payload.layout.heroSubtitleLeading !== undefined) {
       const v = payload.layout.heroSubtitleLeading;
-      if (v === "tight" || v === "normal" || v === "relaxed") {
+      if (isLeading(v)) {
         layoutPatch.heroSubtitleLeading = v;
       }
     }
@@ -503,7 +512,7 @@ export async function saveEditorState(slug: string, payload: EditorPayload) {
     }
     if (payload.layout.heroCtaTracking !== undefined) {
       const v = payload.layout.heroCtaTracking;
-      if (v === "tight" || v === "normal" || v === "wide") {
+      if (isTracking(v)) {
         layoutPatch.heroCtaTracking = v;
       }
     }
@@ -515,7 +524,7 @@ export async function saveEditorState(slug: string, payload: EditorPayload) {
     }
     if (payload.layout.heroCtaWeight !== undefined) {
       const v = payload.layout.heroCtaWeight;
-      if (v === "default" || v === "normal" || v === "medium" || v === "bold") {
+      if (v === "default" || isFontWeight(v)) {
         layoutPatch.heroCtaWeight = v;
       }
     }
@@ -545,7 +554,7 @@ export async function saveEditorState(slug: string, payload: EditorPayload) {
     }
     if (payload.layout.heroBylineTracking !== undefined) {
       const v = payload.layout.heroBylineTracking;
-      if (v === "tight" || v === "normal" || v === "wide") {
+      if (isTracking(v)) {
         layoutPatch.heroBylineTracking = v;
       }
     }
@@ -557,13 +566,13 @@ export async function saveEditorState(slug: string, payload: EditorPayload) {
     }
     if (payload.layout.heroBylineWeight !== undefined) {
       const v = payload.layout.heroBylineWeight;
-      if (v === "normal" || v === "medium" || v === "bold") {
+      if (isFontWeight(v)) {
         layoutPatch.heroBylineWeight = v;
       }
     }
     if (payload.layout.heroBylineLeading !== undefined) {
       const v = payload.layout.heroBylineLeading;
-      if (v === "tight" || v === "normal" || v === "relaxed") {
+      if (isLeading(v)) {
         layoutPatch.heroBylineLeading = v;
       }
     }

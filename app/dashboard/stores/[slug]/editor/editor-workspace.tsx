@@ -48,9 +48,12 @@ import {
   isHeroStyle,
   isSectionKey,
   type AlignX,
+  type FontWeight,
   type HeroImageSide,
   type HeroStyle,
+  type Leading,
   type SectionKey,
+  type Tracking,
 } from "@/lib/theme-keys";
 
 type Testimonial = { quote: string; author: string; role: string | null };
@@ -280,32 +283,32 @@ type EditorTheme = {
     heroTaglineFontScaleMobile: number | null;
     heroTaglineColor: string | null;
     heroTaglineAlign: AlignX;
-    heroTaglineWeight: "normal" | "medium" | "bold";
-    heroTaglineTracking: "tight" | "normal" | "wide";
-    heroTaglineLeading: "tight" | "normal" | "relaxed";
+    heroTaglineWeight: FontWeight;
+    heroTaglineTracking: Tracking;
+    heroTaglineLeading: Leading;
     heroEyebrowFontScale: number;
-    heroEyebrowTracking: "tight" | "normal" | "wide";
+    heroEyebrowTracking: Tracking;
     heroEyebrowColor: string | null;
     heroEyebrowCase: "upper" | "capitalize" | "none";
-    heroEyebrowWeight: "normal" | "medium" | "bold";
-    heroEyebrowLeading: "tight" | "normal" | "relaxed";
+    heroEyebrowWeight: FontWeight;
+    heroEyebrowLeading: Leading;
     heroSubtitleFontScale: number;
     heroSubtitleColor: string | null;
     heroSubtitleAlign: "inherit" | AlignX;
-    heroSubtitleWeight: "normal" | "medium" | "bold";
-    heroSubtitleTracking: "tight" | "normal" | "wide";
-    heroSubtitleLeading: "tight" | "normal" | "relaxed";
+    heroSubtitleWeight: FontWeight;
+    heroSubtitleTracking: Tracking;
+    heroSubtitleLeading: Leading;
     heroCtaFontScale: number;
-    heroCtaTracking: "tight" | "normal" | "wide";
+    heroCtaTracking: Tracking;
     heroCtaCase: "default" | "capitalize" | "none";
-    heroCtaWeight: "default" | "normal" | "medium" | "bold";
+    heroCtaWeight: "default" | FontWeight;
     heroCtaColor: string | null;
     heroBylineFontScale: number;
     heroBylineColor: string | null;
-    heroBylineTracking: "tight" | "normal" | "wide";
+    heroBylineTracking: Tracking;
     heroBylineCase: "upper" | "capitalize" | "none";
-    heroBylineWeight: "normal" | "medium" | "bold";
-    heroBylineLeading: "tight" | "normal" | "relaxed";
+    heroBylineWeight: FontWeight;
+    heroBylineLeading: Leading;
     heroSplitRatio: "image-narrow" | "normal" | "image-wide" | "photo";
     heroImageFocus: "top" | "center" | "bottom";
     heroImageFocusX: AlignX;

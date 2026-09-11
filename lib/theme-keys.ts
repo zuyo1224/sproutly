@@ -38,6 +38,34 @@ export function isAlignX(value: unknown): value is AlignX {
   return typeof value === "string" && (ALIGN_X_KEYS as readonly string[]).includes(value);
 }
 
+// Hero 文字的三張「三檔」清單：粗細 normal/medium/bold、字距 tight/normal/wide、
+// 行距 tight/normal/relaxed。主標／小標／副標／按鈕／byline 五組欄位各自都有這幾格，
+// 以前公開頁 _theme.ts 的 type 與 resolveLayout 的 === 三連判斷、編輯器 editor-workspace
+// 的 type、存檔 actions.ts 的 === 三連判斷，四個檔加起來抄了四十多處。按鈕粗細多一檔
+// "default"（照各版型原本），那格的 type 寫成 "default" | FontWeight，不另開清單。
+// section 樣式那套的 letterSpacing / lineHeight 值雖然一樣，正本在 lib/section-style-schema，
+// 兩邊各管各的，這裡只管 Hero。
+export const FONT_WEIGHT_KEYS = ["normal", "medium", "bold"] as const;
+export type FontWeight = (typeof FONT_WEIGHT_KEYS)[number];
+
+export function isFontWeight(value: unknown): value is FontWeight {
+  return typeof value === "string" && (FONT_WEIGHT_KEYS as readonly string[]).includes(value);
+}
+
+export const TRACKING_KEYS = ["tight", "normal", "wide"] as const;
+export type Tracking = (typeof TRACKING_KEYS)[number];
+
+export function isTracking(value: unknown): value is Tracking {
+  return typeof value === "string" && (TRACKING_KEYS as readonly string[]).includes(value);
+}
+
+export const LEADING_KEYS = ["tight", "normal", "relaxed"] as const;
+export type Leading = (typeof LEADING_KEYS)[number];
+
+export function isLeading(value: unknown): value is Leading {
+  return typeof value === "string" && (LEADING_KEYS as readonly string[]).includes(value);
+}
+
 export const SECTION_KEYS = [
   "hero",
   "collections",
