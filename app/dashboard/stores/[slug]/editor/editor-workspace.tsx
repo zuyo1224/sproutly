@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useTransition, useEffect, useRef, useMemo } from "react";
+import { useState, useTransition, useEffect, useRef } from "react";
 import Link from "next/link";
 import {
   DndContext,
@@ -44,8 +44,8 @@ import type { SectionStyle } from "@/app/[slug]/_theme";
 import { applySectionStylePatch, type SectionStylePatch } from "@/lib/section-style-schema";
 import {
   HERO_STYLE_KEYS,
-  SECTION_KEYS,
   isHeroImageSide,
+  isHeroStyle,
   isSectionKey,
   type HeroImageSide,
   type HeroStyle,
@@ -514,8 +514,6 @@ export function EditorWorkspace({
     source: SectionKey;
     fields: EditorTheme["layout"]["sectionStyles"][string];
   } | null>(null);
-  // 合法 SectionKey 白名單，過濾 localStorage 殘留的舊 key（schema 變化後保護）
-  const SECTION_KEYS_SET = useMemo(() => new Set<SectionKey>(SECTION_KEYS), []);
   const STYLE_CLIPBOARD_KEY = "sproutly:editor:style-clipboard:v1";
   // mount 時從 localStorage 讀回 clipboard
   useEffect(() => {
@@ -527,8 +525,8 @@ export function EditorWorkspace({
       if (
         parsed &&
         typeof parsed === "object" &&
-        typeof parsed.source === "string" &&
-        SECTION_KEYS_SET.has(parsed.source as SectionKey) &&
+        // 用 lib/theme-keys 的 guard 過濾 localStorage 殘留的舊 key（schema 變化後保護）
+        isSectionKey(parsed.source) &&
         parsed.fields &&
         typeof parsed.fields === "object"
       ) {
@@ -537,7 +535,6 @@ export function EditorWorkspace({
     } catch {
       // localStorage / JSON parse 壞了忽略，clipboard 維持 null
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
   // 變動時寫回 localStorage（null 清空 key）
   useEffect(() => {
@@ -1047,8 +1044,10 @@ export function EditorWorkspace({
   function handleDragEnd(event: DragEndEvent) {
     const { active, over } = event;
     if (!over || active.id === over.id) return;
-    const oldIdx = theme.layout.sectionOrder.indexOf(active.id as SectionKey);
-    const newIdx = theme.layout.sectionOrder.indexOf(over.id as SectionKey);
+    // dnd-kit 的 id 型別是 string | number；不是合法 section key 就當沒拖到
+    if (!isSectionKey(active.id) || !isSectionKey(over.id)) return;
+    const oldIdx = theme.layout.sectionOrder.indexOf(active.id);
+    const newIdx = theme.layout.sectionOrder.indexOf(over.id);
     if (oldIdx === -1 || newIdx === -1) return;
     updateLayout(
       { sectionOrder: arrayMove(theme.layout.sectionOrder, oldIdx, newIdx) },
@@ -1647,12 +1646,15 @@ export function EditorWorkspace({
               if (patch.layout) {
                 const l = patch.layout;
                 const patchObj: Partial<EditorTheme["layout"]> = {};
-                if (l.heroStyle) patchObj.heroStyle = l.heroStyle as HeroStyle;
+                // patch 進來前已過 sanitizeThemePatch，這裡再用 guard 收一次而不硬轉：
+                // 型別上不再假設上游一定濾過，多一種版型也只要改 lib/theme-keys
+                if (isHeroStyle(l.heroStyle)) patchObj.heroStyle = l.heroStyle;
                 if (l.heroEyebrow !== undefined) patchObj.heroEyebrow = l.heroEyebrow;
                 if (l.heroSubtitle !== undefined) patchObj.heroSubtitle = l.heroSubtitle;
                 if (isHeroImageSide(l.heroImageSide)) patchObj.heroImageSide = l.heroImageSide;
-                if (l.sectionOrder && Array.isArray(l.sectionOrder)) {
-                  patchObj.sectionOrder = l.sectionOrder as SectionKey[];
+                if (Array.isArray(l.sectionOrder)) {
+                  const order = l.sectionOrder.filter(isSectionKey);
+                  if (order.length) patchObj.sectionOrder = order;
                 }
                 if (Object.keys(patchObj).length) {
                   next.layout = { ...theme.layout, ...patchObj };
@@ -1883,9 +1885,9 @@ export function EditorWorkspace({
             <Field label="樣式">
               <select
                 value={theme.layout.heroStyle}
-                onChange={(e) =>
-                  updateLayout({ heroStyle: e.target.value as HeroStyle })
-                }
+                onChange={(e) => {
+                  if (isHeroStyle(e.target.value)) updateLayout({ heroStyle: e.target.value });
+                }}
                 className="w-full rounded-lg border border-stone-200 px-3 py-2 text-sm"
               >
                 {HERO_STYLE_KEYS.map(
