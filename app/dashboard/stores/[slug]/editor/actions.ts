@@ -27,7 +27,7 @@ import {
   sanitizeSectionStyles,
   type SectionStyle,
 } from "@/lib/section-style-schema";
-import { DEFAULT_SECTION_ORDER, isHeroImageSide, isHeroStyle, isSectionKey } from "@/lib/theme-keys";
+import { DEFAULT_SECTION_ORDER, isAlignX, isHeroImageSide, isHeroStyle, isSectionKey } from "@/lib/theme-keys";
 
 type EditorPayload = {
   primary?: string;
@@ -395,7 +395,7 @@ export async function saveEditorState(slug: string, payload: EditorPayload) {
     }
     if (payload.layout.heroTaglineAlign !== undefined) {
       const v = payload.layout.heroTaglineAlign;
-      if (v === "left" || v === "center" || v === "right") {
+      if (isAlignX(v)) {
         layoutPatch.heroTaglineAlign = v;
       }
     }
@@ -473,7 +473,7 @@ export async function saveEditorState(slug: string, payload: EditorPayload) {
     }
     if (payload.layout.heroSubtitleAlign !== undefined) {
       const v = payload.layout.heroSubtitleAlign;
-      if (v === "inherit" || v === "left" || v === "center" || v === "right") {
+      if (v === "inherit" || isAlignX(v)) {
         layoutPatch.heroSubtitleAlign = v;
       }
     }
@@ -581,7 +581,7 @@ export async function saveEditorState(slug: string, payload: EditorPayload) {
     }
     if (payload.layout.heroImageFocusX !== undefined) {
       const v = payload.layout.heroImageFocusX;
-      if (v === "left" || v === "center" || v === "right") {
+      if (isAlignX(v)) {
         layoutPatch.heroImageFocusX = v;
       }
     }
@@ -605,7 +605,7 @@ export async function saveEditorState(slug: string, payload: EditorPayload) {
     }
     if (payload.layout.heroSplitTextAlignX !== undefined) {
       const v = payload.layout.heroSplitTextAlignX;
-      if (v === "left" || v === "center" || v === "right") {
+      if (isAlignX(v)) {
         layoutPatch.heroSplitTextAlignX = v;
       }
     }
@@ -782,7 +782,7 @@ export async function saveEditorState(slug: string, payload: EditorPayload) {
     }
     if (payload.layout.heroMinimalAlign !== undefined) {
       const v = payload.layout.heroMinimalAlign;
-      if (v === "left" || v === "center" || v === "right") {
+      if (isAlignX(v)) {
         layoutPatch.heroMinimalAlign = v;
       }
     }
@@ -833,7 +833,7 @@ export async function saveEditorState(slug: string, payload: EditorPayload) {
     }
     if (payload.layout.heroTextAlignX !== undefined) {
       const v = payload.layout.heroTextAlignX;
-      if (v === "left" || v === "center" || v === "right") {
+      if (isAlignX(v)) {
         layoutPatch.heroTextAlignX = v;
       }
     }

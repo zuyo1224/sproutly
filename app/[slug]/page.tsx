@@ -1773,7 +1773,7 @@ export default async function StoreHomePage({
           const subtitleAlign = theme.layout.heroSubtitleAlign;
           const subtitleAlignStyle =
             subtitleAlign !== "inherit"
-              ? { textAlign: subtitleAlign as "left" | "center" | "right" }
+              ? { textAlign: subtitleAlign }
               : {};
           // 副標粗細 / 字距（五處共用）。這兩個以前沒有人寫過——inline style 只設顏色與
           // 字級，粗細與字距都是繼承來的。各段內文那兩格的規則落在 section 的
@@ -3019,7 +3019,7 @@ export default async function StoreHomePage({
             minimalGapScale === null ? {} : { marginBottom: `${rem * minimalGapScale}rem` };
           const minimalAlign = theme.layout.heroMinimalAlign;
           const minimalAlignStyle =
-            minimalAlign === "center" ? {} : { textAlign: minimalAlign as "left" | "right" };
+            minimalAlign === "center" ? {} : { textAlign: minimalAlign };
           // 副標與短橫線的左右 auto：靠左時右邊留 auto、靠右時左邊留 auto
           const minimalBlockAlignStyle =
             minimalAlign === "left"

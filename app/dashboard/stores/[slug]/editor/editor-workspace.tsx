@@ -47,6 +47,7 @@ import {
   isHeroImageSide,
   isHeroStyle,
   isSectionKey,
+  type AlignX,
   type HeroImageSide,
   type HeroStyle,
   type SectionKey,
@@ -278,7 +279,7 @@ type EditorTheme = {
     heroTaglineFontScale: number;
     heroTaglineFontScaleMobile: number | null;
     heroTaglineColor: string | null;
-    heroTaglineAlign: "left" | "center" | "right";
+    heroTaglineAlign: AlignX;
     heroTaglineWeight: "normal" | "medium" | "bold";
     heroTaglineTracking: "tight" | "normal" | "wide";
     heroTaglineLeading: "tight" | "normal" | "relaxed";
@@ -290,7 +291,7 @@ type EditorTheme = {
     heroEyebrowLeading: "tight" | "normal" | "relaxed";
     heroSubtitleFontScale: number;
     heroSubtitleColor: string | null;
-    heroSubtitleAlign: "inherit" | "left" | "center" | "right";
+    heroSubtitleAlign: "inherit" | AlignX;
     heroSubtitleWeight: "normal" | "medium" | "bold";
     heroSubtitleTracking: "tight" | "normal" | "wide";
     heroSubtitleLeading: "tight" | "normal" | "relaxed";
@@ -307,11 +308,11 @@ type EditorTheme = {
     heroBylineLeading: "tight" | "normal" | "relaxed";
     heroSplitRatio: "image-narrow" | "normal" | "image-wide" | "photo";
     heroImageFocus: "top" | "center" | "bottom";
-    heroImageFocusX: "left" | "center" | "right";
+    heroImageFocusX: AlignX;
     heroSplitImageFit: "cover" | "contain";
     heroSplitImageAspect: "tall" | "square" | "wide" | "photo";
     heroSplitTextAlign: "top" | "center" | "bottom";
-    heroSplitTextAlignX: "left" | "center" | "right";
+    heroSplitTextAlignX: AlignX;
     heroSplitTextPadding: "tight" | "normal" | "roomy";
     heroSplitMobilePadY: "tight" | "normal" | "roomy";
     heroSplitGap: "tight" | "normal" | "loose";
@@ -340,13 +341,13 @@ type EditorTheme = {
     heroMinimalRule: "none" | "short" | "normal" | "long";
     heroMinimalRuleColor: string | null;
     heroMinimalRuleWeight: "normal" | "medium" | "thick";
-    heroMinimalAlign: "left" | "center" | "right";
+    heroMinimalAlign: AlignX;
     heroMinimalBg: string | null;
     heroMinimalGap: "tight" | "normal" | "loose";
     heroTextBg: string | null;
     heroTextPadding: "compact" | "normal" | "spacious";
     heroTextWidth: "narrow" | "normal" | "wide" | "full";
-    heroTextAlignX: "left" | "center" | "right";
+    heroTextAlignX: AlignX;
     heroTextGap: "tight" | "normal" | "loose";
     heroImageMaxHeight: "none" | "screen" | "short";
     heroFullImageFit: "cover" | "contain";

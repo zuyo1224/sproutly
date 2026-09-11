@@ -19,9 +19,11 @@ import {
 } from "@/lib/section-style-schema";
 import {
   DEFAULT_SECTION_ORDER,
+  isAlignX,
   isHeroImageSide,
   isHeroStyle,
   isSectionKey,
+  type AlignX,
   type HeroImageSide,
   type HeroStyle,
   type SectionKey,
@@ -225,7 +227,7 @@ export interface StoreTheme {
     // 沒動過的店家兩端照舊、一個 px 都不動。只管 767px 以下（跟其他 *Mobile 那幾格同一條線）。
     heroTaglineFontScaleMobile: number | null; // 主標字級（手機），null = 跟桌機那格走
     heroTaglineColor: string | null;   // 主標顏色，hex；null = 用 theme.text
-    heroTaglineAlign: "left" | "center" | "right"; // 主標對齊（預設 left）
+    heroTaglineAlign: AlignX; // 主標對齊（預設 left）
     // 主標粗細（normal 400 常規 / medium 500 中黑 / bold 700 粗）。四種版型的 hero 主標
     // 都在 inline style 裡寫死 fontWeight: 400——那是整個網站字最大、客人第一眼唯一會讀完
     // 的一句話，而 400 是最輕的那一級。細字配大字級在雜誌版型上是好看的，配到太和工房那種
@@ -313,7 +315,7 @@ export interface StoreTheme {
     heroEyebrowLeading: "tight" | "normal" | "relaxed"; // 小標行距（預設 normal = 不覆寫）
     heroSubtitleFontScale: number;     // 副標字體 multiplier，0.6-1.8（預設 1.0）
     heroSubtitleColor: string | null;  // 副標顏色，hex；null = 用 theme.textMuted
-    heroSubtitleAlign: "inherit" | "left" | "center" | "right"; // 副標對齊（inherit = 跟版型預設走，不覆寫）
+    heroSubtitleAlign: "inherit" | AlignX; // 副標對齊（inherit = 跟版型預設走，不覆寫）
     // 副標粗細與字距。副標已經有字級 / 顏色 / 對齊三格，但這兩個從頭到尾沒有人寫過——
     // 五處 <p> 的 inline style 只設顏色與字級，class 只有 text-base sm:text-lg 與
     // leading-[1.9]，粗細與字距都是繼承來的（body 的 400、瀏覽器的 normal）。
@@ -489,7 +491,7 @@ export interface StoreTheme {
     //   center 不覆寫
     //   right  保留右緣（切左邊）
     // 兩格各管一軸、可以疊：留上緣 + 留左緣 = 保留左上角。
-    heroImageFocusX: "left" | "center" | "right"; // split 照片左右取景（預設 center = 不覆寫）
+    heroImageFocusX: AlignX; // split 照片左右取景（預設 center = 不覆寫）
     // split 照片鋪滿圖框還是整張顯示。上面兩格挑的是「裁哪一邊」，前提都是照片一定會被
     // 裁：圖框的形狀是版型定的（平板以上整欄高的直式框、手機正方形），照片比例對不上就
     // 鋪滿（object-cover）切掉多的那一截。有些照片哪一邊都不能切——整株連盆的植物、
@@ -548,7 +550,7 @@ export interface StoreTheme {
     // 按鈕那排是 flex，兩樣都是比欄窄的區塊，只改 text-align 的話字會置中、但那塊副標
     // 跟那排按鈕還黏在左邊界，變成上面置中下面靠左。所以要連 align-items 一起給，
     // 那兩塊才會跟著移到同一邊。
-    heroSplitTextAlignX: "left" | "center" | "right"; // split 文字欄水平對齊（預設 left = 不覆寫）
+    heroSplitTextAlignX: AlignX; // split 文字欄水平對齊（預設 left = 不覆寫）
     // split 版型文字那欄左右留多少空。上面「圖文比例」讓的是欄本身有多寬，可是欄裡面
     // 那圈內距是寫死的（px-8 sm:px-12 md:px-16 lg:px-24，桌機左右各 6rem），兩件事會
     // 互相抵消：選了「圖窄」把欄讓寬，字實際能用的寬度先被兩邊各 6rem 吃掉一截，主標
@@ -833,7 +835,7 @@ export interface StoreTheme {
     // 短橫線的 mx-auto 是寫在 class 上的左右 auto 邊界，只改 text-align 的話字會靠左、
     // 但那條線跟那塊副標的區塊還留在中間，變成兩邊各對各的。所以靠左 / 靠右時要連
     // 那兩個 auto 一起蓋掉（inline 贏 class），三個東西才會對到同一條邊。
-    heroMinimalAlign: "left" | "center" | "right"; // minimal 整段文字對齊（預設 center = 不覆寫）
+    heroMinimalAlign: AlignX; // minimal 整段文字對齊（預設 center = 不覆寫）
     // minimal 版型整段的底色。這個版型沒有圖、沒有卡片、沒有色塊，一進站就是一片底色
     // 配中間一段字——那片底色就是它全部的畫面，可是它一直寫死吃 theme.bg，跟底下的
     // 商品段、慢讀段、頁尾同一個顏色。客人從 IG 點進來看到的是一整片同色從上捲到下，
@@ -888,7 +890,7 @@ export interface StoreTheme {
     // 欄本身擺哪。欄寬選「滿版」時欄已經佔滿、這格自然看不出差別，不特別擋。
     // 主標拖過位置的店整層走自由定位、沒有欄可言，這格跟欄寬那格一樣不生效。
     // 預設置中＝完全不輸出任何 inline style，既有店家算出來一模一樣。
-    heroTextAlignX: "left" | "center" | "right"; // 滿版圖文字段整欄擺哪邊（預設 center = 不覆寫）
+    heroTextAlignX: AlignX; // 滿版圖文字段整欄擺哪邊（預設 center = 不覆寫）
     // 同一塊文字段裡面，小標、主標、副標、按鈕彼此之間隔多遠。原本寫死在 class 上
     //（小標 mb-6、副標 mt-5、按鈕 mt-8 = 1.5 / 1.25 / 2rem），是配預設主標字級挑的。
     // 為什麼要：這個版型已經有的兩格留白，一格管那塊色塊上下各留多少空、一格管裡面的字
@@ -1366,11 +1368,7 @@ function resolveLayout(raw: unknown): StoreTheme["layout"] {
       return clampHeroFontScale(v);
     })(),
     heroTaglineColor: normalizeHexColor(l.heroTaglineColor),
-    heroTaglineAlign: (() => {
-      const v = l.heroTaglineAlign;
-      if (v === "left" || v === "center" || v === "right") return v;
-      return "left" as const;
-    })(),
+    heroTaglineAlign: isAlignX(l.heroTaglineAlign) ? l.heroTaglineAlign : "left",
     heroTaglineWeight: (() => {
       const v = l.heroTaglineWeight;
       if (v === "normal" || v === "medium" || v === "bold") return v;
@@ -1418,11 +1416,7 @@ function resolveLayout(raw: unknown): StoreTheme["layout"] {
       return clampHeroFontScale(v);
     })(),
     heroSubtitleColor: normalizeHexColor(l.heroSubtitleColor),
-    heroSubtitleAlign: (() => {
-      const v = l.heroSubtitleAlign;
-      if (v === "left" || v === "center" || v === "right") return v;
-      return "inherit" as const;
-    })(),
+    heroSubtitleAlign: isAlignX(l.heroSubtitleAlign) ? l.heroSubtitleAlign : "inherit",
     heroSubtitleWeight: (() => {
       const v = l.heroSubtitleWeight;
       if (v === "normal" || v === "medium" || v === "bold") return v;
@@ -1496,11 +1490,7 @@ function resolveLayout(raw: unknown): StoreTheme["layout"] {
       if (v === "top" || v === "bottom") return v;
       return "center" as const;
     })(),
-    heroImageFocusX: (() => {
-      const v = l.heroImageFocusX;
-      if (v === "left" || v === "right") return v;
-      return "center" as const;
-    })(),
+    heroImageFocusX: isAlignX(l.heroImageFocusX) ? l.heroImageFocusX : "center",
     heroSplitImageFit: l.heroSplitImageFit === "contain" ? ("contain" as const) : ("cover" as const),
     heroSplitImageAspect: (() => {
       const v = l.heroSplitImageAspect;
@@ -1512,11 +1502,7 @@ function resolveLayout(raw: unknown): StoreTheme["layout"] {
       if (v === "top" || v === "bottom") return v;
       return "center" as const;
     })(),
-    heroSplitTextAlignX: (() => {
-      const v = l.heroSplitTextAlignX;
-      if (v === "center" || v === "right") return v;
-      return "left" as const;
-    })(),
+    heroSplitTextAlignX: isAlignX(l.heroSplitTextAlignX) ? l.heroSplitTextAlignX : "left",
     heroSplitTextPadding: (() => {
       const v = l.heroSplitTextPadding;
       if (v === "tight" || v === "roomy") return v;
@@ -1647,11 +1633,7 @@ function resolveLayout(raw: unknown): StoreTheme["layout"] {
       if (v === "tight" || v === "loose") return v;
       return "normal" as const;
     })(),
-    heroMinimalAlign: (() => {
-      const v = l.heroMinimalAlign;
-      if (v === "left" || v === "right") return v;
-      return "center" as const;
-    })(),
+    heroMinimalAlign: isAlignX(l.heroMinimalAlign) ? l.heroMinimalAlign : "center",
     heroTextBg: normalizeHexColor(l.heroTextBg),
     heroTextPadding: (() => {
       const v = l.heroTextPadding;
@@ -1663,11 +1645,7 @@ function resolveLayout(raw: unknown): StoreTheme["layout"] {
       if (v === "narrow" || v === "wide" || v === "full") return v;
       return "normal" as const;
     })(),
-    heroTextAlignX: (() => {
-      const v = l.heroTextAlignX;
-      if (v === "left" || v === "right") return v;
-      return "center" as const;
-    })(),
+    heroTextAlignX: isAlignX(l.heroTextAlignX) ? l.heroTextAlignX : "center",
     heroTextGap: (() => {
       const v = l.heroTextGap;
       if (v === "tight" || v === "loose") return v;

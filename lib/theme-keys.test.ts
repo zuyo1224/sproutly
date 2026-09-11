@@ -1,10 +1,12 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import {
+  ALIGN_X_KEYS,
   HERO_STYLE_KEYS,
   HERO_IMAGE_SIDES,
   SECTION_KEYS,
   DEFAULT_SECTION_ORDER,
+  isAlignX,
   isHeroStyle,
   isHeroImageSide,
   isSectionKey,
@@ -46,4 +48,15 @@ test("預設順序的 6 個都在 11 個之內，且順序照 hero 開頭、visi
   assert.equal(new Set(DEFAULT_SECTION_ORDER).size, DEFAULT_SECTION_ORDER.length);
   assert.equal(DEFAULT_SECTION_ORDER[0], "hero");
   assert.equal(DEFAULT_SECTION_ORDER.at(-1), "visit");
+});
+
+test("水平對齊只有 left / center / right 三種，清單外與非字串不算", () => {
+  assert.deepEqual([...ALIGN_X_KEYS], ["left", "center", "right"]);
+  for (const k of ALIGN_X_KEYS) assert.equal(isAlignX(k), true);
+  assert.equal(isAlignX("inherit"), false);
+  assert.equal(isAlignX("justify"), false);
+  assert.equal(isAlignX("Left"), false);
+  assert.equal(isAlignX(""), false);
+  assert.equal(isAlignX(undefined), false);
+  assert.equal(isAlignX(null), false);
 });

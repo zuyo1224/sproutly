@@ -27,6 +27,17 @@ export function isHeroImageSide(value: unknown): value is HeroImageSide {
   return typeof value === "string" && (HERO_IMAGE_SIDES as readonly string[]).includes(value);
 }
 
+// 水平對齊三值。Hero 六個對齊欄位（主標／副標／split 照片取景／split 文字欄／minimal 整段／
+// 滿版圖文字段）的 type 以前在公開頁 _theme.ts 與編輯器 editor-workspace 各手抄六份，
+// 存檔 actions.ts 六段 v === "left" || v === "center" || v === "right" 再各抄一遍。
+// 三個值不太會變，但十八份抄本只要哪天多一種對齊（例如 justify）就得全部翻一次。
+export const ALIGN_X_KEYS = ["left", "center", "right"] as const;
+export type AlignX = (typeof ALIGN_X_KEYS)[number];
+
+export function isAlignX(value: unknown): value is AlignX {
+  return typeof value === "string" && (ALIGN_X_KEYS as readonly string[]).includes(value);
+}
+
 export const SECTION_KEYS = [
   "hero",
   "collections",
