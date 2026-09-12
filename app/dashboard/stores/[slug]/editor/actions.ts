@@ -21,6 +21,7 @@ import {
   clampFreePos,
 } from "@/lib/theme-scale";
 import { normalizeHexColor } from "@/lib/hex-color";
+import { isFiniteNumber } from "@/lib/is-finite-number";
 import { isPlainObject } from "@/lib/is-plain-object";
 import { displayableImageUrl } from "@/lib/image-url";
 import { normalizeHeroImageBounds } from "@/lib/hero-image-bounds";
@@ -352,19 +353,19 @@ export async function saveEditorState(slug: string, payload: EditorPayload) {
     }
     if (payload.layout.heroZoom !== undefined) {
       const z = payload.layout.heroZoom;
-      if (typeof z === "number" && Number.isFinite(z)) {
+      if (isFiniteNumber(z)) {
         layoutPatch.heroZoom = clampHeroZoom(z);
       }
     }
     for (const key of ["heroZoomMobile", "heroZoomTablet", "heroZoomDesktop"] as const) {
       const z = payload.layout[key];
-      if (z !== undefined && typeof z === "number" && Number.isFinite(z)) {
+      if (z !== undefined && isFiniteNumber(z)) {
         layoutPatch[key] = clampHeroZoom(z);
       }
     }
     if (payload.layout.heroTaglineFontScale !== undefined) {
       const v = payload.layout.heroTaglineFontScale;
-      if (typeof v === "number" && Number.isFinite(v)) {
+      if (isFiniteNumber(v)) {
         layoutPatch.heroTaglineFontScale = clampHeroFontScale(v);
       }
     }
@@ -373,7 +374,7 @@ export async function saveEditorState(slug: string, payload: EditorPayload) {
       if (v === null) {
         // null = 商家按「改回跟桌機一樣」，要存進去把舊值蓋掉，不能當「沒帶」跳過
         layoutPatch.heroTaglineFontScaleMobile = null;
-      } else if (typeof v === "number" && Number.isFinite(v)) {
+      } else if (isFiniteNumber(v)) {
         layoutPatch.heroTaglineFontScaleMobile = clampHeroFontScale(v);
       }
     }
@@ -430,7 +431,7 @@ export async function saveEditorState(slug: string, payload: EditorPayload) {
     }
     if (payload.layout.heroEyebrowFontScale !== undefined) {
       const v = payload.layout.heroEyebrowFontScale;
-      if (typeof v === "number" && Number.isFinite(v)) {
+      if (isFiniteNumber(v)) {
         layoutPatch.heroEyebrowFontScale = clampHeroFontScale(v);
       }
     }
@@ -469,7 +470,7 @@ export async function saveEditorState(slug: string, payload: EditorPayload) {
     }
     if (payload.layout.heroSubtitleFontScale !== undefined) {
       const v = payload.layout.heroSubtitleFontScale;
-      if (typeof v === "number" && Number.isFinite(v)) {
+      if (isFiniteNumber(v)) {
         layoutPatch.heroSubtitleFontScale = clampHeroFontScale(v);
       }
     }
@@ -508,7 +509,7 @@ export async function saveEditorState(slug: string, payload: EditorPayload) {
     }
     if (payload.layout.heroCtaFontScale !== undefined) {
       const v = payload.layout.heroCtaFontScale;
-      if (typeof v === "number" && Number.isFinite(v)) {
+      if (isFiniteNumber(v)) {
         layoutPatch.heroCtaFontScale = clampHeroFontScale(v);
       }
     }
@@ -541,7 +542,7 @@ export async function saveEditorState(slug: string, payload: EditorPayload) {
     }
     if (payload.layout.heroBylineFontScale !== undefined) {
       const v = payload.layout.heroBylineFontScale;
-      if (typeof v === "number" && Number.isFinite(v)) {
+      if (isFiniteNumber(v)) {
         layoutPatch.heroBylineFontScale = clampHeroFontScale(v);
       }
     }
@@ -884,7 +885,7 @@ export async function saveEditorState(slug: string, payload: EditorPayload) {
     }
     if (payload.layout.fontScale !== undefined) {
       const v = payload.layout.fontScale;
-      if (typeof v === "number" && Number.isFinite(v)) {
+      if (isFiniteNumber(v)) {
         layoutPatch.fontScale = clampFontScale(v);
       }
     }
@@ -914,7 +915,7 @@ export async function saveEditorState(slug: string, payload: EditorPayload) {
     }
     if (payload.layout.featuredCount !== undefined) {
       const v = payload.layout.featuredCount;
-      if (typeof v === "number" && Number.isFinite(v)) {
+      if (isFiniteNumber(v)) {
         layoutPatch.featuredCount = clampFeaturedCount(v);
       }
     }

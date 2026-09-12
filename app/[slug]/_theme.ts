@@ -8,6 +8,7 @@ import {
   clampFreePos,
 } from "@/lib/theme-scale";
 import { normalizeHexColor } from "@/lib/hex-color";
+import { isFiniteNumber } from "@/lib/is-finite-number";
 import { isPlainObject } from "@/lib/is-plain-object";
 import { cleanMapEmbedUrl } from "@/lib/map-embed-url";
 import {
@@ -1314,52 +1315,52 @@ function resolveLayout(raw: unknown): StoreTheme["layout"] {
       typeof l.mapEmbedUrl === "string" ? cleanMapEmbedUrl(l.mapEmbedUrl) : null,
     heroZoom: (() => {
       const z = l.heroZoom;
-      if (typeof z !== "number" || !Number.isFinite(z)) return 1.0;
+      if (!isFiniteNumber(z)) return 1.0;
       return clampHeroZoom(z);
     })(),
     // Per-viewport zoom — 預設不同 viewport 套不同值修米色 strip
     // 沒設定就 fallback：若 legacy heroZoom 有值就用它，否則套各 viewport 預設
     heroZoomMobile: (() => {
       const z = l.heroZoomMobile;
-      if (typeof z === "number" && Number.isFinite(z)) {
+      if (isFiniteNumber(z)) {
         return clampHeroZoom(z);
       }
       const fallback = l.heroZoom;
-      if (typeof fallback === "number" && Number.isFinite(fallback)) {
+      if (isFiniteNumber(fallback)) {
         return clampHeroZoom(fallback);
       }
       return 1.5;
     })(),
     heroZoomTablet: (() => {
       const z = l.heroZoomTablet;
-      if (typeof z === "number" && Number.isFinite(z)) {
+      if (isFiniteNumber(z)) {
         return clampHeroZoom(z);
       }
       const fallback = l.heroZoom;
-      if (typeof fallback === "number" && Number.isFinite(fallback)) {
+      if (isFiniteNumber(fallback)) {
         return clampHeroZoom(fallback);
       }
       return 1.3;
     })(),
     heroZoomDesktop: (() => {
       const z = l.heroZoomDesktop;
-      if (typeof z === "number" && Number.isFinite(z)) {
+      if (isFiniteNumber(z)) {
         return clampHeroZoom(z);
       }
       const fallback = l.heroZoom;
-      if (typeof fallback === "number" && Number.isFinite(fallback)) {
+      if (isFiniteNumber(fallback)) {
         return clampHeroZoom(fallback);
       }
       return 1.0;
     })(),
     heroTaglineFontScale: (() => {
       const v = l.heroTaglineFontScale;
-      if (typeof v !== "number" || !Number.isFinite(v)) return 1.0;
+      if (!isFiniteNumber(v)) return 1.0;
       return clampHeroFontScale(v);
     })(),
     heroTaglineFontScaleMobile: (() => {
       const v = l.heroTaglineFontScaleMobile;
-      if (typeof v !== "number" || !Number.isFinite(v)) return null;
+      if (!isFiniteNumber(v)) return null;
       return clampHeroFontScale(v);
     })(),
     heroTaglineColor: normalizeHexColor(l.heroTaglineColor),
@@ -1369,7 +1370,7 @@ function resolveLayout(raw: unknown): StoreTheme["layout"] {
     heroTaglineLeading: isLeading(l.heroTaglineLeading) ? l.heroTaglineLeading : "normal",
     heroEyebrowFontScale: (() => {
       const v = l.heroEyebrowFontScale;
-      if (typeof v !== "number" || !Number.isFinite(v)) return 1.0;
+      if (!isFiniteNumber(v)) return 1.0;
       return clampHeroFontScale(v);
     })(),
     heroEyebrowTracking: isTracking(l.heroEyebrowTracking) ? l.heroEyebrowTracking : "normal",
@@ -1379,7 +1380,7 @@ function resolveLayout(raw: unknown): StoreTheme["layout"] {
     heroEyebrowLeading: isLeading(l.heroEyebrowLeading) ? l.heroEyebrowLeading : "normal",
     heroSubtitleFontScale: (() => {
       const v = l.heroSubtitleFontScale;
-      if (typeof v !== "number" || !Number.isFinite(v)) return 1.0;
+      if (!isFiniteNumber(v)) return 1.0;
       return clampHeroFontScale(v);
     })(),
     heroSubtitleColor: normalizeHexColor(l.heroSubtitleColor),
@@ -1389,7 +1390,7 @@ function resolveLayout(raw: unknown): StoreTheme["layout"] {
     heroSubtitleLeading: isLeading(l.heroSubtitleLeading) ? l.heroSubtitleLeading : "normal",
     heroCtaFontScale: (() => {
       const v = l.heroCtaFontScale;
-      if (typeof v !== "number" || !Number.isFinite(v)) return 1.0;
+      if (!isFiniteNumber(v)) return 1.0;
       return clampHeroFontScale(v);
     })(),
     heroCtaTracking: isTracking(l.heroCtaTracking) ? l.heroCtaTracking : "normal",
@@ -1405,7 +1406,7 @@ function resolveLayout(raw: unknown): StoreTheme["layout"] {
     heroCtaColor: normalizeHexColor(l.heroCtaColor),
     heroBylineFontScale: (() => {
       const v = l.heroBylineFontScale;
-      if (typeof v !== "number" || !Number.isFinite(v)) return 1.0;
+      if (!isFiniteNumber(v)) return 1.0;
       return clampHeroFontScale(v);
     })(),
     heroBylineColor: normalizeHexColor(l.heroBylineColor),
@@ -1609,7 +1610,7 @@ function resolveLayout(raw: unknown): StoreTheme["layout"] {
     })(),
     fontScale: (() => {
       const v = l.fontScale;
-      if (typeof v !== "number" || !Number.isFinite(v)) return 1.0;
+      if (!isFiniteNumber(v)) return 1.0;
       return clampFontScale(v);
     })(),
     sectionPaddingScale: (() => {
@@ -1626,7 +1627,7 @@ function resolveLayout(raw: unknown): StoreTheme["layout"] {
     footerText: normalizeHexColor(l.footerText),
     featuredCount: (() => {
       const v = l.featuredCount;
-      if (typeof v !== "number" || !Number.isFinite(v)) return 6;
+      if (!isFiniteNumber(v)) return 6;
       return clampFeaturedCount(v);
     })(),
     featuredColumns: (() => {
