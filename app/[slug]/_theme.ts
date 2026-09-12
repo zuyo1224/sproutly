@@ -1675,9 +1675,8 @@ function resolveLayout(raw: unknown): StoreTheme["layout"] {
       if (isPlainObject(fp)) {
         for (const [k, obj] of Object.entries(fp)) {
           if (!isPlainObject(obj)) continue;
-          const x = typeof obj.x === "number" ? obj.x : NaN;
-          const y = typeof obj.y === "number" ? obj.y : NaN;
-          if (!Number.isFinite(x) || !Number.isFinite(y)) continue;
+          const { x, y } = obj;
+          if (!isFiniteNumber(x) || !isFiniteNumber(y)) continue;
           result[k] = {
             x: clampFreePos(x),
             y: clampFreePos(y),
@@ -1687,9 +1686,8 @@ function resolveLayout(raw: unknown): StoreTheme["layout"] {
       // 2. legacy fallback：把舊 heroTaglinePosition 自動 migrate 到 freePositions["hero-tagline"]
       const legacy = (l as { heroTaglinePosition?: unknown }).heroTaglinePosition;
       if (isPlainObject(legacy) && !result["hero-tagline"]) {
-        const x = typeof legacy.x === "number" ? legacy.x : NaN;
-        const y = typeof legacy.y === "number" ? legacy.y : NaN;
-        if (Number.isFinite(x) && Number.isFinite(y)) {
+        const { x, y } = legacy;
+        if (isFiniteNumber(x) && isFiniteNumber(y)) {
           result["hero-tagline"] = {
             x: clampFreePos(x),
             y: clampFreePos(y),

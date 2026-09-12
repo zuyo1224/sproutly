@@ -10,6 +10,8 @@
 //
 // 存的是百分比不是像素：換了 CDN 尺寸、縮圖、retina 都不影響。
 
+import { isFiniteNumber } from "./is-finite-number.ts";
+
 export type HeroImageBounds = {
   /** 偵測時的照片網址。跟現在的 heroUrl 對不上就當沒存過（商家換了圖）。 */
   url: string;
@@ -28,11 +30,9 @@ export function normalizeHeroImageBounds(value: unknown): HeroImageBounds | null
   if (!value || typeof value !== "object" || Array.isArray(value)) return null;
   const o = value as Record<string, unknown>;
   const url = typeof o.url === "string" ? o.url.trim().slice(0, MAX_URL) : "";
-  const topPct = typeof o.topPct === "number" ? o.topPct : NaN;
-  const bottomPct = typeof o.bottomPct === "number" ? o.bottomPct : NaN;
-  const fileAspect = typeof o.fileAspect === "number" ? o.fileAspect : NaN;
+  const { topPct, bottomPct, fileAspect } = o;
   if (!url) return null;
-  if (![topPct, bottomPct, fileAspect].every(Number.isFinite)) return null;
+  if (!isFiniteNumber(topPct) || !isFiniteNumber(bottomPct) || !isFiniteNumber(fileAspect)) return null;
   if (topPct < 0 || bottomPct > 100 || bottomPct <= topPct) return null;
   // 寬高比合理範圍：比 1:20 更瘦或比 20:1 更扁的圖不可能是 hero 照片，多半是壞資料。
   if (fileAspect < 0.05 || fileAspect > 20) return null;
