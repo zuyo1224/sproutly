@@ -123,6 +123,20 @@ export function brokenImageCount(
   return urls.filter((u) => !isPastedRemoteImageUrl(u)).length;
 }
 
+// 後台標記用：客人在店面實際看到的主圖是 image_urls 的第幾格（0 起算）。
+//
+// 店面是走 displayableImageUrls 取第一張，等於原排序裡第一個 isPastedRemoteImageUrl 判得過的
+// 那格；這支回的就是那一格的索引，讓編輯頁能在對的格子標「店面主圖」。全部判不過或非陣列
+// 回 -1，跟 findIndex 的慣例一樣，呼叫端照「沒有圖」那條講。收成一支的理由跟 brokenImageCount
+// 相同：「哪幾張店面不放」「店面主圖是哪張」「店面掛哪幾張」三件事要綁同一支判法，
+// 哪天判法改了，後台標記跟店面實況才不會各說各話。
+export function storefrontCoverIndex(
+  urls: (string | null | undefined)[] | null | undefined,
+): number {
+  if (!Array.isArray(urls)) return -1;
+  return urls.findIndex((u) => isPastedRemoteImageUrl(u));
+}
+
 // 單一欄位版：heroUrl／logoUrl 這種只有一個值的欄位用。
 //
 // 為什麼另開一支：hero 與 logo 不像商品圖是陣列，各處要用時都得寫

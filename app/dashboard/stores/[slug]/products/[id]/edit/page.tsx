@@ -7,7 +7,11 @@ import { ImageFilePicker } from "@/app/_components/image-file-picker";
 import { UnsavedChangesGuard } from "@/app/_components/unsaved-changes-guard";
 import { currencySymbol } from "@/lib/format-price";
 import { isUuid } from "@/lib/uuid";
-import { brokenImageCount as countBrokenImages, isPastedRemoteImageUrl } from "@/lib/image-url";
+import {
+  brokenImageCount as countBrokenImages,
+  isPastedRemoteImageUrl,
+  storefrontCoverIndex,
+} from "@/lib/image-url";
 import {
   MAX_PRICE_YUAN,
   MAX_STOCK,
@@ -80,10 +84,8 @@ export default async function EditProductPage({
   // 等於原排序裡第一個判得過的。第一張判得過時就是 0、跟「Cover」那格同一張，不用多講；
   // 第一張判不過時商家看著「Cover」標籤會以為客人看到的是它，其實店面掛的是後面這張，
   // 所以在那格另標「店面主圖」、下面那句「第一張是主圖」也改講實況。全部判不過回 -1，
-  // 店面落「沒有圖」佔位格，同樣講清楚。
-  const storefrontCoverIdx = (product.image_urls ?? []).findIndex(
-    (u: string) => isPastedRemoteImageUrl(u),
-  );
+  // 店面落「沒有圖」佔位格，同樣講清楚。判法跟上面的張數同源（lib/image-url）。
+  const storefrontCoverIdx = storefrontCoverIndex(product.image_urls);
   // 價格 label 跟著這件商品實際的幣別走，非台幣的商品不再硬寫 NT$（共用 currencySymbol）
   const currencyLabel = currencySymbol(product.currency);
 

@@ -15,6 +15,7 @@ import assert from "node:assert/strict";
 import {
   absoluteImageUrls,
   brokenImageCount,
+  storefrontCoverIndex,
   displayableImageUrls,
   displayableImageUrl,
   imageMimeTypeFromUrl,
@@ -150,6 +151,23 @@ describe("brokenImageCount（後台琥珀點／提醒句：image_urls 裡店面�
       brokenImageCount(["http://a.example/old.jpg", "/photo.jpg", "  ", null, "https://a.example/ok.jpg", "/photo.jpg"]),
       5,
     );
+  });
+});
+
+describe("storefrontCoverIndex（後台「店面主圖」標記：客人看到的主圖是第幾格）", () => {
+  it("非陣列、空陣列、全部判不過都回 -1", () => {
+    assert.equal(storefrontCoverIndex(null), -1);
+    assert.equal(storefrontCoverIndex(undefined), -1);
+    assert.equal(storefrontCoverIndex([]), -1);
+    assert.equal(storefrontCoverIndex(["http://a.example/old.jpg", "/photo.jpg", "  ", null]), -1);
+  });
+
+  it("第一張判得過回 0；第一張判不過時回後面第一個判得過的索引，且跟 displayableImageUrls 第一張同一格", () => {
+    assert.equal(storefrontCoverIndex(["https://a.example/1.jpg", "http://a.example/old.jpg"]), 0);
+    const input = ["http://a.example/old.jpg", "/photo.jpg", " https://a.example/2.jpg ", "https://a.example/1.jpg"];
+    const idx = storefrontCoverIndex(input);
+    assert.equal(idx, 2);
+    assert.equal(input[idx].trim(), displayableImageUrls(input)[0]);
   });
 });
 
