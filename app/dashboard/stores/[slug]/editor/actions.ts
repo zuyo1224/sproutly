@@ -30,7 +30,9 @@ import {
   type SectionStyle,
 } from "@/lib/section-style-schema";
 import {
+  ALIGN_X_KEYS,
   DEFAULT_SECTION_ORDER,
+  FONT_WEIGHT_KEYS,
   isAlignX,
   isFontWeight,
   isHeroImageSide,
@@ -208,6 +210,57 @@ type EditorPayload = {
     social?: boolean;
   };
 };
+
+// 存檔時「只認清單內的值」的版面欄位與各自的合法值。清單目前只有這裡一份；公開頁 _theme.ts
+// 讀回那層是靠型別跟預設值兜，這裡漏值就是「編輯器能選、存檔被濾掉」的那種錯，改清單先改這張。
+// 副標對齊與按鈕字重多一個「跟著主標／預設」的選項，所以拿 theme-keys 的共用清單前面補一個再展開
+const LAYOUT_ONE_OF = {
+  heroHeight: ["auto", "short", "tall", "full"],
+  heroHeightMobile: ["same", "auto", "short", "tall", "full"],
+  heroFullTextAlignY: ["top", "center", "bottom"],
+  heroSubtitleAlign: ["inherit", ...ALIGN_X_KEYS],
+  heroCtaCase: ["default", "capitalize", "none"],
+  heroCtaWeight: ["default", ...FONT_WEIGHT_KEYS],
+  heroSplitRatio: ["image-narrow", "normal", "image-wide", "photo"],
+  heroImageFocus: ["top", "center", "bottom"],
+  heroSplitImageFit: ["cover", "contain"],
+  heroSplitImageAspect: ["tall", "square", "wide", "photo"],
+  heroSplitTextAlign: ["top", "center", "bottom"],
+  heroSplitMobileOrder: ["image-first", "text-first"],
+  heroSplitDivider: ["none", "thin", "medium", "thick"],
+  heroSplitDividerTone: ["normal", "strong", "accent"],
+  heroSplitHeight: ["content", "compact", "normal"],
+  heroSplitTextPadding: ["tight", "normal", "roomy"],
+  heroSplitMobilePadY: ["tight", "normal", "roomy"],
+  heroSplitGap: ["tight", "normal", "loose"],
+  heroMagazineRuleWeight: ["normal", "medium", "thick"],
+  heroMagazineRuleTone: ["normal", "faint", "strong", "accent"],
+  heroMagazineGap: ["tight", "medium", "normal"],
+  heroMagazineGapMobile: ["same", "tight", "medium", "normal"],
+  heroMagazineTextWidth: ["narrow", "normal", "rule", "full"],
+  heroMagazineRuleWidth: ["narrow", "normal", "full"],
+  heroMagazineTextGap: ["tight", "normal", "loose"],
+  heroMagazinePadX: ["narrow", "normal", "wide"],
+  heroMagazinePadY: ["tight", "normal", "roomy"],
+  heroMagazineSubtitleWidth: ["narrow", "normal", "wide", "title"],
+  heroMinimalWidth: ["narrow", "normal", "wide"],
+  heroMinimalPadding: ["compact", "normal", "spacious"],
+  heroMinimalPaddingMobile: ["same", "compact", "normal", "spacious"],
+  heroMinimalPadX: ["narrow", "normal", "wide"],
+  heroMinimalPadXMobile: ["same", "narrow", "normal", "wide"],
+  heroMinimalRule: ["none", "short", "normal", "long"],
+  heroMinimalRuleWeight: ["normal", "medium", "thick"],
+  heroMinimalGap: ["tight", "normal", "loose"],
+  heroTextPadding: ["compact", "normal", "spacious"],
+  heroTextWidth: ["narrow", "normal", "wide", "full"],
+  heroTextGap: ["tight", "normal", "loose"],
+  heroImageMaxHeight: ["none", "screen", "short"],
+  heroFullImageFit: ["cover", "contain"],
+  sectionPaddingScale: ["compact", "default", "spacious"],
+  buttonRadius: ["pill", "soft", "square"],
+  faqDefaultOpen: ["none", "first", "all"],
+} as const satisfies Partial<Record<keyof NonNullable<EditorPayload["layout"]>, readonly string[]>>;
+
 
 function sanitizeHex(s: unknown): string | undefined {
   return normalizeHexColor(s) ?? undefined;
@@ -428,250 +481,13 @@ export async function saveEditorState(slug: string, payload: EditorPayload) {
       const v = payload.layout[key];
       if (isTextCase(v)) layoutPatch[key] = v;
     }
-    if (payload.layout.heroHeight !== undefined) {
-      const v = payload.layout.heroHeight;
-      if (v === "auto" || v === "short" || v === "tall" || v === "full") {
-        layoutPatch.heroHeight = v;
-      }
-    }
-    if (payload.layout.heroHeightMobile !== undefined) {
-      const v = payload.layout.heroHeightMobile;
-      if (v === "same" || v === "auto" || v === "short" || v === "tall" || v === "full") {
-        layoutPatch.heroHeightMobile = v;
-      }
-    }
-    if (payload.layout.heroFullTextAlignY !== undefined) {
-      const v = payload.layout.heroFullTextAlignY;
-      if (v === "top" || v === "center" || v === "bottom") {
-        layoutPatch.heroFullTextAlignY = v;
-      }
-    }
-    if (payload.layout.heroSubtitleAlign !== undefined) {
-      const v = payload.layout.heroSubtitleAlign;
-      if (v === "inherit" || isAlignX(v)) {
-        layoutPatch.heroSubtitleAlign = v;
-      }
-    }
-    if (payload.layout.heroCtaCase !== undefined) {
-      const v = payload.layout.heroCtaCase;
-      if (v === "default" || v === "capitalize" || v === "none") {
-        layoutPatch.heroCtaCase = v;
-      }
-    }
-    if (payload.layout.heroCtaWeight !== undefined) {
-      const v = payload.layout.heroCtaWeight;
-      if (v === "default" || isFontWeight(v)) {
-        layoutPatch.heroCtaWeight = v;
-      }
-    }
-    if (payload.layout.heroSplitRatio !== undefined) {
-      const v = payload.layout.heroSplitRatio;
-      if (v === "image-narrow" || v === "normal" || v === "image-wide" || v === "photo") {
-        layoutPatch.heroSplitRatio = v;
-      }
-    }
-    if (payload.layout.heroImageFocus !== undefined) {
-      const v = payload.layout.heroImageFocus;
-      if (v === "top" || v === "center" || v === "bottom") {
-        layoutPatch.heroImageFocus = v;
-      }
-    }
-    if (payload.layout.heroSplitImageFit !== undefined) {
-      const v = payload.layout.heroSplitImageFit;
-      if (v === "cover" || v === "contain") {
-        layoutPatch.heroSplitImageFit = v;
-      }
-    }
-    if (payload.layout.heroSplitImageAspect !== undefined) {
-      const v = payload.layout.heroSplitImageAspect;
-      if (v === "tall" || v === "square" || v === "wide" || v === "photo") {
-        layoutPatch.heroSplitImageAspect = v;
-      }
-    }
-    if (payload.layout.heroSplitTextAlign !== undefined) {
-      const v = payload.layout.heroSplitTextAlign;
-      if (v === "top" || v === "center" || v === "bottom") {
-        layoutPatch.heroSplitTextAlign = v;
-      }
-    }
-    if (payload.layout.heroSplitMobileOrder !== undefined) {
-      const v = payload.layout.heroSplitMobileOrder;
-      if (v === "image-first" || v === "text-first") {
-        layoutPatch.heroSplitMobileOrder = v;
-      }
-    }
-    if (payload.layout.heroSplitDivider !== undefined) {
-      const v = payload.layout.heroSplitDivider;
-      if (v === "none" || v === "thin" || v === "medium" || v === "thick") {
-        layoutPatch.heroSplitDivider = v;
-      }
-    }
-    if (payload.layout.heroSplitDividerTone !== undefined) {
-      const v = payload.layout.heroSplitDividerTone;
-      if (v === "normal" || v === "strong" || v === "accent") {
-        layoutPatch.heroSplitDividerTone = v;
-      }
-    }
-    if (payload.layout.heroSplitHeight !== undefined) {
-      const v = payload.layout.heroSplitHeight;
-      if (v === "content" || v === "compact" || v === "normal") {
-        layoutPatch.heroSplitHeight = v;
-      }
-    }
-    if (payload.layout.heroSplitTextPadding !== undefined) {
-      const v = payload.layout.heroSplitTextPadding;
-      if (v === "tight" || v === "normal" || v === "roomy") {
-        layoutPatch.heroSplitTextPadding = v;
-      }
-    }
-    if (payload.layout.heroSplitMobilePadY !== undefined) {
-      const v = payload.layout.heroSplitMobilePadY;
-      if (v === "tight" || v === "normal" || v === "roomy") {
-        layoutPatch.heroSplitMobilePadY = v;
-      }
-    }
-    if (payload.layout.heroSplitGap !== undefined) {
-      const v = payload.layout.heroSplitGap;
-      if (v === "tight" || v === "normal" || v === "loose") {
-        layoutPatch.heroSplitGap = v;
-      }
-    }
-    if (payload.layout.heroMagazineRuleWeight !== undefined) {
-      const v = payload.layout.heroMagazineRuleWeight;
-      if (v === "normal" || v === "medium" || v === "thick") {
-        layoutPatch.heroMagazineRuleWeight = v;
-      }
-    }
-    if (payload.layout.heroMagazineRuleTone !== undefined) {
-      const v = payload.layout.heroMagazineRuleTone;
-      if (v === "normal" || v === "faint" || v === "strong" || v === "accent") {
-        layoutPatch.heroMagazineRuleTone = v;
-      }
-    }
-    if (payload.layout.heroMagazineGap !== undefined) {
-      const v = payload.layout.heroMagazineGap;
-      if (v === "tight" || v === "medium" || v === "normal") {
-        layoutPatch.heroMagazineGap = v;
-      }
-    if (payload.layout.heroMagazineGapMobile !== undefined) {
-      const v = payload.layout.heroMagazineGapMobile;
-      if (v === "same" || v === "tight" || v === "medium" || v === "normal") {
-        layoutPatch.heroMagazineGapMobile = v;
-      }
-    }
-    }
-    if (payload.layout.heroMagazineTextWidth !== undefined) {
-      const v = payload.layout.heroMagazineTextWidth;
-      if (v === "narrow" || v === "normal" || v === "rule" || v === "full") {
-        layoutPatch.heroMagazineTextWidth = v;
-      }
-    }
-    if (payload.layout.heroMagazineRuleWidth !== undefined) {
-      const v = payload.layout.heroMagazineRuleWidth;
-      if (v === "narrow" || v === "normal" || v === "full") {
-        layoutPatch.heroMagazineRuleWidth = v;
-      }
-    }
-    if (payload.layout.heroMagazineTextGap !== undefined) {
-      const v = payload.layout.heroMagazineTextGap;
-      if (v === "tight" || v === "normal" || v === "loose") {
-        layoutPatch.heroMagazineTextGap = v;
-      }
-    }
-    if (payload.layout.heroMagazinePadX !== undefined) {
-      const v = payload.layout.heroMagazinePadX;
-      if (v === "narrow" || v === "normal" || v === "wide") {
-        layoutPatch.heroMagazinePadX = v;
-      }
-    }
-    if (payload.layout.heroMagazinePadY !== undefined) {
-      const v = payload.layout.heroMagazinePadY;
-      if (v === "tight" || v === "normal" || v === "roomy") {
-        layoutPatch.heroMagazinePadY = v;
-      }
-    }
-    if (payload.layout.heroMagazineSubtitleWidth !== undefined) {
-      const v = payload.layout.heroMagazineSubtitleWidth;
-      if (v === "narrow" || v === "normal" || v === "wide" || v === "title") {
-        layoutPatch.heroMagazineSubtitleWidth = v;
-      }
-    }
-    if (payload.layout.heroMinimalWidth !== undefined) {
-      const v = payload.layout.heroMinimalWidth;
-      if (v === "narrow" || v === "normal" || v === "wide") {
-        layoutPatch.heroMinimalWidth = v;
-      }
-    }
-    if (payload.layout.heroMinimalPadding !== undefined) {
-      const v = payload.layout.heroMinimalPadding;
-      if (v === "compact" || v === "normal" || v === "spacious") {
-        layoutPatch.heroMinimalPadding = v;
-      }
-    }
-    if (payload.layout.heroMinimalPaddingMobile !== undefined) {
-      const v = payload.layout.heroMinimalPaddingMobile;
-      if (v === "same" || v === "compact" || v === "normal" || v === "spacious") {
-        layoutPatch.heroMinimalPaddingMobile = v;
-      }
-    }
-    if (payload.layout.heroMinimalPadX !== undefined) {
-      const v = payload.layout.heroMinimalPadX;
-      if (v === "narrow" || v === "normal" || v === "wide") {
-        layoutPatch.heroMinimalPadX = v;
-      }
-    }
-    if (payload.layout.heroMinimalPadXMobile !== undefined) {
-      const v = payload.layout.heroMinimalPadXMobile;
-      if (v === "same" || v === "narrow" || v === "normal" || v === "wide") {
-        layoutPatch.heroMinimalPadXMobile = v;
-      }
-    }
-    if (payload.layout.heroMinimalRule !== undefined) {
-      const v = payload.layout.heroMinimalRule;
-      if (v === "none" || v === "short" || v === "normal" || v === "long") {
-        layoutPatch.heroMinimalRule = v;
-      }
-    }
-    if (payload.layout.heroMinimalRuleWeight !== undefined) {
-      const v = payload.layout.heroMinimalRuleWeight;
-      if (v === "normal" || v === "medium" || v === "thick") {
-        layoutPatch.heroMinimalRuleWeight = v;
-      }
-    }
-    if (payload.layout.heroMinimalGap !== undefined) {
-      const v = payload.layout.heroMinimalGap;
-      if (v === "tight" || v === "normal" || v === "loose") {
-        layoutPatch.heroMinimalGap = v;
-      }
-    }
-    if (payload.layout.heroTextPadding !== undefined) {
-      const v = payload.layout.heroTextPadding;
-      if (v === "compact" || v === "normal" || v === "spacious") {
-        layoutPatch.heroTextPadding = v;
-      }
-    }
-    if (payload.layout.heroTextWidth !== undefined) {
-      const v = payload.layout.heroTextWidth;
-      if (v === "narrow" || v === "normal" || v === "wide" || v === "full") {
-        layoutPatch.heroTextWidth = v;
-      }
-    }
-    if (payload.layout.heroTextGap !== undefined) {
-      const v = payload.layout.heroTextGap;
-      if (v === "tight" || v === "normal" || v === "loose") {
-        layoutPatch.heroTextGap = v;
-      }
-    }
-    if (payload.layout.heroImageMaxHeight !== undefined) {
-      const v = payload.layout.heroImageMaxHeight;
-      if (v === "none" || v === "screen" || v === "short") {
-        layoutPatch.heroImageMaxHeight = v;
-      }
-    }
-    if (payload.layout.heroFullImageFit !== undefined) {
-      const v = payload.layout.heroFullImageFit;
-      if (v === "cover" || v === "contain") {
-        layoutPatch.heroFullImageFit = v;
+    // Hero 各版型「只認清單內的值」的欄位：每格帶自己的合法值清單，值不在清單內就整格不動 DB。
+    // 以前 44 格各手寫一段 v === "a" || v === "b"，多一格就多抄六行；現在只在這張表加一行。
+    // 副標對齊、按鈕字重那兩格多一個「跟著別的」選項，所以在共用清單前面補上再展開
+    for (const key of Object.keys(LAYOUT_ONE_OF) as Array<keyof typeof LAYOUT_ONE_OF>) {
+      const v = payload.layout[key];
+      if (typeof v === "string" && (LAYOUT_ONE_OF[key] as readonly string[]).includes(v)) {
+        layoutPatch[key] = v;
       }
     }
     if (payload.layout.heroImageBounds !== undefined) {
@@ -685,18 +501,6 @@ export async function saveEditorState(slug: string, payload: EditorPayload) {
       const v = payload.layout.fontScale;
       if (isFiniteNumber(v)) {
         layoutPatch.fontScale = clampFontScale(v);
-      }
-    }
-    if (payload.layout.sectionPaddingScale !== undefined) {
-      const v = payload.layout.sectionPaddingScale;
-      if (v === "compact" || v === "default" || v === "spacious") {
-        layoutPatch.sectionPaddingScale = v;
-      }
-    }
-    if (payload.layout.buttonRadius !== undefined) {
-      const v = payload.layout.buttonRadius;
-      if (v === "pill" || v === "soft" || v === "square") {
-        layoutPatch.buttonRadius = v;
       }
     }
     // Hero 各段文字色／底色與頁尾底色／文字色全走同一套：空字串或 null = 清除回預設，非法色碼整格不存
@@ -756,12 +560,6 @@ export async function saveEditorState(slug: string, payload: EditorPayload) {
       const v = payload.layout.journalColumns;
       // 慢讀固定三張卡，4 欄永遠填不滿，只收 2/3
       if (v === 2 || v === 3) layoutPatch.journalColumns = v;
-    }
-    if (payload.layout.faqDefaultOpen !== undefined) {
-      const v = payload.layout.faqDefaultOpen;
-      if (v === "none" || v === "first" || v === "all") {
-        layoutPatch.faqDefaultOpen = v;
-      }
     }
     if (payload.layout.sectionStyles !== undefined) {
       // 欄位表與合法值都在 lib/section-style-schema，跟公開頁讀回那層走同一支——
