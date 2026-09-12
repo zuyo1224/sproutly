@@ -5,6 +5,7 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { parseAiThemePatch } from "@/lib/ai-theme-patch";
+import { isPlainObject } from "@/lib/is-plain-object";
 import { HERO_STYLE_KEYS, HERO_IMAGE_SIDES, DEFAULT_SECTION_ORDER } from "@/lib/theme-keys";
 import { tsUnionLiteral } from "@/lib/ts-union-literal";
 
@@ -97,7 +98,7 @@ export async function POST(request: Request) {
   }
 
   const themeContext =
-    body.theme && typeof body.theme === "object"
+    isPlainObject(body.theme)
       ? `\n\n當前 theme：\n\`\`\`json\n${JSON.stringify(body.theme, null, 2)}\n\`\`\``
       : "";
 

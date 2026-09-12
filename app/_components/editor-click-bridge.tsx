@@ -2,6 +2,7 @@
 
 import { useEffect } from "react";
 import { clampFreePos } from "@/lib/theme-scale";
+import { isPlainObject } from "@/lib/is-plain-object";
 
 /**
  * iframe 內公開頁 client island —
@@ -337,8 +338,8 @@ export function EditorClickBridge() {
 
     // 接 editor 送來的 theme update — 用來支援「undo 不重新整理頁面」
     // editor undo → postMessage theme-apply → iframe 即時套 CSS vars / 文字 / position
-    function applyThemePatch(theme: Record<string, unknown>) {
-      if (!theme || typeof theme !== "object") return;
+    function applyThemePatch(theme: unknown) {
+      if (!isPlainObject(theme)) return;
       const root = document.querySelector(":root") as HTMLElement | null;
       if (root) {
         // CSS vars（顏色 / 字型）
@@ -352,13 +353,13 @@ export function EditorClickBridge() {
           "--store-border": "border",
         };
         for (const [cssVar, key] of Object.entries(colors)) {
-          const v = (theme as Record<string, unknown>)[key];
+          const v = theme[key];
           if (typeof v === "string") root.style.setProperty(cssVar, v);
         }
       }
 
       // tagline / eyebrow 等 text 欄位（用 data-edit-field 對應）
-      const tagline = (theme as { tagline?: string }).tagline;
+      const tagline = theme.tagline;
       if (typeof tagline === "string") {
         document
           .querySelectorAll<HTMLElement>('[data-edit-field="tagline"]')
@@ -372,8 +373,9 @@ export function EditorClickBridge() {
       // hero-tagline 已重新打開 drag — 但只綁在 h1 上，scope 內 cream block，
       // 不會跑出 hero section 外影響其他 section。
       const SKIP_FREE_POSITION_KEYS = new Set<string>();
-      const layout = (theme as { layout?: { freePositions?: Record<string, { x: number; y: number }> } }).layout;
-      if (layout?.freePositions && typeof layout.freePositions === "object") {
+      const layout = theme.layout;
+      const freePositions = isPlainObject(layout) ? layout.freePositions : undefined;
+      if (isPlainObject(freePositions)) {
         document
           .querySelectorAll<HTMLElement>("[data-edit-drag]")
           .forEach((el) => {
@@ -387,8 +389,8 @@ export function EditorClickBridge() {
               el.style.position = "";
               return;
             }
-            const pos = layout.freePositions![key];
-            if (pos && typeof pos.x === "number" && typeof pos.y === "number") {
+            const pos = freePositions[key];
+            if (isPlainObject(pos) && typeof pos.x === "number" && typeof pos.y === "number") {
               el.style.left = `${pos.x * 100}%`;
               el.style.top = `${pos.y * 100}%`;
               el.style.transform = "translate(-50%, -50%)";
@@ -405,7 +407,7 @@ export function EditorClickBridge() {
 
     function onParentMessage(ev: MessageEvent) {
       if (typeof ev.data !== "object" || !ev.data) return;
-      const msg = ev.data as { type?: string; theme?: Record<string, unknown> };
+      const msg = ev.data as { type?: string; theme?: unknown };
       if (msg.type === "sproutly-theme-apply" && msg.theme) {
         applyThemePatch(msg.theme);
       }

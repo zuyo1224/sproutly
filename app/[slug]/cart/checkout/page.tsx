@@ -24,6 +24,7 @@ type Product = {
 import { formatPrice } from "@/lib/format-price";
 import { fetchProductsByIds } from "@/lib/fetch-products-by-ids";
 import { displayableImageUrls } from "@/lib/image-url";
+import { isPlainObject } from "@/lib/is-plain-object";
 
 // 送出後「連線出狀況、看不出單有沒有成立」時給客人的話。不能寫成「送出失敗」——
 // 逾時／閘道錯誤發生時訂單很可能已經在資料庫裡了，叫客人重送就會下成兩張；也不能
@@ -250,8 +251,8 @@ export default function CartCheckoutPage() {
       const rawBody = await res.text();
       let data: { orderId?: unknown; error?: unknown } | null = null;
       try {
-        const parsed = JSON.parse(rawBody);
-        if (parsed && typeof parsed === "object") data = parsed;
+        const parsed: unknown = JSON.parse(rawBody);
+        if (isPlainObject(parsed)) data = parsed;
       } catch {
         data = null;
       }
