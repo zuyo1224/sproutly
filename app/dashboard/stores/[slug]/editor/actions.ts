@@ -351,22 +351,25 @@ export async function saveEditorState(slug: string, payload: EditorPayload) {
         if (cleaned) layoutPatch.mapEmbedUrl = cleaned;
       }
     }
-    if (payload.layout.heroZoom !== undefined) {
-      const z = payload.layout.heroZoom;
-      if (isFiniteNumber(z)) {
-        layoutPatch.heroZoom = clampHeroZoom(z);
-      }
-    }
-    for (const key of ["heroZoomMobile", "heroZoomTablet", "heroZoomDesktop"] as const) {
+    // 舊的單一 heroZoom 跟三個裝置各自的 zoom 走同一支 clamp，一起收在一個迴圈
+    for (const key of ["heroZoom", "heroZoomMobile", "heroZoomTablet", "heroZoomDesktop"] as const) {
       const z = payload.layout[key];
       if (z !== undefined && isFiniteNumber(z)) {
         layoutPatch[key] = clampHeroZoom(z);
       }
     }
-    if (payload.layout.heroTaglineFontScale !== undefined) {
-      const v = payload.layout.heroTaglineFontScale;
-      if (isFiniteNumber(v)) {
-        layoutPatch.heroTaglineFontScale = clampHeroFontScale(v);
+    // Hero 五段文字（主標／眉標／副標／按鈕／署名）的字級倍率都是同一支 clampHeroFontScale，
+    // 沒帶就跳過、不是有限數字就不動 DB；主標的手機版另外要吃 null（見下面那段），不放進來
+    for (const key of [
+      "heroTaglineFontScale",
+      "heroEyebrowFontScale",
+      "heroSubtitleFontScale",
+      "heroCtaFontScale",
+      "heroBylineFontScale",
+    ] as const) {
+      const v = payload.layout[key];
+      if (v !== undefined && isFiniteNumber(v)) {
+        layoutPatch[key] = clampHeroFontScale(v);
       }
     }
     if (payload.layout.heroTaglineFontScaleMobile !== undefined) {
@@ -429,12 +432,6 @@ export async function saveEditorState(slug: string, payload: EditorPayload) {
         layoutPatch.heroTaglineLeading = v;
       }
     }
-    if (payload.layout.heroEyebrowFontScale !== undefined) {
-      const v = payload.layout.heroEyebrowFontScale;
-      if (isFiniteNumber(v)) {
-        layoutPatch.heroEyebrowFontScale = clampHeroFontScale(v);
-      }
-    }
     if (payload.layout.heroEyebrowTracking !== undefined) {
       const v = payload.layout.heroEyebrowTracking;
       if (isTracking(v)) {
@@ -466,12 +463,6 @@ export async function saveEditorState(slug: string, payload: EditorPayload) {
       const v = payload.layout.heroEyebrowLeading;
       if (isLeading(v)) {
         layoutPatch.heroEyebrowLeading = v;
-      }
-    }
-    if (payload.layout.heroSubtitleFontScale !== undefined) {
-      const v = payload.layout.heroSubtitleFontScale;
-      if (isFiniteNumber(v)) {
-        layoutPatch.heroSubtitleFontScale = clampHeroFontScale(v);
       }
     }
     if (payload.layout.heroSubtitleColor !== undefined) {
@@ -507,12 +498,6 @@ export async function saveEditorState(slug: string, payload: EditorPayload) {
         layoutPatch.heroSubtitleLeading = v;
       }
     }
-    if (payload.layout.heroCtaFontScale !== undefined) {
-      const v = payload.layout.heroCtaFontScale;
-      if (isFiniteNumber(v)) {
-        layoutPatch.heroCtaFontScale = clampHeroFontScale(v);
-      }
-    }
     if (payload.layout.heroCtaTracking !== undefined) {
       const v = payload.layout.heroCtaTracking;
       if (isTracking(v)) {
@@ -538,12 +523,6 @@ export async function saveEditorState(slug: string, payload: EditorPayload) {
       } else {
         const hex = normalizeHexColor(v);
         if (hex) layoutPatch.heroCtaColor = hex;
-      }
-    }
-    if (payload.layout.heroBylineFontScale !== undefined) {
-      const v = payload.layout.heroBylineFontScale;
-      if (isFiniteNumber(v)) {
-        layoutPatch.heroBylineFontScale = clampHeroFontScale(v);
       }
     }
     if (payload.layout.heroBylineColor !== undefined) {
