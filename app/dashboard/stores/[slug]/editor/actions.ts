@@ -381,14 +381,52 @@ export async function saveEditorState(slug: string, payload: EditorPayload) {
         layoutPatch.heroTaglineFontScaleMobile = clampHeroFontScale(v);
       }
     }
-    if (payload.layout.heroTaglineColor !== undefined) {
-      const v = payload.layout.heroTaglineColor;
-      if (v === null || v === "") {
-        layoutPatch.heroTaglineColor = null;
-      } else {
-        const hex = normalizeHexColor(v);
-        if (hex) layoutPatch.heroTaglineColor = hex;
-      }
+    // 對齊／字重／字距／行高／大小寫這幾類「只認清單內的值」的欄位，每一類走同一支 guard，
+    // 判不過就不動 DB。帶 "inherit"／"default" 這種額外選項的（副標對齊、按鈕字重與大小寫）不在這裡
+    for (const key of [
+      "heroTaglineAlign",
+      "heroImageFocusX",
+      "heroSplitTextAlignX",
+      "heroMinimalAlign",
+      "heroTextAlignX",
+    ] as const) {
+      const v = payload.layout[key];
+      if (isAlignX(v)) layoutPatch[key] = v;
+    }
+    for (const key of [
+      "heroTaglineWeight",
+      "heroEyebrowWeight",
+      "heroSubtitleWeight",
+      "heroBylineWeight",
+    ] as const) {
+      const v = payload.layout[key];
+      if (isFontWeight(v)) layoutPatch[key] = v;
+    }
+    for (const key of [
+      "heroTaglineTracking",
+      "heroEyebrowTracking",
+      "heroSubtitleTracking",
+      "heroCtaTracking",
+      "heroBylineTracking",
+    ] as const) {
+      const v = payload.layout[key];
+      if (isTracking(v)) layoutPatch[key] = v;
+    }
+    for (const key of [
+      "heroTaglineLeading",
+      "heroEyebrowLeading",
+      "heroSubtitleLeading",
+      "heroBylineLeading",
+    ] as const) {
+      const v = payload.layout[key];
+      if (isLeading(v)) layoutPatch[key] = v;
+    }
+    for (const key of [
+      "heroEyebrowCase",
+      "heroBylineCase",
+    ] as const) {
+      const v = payload.layout[key];
+      if (isTextCase(v)) layoutPatch[key] = v;
     }
     if (payload.layout.heroHeight !== undefined) {
       const v = payload.layout.heroHeight;
@@ -408,100 +446,10 @@ export async function saveEditorState(slug: string, payload: EditorPayload) {
         layoutPatch.heroFullTextAlignY = v;
       }
     }
-    if (payload.layout.heroTaglineAlign !== undefined) {
-      const v = payload.layout.heroTaglineAlign;
-      if (isAlignX(v)) {
-        layoutPatch.heroTaglineAlign = v;
-      }
-    }
-    if (payload.layout.heroTaglineWeight !== undefined) {
-      const v = payload.layout.heroTaglineWeight;
-      if (isFontWeight(v)) {
-        layoutPatch.heroTaglineWeight = v;
-      }
-    }
-    if (payload.layout.heroTaglineTracking !== undefined) {
-      const v = payload.layout.heroTaglineTracking;
-      if (isTracking(v)) {
-        layoutPatch.heroTaglineTracking = v;
-      }
-    }
-    if (payload.layout.heroTaglineLeading !== undefined) {
-      const v = payload.layout.heroTaglineLeading;
-      if (isLeading(v)) {
-        layoutPatch.heroTaglineLeading = v;
-      }
-    }
-    if (payload.layout.heroEyebrowTracking !== undefined) {
-      const v = payload.layout.heroEyebrowTracking;
-      if (isTracking(v)) {
-        layoutPatch.heroEyebrowTracking = v;
-      }
-    }
-    if (payload.layout.heroEyebrowColor !== undefined) {
-      const v = payload.layout.heroEyebrowColor;
-      if (v === null || v === "") {
-        layoutPatch.heroEyebrowColor = null;
-      } else {
-        const hex = normalizeHexColor(v);
-        if (hex) layoutPatch.heroEyebrowColor = hex;
-      }
-    }
-    if (payload.layout.heroEyebrowCase !== undefined) {
-      const v = payload.layout.heroEyebrowCase;
-      if (isTextCase(v)) {
-        layoutPatch.heroEyebrowCase = v;
-      }
-    }
-    if (payload.layout.heroEyebrowWeight !== undefined) {
-      const v = payload.layout.heroEyebrowWeight;
-      if (isFontWeight(v)) {
-        layoutPatch.heroEyebrowWeight = v;
-      }
-    }
-    if (payload.layout.heroEyebrowLeading !== undefined) {
-      const v = payload.layout.heroEyebrowLeading;
-      if (isLeading(v)) {
-        layoutPatch.heroEyebrowLeading = v;
-      }
-    }
-    if (payload.layout.heroSubtitleColor !== undefined) {
-      const v = payload.layout.heroSubtitleColor;
-      if (v === null || v === "") {
-        layoutPatch.heroSubtitleColor = null;
-      } else {
-        const hex = normalizeHexColor(v);
-        if (hex) layoutPatch.heroSubtitleColor = hex;
-      }
-    }
     if (payload.layout.heroSubtitleAlign !== undefined) {
       const v = payload.layout.heroSubtitleAlign;
       if (v === "inherit" || isAlignX(v)) {
         layoutPatch.heroSubtitleAlign = v;
-      }
-    }
-    if (payload.layout.heroSubtitleWeight !== undefined) {
-      const v = payload.layout.heroSubtitleWeight;
-      if (isFontWeight(v)) {
-        layoutPatch.heroSubtitleWeight = v;
-      }
-    }
-    if (payload.layout.heroSubtitleTracking !== undefined) {
-      const v = payload.layout.heroSubtitleTracking;
-      if (isTracking(v)) {
-        layoutPatch.heroSubtitleTracking = v;
-      }
-    }
-    if (payload.layout.heroSubtitleLeading !== undefined) {
-      const v = payload.layout.heroSubtitleLeading;
-      if (isLeading(v)) {
-        layoutPatch.heroSubtitleLeading = v;
-      }
-    }
-    if (payload.layout.heroCtaTracking !== undefined) {
-      const v = payload.layout.heroCtaTracking;
-      if (isTracking(v)) {
-        layoutPatch.heroCtaTracking = v;
       }
     }
     if (payload.layout.heroCtaCase !== undefined) {
@@ -516,48 +464,6 @@ export async function saveEditorState(slug: string, payload: EditorPayload) {
         layoutPatch.heroCtaWeight = v;
       }
     }
-    if (payload.layout.heroCtaColor !== undefined) {
-      const v = payload.layout.heroCtaColor;
-      if (v === null || v === "") {
-        layoutPatch.heroCtaColor = null;
-      } else {
-        const hex = normalizeHexColor(v);
-        if (hex) layoutPatch.heroCtaColor = hex;
-      }
-    }
-    if (payload.layout.heroBylineColor !== undefined) {
-      const v = payload.layout.heroBylineColor;
-      if (v === null || v === "") {
-        layoutPatch.heroBylineColor = null;
-      } else {
-        const hex = normalizeHexColor(v);
-        if (hex) layoutPatch.heroBylineColor = hex;
-      }
-    }
-    if (payload.layout.heroBylineTracking !== undefined) {
-      const v = payload.layout.heroBylineTracking;
-      if (isTracking(v)) {
-        layoutPatch.heroBylineTracking = v;
-      }
-    }
-    if (payload.layout.heroBylineCase !== undefined) {
-      const v = payload.layout.heroBylineCase;
-      if (isTextCase(v)) {
-        layoutPatch.heroBylineCase = v;
-      }
-    }
-    if (payload.layout.heroBylineWeight !== undefined) {
-      const v = payload.layout.heroBylineWeight;
-      if (isFontWeight(v)) {
-        layoutPatch.heroBylineWeight = v;
-      }
-    }
-    if (payload.layout.heroBylineLeading !== undefined) {
-      const v = payload.layout.heroBylineLeading;
-      if (isLeading(v)) {
-        layoutPatch.heroBylineLeading = v;
-      }
-    }
     if (payload.layout.heroSplitRatio !== undefined) {
       const v = payload.layout.heroSplitRatio;
       if (v === "image-narrow" || v === "normal" || v === "image-wide" || v === "photo") {
@@ -568,12 +474,6 @@ export async function saveEditorState(slug: string, payload: EditorPayload) {
       const v = payload.layout.heroImageFocus;
       if (v === "top" || v === "center" || v === "bottom") {
         layoutPatch.heroImageFocus = v;
-      }
-    }
-    if (payload.layout.heroImageFocusX !== undefined) {
-      const v = payload.layout.heroImageFocusX;
-      if (isAlignX(v)) {
-        layoutPatch.heroImageFocusX = v;
       }
     }
     if (payload.layout.heroSplitImageFit !== undefined) {
@@ -594,34 +494,10 @@ export async function saveEditorState(slug: string, payload: EditorPayload) {
         layoutPatch.heroSplitTextAlign = v;
       }
     }
-    if (payload.layout.heroSplitTextAlignX !== undefined) {
-      const v = payload.layout.heroSplitTextAlignX;
-      if (isAlignX(v)) {
-        layoutPatch.heroSplitTextAlignX = v;
-      }
-    }
     if (payload.layout.heroSplitMobileOrder !== undefined) {
       const v = payload.layout.heroSplitMobileOrder;
       if (v === "image-first" || v === "text-first") {
         layoutPatch.heroSplitMobileOrder = v;
-      }
-    }
-    if (payload.layout.heroSplitTextBg !== undefined) {
-      const v = payload.layout.heroSplitTextBg;
-      if (v === null || v === "") {
-        layoutPatch.heroSplitTextBg = null;
-      } else {
-        const hex = normalizeHexColor(v);
-        if (hex) layoutPatch.heroSplitTextBg = hex;
-      }
-    }
-    if (payload.layout.heroSplitImageBg !== undefined) {
-      const v = payload.layout.heroSplitImageBg;
-      if (v === null || v === "") {
-        layoutPatch.heroSplitImageBg = null;
-      } else {
-        const hex = normalizeHexColor(v);
-        if (hex) layoutPatch.heroSplitImageBg = hex;
       }
     }
     if (payload.layout.heroSplitDivider !== undefined) {
@@ -762,52 +638,10 @@ export async function saveEditorState(slug: string, payload: EditorPayload) {
         layoutPatch.heroMinimalRuleWeight = v;
       }
     }
-    if (payload.layout.heroMinimalRuleColor !== undefined) {
-      const v = payload.layout.heroMinimalRuleColor;
-      if (v === null || v === "") {
-        layoutPatch.heroMinimalRuleColor = null;
-      } else {
-        const hex = normalizeHexColor(v);
-        if (hex) layoutPatch.heroMinimalRuleColor = hex;
-      }
-    }
-    if (payload.layout.heroMinimalAlign !== undefined) {
-      const v = payload.layout.heroMinimalAlign;
-      if (isAlignX(v)) {
-        layoutPatch.heroMinimalAlign = v;
-      }
-    }
     if (payload.layout.heroMinimalGap !== undefined) {
       const v = payload.layout.heroMinimalGap;
       if (v === "tight" || v === "normal" || v === "loose") {
         layoutPatch.heroMinimalGap = v;
-      }
-    }
-    if (payload.layout.heroMinimalBg !== undefined) {
-      const v = payload.layout.heroMinimalBg;
-      if (v === null || v === "") {
-        layoutPatch.heroMinimalBg = null;
-      } else {
-        const hex = normalizeHexColor(v);
-        if (hex) layoutPatch.heroMinimalBg = hex;
-      }
-    }
-    if (payload.layout.heroMagazineBg !== undefined) {
-      const v = payload.layout.heroMagazineBg;
-      if (v === null || v === "") {
-        layoutPatch.heroMagazineBg = null;
-      } else {
-        const hex = normalizeHexColor(v);
-        if (hex) layoutPatch.heroMagazineBg = hex;
-      }
-    }
-    if (payload.layout.heroTextBg !== undefined) {
-      const v = payload.layout.heroTextBg;
-      if (v === null || v === "") {
-        layoutPatch.heroTextBg = null;
-      } else {
-        const hex = normalizeHexColor(v);
-        if (hex) layoutPatch.heroTextBg = hex;
       }
     }
     if (payload.layout.heroTextPadding !== undefined) {
@@ -820,12 +654,6 @@ export async function saveEditorState(slug: string, payload: EditorPayload) {
       const v = payload.layout.heroTextWidth;
       if (v === "narrow" || v === "normal" || v === "wide" || v === "full") {
         layoutPatch.heroTextWidth = v;
-      }
-    }
-    if (payload.layout.heroTextAlignX !== undefined) {
-      const v = payload.layout.heroTextAlignX;
-      if (isAlignX(v)) {
-        layoutPatch.heroTextAlignX = v;
       }
     }
     if (payload.layout.heroTextGap !== undefined) {
@@ -844,15 +672,6 @@ export async function saveEditorState(slug: string, payload: EditorPayload) {
       const v = payload.layout.heroFullImageFit;
       if (v === "cover" || v === "contain") {
         layoutPatch.heroFullImageFit = v;
-      }
-    }
-    if (payload.layout.heroFullImageBg !== undefined) {
-      const v = payload.layout.heroFullImageBg;
-      if (v === null || v === "") {
-        layoutPatch.heroFullImageBg = null;
-      } else {
-        const hex = normalizeHexColor(v);
-        if (hex) layoutPatch.heroFullImageBg = hex;
       }
     }
     if (payload.layout.heroImageBounds !== undefined) {
@@ -880,8 +699,23 @@ export async function saveEditorState(slug: string, payload: EditorPayload) {
         layoutPatch.buttonRadius = v;
       }
     }
-    // 頁尾底色 / 文字色：跟其他色碼欄位同一套（空字串 = 清除回預設，非法色碼整格不存）
-    for (const field of ["footerBg", "footerText"] as const) {
+    // Hero 各段文字色／底色與頁尾底色／文字色全走同一套：空字串或 null = 清除回預設，非法色碼整格不存
+    for (const field of [
+      "heroTaglineColor",
+      "heroEyebrowColor",
+      "heroSubtitleColor",
+      "heroCtaColor",
+      "heroBylineColor",
+      "heroSplitTextBg",
+      "heroSplitImageBg",
+      "heroMinimalRuleColor",
+      "heroMinimalBg",
+      "heroMagazineBg",
+      "heroTextBg",
+      "heroFullImageBg",
+      "footerBg",
+      "footerText",
+    ] as const) {
       if (payload.layout[field] !== undefined) {
         const v = payload.layout[field];
         if (v === null || v === "") {
