@@ -14,6 +14,8 @@
 // 那邊本來就把負數判 OutOfStock 餵給 Google，這邊以前只認 === 0，於是負庫存商品
 // 會「對 Google 標售完、畫面卻顯示有貨又不沉底」兩端對不上。收成這一份單一定義後，
 // 結構化資料與畫面的缺貨判斷保證走同一條路徑（availabilityForSchema 直接呼叫這支）。
+import { QTY_MAX } from "./product-quantity.ts";
+
 export function isSoldOut(stock: number | null | undefined): boolean {
   return stock != null && stock <= 0;
 }
@@ -66,6 +68,20 @@ export function clampToStock(
   const effectiveQty = stock != null ? Math.min(qty, Math.max(stock, 0)) : qty;
   const clamped = !soldOut && effectiveQty < qty;
   return { effectiveQty, soldOut, clamped };
+}
+
+// 數量選擇器「最多能選到幾件」的單一來源：沒在管庫存（null/undefined）就是全站
+// 軟上限 QTY_MAX；有在管就卡在庫存量，但仍不超過 QTY_MAX。
+// 商品詳情頁的數量下拉（Array.from({ length: maxQty }) 長出 1..N）與購物車頁的
+// 「＋」按鈕（qty >= maxQty 就 disabled）原本各自 inline 同一條三元，一頁寫
+// `stock !== null ? Math.min(stock, QTY_MAX) : QTY_MAX`、一頁寫 `stock == null ? QTY_MAX
+// : Math.min(stock, QTY_MAX)`，兩頁的 stock 型別都是 number | null 所以結果一樣，只是
+// 寫法不同、日後改「選得到幾件」的規則（例如某些店限購、或 QTY_MAX 改成 per-store）
+// 就得兩頁追。收成這支，商品頁選得到的量與購物車加得到的量保證同一條線。
+// 售完（0 或負數）原樣回傳 0／負數，不在這裡夾成 0：兩個呼叫端都先用 isSoldOut 把
+// 售完的擋在外面（商品頁不渲染選單、購物車標「已售完」），這支只負責「有貨時的上限」。
+export function maxSelectableQty(stock: number | null | undefined): number {
+  return stock == null ? QTY_MAX : Math.min(stock, QTY_MAX);
 }
 
 // 把售完的整批沉到清單最後，有貨的維持原本的相對順序。

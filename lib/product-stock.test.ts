@@ -13,6 +13,7 @@ import {
   stockAriaSuffix,
   clampToStock,
   bySoldOutLast,
+  maxSelectableQty,
   insufficientStockError,
   stockConflictError,
 } from "./product-stock.ts";
@@ -75,6 +76,25 @@ describe("clampToStock", () => {
   it("售完（0 或負數）effectiveQty 是 0、標 soldOut、不標 clamped", () => {
     assert.deepEqual(clampToStock(0, 5), { effectiveQty: 0, soldOut: true, clamped: false });
     assert.deepEqual(clampToStock(-2, 5), { effectiveQty: 0, soldOut: true, clamped: false });
+  });
+});
+
+describe("maxSelectableQty", () => {
+  it("沒在管庫存（null／undefined）就是全站軟上限 99", () => {
+    assert.equal(maxSelectableQty(null), 99);
+    assert.equal(maxSelectableQty(undefined), 99);
+  });
+  it("有在管庫存就卡在庫存量", () => {
+    assert.equal(maxSelectableQty(1), 1);
+    assert.equal(maxSelectableQty(5), 5);
+  });
+  it("庫存超過 99 仍不超過軟上限", () => {
+    assert.equal(maxSelectableQty(99), 99);
+    assert.equal(maxSelectableQty(500), 99);
+  });
+  it("售完（0／負數）原樣回傳，售完的擋法交給呼叫端的 isSoldOut", () => {
+    assert.equal(maxSelectableQty(0), 0);
+    assert.equal(maxSelectableQty(-2), -2);
   });
 });
 

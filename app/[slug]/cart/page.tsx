@@ -17,8 +17,7 @@ type Product = {
 };
 
 import { formatPrice } from "@/lib/format-price";
-import { isSoldOut } from "@/lib/product-stock";
-import { QTY_MAX } from "@/lib/product-quantity";
+import { isSoldOut, maxSelectableQty } from "@/lib/product-stock";
 import { fetchProductsByIds } from "@/lib/fetch-products-by-ids";
 import { displayableImageUrls } from "@/lib/image-url";
 
@@ -322,8 +321,8 @@ export default function CartPage() {
             {itemRows.map(({ product: p, qty }) => {
               // 庫存上限：null 視為不限（沿用 QTY_MAX 軟上限），否則卡在庫存量。
               // 跟結帳 API 同一條紅線，只是搬到購物車先擋，讓客人不用排到
-              // 結帳才被退回。
-              const maxQty = p.stock == null ? QTY_MAX : Math.min(p.stock, QTY_MAX);
+              // 結帳才被退回。跟商品頁數量下拉同走 maxSelectableQty。
+              const maxQty = maxSelectableQty(p.stock);
               const atStockLimit = p.stock != null && qty >= p.stock;
               // 縮圖先濾掉店面注定顯示不出的舊值（http://、半截網址、空白），跟逛街頁同一條線。
               const thumb = displayableImageUrls(p.image_urls)[0];
