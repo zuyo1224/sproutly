@@ -1,6 +1,6 @@
 // 客戶端購物車 helpers（localStorage based，per-store key）
 
-import { QTY_MIN, QTY_MAX } from "./product-quantity.ts";
+import { QTY_MIN, QTY_MAX, clampQty } from "./product-quantity.ts";
 
 export type CartItem = {
   productId: string;
@@ -18,13 +18,15 @@ export function getCart(slug: string): CartItem[] {
     if (!Array.isArray(arr)) return [];
     // qty 必須是 1-99 的整數。typeof "number" 擋不掉 NaN / 負數 / 小數，
     // 漏掉的話 getCartCount 會算出 NaN，購物車徽章直接顯示「NaN」。
-    return arr
-      .filter((x) => x && typeof x.productId === "string")
-      .map((x) => ({
-        productId: x.productId as string,
-        qty: Math.min(Math.max(Math.floor(Number(x.qty)), QTY_MIN), QTY_MAX),
-      }))
-      .filter((x) => Number.isFinite(x.qty));
+    // 不是數字的那筆（clampQty 回 null）整筆丟掉。
+    const items: CartItem[] = [];
+    for (const x of arr) {
+      if (!x || typeof x.productId !== "string") continue;
+      const qty = clampQty(x.qty);
+      if (qty === null) continue;
+      items.push({ productId: x.productId, qty });
+    }
+    return items;
   } catch {
     return [];
   }
@@ -43,9 +45,7 @@ export function setCart(slug: string, items: CartItem[]) {
 // 以前只卡上限：傳 0、負數、小數、NaN 會原樣寫進 localStorage，讀回才被夾成 1，
 // 等於存的跟看到的不一樣；傳負數還會把既有數量往下扣到 0 或負的。
 function normalizeAddQty(qty: number): number {
-  const n = Math.floor(Number(qty));
-  if (!Number.isFinite(n)) return QTY_MIN;
-  return Math.min(Math.max(n, QTY_MIN), QTY_MAX);
+  return clampQty(qty) ?? QTY_MIN;
 }
 
 // 「改成幾件」的入口清洗。跟 normalizeAddQty 分開是因為這裡的 0 與負數有意義

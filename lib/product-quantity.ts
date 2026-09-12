@@ -18,3 +18,16 @@ export const QTY_MAX = 99;
 export function isValidQty(qty: unknown): qty is number {
   return Number.isInteger(qty) && (qty as number) >= QTY_MIN && (qty as number) <= QTY_MAX;
 }
+
+// 前端「把任何來路的數量夾成合法整數」：查詢字串、localStorage 讀回的值、程式傳進來
+// 的數字都走這支。先捨去取整再夾進 QTY_MIN-QTY_MAX；不是數字（NaN）回 null，讓呼叫
+// 端自己決定是「當成 1」（結帳頁的 ?qty=、addToCart 的加幾件）還是「整筆丟掉」
+// （getCart 讀回時）。以前這條 Math.min(Math.max(Math.floor(Number(v)), 1), 99)
+// 在購物車讀回、加幾件、單品結帳頁各抄一份，NaN 各自用 || 或 isFinite 收尾。
+// ±Infinity 不算 NaN，照 Math.min／Math.max 夾到邊界（跟查詢字串 ?qty=Infinity
+// 以前的結果一樣是 99）。
+export function clampQty(v: unknown): number | null {
+  const n = Math.floor(Number(v));
+  if (Number.isNaN(n)) return null;
+  return Math.min(Math.max(n, QTY_MIN), QTY_MAX);
+}
