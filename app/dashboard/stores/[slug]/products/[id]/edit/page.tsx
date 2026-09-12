@@ -7,7 +7,7 @@ import { ImageFilePicker } from "@/app/_components/image-file-picker";
 import { UnsavedChangesGuard } from "@/app/_components/unsaved-changes-guard";
 import { currencySymbol } from "@/lib/format-price";
 import { isUuid } from "@/lib/uuid";
-import { isPastedRemoteImageUrl } from "@/lib/image-url";
+import { brokenImageCount as countBrokenImages, isPastedRemoteImageUrl } from "@/lib/image-url";
 import {
   MAX_PRICE_YUAN,
   MAX_STOCK,
@@ -75,9 +75,7 @@ export default async function EditProductPage({
   // 店面（55a8fa7、5e6c204）對這幾張是直接跳過不掛、不是掛一塊破圖，所以標記與提醒
   // 都講「店面不會放」；主圖判不過時，客人看到的主圖會是後面第一張判得過的。
   // 上傳走 Supabase Storage 的公開網址是 https，判得過，不會被誤標。
-  const brokenImageCount = (product.image_urls ?? []).filter(
-    (u: string) => !isPastedRemoteImageUrl(u),
-  ).length;
+  const brokenImageCount = countBrokenImages(product.image_urls);
   // 客人實際看到的主圖是第幾張：店面（5e6c204／55a8fa7）是走 displayableImageUrls 取第一張，
   // 等於原排序裡第一個判得過的。第一張判得過時就是 0、跟「Cover」那格同一張，不用多講；
   // 第一張判不過時商家看著「Cover」標籤會以為客人看到的是它，其實店面掛的是後面這張，

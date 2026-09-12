@@ -16,9 +16,9 @@ import { fetchAllRows } from "@/lib/fetch-all-rows";
 // 列表縮圖改吃 displayableImageUrls 的第一張，跟店面卡片（5e6c204）同一支：DB 裡舊的
 // http:// 或半截網址店面是直接跳過不掛，主圖判不過時客人看到的主圖其實是後面第一張判得過
 // 的，商家在這裡看到的縮圖要跟客人一樣，不然對著列表找不到哪件商品「圖不對」。
-// 有任何一張判不過就在縮圖角落標一個琥珀點（張數跟編輯頁的 brokenImageCount 同一算法），
+// 有任何一張判不過就在縮圖角落標一個琥珀點（張數跟編輯頁同一支 brokenImageCount），
 // 點進編輯頁看是哪幾張。
-import { displayableImageUrls, isPastedRemoteImageUrl } from "@/lib/image-url";
+import { brokenImageCount, displayableImageUrls } from "@/lib/image-url";
 
 type Params = Promise<{ slug: string }>;
 type SearchParams = Promise<{ q?: string; filter?: string; error?: string }>;
@@ -266,9 +266,7 @@ export default async function ProductsListPage({
             // 有判得過的，客人看到的主圖就是後面那張，商家這裡也要看到同一張。
             // 全部判不過就落「No Image」佔位格，跟店面「沒有圖」是同一個狀態。
             const thumb = displayableImageUrls(p.image_urls)[0] ?? null;
-            const brokenCount = (p.image_urls ?? []).filter(
-              (u) => !isPastedRemoteImageUrl(u),
-            ).length;
+            const brokenCount = brokenImageCount(p.image_urls);
             const brokenTitle = `有 ${brokenCount} 張圖店面不會放，點進去看`;
             return (
             <div

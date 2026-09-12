@@ -110,6 +110,19 @@ export function displayableImageUrls(
   return out;
 }
 
+// 後台標記用：image_urls 裡「店面不會放」的張數（isPastedRemoteImageUrl 判不過的）。
+//
+// 為什麼收成一支：商品列表頁的琥珀點與編輯頁的提醒句各自手抄同一段 filter，口徑要跟
+// displayableImageUrls 一致（那支留的就是判得過的那批），兩處各抄一次哪天一處改了判法
+// 另一處就對不上。這支不去重、不去空白，算的是「DB 裡原始那幾格有幾格判不過」——商家看
+// 的是自己貼的每一格，同一張壞網址貼了兩次就是兩格要處理。非陣列輸入回 0。
+export function brokenImageCount(
+  urls: (string | null | undefined)[] | null | undefined,
+): number {
+  if (!Array.isArray(urls)) return 0;
+  return urls.filter((u) => !isPastedRemoteImageUrl(u)).length;
+}
+
 // 單一欄位版：heroUrl／logoUrl 這種只有一個值的欄位用。
 //
 // 為什麼另開一支：hero 與 logo 不像商品圖是陣列，各處要用時都得寫

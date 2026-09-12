@@ -14,6 +14,7 @@ import { describe, it } from "node:test";
 import assert from "node:assert/strict";
 import {
   absoluteImageUrls,
+  brokenImageCount,
   displayableImageUrls,
   displayableImageUrl,
   imageMimeTypeFromUrl,
@@ -130,10 +131,25 @@ describe("displayableImageUrls（店面實際掛的那批：只留 isPastedRemot
     assert.deepEqual(disp, ["https://a.example/2.jpg", "https://a.example/1.jpg"]);
   });
 
-  it("後台標記那條同口徑：image_urls 裡 isPastedRemoteImageUrl 判不過的張數 + displayable 張數 = 原始去重前的張數（沒有重複時）", () => {
+  it("後台標記那條同口徑：brokenImageCount + displayable 張數 = 原始去重前的張數（沒有重複時）", () => {
     const input = ["http://a.example/old.jpg", "https://a.example/2.jpg", "/photo.jpg", "https://a.example/1.jpg", "  "];
-    const broken = input.filter((u) => !isPastedRemoteImageUrl(u)).length;
-    assert.equal(broken + displayableImageUrls(input).length, input.length);
+    assert.equal(brokenImageCount(input) + displayableImageUrls(input).length, input.length);
+  });
+});
+
+describe("brokenImageCount（後台琥珀點／提醒句：image_urls 裡店面不會放的張數）", () => {
+  it("非陣列輸入回 0；全部判得過回 0", () => {
+    assert.equal(brokenImageCount(null), 0);
+    assert.equal(brokenImageCount(undefined), 0);
+    assert.equal(brokenImageCount([]), 0);
+    assert.equal(brokenImageCount(["https://a.example/1.jpg", " https://a.example/2.jpg "]), 0);
+  });
+
+  it("http://、半截網址、空白、null 各算一格；同一張壞網址貼兩次算兩格（不去重）", () => {
+    assert.equal(
+      brokenImageCount(["http://a.example/old.jpg", "/photo.jpg", "  ", null, "https://a.example/ok.jpg", "/photo.jpg"]),
+      5,
+    );
   });
 });
 
