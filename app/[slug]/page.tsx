@@ -23,6 +23,7 @@ import HeroAdaptiveBanner from "./HeroAdaptiveBanner";
 import {
   clampHeroSplitPhotoAspect,
   HERO_IMAGE_MAX_HEIGHT_VH,
+  HERO_SPLIT_HEIGHT_VH,
   pickHeroImageBounds,
 } from "@/lib/hero-image-bounds";
 
@@ -2381,7 +2382,7 @@ export default async function StoreHomePage({
               if (theme.layout.heroSplitHeight === "content") return null;
               if (!splitPhotoBounds) return null;
               const r = clampHeroSplitPhotoAspect(splitPhotoBounds.fileAspect);
-              const vh = theme.layout.heroSplitHeight === "compact" ? 70 : 100;
+              const vh = HERO_SPLIT_HEIGHT_VH[theme.layout.heroSplitHeight];
               return `clamp(30%, ${(vh * r).toFixed(2)}vh, 65%)`;
             })();
             // 「跟照片」配「這一段有多高 = 跟著內容」：上面那條算不出欄寬（段高不是寫死的），

@@ -86,6 +86,15 @@ export function clampHeroSplitPhotoAspect(fileAspect: number): number {
 }
 
 /**
+ * split hero「這一段有多高」寫死的那兩檔對應的螢幕高度百分比：七成螢幕 70vh、跟預設
+ * 100vh（平板以上 class 上的 md:min-h-screen）。layout.tsx 的 CSS 拿它寫 min-height，
+ * 公開頁「跟照片」那檔拿它算圖欄寬（段高 × 照片比例）——欄寬算的段高要跟 CSS 真的
+ * 撐出來的段高是同一個數，以前兩邊各寫一份 70，只靠碰巧一樣才對得上。
+ * "content" 不在表裡（段高由文字撐出來、render 時不知道，兩邊都不套）。
+ */
+export const HERO_SPLIT_HEIGHT_VH = { compact: 70, normal: 100 } as const;
+
+/**
  * 編輯器「Hero 圖片」預覽框的寬高比範圍：3:4 到 3:1。面板窄，太直的照片會把整欄撐得
  * 很長，所以下限比公開頁的 split 圖寬。主體框與「整張顯示」收過上限的外框都走這一支。
  * 呼叫端拿回傳值跟原值比（clamped === aspect）判斷「有沒有被夾過」，夾過的不畫上限提示。

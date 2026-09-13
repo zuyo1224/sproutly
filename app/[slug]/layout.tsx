@@ -12,6 +12,7 @@ import {
 import { createClient } from "@/lib/supabase/server";
 import { telHref, socialUrl, mapsHref } from "@/lib/contact-href";
 import { contrastRatio, NON_TEXT_CONTRAST_MIN } from "@/lib/color-contrast";
+import { HERO_SPLIT_HEIGHT_VH } from "@/lib/hero-image-bounds";
 import { resolveTheme, themeToCssVars, HOMEPAGE_DEFAULTS } from "./_theme";
 import { FavoritesCounter } from "@/app/_components/favorite-button";
 import { CartIcon } from "@/app/_components/cart-icon";
@@ -2502,7 +2503,7 @@ export default async function PublicStoreLayout({
             min-height: 0;
           }
           section[data-edit-target="hero"][data-hero-split-height="compact"] {
-            min-height: 70vh;
+            min-height: ${HERO_SPLIT_HEIGHT_VH.compact}vh;
           }
         }
 
@@ -2546,7 +2547,7 @@ export default async function PublicStoreLayout({
             min-height: 0;
           }
           section[data-edit-target="hero"][data-hero-split-height="compact"] {
-            min-height: 70vh;
+            min-height: ${HERO_SPLIT_HEIGHT_VH.compact}vh;
           }
           /* 跟著內容那檔的圖欄保底。這一檔把段的 min-height 清成 0 之後，段高就只剩文字
              那欄撐出來的——圖那欄 class 上是 md:h-full，跟著 grid 那一列走，自己沒有高度

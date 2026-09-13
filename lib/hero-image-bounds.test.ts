@@ -20,6 +20,7 @@ import {
   detectHeroImageBounds,
   heroBannerGeometry,
   HERO_IMAGE_MAX_HEIGHT_VH,
+  HERO_SPLIT_HEIGHT_VH,
   HERO_PREVIEW_ASPECT_MAX,
   HERO_PREVIEW_ASPECT_MIN,
   HERO_SPLIT_PHOTO_ASPECT_MAX,
@@ -151,6 +152,12 @@ describe("heroBannerGeometry（公開頁 banner 與編輯器預覽框共用的�
   it("HERO_IMAGE_MAX_HEIGHT_VH：screen 是整個螢幕、short 比它矮，兩檔都在 0–100", () => {
     assert.equal(HERO_IMAGE_MAX_HEIGHT_VH.screen, 100);
     assert.ok(HERO_IMAGE_MAX_HEIGHT_VH.short > 0 && HERO_IMAGE_MAX_HEIGHT_VH.short < 100);
+  });
+
+  it("HERO_SPLIT_HEIGHT_VH：normal 是整個螢幕（md:min-h-screen）、compact 七成，圖欄寬跟 CSS 段高吃同一個數", () => {
+    assert.equal(HERO_SPLIT_HEIGHT_VH.normal, 100);
+    assert.equal(HERO_SPLIT_HEIGHT_VH.compact, 70);
+    assert.ok(HERO_SPLIT_HEIGHT_VH.compact < HERO_SPLIT_HEIGHT_VH.normal);
   });
 });
 
