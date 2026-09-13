@@ -12,7 +12,7 @@ import {
 import { createClient } from "@/lib/supabase/server";
 import { telHref, socialUrl, mapsHref } from "@/lib/contact-href";
 import { contrastRatio, NON_TEXT_CONTRAST_MIN } from "@/lib/color-contrast";
-import { HERO_SPLIT_HEIGHT_VH } from "@/lib/hero-image-bounds";
+import { HERO_FULL_HEIGHT_VH, HERO_SPLIT_HEIGHT_VH } from "@/lib/hero-image-bounds";
 import { resolveTheme, themeToCssVars, HOMEPAGE_DEFAULTS } from "./_theme";
 import { FavoritesCounter } from "@/app/_components/favorite-button";
 import { CartIcon } from "@/app/_components/cart-icon";
@@ -2311,13 +2311,13 @@ export default async function PublicStoreLayout({
             min-height: 0;
           }
           section[data-edit-target="hero"][data-hero-full-height-mobile="short"] {
-            min-height: 60vh;
+            min-height: ${HERO_FULL_HEIGHT_VH.short}vh;
           }
           section[data-edit-target="hero"][data-hero-full-height-mobile="tall"] {
-            min-height: 80vh;
+            min-height: ${HERO_FULL_HEIGHT_VH.tall}vh;
           }
           section[data-edit-target="hero"][data-hero-full-height-mobile="full"] {
-            min-height: 100vh;
+            min-height: ${HERO_FULL_HEIGHT_VH.full}vh;
           }
           section[data-edit-target="hero"][data-hero-full-height-mobile="short"],
           section[data-edit-target="hero"][data-hero-full-height-mobile="tall"],

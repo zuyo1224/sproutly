@@ -1995,7 +1995,9 @@ export default async function StoreHomePage({
 
           // Variant 1: full-image — 自適應 banner（圖 + 文字段），手機 / 桌機 同一套
           if (heroStyle === "full-image" && theme.heroUrl) {
-            // Hero 高度策略
+            // Hero 高度策略。三檔的 vh 數字以 lib/hero-image-bounds 的 HERO_FULL_HEIGHT_VH
+            // 為準（手機那格的 CSS 與編輯器 hint 都查那張表）；這裡的 Tailwind class 名得寫死
+            // 讓它掃得到、沒法插值，改表時要一起改，有測試對著表掃這段原始碼擋漂移。
             const heroHeightClass =
               theme.layout.heroHeight === "short"
                 ? "min-h-[60vh]"

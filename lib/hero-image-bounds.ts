@@ -95,6 +95,17 @@ export function clampHeroSplitPhotoAspect(fileAspect: number): number {
 export const HERO_SPLIT_HEIGHT_VH = { compact: 70, normal: 100 } as const;
 
 /**
+ * 滿版（full-image）hero「Hero 高度」三檔對應的螢幕高度百分比：矮 60vh、高 80vh、
+ * 全屏 100vh。同一把尺散在三個地方：layout.tsx 手機那格（heroHeightMobile）的 CSS
+ * min-height、編輯器兩組按鈕的 hint 字（讓商家看到的數字就是真的套上去的數字）、
+ * 公開頁桌機那格的 Tailwind class（min-h-[60vh] / min-h-[80vh] / min-h-screen）。
+ * 前兩處直接查表；Tailwind 的 class 名得寫死在原始碼裡讓它掃得到、沒法插值，所以
+ * page.tsx 那三個 class 仍是手寫，由測試對著這張表掃原始碼確認沒漂。
+ * "auto" 不在表裡（跟著照片比例，不設 min-height）。
+ */
+export const HERO_FULL_HEIGHT_VH = { short: 60, tall: 80, full: 100 } as const;
+
+/**
  * 編輯器「Hero 圖片」預覽框的寬高比範圍：3:4 到 3:1。面板窄，太直的照片會把整欄撐得
  * 很長，所以下限比公開頁的 split 圖寬。主體框與「整張顯示」收過上限的外框都走這一支。
  * 呼叫端拿回傳值跟原值比（clamped === aspect）判斷「有沒有被夾過」，夾過的不畫上限提示。

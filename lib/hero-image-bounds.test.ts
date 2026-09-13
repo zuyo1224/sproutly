@@ -14,11 +14,13 @@
 // 跟其他 lib 測試同一套：node:test + node:assert，import 一律帶 .ts。
 import { after, afterEach, before, describe, it } from "node:test";
 import assert from "node:assert/strict";
+import { readFileSync } from "node:fs";
 import {
   clampHeroPreviewAspect,
   clampHeroSplitPhotoAspect,
   detectHeroImageBounds,
   heroBannerGeometry,
+  HERO_FULL_HEIGHT_VH,
   HERO_IMAGE_MAX_HEIGHT_VH,
   HERO_SPLIT_HEIGHT_VH,
   HERO_PREVIEW_ASPECT_MAX,
@@ -158,6 +160,24 @@ describe("heroBannerGeometry（公開頁 banner 與編輯器預覽框共用的�
     assert.equal(HERO_SPLIT_HEIGHT_VH.normal, 100);
     assert.equal(HERO_SPLIT_HEIGHT_VH.compact, 70);
     assert.ok(HERO_SPLIT_HEIGHT_VH.compact < HERO_SPLIT_HEIGHT_VH.normal);
+  });
+
+  it("HERO_FULL_HEIGHT_VH：矮 < 高 < 全屏，全屏就是整個螢幕", () => {
+    assert.equal(HERO_FULL_HEIGHT_VH.full, 100);
+    assert.ok(HERO_FULL_HEIGHT_VH.short < HERO_FULL_HEIGHT_VH.tall);
+    assert.ok(HERO_FULL_HEIGHT_VH.tall < HERO_FULL_HEIGHT_VH.full);
+  });
+
+  // 公開頁桌機那格是 Tailwind class，class 名得寫死在原始碼裡讓 Tailwind 掃得到、沒法從表插值；
+  // 這裡直接讀 page.tsx 原始碼，確認三個 class 帶的數字跟表一樣（手機 CSS 與編輯器 hint 都查表，
+  // 表改了 class 沒跟上，桌機跟手機就會撐出不同高度、面板寫的數字也跟客人看到的對不上）。
+  it("HERO_FULL_HEIGHT_VH：公開頁 page.tsx 手寫的 min-h class 跟表對得上", () => {
+    const src = readFileSync(new URL("../app/[slug]/page.tsx", import.meta.url), "utf8");
+    assert.ok(src.includes(`"min-h-[${HERO_FULL_HEIGHT_VH.short}vh]"`), "short 那檔的 class 跟表不一樣");
+    assert.ok(src.includes(`"min-h-[${HERO_FULL_HEIGHT_VH.tall}vh]"`), "tall 那檔的 class 跟表不一樣");
+    // full 是 100vh，Tailwind 內建的 min-h-screen；表上 full 不是 100 時 class 也得換掉
+    assert.equal(HERO_FULL_HEIGHT_VH.full, 100);
+    assert.ok(src.includes('"min-h-screen"'));
   });
 });
 

@@ -24,6 +24,7 @@ import {
   clampHeroPreviewAspect,
   detectHeroImageBounds,
   heroBannerGeometry,
+  HERO_FULL_HEIGHT_VH,
   HERO_IMAGE_MAX_HEIGHT_VH,
   type HeroImageBounds,
 } from "@/lib/hero-image-bounds";
@@ -3038,9 +3039,9 @@ export function EditorWorkspace({
               <div className="grid grid-cols-4 gap-1.5">
                 {([
                   { v: "auto", label: "自適應", hint: "跟著照片比例" },
-                  { v: "short", label: "矮", hint: "60vh" },
-                  { v: "tall", label: "高", hint: "80vh" },
-                  { v: "full", label: "全屏", hint: "100vh" },
+                  { v: "short", label: "矮", hint: `${HERO_FULL_HEIGHT_VH.short}vh` },
+                  { v: "tall", label: "高", hint: `${HERO_FULL_HEIGHT_VH.tall}vh` },
+                  { v: "full", label: "全屏", hint: `${HERO_FULL_HEIGHT_VH.full}vh` },
                 ] as const).map((opt) => (
                   <button
                     key={opt.v}
@@ -3070,9 +3071,9 @@ export function EditorWorkspace({
                   {([
                     { v: "same", label: "跟桌機一樣" },
                     { v: "auto", label: "自適應" },
-                    { v: "short", label: "矮", hint: "60vh" },
-                    { v: "tall", label: "高", hint: "80vh" },
-                    { v: "full", label: "全屏", hint: "100vh" },
+                    { v: "short", label: "矮", hint: `${HERO_FULL_HEIGHT_VH.short}vh` },
+                    { v: "tall", label: "高", hint: `${HERO_FULL_HEIGHT_VH.tall}vh` },
+                    { v: "full", label: "全屏", hint: `${HERO_FULL_HEIGHT_VH.full}vh` },
                   ] as const).map((opt) => (
                     <button
                       key={opt.v}
