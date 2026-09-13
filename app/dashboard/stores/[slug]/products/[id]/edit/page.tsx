@@ -5,7 +5,7 @@ import { updateProduct, deleteProduct, duplicateProduct } from "../../actions";
 import { SubmitButton } from "@/app/_components/submit-button";
 import { ImageFilePicker } from "@/app/_components/image-file-picker";
 import { UnsavedChangesGuard } from "@/app/_components/unsaved-changes-guard";
-import { currencySymbol } from "@/lib/format-price";
+import { currencySymbol, centsToYuan } from "@/lib/format-price";
 import { isUuid } from "@/lib/uuid";
 import {
   brokenImageCount as countBrokenImages,
@@ -69,7 +69,12 @@ export default async function EditProductPage({
   const updateBound = updateProduct.bind(null, slug, product.id);
   const deleteBound = deleteProduct.bind(null, slug, product.id);
   const duplicateBound = duplicateProduct.bind(null, slug, product.id);
-  const price = (product.price_cents / 100).toFixed(0);
+  // 表單「價格」欄的預設值：DB 存的整數「分」換回「元」。原本這裡自寫一份
+  // (cents / 100).toFixed(0)，跟匯出 CSV 三處走的 centsToYuan（Math.round）是同一件事；
+  // 整數分除以 100 只會在 .5 平手，兩種寫法都往上收，結果逐分相同，改走同一支讓
+  // 「分→元」的捨入規則日後只在 lib/format-price 一處動。<input> 的 defaultValue 吃
+  // 數字也吃字串，這裡維持字串跟以前一樣。
+  const price = String(centsToYuan(product.price_cents));
   const imageCount = product.image_urls?.length ?? 0;
   // 店面不會放的圖：DB 裡更早存進去的 http:// 或漏了網域的半截網址。後台這頁是普通
   // <img>、瀏覽器本機多半照樣顯示得出來，商家看不出哪張有問題；但 https 店面載 http://
