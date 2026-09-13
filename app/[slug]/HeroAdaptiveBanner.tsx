@@ -5,6 +5,7 @@ import { isOptimizableImageSrc } from "@/lib/image-url";
 import { useEffect, useState } from "react";
 import {
   detectHeroImageBounds,
+  heroBannerGeometry,
   type HeroImageBounds,
 } from "@/lib/hero-image-bounds";
 
@@ -72,14 +73,10 @@ export default function HeroAdaptiveBanner({
   let objectPosition = "center";
 
   if (bounds) {
-    const contentH = bounds.bottomPct - bounds.topPct; // 0-100
-    const contentMid = (bounds.topPct + bounds.bottomPct) / 2;
-    // banner_aspect = file_aspect / (content_h_fraction)
-    // 1:1 file with content 22-78% (56%) → aspect = 1 / 0.56 = 1.786
-    const ar = bounds.fileAspect / (contentH / 100);
-    aspectRatio = String(ar);
-    // object-position 把 image 的 content_mid% 對齊 container 中心
-    objectPosition = `50% ${contentMid.toFixed(2)}%`;
+    // 框比例與 object-position 跟編輯器預覽框走同一支（lib/hero-image-bounds）。
+    const g = heroBannerGeometry(bounds);
+    aspectRatio = String(g.aspect);
+    objectPosition = g.objectPosition;
   }
 
   const image = (

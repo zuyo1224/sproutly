@@ -20,7 +20,7 @@ import {
 // 所以用內文那條線（WCAG 1.4.3 的 4.5）判，不用非文字元素的 3。
 const CTA_TEXT_CONTRAST_MIN = 4.5;
 import HeroAdaptiveBanner from "./HeroAdaptiveBanner";
-import { pickHeroImageBounds } from "@/lib/hero-image-bounds";
+import { HERO_IMAGE_MAX_HEIGHT_VH, pickHeroImageBounds } from "@/lib/hero-image-bounds";
 
 type Params = Promise<{ slug: string }>;
 
@@ -2070,11 +2070,9 @@ export default async function StoreHomePage({
                   // 客人第一屏只看得到照片中間一塊，而「Hero 高度」那格是 min-height、
                   // 壓不下來。沒設就不傳，banner 跟以前一模一樣。
                   maxHeight={
-                    theme.layout.heroImageMaxHeight === "screen"
-                      ? "100vh"
-                      : theme.layout.heroImageMaxHeight === "short"
-                      ? "68vh"
-                      : undefined
+                    theme.layout.heroImageMaxHeight === "none"
+                      ? undefined
+                      : `${HERO_IMAGE_MAX_HEIGHT_VH[theme.layout.heroImageMaxHeight]}vh`
                   }
                   // 照片完整度（heroFullImageFit）。只在有上限時才有東西可以管：沒上限
                   // 自適應本來就不裁主體，contain 只會把圖自帶的留白重新露出來，所以不傳。

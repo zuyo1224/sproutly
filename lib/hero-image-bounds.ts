@@ -39,6 +39,39 @@ export function normalizeHeroImageBounds(value: unknown): HeroImageBounds | null
   return { url, topPct, bottomPct, fileAspect };
 }
 
+/**
+ * 從主體邊界算出 banner 要畫的幾何：框的寬高比（整檔寬高比 ÷ 主體佔的高度比例，
+ * 例：1:1 的檔、主體在 22%–78% 共 56% → 1 / 0.56 = 1.786）與 object-position（把
+ * 主體中點對到框的中央，裁掉的只會是上下的留白）。
+ *
+ * 公開頁 HeroAdaptiveBanner 與編輯器「Hero 圖片」預覽框都走這一支，兩邊算出來的框
+ * 才會是同一個：以前各抄一份，商家在面板看到的框跟客人看到的框有沒有對上，全靠
+ * 兩處手寫的算式碰巧一樣。
+ */
+export function heroBannerGeometry(b: HeroImageBounds): {
+  /** 框的寬高比（數字，直接 String() 進 CSS aspect-ratio）。 */
+  aspect: number;
+  /** 主體中點佔整張圖高度的百分比（0-100）。 */
+  contentMid: number;
+  /** CSS object-position，`50% <contentMid>%`（兩位小數）。 */
+  objectPosition: string;
+} {
+  const contentH = b.bottomPct - b.topPct; // 0-100
+  const contentMid = (b.topPct + b.bottomPct) / 2;
+  return {
+    aspect: b.fileAspect / (contentH / 100),
+    contentMid,
+    objectPosition: `50% ${contentMid.toFixed(2)}%`,
+  };
+}
+
+/**
+ * 「照片最高佔多少螢幕」（heroImageMaxHeight）每一檔對應的螢幕高度百分比。
+ * 公開頁拿它組 max-height 的 vh，編輯器預覽框拿它除以 100 算「畫布高 × 上限」；
+ * "none" 不在表裡（不限高，兩邊都不套）。
+ */
+export const HERO_IMAGE_MAX_HEIGHT_VH = { screen: 100, short: 68 } as const;
+
 /** 存下來的邊界只有在「就是現在這張圖」時才能用。 */
 export function pickHeroImageBounds(
   saved: HeroImageBounds | null | undefined,

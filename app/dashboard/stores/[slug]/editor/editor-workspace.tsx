@@ -22,6 +22,8 @@ import { CSS } from "@dnd-kit/utilities";
 import { saveEditorState } from "./actions";
 import {
   detectHeroImageBounds,
+  heroBannerGeometry,
+  HERO_IMAGE_MAX_HEIGHT_VH,
   type HeroImageBounds,
 } from "@/lib/hero-image-bounds";
 import { AssetPicker } from "@/app/_components/asset-picker";
@@ -1932,18 +1934,15 @@ export function EditorWorkspace({
                     let capCroppedPct: number | null = null;
                     let containFrame: { aspectRatio: string; innerWidthPct: number } | null = null;
                     if (subject) {
-                      const contentH = subject.bottomPct - subject.topPct;
-                      const mid = (subject.topPct + subject.bottomPct) / 2;
-                      const ar = subject.fileAspect / (contentH / 100);
+                      const { aspect: ar, contentMid: mid, objectPosition: pos } =
+                        heroBannerGeometry(subject);
                       const clamped = Math.min(3, Math.max(0.75, ar));
                       aspectRatio = String(clamped);
-                      objectPosition = `50% ${mid.toFixed(2)}%`;
+                      objectPosition = pos;
                       const capRatio =
-                        theme.layout.heroImageMaxHeight === "screen"
-                          ? 1
-                          : theme.layout.heroImageMaxHeight === "short"
-                            ? 0.68
-                            : null;
+                        theme.layout.heroImageMaxHeight === "none"
+                          ? null
+                          : HERO_IMAGE_MAX_HEIGHT_VH[theme.layout.heroImageMaxHeight] / 100;
                       if (capRatio !== null && canvasSize && clamped === ar) {
                         const bannerH = canvasSize.w / ar;
                         const capH = canvasSize.h * capRatio;

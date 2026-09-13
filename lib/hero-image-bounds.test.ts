@@ -16,6 +16,8 @@ import { after, afterEach, before, describe, it } from "node:test";
 import assert from "node:assert/strict";
 import {
   detectHeroImageBounds,
+  heroBannerGeometry,
+  HERO_IMAGE_MAX_HEIGHT_VH,
   normalizeHeroImageBounds,
   pickHeroImageBounds,
   type HeroImageBounds,
@@ -89,6 +91,33 @@ describe("normalizeHeroImageBounds（任何來源進來都走這支）", () => {
     const input = { ...good, url: `  ${good.url}` };
     normalizeHeroImageBounds(input);
     assert.equal(input.url, `  ${good.url}`);
+  });
+});
+
+describe("heroBannerGeometry（公開頁 banner 與編輯器預覽框共用的框幾何）", () => {
+  it("1:1 的檔、主體 22%–78%：框比例 1 / 0.56，主體中點 50%", () => {
+    const g = heroBannerGeometry({ url: "https://x/a.jpg", topPct: 22, bottomPct: 78, fileAspect: 1 });
+    assert.equal(g.aspect, 1 / 0.56);
+    assert.equal(g.contentMid, 50);
+    assert.equal(g.objectPosition, "50% 50.00%");
+  });
+
+  it("主體偏上：object-position 對到主體中點、兩位小數", () => {
+    const g = heroBannerGeometry({ url: "https://x/b.jpg", topPct: 10, bottomPct: 43.333, fileAspect: 1.5 });
+    assert.equal(g.contentMid, (10 + 43.333) / 2);
+    assert.equal(g.objectPosition, "50% 26.67%");
+    assert.equal(g.aspect, 1.5 / ((43.333 - 10) / 100));
+  });
+
+  it("整張都是主體（0–100）：框比例就是檔案比例", () => {
+    const g = heroBannerGeometry({ url: "https://x/c.jpg", topPct: 0, bottomPct: 100, fileAspect: 2 });
+    assert.equal(g.aspect, 2);
+    assert.equal(g.objectPosition, "50% 50.00%");
+  });
+
+  it("HERO_IMAGE_MAX_HEIGHT_VH：screen 是整個螢幕、short 比它矮，兩檔都在 0–100", () => {
+    assert.equal(HERO_IMAGE_MAX_HEIGHT_VH.screen, 100);
+    assert.ok(HERO_IMAGE_MAX_HEIGHT_VH.short > 0 && HERO_IMAGE_MAX_HEIGHT_VH.short < 100);
   });
 });
 
