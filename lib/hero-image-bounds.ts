@@ -72,6 +72,31 @@ export function heroBannerGeometry(b: HeroImageBounds): {
  */
 export const HERO_IMAGE_MAX_HEIGHT_VH = { screen: 100, short: 68 } as const;
 
+/**
+ * 左右分欄（split）hero「跟照片」那幾檔用的照片寬高比範圍：1:2 到 3:1。
+ * 比 1:2 更直的照片在手機上會撐到兩個螢幕高、店名被推到看不見；比 3:1 更扁的圖框
+ * 會矮到像一條橫幅。公開頁三處（圖欄寬、平板以上 aspect-ratio、手機圖框）以前各抄一份
+ * Math.min(3, Math.max(0.5, fileAspect))，範圍只靠三處碰巧一樣才對得上。
+ */
+export const HERO_SPLIT_PHOTO_ASPECT_MIN = 0.5;
+export const HERO_SPLIT_PHOTO_ASPECT_MAX = 3;
+
+export function clampHeroSplitPhotoAspect(fileAspect: number): number {
+  return Math.min(HERO_SPLIT_PHOTO_ASPECT_MAX, Math.max(HERO_SPLIT_PHOTO_ASPECT_MIN, fileAspect));
+}
+
+/**
+ * 編輯器「Hero 圖片」預覽框的寬高比範圍：3:4 到 3:1。面板窄，太直的照片會把整欄撐得
+ * 很長，所以下限比公開頁的 split 圖寬。主體框與「整張顯示」收過上限的外框都走這一支。
+ * 呼叫端拿回傳值跟原值比（clamped === aspect）判斷「有沒有被夾過」，夾過的不畫上限提示。
+ */
+export const HERO_PREVIEW_ASPECT_MIN = 0.75;
+export const HERO_PREVIEW_ASPECT_MAX = 3;
+
+export function clampHeroPreviewAspect(aspect: number): number {
+  return Math.min(HERO_PREVIEW_ASPECT_MAX, Math.max(HERO_PREVIEW_ASPECT_MIN, aspect));
+}
+
 /** 存下來的邊界只有在「就是現在這張圖」時才能用。 */
 export function pickHeroImageBounds(
   saved: HeroImageBounds | null | undefined,

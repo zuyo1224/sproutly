@@ -21,6 +21,7 @@ import {
 import { CSS } from "@dnd-kit/utilities";
 import { saveEditorState } from "./actions";
 import {
+  clampHeroPreviewAspect,
   detectHeroImageBounds,
   heroBannerGeometry,
   HERO_IMAGE_MAX_HEIGHT_VH,
@@ -1936,7 +1937,7 @@ export function EditorWorkspace({
                     if (subject) {
                       const { aspect: ar, contentMid: mid, objectPosition: pos } =
                         heroBannerGeometry(subject);
-                      const clamped = Math.min(3, Math.max(0.75, ar));
+                      const clamped = clampHeroPreviewAspect(ar);
                       aspectRatio = String(clamped);
                       objectPosition = pos;
                       const capRatio =
@@ -1952,7 +1953,7 @@ export function EditorWorkspace({
                           if (theme.layout.heroFullImageFit === "contain") {
                             containFrame = {
                               aspectRatio: String(
-                                Math.min(3, Math.max(0.75, canvasSize.w / capH))
+                                clampHeroPreviewAspect(canvasSize.w / capH)
                               ),
                               innerWidthPct: visible * 100,
                             };

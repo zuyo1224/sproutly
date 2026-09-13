@@ -20,7 +20,11 @@ import {
 // 所以用內文那條線（WCAG 1.4.3 的 4.5）判，不用非文字元素的 3。
 const CTA_TEXT_CONTRAST_MIN = 4.5;
 import HeroAdaptiveBanner from "./HeroAdaptiveBanner";
-import { HERO_IMAGE_MAX_HEIGHT_VH, pickHeroImageBounds } from "@/lib/hero-image-bounds";
+import {
+  clampHeroSplitPhotoAspect,
+  HERO_IMAGE_MAX_HEIGHT_VH,
+  pickHeroImageBounds,
+} from "@/lib/hero-image-bounds";
 
 type Params = Promise<{ slug: string }>;
 
@@ -2376,7 +2380,7 @@ export default async function StoreHomePage({
             const splitPhotoCol = (() => {
               if (theme.layout.heroSplitHeight === "content") return null;
               if (!splitPhotoBounds) return null;
-              const r = Math.min(3, Math.max(0.5, splitPhotoBounds.fileAspect));
+              const r = clampHeroSplitPhotoAspect(splitPhotoBounds.fileAspect);
               const vh = theme.layout.heroSplitHeight === "compact" ? 70 : 100;
               return `clamp(30%, ${(vh * r).toFixed(2)}vh, 65%)`;
             })();
@@ -2391,7 +2395,7 @@ export default async function StoreHomePage({
             const splitPhotoMdAspect = (() => {
               if (theme.layout.heroSplitHeight !== "content") return null;
               if (!splitPhotoBounds) return null;
-              const r = Math.min(3, Math.max(0.5, splitPhotoBounds.fileAspect));
+              const r = clampHeroSplitPhotoAspect(splitPhotoBounds.fileAspect);
               return `${r.toFixed(4)} / 1`;
             })();
             const splitCols =
@@ -2422,7 +2426,7 @@ export default async function StoreHomePage({
               if (theme.layout.heroSplitImageAspect !== "photo") return null;
               const b = pickHeroImageBounds(theme.layout.heroImageBounds, theme.heroUrl);
               if (!b) return null;
-              const r = Math.min(3, Math.max(0.5, b.fileAspect));
+              const r = clampHeroSplitPhotoAspect(b.fileAspect);
               return `${r.toFixed(4)} / 1`;
             })();
             const splitImgAspect =

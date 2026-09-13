@@ -15,9 +15,15 @@
 import { after, afterEach, before, describe, it } from "node:test";
 import assert from "node:assert/strict";
 import {
+  clampHeroPreviewAspect,
+  clampHeroSplitPhotoAspect,
   detectHeroImageBounds,
   heroBannerGeometry,
   HERO_IMAGE_MAX_HEIGHT_VH,
+  HERO_PREVIEW_ASPECT_MAX,
+  HERO_PREVIEW_ASPECT_MIN,
+  HERO_SPLIT_PHOTO_ASPECT_MAX,
+  HERO_SPLIT_PHOTO_ASPECT_MIN,
   normalizeHeroImageBounds,
   pickHeroImageBounds,
   type HeroImageBounds,
@@ -91,6 +97,33 @@ describe("normalizeHeroImageBounds（任何來源進來都走這支）", () => {
     const input = { ...good, url: `  ${good.url}` };
     normalizeHeroImageBounds(input);
     assert.equal(input.url, `  ${good.url}`);
+  });
+});
+
+describe("clampHeroSplitPhotoAspect（split hero「跟照片」的比例夾在 1:2 到 3:1）", () => {
+  it("範圍常數就是 1:2 與 3:1", () => {
+    assert.equal(HERO_SPLIT_PHOTO_ASPECT_MIN, 0.5);
+    assert.equal(HERO_SPLIT_PHOTO_ASPECT_MAX, 3);
+  });
+  it("範圍內原樣回、比 1:2 更直夾到 0.5、比 3:1 更扁夾到 3", () => {
+    assert.equal(clampHeroSplitPhotoAspect(1.5), 1.5);
+    assert.equal(clampHeroSplitPhotoAspect(0.5), 0.5);
+    assert.equal(clampHeroSplitPhotoAspect(3), 3);
+    assert.equal(clampHeroSplitPhotoAspect(0.2), 0.5);
+    assert.equal(clampHeroSplitPhotoAspect(8), 3);
+  });
+});
+
+describe("clampHeroPreviewAspect（編輯器 Hero 預覽框比例夾在 3:4 到 3:1）", () => {
+  it("下限比 split 的寬（面板窄，太直會撐長整欄），上限一樣 3:1", () => {
+    assert.equal(HERO_PREVIEW_ASPECT_MIN, 0.75);
+    assert.equal(HERO_PREVIEW_ASPECT_MAX, 3);
+    assert.ok(HERO_PREVIEW_ASPECT_MIN > HERO_SPLIT_PHOTO_ASPECT_MIN);
+  });
+  it("範圍內回同一個數（呼叫端靠 === 判斷有沒有被夾過）、超出就夾", () => {
+    assert.equal(clampHeroPreviewAspect(1.786), 1.786);
+    assert.equal(clampHeroPreviewAspect(0.6), 0.75);
+    assert.equal(clampHeroPreviewAspect(4), 3);
   });
 });
 
