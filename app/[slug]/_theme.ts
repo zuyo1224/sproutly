@@ -10,6 +10,7 @@ import {
 import { normalizeHexColor } from "@/lib/hex-color";
 import { isFiniteNumber } from "@/lib/is-finite-number";
 import { isPlainObject } from "@/lib/is-plain-object";
+import { pickLayoutChoice } from "@/lib/theme-layout-choices";
 import { cleanMapEmbedUrl } from "@/lib/map-embed-url";
 import {
   normalizeHeroImageBounds,
@@ -1384,7 +1385,7 @@ function resolveLayout(raw: unknown): StoreTheme["layout"] {
       return clampHeroFontScale(v);
     })(),
     heroSubtitleColor: normalizeHexColor(l.heroSubtitleColor),
-    heroSubtitleAlign: isAlignX(l.heroSubtitleAlign) ? l.heroSubtitleAlign : "inherit",
+    heroSubtitleAlign: pickLayoutChoice("heroSubtitleAlign", l.heroSubtitleAlign),
     heroSubtitleWeight: isFontWeight(l.heroSubtitleWeight) ? l.heroSubtitleWeight : "normal",
     heroSubtitleTracking: isTracking(l.heroSubtitleTracking) ? l.heroSubtitleTracking : "normal",
     heroSubtitleLeading: isLeading(l.heroSubtitleLeading) ? l.heroSubtitleLeading : "normal",
@@ -1394,15 +1395,8 @@ function resolveLayout(raw: unknown): StoreTheme["layout"] {
       return clampHeroFontScale(v);
     })(),
     heroCtaTracking: isTracking(l.heroCtaTracking) ? l.heroCtaTracking : "normal",
-    heroCtaCase: (() => {
-      const v = l.heroCtaCase;
-      if (v === "default" || v === "capitalize" || v === "none") return v;
-      return "default" as const;
-    })(),
-    heroCtaWeight:
-      l.heroCtaWeight === "default" || isFontWeight(l.heroCtaWeight)
-        ? l.heroCtaWeight
-        : "default",
+    heroCtaCase: pickLayoutChoice("heroCtaCase", l.heroCtaCase),
+    heroCtaWeight: pickLayoutChoice("heroCtaWeight", l.heroCtaWeight),
     heroCtaColor: normalizeHexColor(l.heroCtaColor),
     heroBylineFontScale: (() => {
       const v = l.heroBylineFontScale;
@@ -1414,215 +1408,63 @@ function resolveLayout(raw: unknown): StoreTheme["layout"] {
     heroBylineCase: isTextCase(l.heroBylineCase) ? l.heroBylineCase : "upper",
     heroBylineWeight: isFontWeight(l.heroBylineWeight) ? l.heroBylineWeight : "normal",
     heroBylineLeading: isLeading(l.heroBylineLeading) ? l.heroBylineLeading : "normal",
-    heroSplitRatio: (() => {
-      const v = l.heroSplitRatio;
-      if (v === "image-narrow" || v === "image-wide" || v === "photo") return v;
-      return "normal" as const;
-    })(),
-    heroImageFocus: (() => {
-      const v = l.heroImageFocus;
-      if (v === "top" || v === "bottom") return v;
-      return "center" as const;
-    })(),
+    heroSplitRatio: pickLayoutChoice("heroSplitRatio", l.heroSplitRatio),
+    heroImageFocus: pickLayoutChoice("heroImageFocus", l.heroImageFocus),
     heroImageFocusX: isAlignX(l.heroImageFocusX) ? l.heroImageFocusX : "center",
-    heroSplitImageFit: l.heroSplitImageFit === "contain" ? ("contain" as const) : ("cover" as const),
-    heroSplitImageAspect: (() => {
-      const v = l.heroSplitImageAspect;
-      if (v === "tall" || v === "wide" || v === "photo") return v;
-      return "square" as const;
-    })(),
-    heroSplitTextAlign: (() => {
-      const v = l.heroSplitTextAlign;
-      if (v === "top" || v === "bottom") return v;
-      return "center" as const;
-    })(),
+    heroSplitImageFit: pickLayoutChoice("heroSplitImageFit", l.heroSplitImageFit),
+    heroSplitImageAspect: pickLayoutChoice("heroSplitImageAspect", l.heroSplitImageAspect),
+    heroSplitTextAlign: pickLayoutChoice("heroSplitTextAlign", l.heroSplitTextAlign),
     heroSplitTextAlignX: isAlignX(l.heroSplitTextAlignX) ? l.heroSplitTextAlignX : "left",
-    heroSplitTextPadding: (() => {
-      const v = l.heroSplitTextPadding;
-      if (v === "tight" || v === "roomy") return v;
-      return "normal" as const;
-    })(),
-    heroSplitMobilePadY: (() => {
-      const v = l.heroSplitMobilePadY;
-      if (v === "tight" || v === "roomy") return v;
-      return "normal" as const;
-    })(),
-    heroSplitGap: (() => {
-      const v = l.heroSplitGap;
-      if (v === "tight" || v === "loose") return v;
-      return "normal" as const;
-    })(),
-    heroSplitMobileOrder: (() => {
-      const v = l.heroSplitMobileOrder;
-      if (v === "text-first") return v;
-      return "image-first" as const;
-    })(),
+    heroSplitTextPadding: pickLayoutChoice("heroSplitTextPadding", l.heroSplitTextPadding),
+    heroSplitMobilePadY: pickLayoutChoice("heroSplitMobilePadY", l.heroSplitMobilePadY),
+    heroSplitGap: pickLayoutChoice("heroSplitGap", l.heroSplitGap),
+    heroSplitMobileOrder: pickLayoutChoice("heroSplitMobileOrder", l.heroSplitMobileOrder),
     heroSplitTextBg: normalizeHexColor(l.heroSplitTextBg),
     heroSplitImageBg: normalizeHexColor(l.heroSplitImageBg),
-    heroSplitDivider: (() => {
-      const v = l.heroSplitDivider;
-      if (v === "thin" || v === "medium" || v === "thick") return v;
-      return "none" as const;
-    })(),
-    heroSplitDividerTone: (() => {
-      const v = l.heroSplitDividerTone;
-      if (v === "strong" || v === "accent") return v;
-      return "normal" as const;
-    })(),
-    heroSplitHeight: (() => {
-      const v = l.heroSplitHeight;
-      if (v === "content" || v === "compact") return v;
-      return "normal" as const;
-    })(),
-    heroMagazineRuleWeight: (() => {
-      const v = l.heroMagazineRuleWeight;
-      if (v === "medium" || v === "thick") return v;
-      return "normal" as const;
-    })(),
-    heroMagazineRuleTone: (() => {
-      const v = l.heroMagazineRuleTone;
-      if (v === "faint" || v === "strong" || v === "accent") return v;
-      return "normal" as const;
-    })(),
-    heroMagazineGap: (() => {
-      const v = l.heroMagazineGap;
-      if (v === "tight" || v === "medium") return v;
-      return "normal" as const;
-    })(),
-    heroMagazineGapMobile: (() => {
-      const v = l.heroMagazineGapMobile;
-      if (v === "tight" || v === "medium" || v === "normal") return v;
-      return "same" as const;
-    })(),
-    heroMagazineTextWidth: (() => {
-      const v = l.heroMagazineTextWidth;
-      if (v === "narrow" || v === "rule" || v === "full") return v;
-      return "normal" as const;
-    })(),
-    heroMagazineRuleWidth: (() => {
-      const v = l.heroMagazineRuleWidth;
-      if (v === "narrow" || v === "full") return v;
-      return "normal" as const;
-    })(),
-    heroMagazineSubtitleWidth: (() => {
-      const v = l.heroMagazineSubtitleWidth;
-      if (v === "narrow" || v === "wide" || v === "title") return v;
-      return "normal" as const;
-    })(),
-    heroMagazineTextGap: (() => {
-      const v = l.heroMagazineTextGap;
-      if (v === "tight" || v === "loose") return v;
-      return "normal" as const;
-    })(),
-    heroMagazinePadX: (() => {
-      const v = l.heroMagazinePadX;
-      if (v === "narrow" || v === "wide") return v;
-      return "normal" as const;
-    })(),
-    heroMagazinePadY: (() => {
-      const v = l.heroMagazinePadY;
-      if (v === "tight" || v === "roomy") return v;
-      return "normal" as const;
-    })(),
+    heroSplitDivider: pickLayoutChoice("heroSplitDivider", l.heroSplitDivider),
+    heroSplitDividerTone: pickLayoutChoice("heroSplitDividerTone", l.heroSplitDividerTone),
+    heroSplitHeight: pickLayoutChoice("heroSplitHeight", l.heroSplitHeight),
+    heroMagazineRuleWeight: pickLayoutChoice("heroMagazineRuleWeight", l.heroMagazineRuleWeight),
+    heroMagazineRuleTone: pickLayoutChoice("heroMagazineRuleTone", l.heroMagazineRuleTone),
+    heroMagazineGap: pickLayoutChoice("heroMagazineGap", l.heroMagazineGap),
+    heroMagazineGapMobile: pickLayoutChoice("heroMagazineGapMobile", l.heroMagazineGapMobile),
+    heroMagazineTextWidth: pickLayoutChoice("heroMagazineTextWidth", l.heroMagazineTextWidth),
+    heroMagazineRuleWidth: pickLayoutChoice("heroMagazineRuleWidth", l.heroMagazineRuleWidth),
+    heroMagazineSubtitleWidth: pickLayoutChoice("heroMagazineSubtitleWidth", l.heroMagazineSubtitleWidth),
+    heroMagazineTextGap: pickLayoutChoice("heroMagazineTextGap", l.heroMagazineTextGap),
+    heroMagazinePadX: pickLayoutChoice("heroMagazinePadX", l.heroMagazinePadX),
+    heroMagazinePadY: pickLayoutChoice("heroMagazinePadY", l.heroMagazinePadY),
     heroMagazineBg: normalizeHexColor(l.heroMagazineBg),
-    heroMinimalWidth: (() => {
-      const v = l.heroMinimalWidth;
-      if (v === "narrow" || v === "wide") return v;
-      return "normal" as const;
-    })(),
-    heroMinimalPadding: (() => {
-      const v = l.heroMinimalPadding;
-      if (v === "compact" || v === "spacious") return v;
-      return "normal" as const;
-    })(),
-    heroMinimalPaddingMobile: (() => {
-      const v = l.heroMinimalPaddingMobile;
-      if (v === "compact" || v === "normal" || v === "spacious") return v;
-      return "same" as const;
-    })(),
-    heroMinimalPadX: (() => {
-      const v = l.heroMinimalPadX;
-      if (v === "narrow" || v === "wide") return v;
-      return "normal" as const;
-    })(),
-    heroMinimalPadXMobile: (() => {
-      const v = l.heroMinimalPadXMobile;
-      if (v === "narrow" || v === "normal" || v === "wide") return v;
-      return "same" as const;
-    })(),
-    heroMinimalRule: (() => {
-      const v = l.heroMinimalRule;
-      if (v === "none" || v === "short" || v === "long") return v;
-      return "normal" as const;
-    })(),
+    heroMinimalWidth: pickLayoutChoice("heroMinimalWidth", l.heroMinimalWidth),
+    heroMinimalPadding: pickLayoutChoice("heroMinimalPadding", l.heroMinimalPadding),
+    heroMinimalPaddingMobile: pickLayoutChoice("heroMinimalPaddingMobile", l.heroMinimalPaddingMobile),
+    heroMinimalPadX: pickLayoutChoice("heroMinimalPadX", l.heroMinimalPadX),
+    heroMinimalPadXMobile: pickLayoutChoice("heroMinimalPadXMobile", l.heroMinimalPadXMobile),
+    heroMinimalRule: pickLayoutChoice("heroMinimalRule", l.heroMinimalRule),
     heroMinimalRuleColor: normalizeHexColor(l.heroMinimalRuleColor),
-    heroMinimalRuleWeight: (() => {
-      const v = l.heroMinimalRuleWeight;
-      if (v === "medium" || v === "thick") return v;
-      return "normal" as const;
-    })(),
+    heroMinimalRuleWeight: pickLayoutChoice("heroMinimalRuleWeight", l.heroMinimalRuleWeight),
     heroMinimalBg: normalizeHexColor(l.heroMinimalBg),
-    heroMinimalGap: (() => {
-      const v = l.heroMinimalGap;
-      if (v === "tight" || v === "loose") return v;
-      return "normal" as const;
-    })(),
+    heroMinimalGap: pickLayoutChoice("heroMinimalGap", l.heroMinimalGap),
     heroMinimalAlign: isAlignX(l.heroMinimalAlign) ? l.heroMinimalAlign : "center",
     heroTextBg: normalizeHexColor(l.heroTextBg),
-    heroTextPadding: (() => {
-      const v = l.heroTextPadding;
-      if (v === "compact" || v === "spacious") return v;
-      return "normal" as const;
-    })(),
-    heroTextWidth: (() => {
-      const v = l.heroTextWidth;
-      if (v === "narrow" || v === "wide" || v === "full") return v;
-      return "normal" as const;
-    })(),
+    heroTextPadding: pickLayoutChoice("heroTextPadding", l.heroTextPadding),
+    heroTextWidth: pickLayoutChoice("heroTextWidth", l.heroTextWidth),
     heroTextAlignX: isAlignX(l.heroTextAlignX) ? l.heroTextAlignX : "center",
-    heroTextGap: (() => {
-      const v = l.heroTextGap;
-      if (v === "tight" || v === "loose") return v;
-      return "normal" as const;
-    })(),
-    heroImageMaxHeight: (() => {
-      const v = l.heroImageMaxHeight;
-      if (v === "screen" || v === "short") return v;
-      return "none" as const;
-    })(),
-    heroFullImageFit: l.heroFullImageFit === "contain" ? ("contain" as const) : ("cover" as const),
+    heroTextGap: pickLayoutChoice("heroTextGap", l.heroTextGap),
+    heroImageMaxHeight: pickLayoutChoice("heroImageMaxHeight", l.heroImageMaxHeight),
+    heroFullImageFit: pickLayoutChoice("heroFullImageFit", l.heroFullImageFit),
     heroFullImageBg: normalizeHexColor(l.heroFullImageBg),
     heroImageBounds: normalizeHeroImageBounds(l.heroImageBounds),
-    heroHeight: (() => {
-      const v = l.heroHeight;
-      if (v === "short" || v === "tall" || v === "full" || v === "auto") return v;
-      return "auto" as const;
-    })(),
-    heroHeightMobile: (() => {
-      const v = l.heroHeightMobile;
-      if (v === "auto" || v === "short" || v === "tall" || v === "full") return v;
-      return "same" as const;
-    })(),
-    heroFullTextAlignY: (() => {
-      const v = l.heroFullTextAlignY;
-      if (v === "center" || v === "bottom") return v;
-      return "top" as const;
-    })(),
+    heroHeight: pickLayoutChoice("heroHeight", l.heroHeight),
+    heroHeightMobile: pickLayoutChoice("heroHeightMobile", l.heroHeightMobile),
+    heroFullTextAlignY: pickLayoutChoice("heroFullTextAlignY", l.heroFullTextAlignY),
     fontScale: (() => {
       const v = l.fontScale;
       if (!isFiniteNumber(v)) return 1.0;
       return clampFontScale(v);
     })(),
-    sectionPaddingScale: (() => {
-      const v = l.sectionPaddingScale;
-      if (v === "compact" || v === "default" || v === "spacious") return v;
-      return "default" as const;
-    })(),
-    buttonRadius: (() => {
-      const v = l.buttonRadius;
-      if (v === "pill" || v === "soft" || v === "square") return v;
-      return "pill" as const;
-    })(),
+    sectionPaddingScale: pickLayoutChoice("sectionPaddingScale", l.sectionPaddingScale),
+    buttonRadius: pickLayoutChoice("buttonRadius", l.buttonRadius),
     footerBg: normalizeHexColor(l.footerBg),
     footerText: normalizeHexColor(l.footerText),
     featuredCount: (() => {
@@ -1660,11 +1502,7 @@ function resolveLayout(raw: unknown): StoreTheme["layout"] {
       if (v === 2 || v === 3) return v;
       return 3 as const;
     })(),
-    faqDefaultOpen: (() => {
-      const v = l.faqDefaultOpen;
-      if (v === "first" || v === "all") return v;
-      return "none" as const;
-    })(),
+    faqDefaultOpen: pickLayoutChoice("faqDefaultOpen", l.faqDefaultOpen),
     // 欄位表與合法值都在 lib/section-style-schema，跟編輯器存檔那層走同一支——
     // 以前這裡跟 actions.ts 各手抄一條長判斷鏈，漏在哪一邊就是「控制看起來壞的」。
     sectionStyles: sanitizeSectionStyles(l.sectionStyles),

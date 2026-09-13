@@ -25,14 +25,13 @@ import { isFiniteNumber } from "@/lib/is-finite-number";
 import { isPlainObject } from "@/lib/is-plain-object";
 import { displayableImageUrl } from "@/lib/image-url";
 import { normalizeHeroImageBounds } from "@/lib/hero-image-bounds";
+import { LAYOUT_CHOICE_KEYS, isLayoutChoice } from "@/lib/theme-layout-choices";
 import {
   sanitizeSectionStyles,
   type SectionStyle,
 } from "@/lib/section-style-schema";
 import {
-  ALIGN_X_KEYS,
   DEFAULT_SECTION_ORDER,
-  FONT_WEIGHT_KEYS,
   isAlignX,
   isFontWeight,
   isHeroImageSide,
@@ -210,56 +209,6 @@ type EditorPayload = {
     social?: boolean;
   };
 };
-
-// 存檔時「只認清單內的值」的版面欄位與各自的合法值。清單目前只有這裡一份；公開頁 _theme.ts
-// 讀回那層是靠型別跟預設值兜，這裡漏值就是「編輯器能選、存檔被濾掉」的那種錯，改清單先改這張。
-// 副標對齊與按鈕字重多一個「跟著主標／預設」的選項，所以拿 theme-keys 的共用清單前面補一個再展開
-const LAYOUT_ONE_OF = {
-  heroHeight: ["auto", "short", "tall", "full"],
-  heroHeightMobile: ["same", "auto", "short", "tall", "full"],
-  heroFullTextAlignY: ["top", "center", "bottom"],
-  heroSubtitleAlign: ["inherit", ...ALIGN_X_KEYS],
-  heroCtaCase: ["default", "capitalize", "none"],
-  heroCtaWeight: ["default", ...FONT_WEIGHT_KEYS],
-  heroSplitRatio: ["image-narrow", "normal", "image-wide", "photo"],
-  heroImageFocus: ["top", "center", "bottom"],
-  heroSplitImageFit: ["cover", "contain"],
-  heroSplitImageAspect: ["tall", "square", "wide", "photo"],
-  heroSplitTextAlign: ["top", "center", "bottom"],
-  heroSplitMobileOrder: ["image-first", "text-first"],
-  heroSplitDivider: ["none", "thin", "medium", "thick"],
-  heroSplitDividerTone: ["normal", "strong", "accent"],
-  heroSplitHeight: ["content", "compact", "normal"],
-  heroSplitTextPadding: ["tight", "normal", "roomy"],
-  heroSplitMobilePadY: ["tight", "normal", "roomy"],
-  heroSplitGap: ["tight", "normal", "loose"],
-  heroMagazineRuleWeight: ["normal", "medium", "thick"],
-  heroMagazineRuleTone: ["normal", "faint", "strong", "accent"],
-  heroMagazineGap: ["tight", "medium", "normal"],
-  heroMagazineGapMobile: ["same", "tight", "medium", "normal"],
-  heroMagazineTextWidth: ["narrow", "normal", "rule", "full"],
-  heroMagazineRuleWidth: ["narrow", "normal", "full"],
-  heroMagazineTextGap: ["tight", "normal", "loose"],
-  heroMagazinePadX: ["narrow", "normal", "wide"],
-  heroMagazinePadY: ["tight", "normal", "roomy"],
-  heroMagazineSubtitleWidth: ["narrow", "normal", "wide", "title"],
-  heroMinimalWidth: ["narrow", "normal", "wide"],
-  heroMinimalPadding: ["compact", "normal", "spacious"],
-  heroMinimalPaddingMobile: ["same", "compact", "normal", "spacious"],
-  heroMinimalPadX: ["narrow", "normal", "wide"],
-  heroMinimalPadXMobile: ["same", "narrow", "normal", "wide"],
-  heroMinimalRule: ["none", "short", "normal", "long"],
-  heroMinimalRuleWeight: ["normal", "medium", "thick"],
-  heroMinimalGap: ["tight", "normal", "loose"],
-  heroTextPadding: ["compact", "normal", "spacious"],
-  heroTextWidth: ["narrow", "normal", "wide", "full"],
-  heroTextGap: ["tight", "normal", "loose"],
-  heroImageMaxHeight: ["none", "screen", "short"],
-  heroFullImageFit: ["cover", "contain"],
-  sectionPaddingScale: ["compact", "default", "spacious"],
-  buttonRadius: ["pill", "soft", "square"],
-  faqDefaultOpen: ["none", "first", "all"],
-} as const satisfies Partial<Record<keyof NonNullable<EditorPayload["layout"]>, readonly string[]>>;
 
 
 function sanitizeHex(s: unknown): string | undefined {
@@ -481,14 +430,11 @@ export async function saveEditorState(slug: string, payload: EditorPayload) {
       const v = payload.layout[key];
       if (isTextCase(v)) layoutPatch[key] = v;
     }
-    // Hero 各版型「只認清單內的值」的欄位：每格帶自己的合法值清單，值不在清單內就整格不動 DB。
-    // 以前 44 格各手寫一段 v === "a" || v === "b"，多一格就多抄六行；現在只在這張表加一行。
-    // 副標對齊、按鈕字重那兩格多一個「跟著別的」選項，所以在共用清單前面補上再展開
-    for (const key of Object.keys(LAYOUT_ONE_OF) as Array<keyof typeof LAYOUT_ONE_OF>) {
+    // 「只認清單內的值」的 44 格版面欄位：值不在清單內就整格不動 DB。清單與預設值跟公開頁
+    // 讀回端共用 lib/theme-layout-choices 那張表，多一格只在那邊加一行。
+    for (const key of LAYOUT_CHOICE_KEYS) {
       const v = payload.layout[key];
-      if (typeof v === "string" && (LAYOUT_ONE_OF[key] as readonly string[]).includes(v)) {
-        layoutPatch[key] = v;
-      }
+      if (isLayoutChoice(key, v)) layoutPatch[key] = v;
     }
     if (payload.layout.heroImageBounds !== undefined) {
       // 編輯器自動偵測存進來的主體邊界。壞資料（數字不合理、沒 url）一律存 null，
