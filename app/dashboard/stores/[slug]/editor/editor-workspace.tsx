@@ -43,6 +43,7 @@ import {
 import { FREE_POS_KEYS, SECTION_DRAG_ELEMENT, stripLegacyFreePositions } from "@/lib/free-positions";
 import type { SectionStyle } from "@/app/[slug]/_theme";
 import { applySectionStylePatch, type SectionStylePatch } from "@/lib/section-style-schema";
+import { contrastRatio, relativeLuminance } from "@/lib/color-contrast";
 // 版面「只認清單內的值」的 44 格＋排成幾欄 6 格，型別直接從 lib/theme-layout-choices 那張表導出，
 // 跟存檔端（actions.ts）與讀回端（_theme.ts resolveLayout）吃同一份；表多一個值，這裡不用再抄一次
 import type { LayoutChoice, LayoutColumns } from "@/lib/theme-layout-choices";
@@ -455,25 +456,16 @@ const HERO_STYLE_LABELS: Record<HeroStyle, string> = {
   magazine: "雜誌封面",
 };
 
-// 算顏色亮度（WCAG relative luminance），給「背景色 / 文字色」對比防呆用
+// 「背景色 / 文字色」對比防呆用的亮度。算法走 lib/color-contrast（跟公開頁判斷小標
+// 看不看得見是同一套），這裡只多做一件事：色碼文字框讓人直接打，打成「1A1A1A」沒帶
+// # 的也先照算出警告，不等存檔才知道。lib 那支只認帶 # 的六碼，所以缺 # 就補上再送。
 function hexLuminance(hex: string): number | null {
-  const m = /^#?([0-9a-fA-F]{6})$/.exec(hex.trim());
-  if (!m) return null;
-  const int = parseInt(m[1], 16);
-  const toLin = (c: number) => {
-    const s = c / 255;
-    return s <= 0.03928 ? s / 12.92 : Math.pow((s + 0.055) / 1.055, 2.4);
-  };
-  const r = toLin((int >> 16) & 255);
-  const g = toLin((int >> 8) & 255);
-  const b = toLin(int & 255);
-  return 0.2126 * r + 0.7152 * g + 0.0722 * b;
+  return relativeLuminance(withHash(hex));
 }
 
-function contrastRatio(l1: number, l2: number): number {
-  const hi = Math.max(l1, l2);
-  const lo = Math.min(l1, l2);
-  return (hi + 0.05) / (lo + 0.05);
+function withHash(hex: string): string {
+  const s = hex.trim();
+  return s.startsWith("#") ? s : `#${s}`;
 }
 
 export function EditorWorkspace({
@@ -6964,9 +6956,10 @@ export function EditorWorkspace({
                 const sectionBg = bg ?? theme.bg; // 區段實際底色：自訂優先，否則全站底色
                 const sectionBgLum = hexLuminance(sectionBg);
                 const textLum = textCol ? hexLuminance(textCol) : null;
+                // 兩色任一認不得就是 null（跟上面兩個亮度 null 的情況一樣）
+                const ratio = textCol ? contrastRatio(withHash(sectionBg), withHash(textCol)) : null;
                 let warn: { msg: string; fix: string } | null = null;
-                if (sectionBgLum !== null && textLum !== null) {
-                  const ratio = contrastRatio(sectionBgLum, textLum);
+                if (sectionBgLum !== null && ratio !== null) {
                   if (ratio < 3) {
                     warn = {
                       msg: `背景跟文字色太接近（對比約 ${ratio.toFixed(1)} 比 1），文字會看不清`,
