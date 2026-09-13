@@ -38,6 +38,7 @@ export async function generateMetadata({
 
 import { formatPrice } from "@/lib/format-price";
 import { jsonbText } from "@/lib/jsonb-text";
+import { roundTo } from "@/lib/round-to";
 
 export default async function StoreHomePage({
   params,
@@ -1653,10 +1654,10 @@ export default async function StoreHomePage({
               : theme.layout.heroTaglineTracking === "wide"
               ? 0.05
               : 0;
-          // base 是該版型原本寫死的 em 值；加完四捨五入到小數第三位，避免浮點跑出
-          // 0.019999999999999997em 這種字串塞進 inline style。
+          // base 是該版型原本寫死的 em 值；加完用 roundTo 收到小數第三位，避免浮點跑出
+          // 0.019999999999999997em 這種字串塞進 inline style（下面各處字距／字級同）。
           const taglineTracking = (baseEm: number) =>
-            `${Math.round((baseEm + taglineTrackDelta) * 1000) / 1000}em`;
+            `${roundTo(baseEm + taglineTrackDelta, 3)}em`;
           // 主標行距（四個版型共用）。四處的 class 各寫死一個 leading-[]（1.6 / 1.15 /
           // 1.05 / 1.2），那些數字是照英文主標挑的：拉丁字母有大量上下伸出的筆畫，壓到
           // 1.05 還看得出行的界線；中文是等高方塊字，同樣的值排出來上下兩行幾乎貼在一起。
@@ -1673,7 +1674,7 @@ export default async function StoreHomePage({
             taglineLeadingRatio !== 1
               ? {
                   lineHeight:
-                    Math.round(Math.max(1, base * taglineLeadingRatio) * 1000) / 1000,
+                    roundTo(Math.max(1, base * taglineLeadingRatio), 3),
                 }
               : {};
           // 各版型的預設字級是 Tailwind responsive class，只在 user 動過 slider
@@ -1709,7 +1710,7 @@ export default async function StoreHomePage({
           const eyebrowScale = theme.layout.heroEyebrowFontScale;
           const eyebrowSizeStyle =
             eyebrowScale !== 1
-              ? { fontSize: `${Math.round(10 * eyebrowScale * 10) / 10}px` }
+              ? { fontSize: `${roundTo(10 * eyebrowScale, 1)}px` }
               : {};
           const eyebrowTrackDelta =
             theme.layout.heroEyebrowTracking === "tight"
@@ -1721,7 +1722,7 @@ export default async function StoreHomePage({
           const eyebrowTrackStyle = (baseEm: number) =>
             eyebrowTrackDelta !== 0
               ? {
-                  letterSpacing: `${Math.round((baseEm + eyebrowTrackDelta) * 1000) / 1000}em`,
+                  letterSpacing: `${roundTo(baseEm + eyebrowTrackDelta, 3)}em`,
                 }
               : {};
           // 沒設就各自 fallback 回原本寫死的那個色（三處主色、雜誌那條 metadata 淡文字色）
@@ -1813,7 +1814,7 @@ export default async function StoreHomePage({
           // 滿版圖那兩處的底線連結（base = text-sm 0.875rem）
           const ctaLinkSizeStyle =
             ctaScale !== 1
-              ? { fontSize: `${Math.round(0.875 * ctaScale * 1000) / 1000}rem` }
+              ? { fontSize: `${roundTo(0.875 * ctaScale, 3)}rem` }
               : {};
           // split 兩顆 + 極簡那顆（base = .sproutly-btn-lg 的 0.875rem / padding 1.125rem
           // 2.25rem）。內距改成 em 跟著字走——1.125 / 0.875 = 1.286em、2.25 / 0.875 =
@@ -1822,7 +1823,7 @@ export default async function StoreHomePage({
           const ctaBtnSizeStyle =
             ctaScale !== 1
               ? {
-                  fontSize: `${Math.round(0.875 * ctaScale * 1000) / 1000}rem`,
+                  fontSize: `${roundTo(0.875 * ctaScale, 3)}rem`,
                   padding: "1.286em 2.571em",
                 }
               : {};
@@ -1830,7 +1831,7 @@ export default async function StoreHomePage({
           // metadata——那行左邊的 byline 是另一件事（下一格才輪到它），跟按鈕不是成對的。
           const ctaMicroSizeStyle =
             ctaScale !== 1
-              ? { fontSize: `${Math.round(10 * ctaScale * 10) / 10}px` }
+              ? { fontSize: `${roundTo(10 * ctaScale, 1)}px` }
               : {};
           // 按鈕字距。字級那格只能讓「立即選購」四個字變大，散開的問題原封不動——0.18em 是
           // 跟著字級等比例放大的，字愈大四個字散得愈開。三處 base 各不相同：滿版圖那兩處
@@ -1846,7 +1847,7 @@ export default async function StoreHomePage({
           const ctaTrackStyle = (baseEm: number) =>
             ctaTrackDelta !== 0
               ? {
-                  letterSpacing: `${Math.round(Math.max(0, baseEm + ctaTrackDelta) * 1000) / 1000}em`,
+                  letterSpacing: `${roundTo(Math.max(0, baseEm + ctaTrackDelta), 3)}em`,
                 }
               : {};
           // 按鈕大小寫。預設是「照各版型原本」不是「全大寫」——三處的 base 本來就不一致
@@ -1909,7 +1910,7 @@ export default async function StoreHomePage({
           const bylineScale = theme.layout.heroBylineFontScale;
           const bylineSizeStyle =
             bylineScale !== 1
-              ? { fontSize: `${Math.round(10 * bylineScale * 10) / 10}px` }
+              ? { fontSize: `${roundTo(10 * bylineScale, 1)}px` }
               : {};
           const bylineColor = theme.layout.heroBylineColor ?? theme.textMuted;
           // byline 的字距與大小寫。上面兩格動的是那行字多大、什麼顏色，這兩格動的是字與字
@@ -1931,9 +1932,7 @@ export default async function StoreHomePage({
           const bylineTrackStyle =
             bylineTrackDelta !== 0
               ? {
-                  letterSpacing: `${
-                    Math.round(Math.max(0, 0.32 + bylineTrackDelta) * 1000) / 1000
-                  }em`,
+                  letterSpacing: `${roundTo(Math.max(0, 0.32 + bylineTrackDelta), 3)}em`,
                 }
               : {};
           const bylineCaseStyle: { textTransform?: "none" | "capitalize" } =
