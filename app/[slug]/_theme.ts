@@ -10,7 +10,7 @@ import {
 import { normalizeHexColor } from "@/lib/hex-color";
 import { isFiniteNumber } from "@/lib/is-finite-number";
 import { isPlainObject } from "@/lib/is-plain-object";
-import { pickLayoutChoice } from "@/lib/theme-layout-choices";
+import { pickLayoutChoice, pickLayoutColumns } from "@/lib/theme-layout-choices";
 import { cleanMapEmbedUrl } from "@/lib/map-embed-url";
 import {
   normalizeHeroImageBounds,
@@ -1472,36 +1472,12 @@ function resolveLayout(raw: unknown): StoreTheme["layout"] {
       if (!isFiniteNumber(v)) return 6;
       return clampFeaturedCount(v);
     })(),
-    featuredColumns: (() => {
-      const v = l.featuredColumns;
-      if (v === 2 || v === 3 || v === 4) return v;
-      return 3 as const;
-    })(),
-    collectionsColumns: (() => {
-      const v = l.collectionsColumns;
-      if (v === 2 || v === 3 || v === 4) return v;
-      return 3 as const;
-    })(),
-    testimonialsColumns: (() => {
-      const v = l.testimonialsColumns;
-      if (v === 2 || v === 3 || v === 4) return v;
-      return 3 as const;
-    })(),
-    statsColumns: (() => {
-      const v = l.statsColumns;
-      if (v === 2 || v === 3 || v === 4) return v;
-      return 4 as const;
-    })(),
-    galleryColumns: (() => {
-      const v = l.galleryColumns;
-      if (v === 2 || v === 3 || v === 4) return v;
-      return 3 as const;
-    })(),
-    journalColumns: (() => {
-      const v = l.journalColumns;
-      if (v === 2 || v === 3) return v;
-      return 3 as const;
-    })(),
+    featuredColumns: pickLayoutColumns("featuredColumns", l.featuredColumns),
+    collectionsColumns: pickLayoutColumns("collectionsColumns", l.collectionsColumns),
+    testimonialsColumns: pickLayoutColumns("testimonialsColumns", l.testimonialsColumns),
+    statsColumns: pickLayoutColumns("statsColumns", l.statsColumns),
+    galleryColumns: pickLayoutColumns("galleryColumns", l.galleryColumns),
+    journalColumns: pickLayoutColumns("journalColumns", l.journalColumns),
     faqDefaultOpen: pickLayoutChoice("faqDefaultOpen", l.faqDefaultOpen),
     // 欄位表與合法值都在 lib/section-style-schema，跟編輯器存檔那層走同一支——
     // 以前這裡跟 actions.ts 各手抄一條長判斷鏈，漏在哪一邊就是「控制看起來壞的」。

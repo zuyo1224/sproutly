@@ -25,7 +25,12 @@ import { isFiniteNumber } from "@/lib/is-finite-number";
 import { isPlainObject } from "@/lib/is-plain-object";
 import { displayableImageUrl } from "@/lib/image-url";
 import { normalizeHeroImageBounds } from "@/lib/hero-image-bounds";
-import { LAYOUT_CHOICE_KEYS, isLayoutChoice } from "@/lib/theme-layout-choices";
+import {
+  LAYOUT_CHOICE_KEYS,
+  LAYOUT_COLUMN_KEYS,
+  isLayoutChoice,
+  isLayoutColumns,
+} from "@/lib/theme-layout-choices";
 import {
   sanitizeSectionStyles,
   type SectionStyle,
@@ -482,30 +487,10 @@ export async function saveEditorState(slug: string, payload: EditorPayload) {
         layoutPatch.featuredCount = clampFeaturedCount(v);
       }
     }
-    if (payload.layout.featuredColumns !== undefined) {
-      const v = payload.layout.featuredColumns;
-      if (v === 2 || v === 3 || v === 4) layoutPatch.featuredColumns = v;
-    }
-    if (payload.layout.collectionsColumns !== undefined) {
-      const v = payload.layout.collectionsColumns;
-      if (v === 2 || v === 3 || v === 4) layoutPatch.collectionsColumns = v;
-    }
-    if (payload.layout.testimonialsColumns !== undefined) {
-      const v = payload.layout.testimonialsColumns;
-      if (v === 2 || v === 3 || v === 4) layoutPatch.testimonialsColumns = v;
-    }
-    if (payload.layout.statsColumns !== undefined) {
-      const v = payload.layout.statsColumns;
-      if (v === 2 || v === 3 || v === 4) layoutPatch.statsColumns = v;
-    }
-    if (payload.layout.galleryColumns !== undefined) {
-      const v = payload.layout.galleryColumns;
-      if (v === 2 || v === 3 || v === 4) layoutPatch.galleryColumns = v;
-    }
-    if (payload.layout.journalColumns !== undefined) {
-      const v = payload.layout.journalColumns;
-      // 慢讀固定三張卡，4 欄永遠填不滿，只收 2/3
-      if (v === 2 || v === 3) layoutPatch.journalColumns = v;
+    // 排成幾欄六格（2/3/4，慢讀只到 3）也走 lib/theme-layout-choices 那張表，跟讀回端同一份。
+    for (const key of LAYOUT_COLUMN_KEYS) {
+      const v = payload.layout[key];
+      if (isLayoutColumns(key, v)) layoutPatch[key] = v;
     }
     if (payload.layout.sectionStyles !== undefined) {
       // 欄位表與合法值都在 lib/section-style-schema，跟公開頁讀回那層走同一支——

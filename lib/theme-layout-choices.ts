@@ -85,3 +85,37 @@ export function pickLayoutChoice<K extends LayoutChoiceKey>(
 ): LayoutChoice<K> {
   return isLayoutChoice(key, value) ? value : LAYOUT_CHOICES[key].fallback;
 }
+
+// 「排成幾欄」六格是上面那張表的數字版：值是 2/3/4 不是字串，所以另開一張，
+// 型別守衛與 pick 的規則跟上面完全一樣。慢讀固定三張卡，4 欄永遠填不滿，只開 2/3。
+export const LAYOUT_COLUMN_CHOICES = {
+  featuredColumns: { values: [2, 3, 4], fallback: 3 },
+  collectionsColumns: { values: [2, 3, 4], fallback: 3 },
+  testimonialsColumns: { values: [2, 3, 4], fallback: 3 },
+  statsColumns: { values: [2, 3, 4], fallback: 4 },
+  galleryColumns: { values: [2, 3, 4], fallback: 3 },
+  journalColumns: { values: [2, 3], fallback: 3 },
+} as const satisfies Record<string, { values: readonly number[]; fallback: number }>;
+
+export type LayoutColumnKey = keyof typeof LAYOUT_COLUMN_CHOICES;
+export type LayoutColumns<K extends LayoutColumnKey> =
+  (typeof LAYOUT_COLUMN_CHOICES)[K]["values"][number];
+
+export const LAYOUT_COLUMN_KEYS = Object.keys(LAYOUT_COLUMN_CHOICES) as LayoutColumnKey[];
+
+export function isLayoutColumns<K extends LayoutColumnKey>(
+  key: K,
+  value: unknown
+): value is LayoutColumns<K> {
+  return (
+    typeof value === "number" &&
+    (LAYOUT_COLUMN_CHOICES[key].values as readonly number[]).includes(value)
+  );
+}
+
+export function pickLayoutColumns<K extends LayoutColumnKey>(
+  key: K,
+  value: unknown
+): LayoutColumns<K> {
+  return isLayoutColumns(key, value) ? value : LAYOUT_COLUMN_CHOICES[key].fallback;
+}

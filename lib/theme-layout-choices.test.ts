@@ -8,8 +8,12 @@ import assert from "node:assert/strict";
 import {
   LAYOUT_CHOICES,
   LAYOUT_CHOICE_KEYS,
+  LAYOUT_COLUMN_CHOICES,
+  LAYOUT_COLUMN_KEYS,
   isLayoutChoice,
+  isLayoutColumns,
   pickLayoutChoice,
+  pickLayoutColumns,
 } from "./theme-layout-choices.ts";
 
 describe("LAYOUT_CHOICES", () => {
@@ -37,5 +41,32 @@ describe("isLayoutChoice / pickLayoutChoice", () => {
     assert.equal(pickLayoutChoice("heroHeightMobile", null), "same");
     assert.equal(pickLayoutChoice("buttonRadius", 3), "pill");
     assert.equal(pickLayoutChoice("heroCtaCase", "upper"), "default");
+  });
+});
+
+describe("LAYOUT_COLUMN_CHOICES", () => {
+  it("每格的 fallback 都在自己的 values 裡，且 values 沒重複", () => {
+    for (const key of LAYOUT_COLUMN_KEYS) {
+      const { values, fallback } = LAYOUT_COLUMN_CHOICES[key];
+      assert.ok((values as readonly number[]).includes(fallback), `${key} 的 fallback 不在清單內`);
+      assert.equal(new Set(values).size, values.length, `${key} 的 values 有重複`);
+    }
+  });
+
+  it("清單內的欄數原樣回，慢讀只收 2/3", () => {
+    assert.equal(isLayoutColumns("featuredColumns", 4), true);
+    assert.equal(pickLayoutColumns("featuredColumns", 2), 2);
+    assert.equal(pickLayoutColumns("journalColumns", 2), 2);
+    assert.equal(isLayoutColumns("journalColumns", 4), false);
+    assert.equal(pickLayoutColumns("journalColumns", 4), 3);
+  });
+
+  it("沒填、壞值、字串數字一律回該格 fallback", () => {
+    assert.equal(pickLayoutColumns("featuredColumns", undefined), 3);
+    assert.equal(pickLayoutColumns("statsColumns", null), 4);
+    assert.equal(pickLayoutColumns("galleryColumns", 5), 3);
+    assert.equal(pickLayoutColumns("collectionsColumns", "3"), 3);
+    assert.equal(isLayoutColumns("testimonialsColumns", "3"), false);
+    assert.equal(pickLayoutColumns("testimonialsColumns", NaN), 3);
   });
 });
