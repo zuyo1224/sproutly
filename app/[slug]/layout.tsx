@@ -14,6 +14,7 @@ import { telHref, socialUrl, mapsHref } from "@/lib/contact-href";
 import { contrastRatio, NON_TEXT_CONTRAST_MIN } from "@/lib/color-contrast";
 import { HERO_FULL_HEIGHT_VH, HERO_SPLIT_HEIGHT_VH } from "@/lib/hero-image-bounds";
 import {
+  SECTION_BODY_TRACKING_EM,
   SECTION_CARD_PADDING_PX,
   SECTION_HEADING_SCALE,
   SECTION_LINE_HEIGHT,
@@ -1005,17 +1006,19 @@ export default async function PublicStoreLayout({
            管的是同一批字。落在段落上是繼承值，元素自己 inline 寫死字距的那幾行（大標、
            小標）本來就蓋得掉這條，剛好是這格不想動的。
            卡片描述沒有自己的字距那格，會跟著這條走（卡片那邊只做過品名與全大寫小字）。
-           收緊 -0.02em / 撐開 0.06em，兩頭都比小標那種 0.4em 保守——內文要的是一整段讀得順。
+           收緊 -0.02em / 撐開 0.06em，兩頭都比小標那種 0.4em 保守——內文要的是一整段讀得順
+          （數字統一放在 lib/section-style-schema 的 SECTION_BODY_TRACKING_EM，卡片描述、
+           hero 副標那兩格與編輯器預覽同一張表）。
            除了直接寫 letter-spacing 也一併寫 --body-track：inline 寫死字距的那幾行裡，重點
            那段的引言是「該跟著這條走卻跟不到」的例外（大標、小標則是刻意不跟），它改讀變數。
            沒設（或選「預設」）就沒 attribute、整條規則不存在，既有店家一個字都不會變。 */
         section[data-edit-target][data-body-tracking="tight"] :is(p, li, blockquote, figcaption, dd) {
-          letter-spacing: -0.02em;
-          --body-track: -0.02em;
+          letter-spacing: ${SECTION_BODY_TRACKING_EM.tight}em;
+          --body-track: ${SECTION_BODY_TRACKING_EM.tight}em;
         }
         section[data-edit-target][data-body-tracking="wide"] :is(p, li, blockquote, figcaption, dd) {
-          letter-spacing: 0.06em;
-          --body-track: 0.06em;
+          letter-spacing: ${SECTION_BODY_TRACKING_EM.wide}em;
+          --body-track: ${SECTION_BODY_TRACKING_EM.wide}em;
         }
 
         /* 區段內容垂直位置：editor 各 section panel「內容垂直位置」三按鈕（靠上 / 置中 / 靠下）。
@@ -2144,16 +2147,16 @@ export default async function PublicStoreLayout({
            中文筆畫黏在一起、0.14em 會把一句話撐散成單字，那對值是照「一個詞」挑的。
            沒設就沒 attribute、整條規則不存在，既有店家一個字都不會動。 */
         section[data-edit-target][data-card-desc-tracking="tight"] {
-          --card-desc-track: -0.02em;
+          --card-desc-track: ${SECTION_BODY_TRACKING_EM.tight}em;
         }
         section[data-edit-target][data-card-desc-tracking="tight"] .sproutly-card-desc {
-          letter-spacing: -0.02em;
+          letter-spacing: ${SECTION_BODY_TRACKING_EM.tight}em;
         }
         section[data-edit-target][data-card-desc-tracking="wide"] {
-          --card-desc-track: 0.06em;
+          --card-desc-track: ${SECTION_BODY_TRACKING_EM.wide}em;
         }
         section[data-edit-target][data-card-desc-tracking="wide"] .sproutly-card-desc {
-          letter-spacing: 0.06em;
+          letter-spacing: ${SECTION_BODY_TRACKING_EM.wide}em;
         }
 
         /* 卡片小字字級：editor 各 section panel「卡片小字字級」三按鈕（小 / 跟預設 / 大）。

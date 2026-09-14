@@ -45,6 +45,7 @@ import { formatPrice } from "@/lib/format-price";
 import { jsonbText } from "@/lib/jsonb-text";
 import { roundTo } from "@/lib/round-to";
 import {
+  SECTION_BODY_TRACKING_EM,
   SECTION_BORDER_RADIUS_PX,
   SECTION_LINE_HEIGHT,
   SECTION_MIN_HEIGHT_VH,
@@ -1795,12 +1796,12 @@ export default async function StoreHomePage({
               ? { fontWeight: 500 }
               : {};
           // 副標沒有寫死的 base 字距（繼承 normal），所以這裡存的是絕對值不是相對量——
-          // 跟各段內文字距同一組數字（收緊 -0.02em / 撐開 0.06em）。
+          // 跟各段內文字距同一組數字（收緊 -0.02em / 撐開 0.06em，查 SECTION_BODY_TRACKING_EM）。
           const subtitleTrackStyle =
             theme.layout.heroSubtitleTracking === "tight"
-              ? { letterSpacing: "-0.02em" }
+              ? { letterSpacing: `${SECTION_BODY_TRACKING_EM.tight}em` }
               : theme.layout.heroSubtitleTracking === "wide"
-              ? { letterSpacing: "0.06em" }
+              ? { letterSpacing: `${SECTION_BODY_TRACKING_EM.wide}em` }
               : {};
           // 副標行距（五處共用）。五處 class 一律 leading-[1.9]——那是內文段落的行距，套在
           // 只有兩三行的副標上偏鬆，整段會散開成一塊灰色反而搶主標。各段內文的「行距」走

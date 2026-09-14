@@ -17,6 +17,7 @@ import {
   SECTION_STYLE_ENUMS,
   SECTION_STYLE_NEUTRAL_VALUES,
   SECTION_STYLE_COLOR_FIELDS,
+  SECTION_BODY_TRACKING_EM,
   SECTION_BORDER_RADIUS_PX,
   SECTION_CARD_PADDING_PX,
   SECTION_LINE_HEIGHT,
@@ -130,6 +131,19 @@ describe("SECTION_LINE_HEIGHT 跟 lineHeight 那欄對得起來", () => {
     }
     assert.ok(SECTION_LINE_HEIGHT.tight >= 1);
     assert.ok(SECTION_LINE_HEIGHT.tight < SECTION_LINE_HEIGHT.relaxed);
+  });
+});
+
+describe("SECTION_BODY_TRACKING_EM 跟 bodyTracking / cardDescTracking 那兩欄對得起來", () => {
+  it("表上的 key 就是 bodyTracking 除了 normal 以外的每一檔，沒多沒少；cardDescTracking 共用同一組檔位", () => {
+    const withValue = SECTION_STYLE_ENUMS.bodyTracking.filter((v) => v !== "normal");
+    assert.deepEqual(Object.keys(SECTION_BODY_TRACKING_EM).sort(), [...withValue].sort());
+    assert.deepEqual([...SECTION_STYLE_ENUMS.cardDescTracking], [...SECTION_STYLE_ENUMS.bodyTracking]);
+  });
+  it("收緊是負數、撐開是正數，兩頭都比小標那種 0.4em 保守", () => {
+    assert.ok(Number.isFinite(SECTION_BODY_TRACKING_EM.tight) && SECTION_BODY_TRACKING_EM.tight < 0);
+    assert.ok(Number.isFinite(SECTION_BODY_TRACKING_EM.wide) && SECTION_BODY_TRACKING_EM.wide > 0);
+    assert.ok(Math.abs(SECTION_BODY_TRACKING_EM.tight) < 0.4 && SECTION_BODY_TRACKING_EM.wide < 0.4);
   });
 });
 

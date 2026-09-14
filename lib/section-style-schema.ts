@@ -77,7 +77,8 @@ export const SECTION_STYLE_ENUMS = {
   // 沒有更精確的規則可蓋。等真有店家被「內文與卡片描述要不同字距」卡到再補一格。
   // 收緊給 -0.02em 不給更小：內文的字級本來就小，再往內收中文的筆畫會疊到隔壁的字。
   // 撐開給 0.06em 不給小標那種 0.4em：內文是要一整段讀得順，撐到那個程度一句話會散成
-  // 一個一個沒關係的字（那是小標那種兩三個詞才成立的樣式）。
+  // 一個一個沒關係的字（那是小標那種兩三個詞才成立的樣式）。數字統一放在下面的
+  // SECTION_BODY_TRACKING_EM，卡片描述與 hero 副標那兩格也共用同一張表。
   bodyTracking: ["tight", "normal", "wide"],
   // 標題用色（default 跟整段文字色 / accent 全站主色 / muted 跟次要文字同深淺）。
   // 區段裡用主色畫的一直只有配件——小標 eyebrow、標題底下那截短線、常見問題的＋——標題
@@ -1283,6 +1284,19 @@ export const SECTION_CARD_PADDING_PX = { tight: 8, normal: 14, loose: 22 } as co
  * 自己 class 的行高）。
  */
 export const SECTION_LINE_HEIGHT = { tight: 1.4, relaxed: 2 } as const;
+
+/**
+ * 「整句話」的字距兩檔對應的 em：收緊 -0.02em、撐開 0.06em。跟上面六張表不一樣的是這把尺
+ * 不只一格在用——區段「內文字距」（bodyTracking）、卡片描述字距（cardDescTracking）、hero
+ * 副標字距（theme.layout.heroSubtitleTracking）三格的註解本來就互指「跟內文那格同一對值」，
+ * 理由都一樣：套的是 14px 上下的整句話，收到品名那組的 -0.04em 中文筆畫會黏、撐到 0.14em
+ * 一句話散成單字。原本散在四處各寫一份：layout.tsx <style> 裡 data-body-tracking 兩條、
+ * data-card-desc-tracking 四條 CSS、公開頁 page.tsx 套 hero 副標 inline letter-spacing 的
+ * 算式、編輯器面板「副標字距」三顆按鈕自己套在字上的預覽值（商家看到的樣子）。品名那組
+ *（-0.04em／0.14em）、價錢那組（撐開 0.08em）、小標那種 0.4em 都是照別的字挑的，不合併。
+ * "normal" 不在表裡（不套、不發 attribute，字距維持繼承值）。
+ */
+export const SECTION_BODY_TRACKING_EM = { tight: -0.02, wide: 0.06 } as const;
 
 export const SECTION_STYLE_NEUTRAL_VALUES = {
   bodyAlign: "auto",
