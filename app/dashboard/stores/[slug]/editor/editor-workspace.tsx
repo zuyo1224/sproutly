@@ -46,7 +46,7 @@ import {
 } from "@/lib/theme-scale";
 import { FREE_POS_KEYS, SECTION_DRAG_ELEMENT, stripLegacyFreePositions } from "@/lib/free-positions";
 import type { SectionStyle } from "@/app/[slug]/_theme";
-import { applySectionStylePatch, type SectionStylePatch } from "@/lib/section-style-schema";
+import { applySectionStylePatch, SECTION_MIN_HEIGHT_VH, type SectionStylePatch } from "@/lib/section-style-schema";
 import { contrastRatio, relativeLuminance } from "@/lib/color-contrast";
 // 版面「只認清單內的值」的 44 格＋排成幾欄 6 格，型別直接從 lib/theme-layout-choices 那張表導出，
 // 跟存檔端（actions.ts）與讀回端（_theme.ts resolveLayout）吃同一份；表多一個值，這裡不用再抄一次
@@ -7834,7 +7834,7 @@ export function EditorWorkspace({
                   ))}
                 </div>
                 <div className="mt-1.5 flex items-center justify-between text-[11px] text-stone-500">
-                  <span>普通 跟著內容 · 高 80vh · 滿屏 100vh</span>
+                  <span>普通 跟著內容 · 高 {SECTION_MIN_HEIGHT_VH.tall}vh · 滿屏 {SECTION_MIN_HEIGHT_VH.fullscreen}vh</span>
                   {minHeight && (
                     <button
                       type="button"

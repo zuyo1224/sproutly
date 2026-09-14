@@ -257,7 +257,7 @@ export const SECTION_STYLE_ENUMS = {
   dividerStyle: ["solid", "dashed", "dotted"],
   // 該 section 標題字級（small 0.85x / default 1x / large 1.25x）
   headingScale: ["small", "default", "large"],
-  // 該 section 最低高度（auto 不限制 / tall 80vh / fullscreen 100vh）
+  // 該 section 最低高度（auto 不限制 / tall、fullscreen 各幾 vh 見 SECTION_MIN_HEIGHT_VH）
   minHeight: ["auto", "tall", "fullscreen"],
   // 內容垂直位置（top 靠上 / middle 置中 / bottom 靠下）。只有在這一段比內容高的時候才看得出
   // 差別，也就是設了上面那條「最低高度」之後——原本撐出來的空高一律留在內容下面，商家選了
@@ -1222,6 +1222,15 @@ export const SECTION_STYLE_ENUMS = {
 // 每一欄「等同沒設定」的那個值。editor 端商家選到它就把整欄 delete 掉（少一欄存進 DB，
 // 也讓「有沒有自訂」這件事只看 key 在不在）。沒列在這裡的欄位（headingAlign / paddingScale
 // / headingScale / minHeight）沒有這種值，只有明確按重設才清掉。
+/**
+ * 區段「最低高度」兩檔對應的螢幕高度百分比：高 80vh、滿屏 100vh。同一把尺原本散在
+ * 三處各寫一份：公開頁 page.tsx 套 inline min-height 的算式、編輯器面板按鈕下的 hint 字
+ *（商家看到的數字）、上面 SECTION_STYLE_ENUMS 那行註解。跟 lib/hero-image-bounds 的
+ * HERO_FULL_HEIGHT_VH 同寫法，但那是 hero 自己的「Hero 高度」、跟這格是不同功能碰巧同數字，
+ * 不合併。"auto" 不在表裡（跟著內容、不設 min-height）。
+ */
+export const SECTION_MIN_HEIGHT_VH = { tall: 80, fullscreen: 100 } as const;
+
 export const SECTION_STYLE_NEUTRAL_VALUES = {
   bodyAlign: "auto",
   bodyMeasure: "auto",

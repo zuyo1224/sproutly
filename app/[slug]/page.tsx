@@ -44,6 +44,7 @@ export async function generateMetadata({
 import { formatPrice } from "@/lib/format-price";
 import { jsonbText } from "@/lib/jsonb-text";
 import { roundTo } from "@/lib/round-to";
+import { SECTION_MIN_HEIGHT_VH } from "@/lib/section-style-schema";
 
 export default async function StoreHomePage({
   params,
@@ -159,9 +160,9 @@ export default async function StoreHomePage({
   // 上層繼承的內文大小（實測 30px 的標題渲染出來 16px），而且倍率乘的是內文而不是標題本身。
   // 改成跟標題粗細、標題底線同一招 data attribute：沒設就整條規則不存在，Tailwind 的字級原封
   // 不動；有設才套 layout.tsx 那份基準字級 × 倍率。
-  // 最小高度：auto 不設定 / tall 80vh / fullscreen 100vh
+  // 最小高度：auto 不設定 / tall、fullscreen 查 SECTION_MIN_HEIGHT_VH（跟編輯器 hint 同一張表）
   const minHeightToVal = (s: "auto" | "tall" | "fullscreen" | undefined) =>
-    s === "tall" ? "80vh" : s === "fullscreen" ? "100vh" : undefined;
+    s === "tall" || s === "fullscreen" ? `${SECTION_MIN_HEIGHT_VH[s]}vh` : undefined;
   // 外框：用 outline 不用 border 避免跟 divider borderTop/Bottom 衝突；outline-offset 設 negative 內凹
   // 只回粗細，顏色交給 mergeSectionStyle 算（見下面 lineColorFor：自訂文字色的段落線要跟著換）
   const outlineToVal = (s: "none" | "subtle" | "strong" | undefined) => {

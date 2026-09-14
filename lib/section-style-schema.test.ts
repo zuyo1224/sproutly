@@ -17,6 +17,7 @@ import {
   SECTION_STYLE_ENUMS,
   SECTION_STYLE_NEUTRAL_VALUES,
   SECTION_STYLE_COLOR_FIELDS,
+  SECTION_MIN_HEIGHT_VH,
   applySectionStylePatch,
   sanitizeSectionStyle,
   sanitizeSectionStyles,
@@ -40,6 +41,20 @@ describe("SECTION_STYLE_NEUTRAL_VALUES 與 SECTION_STYLE_ENUMS 對得起來", ()
       assert.equal(field in SECTION_STYLE_ENUMS, false);
       assert.equal(field in SECTION_STYLE_NEUTRAL_VALUES, false);
     }
+  });
+});
+
+describe("SECTION_MIN_HEIGHT_VH 跟 minHeight 那欄對得起來", () => {
+  it("表上的 key 就是 minHeight 除了 auto 以外的每一檔，沒多沒少", () => {
+    const withHeight = SECTION_STYLE_ENUMS.minHeight.filter((v) => v !== "auto");
+    assert.deepEqual(Object.keys(SECTION_MIN_HEIGHT_VH).sort(), [...withHeight].sort());
+  });
+  it("每一檔都是 0 到 100 之間的整數 vh，且滿屏一定是 100、比高的那檔高", () => {
+    for (const v of Object.values(SECTION_MIN_HEIGHT_VH)) {
+      assert.ok(Number.isInteger(v) && v > 0 && v <= 100);
+    }
+    assert.equal(SECTION_MIN_HEIGHT_VH.fullscreen, 100);
+    assert.ok(SECTION_MIN_HEIGHT_VH.tall < SECTION_MIN_HEIGHT_VH.fullscreen);
   });
 });
 
