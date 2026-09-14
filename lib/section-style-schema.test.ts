@@ -19,6 +19,7 @@ import {
   SECTION_STYLE_COLOR_FIELDS,
   SECTION_BORDER_RADIUS_PX,
   SECTION_CARD_PADDING_PX,
+  SECTION_LINE_HEIGHT,
   SECTION_HEADING_SCALE,
   SECTION_MEDIA_RADIUS_PX,
   SECTION_MIN_HEIGHT_VH,
@@ -115,6 +116,20 @@ describe("SECTION_CARD_PADDING_PX 跟 cardPadding 那欄對得起來", () => {
     }
     assert.ok(SECTION_CARD_PADDING_PX.tight < SECTION_CARD_PADDING_PX.normal);
     assert.ok(SECTION_CARD_PADDING_PX.normal < SECTION_CARD_PADDING_PX.loose);
+  });
+});
+
+describe("SECTION_LINE_HEIGHT 跟 lineHeight 那欄對得起來", () => {
+  it("表上的 key 就是 lineHeight 除了 normal 以外的每一檔，沒多沒少", () => {
+    const withValue = SECTION_STYLE_ENUMS.lineHeight.filter((v) => v !== "normal");
+    assert.deepEqual(Object.keys(SECTION_LINE_HEIGHT).sort(), [...withValue].sort());
+  });
+  it("每檔都是有限正數，緊湊 < 舒展，且緊湊不能比一般內文的 1 還擠", () => {
+    for (const v of Object.values(SECTION_LINE_HEIGHT)) {
+      assert.ok(Number.isFinite(v) && v > 0);
+    }
+    assert.ok(SECTION_LINE_HEIGHT.tight >= 1);
+    assert.ok(SECTION_LINE_HEIGHT.tight < SECTION_LINE_HEIGHT.relaxed);
   });
 });
 

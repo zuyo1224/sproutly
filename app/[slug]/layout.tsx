@@ -16,6 +16,7 @@ import { HERO_FULL_HEIGHT_VH, HERO_SPLIT_HEIGHT_VH } from "@/lib/hero-image-boun
 import {
   SECTION_CARD_PADDING_PX,
   SECTION_HEADING_SCALE,
+  SECTION_LINE_HEIGHT,
   SECTION_MEDIA_RADIUS_PX,
 } from "@/lib/section-style-schema";
 import { resolveTheme, themeToCssVars, HOMEPAGE_DEFAULTS } from "./_theme";
@@ -896,13 +897,14 @@ export default async function PublicStoreLayout({
            一律贏有分層的，所以這幾條規則蓋得過 leading-* class。
            只套內文元素（段落 / 條列 / 引言 / 圖說），不碰 h1-h3 —— 標題的行高是設計上跟
            字級綁在一起的（大標 1.05、卡片標題 1.4），跟著內文一起拉開會散掉；商家要調
-           標題另有字級 / 粗細 / 底線那一組控制。數值跟 page.tsx 的 lineHeightToVal 對齊。
+           標題另有字級 / 粗細 / 底線那一組控制。數值跟 page.tsx 的 lineHeightToVal 同讀
+           SECTION_LINE_HEIGHT，不會再各寫一份。
            沒設就沒 attribute、整條規則不存在，既有店家一行字都不會變。 */
         section[data-edit-target][data-line-height="tight"] :is(p, li, blockquote, figcaption, dd) {
-          line-height: 1.4;
+          line-height: ${SECTION_LINE_HEIGHT.tight};
         }
         section[data-edit-target][data-line-height="relaxed"] :is(p, li, blockquote, figcaption, dd) {
-          line-height: 2;
+          line-height: ${SECTION_LINE_HEIGHT.relaxed};
         }
 
         /* 區段內文對齊：editor 各 section panel「內文對齊」四按鈕（跟標題一致 / 左 / 中 / 右）。

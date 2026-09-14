@@ -44,7 +44,11 @@ export async function generateMetadata({
 import { formatPrice } from "@/lib/format-price";
 import { jsonbText } from "@/lib/jsonb-text";
 import { roundTo } from "@/lib/round-to";
-import { SECTION_BORDER_RADIUS_PX, SECTION_MIN_HEIGHT_VH } from "@/lib/section-style-schema";
+import {
+  SECTION_BORDER_RADIUS_PX,
+  SECTION_LINE_HEIGHT,
+  SECTION_MIN_HEIGHT_VH,
+} from "@/lib/section-style-schema";
 
 export default async function StoreHomePage({
   params,
@@ -192,15 +196,15 @@ export default async function StoreHomePage({
     if (s === "wide") return "0.12em";
     return undefined;
   };
-  // 行高：tight 緊湊（1.4，標題密集感）/ relaxed 舒展（2.0，長段落呼吸感）/ normal 預設不套
+  // 行高：tight 緊湊（標題密集感）/ relaxed 舒展（長段落呼吸感）/ normal 預設不套，數字見 SECTION_LINE_HEIGHT
   // line-height 是 CSS inherited 屬性，套到 section 後沒有自己行高的文字會自動繼承；
   // 大標自己 inline 設的 lineHeight 1.2 不受影響（直接 override 繼承值）。
   // 但真正的內文（描述、卡片說明、常見問題答案）幾乎每一段都掛著 Tailwind 的
   // leading-[1.9] 之類 class，元素自己的 class 一樣蓋掉繼承值 —— 那些才是商家調行高
   // 想調的字，所以另外走 data-line-height attribute 由 layout.tsx 補一條規則（見那裡）。
   const lineHeightToVal = (s: "tight" | "normal" | "relaxed" | undefined) => {
-    if (s === "tight") return 1.4;
-    if (s === "relaxed") return 2.0;
+    if (s === "tight") return SECTION_LINE_HEIGHT.tight;
+    if (s === "relaxed") return SECTION_LINE_HEIGHT.relaxed;
     return undefined;
   };
   // 內文一行字數：normal 約 34 字 / narrow 約 24 字 / auto 不限制（不套）

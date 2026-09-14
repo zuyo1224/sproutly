@@ -982,9 +982,9 @@ export const SECTION_STYLE_ENUMS = {
   entrance: ["none", "fade", "slide-up"],
   // 該 section 字體（default 跟全網站 / serif 思源宋體 / sans 思源黑體），讓某段獨立切字體
   fontFamily: ["default", "serif", "sans"],
-  // 字距（tight -0.02em / normal 預設 / wide 0.1em），雜誌大標常見 wide
+  // 字距（tight -0.02em / normal 預設 / wide 0.12em，數字只在 page.tsx letterSpacingToVal 一處），雜誌大標常見 wide
   letterSpacing: ["tight", "normal", "wide"],
-  // 行高（tight 1.4 緊湊 / normal 預設不套 / relaxed 2.0 舒展）
+  // 行高（tight 緊湊 / normal 預設不套 / relaxed 舒展，數字見 SECTION_LINE_HEIGHT）
   lineHeight: ["tight", "normal", "relaxed"],
   // 淡化（default 不套 / muted 0.85 / faint 0.7），讓次要 section 變淡襯托主角
   opacity: ["default", "muted", "faint"],
@@ -1272,6 +1272,17 @@ export const SECTION_MEDIA_RADIUS_PX = { soft: 14, round: 28 } as const;
  * 不收；cardRadius「更圓」的 26px 是單獨一處，也不收。
  */
 export const SECTION_CARD_PADDING_PX = { tight: 8, normal: 14, loose: 22 } as const;
+
+/**
+ * 區段「行高」兩檔對應的倍率：緊湊 1.4（標題密集感）、舒展 2（長段落呼吸感）。同一把尺原本
+ * 散在三處各寫一份：公開頁 page.tsx lineHeightToVal 套在 section 上的 inline line-height、
+ * layout.tsx <style> 裡 data-line-height 兩條蓋內文 leading-* class 的 CSS（那邊的註解還
+ * 特別叮嚀「數值跟 page.tsx 對齊」，以前只靠人記）、上面 SECTION_STYLE_ENUMS 那行註解。
+ * 跟上面五張表同一個理由收成一張。hero 副標的 heroSubtitleLeading 與卡片標題寫死的
+ * leading-[1.4] 是各自的尺，不合併。"normal" 不在表裡（不套、不發 attribute，文字維持
+ * 自己 class 的行高）。
+ */
+export const SECTION_LINE_HEIGHT = { tight: 1.4, relaxed: 2 } as const;
 
 export const SECTION_STYLE_NEUTRAL_VALUES = {
   bodyAlign: "auto",
