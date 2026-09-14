@@ -19,6 +19,7 @@ import {
   SECTION_STYLE_COLOR_FIELDS,
   SECTION_BORDER_RADIUS_PX,
   SECTION_HEADING_SCALE,
+  SECTION_MEDIA_RADIUS_PX,
   SECTION_MIN_HEIGHT_VH,
   applySectionStylePatch,
   sanitizeSectionStyle,
@@ -84,6 +85,19 @@ describe("SECTION_HEADING_SCALE 跟 headingScale 那欄對得起來", () => {
     }
     assert.ok(SECTION_HEADING_SCALE.small < 1);
     assert.ok(SECTION_HEADING_SCALE.large > 1);
+  });
+});
+
+describe("SECTION_MEDIA_RADIUS_PX 跟 mediaRadius 那欄對得起來", () => {
+  it("表上的 key 就是 mediaRadius 除了 none 以外的每一檔，沒多沒少", () => {
+    const withRadius = SECTION_STYLE_ENUMS.mediaRadius.filter((v) => v !== "none");
+    assert.deepEqual(Object.keys(SECTION_MEDIA_RADIUS_PX).sort(), [...withRadius].sort());
+  });
+  it("每檔都是正整數像素，圓潤比微圓圓", () => {
+    for (const v of Object.values(SECTION_MEDIA_RADIUS_PX)) {
+      assert.ok(Number.isInteger(v) && v > 0);
+    }
+    assert.ok(SECTION_MEDIA_RADIUS_PX.soft < SECTION_MEDIA_RADIUS_PX.round);
   });
 });
 

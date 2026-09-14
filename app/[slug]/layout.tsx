@@ -13,7 +13,7 @@ import { createClient } from "@/lib/supabase/server";
 import { telHref, socialUrl, mapsHref } from "@/lib/contact-href";
 import { contrastRatio, NON_TEXT_CONTRAST_MIN } from "@/lib/color-contrast";
 import { HERO_FULL_HEIGHT_VH, HERO_SPLIT_HEIGHT_VH } from "@/lib/hero-image-bounds";
-import { SECTION_HEADING_SCALE } from "@/lib/section-style-schema";
+import { SECTION_HEADING_SCALE, SECTION_MEDIA_RADIUS_PX } from "@/lib/section-style-schema";
 import { resolveTheme, themeToCssVars, HOMEPAGE_DEFAULTS } from "./_theme";
 import { FavoritesCounter } from "@/app/_components/favorite-button";
 import { CartIcon } from "@/app/_components/cart-icon";
@@ -1093,10 +1093,10 @@ export default async function PublicStoreLayout({
           overflow: hidden;
         }
         section[data-edit-target][data-media-radius="soft"] {
-          --store-media-radius: 14px;
+          --store-media-radius: ${SECTION_MEDIA_RADIUS_PX.soft}px;
         }
         section[data-edit-target][data-media-radius="round"] {
-          --store-media-radius: 28px;
+          --store-media-radius: ${SECTION_MEDIA_RADIUS_PX.round}px;
         }
 
         /* 內容欄寬：editor 各 section panel「內容欄寬」四按鈕（窄 / 照原本的 / 寬 / 滿版）。

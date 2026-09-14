@@ -270,7 +270,7 @@ export const SECTION_STYLE_ENUMS = {
   // 平板一律顯示：只有一欄，選了「手機不顯示」還要決定平板算不算手機，切在中間最好解釋
   // ——手機是 640 以下、桌機是 1024 以上，中間那段兩邊都不碰。
   hideOn: ["none", "mobile", "desktop"],
-  // 照片圓角（soft 14px / round 28px），只套這一段裡的照片，不動段落自己的框。
+  // 照片圓角（soft、round 各幾 px 見 SECTION_MEDIA_RADIUS_PX），只套這一段裡的照片，不動段落自己的框。
   // 站上的照片一律是接近直角的（商品卡的圖框固定 4px），這是全站寫死的一個值：
   // 商家把某一段設成圓角卡片（bgColor + borderRadius + shadow 那三件套）之後，段落的四角
   // 圓了、裡面的照片還是方的，兩個圓角對不起來反而更像沒做完；反過來想讓某一段的照片
@@ -1234,8 +1234,8 @@ export const SECTION_MIN_HEIGHT_VH = { tall: 80, fullscreen: 100 } as const;
 /**
  * 區段「圓角」兩檔對應的像素：微圓 16px、大圓 32px。跟 SECTION_MIN_HEIGHT_VH 同一個理由收成
  * 一張表：原本公開頁 page.tsx 套 inline border-radius 的算式、編輯器面板按鈕下的 hint 字
- *（商家看到的數字）、上面 SECTION_STYLE_ENUMS 那行註解各寫一份。imageRadius 那格的 14px／28px
- * 是「這一段裡的照片」的圓角、不是段落自己的框，另一把尺，不合併。"none" 不在表裡（不設
+ *（商家看到的數字）、上面 SECTION_STYLE_ENUMS 那行註解各寫一份。mediaRadius 那格
+ *（SECTION_MEDIA_RADIUS_PX）是「這一段裡的照片」的圓角、不是段落自己的框，另一把尺，不合併。"none" 不在表裡（不設
  * border-radius，維持直角）。
  */
 export const SECTION_BORDER_RADIUS_PX = { soft: 16, strong: 32 } as const;
@@ -1249,6 +1249,16 @@ export const SECTION_BORDER_RADIUS_PX = { soft: 16, strong: 32 } as const;
  * 不合併。"default" 不在表裡（不套規則，Tailwind 字級原樣）。
  */
 export const SECTION_HEADING_SCALE = { small: 0.85, large: 1.25 } as const;
+
+/**
+ * 區段「照片圓角」兩檔對應的像素：微圓 14px、圓潤 28px，套在 layout.tsx 那條
+ * --store-media-radius 變數上、只圓這一段裡的照片。跟上面三張表同一個理由收成一張：原本
+ * 公開頁 layout.tsx <style> 裡 data-media-radius 兩條 CSS、上面 SECTION_STYLE_ENUMS 那行註解
+ * 各寫一份（編輯器面板那格的 hint 字沒寫數字，所以只有這兩處）。SECTION_BORDER_RADIUS_PX 的
+ * 16／32 是段落自己的框，另一把尺，不合併。"none" 不在表裡（沒 attribute、整條規則不存在，
+ * 既有店家的照片一律不動）。
+ */
+export const SECTION_MEDIA_RADIUS_PX = { soft: 14, round: 28 } as const;
 
 export const SECTION_STYLE_NEUTRAL_VALUES = {
   bodyAlign: "auto",
