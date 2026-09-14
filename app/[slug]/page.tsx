@@ -25,6 +25,8 @@ import {
   HERO_IMAGE_MAX_HEIGHT_VH,
   HERO_SPLIT_HEIGHT_VH,
   heroTextGapScale,
+  padX,
+  padY,
   pickHeroImageBounds,
 } from "@/lib/hero-image-bounds";
 
@@ -2018,9 +2020,9 @@ export default async function StoreHomePage({
             const heroTextBgColor = theme.layout.heroTextBg ?? theme.bg;
             const heroTextPaddingStyle =
               theme.layout.heroTextPadding === "compact"
-                ? { paddingTop: "clamp(2rem, 5vw, 3rem)", paddingBottom: "clamp(2rem, 5vw, 3rem)" }
+                ? padY("clamp(2rem, 5vw, 3rem)")
                 : theme.layout.heroTextPadding === "spacious"
-                ? { paddingTop: "clamp(6rem, 12vw, 9rem)", paddingBottom: "clamp(6rem, 12vw, 9rem)" }
+                ? padY("clamp(6rem, 12vw, 9rem)")
                 : {};
             // 那段字自己內部的疏密（小標→主標→副標→按鈕）。原本寫死 mb-6 / mt-5 / mt-8
             //（1.5 / 1.25 / 2rem），上面兩格管的是那塊色塊的邊界離字有多遠，這格管的是
@@ -2752,9 +2754,9 @@ export default async function StoreHomePage({
             // 不是太擠就是只剩中間一條字。「跟預設」不輸出任何值，既有店家算出來一樣。
             const magPadXStyle =
               theme.layout.heroMagazinePadX === "narrow"
-                ? { paddingLeft: "clamp(1rem, 4vw, 1.5rem)", paddingRight: "clamp(1rem, 4vw, 1.5rem)" }
+                ? padX("clamp(1rem, 4vw, 1.5rem)")
                 : theme.layout.heroMagazinePadX === "wide"
-                  ? { paddingLeft: "clamp(2.5rem, 9vw, 6rem)", paddingRight: "clamp(2.5rem, 9vw, 6rem)" }
+                  ? padX("clamp(2.5rem, 9vw, 6rem)")
                   : undefined;
             // 上下那兩條線離這一段上下邊多遠。section 上的 py-20 sm:py-28 是寫死的，
             // 「大字與上下橫線的距離」那格清掉段高之後，線外面還是固定留 5–7rem。
@@ -2762,9 +2764,9 @@ export default async function StoreHomePage({
             // 線往邊或往中間移。「跟預設」不輸出任何值，既有店家算出來一模一樣。
             const magPadYStyle =
               theme.layout.heroMagazinePadY === "tight"
-                ? { paddingTop: "clamp(2rem, 5vw, 3.5rem)", paddingBottom: "clamp(2rem, 5vw, 3.5rem)" }
+                ? padY("clamp(2rem, 5vw, 3.5rem)")
                 : theme.layout.heroMagazinePadY === "roomy"
-                  ? { paddingTop: "clamp(8rem, 14vw, 12rem)", paddingBottom: "clamp(8rem, 14vw, 12rem)" }
+                  ? padY("clamp(8rem, 14vw, 12rem)")
                   : undefined;
             return (
               <section
@@ -2957,9 +2959,9 @@ export default async function StoreHomePage({
           // clamp 讓手機到桌機連續變化，不像原本的 sm 斷點那樣跳一階
           const minimalPaddingStyle =
             theme.layout.heroMinimalPadding === "compact"
-              ? { paddingTop: "clamp(4rem, 10vw, 7rem)", paddingBottom: "clamp(4rem, 10vw, 7rem)" }
+              ? padY("clamp(4rem, 10vw, 7rem)")
               : theme.layout.heroMinimalPadding === "spacious"
-              ? { paddingTop: "clamp(14rem, 24vw, 20rem)", paddingBottom: "clamp(14rem, 24vw, 20rem)" }
+              ? padY("clamp(14rem, 24vw, 20rem)")
               : {};
           // 這段字離螢幕左右兩邊多遠。欄寬那格給的是上限，桌機上才碰得到；手機螢幕比
           // 最窄那檔還窄，字離邊多遠就只剩這道 px-6 在決定，原本寫死 1.5rem。雜誌版型
@@ -2967,9 +2969,9 @@ export default async function StoreHomePage({
           // 「跟預設」不輸出任何值，既有店家算出來一模一樣。
           const minimalPadXStyle =
             theme.layout.heroMinimalPadX === "narrow"
-              ? { paddingLeft: "clamp(0.5rem, 2.5vw, 1rem)", paddingRight: "clamp(0.5rem, 2.5vw, 1rem)" }
+              ? padX("clamp(0.5rem, 2.5vw, 1rem)")
               : theme.layout.heroMinimalPadX === "wide"
-              ? { paddingLeft: "clamp(2.5rem, 9vw, 6rem)", paddingRight: "clamp(2.5rem, 9vw, 6rem)" }
+              ? padX("clamp(2.5rem, 9vw, 6rem)")
               : {};
           // 主標與按鈕之間那條短橫線：這個版型唯一的圖形，在做的是把字跟按鈕斷開。
           // 長度 24 / 48 / 96 三檔加一檔不顯示（hero 只放一行店名、連按鈕都不要的店，

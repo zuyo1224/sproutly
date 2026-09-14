@@ -24,6 +24,8 @@ import {
   HERO_IMAGE_MAX_HEIGHT_VH,
   HERO_TEXT_GAP_SCALE,
   heroTextGapScale,
+  padX,
+  padY,
   HERO_SPLIT_HEIGHT_VH,
   HERO_PREVIEW_ASPECT_MAX,
   HERO_PREVIEW_ASPECT_MIN,
@@ -175,6 +177,16 @@ describe("heroBannerGeometry（公開頁 banner 與編輯器預覽框共用的�
     assert.equal(heroTextGapScale("normal"), null);
     assert.equal(heroTextGapScale("tight"), HERO_TEXT_GAP_SCALE.tight);
     assert.equal(heroTextGapScale("loose"), HERO_TEXT_GAP_SCALE.loose);
+  });
+
+  // 滿版／雜誌／極簡三個版型的上下、左右內距那幾格都走這兩支：同一串 clamp 要同時套
+  // 兩邊，以前逐字寫兩次、改一邊漏另一邊就變成上緊下鬆。
+  it("padY／padX：同一個值套到成對的兩邊，且只有那兩個 key", () => {
+    assert.deepEqual(padY("clamp(2rem, 5vw, 3rem)"), {
+      paddingTop: "clamp(2rem, 5vw, 3rem)",
+      paddingBottom: "clamp(2rem, 5vw, 3rem)",
+    });
+    assert.deepEqual(padX("1.5rem"), { paddingLeft: "1.5rem", paddingRight: "1.5rem" });
   });
 
   it("HERO_FULL_HEIGHT_VH：矮 < 高 < 全屏，全屏就是整個螢幕", () => {

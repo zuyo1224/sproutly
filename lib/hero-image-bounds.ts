@@ -122,6 +122,21 @@ export function heroTextGapScale(choice: "tight" | "normal" | "loose"): number |
 }
 
 /**
+ * hero 各版型「上下內距」／「左右內距」那幾格的 inline style：同一個 clamp() 值要同時
+ * 塞給 paddingTop 與 paddingBottom（或 paddingLeft 與 paddingRight）。以前 page.tsx
+ * 滿版／雜誌／極簡三個版型共十行都把同一串 clamp 逐字寫兩次，改一邊漏另一邊就變成
+ * 上緊下鬆、左寬右窄——這種對稱寫錯肉眼在編輯器裡幾乎看不出來。
+ * 這裡只包「同一個值套兩邊」這件事，值本身仍由各版型自己決定（每個版型的尺不同）。
+ */
+export function padY(value: string): { paddingTop: string; paddingBottom: string } {
+  return { paddingTop: value, paddingBottom: value };
+}
+
+export function padX(value: string): { paddingLeft: string; paddingRight: string } {
+  return { paddingLeft: value, paddingRight: value };
+}
+
+/**
  * 編輯器「Hero 圖片」預覽框的寬高比範圍：3:4 到 3:1。面板窄，太直的照片會把整欄撐得
  * 很長，所以下限比公開頁的 split 圖寬。主體框與「整張顯示」收過上限的外框都走這一支。
  * 呼叫端拿回傳值跟原值比（clamped === aspect）判斷「有沒有被夾過」，夾過的不畫上限提示。
