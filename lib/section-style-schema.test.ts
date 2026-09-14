@@ -17,6 +17,7 @@ import {
   SECTION_STYLE_ENUMS,
   SECTION_STYLE_NEUTRAL_VALUES,
   SECTION_STYLE_COLOR_FIELDS,
+  SECTION_BORDER_RADIUS_PX,
   SECTION_MIN_HEIGHT_VH,
   applySectionStylePatch,
   sanitizeSectionStyle,
@@ -55,6 +56,19 @@ describe("SECTION_MIN_HEIGHT_VH 跟 minHeight 那欄對得起來", () => {
     }
     assert.equal(SECTION_MIN_HEIGHT_VH.fullscreen, 100);
     assert.ok(SECTION_MIN_HEIGHT_VH.tall < SECTION_MIN_HEIGHT_VH.fullscreen);
+  });
+});
+
+describe("SECTION_BORDER_RADIUS_PX 跟 borderRadius 那欄對得起來", () => {
+  it("表上的 key 就是 borderRadius 除了 none 以外的每一檔，沒多沒少", () => {
+    const withRadius = SECTION_STYLE_ENUMS.borderRadius.filter((v) => v !== "none");
+    assert.deepEqual(Object.keys(SECTION_BORDER_RADIUS_PX).sort(), [...withRadius].sort());
+  });
+  it("每一檔都是正整數 px，且大圓比微圓大", () => {
+    for (const v of Object.values(SECTION_BORDER_RADIUS_PX)) {
+      assert.ok(Number.isInteger(v) && v > 0);
+    }
+    assert.ok(SECTION_BORDER_RADIUS_PX.soft < SECTION_BORDER_RADIUS_PX.strong);
   });
 });
 

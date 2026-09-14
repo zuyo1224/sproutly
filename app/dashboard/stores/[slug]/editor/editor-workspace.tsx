@@ -46,7 +46,7 @@ import {
 } from "@/lib/theme-scale";
 import { FREE_POS_KEYS, SECTION_DRAG_ELEMENT, stripLegacyFreePositions } from "@/lib/free-positions";
 import type { SectionStyle } from "@/app/[slug]/_theme";
-import { applySectionStylePatch, SECTION_MIN_HEIGHT_VH, type SectionStylePatch } from "@/lib/section-style-schema";
+import { applySectionStylePatch, SECTION_BORDER_RADIUS_PX, SECTION_MIN_HEIGHT_VH, type SectionStylePatch } from "@/lib/section-style-schema";
 import { contrastRatio, relativeLuminance } from "@/lib/color-contrast";
 // 版面「只認清單內的值」的 44 格＋排成幾欄 6 格，型別直接從 lib/theme-layout-choices 那張表導出，
 // 跟存檔端（actions.ts）與讀回端（_theme.ts resolveLayout）吃同一份；表多一個值，這裡不用再抄一次
@@ -8363,7 +8363,7 @@ export function EditorWorkspace({
                   ))}
                 </div>
                 <div className="mt-1.5 flex items-center justify-between text-[11px] text-stone-500">
-                  <span>微圓 16px · 大圓 32px（搭配背景色 / 陰影像卡片）</span>
+                  <span>微圓 {SECTION_BORDER_RADIUS_PX.soft}px · 大圓 {SECTION_BORDER_RADIUS_PX.strong}px（搭配背景色 / 陰影像卡片）</span>
                   {borderRadius && (
                     <button
                       type="button"

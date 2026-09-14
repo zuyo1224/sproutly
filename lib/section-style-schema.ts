@@ -976,7 +976,7 @@ export const SECTION_STYLE_ENUMS = {
   outlineStyle: ["solid", "dashed", "dotted"],
   // 陰影（soft 淺 / deep 深），讓有 bgColor 的 section 像卡片浮起
   shadow: ["none", "soft", "deep"],
-  // 圓角（soft 16px / strong 32px），跟 bgColor + outline + shadow 三件套組成卡片風
+  // 圓角（soft、strong 各幾 px 見 SECTION_BORDER_RADIUS_PX），跟 bgColor + outline + shadow 三件套組成卡片風
   borderRadius: ["none", "soft", "strong"],
   // 進場動畫（fade 淡入 / slide-up 上滑），靠 CSS scroll-driven 觸發，edit mode 內 disable
   entrance: ["none", "fade", "slide-up"],
@@ -1230,6 +1230,15 @@ export const SECTION_STYLE_ENUMS = {
  * 不合併。"auto" 不在表裡（跟著內容、不設 min-height）。
  */
 export const SECTION_MIN_HEIGHT_VH = { tall: 80, fullscreen: 100 } as const;
+
+/**
+ * 區段「圓角」兩檔對應的像素：微圓 16px、大圓 32px。跟 SECTION_MIN_HEIGHT_VH 同一個理由收成
+ * 一張表：原本公開頁 page.tsx 套 inline border-radius 的算式、編輯器面板按鈕下的 hint 字
+ *（商家看到的數字）、上面 SECTION_STYLE_ENUMS 那行註解各寫一份。imageRadius 那格的 14px／28px
+ * 是「這一段裡的照片」的圓角、不是段落自己的框，另一把尺，不合併。"none" 不在表裡（不設
+ * border-radius，維持直角）。
+ */
+export const SECTION_BORDER_RADIUS_PX = { soft: 16, strong: 32 } as const;
 
 export const SECTION_STYLE_NEUTRAL_VALUES = {
   bodyAlign: "auto",

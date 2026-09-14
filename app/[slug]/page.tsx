@@ -44,7 +44,7 @@ export async function generateMetadata({
 import { formatPrice } from "@/lib/format-price";
 import { jsonbText } from "@/lib/jsonb-text";
 import { roundTo } from "@/lib/round-to";
-import { SECTION_MIN_HEIGHT_VH } from "@/lib/section-style-schema";
+import { SECTION_BORDER_RADIUS_PX, SECTION_MIN_HEIGHT_VH } from "@/lib/section-style-schema";
 
 export default async function StoreHomePage({
   params,
@@ -176,12 +176,10 @@ export default async function StoreHomePage({
     if (s === "deep") return "0 2px 4px rgba(0,0,0,0.06), 0 12px 32px rgba(0,0,0,0.1)";
     return undefined;
   };
-  // 圓角：soft 16px / strong 32px，搭配 bgColor + outline + shadow 三件套讓 section 像卡片
-  const radiusToVal = (s: "none" | "soft" | "strong" | undefined) => {
-    if (s === "soft") return "16px";
-    if (s === "strong") return "32px";
-    return undefined;
-  };
+  // 圓角：none 不設定 / soft、strong 查 SECTION_BORDER_RADIUS_PX（跟編輯器 hint 同一張表），
+  // 搭配 bgColor + outline + shadow 三件套讓 section 像卡片
+  const radiusToVal = (s: "none" | "soft" | "strong" | undefined) =>
+    s === "soft" || s === "strong" ? `${SECTION_BORDER_RADIUS_PX[s]}px` : undefined;
   // 字體：serif 思源宋體（雜誌風）/ sans 思源黑體（現代），對齊 _theme.ts FONT_LABELS 的 noto-serif / noto
   const fontFamilyToVal = (s: "default" | "serif" | "sans" | undefined) => {
     if (s === "serif") return "var(--font-noto-serif), 'Times New Roman', serif";
