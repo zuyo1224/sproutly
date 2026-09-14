@@ -390,7 +390,7 @@ export const SECTION_STYLE_ENUMS = {
   // 商家原本沒有一格動得到——「卡片間距」調的是卡片彼此之間的距離、「區段空白」跟
   // 「上下外距」調的是段落外圍，卡片裡面那圈一動也不動。
   // 圓角跟著一起收放：內距收緊還留 14px 的圓角，框的四角會比裡面的照片圓得多，看起來像
-  // 兩個對不上的形狀；三檔的圓角照內距等比走（8 / 14 / 22px）。
+  // 兩個對不上的形狀；三檔的圓角照內距等比走（數字見下面 SECTION_CARD_PADDING_PX）。
   cardPadding: ["tight", "normal", "loose"],
   // 卡片圓角（square 直角 / auto 跟著內距走 / round 更圓），設了卡片底或框之後才有意義。
   // 上面那格把圓角綁在內距上（8 / 14 / 22px）是為了讓框的四角跟裡面的照片對得起來，多數
@@ -1259,6 +1259,19 @@ export const SECTION_HEADING_SCALE = { small: 0.85, large: 1.25 } as const;
  * 既有店家的照片一律不動）。
  */
 export const SECTION_MEDIA_RADIUS_PX = { soft: 14, round: 28 } as const;
+
+/**
+ * 區段「卡片內距」三檔對應的像素：收緊 8px、跟預設 14px、放寬 22px，套在 layout.tsx 設了卡片
+ * 底或框之後那組 .sproutly-card 規則的 padding 上；卡片自己的 border-radius 也照同一個數字
+ * 等比走（內距收緊還留 14px 的圓角，框的四角會比裡面的照片圓得多）。跟上面四張表同一個理由
+ * 收成一張：原本 layout.tsx <style> 裡基準那條（14px 兩次）、data-card-padding 收緊／放寬
+ * 兩條（8px／22px 各兩次）、上面 SECTION_STYLE_ENUMS 那行註解各寫一份（編輯器面板那格的
+ * hint 字沒寫數字）。跟前四張表不同的是「跟預設」也在表裡：那一檔不是沒 attribute 就沒規則，
+ * 而是基準那條寫死的 14px，收緊／放寬是蓋在它上面的。引言卡（.sproutly-promise-card）與
+ * 來坐坐（.sproutly-visit-card）另接的 rem 那兩組是照整段一塊大板子挑的、跟這把尺無關，
+ * 不收；cardRadius「更圓」的 26px 是單獨一處，也不收。
+ */
+export const SECTION_CARD_PADDING_PX = { tight: 8, normal: 14, loose: 22 } as const;
 
 export const SECTION_STYLE_NEUTRAL_VALUES = {
   bodyAlign: "auto",

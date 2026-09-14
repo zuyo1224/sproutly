@@ -18,6 +18,7 @@ import {
   SECTION_STYLE_NEUTRAL_VALUES,
   SECTION_STYLE_COLOR_FIELDS,
   SECTION_BORDER_RADIUS_PX,
+  SECTION_CARD_PADDING_PX,
   SECTION_HEADING_SCALE,
   SECTION_MEDIA_RADIUS_PX,
   SECTION_MIN_HEIGHT_VH,
@@ -98,6 +99,22 @@ describe("SECTION_MEDIA_RADIUS_PX 跟 mediaRadius 那欄對得起來", () => {
       assert.ok(Number.isInteger(v) && v > 0);
     }
     assert.ok(SECTION_MEDIA_RADIUS_PX.soft < SECTION_MEDIA_RADIUS_PX.round);
+  });
+});
+
+describe("SECTION_CARD_PADDING_PX 跟 cardPadding 那欄對得起來", () => {
+  it("表上的 key 就是 cardPadding 的三檔，沒多沒少（跟預設也在表裡：那檔是基準那條寫死的數字）", () => {
+    assert.deepEqual(
+      Object.keys(SECTION_CARD_PADDING_PX).sort(),
+      [...SECTION_STYLE_ENUMS.cardPadding].sort()
+    );
+  });
+  it("每檔都是正整數像素，收緊 < 跟預設 < 放寬", () => {
+    for (const v of Object.values(SECTION_CARD_PADDING_PX)) {
+      assert.ok(Number.isInteger(v) && v > 0);
+    }
+    assert.ok(SECTION_CARD_PADDING_PX.tight < SECTION_CARD_PADDING_PX.normal);
+    assert.ok(SECTION_CARD_PADDING_PX.normal < SECTION_CARD_PADDING_PX.loose);
   });
 });
 

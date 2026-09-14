@@ -13,7 +13,11 @@ import { createClient } from "@/lib/supabase/server";
 import { telHref, socialUrl, mapsHref } from "@/lib/contact-href";
 import { contrastRatio, NON_TEXT_CONTRAST_MIN } from "@/lib/color-contrast";
 import { HERO_FULL_HEIGHT_VH, HERO_SPLIT_HEIGHT_VH } from "@/lib/hero-image-bounds";
-import { SECTION_HEADING_SCALE, SECTION_MEDIA_RADIUS_PX } from "@/lib/section-style-schema";
+import {
+  SECTION_CARD_PADDING_PX,
+  SECTION_HEADING_SCALE,
+  SECTION_MEDIA_RADIUS_PX,
+} from "@/lib/section-style-schema";
 import { resolveTheme, themeToCssVars, HOMEPAGE_DEFAULTS } from "./_theme";
 import { FavoritesCounter } from "@/app/_components/favorite-button";
 import { CartIcon } from "@/app/_components/cart-icon";
@@ -1523,8 +1527,8 @@ export default async function PublicStoreLayout({
            兩個名字寫進同一個 :is()，分量取自最重的那個＝跟原本的單一 class 一樣重，
            排在後面的規則照樣壓得過前面的，既有四段一個像素都沒動。 */
         section[data-edit-target][data-card-surface] :is(.sproutly-card,.sproutly-card-box) {
-          padding: 14px;
-          border-radius: 14px;
+          padding: ${SECTION_CARD_PADDING_PX.normal}px;
+          border-radius: ${SECTION_CARD_PADDING_PX.normal}px;
           transition: box-shadow 0.7s cubic-bezier(0.22, 1, 0.36, 1),
                       transform 0.7s cubic-bezier(0.22, 1, 0.36, 1);
         }
@@ -1550,16 +1554,17 @@ export default async function PublicStoreLayout({
            只有品名跟價錢兩行，同樣 14px 佔的比例大得多，照片被框擠小。
            商家原本沒有一格動得到——「卡片間距」調的是卡片彼此之間、「區段空白」與
            「上下外距」調的是段落外圍，卡片裡面那圈一動也不動。
-           圓角跟著等比走（8 / 14 / 22px）：內距收緊還留 14px 的圓角，框的四角會比裡面的
-           照片圓得多，變成兩個對不上的形狀。
+           圓角跟著等比走（8 / 14 / 22px，數字統一放在 lib/section-style-schema 的
+           SECTION_CARD_PADDING_PX，上面基準那條的 14px 也是讀它）：內距收緊還留 14px 的
+           圓角，框的四角會比裡面的照片圓得多，變成兩個對不上的形狀。
            沒設（或選「跟預設」）就沒 attribute，維持上面那組 14px。 */
         section[data-edit-target][data-card-surface][data-card-padding="tight"] :is(.sproutly-card,.sproutly-card-box) {
-          padding: 8px;
-          border-radius: 8px;
+          padding: ${SECTION_CARD_PADDING_PX.tight}px;
+          border-radius: ${SECTION_CARD_PADDING_PX.tight}px;
         }
         section[data-edit-target][data-card-surface][data-card-padding="loose"] :is(.sproutly-card,.sproutly-card-box) {
-          padding: 22px;
-          border-radius: 22px;
+          padding: ${SECTION_CARD_PADDING_PX.loose}px;
+          border-radius: ${SECTION_CARD_PADDING_PX.loose}px;
         }
 
         /* 引言卡的內距：Promise 那段只有一張卡，佔滿整段的寬、中間一句大字，上面那組的
