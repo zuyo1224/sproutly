@@ -21,6 +21,7 @@ import {
   SECTION_BORDER_RADIUS_PX,
   SECTION_CARD_PADDING_PX,
   SECTION_LINE_HEIGHT,
+  SECTION_MICRO_LEADING,
   SECTION_HEADING_SCALE,
   SECTION_MEDIA_RADIUS_PX,
   SECTION_MIN_HEIGHT_VH,
@@ -311,5 +312,23 @@ describe("applySectionStylePatch", () => {
       { headingAlign: "center", hideOn: "desktop", bgColor: "#1f6f3f", textColor: null }
     );
     assert.deepEqual(sanitizeSectionStyle(next), next);
+  });
+});
+
+describe("SECTION_MICRO_LEADING 跟小標行距、卡片小字行距兩欄對得起來", () => {
+  it("表上的 key 就是 eyebrowLeading 除了 normal 以外的每一檔，且 cardMicroLeading 檔位跟它一樣", () => {
+    const withValue = SECTION_STYLE_ENUMS.eyebrowLeading.filter((v) => v !== "normal");
+    assert.deepEqual(Object.keys(SECTION_MICRO_LEADING).sort(), [...withValue].sort());
+    assert.deepEqual(
+      [...SECTION_STYLE_ENUMS.cardMicroLeading].sort(),
+      [...SECTION_STYLE_ENUMS.eyebrowLeading].sort()
+    );
+  });
+  it("每檔都是有限正數，收緊 < 拉開，且收緊不能比 1 還擠（中文兩行會疊到筆畫）", () => {
+    for (const v of Object.values(SECTION_MICRO_LEADING)) {
+      assert.ok(Number.isFinite(v) && v > 0);
+    }
+    assert.ok(SECTION_MICRO_LEADING.tight >= 1);
+    assert.ok(SECTION_MICRO_LEADING.tight < SECTION_MICRO_LEADING.loose);
   });
 });

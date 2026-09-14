@@ -168,6 +168,7 @@ export const SECTION_STYLE_ENUMS = {
   // 的比例，字放大了兩行之間只會更遠）、「標題塊裡面」調的是小標跟大標之間那截 margin，
   // 同一行字自己換行的距離不歸它管、「段落大標行距」落在 h2 上，這行是 p。
   // 收緊給 1.15 不給更小：中文的字在行框裡本來就佔滿，1.0 以下上下兩行會真的疊到筆畫。
+  // 數字在 SECTION_MICRO_LEADING（跟卡片小字行距那格共用一把尺）。
   eyebrowLeading: ["tight", "normal", "loose"],
   // 小標用色（accent 全站主色 / muted 跟次要文字同深淺 / text 跟內文同深 / normal 照這一段
   // 原本的），只套段落最上面那行小標。那行的字距、大小、粗細、行距都補過了，顏色是這一組
@@ -766,7 +767,7 @@ export const SECTION_STYLE_ENUMS = {
   // 自己換行的距離不歸它管；「卡片小字字距」動的是同一行裡字與字之間；「卡片標題行距」與
   // 「卡片描述行距」的規則各帶自己的 class，都跳過這幾行。
   // 收緊給 1.15 不給更小，跟小標行距那格同一個理由：中文的字在行框裡本來就佔滿，1.0 以下
-  // 上下兩行會疊到筆畫。
+  // 上下兩行會疊到筆畫。數字在 SECTION_MICRO_LEADING（跟小標行距那格共用一把尺）。
   cardMicroLeading: ["tight", "normal", "loose"],
   // 卡片小字粗細（light 常規 400 / normal 照這一段原本的 / medium 中黑 500 / bold 粗 700），
   // 套的是跟上面兩格同一批小字——選物卡片底下的「看更多」、慢讀卡片上面的分類與底下的標籤、
@@ -1297,6 +1298,20 @@ export const SECTION_LINE_HEIGHT = { tight: 1.4, relaxed: 2 } as const;
  * "normal" 不在表裡（不套、不發 attribute，字距維持繼承值）。
  */
 export const SECTION_BODY_TRACKING_EM = { tight: -0.02, wide: 0.06 } as const;
+
+/**
+ * 「10px 小字」換行後兩行之間的行距兩檔：收緊 1.15、拉開 2.2。跟 SECTION_BODY_TRACKING_EM
+ * 一樣是一把尺兩格在用——段落最上面那行小標（eyebrowLeading）與卡片上那幾行小字
+ *（cardMicroLeading，選物「看更多」、慢讀分類與標籤、精選「剩 N」）。兩格的處境一模一樣：
+ * 都是 <p>、沒帶 leading class、行距整條繼承段落那層的內文行高，換行後兩行之間空得比字還
+ * 高；收緊都停在 1.15 不給更小，因為中文的字在行框裡本來就佔滿，1.0 以下上下兩行會疊到
+ * 筆畫。原本散在 layout.tsx <style> 裡 data-eyebrow-leading 兩條與 data-card-micro-leading
+ * 兩條 CSS 各寫一份，註解互指「跟小標那組同一個理由」、以前只靠人記。hero 自己的小標
+ *（theme.layout.heroEyebrowLeading，1.2／2）、卡片品名（1.15／1.75）、卡片描述（1.4／1.95）
+ * 是照各自的字挑的，碰巧有同數字也不合併。"normal" 不在表裡（不套、不發 attribute，
+ * 行距維持繼承值）。
+ */
+export const SECTION_MICRO_LEADING = { tight: 1.15, loose: 2.2 } as const;
 
 export const SECTION_STYLE_NEUTRAL_VALUES = {
   bodyAlign: "auto",

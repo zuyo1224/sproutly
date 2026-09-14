@@ -19,6 +19,7 @@ import {
   SECTION_HEADING_SCALE,
   SECTION_LINE_HEIGHT,
   SECTION_MEDIA_RADIUS_PX,
+  SECTION_MICRO_LEADING,
 } from "@/lib/section-style-schema";
 import { resolveTheme, themeToCssVars, HOMEPAGE_DEFAULTS } from "./_theme";
 import { FavoritesCounter } from "@/app/_components/favorite-button";
@@ -2222,12 +2223,13 @@ export default async function PublicStoreLayout({
            描述、引言、答案全部一起被收緊。這條帶 class（attribute 數也多一個），無論商家
            有沒有同時設行高都壓得過去。
            收緊給 1.15 不給更小，跟小標那組同一個理由：中文的字在行框裡本來就佔滿，1.0 以下
-           上下兩行會疊到筆畫。沒設就沒 attribute、整條規則不存在，既有店家一行字都不會動。 */
+           上下兩行會疊到筆畫。數字跟小標那組共用 SECTION_MICRO_LEADING。
+           沒設就沒 attribute、整條規則不存在，既有店家一行字都不會動。 */
         section[data-edit-target][data-card-micro-leading="tight"] .sproutly-card-micro {
-          line-height: 1.15;
+          line-height: ${SECTION_MICRO_LEADING.tight};
         }
         section[data-edit-target][data-card-micro-leading="loose"] .sproutly-card-micro {
-          line-height: 2.2;
+          line-height: ${SECTION_MICRO_LEADING.loose};
         }
 
         /* 卡片小字粗細：editor 各 section panel「卡片小字粗細」四按鈕（常規 / 跟預設 /
@@ -2870,12 +2872,13 @@ export default async function PublicStoreLayout({
            所以這兩條寫成 attribute + class：屬性數比行高那條多一個（那條是 section + 2 個
            attribute + 元素），無論商家有沒有同時設行高都壓得過去。
            收緊給 1.15 不給更小：中文的字在行框裡本來就佔滿，1.0 以下上下兩行會疊到筆畫。
+           數字跟卡片小字那組共用 SECTION_MICRO_LEADING。
            沒設就沒 attribute、整條規則不存在，既有店家的小標一行字都不會動。 */
         section[data-edit-target][data-eyebrow-leading="tight"] .sproutly-section-eyebrow {
-          line-height: 1.15;
+          line-height: ${SECTION_MICRO_LEADING.tight};
         }
         section[data-edit-target][data-eyebrow-leading="loose"] .sproutly-section-eyebrow {
-          line-height: 2.2;
+          line-height: ${SECTION_MICRO_LEADING.loose};
         }
 
         /* 小標大小寫：editor 各 section panel「小標大小寫」三按鈕（全大寫 / 字首大寫 / 照原樣）。
