@@ -13,6 +13,7 @@ import { createClient } from "@/lib/supabase/server";
 import { telHref, socialUrl, mapsHref } from "@/lib/contact-href";
 import { contrastRatio, NON_TEXT_CONTRAST_MIN } from "@/lib/color-contrast";
 import { HERO_FULL_HEIGHT_VH, HERO_SPLIT_HEIGHT_VH } from "@/lib/hero-image-bounds";
+import { SECTION_HEADING_SCALE } from "@/lib/section-style-schema";
 import { resolveTheme, themeToCssVars, HOMEPAGE_DEFAULTS } from "./_theme";
 import { FavoritesCounter } from "@/app/_components/favorite-button";
 import { CartIcon } from "@/app/_components/cart-icon";
@@ -734,7 +735,8 @@ export default async function PublicStoreLayout({
           }
         }
 
-        /* 區段標題字級：editor 各 section panel「標題大小」三按鈕（小 0.85 / 預設 1 / 大 1.25）。
+        /* 區段標題字級：editor 各 section panel「標題大小」三按鈕（小 / 預設 / 大，倍率查
+           lib/section-style-schema 的 SECTION_HEADING_SCALE，跟編輯器 hint 同一張表）。
            這條規則以前是「所有 section h2 一律 font-size: calc(1em * var(--store-heading-scale, 1))」
            ——沒設定的店家也吃得到，而 1em 是相對「上一層」的字級，不是 h2 自己的。這個 CSS
            沒有包在 @layer 裡，Tailwind v4 的工具類全在 @layer utilities，沒分層的一律贏有分層的，
@@ -779,10 +781,10 @@ export default async function PublicStoreLayout({
           }
         }
         section[data-edit-target]:not([data-edit-target="hero"])[data-heading-scale="small"] h2 {
-          font-size: calc(var(--store-h2-base, 1.5rem) * 0.85);
+          font-size: calc(var(--store-h2-base, 1.5rem) * ${SECTION_HEADING_SCALE.small});
         }
         section[data-edit-target]:not([data-edit-target="hero"])[data-heading-scale="large"] h2 {
-          font-size: calc(var(--store-h2-base, 1.5rem) * 1.25);
+          font-size: calc(var(--store-h2-base, 1.5rem) * ${SECTION_HEADING_SCALE.large});
         }
 
         /* 區段標題粗細：editor 各 section panel「標題粗細」三按鈕（細 / 預設 / 粗）。

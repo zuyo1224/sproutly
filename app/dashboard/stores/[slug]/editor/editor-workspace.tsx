@@ -46,7 +46,7 @@ import {
 } from "@/lib/theme-scale";
 import { FREE_POS_KEYS, SECTION_DRAG_ELEMENT, stripLegacyFreePositions } from "@/lib/free-positions";
 import type { SectionStyle } from "@/app/[slug]/_theme";
-import { applySectionStylePatch, SECTION_BORDER_RADIUS_PX, SECTION_MIN_HEIGHT_VH, type SectionStylePatch } from "@/lib/section-style-schema";
+import { applySectionStylePatch, SECTION_BORDER_RADIUS_PX, SECTION_HEADING_SCALE, SECTION_MIN_HEIGHT_VH, type SectionStylePatch } from "@/lib/section-style-schema";
 import { contrastRatio, relativeLuminance } from "@/lib/color-contrast";
 // 版面「只認清單內的值」的 44 格＋排成幾欄 6 格，型別直接從 lib/theme-layout-choices 那張表導出，
 // 跟存檔端（actions.ts）與讀回端（_theme.ts resolveLayout）吃同一份；表多一個值，這裡不用再抄一次
@@ -7495,7 +7495,7 @@ export function EditorWorkspace({
                   ))}
                 </div>
                 <div className="mt-1.5 flex items-center justify-between text-[11px] text-stone-500">
-                  <span>小 0.85x · 預設 1x · 大 1.25x</span>
+                  <span>小 {SECTION_HEADING_SCALE.small}x · 預設 1x · 大 {SECTION_HEADING_SCALE.large}x</span>
                   {headingScale && (
                     <button
                       type="button"

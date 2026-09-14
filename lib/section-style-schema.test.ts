@@ -18,6 +18,7 @@ import {
   SECTION_STYLE_NEUTRAL_VALUES,
   SECTION_STYLE_COLOR_FIELDS,
   SECTION_BORDER_RADIUS_PX,
+  SECTION_HEADING_SCALE,
   SECTION_MIN_HEIGHT_VH,
   applySectionStylePatch,
   sanitizeSectionStyle,
@@ -69,6 +70,20 @@ describe("SECTION_BORDER_RADIUS_PX 跟 borderRadius 那欄對得起來", () => {
       assert.ok(Number.isInteger(v) && v > 0);
     }
     assert.ok(SECTION_BORDER_RADIUS_PX.soft < SECTION_BORDER_RADIUS_PX.strong);
+  });
+});
+
+describe("SECTION_HEADING_SCALE 跟 headingScale 那欄對得起來", () => {
+  it("表上的 key 就是 headingScale 除了 default 以外的每一檔，沒多沒少", () => {
+    const withScale = SECTION_STYLE_ENUMS.headingScale.filter((v) => v !== "default");
+    assert.deepEqual(Object.keys(SECTION_HEADING_SCALE).sort(), [...withScale].sort());
+  });
+  it("小在 1 以下、大在 1 以上，都是有限正數（乘進 calc() 不能是 NaN）", () => {
+    for (const v of Object.values(SECTION_HEADING_SCALE)) {
+      assert.ok(Number.isFinite(v) && v > 0);
+    }
+    assert.ok(SECTION_HEADING_SCALE.small < 1);
+    assert.ok(SECTION_HEADING_SCALE.large > 1);
   });
 });
 

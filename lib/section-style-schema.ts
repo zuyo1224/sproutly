@@ -255,7 +255,7 @@ export const SECTION_STYLE_ENUMS = {
   //（配上主色就是手作感網站常見的圓點裝飾線）。
   // 沒設就完全不覆寫，border 字串跟以前一字不差，既有店家一條線都不會變。
   dividerStyle: ["solid", "dashed", "dotted"],
-  // 該 section 標題字級（small 0.85x / default 1x / large 1.25x）
+  // 該 section 標題字級（default 不套 / small、large 各乘幾倍見 SECTION_HEADING_SCALE）
   headingScale: ["small", "default", "large"],
   // 該 section 最低高度（auto 不限制 / tall、fullscreen 各幾 vh 見 SECTION_MIN_HEIGHT_VH）
   minHeight: ["auto", "tall", "fullscreen"],
@@ -1239,6 +1239,16 @@ export const SECTION_MIN_HEIGHT_VH = { tall: 80, fullscreen: 100 } as const;
  * border-radius，維持直角）。
  */
 export const SECTION_BORDER_RADIUS_PX = { soft: 16, strong: 32 } as const;
+
+/**
+ * 區段「標題大小」兩檔對應的倍率：小 0.85x、大 1.25x，乘在 layout.tsx 依各 h2 的 text-* class
+ * 對齊出來的基準字級（--store-h2-base）上。跟上面兩張表同一個理由收成一張：原本公開頁
+ * layout.tsx <style> 裡 data-heading-scale 兩條 CSS 的算式、編輯器面板按鈕下的 hint 字
+ *（商家看到的數字）、上面 SECTION_STYLE_ENUMS 那行註解各寫一份。hero 主標的
+ * heroTaglineLeading「收緊／放鬆」行距碰巧也是 0.85／1.25，那是行距不是字級、另一把尺，
+ * 不合併。"default" 不在表裡（不套規則，Tailwind 字級原樣）。
+ */
+export const SECTION_HEADING_SCALE = { small: 0.85, large: 1.25 } as const;
 
 export const SECTION_STYLE_NEUTRAL_VALUES = {
   bodyAlign: "auto",
