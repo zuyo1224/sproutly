@@ -24,6 +24,7 @@ import {
   clampHeroSplitPhotoAspect,
   HERO_IMAGE_MAX_HEIGHT_VH,
   HERO_SPLIT_HEIGHT_VH,
+  heroTextGapScale,
   pickHeroImageBounds,
 } from "@/lib/hero-image-bounds";
 
@@ -2026,16 +2027,11 @@ export default async function StoreHomePage({
             // 字與字之間。三個值套同一個倍率，6:5:8 的層次不變，只有整體疏密變；
             // 「跟預設」不輸出任何值（inline style 不蓋 class），既有店家算出來一模一樣。
             // 只套在照 flow 排的那幾條路徑上——拖過位置的走絕對座標，跟間距無關。
-            const heroTextGapScale =
-              theme.layout.heroTextGap === "tight"
-                ? 0.5
-                : theme.layout.heroTextGap === "loose"
-                  ? 1.75
-                  : null;
+            const fullGapScale = heroTextGapScale(theme.layout.heroTextGap);
             const heroTextGapTop = (rem: number) =>
-              heroTextGapScale === null ? {} : { marginTop: `${rem * heroTextGapScale}rem` };
+              fullGapScale === null ? {} : { marginTop: `${rem * fullGapScale}rem` };
             const heroTextGapBottom = (rem: number) =>
-              heroTextGapScale === null ? {} : { marginBottom: `${rem * heroTextGapScale}rem` };
+              fullGapScale === null ? {} : { marginBottom: `${rem * fullGapScale}rem` };
             // 「Hero 高度」撐高之後多出來的那截要去哪。section 原本是普通的 block、只掛
             // min-height：照片 + 文字段加起來比 60vh / 80vh / 100vh 矮時，多出來的高度全掉
             // 在文字段底下、露出一條全站底色——文字段底色跟全站底色不同的店（「文字段底色」
@@ -2534,12 +2530,7 @@ export default async function StoreHomePage({
             // mb-6 / mt-6 / mt-10（1.5 / 1.5 / 2.5rem），是配預設主標字級挑的。
             // 三個值套同一個倍率，6:6:10 的層次不變，只有整體疏密變；
             // 「跟預設」不輸出任何值（inline style 不蓋 class），既有店家算出來一模一樣。
-            const splitGapScale =
-              theme.layout.heroSplitGap === "tight"
-                ? 0.5
-                : theme.layout.heroSplitGap === "loose"
-                  ? 1.75
-                  : null;
+            const splitGapScale = heroTextGapScale(theme.layout.heroSplitGap);
             const splitGapTop = (rem: number) =>
               splitGapScale === null ? {} : { marginTop: `${rem * splitGapScale}rem` };
             const splitGapBottom = (rem: number) =>
@@ -2737,12 +2728,7 @@ export default async function StoreHomePage({
             // 橫線的距離」動的是整段的最低高度、也就是三塊之間被撐開多遠，這格動的是每
             // 一塊自己裡面。三個值套同一個倍率，4:8:4 的層次不變，只有整體疏密變；
             // 「跟預設」不輸出任何值（inline style 不蓋 class），既有店家算出來一模一樣。
-            const magGapScale =
-              theme.layout.heroMagazineTextGap === "tight"
-                ? 0.5
-                : theme.layout.heroMagazineTextGap === "loose"
-                  ? 1.75
-                  : null;
+            const magGapScale = heroTextGapScale(theme.layout.heroMagazineTextGap);
             const magGapTop = (rem: number) =>
               magGapScale === null ? {} : { marginTop: `${rem * magGapScale}rem` };
             const magGapBottom = (rem: number) =>
@@ -3013,12 +2999,7 @@ export default async function StoreHomePage({
           // mb-8 / mt-8 / mt-10 / mt-12（2 / 2 / 2.5 / 3rem），是配預設主標字級挑的。
           // 四個值套同一個倍率，8:8:10:12 的層次不變，只有整體疏密變；
           // 「跟預設」不輸出任何值（inline style 不蓋 class），既有店家算出來一模一樣。
-          const minimalGapScale =
-            theme.layout.heroMinimalGap === "tight"
-              ? 0.5
-              : theme.layout.heroMinimalGap === "loose"
-              ? 1.75
-              : null;
+          const minimalGapScale = heroTextGapScale(theme.layout.heroMinimalGap);
           const minimalGapTop = (rem: number) =>
             minimalGapScale === null ? {} : { marginTop: `${rem * minimalGapScale}rem` };
           const minimalGapBottom = (rem: number) =>

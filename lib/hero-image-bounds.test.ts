@@ -22,6 +22,8 @@ import {
   heroBannerGeometry,
   HERO_FULL_HEIGHT_VH,
   HERO_IMAGE_MAX_HEIGHT_VH,
+  HERO_TEXT_GAP_SCALE,
+  heroTextGapScale,
   HERO_SPLIT_HEIGHT_VH,
   HERO_PREVIEW_ASPECT_MAX,
   HERO_PREVIEW_ASPECT_MIN,
@@ -160,6 +162,19 @@ describe("heroBannerGeometry（公開頁 banner 與編輯器預覽框共用的�
     assert.equal(HERO_SPLIT_HEIGHT_VH.normal, 100);
     assert.equal(HERO_SPLIT_HEIGHT_VH.compact, 70);
     assert.ok(HERO_SPLIT_HEIGHT_VH.compact < HERO_SPLIT_HEIGHT_VH.normal);
+  });
+
+  it("HERO_TEXT_GAP_SCALE：緊小於 1、鬆大於 1（倍率乘在原 rem 上，1 就等於沒動）", () => {
+    assert.ok(HERO_TEXT_GAP_SCALE.tight > 0 && HERO_TEXT_GAP_SCALE.tight < 1);
+    assert.ok(HERO_TEXT_GAP_SCALE.loose > 1);
+  });
+
+  // 四種版型（滿版／分欄／雜誌／極簡）各一格，都走這支：normal 回 null（不覆寫 inline
+  // style，既有店家一個像素都不動），另外兩檔查表。
+  it("heroTextGapScale：normal 回 null、tight／loose 回表裡的倍率", () => {
+    assert.equal(heroTextGapScale("normal"), null);
+    assert.equal(heroTextGapScale("tight"), HERO_TEXT_GAP_SCALE.tight);
+    assert.equal(heroTextGapScale("loose"), HERO_TEXT_GAP_SCALE.loose);
   });
 
   it("HERO_FULL_HEIGHT_VH：矮 < 高 < 全屏，全屏就是整個螢幕", () => {

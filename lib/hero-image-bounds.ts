@@ -106,6 +106,22 @@ export const HERO_SPLIT_HEIGHT_VH = { compact: 70, normal: 100 } as const;
 export const HERO_FULL_HEIGHT_VH = { short: 60, tall: 80, full: 100 } as const;
 
 /**
+ * hero 文字段「這段字裡面的行距」（小標→主標→副標→按鈕那幾截 margin）收緊／放寬時
+ * 乘在原本 rem 上的倍率：緊 0.5、鬆 1.75。四種版型各有自己的一格
+ * （heroTextGap 滿版、heroSplitGap 分欄、heroMagazineTextGap 雜誌、heroMinimalGap 極簡），
+ * 每格那幾截的原始 rem 各不一樣（6:5:8、6:6:10、4:8:4、8:8:10:12），但「緊到一半、鬆到
+ * 快兩倍」這把尺是同一把——商家在四個面板看到的都是「緊／跟預設／鬆」三顆一樣的按鈕，
+ * 換版型時同一顆按鈕的鬆緊感要一樣。以前 page.tsx 四段各手寫一份 0.5／1.75 三元式，
+ * 只靠四處碰巧一樣才對得上。
+ * "normal" 不在表裡（不覆寫，inline style 不輸出、既有店家算出來一模一樣），helper 回 null。
+ */
+export const HERO_TEXT_GAP_SCALE = { tight: 0.5, loose: 1.75 } as const;
+
+export function heroTextGapScale(choice: "tight" | "normal" | "loose"): number | null {
+  return choice === "tight" || choice === "loose" ? HERO_TEXT_GAP_SCALE[choice] : null;
+}
+
+/**
  * 編輯器「Hero 圖片」預覽框的寬高比範圍：3:4 到 3:1。面板窄，太直的照片會把整欄撐得
  * 很長，所以下限比公開頁的 split 圖寬。主體框與「整張顯示」收過上限的外框都走這一支。
  * 呼叫端拿回傳值跟原值比（clamped === aspect）判斷「有沒有被夾過」，夾過的不畫上限提示。
