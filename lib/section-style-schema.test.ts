@@ -27,6 +27,9 @@ import {
   SECTION_GAP_OPTIONS,
   SECTION_SCALE_OPTIONS,
   SECTION_WEIGHT_OPTIONS,
+  SECTION_LINE_TONE_OPTIONS,
+  SECTION_LINE_WEIGHT_OPTIONS,
+  SECTION_BG_STRENGTH_OPTIONS,
   SECTION_HEADING_SCALE,
   SECTION_MEDIA_RADIUS_PX,
   SECTION_MIN_HEIGHT_VH,
@@ -367,6 +370,28 @@ describe("SECTION_SCALE_OPTIONS／SECTION_WEIGHT_OPTIONS", () => {
     assert.equal(SECTION_WEIGHT_OPTIONS[0].v, "normal");
     assert.equal(SECTION_WEIGHT_OPTIONS[0].label, "跟預設");
     for (const options of [SECTION_SCALE_OPTIONS, SECTION_WEIGHT_OPTIONS]) {
+      const labels = options.map((o) => o.label);
+      for (const l of labels) assert.ok(l.length > 0);
+      assert.equal(new Set(labels).size, labels.length);
+    }
+  });
+});
+
+describe("SECTION_LINE_TONE_OPTIONS／SECTION_LINE_WEIGHT_OPTIONS／SECTION_BG_STRENGTH_OPTIONS", () => {
+  it("三張表的 v 各跟用到它的每一欄合法值同一組同一個順序，「跟預設」那顆對到中性值，label 有字且不重複", () => {
+    const pairs = [
+      [SECTION_LINE_TONE_OPTIONS, ["dividerTone", "headingRuleTone", "outlineTone"], "normal"],
+      [SECTION_LINE_WEIGHT_OPTIONS, ["headingRuleWeight", "accentBarWeight"], "normal"],
+      [SECTION_BG_STRENGTH_OPTIONS, ["textureTone", "bgGradientTone"], "default"],
+    ] as const;
+    for (const [options, keys, neutral] of pairs) {
+      for (const key of keys) {
+        assert.deepEqual(options.map((o) => o.v), [...SECTION_STYLE_ENUMS[key]]);
+        assert.equal(SECTION_STYLE_NEUTRAL_VALUES[key], neutral);
+      }
+      const hit = options.find((o) => o.label === "跟預設");
+      assert.ok(hit);
+      assert.equal(hit.v, neutral);
       const labels = options.map((o) => o.label);
       for (const l of labels) assert.ok(l.length > 0);
       assert.equal(new Set(labels).size, labels.length);

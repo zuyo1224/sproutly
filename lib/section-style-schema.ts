@@ -1365,6 +1365,35 @@ export const SECTION_WEIGHT_OPTIONS = [
   { v: "bold", label: "粗" },
 ] as const satisfies ReadonlyArray<{ v: (typeof SECTION_STYLE_ENUMS)["eyebrowWeight"][number]; label: string }>;
 
+/**
+ * 同一批「中檔（或第一顆）寫『跟預設』」再補三張，都是線條與底色那類的欄位：
+ * - SECTION_LINE_TONE_OPTIONS（跟預設／同文字／主色）：分隔線深淺、標題底線深淺、卡片外框深淺三格
+ * - SECTION_LINE_WEIGHT_OPTIONS（細／跟預設／粗）：標題底線粗細、卡片色條粗細兩格
+ * - SECTION_BG_STRENGTH_OPTIONS（更淡／跟預設／加深）：底紋濃淡、底色明暗濃淡兩格
+ * 以前七格各手寫一份逐字相同的陣列。三張表 v 的順序都照 SECTION_STYLE_ENUMS 對應欄位。
+ * 「分隔線粗細」那格值是 normal/medium/thick、字是「跟預設／中／粗」，跟底線粗細的
+ * thin/normal/thick 不是同一組值；「卡片色條深淺」多一檔 soft 四顆；「合作 logo 濃淡」是
+ * faint/default/solid 第三檔寫「清楚」；「卡片副文字深淺」是 muted/default/strong 第一檔寫
+ * 「更淡」但值不同——這四格各只一份、字或值都不一樣，不合併。
+ */
+export const SECTION_LINE_TONE_OPTIONS = [
+  { v: "normal", label: "跟預設" },
+  { v: "strong", label: "同文字" },
+  { v: "accent", label: "主色" },
+] as const satisfies ReadonlyArray<{ v: (typeof SECTION_STYLE_ENUMS)["dividerTone"][number]; label: string }>;
+
+export const SECTION_LINE_WEIGHT_OPTIONS = [
+  { v: "thin", label: "細" },
+  { v: "normal", label: "跟預設" },
+  { v: "thick", label: "粗" },
+] as const satisfies ReadonlyArray<{ v: (typeof SECTION_STYLE_ENUMS)["headingRuleWeight"][number]; label: string }>;
+
+export const SECTION_BG_STRENGTH_OPTIONS = [
+  { v: "faint", label: "更淡" },
+  { v: "default", label: "跟預設" },
+  { v: "strong", label: "加深" },
+] as const satisfies ReadonlyArray<{ v: (typeof SECTION_STYLE_ENUMS)["textureTone"][number]; label: string }>;
+
 export const SECTION_STYLE_NEUTRAL_VALUES = {
   bodyAlign: "auto",
   bodyMeasure: "auto",
