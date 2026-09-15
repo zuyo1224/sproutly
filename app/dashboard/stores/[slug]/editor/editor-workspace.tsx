@@ -45,9 +45,9 @@ import {
   FEATURED_COUNT_MAX,
 } from "@/lib/theme-scale";
 import { FREE_POS_KEYS, SECTION_DRAG_ELEMENT, stripLegacyFreePositions } from "@/lib/free-positions";
-// HOMEPAGE_DEFAULTS：面板每一格「空白就用預設」的 placeholder 直接查這張表，跟公開頁
-// 真正套上去的字是同一份；以前三十格各手抄一句，選物 intro 那格就抄成「…那一株...」而
-// 實品是「…那一株。」。
+// HOMEPAGE_DEFAULTS：面板每一格「空白就用預設」的 placeholder、以及格子底下 hint 散文裡
+// 「預設「xxx」」那段字，都直接查這張表，跟公開頁真正套上去的字是同一份；以前三十格各手抄
+// 一句，選物 intro 那格就抄成「…那一株...」而實品是「…那一株。」。
 import { HOMEPAGE_DEFAULTS, type SectionStyle } from "@/app/[slug]/_theme";
 import { applySectionStylePatch, SECTION_BODY_TRACKING_EM, SECTION_BORDER_RADIUS_PX, SECTION_HEADING_SCALE, SECTION_MIN_HEIGHT_VH, type SectionStylePatch } from "@/lib/section-style-schema";
 import { contrastRatio, relativeLuminance } from "@/lib/color-contrast";
@@ -2494,7 +2494,7 @@ export function EditorWorkspace({
                 className="w-full rounded-lg border border-stone-200 px-3 py-2 text-sm"
               />
               <p className="text-[10px] text-stone-500 mt-1">
-                Hero 區段大按鈕的文字，預設「看商品」
+                Hero 區段大按鈕的文字，預設「{HOMEPAGE_DEFAULTS.heroCta}」
               </p>
             </Field>
             <Field label="次要按鈕文字">
@@ -2509,7 +2509,7 @@ export function EditorWorkspace({
                 className="w-full rounded-lg border border-stone-200 px-3 py-2 text-sm"
               />
               <p className="text-[10px] text-stone-500 mt-1">
-                Split 版型 Hero 區段的次要按鈕（連到關於頁），預設「關於我們」
+                Split 版型 Hero 區段的次要按鈕（連到關於頁），預設「{HOMEPAGE_DEFAULTS.heroSecondaryCta}」
               </p>
             </Field>
             <Field label={`按鈕文字大小（${theme.layout.heroCtaFontScale.toFixed(2)}x）`}>
@@ -4848,7 +4848,7 @@ export function EditorWorkspace({
                 className="w-full rounded-lg border border-stone-200 px-3 py-2 text-sm"
               />
               <p className="text-[10px] text-stone-500 mt-1">
-                每張選物提案卡片底部的小字行動按鈕，預設「看這個 →」
+                每張選物提案卡片底部的小字行動按鈕，預設「{HOMEPAGE_DEFAULTS.collectionsCardCta}」
               </p>
             </Field>
             <p className="text-xs text-stone-500 leading-relaxed">
@@ -4871,7 +4871,7 @@ export function EditorWorkspace({
                 className="w-full rounded-lg border border-stone-200 px-3 py-2 text-sm"
               />
               <p className="mt-1 text-[11px] text-stone-500 leading-relaxed">
-                Promise 卡片上方那行小字，預設「Our Promise」。
+                Promise 卡片上方那行小字，預設「{HOMEPAGE_DEFAULTS.promiseEyebrow}」。
               </p>
             </Field>
             <Field label="Promise 文字">
@@ -4903,7 +4903,7 @@ export function EditorWorkspace({
                 className="w-full rounded-lg border border-stone-200 px-3 py-2 text-sm"
               />
               <p className="mt-1 text-[11px] text-stone-500 leading-relaxed">
-                Visit 區段標題上方那行小字，預設「Visit」。
+                Visit 區段標題上方那行小字，預設「{HOMEPAGE_DEFAULTS.visitEyebrow}」。
               </p>
             </Field>
             <Field label="標題">
@@ -5075,7 +5075,7 @@ export function EditorWorkspace({
                 className="w-full rounded-lg border border-stone-200 px-3 py-2 text-sm"
               />
               <p className="mt-1 text-[11px] text-stone-500 leading-relaxed">
-                Partners 區段上方那行小字，預設「As featured in」。
+                Partners 區段上方那行小字，預設「{HOMEPAGE_DEFAULTS.partnersEyebrow}」。
               </p>
             </Field>
             {theme.layout.partners.length === 0 ? (
@@ -5199,7 +5199,7 @@ export function EditorWorkspace({
                 className="w-full rounded-lg border border-stone-200 px-3 py-2 text-sm"
               />
               <p className="mt-1 text-[11px] text-stone-500 leading-relaxed">
-                Gallery 區段上方那行小字，預設「Gallery」。
+                Gallery 區段上方那行小字，預設「{HOMEPAGE_DEFAULTS.galleryEyebrow}」。
               </p>
             </Field>
             <Field label="標題">
@@ -5214,7 +5214,7 @@ export function EditorWorkspace({
                 className="w-full rounded-lg border border-stone-200 px-3 py-2 text-sm"
               />
               <p className="mt-1 text-[11px] text-stone-500 leading-relaxed">
-                Gallery 區段大字，預設「相片紀錄」。
+                Gallery 區段大字，預設「{HOMEPAGE_DEFAULTS.galleryTitle}」。
               </p>
             </Field>
             {theme.layout.gallery.length === 0 ? (
@@ -5337,7 +5337,7 @@ export function EditorWorkspace({
                 className="w-full rounded-lg border border-stone-200 px-3 py-2 text-sm"
               />
               <p className="mt-1 text-[11px] text-stone-500 leading-relaxed">
-                FAQ 區段上方那行小字，預設「FAQ」。
+                FAQ 區段上方那行小字，預設「{HOMEPAGE_DEFAULTS.faqEyebrow}」。
               </p>
             </Field>
             <Field label="標題">
@@ -5352,7 +5352,7 @@ export function EditorWorkspace({
                 className="w-full rounded-lg border border-stone-200 px-3 py-2 text-sm"
               />
               <p className="mt-1 text-[11px] text-stone-500 leading-relaxed">
-                FAQ 區段大字，預設「常見問題」。
+                FAQ 區段大字，預設「{HOMEPAGE_DEFAULTS.faqTitle}」。
               </p>
             </Field>
             {theme.layout.faqItems.length === 0 ? (
@@ -5458,7 +5458,7 @@ export function EditorWorkspace({
                 className="w-full rounded-lg border border-stone-200 px-3 py-2 text-sm"
               />
               <p className="mt-1 text-[11px] text-stone-500 leading-relaxed">
-                顧客評語區段上方那行小字，預設「Testimonials」。
+                顧客評語區段上方那行小字，預設「{HOMEPAGE_DEFAULTS.testimonialsEyebrow}」。
               </p>
             </Field>
             <Field label="標題">
@@ -5473,7 +5473,7 @@ export function EditorWorkspace({
                 className="w-full rounded-lg border border-stone-200 px-3 py-2 text-sm"
               />
               <p className="mt-1 text-[11px] text-stone-500 leading-relaxed">
-                顧客評語區段大字，預設「顧客的話」。
+                顧客評語區段大字，預設「{HOMEPAGE_DEFAULTS.testimonialsTitle}」。
               </p>
             </Field>
             {theme.layout.testimonials.length === 0 ? (
@@ -5598,7 +5598,7 @@ export function EditorWorkspace({
                   className="w-full rounded-lg border border-stone-200 px-3 py-2 text-sm"
                 />
                 <p className="mt-1 text-[11px] text-stone-500 leading-relaxed">
-                  Featured 區段上方那行大字，預設「本月選物」。
+                  Featured 區段上方那行大字，預設「{HOMEPAGE_DEFAULTS.featuredTitle}」。
                 </p>
               </Field>
               <Field label="看更多按鈕文字">
@@ -5613,7 +5613,7 @@ export function EditorWorkspace({
                   className="w-full rounded-lg border border-stone-200 px-3 py-2 text-sm"
                 />
                 <p className="mt-1 text-[11px] text-stone-500 leading-relaxed">
-                  區段底部跳到 /shop 的連結文字。預設「看所有的植物」，
+                  區段底部跳到 /shop 的連結文字。預設「{HOMEPAGE_DEFAULTS.featuredCta}」，
                   非盆栽店家可改成「看所有商品 / 逛全部 / 看更多選品」。
                 </p>
               </Field>
@@ -5670,7 +5670,7 @@ export function EditorWorkspace({
                 className="w-full rounded-lg border border-stone-200 px-3 py-2 text-sm"
               />
               <p className="mt-1 text-[11px] text-stone-500 leading-relaxed">
-                Journal 區段上方那行小字，預設「Journal」。
+                Journal 區段上方那行小字，預設「{HOMEPAGE_DEFAULTS.journalEyebrow}」。
               </p>
             </Field>
             <Field label="標題">
@@ -5685,7 +5685,7 @@ export function EditorWorkspace({
                 className="w-full rounded-lg border border-stone-200 px-3 py-2 text-sm"
               />
               <p className="mt-1 text-[11px] text-stone-500 leading-relaxed">
-                Journal 區段大字，預設「慢讀」。
+                Journal 區段大字，預設「{HOMEPAGE_DEFAULTS.journalTitle}」。
               </p>
             </Field>
             <Field label="副題">
@@ -5715,7 +5715,7 @@ export function EditorWorkspace({
                 className="w-full rounded-lg border border-stone-200 px-3 py-2 text-sm"
               />
               <p className="mt-1 text-[11px] text-stone-500 leading-relaxed">
-                每張 Journal 卡片底部那行小字，預設「Coming soon」。
+                每張 Journal 卡片底部那行小字，預設「{HOMEPAGE_DEFAULTS.journalCardLabel}」。
               </p>
             </Field>
             <div className="pt-2 mt-2 border-t border-stone-100">
