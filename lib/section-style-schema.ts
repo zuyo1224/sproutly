@@ -1342,6 +1342,29 @@ export const SECTION_GAP_OPTIONS = [
   { v: "loose", label: "放寬" },
 ] as const satisfies ReadonlyArray<{ v: (typeof SECTION_STYLE_ENUMS)["headingGap"][number]; label: string }>;
 
+/**
+ * 同一批「中檔寫『跟預設』」的另外兩張表：
+ * - SECTION_SCALE_OPTIONS（小／跟預設／大）：小標字級、合作 logo 大小、卡片標題／描述／小字／價錢字級六格
+ * - SECTION_WEIGHT_OPTIONS（跟預設／常規／中黑／粗）：小標粗細、卡片小字粗細兩格
+ * 以前八格各手寫一份逐字相同的陣列。粗細那張的順序照面板原本的擺法（「跟預設」擺第一顆），
+ * 跟 SECTION_STYLE_ENUMS.eyebrowWeight 的順序（light 在前）不同，故意不對齊：按鈕順序是給
+ * 商家看的、enum 順序是給程式查表的。區段「內文大小」「標題大小」那兩格中檔寫「預設」
+ *（bodyScale／headingScale 的 default 是真的套一個字級，不是「key 不存在」）、hero 與卡片
+ * 品名／描述／價錢的粗細三檔沒有「跟預設」那顆，都不是同一張表，不合併。
+ */
+export const SECTION_SCALE_OPTIONS = [
+  { v: "small", label: "小" },
+  { v: "default", label: "跟預設" },
+  { v: "large", label: "大" },
+] as const satisfies ReadonlyArray<{ v: (typeof SECTION_STYLE_ENUMS)["eyebrowScale"][number]; label: string }>;
+
+export const SECTION_WEIGHT_OPTIONS = [
+  { v: "normal", label: "跟預設" },
+  { v: "light", label: "常規" },
+  { v: "medium", label: "中黑" },
+  { v: "bold", label: "粗" },
+] as const satisfies ReadonlyArray<{ v: (typeof SECTION_STYLE_ENUMS)["eyebrowWeight"][number]; label: string }>;
+
 export const SECTION_STYLE_NEUTRAL_VALUES = {
   bodyAlign: "auto",
   bodyMeasure: "auto",

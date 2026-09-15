@@ -25,6 +25,8 @@ import {
   SECTION_TRACKING_OPTIONS,
   SECTION_LEADING_OPTIONS,
   SECTION_GAP_OPTIONS,
+  SECTION_SCALE_OPTIONS,
+  SECTION_WEIGHT_OPTIONS,
   SECTION_HEADING_SCALE,
   SECTION_MEDIA_RADIUS_PX,
   SECTION_MIN_HEIGHT_VH,
@@ -346,6 +348,25 @@ describe("SECTION_TRACKING_OPTIONS／SECTION_LEADING_OPTIONS／SECTION_GAP_OPTIO
       assert.deepEqual(options.map((o) => o.v), [...keys]);
       assert.equal(options[1].v, "normal");
       assert.equal(options[1].label, "跟預設");
+      const labels = options.map((o) => o.label);
+      for (const l of labels) assert.ok(l.length > 0);
+      assert.equal(new Set(labels).size, labels.length);
+    }
+  });
+});
+
+describe("SECTION_SCALE_OPTIONS／SECTION_WEIGHT_OPTIONS", () => {
+  it("字級表照欄位順序、中檔「跟預設」；粗細表跟欄位同一組值但「跟預設」擺第一顆", () => {
+    assert.deepEqual(SECTION_SCALE_OPTIONS.map((o) => o.v), [...SECTION_STYLE_ENUMS.eyebrowScale]);
+    assert.equal(SECTION_SCALE_OPTIONS[1].v, "default");
+    assert.equal(SECTION_SCALE_OPTIONS[1].label, "跟預設");
+    assert.deepEqual(
+      [...SECTION_WEIGHT_OPTIONS.map((o) => o.v)].sort(),
+      [...SECTION_STYLE_ENUMS.eyebrowWeight].sort(),
+    );
+    assert.equal(SECTION_WEIGHT_OPTIONS[0].v, "normal");
+    assert.equal(SECTION_WEIGHT_OPTIONS[0].label, "跟預設");
+    for (const options of [SECTION_SCALE_OPTIONS, SECTION_WEIGHT_OPTIONS]) {
       const labels = options.map((o) => o.label);
       for (const l of labels) assert.ok(l.length > 0);
       assert.equal(new Set(labels).size, labels.length);

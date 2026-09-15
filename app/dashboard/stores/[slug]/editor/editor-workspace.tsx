@@ -49,9 +49,10 @@ import { FREE_POS_KEYS, SECTION_DRAG_ELEMENT, stripLegacyFreePositions } from "@
 // 「預設「xxx」」那段字，都直接查這張表，跟公開頁真正套上去的字是同一份；以前三十格各手抄
 // 一句，選物 intro 那格就抄成「…那一株...」而實品是「…那一株。」。
 import { HOMEPAGE_DEFAULTS, type SectionStyle } from "@/app/[slug]/_theme";
-// SECTION_TRACKING_OPTIONS／SECTION_LEADING_OPTIONS／SECTION_GAP_OPTIONS：區段面板裡中檔寫
-// 「跟預設」的字距五格、行距四格、間距四格三顆按鈕的表，以前十三格各手寫一份一模一樣的陣列。
-import { applySectionStylePatch, SECTION_BODY_TRACKING_EM, SECTION_BORDER_RADIUS_PX, SECTION_GAP_OPTIONS, SECTION_HEADING_SCALE, SECTION_LEADING_OPTIONS, SECTION_MIN_HEIGHT_VH, SECTION_TRACKING_OPTIONS, type SectionStylePatch } from "@/lib/section-style-schema";
+// SECTION_TRACKING_OPTIONS／SECTION_LEADING_OPTIONS／SECTION_GAP_OPTIONS／SECTION_SCALE_OPTIONS／
+// SECTION_WEIGHT_OPTIONS：區段面板裡中檔寫「跟預設」的字距五格、行距四格、間距四格、字級六格、
+// 粗細兩格的按鈕表，以前二十一格各手寫一份一模一樣的陣列。
+import { applySectionStylePatch, SECTION_BODY_TRACKING_EM, SECTION_BORDER_RADIUS_PX, SECTION_GAP_OPTIONS, SECTION_HEADING_SCALE, SECTION_LEADING_OPTIONS, SECTION_MIN_HEIGHT_VH, SECTION_SCALE_OPTIONS, SECTION_TRACKING_OPTIONS, SECTION_WEIGHT_OPTIONS, type SectionStylePatch } from "@/lib/section-style-schema";
 import { contrastRatio, relativeLuminance } from "@/lib/color-contrast";
 // 版面「只認清單內的值」的 44 格＋排成幾欄 6 格，型別直接從 lib/theme-layout-choices 那張表導出，
 // 跟存檔端（actions.ts）與讀回端（_theme.ts resolveLayout）吃同一份；表多一個值，這裡不用再抄一次
@@ -7095,11 +7096,7 @@ export function EditorWorkspace({
               </Field>
               <Field label="小標字級">
                 <div className="grid grid-cols-3 gap-1.5">
-                  {([
-                    { v: "small", label: "小" },
-                    { v: "default", label: "跟預設" },
-                    { v: "large", label: "大" },
-                  ] as const).map((opt) => (
+                  {SECTION_SCALE_OPTIONS.map((opt) => (
                     <button
                       key={opt.v}
                       type="button"
@@ -7130,12 +7127,7 @@ export function EditorWorkspace({
               </Field>
               <Field label="小標粗細">
                 <div className="grid grid-cols-4 gap-1.5">
-                  {([
-                    { v: "normal", label: "跟預設" },
-                    { v: "light", label: "常規" },
-                    { v: "medium", label: "中黑" },
-                    { v: "bold", label: "粗" },
-                  ] as const).map((opt) => (
+                  {SECTION_WEIGHT_OPTIONS.map((opt) => (
                     <button
                       key={opt.v}
                       type="button"
@@ -8560,11 +8552,7 @@ export function EditorWorkspace({
                 <>
               <Field label="合作 logo 大小">
                 <div className="grid grid-cols-3 gap-1.5">
-                  {([
-                    { v: "small", label: "小" },
-                    { v: "default", label: "跟預設" },
-                    { v: "large", label: "大" },
-                  ] as const).map((opt) => (
+                  {SECTION_SCALE_OPTIONS.map((opt) => (
                     <button
                       key={opt.v}
                       type="button"
@@ -9265,11 +9253,7 @@ export function EditorWorkspace({
               {SECTIONS_WITH_CARD_TITLE_TEXT.includes(selectedSection) && (
                 <Field label="卡片標題字級">
                   <div className="grid grid-cols-3 gap-1.5">
-                    {([
-                      { v: "small", label: "小" },
-                      { v: "default", label: "跟預設" },
-                      { v: "large", label: "大" },
-                    ] as const).map((opt) => (
+                    {SECTION_SCALE_OPTIONS.map((opt) => (
                       <button
                         key={opt.v}
                         type="button"
@@ -9442,11 +9426,7 @@ export function EditorWorkspace({
               {SECTIONS_WITH_CARD_DESC_TEXT.includes(selectedSection) && (
                 <Field label="卡片描述字級">
                   <div className="grid grid-cols-3 gap-1.5">
-                    {([
-                      { v: "small", label: "小" },
-                      { v: "default", label: "跟預設" },
-                      { v: "large", label: "大" },
-                    ] as const).map((opt) => (
+                    {SECTION_SCALE_OPTIONS.map((opt) => (
                       <button
                         key={opt.v}
                         type="button"
@@ -9619,11 +9599,7 @@ export function EditorWorkspace({
               {SECTIONS_WITH_CARD_MICRO_TEXT.includes(selectedSection) && (
                 <Field label="卡片小字字級">
                   <div className="grid grid-cols-3 gap-1.5">
-                    {([
-                      { v: "small", label: "小" },
-                      { v: "default", label: "跟預設" },
-                      { v: "large", label: "大" },
-                    ] as const).map((opt) => (
+                    {SECTION_SCALE_OPTIONS.map((opt) => (
                       <button
                         key={opt.v}
                         type="button"
@@ -9722,12 +9698,7 @@ export function EditorWorkspace({
               {SECTIONS_WITH_CARD_MICRO_TEXT.includes(selectedSection) && (
                 <Field label="卡片小字粗細">
                   <div className="grid grid-cols-4 gap-1.5">
-                    {([
-                      { v: "normal", label: "跟預設" },
-                      { v: "light", label: "常規" },
-                      { v: "medium", label: "中黑" },
-                      { v: "bold", label: "粗" },
-                    ] as const).map((opt) => (
+                    {SECTION_WEIGHT_OPTIONS.map((opt) => (
                       <button
                         key={opt.v}
                         type="button"
@@ -9835,11 +9806,7 @@ export function EditorWorkspace({
               {SECTIONS_WITH_CARD_PRICE.includes(selectedSection) && (
                 <Field label="卡片價錢字級">
                   <div className="grid grid-cols-3 gap-1.5">
-                    {([
-                      { v: "small", label: "小" },
-                      { v: "default", label: "跟預設" },
-                      { v: "large", label: "大" },
-                    ] as const).map((opt) => (
+                    {SECTION_SCALE_OPTIONS.map((opt) => (
                       <button
                         key={opt.v}
                         type="button"
