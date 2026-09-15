@@ -24,7 +24,7 @@ import {
   clampHeroSplitPhotoAspect,
   HERO_IMAGE_MAX_HEIGHT_VH,
   HERO_SPLIT_HEIGHT_VH,
-  heroTextGapScale,
+  heroTextGapMargins,
   padX,
   padY,
   pickHeroImageBounds,
@@ -2029,11 +2029,9 @@ export default async function StoreHomePage({
             // 字與字之間。三個值套同一個倍率，6:5:8 的層次不變，只有整體疏密變；
             // 「跟預設」不輸出任何值（inline style 不蓋 class），既有店家算出來一模一樣。
             // 只套在照 flow 排的那幾條路徑上——拖過位置的走絕對座標，跟間距無關。
-            const fullGapScale = heroTextGapScale(theme.layout.heroTextGap);
-            const heroTextGapTop = (rem: number) =>
-              fullGapScale === null ? {} : { marginTop: `${rem * fullGapScale}rem` };
-            const heroTextGapBottom = (rem: number) =>
-              fullGapScale === null ? {} : { marginBottom: `${rem * fullGapScale}rem` };
+            const { top: heroTextGapTop, bottom: heroTextGapBottom } = heroTextGapMargins(
+              theme.layout.heroTextGap,
+            );
             // 「Hero 高度」撐高之後多出來的那截要去哪。section 原本是普通的 block、只掛
             // min-height：照片 + 文字段加起來比 60vh / 80vh / 100vh 矮時，多出來的高度全掉
             // 在文字段底下、露出一條全站底色——文字段底色跟全站底色不同的店（「文字段底色」
@@ -2532,11 +2530,9 @@ export default async function StoreHomePage({
             // mb-6 / mt-6 / mt-10（1.5 / 1.5 / 2.5rem），是配預設主標字級挑的。
             // 三個值套同一個倍率，6:6:10 的層次不變，只有整體疏密變；
             // 「跟預設」不輸出任何值（inline style 不蓋 class），既有店家算出來一模一樣。
-            const splitGapScale = heroTextGapScale(theme.layout.heroSplitGap);
-            const splitGapTop = (rem: number) =>
-              splitGapScale === null ? {} : { marginTop: `${rem * splitGapScale}rem` };
-            const splitGapBottom = (rem: number) =>
-              splitGapScale === null ? {} : { marginBottom: `${rem * splitGapScale}rem` };
+            const { top: splitGapTop, bottom: splitGapBottom } = heroTextGapMargins(
+              theme.layout.heroSplitGap,
+            );
             // 文字那欄裡面的字靠哪一邊。原本一格都沒有：那欄是 flex flex-col，沒寫
             // text-align 也沒寫 align-items，所以每一樣東西都從左邊界起排。
             // 兩個屬性一起給：text-align 管小標、主標這種吃滿整欄的區塊裡面的字，
@@ -2730,11 +2726,9 @@ export default async function StoreHomePage({
             // 橫線的距離」動的是整段的最低高度、也就是三塊之間被撐開多遠，這格動的是每
             // 一塊自己裡面。三個值套同一個倍率，4:8:4 的層次不變，只有整體疏密變；
             // 「跟預設」不輸出任何值（inline style 不蓋 class），既有店家算出來一模一樣。
-            const magGapScale = heroTextGapScale(theme.layout.heroMagazineTextGap);
-            const magGapTop = (rem: number) =>
-              magGapScale === null ? {} : { marginTop: `${rem * magGapScale}rem` };
-            const magGapBottom = (rem: number) =>
-              magGapScale === null ? {} : { marginBottom: `${rem * magGapScale}rem` };
+            const { top: magGapTop, bottom: magGapBottom } = heroTextGapMargins(
+              theme.layout.heroMagazineTextGap,
+            );
             // 上下那兩條線（連同貼著線的小標 / 店名 / 落款 / 按鈕）的欄寬。原本兩塊各自
             // 寫死 max-w-6xl（72rem），跟中間大字那層是分開的兩個上限：中間選了滿版，
             // 字排到邊界、線還停在 72rem，字跑到框外面；選了窄，線又比字長出一大截。
@@ -3001,11 +2995,9 @@ export default async function StoreHomePage({
           // mb-8 / mt-8 / mt-10 / mt-12（2 / 2 / 2.5 / 3rem），是配預設主標字級挑的。
           // 四個值套同一個倍率，8:8:10:12 的層次不變，只有整體疏密變；
           // 「跟預設」不輸出任何值（inline style 不蓋 class），既有店家算出來一模一樣。
-          const minimalGapScale = heroTextGapScale(theme.layout.heroMinimalGap);
-          const minimalGapTop = (rem: number) =>
-            minimalGapScale === null ? {} : { marginTop: `${rem * minimalGapScale}rem` };
-          const minimalGapBottom = (rem: number) =>
-            minimalGapScale === null ? {} : { marginBottom: `${rem * minimalGapScale}rem` };
+          const { top: minimalGapTop, bottom: minimalGapBottom } = heroTextGapMargins(
+            theme.layout.heroMinimalGap,
+          );
           const minimalAlign = theme.layout.heroMinimalAlign;
           const minimalAlignStyle =
             minimalAlign === "center" ? {} : { textAlign: minimalAlign };

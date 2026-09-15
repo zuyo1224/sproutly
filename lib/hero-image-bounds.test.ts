@@ -23,6 +23,7 @@ import {
   HERO_FULL_HEIGHT_VH,
   HERO_IMAGE_MAX_HEIGHT_VH,
   HERO_TEXT_GAP_SCALE,
+  heroTextGapMargins,
   heroTextGapScale,
   padX,
   padY,
@@ -181,6 +182,17 @@ describe("heroBannerGeometry（公開頁 banner 與編輯器預覽框共用的�
 
   // 滿版／雜誌／極簡三個版型的上下、左右內距那幾格都走這兩支：同一串 clamp 要同時套
   // 兩邊，以前逐字寫兩次、改一邊漏另一邊就變成上緊下鬆。
+  it("heroTextGapMargins：normal 兩邊都回空物件（inline 不輸出）、tight／loose 乘上倍率並只給該邊的 key", () => {
+    const normal = heroTextGapMargins("normal");
+    assert.deepEqual(normal.top(2), {});
+    assert.deepEqual(normal.bottom(2), {});
+    const tight = heroTextGapMargins("tight");
+    assert.deepEqual(tight.top(2), { marginTop: `${2 * HERO_TEXT_GAP_SCALE.tight}rem` });
+    assert.deepEqual(tight.bottom(1.5), { marginBottom: `${1.5 * HERO_TEXT_GAP_SCALE.tight}rem` });
+    const loose = heroTextGapMargins("loose");
+    assert.deepEqual(loose.top(1), { marginTop: `${HERO_TEXT_GAP_SCALE.loose}rem` });
+  });
+
   it("padY／padX：同一個值套到成對的兩邊，且只有那兩個 key", () => {
     assert.deepEqual(padY("clamp(2rem, 5vw, 3rem)"), {
       paddingTop: "clamp(2rem, 5vw, 3rem)",

@@ -122,6 +122,24 @@ export function heroTextGapScale(choice: "tight" | "normal" | "loose"): number |
 }
 
 /**
+ * 把上面那個倍率變成真的能 spread 進 style 的兩支小函式：top(rem) 給 marginTop、
+ * bottom(rem) 給 marginBottom，rem 是那一截原本 Tailwind class 寫死的值。
+ * 「跟預設」時兩支都回 {}（inline 不輸出、class 上的 mt-/mb- 照舊），既有店家算出來一模一樣。
+ * 以前 page.tsx 四種版型各自寫一對 `scale === null ? {} : { marginTop: … }` 閉包，
+ * 八支形狀逐字相同、只有變數名不同；改成同一支 helper 產出，四個版型解構出來用。
+ */
+export function heroTextGapMargins(choice: "tight" | "normal" | "loose"): {
+  top: (rem: number) => { marginTop?: string };
+  bottom: (rem: number) => { marginBottom?: string };
+} {
+  const scale = heroTextGapScale(choice);
+  return {
+    top: (rem) => (scale === null ? {} : { marginTop: `${rem * scale}rem` }),
+    bottom: (rem) => (scale === null ? {} : { marginBottom: `${rem * scale}rem` }),
+  };
+}
+
+/**
  * hero 各版型「上下內距」／「左右內距」那幾格的 inline style：同一個 clamp() 值要同時
  * 塞給 paddingTop 與 paddingBottom（或 paddingLeft 與 paddingRight）。以前 page.tsx
  * 滿版／雜誌／極簡三個版型共十行都把同一串 clamp 逐字寫兩次，改一邊漏另一邊就變成
