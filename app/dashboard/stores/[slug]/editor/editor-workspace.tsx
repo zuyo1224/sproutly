@@ -45,7 +45,10 @@ import {
   FEATURED_COUNT_MAX,
 } from "@/lib/theme-scale";
 import { FREE_POS_KEYS, SECTION_DRAG_ELEMENT, stripLegacyFreePositions } from "@/lib/free-positions";
-import type { SectionStyle } from "@/app/[slug]/_theme";
+// HOMEPAGE_DEFAULTS：面板每一格「空白就用預設」的 placeholder 直接查這張表，跟公開頁
+// 真正套上去的字是同一份；以前三十格各手抄一句，選物 intro 那格就抄成「…那一株...」而
+// 實品是「…那一株。」。
+import { HOMEPAGE_DEFAULTS, type SectionStyle } from "@/app/[slug]/_theme";
 import { applySectionStylePatch, SECTION_BODY_TRACKING_EM, SECTION_BORDER_RADIUS_PX, SECTION_HEADING_SCALE, SECTION_MIN_HEIGHT_VH, type SectionStylePatch } from "@/lib/section-style-schema";
 import { contrastRatio, relativeLuminance } from "@/lib/color-contrast";
 // 版面「只認清單內的值」的 44 格＋排成幾欄 6 格，型別直接從 lib/theme-layout-choices 那張表導出，
@@ -2486,7 +2489,7 @@ export function EditorWorkspace({
                 onChange={(e) =>
                   updateHomepage({ heroCta: e.target.value })
                 }
-                placeholder="看商品"
+                placeholder={HOMEPAGE_DEFAULTS.heroCta}
                 maxLength={60}
                 className="w-full rounded-lg border border-stone-200 px-3 py-2 text-sm"
               />
@@ -2501,7 +2504,7 @@ export function EditorWorkspace({
                 onChange={(e) =>
                   updateHomepage({ heroSecondaryCta: e.target.value })
                 }
-                placeholder="關於我們"
+                placeholder={HOMEPAGE_DEFAULTS.heroSecondaryCta}
                 maxLength={60}
                 className="w-full rounded-lg border border-stone-200 px-3 py-2 text-sm"
               />
@@ -4811,7 +4814,7 @@ export function EditorWorkspace({
                   updateHomepage({ collectionsIntro: e.target.value })
                 }
                 rows={3}
-                placeholder="告訴我們你的空間，我們幫你選對的那一株..."
+                placeholder={HOMEPAGE_DEFAULTS.collectionsIntro}
                 className="w-full rounded-lg border border-stone-200 px-3 py-2 text-sm resize-none"
               />
             </Field>
@@ -4840,7 +4843,7 @@ export function EditorWorkspace({
                 onChange={(e) =>
                   updateHomepage({ collectionsCardCta: e.target.value })
                 }
-                placeholder="看這個 →"
+                placeholder={HOMEPAGE_DEFAULTS.collectionsCardCta}
                 maxLength={60}
                 className="w-full rounded-lg border border-stone-200 px-3 py-2 text-sm"
               />
@@ -4863,7 +4866,7 @@ export function EditorWorkspace({
                 onChange={(e) =>
                   updateHomepage({ promiseEyebrow: e.target.value })
                 }
-                placeholder="Our Promise"
+                placeholder={HOMEPAGE_DEFAULTS.promiseEyebrow}
                 maxLength={60}
                 className="w-full rounded-lg border border-stone-200 px-3 py-2 text-sm"
               />
@@ -4895,7 +4898,7 @@ export function EditorWorkspace({
                 onChange={(e) =>
                   updateHomepage({ visitEyebrow: e.target.value })
                 }
-                placeholder="Visit"
+                placeholder={HOMEPAGE_DEFAULTS.visitEyebrow}
                 maxLength={60}
                 className="w-full rounded-lg border border-stone-200 px-3 py-2 text-sm"
               />
@@ -4908,7 +4911,7 @@ export function EditorWorkspace({
                 type="text"
                 value={theme.homepage.visitTitle}
                 onChange={(e) => updateHomepage({ visitTitle: e.target.value })}
-                placeholder="來店裡走走"
+                placeholder={HOMEPAGE_DEFAULTS.visitTitle}
                 className="w-full rounded-lg border border-stone-200 px-3 py-2 text-sm"
               />
             </Field>
@@ -5067,7 +5070,7 @@ export function EditorWorkspace({
                 onChange={(e) =>
                   updateHomepage({ partnersEyebrow: e.target.value })
                 }
-                placeholder="As featured in"
+                placeholder={HOMEPAGE_DEFAULTS.partnersEyebrow}
                 maxLength={60}
                 className="w-full rounded-lg border border-stone-200 px-3 py-2 text-sm"
               />
@@ -5191,7 +5194,7 @@ export function EditorWorkspace({
                 onChange={(e) =>
                   updateHomepage({ galleryEyebrow: e.target.value })
                 }
-                placeholder="Gallery"
+                placeholder={HOMEPAGE_DEFAULTS.galleryEyebrow}
                 maxLength={60}
                 className="w-full rounded-lg border border-stone-200 px-3 py-2 text-sm"
               />
@@ -5206,7 +5209,7 @@ export function EditorWorkspace({
                 onChange={(e) =>
                   updateHomepage({ galleryTitle: e.target.value })
                 }
-                placeholder="相片紀錄"
+                placeholder={HOMEPAGE_DEFAULTS.galleryTitle}
                 maxLength={60}
                 className="w-full rounded-lg border border-stone-200 px-3 py-2 text-sm"
               />
@@ -5329,7 +5332,7 @@ export function EditorWorkspace({
                 onChange={(e) =>
                   updateHomepage({ faqEyebrow: e.target.value })
                 }
-                placeholder="FAQ"
+                placeholder={HOMEPAGE_DEFAULTS.faqEyebrow}
                 maxLength={60}
                 className="w-full rounded-lg border border-stone-200 px-3 py-2 text-sm"
               />
@@ -5344,7 +5347,7 @@ export function EditorWorkspace({
                 onChange={(e) =>
                   updateHomepage({ faqTitle: e.target.value })
                 }
-                placeholder="常見問題"
+                placeholder={HOMEPAGE_DEFAULTS.faqTitle}
                 maxLength={60}
                 className="w-full rounded-lg border border-stone-200 px-3 py-2 text-sm"
               />
@@ -5450,7 +5453,7 @@ export function EditorWorkspace({
                 onChange={(e) =>
                   updateHomepage({ testimonialsEyebrow: e.target.value })
                 }
-                placeholder="Testimonials"
+                placeholder={HOMEPAGE_DEFAULTS.testimonialsEyebrow}
                 maxLength={60}
                 className="w-full rounded-lg border border-stone-200 px-3 py-2 text-sm"
               />
@@ -5465,7 +5468,7 @@ export function EditorWorkspace({
                 onChange={(e) =>
                   updateHomepage({ testimonialsTitle: e.target.value })
                 }
-                placeholder="顧客的話"
+                placeholder={HOMEPAGE_DEFAULTS.testimonialsTitle}
                 maxLength={60}
                 className="w-full rounded-lg border border-stone-200 px-3 py-2 text-sm"
               />
@@ -5590,7 +5593,7 @@ export function EditorWorkspace({
                   onChange={(e) =>
                     updateHomepage({ featuredTitle: e.target.value })
                   }
-                  placeholder="本月選物"
+                  placeholder={HOMEPAGE_DEFAULTS.featuredTitle}
                   maxLength={60}
                   className="w-full rounded-lg border border-stone-200 px-3 py-2 text-sm"
                 />
@@ -5605,7 +5608,7 @@ export function EditorWorkspace({
                   onChange={(e) =>
                     updateHomepage({ featuredCta: e.target.value })
                   }
-                  placeholder="看所有的植物"
+                  placeholder={HOMEPAGE_DEFAULTS.featuredCta}
                   maxLength={60}
                   className="w-full rounded-lg border border-stone-200 px-3 py-2 text-sm"
                 />
@@ -5662,7 +5665,7 @@ export function EditorWorkspace({
                 onChange={(e) =>
                   updateHomepage({ journalEyebrow: e.target.value })
                 }
-                placeholder="Journal"
+                placeholder={HOMEPAGE_DEFAULTS.journalEyebrow}
                 maxLength={60}
                 className="w-full rounded-lg border border-stone-200 px-3 py-2 text-sm"
               />
@@ -5677,7 +5680,7 @@ export function EditorWorkspace({
                 onChange={(e) =>
                   updateHomepage({ journalTitle: e.target.value })
                 }
-                placeholder="慢讀"
+                placeholder={HOMEPAGE_DEFAULTS.journalTitle}
                 maxLength={60}
                 className="w-full rounded-lg border border-stone-200 px-3 py-2 text-sm"
               />
@@ -5692,7 +5695,7 @@ export function EditorWorkspace({
                   updateHomepage({ journalSubtitle: e.target.value })
                 }
                 rows={3}
-                placeholder="關於植物、空間，與這間店的日常筆記。"
+                placeholder={HOMEPAGE_DEFAULTS.journalSubtitle}
                 maxLength={160}
                 className="w-full rounded-lg border border-stone-200 px-3 py-2 text-sm resize-none"
               />
@@ -5707,7 +5710,7 @@ export function EditorWorkspace({
                 onChange={(e) =>
                   updateHomepage({ journalCardLabel: e.target.value })
                 }
-                placeholder="Coming soon"
+                placeholder={HOMEPAGE_DEFAULTS.journalCardLabel}
                 maxLength={60}
                 className="w-full rounded-lg border border-stone-200 px-3 py-2 text-sm"
               />
@@ -10864,7 +10867,7 @@ export function EditorWorkspace({
                   updateHomepage({ aboutEyebrow: e.target.value })
                 }
                 maxLength={60}
-                placeholder="About"
+                placeholder={HOMEPAGE_DEFAULTS.aboutEyebrow}
                 className="w-full rounded-lg border border-stone-200 px-3 py-2 text-sm"
               />
             </Field>
@@ -10876,7 +10879,7 @@ export function EditorWorkspace({
                   updateHomepage({ aboutTitle: e.target.value })
                 }
                 maxLength={60}
-                placeholder="關於我們"
+                placeholder={HOMEPAGE_DEFAULTS.aboutTitle}
                 className="w-full rounded-lg border border-stone-200 px-3 py-2 text-sm"
               />
             </Field>
@@ -10888,7 +10891,7 @@ export function EditorWorkspace({
                   updateHomepage({ contactEyebrow: e.target.value })
                 }
                 maxLength={60}
-                placeholder="Contact"
+                placeholder={HOMEPAGE_DEFAULTS.contactEyebrow}
                 className="w-full rounded-lg border border-stone-200 px-3 py-2 text-sm"
               />
             </Field>
@@ -10900,7 +10903,7 @@ export function EditorWorkspace({
                   updateHomepage({ contactTitle: e.target.value })
                 }
                 maxLength={60}
-                placeholder="聯絡我們"
+                placeholder={HOMEPAGE_DEFAULTS.contactTitle}
                 className="w-full rounded-lg border border-stone-200 px-3 py-2 text-sm"
               />
             </Field>
@@ -10912,7 +10915,7 @@ export function EditorWorkspace({
                   updateHomepage({ shopEyebrow: e.target.value })
                 }
                 maxLength={60}
-                placeholder="Shop"
+                placeholder={HOMEPAGE_DEFAULTS.shopEyebrow}
                 className="w-full rounded-lg border border-stone-200 px-3 py-2 text-sm"
               />
             </Field>
@@ -10924,7 +10927,7 @@ export function EditorWorkspace({
                   updateHomepage({ shopTitle: e.target.value })
                 }
                 maxLength={60}
-                placeholder="所有商品"
+                placeholder={HOMEPAGE_DEFAULTS.shopTitle}
                 className="w-full rounded-lg border border-stone-200 px-3 py-2 text-sm"
               />
             </Field>
@@ -10944,7 +10947,7 @@ export function EditorWorkspace({
                   updateHomepage({ footerWordsLabel: e.target.value })
                 }
                 maxLength={60}
-                placeholder="Words"
+                placeholder={HOMEPAGE_DEFAULTS.footerWordsLabel}
                 className="w-full rounded-lg border border-stone-200 px-3 py-2 text-sm"
               />
             </Field>
@@ -10956,7 +10959,7 @@ export function EditorWorkspace({
                   updateHomepage({ footerVisitLabel: e.target.value })
                 }
                 maxLength={60}
-                placeholder="Visit · 店面資訊"
+                placeholder={HOMEPAGE_DEFAULTS.footerVisitLabel}
                 className="w-full rounded-lg border border-stone-200 px-3 py-2 text-sm"
               />
             </Field>
@@ -10968,7 +10971,7 @@ export function EditorWorkspace({
                   updateHomepage({ footerFollowLabel: e.target.value })
                 }
                 maxLength={60}
-                placeholder="Follow"
+                placeholder={HOMEPAGE_DEFAULTS.footerFollowLabel}
                 className="w-full rounded-lg border border-stone-200 px-3 py-2 text-sm"
               />
             </Field>
@@ -10980,7 +10983,7 @@ export function EditorWorkspace({
                   updateHomepage({ footerTrackLabel: e.target.value })
                 }
                 maxLength={60}
-                placeholder="Track · 訂單追蹤"
+                placeholder={HOMEPAGE_DEFAULTS.footerTrackLabel}
                 className="w-full rounded-lg border border-stone-200 px-3 py-2 text-sm"
               />
             </Field>
