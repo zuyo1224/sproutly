@@ -10,6 +10,10 @@ import {
   LAYOUT_CHOICE_KEYS,
   LAYOUT_COLUMN_CHOICES,
   LAYOUT_COLUMN_KEYS,
+  HERO_GAP_OPTIONS,
+  HERO_PAD_X_OPTIONS,
+  HERO_PAD_Y_OPTIONS,
+  HERO_SPLIT_PAD_OPTIONS,
   isLayoutChoice,
   isLayoutColumns,
   pickLayoutChoice,
@@ -68,5 +72,33 @@ describe("LAYOUT_COLUMN_CHOICES", () => {
     assert.equal(pickLayoutColumns("collectionsColumns", "3"), 3);
     assert.equal(isLayoutColumns("testimonialsColumns", "3"), false);
     assert.equal(pickLayoutColumns("testimonialsColumns", NaN), 3);
+  });
+});
+
+describe("HERO_GAP_OPTIONS／HERO_PAD_X_OPTIONS／HERO_PAD_Y_OPTIONS／HERO_SPLIT_PAD_OPTIONS", () => {
+  it("四張按鈕表的 v 各跟 LAYOUT_CHOICES 對應欄位的合法值同一組同一個順序，中檔都是「跟預設」，label 有字且不重複", () => {
+    for (const [options, key] of [
+      [HERO_GAP_OPTIONS, "heroSplitGap"],
+      [HERO_GAP_OPTIONS, "heroMagazineTextGap"],
+      [HERO_GAP_OPTIONS, "heroMinimalGap"],
+      [HERO_GAP_OPTIONS, "heroTextGap"],
+      [HERO_PAD_X_OPTIONS, "heroMagazinePadX"],
+      [HERO_PAD_X_OPTIONS, "heroMinimalWidth"],
+      [HERO_PAD_X_OPTIONS, "heroMinimalPadX"],
+      [HERO_PAD_Y_OPTIONS, "heroMinimalPadding"],
+      [HERO_PAD_Y_OPTIONS, "heroTextPadding"],
+      [HERO_SPLIT_PAD_OPTIONS, "heroSplitTextPadding"],
+      [HERO_SPLIT_PAD_OPTIONS, "heroSplitMobilePadY"],
+    ] as const) {
+      assert.deepEqual(options.map((o) => o.v), [...LAYOUT_CHOICES[key].values]);
+      assert.equal(options[1].v, "normal");
+      assert.equal(options[1].label, "跟預設");
+      const labels = options.map((o) => o.label);
+      for (const l of labels) assert.ok(l.length > 0);
+      assert.equal(new Set(labels).size, labels.length);
+    }
+    // 兩格手機版是「same 補在表前面」：表本身之外的值只剩 same
+    assert.deepEqual(["same", ...HERO_PAD_X_OPTIONS.map((o) => o.v)], [...LAYOUT_CHOICES.heroMinimalPadXMobile.values]);
+    assert.deepEqual(["same", ...HERO_PAD_Y_OPTIONS.map((o) => o.v)], [...LAYOUT_CHOICES.heroMinimalPaddingMobile.values]);
   });
 });

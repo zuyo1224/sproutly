@@ -56,7 +56,7 @@ import { applySectionStylePatch, SECTION_BODY_TRACKING_EM, SECTION_BORDER_RADIUS
 import { contrastRatio, relativeLuminance } from "@/lib/color-contrast";
 // 版面「只認清單內的值」的 44 格＋排成幾欄 6 格，型別直接從 lib/theme-layout-choices 那張表導出，
 // 跟存檔端（actions.ts）與讀回端（_theme.ts resolveLayout）吃同一份；表多一個值，這裡不用再抄一次
-import type { LayoutChoice, LayoutColumns } from "@/lib/theme-layout-choices";
+import { HERO_GAP_OPTIONS, HERO_PAD_X_OPTIONS, HERO_PAD_Y_OPTIONS, HERO_SPLIT_PAD_OPTIONS, type LayoutChoice, type LayoutColumns } from "@/lib/theme-layout-choices";
 import {
   ALIGN_X_OPTIONS,
   HERO_STYLE_KEYS,
@@ -3474,11 +3474,7 @@ export function EditorWorkspace({
             {theme.layout.heroStyle === "split" && (
               <Field label="文字欄左右留白">
                 <div className="grid grid-cols-3 gap-1.5">
-                  {([
-                    { v: "tight", label: "窄" },
-                    { v: "normal", label: "跟預設" },
-                    { v: "roomy", label: "寬" },
-                  ] as const).map((opt) => (
+                  {HERO_SPLIT_PAD_OPTIONS.map((opt) => (
                     <button
                       key={opt.v}
                       type="button"
@@ -3506,11 +3502,7 @@ export function EditorWorkspace({
             {theme.layout.heroStyle === "split" && (
               <Field label="手機上文字段上下留白">
                 <div className="grid grid-cols-3 gap-1.5">
-                  {([
-                    { v: "tight", label: "窄" },
-                    { v: "normal", label: "跟預設" },
-                    { v: "roomy", label: "寬" },
-                  ] as const).map((opt) => (
+                  {HERO_SPLIT_PAD_OPTIONS.map((opt) => (
                     <button
                       key={opt.v}
                       type="button"
@@ -3538,11 +3530,7 @@ export function EditorWorkspace({
             {theme.layout.heroStyle === "split" && (
               <Field label="這段字裡面的行距">
                 <div className="grid grid-cols-3 gap-1.5">
-                  {([
-                    { v: "tight", label: "緊" },
-                    { v: "normal", label: "跟預設" },
-                    { v: "loose", label: "鬆" },
-                  ] as const).map((opt) => (
+                  {HERO_GAP_OPTIONS.map((opt) => (
                     <button
                       key={opt.v}
                       type="button"
@@ -3960,11 +3948,7 @@ export function EditorWorkspace({
             {theme.layout.heroStyle === "magazine" && (
               <Field label="這一段離螢幕邊多遠">
                 <div className="grid grid-cols-3 gap-1.5">
-                  {([
-                    { v: "narrow", label: "窄" },
-                    { v: "normal", label: "跟預設" },
-                    { v: "wide", label: "寬" },
-                  ] as const).map((opt) => (
+                  {HERO_PAD_X_OPTIONS.map((opt) => (
                     <button
                       key={opt.v}
                       type="button"
@@ -4057,11 +4041,7 @@ export function EditorWorkspace({
             {theme.layout.heroStyle === "magazine" && (
               <Field label="這段字裡面的行距">
                 <div className="grid grid-cols-3 gap-1.5">
-                  {([
-                    { v: "tight", label: "緊" },
-                    { v: "normal", label: "跟預設" },
-                    { v: "loose", label: "鬆" },
-                  ] as const).map((opt) => (
+                  {HERO_GAP_OPTIONS.map((opt) => (
                     <button
                       key={opt.v}
                       type="button"
@@ -4127,11 +4107,7 @@ export function EditorWorkspace({
             {theme.layout.heroStyle === "minimal" && (
               <Field label="文字欄寬">
                 <div className="grid grid-cols-3 gap-1.5">
-                  {([
-                    { v: "narrow", label: "窄" },
-                    { v: "normal", label: "跟預設" },
-                    { v: "wide", label: "寬" },
-                  ] as const).map((opt) => (
+                  {HERO_PAD_X_OPTIONS.map((opt) => (
                     <button
                       key={opt.v}
                       type="button"
@@ -4157,11 +4133,7 @@ export function EditorWorkspace({
             {theme.layout.heroStyle === "minimal" && (
               <Field label="上下留白">
                 <div className="grid grid-cols-3 gap-1.5">
-                  {([
-                    { v: "compact", label: "少" },
-                    { v: "normal", label: "跟預設" },
-                    { v: "spacious", label: "多" },
-                  ] as const).map((opt) => (
+                  {HERO_PAD_Y_OPTIONS.map((opt) => (
                     <button
                       key={opt.v}
                       type="button"
@@ -4187,12 +4159,7 @@ export function EditorWorkspace({
             {theme.layout.heroStyle === "minimal" && (
               <Field label="手機上的上下留白">
                 <div className="grid grid-cols-2 gap-1.5">
-                  {([
-                    { v: "same", label: "跟桌機一樣" },
-                    { v: "compact", label: "少" },
-                    { v: "normal", label: "跟預設" },
-                    { v: "spacious", label: "多" },
-                  ] as const).map((opt) => (
+                  {([{ v: "same", label: "跟桌機一樣" }, ...HERO_PAD_Y_OPTIONS] as const).map((opt) => (
                     <button
                       key={opt.v}
                       type="button"
@@ -4219,11 +4186,7 @@ export function EditorWorkspace({
             {theme.layout.heroStyle === "minimal" && (
               <Field label="這段字離螢幕邊多遠">
                 <div className="grid grid-cols-3 gap-1.5">
-                  {([
-                    { v: "narrow", label: "窄" },
-                    { v: "normal", label: "跟預設" },
-                    { v: "wide", label: "寬" },
-                  ] as const).map((opt) => (
+                  {HERO_PAD_X_OPTIONS.map((opt) => (
                     <button
                       key={opt.v}
                       type="button"
@@ -4249,12 +4212,7 @@ export function EditorWorkspace({
             {theme.layout.heroStyle === "minimal" && (
               <Field label="手機上離螢幕邊多遠">
                 <div className="grid grid-cols-2 gap-1.5">
-                  {([
-                    { v: "same", label: "跟桌機一樣" },
-                    { v: "narrow", label: "窄" },
-                    { v: "normal", label: "跟預設" },
-                    { v: "wide", label: "寬" },
-                  ] as const).map((opt) => (
+                  {([{ v: "same", label: "跟桌機一樣" }, ...HERO_PAD_X_OPTIONS] as const).map((opt) => (
                     <button
                       key={opt.v}
                       type="button"
@@ -4281,11 +4239,7 @@ export function EditorWorkspace({
             {theme.layout.heroStyle === "minimal" && (
               <Field label="這段字裡面的行距">
                 <div className="grid grid-cols-3 gap-1.5">
-                  {([
-                    { v: "tight", label: "緊" },
-                    { v: "normal", label: "跟預設" },
-                    { v: "loose", label: "鬆" },
-                  ] as const).map((opt) => (
+                  {HERO_GAP_OPTIONS.map((opt) => (
                     <button
                       key={opt.v}
                       type="button"
@@ -4518,11 +4472,7 @@ export function EditorWorkspace({
             {theme.layout.heroStyle === "full-image" && (
               <Field label="文字段上下留白">
                 <div className="grid grid-cols-3 gap-1.5">
-                  {([
-                    { v: "compact", label: "少" },
-                    { v: "normal", label: "跟預設" },
-                    { v: "spacious", label: "多" },
-                  ] as const).map((opt) => (
+                  {HERO_PAD_Y_OPTIONS.map((opt) => (
                     <button
                       key={opt.v}
                       type="button"
@@ -4608,11 +4558,7 @@ export function EditorWorkspace({
             {theme.layout.heroStyle === "full-image" && (
               <Field label="這段字裡面的行距">
                 <div className="grid grid-cols-3 gap-1.5">
-                  {([
-                    { v: "tight", label: "緊" },
-                    { v: "normal", label: "跟預設" },
-                    { v: "loose", label: "鬆" },
-                  ] as const).map((opt) => (
+                  {HERO_GAP_OPTIONS.map((opt) => (
                     <button
                       key={opt.v}
                       type="button"

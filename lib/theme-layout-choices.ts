@@ -86,6 +86,45 @@ export function pickLayoutChoice<K extends LayoutChoiceKey>(
   return isLayoutChoice(key, value) ? value : LAYOUT_CHOICES[key].fallback;
 }
 
+// 編輯器 Hero 各版型面板裡「中檔寫『跟預設』」的三顆按鈕表，四張各對一種 x/normal/y 的欄位：
+// - HERO_GAP_OPTIONS（緊／跟預設／鬆，tight/normal/loose）：split／magazine／minimal／滿版圖
+//   「這段字裡面的行距」四格（heroSplitGap／heroMagazineTextGap／heroMinimalGap／heroTextGap）
+// - HERO_PAD_X_OPTIONS（窄／跟預設／寬，narrow/normal/wide）：magazine 離螢幕邊、minimal 文字欄寬／
+//   離螢幕邊／手機離螢幕邊四格（heroMagazinePadX／heroMinimalWidth／heroMinimalPadX／heroMinimalPadXMobile）
+// - HERO_PAD_Y_OPTIONS（少／跟預設／多，compact/normal/spacious）：minimal 上下留白／手機上下留白、
+//   滿版圖文字段上下留白三格（heroMinimalPadding／heroMinimalPaddingMobile／heroTextPadding）
+// - HERO_SPLIT_PAD_OPTIONS（窄／跟預設／寬，tight/normal/roomy）：split 文字欄左右留白／手機上下留白兩格
+//   （heroSplitTextPadding／heroSplitMobilePadY）
+// 以前十三格各自在 editor-workspace.tsx 手寫一份逐字相同的 { v, label } 陣列，改一格的字另外幾格
+// 不會跟著動。兩格手機版多一顆「跟桌機一樣」（same）擺最前面，面板那邊把 same 補在表前面再展開，
+// 比照上面 LAYOUT_CHOICES 給 heroSubtitleAlign 補 inherit 的做法。放這裡不放 theme-keys：這批欄位的
+// 合法值正本是 LAYOUT_CHOICES，v 的型別直接從那張表對應的格子拿，表多一個值 tsc 會在這裡報。
+// 不收的：magazine 上下留白（heroMagazinePadY）值是 tight/normal/roomy 但按鈕字是「少／多」不是
+// 「窄／寬」、split 的圖文比例／高度與 magazine 的文字寬／橫線寬帶第四檔，各只有一格，不是同一張表。
+export const HERO_GAP_OPTIONS = [
+  { v: "tight", label: "緊" },
+  { v: "normal", label: "跟預設" },
+  { v: "loose", label: "鬆" },
+] as const satisfies ReadonlyArray<{ v: LayoutChoice<"heroSplitGap">; label: string }>;
+
+export const HERO_PAD_X_OPTIONS = [
+  { v: "narrow", label: "窄" },
+  { v: "normal", label: "跟預設" },
+  { v: "wide", label: "寬" },
+] as const satisfies ReadonlyArray<{ v: LayoutChoice<"heroMagazinePadX">; label: string }>;
+
+export const HERO_PAD_Y_OPTIONS = [
+  { v: "compact", label: "少" },
+  { v: "normal", label: "跟預設" },
+  { v: "spacious", label: "多" },
+] as const satisfies ReadonlyArray<{ v: LayoutChoice<"heroMinimalPadding">; label: string }>;
+
+export const HERO_SPLIT_PAD_OPTIONS = [
+  { v: "tight", label: "窄" },
+  { v: "normal", label: "跟預設" },
+  { v: "roomy", label: "寬" },
+] as const satisfies ReadonlyArray<{ v: LayoutChoice<"heroSplitTextPadding">; label: string }>;
+
 // 「排成幾欄」六格是上面那張表的數字版：值是 2/3/4 不是字串，所以另開一張，
 // 型別守衛與 pick 的規則跟上面完全一樣。慢讀固定三張卡，4 欄永遠填不滿，只開 2/3。
 export const LAYOUT_COLUMN_CHOICES = {
