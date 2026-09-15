@@ -70,12 +70,31 @@ export function isTracking(value: unknown): value is Tracking {
   return typeof value === "string" && (TRACKING_KEYS as readonly string[]).includes(value);
 }
 
+// 編輯器「字距」三顆按鈕那張 { v, label } 表。Hero 主標／小標／副標／按鈕／byline 五格，
+// 加上區段樣式的內文字距／標題字距兩格，以前七格各自手寫一份一模一樣的陣列，改一格的字
+// 另外六格不會跟著動；七格是同一個問題（字擠多開）的七個位置，字要一樣。順序照 TRACKING_KEYS。
+// 區段那兩格的型別來自 section-style-schema 自己那張 tight/normal/wide，跟 Tracking 是同一個
+// 字面聯集，比照 ALIGN_X_OPTIONS 給 contentAlignX 用的做法。中檔寫「跟預設」的那幾格
+// （卡片小字／卡片價錢／區段小標）與粗細那格五處字各不相同（稍重／中黑／中）不是同一張表，不收。
+export const TRACKING_OPTIONS = [
+  { v: "tight", label: "收緊" },
+  { v: "normal", label: "預設" },
+  { v: "wide", label: "撐開" },
+] as const satisfies ReadonlyArray<{ v: Tracking; label: string }>;
+
 export const LEADING_KEYS = ["tight", "normal", "relaxed"] as const;
 export type Leading = (typeof LEADING_KEYS)[number];
 
 export function isLeading(value: unknown): value is Leading {
   return typeof value === "string" && (LEADING_KEYS as readonly string[]).includes(value);
 }
+
+// 「行距」三顆按鈕的表，Hero 主標／小標／副標／byline 四格共用，理由同 TRACKING_OPTIONS。
+export const LEADING_OPTIONS = [
+  { v: "tight", label: "收緊" },
+  { v: "normal", label: "預設" },
+  { v: "relaxed", label: "舒展" },
+] as const satisfies ReadonlyArray<{ v: Leading; label: string }>;
 
 // Hero 小標與 byline 的大小寫三檔：upper（照原本的全大寫）/ capitalize（字首大寫）/
 // none（照商家打的）。兩格以前在公開頁 _theme.ts 的 type 與 resolveLayout、編輯器

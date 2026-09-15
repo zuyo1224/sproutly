@@ -60,6 +60,8 @@ import {
   isHeroImageSide,
   isHeroStyle,
   isSectionKey,
+  LEADING_OPTIONS,
+  TRACKING_OPTIONS,
   type AlignX,
   type FontWeight,
   type HeroImageSide,
@@ -2155,11 +2157,7 @@ export function EditorWorkspace({
             </Field>
             <Field label="小標字距">
               <div className="grid grid-cols-3 gap-1.5">
-                {([
-                  { v: "tight", label: "收緊" },
-                  { v: "normal", label: "預設" },
-                  { v: "wide", label: "撐開" },
-                ] as const).map((opt) => (
+                {TRACKING_OPTIONS.map((opt) => (
                   <button
                     key={opt.v}
                     type="button"
@@ -2274,11 +2272,7 @@ export function EditorWorkspace({
             </Field>
             <Field label="小標行距">
               <div className="grid grid-cols-3 gap-1.5">
-                {([
-                  { v: "tight", label: "收緊" },
-                  { v: "normal", label: "預設" },
-                  { v: "relaxed", label: "舒展" },
-                ] as const).map((opt) => (
+                {LEADING_OPTIONS.map((opt) => (
                   <button
                     key={opt.v}
                     type="button"
@@ -2422,11 +2416,7 @@ export function EditorWorkspace({
                 </Field>
                 <Field label="副標字距">
                   <div className="grid grid-cols-3 gap-1.5">
-                    {([
-                      { v: "tight", label: "收緊" },
-                      { v: "normal", label: "預設" },
-                      { v: "wide", label: "撐開" },
-                    ] as const).map((opt) => (
+                    {TRACKING_OPTIONS.map((opt) => (
                       <button
                         key={opt.v}
                         type="button"
@@ -2456,11 +2446,7 @@ export function EditorWorkspace({
                 </Field>
                 <Field label="副標行距">
                   <div className="grid grid-cols-3 gap-1.5">
-                    {([
-                      { v: "tight", label: "收緊" },
-                      { v: "normal", label: "預設" },
-                      { v: "relaxed", label: "舒展" },
-                    ] as const).map((opt) => (
+                    {LEADING_OPTIONS.map((opt) => (
                       <button
                         key={opt.v}
                         type="button"
@@ -2537,11 +2523,7 @@ export function EditorWorkspace({
             </Field>
             <Field label="按鈕字距">
               <div className="grid grid-cols-3 gap-1.5">
-                {([
-                  { v: "tight", label: "收緊" },
-                  { v: "normal", label: "預設" },
-                  { v: "wide", label: "撐開" },
-                ] as const).map((opt) => (
+                {TRACKING_OPTIONS.map((opt) => (
                   <button
                     key={opt.v}
                     type="button"
@@ -2730,11 +2712,7 @@ export function EditorWorkspace({
             </Field>
             <Field label="byline 字距">
               <div className="grid grid-cols-3 gap-1.5">
-                {([
-                  { v: "tight", label: "收緊" },
-                  { v: "normal", label: "預設" },
-                  { v: "wide", label: "撐開" },
-                ] as const).map((opt) => (
+                {TRACKING_OPTIONS.map((opt) => (
                   <button
                     key={opt.v}
                     type="button"
@@ -2817,11 +2795,7 @@ export function EditorWorkspace({
             </Field>
             <Field label="byline 行距">
               <div className="grid grid-cols-3 gap-1.5">
-                {([
-                  { v: "tight", label: "收緊" },
-                  { v: "normal", label: "預設" },
-                  { v: "relaxed", label: "舒展" },
-                ] as const).map((opt) => (
+                {LEADING_OPTIONS.map((opt) => (
                   <button
                     key={opt.v}
                     type="button"
@@ -2986,11 +2960,7 @@ export function EditorWorkspace({
             </Field>
             <Field label="主標字距">
               <div className="grid grid-cols-3 gap-1.5">
-                {([
-                  { v: "tight", label: "收緊" },
-                  { v: "normal", label: "預設" },
-                  { v: "wide", label: "撐開" },
-                ] as const).map((opt) => (
+                {TRACKING_OPTIONS.map((opt) => (
                   <button
                     key={opt.v}
                     type="button"
@@ -3017,11 +2987,7 @@ export function EditorWorkspace({
             </Field>
             <Field label="主標行距">
               <div className="grid grid-cols-3 gap-1.5">
-                {([
-                  { v: "tight", label: "收緊" },
-                  { v: "normal", label: "預設" },
-                  { v: "relaxed", label: "舒展" },
-                ] as const).map((opt) => (
+                {LEADING_OPTIONS.map((opt) => (
                   <button
                     key={opt.v}
                     type="button"
@@ -6820,11 +6786,7 @@ export function EditorWorkspace({
               </Field>
               <Field label="內文字距">
                 <div className="grid grid-cols-3 gap-1.5">
-                  {([
-                    { v: "tight", label: "收緊" },
-                    { v: "normal", label: "預設" },
-                    { v: "wide", label: "撐開" },
-                  ] as const).map((opt) => (
+                  {TRACKING_OPTIONS.map((opt) => (
                     <button
                       key={opt.v}
                       type="button"
@@ -7579,11 +7541,7 @@ export function EditorWorkspace({
               </Field>
               <Field label="標題字距">
                 <div className="grid grid-cols-3 gap-1.5">
-                  {([
-                    { v: "tight", label: "收緊" },
-                    { v: "normal", label: "預設" },
-                    { v: "wide", label: "撐開" },
-                  ] as const).map((opt) => (
+                  {TRACKING_OPTIONS.map((opt) => (
                     <button
                       key={opt.v}
                       type="button"

@@ -3,6 +3,8 @@ import assert from "node:assert/strict";
 import {
   ALIGN_X_KEYS,
   ALIGN_X_OPTIONS,
+  TRACKING_OPTIONS,
+  LEADING_OPTIONS,
   HERO_STYLE_KEYS,
   HERO_IMAGE_SIDES,
   SECTION_KEYS,
@@ -127,4 +129,16 @@ test("編輯器對齊三顆按鈕的選項表跟 ALIGN_X_KEYS 同一組值同一
   const labels = ALIGN_X_OPTIONS.map((o) => o.label);
   for (const l of labels) assert.ok(l.length > 0);
   assert.equal(new Set(labels).size, labels.length);
+});
+
+test("編輯器字距／行距三顆按鈕的選項表各跟 TRACKING_KEYS／LEADING_KEYS 同一組值同一個順序，label 都有字且不重複", () => {
+  for (const [options, keys] of [
+    [TRACKING_OPTIONS, TRACKING_KEYS],
+    [LEADING_OPTIONS, LEADING_KEYS],
+  ] as const) {
+    assert.deepEqual(options.map((o) => o.v), [...keys]);
+    const labels = options.map((o) => o.label);
+    for (const l of labels) assert.ok(l.length > 0);
+    assert.equal(new Set(labels).size, labels.length);
+  }
 });
