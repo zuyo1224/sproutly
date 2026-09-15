@@ -1720,6 +1720,28 @@ export default async function StoreHomePage({
                   "--hero-tagline-fs-m": `clamp(${minRem * taglineMobileScale}rem, ${vw * taglineMobileScale}vw, ${maxRem * taglineMobileScale}rem)`,
                 } as React.CSSProperties)
               : {};
+          // 主標的字本身一包（split / magazine / minimal 三版型共用）：顏色、字體、粗細、
+          // 字距、斷行兩條、字級、手機字級、行高。三處以前各抄一份一模一樣的九個屬性，只差
+          // 帶進去的數字（該版型原本的字距 em、字級 min/vw/max、行高），改一格另兩處不會跟著
+          // 動。屬性順序跟原本逐字相同。滿版圖那支不走這裡：它的 h1 沒有 Tailwind 字級
+          // class，fontSize 是無條件輸出的 clamp、夾在斷行與手機字級中間，硬套會動輸出順序。
+          const taglineTextStyle = (
+            trackEm: number,
+            minRem: number,
+            vw: number,
+            maxRem: number,
+            leading: number,
+          ): React.CSSProperties => ({
+            color: taglineColor,
+            fontFamily: "var(--store-font)",
+            fontWeight: taglineWeight,
+            letterSpacing: taglineTracking(trackEm),
+            wordBreak: "keep-all",
+            overflowWrap: "break-word",
+            ...taglineSizeStyle(minRem, vw, maxRem),
+            ...taglineMobileSizeVar(minRem, vw, maxRem),
+            ...taglineLeadingStyle(leading),
+          });
           // Hero eyebrow 小標（四個版型共用）。字級 10px、字距 0.4em（雜誌 0.32em）、
           // 顏色三處 accent 一處 textMuted，四個值全寫死——hero 這組控制裡唯一一格都動不到
           // 的元素，而它是客人由上往下讀到的第一行字。10px 與 0.4em 都是照拉丁大寫字母調的，
@@ -2652,17 +2674,7 @@ export default async function StoreHomePage({
                   )}
                   <h1
                     className={`text-3xl sm:text-4xl lg:text-5xl xl:text-6xl leading-[1.15] ${fade1}`}
-                    style={{
-                      color: taglineColor,
-                      fontFamily: "var(--store-font)",
-                      fontWeight: taglineWeight,
-                      letterSpacing: taglineTracking(-0.01),
-                      wordBreak: "keep-all",
-                      overflowWrap: "break-word",
-                      ...taglineSizeStyle(1.875, 5, 3.75),
-                      ...taglineMobileSizeVar(1.875, 5, 3.75),
-                      ...taglineLeadingStyle(1.15),
-                    }}
+                    style={taglineTextStyle(-0.01, 1.875, 5, 3.75, 1.15)}
                     data-edit-text
                     data-edit-field="tagline"
                     {...taglineMobileAttr}
@@ -2834,17 +2846,7 @@ export default async function StoreHomePage({
                 >
                   <h1
                     className={`text-4xl sm:text-6xl md:text-7xl lg:text-8xl leading-[1.05] ${fade1}`}
-                    style={{
-                      color: taglineColor,
-                      fontFamily: "var(--store-font)",
-                      fontWeight: taglineWeight,
-                      letterSpacing: taglineTracking(-0.02),
-                      wordBreak: "keep-all",
-                      overflowWrap: "break-word",
-                      ...taglineSizeStyle(2.25, 8, 6),
-                      ...taglineMobileSizeVar(2.25, 8, 6),
-                      ...taglineLeadingStyle(1.05),
-                    }}
+                    style={taglineTextStyle(-0.02, 2.25, 8, 6, 1.05)}
                     data-edit-text
                     data-edit-field="tagline"
                     {...taglineMobileAttr}
@@ -3056,17 +3058,7 @@ export default async function StoreHomePage({
               )}
               <h1
                 className={`text-3xl sm:text-5xl md:text-6xl leading-[1.2] ${fade1}`}
-                style={{
-                  color: taglineColor,
-                  fontFamily: "var(--store-font)",
-                  fontWeight: taglineWeight,
-                  letterSpacing: taglineTracking(-0.015),
-                  wordBreak: "keep-all",
-                  overflowWrap: "break-word",
-                  ...taglineSizeStyle(1.875, 6, 3.75),
-                  ...taglineMobileSizeVar(1.875, 6, 3.75),
-                  ...taglineLeadingStyle(1.2),
-                }}
+                style={taglineTextStyle(-0.015, 1.875, 6, 3.75, 1.2)}
                 data-edit-text
                 data-edit-field="tagline"
                 {...taglineMobileAttr}
