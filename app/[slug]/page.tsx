@@ -2151,6 +2151,21 @@ export default async function StoreHomePage({
                     const heroTextAlignXStyle: React.CSSProperties = taglinePos
                       ? {}
                       : blockAlignMargins(theme.layout.heroTextAlignX);
+                    // 主標的字本身（顏色、字體、粗細、字距、斷行、字級、手機字級、行高）。
+                    // 定過位（absolute）與沒定位兩支只差前面那五個位置屬性，這一包以前各抄
+                    // 一份，改一格另一支不會跟著動。字級不走 taglineSizeStyle：這個版型的
+                    // h1 沒有 Tailwind 字級 class，這條 clamp 就是它的預設，1.0x 也要輸出。
+                    const fullTaglineTextStyle: React.CSSProperties = {
+                      color: taglineColor,
+                      fontFamily: "var(--store-font)",
+                      fontWeight: taglineWeight,
+                      letterSpacing: taglineTracking(0.02),
+                      wordBreak: "keep-all",
+                      overflowWrap: "break-word",
+                      fontSize: `clamp(${1.5 * taglineFontScale}rem, ${3 * taglineFontScale}vw, ${3 * taglineFontScale}rem)`,
+                      ...taglineMobileSizeVar(1.5, 3, 3),
+                      ...taglineLeadingStyle(1.6),
+                    };
                     return (
                   <div
                     className={taglinePos ? "" : "max-w-4xl mx-auto"}
@@ -2210,27 +2225,9 @@ export default async function StoreHomePage({
                               top: `${taglinePos.y * 100}%`,
                               transform: "translate(-50%, -50%)",
                               maxWidth: "min(800px, 90%)",
-                              color: taglineColor,
-                              fontFamily: "var(--store-font)",
-                              fontWeight: taglineWeight,
-                              letterSpacing: taglineTracking(0.02),
-                              wordBreak: "keep-all",
-                              overflowWrap: "break-word",
-                              fontSize: `clamp(${1.5 * taglineFontScale}rem, ${3 * taglineFontScale}vw, ${3 * taglineFontScale}rem)`,
-                              ...taglineMobileSizeVar(1.5, 3, 3),
-                              ...taglineLeadingStyle(1.6),
+                              ...fullTaglineTextStyle,
                             }
-                          : {
-                              color: taglineColor,
-                              fontFamily: "var(--store-font)",
-                              fontWeight: taglineWeight,
-                              letterSpacing: taglineTracking(0.02),
-                              wordBreak: "keep-all",
-                              overflowWrap: "break-word",
-                              fontSize: `clamp(${1.5 * taglineFontScale}rem, ${3 * taglineFontScale}vw, ${3 * taglineFontScale}rem)`,
-                              ...taglineMobileSizeVar(1.5, 3, 3),
-                              ...taglineLeadingStyle(1.6),
-                            }
+                          : fullTaglineTextStyle
                       }
                       data-edit-text
                       data-edit-field="tagline"
