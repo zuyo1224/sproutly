@@ -1313,6 +1313,35 @@ export const SECTION_BODY_TRACKING_EM = { tight: -0.02, wide: 0.06 } as const;
  */
 export const SECTION_MICRO_LEADING = { tight: 1.15, loose: 2.2 } as const;
 
+/**
+ * 編輯器區段面板裡「中檔寫『跟預設』」的三顆按鈕表，三張各自對一種 tight/normal/x 的欄位：
+ * - SECTION_TRACKING_OPTIONS（收緊／跟預設／撐開）：小標字距、卡片品名／描述／小字／價錢字距五格
+ * - SECTION_LEADING_OPTIONS（收緊／跟預設／拉開）：小標行距、卡片標題／描述／小字行距四格
+ * - SECTION_GAP_OPTIONS（收緊／跟預設／放寬）：標題與內容、標題塊裡面、卡片內距、卡片行距四格
+ * 以前十三格各自在 editor-workspace.tsx 手寫一份逐字相同的 { v, label } 陣列，改一格的字
+ * 另外幾格不會跟著動。中檔寫「跟預設」不寫「預設」是這批欄位的共同處境：normal 不是某個值，
+ * 是「這個 key 不存在、維持這段原本的」（見 SECTION_STYLE_ENUMS 上方註解），跟 hero 那組
+ * lib/theme-keys 的 TRACKING_OPTIONS／LEADING_OPTIONS（中檔「預設」、第三檔「舒展」）不是
+ * 同一張表，不合併。v 的順序照 SECTION_STYLE_ENUMS 對應欄位。
+ */
+export const SECTION_TRACKING_OPTIONS = [
+  { v: "tight", label: "收緊" },
+  { v: "normal", label: "跟預設" },
+  { v: "wide", label: "撐開" },
+] as const satisfies ReadonlyArray<{ v: (typeof SECTION_STYLE_ENUMS)["eyebrowTracking"][number]; label: string }>;
+
+export const SECTION_LEADING_OPTIONS = [
+  { v: "tight", label: "收緊" },
+  { v: "normal", label: "跟預設" },
+  { v: "loose", label: "拉開" },
+] as const satisfies ReadonlyArray<{ v: (typeof SECTION_STYLE_ENUMS)["eyebrowLeading"][number]; label: string }>;
+
+export const SECTION_GAP_OPTIONS = [
+  { v: "tight", label: "收緊" },
+  { v: "normal", label: "跟預設" },
+  { v: "loose", label: "放寬" },
+] as const satisfies ReadonlyArray<{ v: (typeof SECTION_STYLE_ENUMS)["headingGap"][number]; label: string }>;
+
 export const SECTION_STYLE_NEUTRAL_VALUES = {
   bodyAlign: "auto",
   bodyMeasure: "auto",

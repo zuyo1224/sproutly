@@ -49,7 +49,9 @@ import { FREE_POS_KEYS, SECTION_DRAG_ELEMENT, stripLegacyFreePositions } from "@
 // 「預設「xxx」」那段字，都直接查這張表，跟公開頁真正套上去的字是同一份；以前三十格各手抄
 // 一句，選物 intro 那格就抄成「…那一株...」而實品是「…那一株。」。
 import { HOMEPAGE_DEFAULTS, type SectionStyle } from "@/app/[slug]/_theme";
-import { applySectionStylePatch, SECTION_BODY_TRACKING_EM, SECTION_BORDER_RADIUS_PX, SECTION_HEADING_SCALE, SECTION_MIN_HEIGHT_VH, type SectionStylePatch } from "@/lib/section-style-schema";
+// SECTION_TRACKING_OPTIONS／SECTION_LEADING_OPTIONS／SECTION_GAP_OPTIONS：區段面板裡中檔寫
+// 「跟預設」的字距五格、行距四格、間距四格三顆按鈕的表，以前十三格各手寫一份一模一樣的陣列。
+import { applySectionStylePatch, SECTION_BODY_TRACKING_EM, SECTION_BORDER_RADIUS_PX, SECTION_GAP_OPTIONS, SECTION_HEADING_SCALE, SECTION_LEADING_OPTIONS, SECTION_MIN_HEIGHT_VH, SECTION_TRACKING_OPTIONS, type SectionStylePatch } from "@/lib/section-style-schema";
 import { contrastRatio, relativeLuminance } from "@/lib/color-contrast";
 // 版面「只認清單內的值」的 44 格＋排成幾欄 6 格，型別直接從 lib/theme-layout-choices 那張表導出，
 // 跟存檔端（actions.ts）與讀回端（_theme.ts resolveLayout）吃同一份；表多一個值，這裡不用再抄一次
@@ -6996,11 +6998,7 @@ export function EditorWorkspace({
               {SECTIONS_WITH_SECTION_HEAD.includes(selectedSection) && (
               <Field label="標題與內容">
                 <div className="grid grid-cols-3 gap-1.5">
-                  {([
-                    { v: "tight", label: "收緊" },
-                    { v: "normal", label: "跟預設" },
-                    { v: "loose", label: "放寬" },
-                  ] as const).map((opt) => (
+                  {SECTION_GAP_OPTIONS.map((opt) => (
                     <button
                       key={opt.v}
                       type="button"
@@ -7034,11 +7032,7 @@ export function EditorWorkspace({
               {SECTIONS_WITH_HEADING_INNER.includes(selectedSection) && (
               <Field label="標題塊裡面">
                 <div className="grid grid-cols-3 gap-1.5">
-                  {([
-                    { v: "tight", label: "收緊" },
-                    { v: "normal", label: "跟預設" },
-                    { v: "loose", label: "放寬" },
-                  ] as const).map((opt) => (
+                  {SECTION_GAP_OPTIONS.map((opt) => (
                     <button
                       key={opt.v}
                       type="button"
@@ -7070,11 +7064,7 @@ export function EditorWorkspace({
               )}
               <Field label="小標字距">
                 <div className="grid grid-cols-3 gap-1.5">
-                  {([
-                    { v: "tight", label: "收緊" },
-                    { v: "normal", label: "跟預設" },
-                    { v: "wide", label: "撐開" },
-                  ] as const).map((opt) => (
+                  {SECTION_TRACKING_OPTIONS.map((opt) => (
                     <button
                       key={opt.v}
                       type="button"
@@ -7176,11 +7166,7 @@ export function EditorWorkspace({
               </Field>
               <Field label="小標行距">
                 <div className="grid grid-cols-3 gap-1.5">
-                  {([
-                    { v: "tight", label: "收緊" },
-                    { v: "normal", label: "跟預設" },
-                    { v: "loose", label: "拉開" },
-                  ] as const).map((opt) => (
+                  {SECTION_LEADING_OPTIONS.map((opt) => (
                     <button
                       key={opt.v}
                       type="button"
@@ -8811,11 +8797,7 @@ export function EditorWorkspace({
               {cardSurface && (
                 <Field label="卡片內距">
                   <div className="grid grid-cols-3 gap-1.5">
-                    {([
-                      { v: "tight", label: "收緊" },
-                      { v: "normal", label: "跟預設" },
-                      { v: "loose", label: "放寬" },
-                    ] as const).map((opt) => (
+                    {SECTION_GAP_OPTIONS.map((opt) => (
                       <button
                         key={opt.v}
                         type="button"
@@ -9357,11 +9339,7 @@ export function EditorWorkspace({
               {SECTIONS_WITH_CARD_TITLE_LEADING.includes(selectedSection) && (
                 <Field label="卡片標題行距">
                   <div className="grid grid-cols-3 gap-1.5">
-                    {([
-                      { v: "tight", label: "收緊" },
-                      { v: "normal", label: "跟預設" },
-                      { v: "loose", label: "拉開" },
-                    ] as const).map((opt) => (
+                    {SECTION_LEADING_OPTIONS.map((opt) => (
                       <button
                         key={opt.v}
                         type="button"
@@ -9394,11 +9372,7 @@ export function EditorWorkspace({
               {SECTIONS_WITH_CARD_TITLE_TEXT.includes(selectedSection) && (
                 <Field label="卡片品名字距">
                   <div className="grid grid-cols-3 gap-1.5">
-                    {([
-                      { v: "tight", label: "收緊" },
-                      { v: "normal", label: "跟預設" },
-                      { v: "wide", label: "撐開" },
-                    ] as const).map((opt) => (
+                    {SECTION_TRACKING_OPTIONS.map((opt) => (
                       <button
                         key={opt.v}
                         type="button"
@@ -9505,11 +9479,7 @@ export function EditorWorkspace({
               {SECTIONS_WITH_CARD_DESC_TEXT.includes(selectedSection) && (
                 <Field label="卡片描述行距">
                   <div className="grid grid-cols-3 gap-1.5">
-                    {([
-                      { v: "tight", label: "收緊" },
-                      { v: "normal", label: "跟預設" },
-                      { v: "loose", label: "拉開" },
-                    ] as const).map((opt) => (
+                    {SECTION_LEADING_OPTIONS.map((opt) => (
                       <button
                         key={opt.v}
                         type="button"
@@ -9579,11 +9549,7 @@ export function EditorWorkspace({
               {SECTIONS_WITH_CARD_DESC_TEXT.includes(selectedSection) && (
                 <Field label="卡片描述字距">
                   <div className="grid grid-cols-3 gap-1.5">
-                    {([
-                      { v: "tight", label: "收緊" },
-                      { v: "normal", label: "跟預設" },
-                      { v: "wide", label: "撐開" },
-                    ] as const).map((opt) => (
+                    {SECTION_TRACKING_OPTIONS.map((opt) => (
                       <button
                         key={opt.v}
                         type="button"
@@ -9690,11 +9656,7 @@ export function EditorWorkspace({
               {SECTIONS_WITH_CARD_MICRO_TEXT.includes(selectedSection) && (
                 <Field label="卡片小字字距">
                   <div className="grid grid-cols-3 gap-1.5">
-                    {([
-                      { v: "tight", label: "收緊" },
-                      { v: "normal", label: "跟預設" },
-                      { v: "wide", label: "撐開" },
-                    ] as const).map((opt) => (
+                    {SECTION_TRACKING_OPTIONS.map((opt) => (
                       <button
                         key={opt.v}
                         type="button"
@@ -9727,11 +9689,7 @@ export function EditorWorkspace({
               {SECTIONS_WITH_CARD_MICRO_TEXT.includes(selectedSection) && (
                 <Field label="卡片小字行距">
                   <div className="grid grid-cols-3 gap-1.5">
-                    {([
-                      { v: "tight", label: "收緊" },
-                      { v: "normal", label: "跟預設" },
-                      { v: "loose", label: "拉開" },
-                    ] as const).map((opt) => (
+                    {SECTION_LEADING_OPTIONS.map((opt) => (
                       <button
                         key={opt.v}
                         type="button"
@@ -9951,11 +9909,7 @@ export function EditorWorkspace({
               {SECTIONS_WITH_CARD_PRICE.includes(selectedSection) && (
                 <Field label="卡片價錢字距">
                   <div className="grid grid-cols-3 gap-1.5">
-                    {([
-                      { v: "tight", label: "收緊" },
-                      { v: "normal", label: "跟預設" },
-                      { v: "wide", label: "撐開" },
-                    ] as const).map((opt) => (
+                    {SECTION_TRACKING_OPTIONS.map((opt) => (
                       <button
                         key={opt.v}
                         type="button"
@@ -10025,11 +9979,7 @@ export function EditorWorkspace({
               {SECTIONS_WITH_CARD_ROW_GAP.includes(selectedSection) && (
                 <Field label="卡片行距">
                   <div className="grid grid-cols-3 gap-1.5">
-                    {([
-                      { v: "tight", label: "收緊" },
-                      { v: "normal", label: "跟預設" },
-                      { v: "loose", label: "放寬" },
-                    ] as const).map((opt) => (
+                    {SECTION_GAP_OPTIONS.map((opt) => (
                       <button
                         key={opt.v}
                         type="button"

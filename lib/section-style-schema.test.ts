@@ -22,6 +22,9 @@ import {
   SECTION_CARD_PADDING_PX,
   SECTION_LINE_HEIGHT,
   SECTION_MICRO_LEADING,
+  SECTION_TRACKING_OPTIONS,
+  SECTION_LEADING_OPTIONS,
+  SECTION_GAP_OPTIONS,
   SECTION_HEADING_SCALE,
   SECTION_MEDIA_RADIUS_PX,
   SECTION_MIN_HEIGHT_VH,
@@ -330,5 +333,22 @@ describe("SECTION_MICRO_LEADING 跟小標行距、卡片小字行距兩欄對得
     }
     assert.ok(SECTION_MICRO_LEADING.tight >= 1);
     assert.ok(SECTION_MICRO_LEADING.tight < SECTION_MICRO_LEADING.loose);
+  });
+});
+
+describe("SECTION_TRACKING_OPTIONS／SECTION_LEADING_OPTIONS／SECTION_GAP_OPTIONS", () => {
+  it("三張按鈕表的 v 各跟對應欄位的合法值同一組同一個順序，中檔都是「跟預設」，label 有字且不重複", () => {
+    for (const [options, keys] of [
+      [SECTION_TRACKING_OPTIONS, SECTION_STYLE_ENUMS.eyebrowTracking],
+      [SECTION_LEADING_OPTIONS, SECTION_STYLE_ENUMS.eyebrowLeading],
+      [SECTION_GAP_OPTIONS, SECTION_STYLE_ENUMS.headingGap],
+    ] as const) {
+      assert.deepEqual(options.map((o) => o.v), [...keys]);
+      assert.equal(options[1].v, "normal");
+      assert.equal(options[1].label, "跟預設");
+      const labels = options.map((o) => o.label);
+      for (const l of labels) assert.ok(l.length > 0);
+      assert.equal(new Set(labels).size, labels.length);
+    }
   });
 });
