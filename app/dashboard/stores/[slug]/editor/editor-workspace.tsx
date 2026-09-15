@@ -53,7 +53,9 @@ import { HOMEPAGE_DEFAULTS, type SectionStyle } from "@/app/[slug]/_theme";
 // SECTION_WEIGHT_OPTIONS／SECTION_LINE_TONE_OPTIONS／SECTION_LINE_WEIGHT_OPTIONS／SECTION_BG_STRENGTH_OPTIONS：
 // 區段面板裡中檔寫「跟預設」的字距五格、行距四格、間距四格、字級六格、粗細兩格、線條深淺三格、
 // 線條粗細兩格、底色濃淡兩格的按鈕表，以前二十八格各手寫一份一模一樣的陣列。
-import { applySectionStylePatch, SECTION_BG_STRENGTH_OPTIONS, SECTION_BODY_TRACKING_EM, SECTION_BORDER_RADIUS_PX, SECTION_GAP_OPTIONS, SECTION_HEADING_SCALE, SECTION_LEADING_OPTIONS, SECTION_LINE_TONE_OPTIONS, SECTION_LINE_WEIGHT_OPTIONS, SECTION_MIN_HEIGHT_VH, SECTION_SCALE_OPTIONS, SECTION_TRACKING_OPTIONS, SECTION_WEIGHT_OPTIONS, type SectionStylePatch } from "@/lib/section-style-schema";
+// SECTION_TEXT_SCALE_OPTIONS／SECTION_TEXT_TONE_OPTIONS：中檔寫「預設」（不是「跟預設」）的
+// 內文／標題大小兩格、標題／卡片品名用色兩格，再收四格。
+import { applySectionStylePatch, SECTION_BG_STRENGTH_OPTIONS, SECTION_BODY_TRACKING_EM, SECTION_BORDER_RADIUS_PX, SECTION_GAP_OPTIONS, SECTION_HEADING_SCALE, SECTION_LEADING_OPTIONS, SECTION_LINE_TONE_OPTIONS, SECTION_LINE_WEIGHT_OPTIONS, SECTION_MIN_HEIGHT_VH, SECTION_SCALE_OPTIONS, SECTION_TEXT_SCALE_OPTIONS, SECTION_TEXT_TONE_OPTIONS, SECTION_TRACKING_OPTIONS, SECTION_WEIGHT_OPTIONS, type SectionStylePatch } from "@/lib/section-style-schema";
 import { contrastRatio, relativeLuminance } from "@/lib/color-contrast";
 // 版面「只認清單內的值」的 44 格＋排成幾欄 6 格，型別直接從 lib/theme-layout-choices 那張表導出，
 // 跟存檔端（actions.ts）與讀回端（_theme.ts resolveLayout）吃同一份；表多一個值，這裡不用再抄一次
@@ -6631,11 +6633,7 @@ export function EditorWorkspace({
               </Field>
               <Field label="內文大小">
                 <div className="grid grid-cols-3 gap-1.5">
-                  {([
-                    { v: "small", label: "小" },
-                    { v: "default", label: "預設" },
-                    { v: "large", label: "大" },
-                  ] as const).map((opt) => (
+                  {SECTION_TEXT_SCALE_OPTIONS.map((opt) => (
                     <button
                       key={opt.v}
                       type="button"
@@ -7353,11 +7351,7 @@ export function EditorWorkspace({
               </div>
               <Field label="標題大小">
                 <div className="grid grid-cols-3 gap-1.5">
-                  {([
-                    { v: "small", label: "小" },
-                    { v: "default", label: "預設" },
-                    { v: "large", label: "大" },
-                  ] as const).map((opt) => (
+                  {SECTION_TEXT_SCALE_OPTIONS.map((opt) => (
                     <button
                       key={opt.v}
                       type="button"
@@ -7500,11 +7494,7 @@ export function EditorWorkspace({
               </Field>
               <Field label="標題用色">
                 <div className="grid grid-cols-3 gap-1.5">
-                  {([
-                    { v: "default", label: "預設" },
-                    { v: "accent", label: "主色" },
-                    { v: "muted", label: "柔和" },
-                  ] as const).map((opt) => (
+                  {SECTION_TEXT_TONE_OPTIONS.map((opt) => (
                     <button
                       key={opt.v}
                       type="button"
@@ -9316,11 +9306,7 @@ export function EditorWorkspace({
               {SECTIONS_WITH_CARD_TITLE_TEXT.includes(selectedSection) && (
                 <Field label="卡片品名用色">
                   <div className="grid grid-cols-3 gap-1.5">
-                    {([
-                      { v: "default", label: "預設" },
-                      { v: "accent", label: "主色" },
-                      { v: "muted", label: "柔和" },
-                    ] as const).map((opt) => (
+                    {SECTION_TEXT_TONE_OPTIONS.map((opt) => (
                       <button
                         key={opt.v}
                         type="button"

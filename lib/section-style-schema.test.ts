@@ -30,6 +30,8 @@ import {
   SECTION_LINE_TONE_OPTIONS,
   SECTION_LINE_WEIGHT_OPTIONS,
   SECTION_BG_STRENGTH_OPTIONS,
+  SECTION_TEXT_SCALE_OPTIONS,
+  SECTION_TEXT_TONE_OPTIONS,
   SECTION_HEADING_SCALE,
   SECTION_MEDIA_RADIUS_PX,
   SECTION_MIN_HEIGHT_VH,
@@ -396,5 +398,32 @@ describe("SECTION_LINE_TONE_OPTIONS／SECTION_LINE_WEIGHT_OPTIONS／SECTION_BG_S
       for (const l of labels) assert.ok(l.length > 0);
       assert.equal(new Set(labels).size, labels.length);
     }
+  });
+});
+
+describe("SECTION_TEXT_SCALE_OPTIONS／SECTION_TEXT_TONE_OPTIONS", () => {
+  it("兩張表的 v 各跟用到它的每一欄合法值同一組同一個順序，「預設」那顆是 default，label 有字且不重複", () => {
+    const pairs = [
+      [SECTION_TEXT_SCALE_OPTIONS, ["bodyScale", "headingScale"]],
+      [SECTION_TEXT_TONE_OPTIONS, ["headingTone", "cardTitleTone"]],
+    ] as const;
+    for (const [options, keys] of pairs) {
+      for (const key of keys) {
+        assert.deepEqual(options.map((o) => o.v), [...SECTION_STYLE_ENUMS[key]]);
+      }
+      const hit = options.find((o) => o.label === "預設");
+      assert.ok(hit);
+      assert.equal(hit.v, "default");
+      // 字面跟「小／跟預設／大」那張只差一個字，這裡鎖住兩張表不會被抄成同一種寫法
+      assert.ok(!options.map((o) => o.label as string).includes("跟預設"));
+      const labels = options.map((o) => o.label);
+      for (const l of labels) assert.ok(l.length > 0);
+      assert.equal(new Set(labels).size, labels.length);
+    }
+    // headingScale 沒有中性值（選 default 也會存下來）、其他三欄的中性值就是 default
+    assert.ok(!("headingScale" in SECTION_STYLE_NEUTRAL_VALUES));
+    assert.equal(SECTION_STYLE_NEUTRAL_VALUES.bodyScale, "default");
+    assert.equal(SECTION_STYLE_NEUTRAL_VALUES.headingTone, "default");
+    assert.equal(SECTION_STYLE_NEUTRAL_VALUES.cardTitleTone, "default");
   });
 });

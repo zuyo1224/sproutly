@@ -1394,6 +1394,32 @@ export const SECTION_BG_STRENGTH_OPTIONS = [
   { v: "strong", label: "加深" },
 ] as const satisfies ReadonlyArray<{ v: (typeof SECTION_STYLE_ENUMS)["textureTone"][number]; label: string }>;
 
+/**
+ * 中檔（或第一顆）寫「預設」、不是「跟預設」的那批也有兩組逐字相同：
+ * - SECTION_TEXT_SCALE_OPTIONS（小／預設／大）：區段「內文大小」（bodyScale）、「標題大小」（headingScale）兩格
+ * - SECTION_TEXT_TONE_OPTIONS（預設／主色／柔和）：「標題用色」（headingTone）、「卡片品名用色」（cardTitleTone）兩格
+ * 以前四格各手寫一份一模一樣的陣列。字面跟上面 SECTION_SCALE_OPTIONS 的「小／跟預設／大」
+ * 只差一個「跟」字，但那是兩種意思：「跟預設」是「這格不設、跟全站走」（key 不存在），
+ * 「預設」是真的套一個字級（headingScale 沒有中性值，選 default 也會存下來），所以是兩張表、
+ * 不合併。兩張表 v 的順序都照 SECTION_STYLE_ENUMS 對應欄位。同批中檔寫「預設」但只有一格的
+ *（內文濃淡 muted/default/strong、字體 default/serif/sans、滑過卡片 default/calm/none、
+ * 卡片價錢用色第三檔 text「跟品名同深」、字距 tight/normal/wide「緊／預設／寬」、
+ * 行高 tight/normal/relaxed、副標對齊 inherit 四顆、照片比例 auto 四顆）各只一份，不動；
+ * 「這段的上下空白」與「卡片間距」字都是「緊湊／預設／寬鬆」但值是 compact/default/spacious
+ * 對 tight/normal/loose，不是同一組值，也不動。
+ */
+export const SECTION_TEXT_SCALE_OPTIONS = [
+  { v: "small", label: "小" },
+  { v: "default", label: "預設" },
+  { v: "large", label: "大" },
+] as const satisfies ReadonlyArray<{ v: (typeof SECTION_STYLE_ENUMS)["bodyScale"][number]; label: string }>;
+
+export const SECTION_TEXT_TONE_OPTIONS = [
+  { v: "default", label: "預設" },
+  { v: "accent", label: "主色" },
+  { v: "muted", label: "柔和" },
+] as const satisfies ReadonlyArray<{ v: (typeof SECTION_STYLE_ENUMS)["headingTone"][number]; label: string }>;
+
 export const SECTION_STYLE_NEUTRAL_VALUES = {
   bodyAlign: "auto",
   bodyMeasure: "auto",
