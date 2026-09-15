@@ -23,6 +23,7 @@ import {
   HERO_FULL_HEIGHT_VH,
   HERO_IMAGE_MAX_HEIGHT_VH,
   HERO_TEXT_GAP_SCALE,
+  blockAlignMargins,
   heroTextGapMargins,
   heroTextGapScale,
   padX,
@@ -191,6 +192,14 @@ describe("heroBannerGeometry（公開頁 banner 與編輯器預覽框共用的�
     assert.deepEqual(tight.bottom(1.5), { marginBottom: `${1.5 * HERO_TEXT_GAP_SCALE.tight}rem` });
     const loose = heroTextGapMargins("loose");
     assert.deepEqual(loose.top(1), { marginTop: `${HERO_TEXT_GAP_SCALE.loose}rem` });
+  });
+
+  // 滿版圖版型 heroTextAlignX 與極簡版型 heroMinimalAlign 都走這支；layout.tsx 各區段
+  // 內容欄 data-content-align-x 兩條 CSS 是同一組值的文字版。
+  it("blockAlignMargins：置中回空物件（inline 不輸出），靠左／靠右各把另一邊留 auto", () => {
+    assert.deepEqual(blockAlignMargins("center"), {});
+    assert.deepEqual(blockAlignMargins("left"), { marginLeft: 0, marginRight: "auto" });
+    assert.deepEqual(blockAlignMargins("right"), { marginLeft: "auto", marginRight: 0 });
   });
 
   it("padY／padX：同一個值套到成對的兩邊，且只有那兩個 key", () => {

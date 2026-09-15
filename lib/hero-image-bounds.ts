@@ -155,6 +155,23 @@ export function padX(value: string): { paddingLeft: string; paddingRight: string
 }
 
 /**
+ * 一道限了寬的欄「擺在段落的哪一邊」：靠左就把右邊 margin 留 auto 讓欄被推到左邊，
+ * 靠右反過來；置中回 {}（inline 不輸出、class 上的 mx-auto 照舊），既有店家算出來一模一樣。
+ * inline 的 marginLeft／marginRight 贏過 class 上的 mx-auto，所以只要給值就蓋得掉。
+ * 以前 page.tsx 滿版圖版型（heroTextAlignX）與極簡版型（heroMinimalAlign）各手寫一份
+ * 同樣的三元式，layout.tsx 給各區段內容欄的 data-content-align-x 兩條 CSS 也是同一組值
+ * （那邊是 template literal 裡的 CSS 文字，沒法 spread 物件，註解指回這裡）。
+ */
+export function blockAlignMargins(align: "left" | "center" | "right"): {
+  marginLeft?: 0 | "auto";
+  marginRight?: 0 | "auto";
+} {
+  if (align === "left") return { marginLeft: 0, marginRight: "auto" };
+  if (align === "right") return { marginLeft: "auto", marginRight: 0 };
+  return {};
+}
+
+/**
  * 編輯器「Hero 圖片」預覽框的寬高比範圍：3:4 到 3:1。面板窄，太直的照片會把整欄撐得
  * 很長，所以下限比公開頁的 split 圖寬。主體框與「整張顯示」收過上限的外框都走這一支。
  * 呼叫端拿回傳值跟原值比（clamped === aspect）判斷「有沒有被夾過」，夾過的不畫上限提示。

@@ -1137,7 +1137,9 @@ export default async function PublicStoreLayout({
            mx-auto 永遠置中，商家把欄收窄之後，字的左緣停在畫面正中偏左的一個誰也對不到
            的位置，雜誌那種「窄欄貼著左邊界起排」做不出來。做法跟 hero 滿版圖版型那格
            （heroTextAlignX）同一招：靠左 / 靠右各自把另一邊的 margin 留成 auto 讓欄被
-           推過去。跟「區段對齊」不衝突：那格動欄裡每行字的 text-align，這格動整道欄。
+           推過去（同一組值收在 lib/hero-image-bounds 的 blockAlignMargins，page.tsx 兩個
+           hero 版型 spread 那支；這裡是 CSS 文字沒法 spread，改值時三處一起）。
+           跟「區段對齊」不衝突：那格動欄裡每行字的 text-align，這格動整道欄。
            選擇器帶兩個 attribute，比 class 上那個 mx-auto 精確，蓋得掉。左右內距（欄自己
            的 px-8）不動，靠左時字的左緣剛好落在導覽列與商品共用的那道全站邊界上。
            沒設（或選「置中」）就沒 attribute、整條規則不存在，各段維持原本的置中。 */

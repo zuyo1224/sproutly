@@ -21,6 +21,7 @@ import {
 const CTA_TEXT_CONTRAST_MIN = 4.5;
 import HeroAdaptiveBanner from "./HeroAdaptiveBanner";
 import {
+  blockAlignMargins,
   clampHeroSplitPhotoAspect,
   HERO_IMAGE_MAX_HEIGHT_VH,
   HERO_SPLIT_HEIGHT_VH,
@@ -2140,15 +2141,12 @@ export default async function StoreHomePage({
                         ? { maxWidth: "72rem" }
                         : { maxWidth: "none" };
                     // 那道欄擺在照片的哪一邊。置中是原本 mx-auto 的行為，不輸出任何值；
-                    // 靠左 / 靠右各自把另一邊的 margin 留成 auto，讓欄自己被推過去。
-                    // inline 的 marginLeft / marginRight 贏過 class 上的 mx-auto。
-                    const ax = theme.layout.heroTextAlignX;
-                    const heroTextAlignXStyle: React.CSSProperties =
-                      taglinePos || ax === "center"
-                        ? {}
-                        : ax === "left"
-                        ? { marginLeft: 0, marginRight: "auto" }
-                        : { marginLeft: "auto", marginRight: 0 };
+                    // 靠左 / 靠右各自把另一邊的 margin 留成 auto，讓欄自己被推過去
+                    // （blockAlignMargins，跟極簡版型與各區段內容欄同一把尺）。
+                    // 主標定過位（absolute）時整欄不受這格影響。
+                    const heroTextAlignXStyle: React.CSSProperties = taglinePos
+                      ? {}
+                      : blockAlignMargins(theme.layout.heroTextAlignX);
                     return (
                   <div
                     className={taglinePos ? "" : "max-w-4xl mx-auto"}
@@ -3002,12 +3000,8 @@ export default async function StoreHomePage({
           const minimalAlignStyle =
             minimalAlign === "center" ? {} : { textAlign: minimalAlign };
           // 副標與短橫線的左右 auto：靠左時右邊留 auto、靠右時左邊留 auto
-          const minimalBlockAlignStyle =
-            minimalAlign === "left"
-              ? { marginLeft: 0, marginRight: "auto" }
-              : minimalAlign === "right"
-              ? { marginLeft: "auto", marginRight: 0 }
-              : {};
+          // （blockAlignMargins，跟滿版圖版型 heroTextAlignX 同一把尺）
+          const minimalBlockAlignStyle = blockAlignMargins(minimalAlign);
           return (
             <section
               className="py-40 sm:py-56"
