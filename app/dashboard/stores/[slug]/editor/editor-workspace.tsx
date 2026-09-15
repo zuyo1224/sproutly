@@ -55,6 +55,7 @@ import { contrastRatio, relativeLuminance } from "@/lib/color-contrast";
 // 跟存檔端（actions.ts）與讀回端（_theme.ts resolveLayout）吃同一份；表多一個值，這裡不用再抄一次
 import type { LayoutChoice, LayoutColumns } from "@/lib/theme-layout-choices";
 import {
+  ALIGN_X_OPTIONS,
   HERO_STYLE_KEYS,
   isHeroImageSide,
   isHeroStyle,
@@ -3476,11 +3477,7 @@ export function EditorWorkspace({
             {theme.layout.heroStyle === "split" && (
               <Field label="文字靠左右哪邊">
                 <div className="grid grid-cols-3 gap-1.5">
-                  {([
-                    { v: "left", label: "靠左" },
-                    { v: "center", label: "置中" },
-                    { v: "right", label: "靠右" },
-                  ] as const).map((opt) => (
+                  {ALIGN_X_OPTIONS.map((opt) => (
                     <button
                       key={opt.v}
                       type="button"
@@ -4348,11 +4345,7 @@ export function EditorWorkspace({
             {theme.layout.heroStyle === "minimal" && (
               <Field label="文字對齊">
                 <div className="grid grid-cols-3 gap-1.5">
-                  {([
-                    { v: "left", label: "靠左" },
-                    { v: "center", label: "置中" },
-                    { v: "right", label: "靠右" },
-                  ] as const).map((opt) => (
+                  {ALIGN_X_OPTIONS.map((opt) => (
                     <button
                       key={opt.v}
                       type="button"
@@ -4618,11 +4611,7 @@ export function EditorWorkspace({
             {theme.layout.heroStyle === "full-image" && (
               <Field label="文字段擺哪邊">
                 <div className="grid grid-cols-3 gap-1.5">
-                  {([
-                    { v: "left", label: "靠左" },
-                    { v: "center", label: "置中" },
-                    { v: "right", label: "靠右" },
-                  ] as const).map((opt) => (
+                  {ALIGN_X_OPTIONS.map((opt) => (
                     <button
                       key={opt.v}
                       type="button"
@@ -7965,11 +7954,7 @@ export function EditorWorkspace({
               {SECTIONS_WITH_CONTENT_COLUMN.includes(selectedSection) && (
               <Field label="內容欄位置">
                 <div className="grid grid-cols-3 gap-1.5">
-                  {([
-                    { v: "left", label: "靠左" },
-                    { v: "center", label: "置中" },
-                    { v: "right", label: "靠右" },
-                  ] as const).map((opt) => (
+                  {ALIGN_X_OPTIONS.map((opt) => (
                     <button
                       key={opt.v}
                       type="button"

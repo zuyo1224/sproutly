@@ -38,6 +38,17 @@ export function isAlignX(value: unknown): value is AlignX {
   return typeof value === "string" && (ALIGN_X_KEYS as readonly string[]).includes(value);
 }
 
+// 編輯器「靠左 / 置中 / 靠右」三顆按鈕那張 { v, label } 表。split 文字欄、minimal 整段、
+// 滿版圖文字段、各區段「內容欄位置」四格以前各自手寫一份一模一樣的陣列，改一格的字
+// （例如「靠左」改「貼左」）另外三格不會跟著動，四格是同一個問題（一道欄擺哪邊）的
+// 四個位置，字要一樣。順序照 ALIGN_X_KEYS。主標／標題對齊那幾格用的是短字「左 / 置中 / 右」
+// 與帶「預設 / 同標題」第四檔的版本，不是這張表。
+export const ALIGN_X_OPTIONS = [
+  { v: "left", label: "靠左" },
+  { v: "center", label: "置中" },
+  { v: "right", label: "靠右" },
+] as const satisfies ReadonlyArray<{ v: AlignX; label: string }>;
+
 // Hero 文字的三張「三檔」清單：粗細 normal/medium/bold、字距 tight/normal/wide、
 // 行距 tight/normal/relaxed。主標／小標／副標／按鈕／byline 五組欄位各自都有這幾格，
 // 以前公開頁 _theme.ts 的 type 與 resolveLayout 的 === 三連判斷、編輯器 editor-workspace

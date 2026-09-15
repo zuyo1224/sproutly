@@ -2,6 +2,7 @@ import { test } from "node:test";
 import assert from "node:assert/strict";
 import {
   ALIGN_X_KEYS,
+  ALIGN_X_OPTIONS,
   HERO_STYLE_KEYS,
   HERO_IMAGE_SIDES,
   SECTION_KEYS,
@@ -119,4 +120,11 @@ test("風格底五種與字體六種都算合法，清單外、大小寫不同�
   assert.equal(isFontKey("noto_serif"), false);
   assert.equal(isFontKey(null), false);
   assert.equal(isFontKey(1), false);
+});
+
+test("編輯器對齊三顆按鈕的選項表跟 ALIGN_X_KEYS 同一組值同一個順序，label 都有字且不重複", () => {
+  assert.deepEqual(ALIGN_X_OPTIONS.map((o) => o.v), [...ALIGN_X_KEYS]);
+  const labels = ALIGN_X_OPTIONS.map((o) => o.label);
+  for (const l of labels) assert.ok(l.length > 0);
+  assert.equal(new Set(labels).size, labels.length);
 });
