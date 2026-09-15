@@ -126,6 +126,16 @@ export default async function StoreHomePage({
       .map((line) => line.trim())
       .filter((line) => line.length > 0);
 
+  // 分好的行一行一個 <span className="block">，主標（四個版型）、精選開場 h2（兩支）、
+  // 承諾引言 blockquote 共七處以前各抄一份一模一樣的 map；收成一個，改一格七處跟著動。
+  // key 用索引：行的內容會重複（同一句話出現兩次是合理的），索引才穩。
+  const blockLines = (lines: string[]) =>
+    lines.map((line, i) => (
+      <span key={i} className="block">
+        {line}
+      </span>
+    ));
+
   const taglineLines = splitByPunc(heroTagline);
   const introLines = splitByPunc(collectionsIntro);
   const promiseLines = promiseText
@@ -2256,11 +2266,7 @@ export default async function StoreHomePage({
                       data-edit-drag="hero-tagline"
                       {...taglineMobileAttr}
                     >
-                      {taglineLines.map((line, i) => (
-                        <span key={i} className="block">
-                          {line}
-                        </span>
-                      ))}
+                      {blockLines(taglineLines)}
                     </h1>
                     {(subtitlePos || !taglinePos) && theme.layout.heroSubtitle && (() => {
                       // 拖過版位 → absolute（座標系跟主標一樣是 cream block）
@@ -2679,11 +2685,7 @@ export default async function StoreHomePage({
                     data-edit-field="tagline"
                     {...taglineMobileAttr}
                   >
-                    {taglineLines.map((line, i) => (
-                      <span key={i} className="block">
-                        {line}
-                      </span>
-                    ))}
+                    {blockLines(taglineLines)}
                   </h1>
                   {theme.layout.heroSubtitle && (
                     <p
@@ -2851,11 +2853,7 @@ export default async function StoreHomePage({
                     data-edit-field="tagline"
                     {...taglineMobileAttr}
                   >
-                    {taglineLines.map((line, i) => (
-                      <span key={i} className="block">
-                        {line}
-                      </span>
-                    ))}
+                    {blockLines(taglineLines)}
                   </h1>
                   {theme.layout.heroSubtitle && (
                     <p
@@ -3063,11 +3061,7 @@ export default async function StoreHomePage({
                 data-edit-field="tagline"
                 {...taglineMobileAttr}
               >
-                {taglineLines.map((line, i) => (
-                  <span key={i} className="block">
-                    {line}
-                  </span>
-                ))}
+                {blockLines(taglineLines)}
               </h1>
               {theme.layout.heroSubtitle && (
                 <p
@@ -3219,11 +3213,7 @@ export default async function StoreHomePage({
                     overflowWrap: "break-word",
                   }}
                 >
-                  {introLines.map((line, i) => (
-                    <span key={i} className="block">
-                      {line}
-                    </span>
-                  ))}
+                  {blockLines(introLines)}
                 </h2>
               ) : (
                 <>
@@ -3258,11 +3248,7 @@ export default async function StoreHomePage({
                     overflowWrap: "break-word",
                   }}
                 >
-                  {introLines.map((line, i) => (
-                    <span key={i} className="block">
-                      {line}
-                    </span>
-                  ))}
+                  {blockLines(introLines)}
                 </h2>
                 </>
               )}
@@ -3994,11 +3980,7 @@ export default async function StoreHomePage({
                     overflowWrap: "break-word",
                   }}
                 >
-                  {promiseLines.map((line, i) => (
-                    <span key={i} className="block">
-                      {line}
-                    </span>
-                  ))}
+                  {blockLines(promiseLines)}
                 </blockquote>
 
                 {/* 底部裝飾線 */}
