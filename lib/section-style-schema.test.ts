@@ -22,6 +22,7 @@ import {
   SECTION_CARD_PADDING_PX,
   SECTION_LINE_HEIGHT,
   SECTION_MICRO_LEADING,
+  alignToAutoMargins,
   SECTION_TRACKING_OPTIONS,
   SECTION_LEADING_OPTIONS,
   SECTION_GAP_OPTIONS,
@@ -340,6 +341,18 @@ describe("SECTION_MICRO_LEADING 跟小標行距、卡片小字行距兩欄對得
     }
     assert.ok(SECTION_MICRO_LEADING.tight >= 1);
     assert.ok(SECTION_MICRO_LEADING.tight < SECTION_MICRO_LEADING.loose);
+  });
+});
+
+describe("alignToAutoMargins 把對齊翻成左右外距", () => {
+  it("靠左＝左 0 右 auto、靠右反過來、置中兩邊 auto，且 headingAlign 三檔每檔都有答案", () => {
+    assert.deepEqual(alignToAutoMargins("left"), { ml: "0", mr: "auto" });
+    assert.deepEqual(alignToAutoMargins("right"), { ml: "auto", mr: "0" });
+    assert.deepEqual(alignToAutoMargins("center"), { ml: "auto", mr: "auto" });
+    for (const a of SECTION_STYLE_ENUMS.headingAlign) {
+      const m = alignToAutoMargins(a);
+      assert.ok(["0", "auto"].includes(m.ml) && ["0", "auto"].includes(m.mr));
+    }
   });
 });
 

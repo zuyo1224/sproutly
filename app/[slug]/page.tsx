@@ -53,6 +53,7 @@ import {
   SECTION_BORDER_RADIUS_PX,
   SECTION_LINE_HEIGHT,
   SECTION_MIN_HEIGHT_VH,
+  alignToAutoMargins,
 } from "@/lib/section-style-schema";
 
 export default async function StoreHomePage({
@@ -1359,7 +1360,8 @@ export default async function StoreHomePage({
     // 標題底線：線本身在 layout.tsx 的 h2::after 畫，這裡只餵它兩件 CSS 沒辦法自己知道的事。
     // 一是顏色，跟外框／分隔線共用上面同一個 lineColor（自訂文字色算出來的淡色），三種線在
     // 同一段裡才會是同一個顏色。二是左右外距——::after 是 block，父層的 text-align 管不到它，
-    // 對齊選了靠右、線還是留在左邊。所以把對齊翻成 margin 的 auto 給 CSS 用。
+    // 對齊選了靠右、線還是留在左邊。所以把對齊翻成 margin 的 auto 給 CSS 用（翻法在
+    // lib/section-style-schema 的 alignToAutoMargins，跟下面內文窄欄那對變數共用）。
     if (s.headingRuleVal) {
       // 深淺讀「底線深淺」那格，三檔跟分隔線深淺一字不差：strong 用該段文字色（跟字同深
       // 就一定看得見，深底淺字自動變淺線）、accent 用算好的 sectionAccent（主色被底色吃掉
@@ -1370,19 +1372,21 @@ export default async function StoreHomePage({
           : s.headingRuleToneVal === "accent"
             ? sectionAccent
             : lineColor;
-      out["--store-rule-ml"] = s.align === "left" ? "0" : "auto";
-      out["--store-rule-mr"] = s.align === "right" ? "0" : "auto";
+      const ruleMargins = alignToAutoMargins(s.align);
+      out["--store-rule-ml"] = ruleMargins.ml;
+      out["--store-rule-mr"] = ruleMargins.mr;
     }
     // 內文一行字數：寬度本身餵給 layout.tsx 那條規則，另外把「窄欄往哪邊靠」也一起翻成
     // margin 的 auto。收窄之後段落就不再撐滿整欄，靠 text-align 決定不了那個窄框自己站哪裡
     // ——不餵的話一律置中，商家把內文設成靠左（報紙那種標題置中、內文靠左）就會看到一段
     // 靠左的字浮在畫面正中間。跟標題底線那條 ::after 一樣，對齊是 inline text-align，CSS
-    // 選擇器讀不到，只能從這裡算好。沒單獨設內文對齊就跟著這一段的標題對齊走。
+    // 選擇器讀不到，只能從這裡算好（同一個 alignToAutoMargins）。沒單獨設內文對齊就跟著
+    // 這一段的標題對齊走。
     if (s.bodyMeasureVal) {
       out["--store-measure-max"] = s.bodyMeasureMax;
-      const bodyAlign = s.bodyAlignVal ?? s.align;
-      out["--store-measure-ml"] = bodyAlign === "left" ? "0" : "auto";
-      out["--store-measure-mr"] = bodyAlign === "right" ? "0" : "auto";
+      const measureMargins = alignToAutoMargins(s.bodyAlignVal ?? s.align);
+      out["--store-measure-ml"] = measureMargins.ml;
+      out["--store-measure-mr"] = measureMargins.mr;
     }
     // 側邊色條：報紙／雜誌標示重點段落（引言、公告）那條粗色條。整段外框太重、分隔線
     // 太輕，中間這一級原本做不出來。畫在 borderLeft / borderRight——分隔線佔的是上下兩邊、

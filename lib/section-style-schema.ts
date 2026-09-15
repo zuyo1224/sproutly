@@ -1314,6 +1314,22 @@ export const SECTION_BODY_TRACKING_EM = { tight: -0.02, wide: 0.06 } as const;
 export const SECTION_MICRO_LEADING = { tight: 1.15, loose: 2.2 } as const;
 
 /**
+ * 「對齊」翻成左右外距。區段裡有兩樣東西靠 text-align 站不到對應那邊：標題底線
+ *（layout.tsx h2::after，是 block、父層的 text-align 管不到）與收窄後的內文窄欄
+ *（data-body-measure 那條，段落不再撐滿整欄）。兩者都只能靠 margin 的 auto 推：靠左＝左邊 0
+ * 右邊 auto、靠右反過來、置中兩邊 auto。page.tsx sectionStyleToInline 餵 --store-rule-ml/mr
+ * 與 --store-measure-ml/mr 兩對變數，以前各寫一份同樣的兩條三元式，註解互指「跟標題底線
+ * 那條同一個處境、同一個解法」、以前只靠人記。
+ * 不合併的：hero 副標那塊（page.tsx heroSubtitle blockAlign）是 React style、靠左時什麼都不寫，
+ * 輸出形狀不同；「區段寬度」（widthOverride）是整段永遠置中、沒有對齊可翻。
+ */
+export function alignToAutoMargins(
+  align: "left" | "center" | "right"
+): { ml: "0" | "auto"; mr: "0" | "auto" } {
+  return { ml: align === "left" ? "0" : "auto", mr: align === "right" ? "0" : "auto" };
+}
+
+/**
  * 編輯器區段面板裡「中檔寫『跟預設』」的三顆按鈕表，三張各自對一種 tight/normal/x 的欄位：
  * - SECTION_TRACKING_OPTIONS（收緊／跟預設／撐開）：小標字距、卡片品名／描述／小字／價錢字距五格
  * - SECTION_LEADING_OPTIONS（收緊／跟預設／拉開）：小標行距、卡片標題／描述／小字行距四格
