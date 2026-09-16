@@ -210,6 +210,13 @@ export default async function StoreHomePage({
     padding: "0 1.5rem",
   });
 
+  // 區段開場小標（慢讀區／顧客回饋／常見問題／相簿／來訪，各拖過版位與沒定位兩支）共九處
+  // 的 className 以前各抄一份一模一樣的字串（小標基底 class、10px、字距 0.4em、大寫、下距 mb-5），
+  // 改一格（例如 mb-5 要改 mb-6）另八處不會跟著動；收成一個常數。精選／數字那幾處字級是
+  // 0.6875rem、下距 mb-4，承諾 mb-8、合作夥伴 absolute／mb-12，不是同一包，留在原地。
+  const sectionEyebrowClass =
+    "sproutly-section-eyebrow text-[10px] tracking-[0.4em] uppercase mb-5";
+
   const taglineLines = splitByPunc(heroTagline);
   const introLines = splitByPunc(collectionsIntro);
   const promiseLines = promiseText
@@ -3722,7 +3729,7 @@ export default async function StoreHomePage({
                 <p
                   data-edit-text
                   data-edit-field="journalEyebrow"
-                  className="sproutly-section-eyebrow text-[10px] tracking-[0.4em] uppercase mb-5"
+                  className={sectionEyebrowClass}
                   style={{ color: eyebrowColor }}
                 >
                   {journalEyebrow}
@@ -3751,7 +3758,7 @@ export default async function StoreHomePage({
                 <p
                   data-edit-text
                   data-edit-field="journalEyebrow"
-                  className="sproutly-section-eyebrow text-[10px] tracking-[0.4em] uppercase mb-5"
+                  className={sectionEyebrowClass}
                   style={{ color: eyebrowColor }}
                 >
                   {journalEyebrow}
@@ -4131,7 +4138,7 @@ export default async function StoreHomePage({
                     <p
                       data-edit-text
                       data-edit-field="testimonialsEyebrow"
-                      className="sproutly-section-eyebrow text-[10px] tracking-[0.4em] uppercase mb-5"
+                      className={sectionEyebrowClass}
                       style={{ color: eyebrowColor }}
                     >
                       {testimonialsEyebrow}
@@ -4159,7 +4166,7 @@ export default async function StoreHomePage({
                     <p
                       data-edit-text
                       data-edit-field="testimonialsEyebrow"
-                      className="sproutly-section-eyebrow text-[10px] tracking-[0.4em] uppercase mb-5"
+                      className={sectionEyebrowClass}
                       style={{ color: eyebrowColor }}
                     >
                       {testimonialsEyebrow}
@@ -4352,7 +4359,7 @@ export default async function StoreHomePage({
                     style={freeIntroPosStyle(faqPos!)}
                   >
                     <p
-                      className="sproutly-section-eyebrow text-[10px] tracking-[0.4em] uppercase mb-5"
+                      className={sectionEyebrowClass}
                       style={{ color: eyebrowColor }}
                     >
                       {faqEyebrow}
@@ -4375,7 +4382,7 @@ export default async function StoreHomePage({
                   <p
                     data-edit-text
                     data-edit-field="faqEyebrow"
-                    className="sproutly-section-eyebrow text-[10px] tracking-[0.4em] uppercase mb-5"
+                    className={sectionEyebrowClass}
                     style={{ color: eyebrowColor }}
                   >
                     {faqEyebrow}
@@ -4910,7 +4917,7 @@ export default async function StoreHomePage({
                     <p
                       data-edit-text
                       data-edit-field="galleryEyebrow"
-                      className="sproutly-section-eyebrow text-[10px] tracking-[0.4em] uppercase mb-5"
+                      className={sectionEyebrowClass}
                       style={{ color: eyebrowColor }}
                     >
                       {galleryEyebrow}
@@ -4935,7 +4942,7 @@ export default async function StoreHomePage({
                   <p
                     data-edit-text
                     data-edit-field="galleryEyebrow"
-                    className="sproutly-section-eyebrow text-[10px] tracking-[0.4em] uppercase mb-5"
+                    className={sectionEyebrowClass}
                     style={{ color: eyebrowColor }}
                   >
                     {galleryEyebrow}
@@ -5087,7 +5094,7 @@ export default async function StoreHomePage({
                 <p
                   data-edit-text
                   data-edit-field="visitEyebrow"
-                  className="sproutly-section-eyebrow text-[10px] tracking-[0.4em] uppercase mb-5"
+                  className={sectionEyebrowClass}
                   style={{ color: eyebrowColor }}
                 >
                   {visitEyebrow}
