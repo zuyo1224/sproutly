@@ -1995,7 +1995,8 @@ export default async function StoreHomePage({
           // 字距／大小寫／粗細三個展開，只差字距的 base em；收成一個 helper，改一格六處
           // 一起動。三個物件的 key 互不重疊（letterSpacing／textTransform／fontWeight），
           // 先合成再展開跟原本依序展開算出來的東西一樣。字級（link／btn／micro）與顏色
-          //（link／solid／outline）各處本來就不同，留在各處前後自己接。
+          //（link／solid／outline）各處本來就不同，由下面顏色那段之後的 ctaLinkStyle／
+          // ctaBtnStyle 再接一層。
           const ctaTextStyle = (baseEm: number): React.CSSProperties => ({
             ...ctaTrackStyle(baseEm),
             ...ctaCaseStyle,
@@ -2030,6 +2031,23 @@ export default async function StoreHomePage({
           const ctaOutlineColorStyle = ctaColor
             ? { color: ctaColor, borderColor: ctaColor }
             : {};
+          // 上面那格 ctaTextStyle 收完之後，六處 CTA 的 style 還是各自排三個展開：滿版圖
+          // 兩顆（absolute／flow）三個一模一樣（link 字級、0.05em、link 色），藥丸型三顆
+          //（split 實心與描邊、極簡）前兩個一模一樣（btn 字級、0.18em）只差最後的顏色；
+          // 再收一層，滿版圖兩顆改一格一起動、藥丸三顆的字級與字距不會有一顆走散。
+          // 三包的 key 互不重疊（fontSize／padding、letterSpacing／textTransform／fontWeight、
+          // color／background／borderColor），先合成再展開跟原本依序展開算出來的東西一樣。
+          // 雜誌那條是 micro 字級配 0.32em，只有一處，留在原地。
+          const ctaLinkStyle: React.CSSProperties = {
+            ...ctaLinkSizeStyle,
+            ...ctaTextStyle(0.05),
+            ...ctaLinkColorStyle,
+          };
+          const ctaBtnStyle = (colorStyle: React.CSSProperties): React.CSSProperties => ({
+            ...ctaBtnSizeStyle,
+            ...ctaTextStyle(0.18),
+            ...colorStyle,
+          });
           // 雜誌版型底下那條 byline（hero 最後一個完全沒得動的元素）。字級寫死在外層那條
           // flex 的 text-[10px] 上、顏色寫死 theme.textMuted。10px 跟上面那條 metadata
           // 同一個值，是照拉丁大寫字母挑的；byline 商家常打中文或中英混排，方塊字在 10px
@@ -2412,9 +2430,7 @@ export default async function StoreHomePage({
                           maxWidth: "min(24rem, 90%)",
                           color: theme.text,
                           fontFamily: "var(--store-font)",
-                          ...ctaLinkSizeStyle,
-                          ...ctaTextStyle(0.05),
-                          ...ctaLinkColorStyle,
+                          ...ctaLinkStyle,
                         }}
                       >
                         {heroCta}
@@ -2430,9 +2446,7 @@ export default async function StoreHomePage({
                         style={{
                           color: theme.text,
                           fontFamily: "var(--store-font)",
-                          ...ctaLinkSizeStyle,
-                          ...ctaTextStyle(0.05),
-                          ...ctaLinkColorStyle,
+                          ...ctaLinkStyle,
                           ...heroTextGapTop(2),
                         }}
                       >
@@ -2764,7 +2778,7 @@ export default async function StoreHomePage({
                       className="sproutly-btn sproutly-btn-primary sproutly-btn-lg"
                       data-edit-text
                       data-edit-field="heroCta"
-                      style={{ ...ctaBtnSizeStyle, ...ctaTextStyle(0.18), ...ctaSolidColorStyle }}
+                      style={ctaBtnStyle(ctaSolidColorStyle)}
                     >
                       {heroCta}
                     </Link>
@@ -2774,7 +2788,7 @@ export default async function StoreHomePage({
                         className="sproutly-btn sproutly-btn-secondary sproutly-btn-lg"
                         data-edit-text
                         data-edit-field="heroSecondaryCta"
-                        style={{ ...ctaBtnSizeStyle, ...ctaTextStyle(0.18), ...ctaOutlineColorStyle }}
+                        style={ctaBtnStyle(ctaOutlineColorStyle)}
                       >
                         {heroSecondaryCta}
                       </Link>
@@ -3135,7 +3149,7 @@ export default async function StoreHomePage({
                 className={`sproutly-btn sproutly-btn-primary sproutly-btn-lg mt-12 ${fade3}`}
                 data-edit-text
                 data-edit-field="heroCta"
-                style={{ ...ctaBtnSizeStyle, ...ctaTextStyle(0.18), ...ctaSolidColorStyle, ...minimalGapTop(3) }}
+                style={{ ...ctaBtnStyle(ctaSolidColorStyle), ...minimalGapTop(3) }}
               >
                 {heroCta}
               </Link>
