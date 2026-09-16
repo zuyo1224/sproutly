@@ -183,6 +183,19 @@ export default async function StoreHomePage({
     width: "100%",
   });
 
+  // 滿版圖 hero 拖過版位的四件（小標、主標、副標、CTA）以前各自再多寫一模一樣的
+  // position absolute 一行，加上最寬「min(某個值, 90%)」一條，只差那個值（小標與 CTA 24rem、
+  // 主標 800px、副標 32rem）；改一格（例如 90% 要改 92%）另三處不會跟著動。收成一個，
+  // 值用參數帶，各處自己多的（顏色、字體、文字 style）留在原地接在後面，屬性順序逐字相同。
+  const heroFreePosStyle = (
+    pos: { x: number; y: number },
+    max: "24rem" | "800px" | "32rem",
+  ): React.CSSProperties => ({
+    position: "absolute",
+    ...freePosStyle(pos),
+    maxWidth: `min(${max}, 90%)`,
+  });
+
   const taglineLines = splitByPunc(heroTagline);
   const introLines = splitByPunc(collectionsIntro);
   const promiseLines = promiseText
@@ -2334,9 +2347,7 @@ export default async function StoreHomePage({
                         data-edit-drag={FREE_POS_KEYS.heroEyebrow}
                         className={`text-[10px] tracking-[0.4em] uppercase ${fade1}`}
                         style={{
-                          position: "absolute",
-                          ...freePosStyle(eyebrowPos),
-                          maxWidth: "min(24rem, 90%)",
+                          ...heroFreePosStyle(eyebrowPos, "24rem"),
                           color: eyebrowAccentColor,
                           ...eyebrowTextStyle(0.4),
                         }}
@@ -2363,9 +2374,7 @@ export default async function StoreHomePage({
                       style={
                         taglinePos
                           ? {
-                              position: "absolute",
-                              ...freePosStyle(taglinePos),
-                              maxWidth: "min(800px, 90%)",
+                              ...heroFreePosStyle(taglinePos, "800px"),
                               ...fullTaglineTextStyle,
                             }
                           : fullTaglineTextStyle
@@ -2387,9 +2396,7 @@ export default async function StoreHomePage({
                             data-edit-drag={FREE_POS_KEYS.heroSubtitle}
                             className={`text-base sm:text-lg leading-[1.9] ${fade2}`}
                             style={{
-                              position: "absolute",
-                              ...freePosStyle(subtitlePos),
-                              maxWidth: "min(32rem, 90%)",
+                              ...heroFreePosStyle(subtitlePos, "32rem"),
                               color: subtitleColor,
                               fontFamily: "var(--store-font)",
                               ...subtitleTextStyle,
@@ -2439,9 +2446,7 @@ export default async function StoreHomePage({
                         data-edit-field="heroCta"
                         data-edit-drag={FREE_POS_KEYS.heroCta}
                         style={{
-                          position: "absolute",
-                          ...freePosStyle(ctaPos),
-                          maxWidth: "min(24rem, 90%)",
+                          ...heroFreePosStyle(ctaPos, "24rem"),
                           color: theme.text,
                           fontFamily: "var(--store-font)",
                           ...ctaLinkStyle,
