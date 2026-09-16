@@ -241,6 +241,15 @@ export default async function StoreHomePage({
 
   const animClass = theme.homepage.enableAnimation ? "sproutly-subtle-fade" : "";
 
+  // 選物系列 intro／精選／慢讀區／顧客回饋／常見問題／相簿六個區段的 <section> className
+  // 以前各抄一份一模一樣的樣板字串（relative、上下內距 py-40 sm:py-56、淡入 class、
+  // 拖過版位時撐 min-h-[60vh] 讓拖出去的東西有地方站），改一格（例如 py-56 要改 py-64）
+  // 另五處不會跟著動；收成一個小函式，拖過版位與否用參數帶。數字／合作夥伴（py-32
+  // sm:py-44、合作夥伴 50vh）與承諾／來訪（拖過版位撐整個螢幕 min-h-screen）不是同一包，
+  // 留在原地。
+  const sectionShellClass = (free: boolean) =>
+    `relative py-40 sm:py-56 ${animClass} ${free ? "min-h-[60vh]" : ""}`;
+
   // 區段裡用全站主色畫的東西（小標 eyebrow、標題底下那截短線、常見問題的＋、數字底下
   // 的短線）一律走這個值，不再直接寫 theme.accent。--store-accent 只有在該段的自訂底色
   // 把主色吃掉時才由 mergeSectionStyle 設（見那裡），沒設就退回全站主色、畫面完全不變。
@@ -3223,7 +3232,7 @@ export default async function StoreHomePage({
             theme.homepage.collectionsCardCta ?? HOMEPAGE_DEFAULTS.collectionsCardCta;
           return (
           <section
-            className={`relative py-40 sm:py-56 ${animClass} ${introFree ? "min-h-[60vh]" : ""}`}
+            className={sectionShellClass(introFree)}
             data-edit-target="collections"
             data-edit-label="選物提案"
             data-anim={collStyle.entranceVal}
@@ -3411,7 +3420,7 @@ export default async function StoreHomePage({
           const featuredStyle = sectionStyleFor("featured");
           return (
           <section
-            className={`relative py-40 sm:py-56 ${animClass} ${featuredFree ? "min-h-[60vh]" : ""}`}
+            className={sectionShellClass(featuredFree)}
             style={mergeSectionStyle(featuredStyle, theme.surface)}
             data-edit-target="featured"
             data-edit-label="本月選物"
@@ -3667,7 +3676,7 @@ export default async function StoreHomePage({
             theme.homepage.journalCardLabel ?? HOMEPAGE_DEFAULTS.journalCardLabel;
           return (
           <section
-            className={`relative py-40 sm:py-56 ${animClass} ${journalFree ? "min-h-[60vh]" : ""}`}
+            className={sectionShellClass(journalFree)}
             style={mergeSectionStyle(journalStyle)}
             data-edit-target="journal"
             data-edit-label="Journal 區段"
@@ -4078,7 +4087,7 @@ export default async function StoreHomePage({
             // 的間距寫在引言的下留白（mb-6）上，發了會多出一截上留白。
             return (
             <section
-              className={`relative py-40 sm:py-56 ${animClass} ${testimonialsFree ? "min-h-[60vh]" : ""}`}
+              className={sectionShellClass(testimonialsFree)}
               style={mergeSectionStyle(testimonialsStyle, theme.surface)}
               data-edit-target="testimonials"
               data-edit-label="顧客評語"
@@ -4317,7 +4326,7 @@ export default async function StoreHomePage({
             // 是 margin-top，這一列的間距寫在整列的上下 padding 上，發了會多出一截。
             return (
             <section
-              className={`relative py-40 sm:py-56 ${animClass} ${faqFree ? "min-h-[60vh]" : ""}`}
+              className={sectionShellClass(faqFree)}
               style={mergeSectionStyle(faqStyle)}
               data-edit-target="faq"
               data-edit-label="常見問題"
@@ -4864,7 +4873,7 @@ export default async function StoreHomePage({
               theme.homepage.galleryTitle ?? HOMEPAGE_DEFAULTS.galleryTitle;
             return (
             <section
-              className={`relative py-40 sm:py-56 ${animClass} ${galleryFree ? "min-h-[60vh]" : ""}`}
+              className={sectionShellClass(galleryFree)}
               style={mergeSectionStyle(galleryStyle)}
               data-edit-target="gallery"
               data-edit-label="圖片相簿"
