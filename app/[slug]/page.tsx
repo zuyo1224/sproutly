@@ -1968,6 +1968,16 @@ export default async function StoreHomePage({
               : theme.layout.heroCtaWeight === "normal"
               ? { fontWeight: 400 }
               : {};
+          // 六處 CTA（滿版圖兩顆、split 兩顆、雜誌一條、極簡一顆）中間都夾同一段
+          // 字距／大小寫／粗細三個展開，只差字距的 base em；收成一個 helper，改一格六處
+          // 一起動。三個物件的 key 互不重疊（letterSpacing／textTransform／fontWeight），
+          // 先合成再展開跟原本依序展開算出來的東西一樣。字級（link／btn／micro）與顏色
+          //（link／solid／outline）各處本來就不同，留在各處前後自己接。
+          const ctaTextStyle = (baseEm: number): React.CSSProperties => ({
+            ...ctaTrackStyle(baseEm),
+            ...ctaCaseStyle,
+            ...ctaWeightStyle,
+          });
           // 按鈕顏色。前四格（大小 / 字距 / 大小寫 / 粗細）能做的只有把字弄大弄粗，弄完
           // 那顆還是跟主標同色的一行字。六處的底是兩件不同的事，所以拆成三種算法，但
           // 商家只挑一個顏色（口徑寫在 _theme.ts 那個欄位上）。
@@ -2380,9 +2390,7 @@ export default async function StoreHomePage({
                           color: theme.text,
                           fontFamily: "var(--store-font)",
                           ...ctaLinkSizeStyle,
-                          ...ctaTrackStyle(0.05),
-                          ...ctaCaseStyle,
-                          ...ctaWeightStyle,
+                          ...ctaTextStyle(0.05),
                           ...ctaLinkColorStyle,
                         }}
                       >
@@ -2400,9 +2408,7 @@ export default async function StoreHomePage({
                           color: theme.text,
                           fontFamily: "var(--store-font)",
                           ...ctaLinkSizeStyle,
-                          ...ctaTrackStyle(0.05),
-                          ...ctaCaseStyle,
-                          ...ctaWeightStyle,
+                          ...ctaTextStyle(0.05),
                           ...ctaLinkColorStyle,
                           ...heroTextGapTop(2),
                         }}
@@ -2735,7 +2741,7 @@ export default async function StoreHomePage({
                       className="sproutly-btn sproutly-btn-primary sproutly-btn-lg"
                       data-edit-text
                       data-edit-field="heroCta"
-                      style={{ ...ctaBtnSizeStyle, ...ctaTrackStyle(0.18), ...ctaCaseStyle, ...ctaWeightStyle, ...ctaSolidColorStyle }}
+                      style={{ ...ctaBtnSizeStyle, ...ctaTextStyle(0.18), ...ctaSolidColorStyle }}
                     >
                       {heroCta}
                     </Link>
@@ -2745,7 +2751,7 @@ export default async function StoreHomePage({
                         className="sproutly-btn sproutly-btn-secondary sproutly-btn-lg"
                         data-edit-text
                         data-edit-field="heroSecondaryCta"
-                        style={{ ...ctaBtnSizeStyle, ...ctaTrackStyle(0.18), ...ctaCaseStyle, ...ctaWeightStyle, ...ctaOutlineColorStyle }}
+                        style={{ ...ctaBtnSizeStyle, ...ctaTextStyle(0.18), ...ctaOutlineColorStyle }}
                       >
                         {heroSecondaryCta}
                       </Link>
@@ -2937,9 +2943,7 @@ export default async function StoreHomePage({
                         ...ctaMicroSizeStyle,
                         // base 是上層 metadata 那條的 0.32em。刻意只套在 CTA 上不套整條——
                         // 左邊的 byline 跟按鈕不是成對的（跟字級那格同一個理由）。
-                        ...ctaTrackStyle(0.32),
-                        ...ctaCaseStyle,
-                        ...ctaWeightStyle,
+                        ...ctaTextStyle(0.32),
                         ...ctaLinkColorStyle,
                       }}
                     >
@@ -3108,7 +3112,7 @@ export default async function StoreHomePage({
                 className={`sproutly-btn sproutly-btn-primary sproutly-btn-lg mt-12 ${fade3}`}
                 data-edit-text
                 data-edit-field="heroCta"
-                style={{ ...ctaBtnSizeStyle, ...ctaTrackStyle(0.18), ...ctaCaseStyle, ...ctaWeightStyle, ...ctaSolidColorStyle, ...minimalGapTop(3) }}
+                style={{ ...ctaBtnSizeStyle, ...ctaTextStyle(0.18), ...ctaSolidColorStyle, ...minimalGapTop(3) }}
               >
                 {heroCta}
               </Link>
