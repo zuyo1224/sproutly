@@ -176,6 +176,17 @@ export default async function StoreHomePage({
   // 有自己底色的容器（提案卡、好評卡）不在此列，它們的底色不跟區段換，主色照舊。
   const accentColor = `var(--store-accent, ${theme.accent})`;
 
+  // 段落大標底下那截 32px 短線（顧客回饋／常見問題／數字／相簿各有拖過版位／沒定位兩支、
+  // 來訪一支）共九條的 style 以前各抄一份一模一樣的四個屬性（寬 32px、高 1px、主色、透明度），
+  // 只差透明度（數字那段 0.6、其餘 0.5）；收成一個，改一格九處跟著動。屬性順序跟原本逐字相同。
+  // 承諾引言底下那條 48px、數字每格底下那條 20px 寬度不同，不是同一包，留在原地。
+  const headRuleStyle = (opacity: 0.5 | 0.6): React.CSSProperties => ({
+    width: "32px",
+    height: "1px",
+    background: accentColor,
+    opacity,
+  });
+
   // 段落最上面那行小標的顏色。原本每一行各自寫死（十四段直接用主色、合作那兩行用次要文字
   // 色），改成統一讀 --store-eyebrow-color、fallback 回它原本那個值——沒設變數時算出來
   // 一模一樣，設了才換色（見 section-style-schema 的 eyebrowTone）。顏色是 inline style，
@@ -4117,12 +4128,7 @@ export default async function StoreHomePage({
                     </h2>
                     <div
                       className="sproutly-section-sub mt-6"
-                      style={{
-                        width: "32px",
-                        height: "1px",
-                        background: accentColor,
-                        opacity: 0.5,
-                      }}
+                      style={headRuleStyle(0.5)}
                     />
                   </div>
                 ) : (
@@ -4150,12 +4156,7 @@ export default async function StoreHomePage({
                     </h2>
                     <div
                       className={`sproutly-section-sub ${testimonialsDivider} mt-6`}
-                      style={{
-                        width: "32px",
-                        height: "1px",
-                        background: accentColor,
-                        opacity: 0.5,
-                      }}
+                      style={headRuleStyle(0.5)}
                     />
                   </div>
                 )}
@@ -4352,12 +4353,7 @@ export default async function StoreHomePage({
                     </h2>
                     <div
                       className="sproutly-section-sub mt-6"
-                      style={{
-                        width: "32px",
-                        height: "1px",
-                        background: accentColor,
-                        opacity: 0.5,
-                      }}
+                      style={headRuleStyle(0.5)}
                     />
                   </div>
                 ) : (
@@ -4382,12 +4378,7 @@ export default async function StoreHomePage({
                   </h2>
                   <div
                     className={`sproutly-section-sub ${faqDivider} mt-6`}
-                    style={{
-                      width: "32px",
-                      height: "1px",
-                      background: accentColor,
-                      opacity: 0.5,
-                    }}
+                    style={headRuleStyle(0.5)}
                   />
                 </div>
                 )}
@@ -4589,12 +4580,7 @@ export default async function StoreHomePage({
                     )}
                     <div
                       className="sproutly-section-sub mt-6"
-                      style={{
-                        width: "32px",
-                        height: "1px",
-                        background: accentColor,
-                        opacity: 0.6,
-                      }}
+                      style={headRuleStyle(0.6)}
                     />
                   </div>
                 )}
@@ -4624,12 +4610,7 @@ export default async function StoreHomePage({
                     )}
                     <div
                       className={`sproutly-section-sub ${statsDivider} mt-6`}
-                      style={{
-                        width: "32px",
-                        height: "1px",
-                        background: accentColor,
-                        opacity: 0.6,
-                      }}
+                      style={headRuleStyle(0.6)}
                     />
                   </div>
                 )}
@@ -4946,12 +4927,7 @@ export default async function StoreHomePage({
                     </h2>
                     <div
                       className="sproutly-section-sub mt-6"
-                      style={{
-                        width: "32px",
-                        height: "1px",
-                        background: accentColor,
-                        opacity: 0.5,
-                      }}
+                      style={headRuleStyle(0.5)}
                     />
                   </div>
                 ) : (
@@ -4976,12 +4952,7 @@ export default async function StoreHomePage({
                   </h2>
                   <div
                     className={`sproutly-section-sub ${galleryDivider} mt-6`}
-                    style={{
-                      width: "32px",
-                      height: "1px",
-                      background: accentColor,
-                      opacity: 0.5,
-                    }}
+                    style={headRuleStyle(0.5)}
                   />
                 </div>
                 )}
@@ -5138,12 +5109,7 @@ export default async function StoreHomePage({
                 </h2>
                 <div
                   className={`${visitDivider} mb-12`}
-                  style={{
-                    width: "32px",
-                    height: "1px",
-                    background: accentColor,
-                    opacity: 0.5,
-                  }}
+                  style={headRuleStyle(0.5)}
                 />
                 {storeAddress && storeMapsHref && (
                   // 地址做成可點連結，手機點下去直接開地圖 App 帶導航，客人不用自己複製貼上。
