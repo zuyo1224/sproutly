@@ -161,15 +161,24 @@ export default async function StoreHomePage({
     fontWeight: "var(--heading-weight, 400)",
   };
 
-  // 拖過版位的區段開場（選物系列 intro h2、慢讀區、顧客回饋、常見問題、數字、相簿共六處）
-  // 的 style 以前各抄一份一模一樣的五個屬性（left／top 用存的比例算、置中的 transform、
-  // 最寬 560px 或 80vw、寬 100%），改一格另五處不會跟著動；收成一個，屬性順序跟原本逐字相同。
-  // 精選「本月選物」那支（24rem／90%）、承諾卡（800px／90%）、來訪（560px／90vw）等最寬不同，
-  // 不是同一包，留在原地。
-  const freeIntroPosStyle = (pos: { x: number; y: number }): React.CSSProperties => ({
+  // 拖過版位的元素（hero 四件、精選標題、承諾卡、合作夥伴小標、來訪卡，加上底下
+  // freeIntroPosStyle 那六處）以前各抄一份一模一樣的三個屬性：left／top 用存的比例算、
+  // 置中的 transform。這三條是「存的座標怎麼變成畫面位置」的定義，改一格（例如改成
+  // 不置中）另八處不會跟著動；收成一個，各處自己多的（最寬、寬、nowrap、position）
+  // 留在原地接在後面，屬性順序跟原本逐字相同。
+  const freePosStyle = (pos: { x: number; y: number }): React.CSSProperties => ({
     left: `${pos.x * 100}%`,
     top: `${pos.y * 100}%`,
     transform: "translate(-50%, -50%)",
+  });
+
+  // 拖過版位的區段開場（選物系列 intro h2、慢讀區、顧客回饋、常見問題、數字、相簿共六處）
+  // 的 style 以前各抄一份一模一樣的五個屬性（上面那三條加最寬 560px 或 80vw、寬 100%），
+  // 改一格另五處不會跟著動；收成一個，屬性順序跟原本逐字相同。
+  // 精選「本月選物」那支（24rem／90%）、承諾卡（800px／90%）、來訪（560px／90vw）等最寬不同，
+  // 不是同一包，留在原地。
+  const freeIntroPosStyle = (pos: { x: number; y: number }): React.CSSProperties => ({
+    ...freePosStyle(pos),
     maxWidth: "min(560px, 80vw)",
     width: "100%",
   });
@@ -2326,9 +2335,7 @@ export default async function StoreHomePage({
                         className={`text-[10px] tracking-[0.4em] uppercase ${fade1}`}
                         style={{
                           position: "absolute",
-                          left: `${eyebrowPos.x * 100}%`,
-                          top: `${eyebrowPos.y * 100}%`,
-                          transform: "translate(-50%, -50%)",
+                          ...freePosStyle(eyebrowPos),
                           maxWidth: "min(24rem, 90%)",
                           color: eyebrowAccentColor,
                           ...eyebrowTextStyle(0.4),
@@ -2357,9 +2364,7 @@ export default async function StoreHomePage({
                         taglinePos
                           ? {
                               position: "absolute",
-                              left: `${taglinePos.x * 100}%`,
-                              top: `${taglinePos.y * 100}%`,
-                              transform: "translate(-50%, -50%)",
+                              ...freePosStyle(taglinePos),
                               maxWidth: "min(800px, 90%)",
                               ...fullTaglineTextStyle,
                             }
@@ -2383,9 +2388,7 @@ export default async function StoreHomePage({
                             className={`text-base sm:text-lg leading-[1.9] ${fade2}`}
                             style={{
                               position: "absolute",
-                              left: `${subtitlePos.x * 100}%`,
-                              top: `${subtitlePos.y * 100}%`,
-                              transform: "translate(-50%, -50%)",
+                              ...freePosStyle(subtitlePos),
                               maxWidth: "min(32rem, 90%)",
                               color: subtitleColor,
                               fontFamily: "var(--store-font)",
@@ -2437,9 +2440,7 @@ export default async function StoreHomePage({
                         data-edit-drag={FREE_POS_KEYS.heroCta}
                         style={{
                           position: "absolute",
-                          left: `${ctaPos.x * 100}%`,
-                          top: `${ctaPos.y * 100}%`,
-                          transform: "translate(-50%, -50%)",
+                          ...freePosStyle(ctaPos),
                           maxWidth: "min(24rem, 90%)",
                           color: theme.text,
                           fontFamily: "var(--store-font)",
@@ -3443,9 +3444,7 @@ export default async function StoreHomePage({
                   data-edit-drag={FREE_POS_KEYS.featuredTitle}
                   className="absolute text-xl sm:text-2xl"
                   style={{
-                    left: `${featuredPos!.x * 100}%`,
-                    top: `${featuredPos!.y * 100}%`,
-                    transform: "translate(-50%, -50%)",
+                    ...freePosStyle(featuredPos!),
                     ...introHeadTextStyle,
                     whiteSpace: "nowrap",
                   }}
@@ -3919,9 +3918,7 @@ export default async function StoreHomePage({
               style={
                 promisePos
                   ? {
-                      left: `${promisePos.x * 100}%`,
-                      top: `${promisePos.y * 100}%`,
-                      transform: "translate(-50%, -50%)",
+                      ...freePosStyle(promisePos),
                       maxWidth: "min(680px, 90vw)",
                       width: "100%",
                       padding: "0 1.5rem",
@@ -4742,9 +4739,7 @@ export default async function StoreHomePage({
                     data-edit-drag={FREE_POS_KEYS.partnersEyebrow}
                     className="sproutly-section-eyebrow absolute text-[10px] tracking-[0.4em] uppercase"
                     style={{
-                      left: `${partnersPos!.x * 100}%`,
-                      top: `${partnersPos!.y * 100}%`,
-                      transform: "translate(-50%, -50%)",
+                      ...freePosStyle(partnersPos!),
                       whiteSpace: "nowrap",
                       color: eyebrowMutedColor,
                     }}
@@ -5056,9 +5051,7 @@ export default async function StoreHomePage({
               style={
                 visitPos
                   ? {
-                      left: `${visitPos.x * 100}%`,
-                      top: `${visitPos.y * 100}%`,
-                      transform: "translate(-50%, -50%)",
+                      ...freePosStyle(visitPos),
                       maxWidth: "min(560px, 90vw)",
                       width: "100%",
                       padding: "0 1.5rem",
