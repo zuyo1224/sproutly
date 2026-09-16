@@ -1807,6 +1807,18 @@ export default async function StoreHomePage({
               : theme.layout.heroEyebrowLeading === "relaxed"
               ? { lineHeight: 2 }
               : {};
+          // 上面五個小標樣式，五處 eyebrow（滿版圖 absolute／flow、split、magazine、minimal）
+          // 每處都照同一個順序展開一遍，只差字距的 base em（雜誌 0.32、其餘 0.4）。
+          // 五個物件的 key 互不重疊（fontSize／letterSpacing／textTransform／fontWeight／
+          // lineHeight），先合成再展開跟原本依序展開算出來的東西逐字相同。
+          // 顏色與上下外距各處不同，留在各自原地。
+          const eyebrowTextStyle = (baseEm: number) => ({
+            ...eyebrowSizeStyle,
+            ...eyebrowTrackStyle(baseEm),
+            ...eyebrowCaseStyle,
+            ...eyebrowWeightStyle,
+            ...eyebrowLeadingStyle,
+          });
           // 副標自訂顏色 / 字級（split / magazine / minimal 共用）
           const subtitleColor =
             theme.layout.heroSubtitleColor ?? theme.textMuted;
@@ -2230,11 +2242,7 @@ export default async function StoreHomePage({
                           transform: "translate(-50%, -50%)",
                           maxWidth: "min(24rem, 90%)",
                           color: eyebrowAccentColor,
-                          ...eyebrowSizeStyle,
-                          ...eyebrowTrackStyle(0.4),
-                          ...eyebrowCaseStyle,
-                          ...eyebrowWeightStyle,
-                          ...eyebrowLeadingStyle,
+                          ...eyebrowTextStyle(0.4),
                         }}
                       >
                         {theme.layout.heroEyebrow}
@@ -2247,11 +2255,7 @@ export default async function StoreHomePage({
                         className={`text-[10px] tracking-[0.4em] uppercase mb-6 ${fade1}`}
                         style={{
                           color: eyebrowAccentColor,
-                          ...eyebrowSizeStyle,
-                          ...eyebrowTrackStyle(0.4),
-                          ...eyebrowCaseStyle,
-                          ...eyebrowWeightStyle,
-                          ...eyebrowLeadingStyle,
+                          ...eyebrowTextStyle(0.4),
                           ...heroTextGapBottom(1.5),
                         }}
                       >
@@ -2670,11 +2674,7 @@ export default async function StoreHomePage({
                       className={`text-[10px] tracking-[0.4em] uppercase mb-6 ${fade1}`}
                       style={{
                         color: eyebrowAccentColor,
-                        ...eyebrowSizeStyle,
-                        ...eyebrowTrackStyle(0.4),
-                        ...eyebrowCaseStyle,
-                        ...eyebrowWeightStyle,
-                        ...eyebrowLeadingStyle,
+                        ...eyebrowTextStyle(0.4),
                         ...splitGapBottom(1.5),
                       }}
                     >
@@ -2811,11 +2811,7 @@ export default async function StoreHomePage({
                     className={`flex justify-between items-center text-[10px] tracking-[0.32em] uppercase ${fade1}`}
                     style={{
                       color: eyebrowMutedColor,
-                      ...eyebrowSizeStyle,
-                      ...eyebrowTrackStyle(0.32),
-                      ...eyebrowCaseStyle,
-                      ...eyebrowWeightStyle,
-                      ...eyebrowLeadingStyle,
+                      ...eyebrowTextStyle(0.32),
                     }}
                   >
                     <span data-edit-text data-edit-field="heroEyebrow">
@@ -3038,11 +3034,7 @@ export default async function StoreHomePage({
                   className={`text-[10px] tracking-[0.4em] uppercase mb-8 ${fade1}`}
                   style={{
                     color: eyebrowAccentColor,
-                    ...eyebrowSizeStyle,
-                    ...eyebrowTrackStyle(0.4),
-                    ...eyebrowCaseStyle,
-                    ...eyebrowWeightStyle,
-                    ...eyebrowLeadingStyle,
+                    ...eyebrowTextStyle(0.4),
                     ...minimalGapBottom(2),
                   }}
                 >
