@@ -139,8 +139,8 @@ export default async function StoreHomePage({
   // 段落大標（慢讀區／顧客回饋／常見問題／數字／相簿／來訪，各有拖過版位／沒定位兩支）
   // 共十一顆 h2 的 style 以前各抄一份一模一樣的五個屬性（顏色、字體、粗細、字距、行高），
   // 只差粗細的 fallback（數字那段 500、其餘 400）；收成一個，改一格十一處跟著動。
-  // 屬性順序跟原本逐字相同。精選開場 h2 那兩支字距 fallback 是 inherit、又多斷行兩條，
-  // 不是同一包，故意不走這裡。
+  // 屬性順序跟原本逐字相同。精選開場／選物 intro 那四支字距 fallback 是 inherit、沒有行高，
+  // 不是同一包，另收在下面的 introHeadTextStyle。
   const sectionHeadTextStyle = (weight: 400 | 500): React.CSSProperties => ({
     color: "var(--store-heading-color, var(--store-text))",
     fontFamily: "var(--store-font)",
@@ -148,6 +148,18 @@ export default async function StoreHomePage({
     letterSpacing: "var(--store-heading-track, var(--store-track, -0.01em))",
     lineHeight: "var(--heading-leading, 1.2)",
   });
+
+  // 開場那兩段（精選「本月選物」h2 兩支、選物系列 intro h2 兩支）共四顆的 style 以前各抄一份
+  // 一模一樣的四個屬性（顏色、字體、字距、粗細），字距 fallback 是 inherit、沒有行高，
+  // 跟上面 sectionHeadTextStyle 那包不同，所以另收一個；改一格四處跟著動。
+  // 各處後面自己多的（intro 的斷行兩條、精選拖過版位那支的 nowrap）留在原地接在後面，
+  // 屬性順序跟原本逐字相同。
+  const introHeadTextStyle: React.CSSProperties = {
+    color: "var(--store-heading-color, var(--store-text))",
+    fontFamily: "var(--store-font)",
+    letterSpacing: "var(--store-heading-track, inherit)",
+    fontWeight: "var(--heading-weight, 400)",
+  };
 
   const taglineLines = splitByPunc(heroTagline);
   const introLines = splitByPunc(collectionsIntro);
@@ -3196,15 +3208,10 @@ export default async function StoreHomePage({
                     transform: "translate(-50%, -50%)",
                     maxWidth: "min(560px, 80vw)",
                     width: "100%",
-                    color: "var(--store-heading-color, var(--store-text))",
-                    fontFamily: "var(--store-font)",
-                    letterSpacing: "var(--store-heading-track, inherit)",
-                    // 十五個段落大標的字重與行距原本都寫死在這裡（多數 400、數字那段 500、
-                    // 行距 1.2），而「標題粗細」「標題行距」兩格是 layout.tsx 的規則——inline
-                    // 一律贏過規則，兩格按下去畫面不動。改讀變數、fallback 回原本的值（沒設
-                    // 等於原樣），變數在那兩組規則裡跟 font-weight / line-height 一起寫出來，
-                    // 跟卡片品名、內文粗細那幾格同一個作法。
-                    fontWeight: "var(--heading-weight, 400)",
+                    // 字重原本寫死在 inline（inline 一律贏過 layout.tsx 的規則，「標題粗細」那格
+                    // 按下去畫面不動），改讀 --heading-weight 變數、fallback 回原本的值——這條
+                    // 現在收在 introHeadTextStyle 裡，跟卡片品名、內文粗細那幾格同一個作法。
+                    ...introHeadTextStyle,
                     wordBreak: "keep-all",
                     overflowWrap: "break-word",
                   }}
@@ -3236,10 +3243,7 @@ export default async function StoreHomePage({
                   data-edit-drag={FREE_POS_KEYS.collectionIntro}
                   className={`sproutly-section-head text-xl sm:text-2xl max-w-xl ${collStyle.align === "center" ? "mx-auto" : collStyle.align === "right" ? "ml-auto" : ""} mb-32 leading-[1.9]`}
                   style={{
-                    color: "var(--store-heading-color, var(--store-text))",
-                    fontFamily: "var(--store-font)",
-                    letterSpacing: "var(--store-heading-track, inherit)",
-                    fontWeight: "var(--heading-weight, 400)",
+                    ...introHeadTextStyle,
                     wordBreak: "keep-all",
                     overflowWrap: "break-word",
                   }}
@@ -3399,10 +3403,7 @@ export default async function StoreHomePage({
                     left: `${featuredPos!.x * 100}%`,
                     top: `${featuredPos!.y * 100}%`,
                     transform: "translate(-50%, -50%)",
-                    color: "var(--store-heading-color, var(--store-text))",
-                    fontFamily: "var(--store-font)",
-                    letterSpacing: "var(--store-heading-track, inherit)",
-                    fontWeight: "var(--heading-weight, 400)",
+                    ...introHeadTextStyle,
                     whiteSpace: "nowrap",
                   }}
                 >
@@ -3433,10 +3434,7 @@ export default async function StoreHomePage({
                     data-edit-field="featuredTitle"
                     className="sproutly-section-head text-xl sm:text-2xl mb-20 sm:mb-28"
                     style={{
-                      color: "var(--store-heading-color, var(--store-text))",
-                      fontFamily: "var(--store-font)",
-                      letterSpacing: "var(--store-heading-track, inherit)",
-                      fontWeight: "var(--heading-weight, 400)",
+                      ...introHeadTextStyle,
                     }}
                   >
                     {featuredTitle}
