@@ -210,12 +210,17 @@ export default async function StoreHomePage({
     padding: "0 1.5rem",
   });
 
+  // 小標「長什麼樣」的三件套（10px、字距 0.4em、大寫）：hero 四種版型的小標、區段開場小標、
+  // 承諾小標、合作夥伴小標、卡片 micro 標，以前各抄一份一模一樣的三個 class，改一格（例如
+  // 字距 0.4em 要改 0.35em）另十幾處不會跟著動；收成一個基底，各處自己多的（下距、fade、
+  // absolute）留在原地接在後面。精選／數字那幾處字級是 0.6875rem，不是同一包，留在原地。
+  const eyebrowBaseClass = "text-[10px] tracking-[0.4em] uppercase";
+
   // 區段開場小標（慢讀區／顧客回饋／常見問題／相簿／來訪，各拖過版位與沒定位兩支）共九處
-  // 的 className 以前各抄一份一模一樣的字串（小標基底 class、10px、字距 0.4em、大寫、下距 mb-5），
-  // 改一格（例如 mb-5 要改 mb-6）另八處不會跟著動；收成一個常數。精選／數字那幾處字級是
-  // 0.6875rem、下距 mb-4，承諾 mb-8、合作夥伴 absolute／mb-12，不是同一包，留在原地。
-  const sectionEyebrowClass =
-    "sproutly-section-eyebrow text-[10px] tracking-[0.4em] uppercase mb-5";
+  // 的 className 以前各抄一份一模一樣的字串（小標基底 class、三件套、下距 mb-5），
+  // 改一格（例如 mb-5 要改 mb-6）另八處不會跟著動；收成一個常數。承諾 mb-8、
+  // 合作夥伴 absolute／mb-12，不是同一包，留在原地。
+  const sectionEyebrowClass = `sproutly-section-eyebrow ${eyebrowBaseClass} mb-5`;
 
   const taglineLines = splitByPunc(heroTagline);
   const introLines = splitByPunc(collectionsIntro);
@@ -2366,7 +2371,7 @@ export default async function StoreHomePage({
                         data-edit-text
                         data-edit-field="heroEyebrow"
                         data-edit-drag={FREE_POS_KEYS.heroEyebrow}
-                        className={`text-[10px] tracking-[0.4em] uppercase ${fade1}`}
+                        className={`${eyebrowBaseClass} ${fade1}`}
                         style={{
                           ...heroFreePosStyle(eyebrowPos, "24rem"),
                           color: eyebrowAccentColor,
@@ -2380,7 +2385,7 @@ export default async function StoreHomePage({
                         data-edit-text
                         data-edit-field="heroEyebrow"
                         data-edit-drag={FREE_POS_KEYS.heroEyebrow}
-                        className={`text-[10px] tracking-[0.4em] uppercase mb-6 ${fade1}`}
+                        className={`${eyebrowBaseClass} mb-6 ${fade1}`}
                         style={{
                           color: eyebrowAccentColor,
                           ...eyebrowTextStyle(0.4),
@@ -2779,7 +2784,7 @@ export default async function StoreHomePage({
                     <p
                       data-edit-text
                       data-edit-field="heroEyebrow"
-                      className={`text-[10px] tracking-[0.4em] uppercase mb-6 ${fade1}`}
+                      className={`${eyebrowBaseClass} mb-6 ${fade1}`}
                       style={{
                         color: eyebrowAccentColor,
                         ...eyebrowTextStyle(0.4),
@@ -3137,7 +3142,7 @@ export default async function StoreHomePage({
                 <p
                   data-edit-text
                   data-edit-field="heroEyebrow"
-                  className={`text-[10px] tracking-[0.4em] uppercase mb-8 ${fade1}`}
+                  className={`${eyebrowBaseClass} mb-8 ${fade1}`}
                   style={{
                     color: eyebrowAccentColor,
                     ...eyebrowTextStyle(0.4),
@@ -3825,7 +3830,7 @@ export default async function StoreHomePage({
                       data-edit-text
                       data-edit-field="journalCardEyebrow"
                       data-edit-index={i}
-                      className="sproutly-card-micro mt-6 text-[10px] tracking-[0.4em] uppercase"
+                      className={`sproutly-card-micro mt-6 ${eyebrowBaseClass}`}
                       style={{ color: cardMicroColor }}
                     >
                       {entry.eyebrow}
@@ -3989,7 +3994,7 @@ export default async function StoreHomePage({
                 <p
                   data-edit-text
                   data-edit-field="promiseEyebrow"
-                  className="sproutly-section-eyebrow text-[10px] tracking-[0.4em] uppercase mb-8 relative z-10"
+                  className={`sproutly-section-eyebrow ${eyebrowBaseClass} mb-8 relative z-10`}
                   style={{ color: eyebrowColor }}
                 >
                   {promiseEyebrow}
@@ -4758,7 +4763,7 @@ export default async function StoreHomePage({
                     data-edit-text
                     data-edit-field="partnersEyebrow"
                     data-edit-drag={FREE_POS_KEYS.partnersEyebrow}
-                    className="sproutly-section-eyebrow absolute text-[10px] tracking-[0.4em] uppercase"
+                    className={`sproutly-section-eyebrow absolute ${eyebrowBaseClass}`}
                     style={{
                       ...freePosStyle(partnersPos!),
                       whiteSpace: "nowrap",
@@ -4772,7 +4777,7 @@ export default async function StoreHomePage({
                   data-edit-drag={FREE_POS_KEYS.partnersEyebrow}
                   data-edit-text
                   data-edit-field="partnersEyebrow"
-                  className="sproutly-section-head sproutly-section-eyebrow text-[10px] tracking-[0.4em] uppercase mb-12"
+                  className={`sproutly-section-head sproutly-section-eyebrow ${eyebrowBaseClass} mb-12`}
                   style={{ color: eyebrowMutedColor }}
                 >
                   {partnersEyebrow}
