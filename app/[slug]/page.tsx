@@ -161,6 +161,13 @@ export default async function StoreHomePage({
     fontWeight: "var(--heading-weight, 400)",
   };
 
+  // 「這個元素有沒有被拖過版位」的查法：拿 key 去 theme.layout.freePositions 找，沒有就
+  // 回 null（後面全靠 null 判斷走 absolute 還是預設排法）。hero 四件加十個區段共十四處
+  // 以前各抄一份一模一樣的 `theme.layout.freePositions[key] ?? null`，改一格（例如改成
+  // 也查舊 key）另十三處不會跟著動；收成一個。
+  const freePosOf = (key: string): { x: number; y: number } | null =>
+    theme.layout.freePositions[key] ?? null;
+
   // 拖過版位的元素（hero 四件、精選標題、承諾卡、合作夥伴小標、來訪卡，加上底下
   // freeIntroPosStyle 那六處）以前各抄一份一模一樣的三個屬性：left／top 用存的比例算、
   // 置中的 transform。這三條是「存的座標怎麼變成畫面位置」的定義，改一格（例如改成
@@ -2305,17 +2312,17 @@ export default async function StoreHomePage({
                 {(() => {
                   // 主標拖動：data-edit-drag 只綁在 h1，不綁外層整塊。
                   // 拖動座標範圍 = cream block（position:relative wrapper）。
-                  const taglinePos = theme.layout.freePositions["hero-tagline"] ?? null;
+                  const taglinePos = freePosOf(FREE_POS_KEYS.heroTagline);
                   // 副標同款：有自訂位置就走 absolute。主標拖走後副標本來整段藏起來
                   //（跟著 flow 排會疊在 absolute 主標上），副標自己定過位就不用藏。
                   const subtitlePos =
-                    theme.layout.freePositions[FREE_POS_KEYS.heroSubtitle] ?? null;
+                    freePosOf(FREE_POS_KEYS.heroSubtitle);
                   // CTA 按鈕同款：定過位走 absolute，沒定位維持「主標拖走就跟著藏」。
                   const ctaPos =
-                    theme.layout.freePositions[FREE_POS_KEYS.heroCta] ?? null;
+                    freePosOf(FREE_POS_KEYS.heroCta);
                   // Eyebrow 小標同款：定過位走 absolute，不再被主標連坐藏掉。
                   const eyebrowPos =
-                    theme.layout.freePositions[FREE_POS_KEYS.heroEyebrow] ?? null;
+                    freePosOf(FREE_POS_KEYS.heroEyebrow);
                   return (
                 <div
                   className={`relative px-6 sm:px-12 py-14 sm:py-20${heroTextGrowClass}${taglinePos ? "" : heroTextAlignYClass}`}
@@ -3206,7 +3213,7 @@ export default async function StoreHomePage({
         {/* === 選物提案 === */}
         {visibleCollections.length > 0 && (() => {
           // key 換代重開（舊 DB 殘留座標掛在舊 key 下自動失效，見 lib/free-positions）
-          const introPos = theme.layout.freePositions[FREE_POS_KEYS.collectionIntro] ?? null;
+          const introPos = freePosOf(FREE_POS_KEYS.collectionIntro);
           const introFree = introPos !== null;
           const collStyle = sectionStyleFor("collections");
           const collectionsCardCta =
@@ -3396,7 +3403,7 @@ export default async function StoreHomePage({
 
         {/* === 本月選物 === */}
         {featuredProducts && featuredProducts.length > 0 && (() => {
-          const featuredPos = theme.layout.freePositions[FREE_POS_KEYS.featuredTitle] ?? null;
+          const featuredPos = freePosOf(FREE_POS_KEYS.featuredTitle);
           const featuredFree = featuredPos !== null;
           const featuredStyle = sectionStyleFor("featured");
           return (
@@ -3644,7 +3651,7 @@ export default async function StoreHomePage({
 
         {/* === Journal（placeholder：尚無實際文章） === */}
         {(() => {
-          const journalPos = theme.layout.freePositions[FREE_POS_KEYS.journalIntro] ?? null;
+          const journalPos = freePosOf(FREE_POS_KEYS.journalIntro);
           const journalFree = journalPos !== null;
           const journalStyle = sectionStyleFor("journal");
           const journalEyebrow =
@@ -3883,7 +3890,7 @@ export default async function StoreHomePage({
 
         {/* === Promise（雜誌風 quote card） === */}
         {promiseLines.length > 0 && (() => {
-          const promisePos = theme.layout.freePositions[FREE_POS_KEYS.promiseCard] ?? null;
+          const promisePos = freePosOf(FREE_POS_KEYS.promiseCard);
           const promiseStyle = sectionStyleFor("promise");
           const promiseCardWrap =
             promiseStyle.align === "right"
@@ -4042,7 +4049,7 @@ export default async function StoreHomePage({
         {theme.layout.sectionOrder.includes("testimonials") &&
           theme.layout.testimonials.length > 0 &&
           (() => {
-            const testimonialsPos = theme.layout.freePositions[FREE_POS_KEYS.testimonialsTitle] ?? null;
+            const testimonialsPos = freePosOf(FREE_POS_KEYS.testimonialsTitle);
             const testimonialsFree = testimonialsPos !== null;
             const testimonialsStyle = sectionStyleFor("testimonials");
             const testimonialsEyebrow =
@@ -4284,7 +4291,7 @@ export default async function StoreHomePage({
         {/* === FAQ Accordion（optional block，<details> 原生 accordion） === */}
         {theme.layout.sectionOrder.includes("faq") &&
           validFaqItems.length > 0 && (() => {
-            const faqPos = theme.layout.freePositions[FREE_POS_KEYS.faqIntro] ?? null;
+            const faqPos = freePosOf(FREE_POS_KEYS.faqIntro);
             const faqFree = faqPos !== null;
             const faqStyle = sectionStyleFor("faq");
             const faqDivider =
@@ -4498,7 +4505,7 @@ export default async function StoreHomePage({
         {/* === Stats（optional block：4 個大數字 + label） === */}
         {theme.layout.sectionOrder.includes("stats") &&
           theme.layout.stats.length > 0 && (() => {
-            const statsPos = theme.layout.freePositions[FREE_POS_KEYS.statsIntro] ?? null;
+            const statsPos = freePosOf(FREE_POS_KEYS.statsIntro);
             const statsStyle = sectionStyleFor("stats");
             const statsEyebrow =
               theme.homepage.statsEyebrow ?? HOMEPAGE_DEFAULTS.statsEyebrow;
@@ -4698,7 +4705,7 @@ export default async function StoreHomePage({
         {/* === Partners（optional block：合作夥伴 logos 灰階） === */}
         {theme.layout.sectionOrder.includes("partners") &&
           visiblePartners.length > 0 && (() => {
-            const partnersPos = theme.layout.freePositions[FREE_POS_KEYS.partnersEyebrow] ?? null;
+            const partnersPos = freePosOf(FREE_POS_KEYS.partnersEyebrow);
             const partnersFree = partnersPos !== null;
             const partnersStyle = sectionStyleFor("partners");
             const partnersJustify =
@@ -4839,7 +4846,7 @@ export default async function StoreHomePage({
         {/* === Gallery（optional block：3 欄圖片網格） === */}
         {theme.layout.sectionOrder.includes("gallery") &&
           visibleGallery.length > 0 && (() => {
-            const galleryPos = theme.layout.freePositions[FREE_POS_KEYS.galleryIntro] ?? null;
+            const galleryPos = freePosOf(FREE_POS_KEYS.galleryIntro);
             const galleryFree = galleryPos !== null;
             const galleryStyle = sectionStyleFor("gallery");
             const galleryDivider =
@@ -5015,7 +5022,7 @@ export default async function StoreHomePage({
 
         {/* === Visit === */}
         {(storeAddress || businessHoursText) && (() => {
-          const visitPos = theme.layout.freePositions[FREE_POS_KEYS.visitCard] ?? null;
+          const visitPos = freePosOf(FREE_POS_KEYS.visitCard);
           const visitStyle = sectionStyleFor("visit");
           const visitDivider =
             visitStyle.align === "right"
