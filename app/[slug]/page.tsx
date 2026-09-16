@@ -1853,6 +1853,17 @@ export default async function StoreHomePage({
               : theme.layout.heroSubtitleLeading === "relaxed"
               ? { lineHeight: 2.2 }
               : {};
+          // 五處副標 <p> 的 style 都要這一包（字級／對齊／粗細／字距／行距），順序固定。
+          // 各處只差前面的位置／外距／顏色與最後那個上邊距，那些留在各自原地。
+          // 五個物件的 key 互不重疊（fontSize / textAlign / fontWeight / letterSpacing /
+          // lineHeight），先合成一包再展開，跟原本五個依序展開算出來的東西逐字相同。
+          const subtitleTextStyle = {
+            ...subtitleSizeStyle,
+            ...subtitleAlignStyle,
+            ...subtitleWeightStyle,
+            ...subtitleTrackStyle,
+            ...subtitleLeadingStyle,
+          };
           // Hero 按鈕（CTA）文字大小。五處的字級寫死成三種值：滿版圖那兩處是 text-sm
           //（0.875rem 的底線連結）、split 兩顆與極簡那顆走 .sproutly-btn-lg（0.875rem，
           // 寫在 layout 的 CSS 裡）、雜誌那條繼承下面 metadata 那行的 10px。那一顆是整個
@@ -2285,11 +2296,7 @@ export default async function StoreHomePage({
                               maxWidth: "min(32rem, 90%)",
                               color: subtitleColor,
                               fontFamily: "var(--store-font)",
-                              ...subtitleSizeStyle,
-                              ...subtitleAlignStyle,
-                              ...subtitleWeightStyle,
-                              ...subtitleTrackStyle,
-                              ...subtitleLeadingStyle,
+                              ...subtitleTextStyle,
                             }}
                           >
                             {theme.layout.heroSubtitle}
@@ -2317,11 +2324,7 @@ export default async function StoreHomePage({
                             fontFamily: "var(--store-font)",
                             maxWidth: "32rem",
                             ...blockAlign,
-                            ...subtitleSizeStyle,
-                            ...subtitleAlignStyle,
-                            ...subtitleWeightStyle,
-                            ...subtitleTrackStyle,
-                            ...subtitleLeadingStyle,
+                            ...subtitleTextStyle,
                             ...heroTextGapTop(1.25),
                           }}
                         >
@@ -2694,11 +2697,7 @@ export default async function StoreHomePage({
                       className={`mt-6 text-base sm:text-lg leading-[1.9] max-w-md ${fade2}`}
                       style={{
                         color: subtitleColor,
-                        ...subtitleSizeStyle,
-                        ...subtitleAlignStyle,
-                        ...subtitleWeightStyle,
-                        ...subtitleTrackStyle,
-                        ...subtitleLeadingStyle,
+                        ...subtitleTextStyle,
                         ...splitGapTop(1.5),
                       }}
                     >
@@ -2872,11 +2871,7 @@ export default async function StoreHomePage({
                               ? { maxWidth: "none" }
                               : {}),
                         color: subtitleColor,
-                        ...subtitleSizeStyle,
-                        ...subtitleAlignStyle,
-                        ...subtitleWeightStyle,
-                        ...subtitleTrackStyle,
-                        ...subtitleLeadingStyle,
+                        ...subtitleTextStyle,
                         ...magGapTop(2),
                       }}
                     >
@@ -3071,11 +3066,7 @@ export default async function StoreHomePage({
                   style={{
                     color: subtitleColor,
                     ...minimalBlockAlignStyle,
-                    ...subtitleSizeStyle,
-                    ...subtitleAlignStyle,
-                    ...subtitleWeightStyle,
-                    ...subtitleTrackStyle,
-                    ...subtitleLeadingStyle,
+                    ...subtitleTextStyle,
                     ...minimalGapTop(2),
                   }}
                 >
