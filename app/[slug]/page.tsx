@@ -175,7 +175,7 @@ export default async function StoreHomePage({
   // 拖過版位的區段開場（選物系列 intro h2、慢讀區、顧客回饋、常見問題、數字、相簿共六處）
   // 的 style 以前各抄一份一模一樣的五個屬性（上面那三條加最寬 560px 或 80vw、寬 100%），
   // 改一格另五處不會跟著動；收成一個，屬性順序跟原本逐字相同。
-  // 精選「本月選物」那支（24rem／90%）、承諾卡（800px／90%）、來訪（560px／90vw）等最寬不同，
+  // 精選「本月選物」那支（24rem／90%）、承諾卡（680px／90vw）、來訪（560px／90vw）等最寬不同，
   // 不是同一包，留在原地。
   const freeIntroPosStyle = (pos: { x: number; y: number }): React.CSSProperties => ({
     ...freePosStyle(pos),
@@ -194,6 +194,20 @@ export default async function StoreHomePage({
     position: "absolute",
     ...freePosStyle(pos),
     maxWidth: `min(${max}, 90%)`,
+  });
+
+  // 承諾卡、來訪卡拖過版位那支的 wrapper 以前各抄一份一模一樣的四條：上面那三條加
+  // 最寬「min(某個值, 90vw)」、寬 100%、左右內距 1.5rem，只差那個值（承諾 680px、來訪 560px）；
+  // 改一格（例如 1.5rem 要改 2rem）另一處不會跟著動。收成一個，值用參數帶，來訪那支
+  // 自己多的 textAlign 留在原地接在後面，屬性順序逐字相同。
+  const freeCardPosStyle = (
+    pos: { x: number; y: number },
+    max: "680px" | "560px",
+  ): React.CSSProperties => ({
+    ...freePosStyle(pos),
+    maxWidth: `min(${max}, 90vw)`,
+    width: "100%",
+    padding: "0 1.5rem",
   });
 
   const taglineLines = splitByPunc(heroTagline);
@@ -3922,12 +3936,7 @@ export default async function StoreHomePage({
               data-edit-drag={FREE_POS_KEYS.promiseCard}
               style={
                 promisePos
-                  ? {
-                      ...freePosStyle(promisePos),
-                      maxWidth: "min(680px, 90vw)",
-                      width: "100%",
-                      padding: "0 1.5rem",
-                    }
+                  ? freeCardPosStyle(promisePos, "680px")
                   : undefined
               }
             >
@@ -5056,10 +5065,7 @@ export default async function StoreHomePage({
               style={
                 visitPos
                   ? {
-                      ...freePosStyle(visitPos),
-                      maxWidth: "min(560px, 90vw)",
-                      width: "100%",
-                      padding: "0 1.5rem",
+                      ...freeCardPosStyle(visitPos, "560px"),
                       textAlign: "center",
                     }
                   : { textAlign: visitStyle.align }
