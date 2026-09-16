@@ -250,6 +250,13 @@ export default async function StoreHomePage({
   const sectionShellClass = (free: boolean) =>
     `relative py-40 sm:py-56 ${animClass} ${free ? "min-h-[60vh]" : ""}`;
 
+  // 區段外殼裡那層「字跟卡片實際排多寬」的容器（選物系列 intro／精選／慢讀區／顧客回饋／
+  // 數字／合作夥伴）六處的 className 以前各抄一份一模一樣的字串（.sproutly-section-inner
+  // 掛鉤、最寬 5xl、置中、左右內距 px-8 sm:px-12），改一格（例如 px-12 要改 px-16）另五處
+  // 不會跟著動；收成一個，六處改成一行引用。相簿那層是 max-w-6xl／px-6 sm:px-10，不是
+  // 同一包，留在原地。四個 utility class 仍以字面出現在這行，Tailwind 掃描照樣抓得到。
+  const sectionInnerClass = "sproutly-section-inner max-w-5xl mx-auto px-8 sm:px-12";
+
   // 區段裡用全站主色畫的東西（小標 eyebrow、標題底下那截短線、常見問題的＋、數字底下
   // 的短線）一律走這個值，不再直接寫 theme.accent。--store-accent 只有在該段的自訂底色
   // 把主色吃掉時才由 mergeSectionStyle 設（見那裡），沒設就退回全站主色、畫面完全不變。
@@ -3300,7 +3307,7 @@ export default async function StoreHomePage({
             data-card-meta-tone={collStyle.cardMetaToneVal}
             style={mergeSectionStyle(collStyle)}
           >
-            <div className="sproutly-section-inner max-w-5xl mx-auto px-8 sm:px-12" style={{ textAlign: collStyle.align }}>
+            <div className={sectionInnerClass} style={{ textAlign: collStyle.align }}>
               {introFree ? (
                 <h2
                   data-edit-text
@@ -3486,7 +3493,7 @@ export default async function StoreHomePage({
             data-card-micro-case={featuredStyle.cardMicroCaseVal}
             data-card-meta-tone={featuredStyle.cardMetaToneVal}
           >
-            <div className="sproutly-section-inner max-w-5xl mx-auto px-8 sm:px-12" style={{ textAlign: featuredStyle.align }}>
+            <div className={sectionInnerClass} style={{ textAlign: featuredStyle.align }}>
               {featuredFree ? (
                 <h2
                   data-edit-text
@@ -3743,7 +3750,7 @@ export default async function StoreHomePage({
             data-card-micro-case={journalStyle.cardMicroCaseVal}
             data-card-row-gap={journalStyle.cardRowGapVal}
           >
-          <div className="sproutly-section-inner max-w-5xl mx-auto px-8 sm:px-12" style={{ textAlign: journalStyle.align }}>
+          <div className={sectionInnerClass} style={{ textAlign: journalStyle.align }}>
             {journalFree ? (
               <div
                 data-edit-drag={FREE_POS_KEYS.journalIntro}
@@ -4150,7 +4157,7 @@ export default async function StoreHomePage({
               data-card-micro-case={testimonialsStyle.cardMicroCaseVal}
             >
               <div
-                className="sproutly-section-inner max-w-5xl mx-auto px-8 sm:px-12"
+                className={sectionInnerClass}
                 style={{ textAlign: testimonialsStyle.align }}
               >
                 {testimonialsFree ? (
@@ -4586,7 +4593,7 @@ export default async function StoreHomePage({
               data-card-micro-case={statsStyle.cardMicroCaseVal}
             >
               <div
-                className="sproutly-section-inner max-w-5xl mx-auto px-8 sm:px-12"
+                className={sectionInnerClass}
                 style={{ textAlign: statsStyle.align }}
               >
                 {statsFree && (
@@ -4774,7 +4781,7 @@ export default async function StoreHomePage({
               data-card-panel-tone={partnersStyle.cardPanelToneVal}
             >
               <div
-                className="sproutly-section-inner max-w-5xl mx-auto px-8 sm:px-12"
+                className={sectionInnerClass}
                 style={{ textAlign: partnersStyle.align }}
               >
                 {partnersFree ? (
