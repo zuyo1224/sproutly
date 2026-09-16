@@ -165,6 +165,9 @@ export default async function StoreHomePage({
   // 回 null（後面全靠 null 判斷走 absolute 還是預設排法）。hero 四件加十個區段共十四處
   // 以前各抄一份一模一樣的 `theme.layout.freePositions[key] ?? null`，改一格（例如改成
   // 也查舊 key）另十三處不會跟著動；收成一個。
+  // 各區段拿到 xxxPos 後寫 `const xxxFree = xxxPos !== null`，兩個都是 const，TypeScript
+  // 會順著 xxxFree 的分支自己把 xxxPos 縮成非 null，所以分支裡直接傳 xxxPos 就好，
+  // 不用再寫 `xxxPos!`（寫了等於關掉檢查，哪天條件改了也不會報錯）。
   const freePosOf = (key: string): { x: number; y: number } | null =>
     theme.layout.freePositions[key] ?? null;
 
@@ -3296,7 +3299,7 @@ export default async function StoreHomePage({
                   data-edit-drag={FREE_POS_KEYS.collectionIntro}
                   className="absolute text-xl sm:text-2xl leading-[1.9]"
                   style={{
-                    ...freeIntroPosStyle(introPos!),
+                    ...freeIntroPosStyle(introPos),
                     // 字重原本寫死在 inline（inline 一律贏過 layout.tsx 的規則，「標題粗細」那格
                     // 按下去畫面不動），改讀 --heading-weight 變數、fallback 回原本的值——這條
                     // 現在收在 introHeadTextStyle 裡，跟卡片品名、內文粗細那幾格同一個作法。
@@ -3482,7 +3485,7 @@ export default async function StoreHomePage({
                   data-edit-drag={FREE_POS_KEYS.featuredTitle}
                   className="absolute text-xl sm:text-2xl"
                   style={{
-                    ...freePosStyle(featuredPos!),
+                    ...freePosStyle(featuredPos),
                     ...introHeadTextStyle,
                     whiteSpace: "nowrap",
                   }}
@@ -3736,7 +3739,7 @@ export default async function StoreHomePage({
               <div
                 data-edit-drag={FREE_POS_KEYS.journalIntro}
                 className="absolute"
-                style={freeIntroPosStyle(journalPos!)}
+                style={freeIntroPosStyle(journalPos)}
               >
                 <p
                   data-edit-text
@@ -4145,7 +4148,7 @@ export default async function StoreHomePage({
                   <div
                     data-edit-drag={FREE_POS_KEYS.testimonialsTitle}
                     className="absolute"
-                    style={freeIntroPosStyle(testimonialsPos!)}
+                    style={freeIntroPosStyle(testimonialsPos)}
                   >
                     <p
                       data-edit-text
@@ -4368,7 +4371,7 @@ export default async function StoreHomePage({
                   <div
                     data-edit-drag={FREE_POS_KEYS.faqIntro}
                     className="absolute"
-                    style={freeIntroPosStyle(faqPos!)}
+                    style={freeIntroPosStyle(faqPos)}
                   >
                     <p
                       className={sectionEyebrowClass}
@@ -4581,7 +4584,7 @@ export default async function StoreHomePage({
                   <div
                     data-edit-drag={FREE_POS_KEYS.statsIntro}
                     className="absolute"
-                    style={freeIntroPosStyle(statsPos!)}
+                    style={freeIntroPosStyle(statsPos)}
                   >
                     {statsEyebrow && (
                       <p
@@ -4772,7 +4775,7 @@ export default async function StoreHomePage({
                     data-edit-drag={FREE_POS_KEYS.partnersEyebrow}
                     className={`sproutly-section-eyebrow absolute ${eyebrowBaseClass}`}
                     style={{
-                      ...freePosStyle(partnersPos!),
+                      ...freePosStyle(partnersPos),
                       whiteSpace: "nowrap",
                       color: eyebrowMutedColor,
                     }}
@@ -4924,7 +4927,7 @@ export default async function StoreHomePage({
                   <div
                     data-edit-drag={FREE_POS_KEYS.galleryIntro}
                     className="absolute"
-                    style={freeIntroPosStyle(galleryPos!)}
+                    style={freeIntroPosStyle(galleryPos)}
                   >
                     <p
                       data-edit-text
