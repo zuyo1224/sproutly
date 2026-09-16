@@ -194,6 +194,18 @@ export default async function StoreHomePage({
   const eyebrowColor = `var(--store-eyebrow-color, ${accentColor})`;
   const eyebrowMutedColor = "var(--store-eyebrow-color, var(--store-text-muted))";
 
+  // 開場那兩段（精選「本月選物」、選物系列 intro）的小標 eyebrow 兩支的 style 以前各抄一份
+  // 一模一樣的三個屬性（顏色、字體、粗細）連同底下那段註解，改一格另一處不會跟著動；
+  // 收成一個 const，屬性順序跟原本逐字相同。其餘各區的 eyebrow 只寫 color 一行
+  // （粗細靠 layout.tsx 的規則直接落在 .sproutly-section-eyebrow 上），不是同一包，不走這裡。
+  // 粗細讀 --eyebrow-weight（小標粗細那格由 layout.tsx 的規則設）：
+  // 500 寫在 inline style 上，CSS 規則壓不過，只能繞變數；沒設時變數不存在、fallback 回原本的 500。
+  const introEyebrowTextStyle: React.CSSProperties = {
+    color: eyebrowColor,
+    fontFamily: "var(--store-font)",
+    fontWeight: "var(--eyebrow-weight, 500)",
+  };
+
   // 卡片上那幾行全大寫小字的顏色（選物的「看更多」、慢讀的分類與標籤、精選的「剩 N」）。
   // 原本四行各自寫死三種值：兩行主色、一行次要文字色、一行琥珀色的庫存警示。改成統一讀
   // --card-micro-color、fallback 回它原本那個值——沒設變數時算出來一模一樣，設了才換色
@@ -3240,14 +3252,7 @@ export default async function StoreHomePage({
                       data-edit-text
                       data-edit-field="collectionsEyebrow"
                       className="sproutly-section-eyebrow text-[0.6875rem] tracking-[0.4em] uppercase mb-4"
-                      style={{
-                        color: eyebrowColor,
-                        fontFamily: "var(--store-font)",
-                        // 粗細讀 --eyebrow-weight（小標粗細那格由 layout.tsx 的規則設）：
-                        // 這行的 500 寫在 inline style 上，CSS 規則壓不過，只能繞變數。
-                        // 沒設時變數不存在、fallback 回原本的 500。
-                        fontWeight: "var(--eyebrow-weight, 500)",
-                      }}
+                      style={introEyebrowTextStyle}
                     >
                       {collectionsEyebrow}
                     </p>
@@ -3431,14 +3436,7 @@ export default async function StoreHomePage({
                       data-edit-text
                       data-edit-field="featuredEyebrow"
                       className="sproutly-section-eyebrow text-[0.6875rem] tracking-[0.4em] uppercase mb-4"
-                      style={{
-                        color: eyebrowColor,
-                        fontFamily: "var(--store-font)",
-                        // 粗細讀 --eyebrow-weight（小標粗細那格由 layout.tsx 的規則設）：
-                        // 這行的 500 寫在 inline style 上，CSS 規則壓不過，只能繞變數。
-                        // 沒設時變數不存在、fallback 回原本的 500。
-                        fontWeight: "var(--eyebrow-weight, 500)",
-                      }}
+                      style={introEyebrowTextStyle}
                     >
                       {featuredEyebrow}
                     </p>
