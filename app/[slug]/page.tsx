@@ -161,6 +161,19 @@ export default async function StoreHomePage({
     fontWeight: "var(--heading-weight, 400)",
   };
 
+  // 拖過版位的區段開場（選物系列 intro h2、慢讀區、顧客回饋、常見問題、數字、相簿共六處）
+  // 的 style 以前各抄一份一模一樣的五個屬性（left／top 用存的比例算、置中的 transform、
+  // 最寬 560px 或 80vw、寬 100%），改一格另五處不會跟著動；收成一個，屬性順序跟原本逐字相同。
+  // 精選「本月選物」那支（24rem／90%）、承諾卡（800px／90%）、來訪（560px／90vw）等最寬不同，
+  // 不是同一包，留在原地。
+  const freeIntroPosStyle = (pos: { x: number; y: number }): React.CSSProperties => ({
+    left: `${pos.x * 100}%`,
+    top: `${pos.y * 100}%`,
+    transform: "translate(-50%, -50%)",
+    maxWidth: "min(560px, 80vw)",
+    width: "100%",
+  });
+
   const taglineLines = splitByPunc(heroTagline);
   const introLines = splitByPunc(collectionsIntro);
   const promiseLines = promiseText
@@ -3244,11 +3257,7 @@ export default async function StoreHomePage({
                   data-edit-drag={FREE_POS_KEYS.collectionIntro}
                   className="absolute text-xl sm:text-2xl leading-[1.9]"
                   style={{
-                    left: `${introPos!.x * 100}%`,
-                    top: `${introPos!.y * 100}%`,
-                    transform: "translate(-50%, -50%)",
-                    maxWidth: "min(560px, 80vw)",
-                    width: "100%",
+                    ...freeIntroPosStyle(introPos!),
                     // 字重原本寫死在 inline（inline 一律贏過 layout.tsx 的規則，「標題粗細」那格
                     // 按下去畫面不動），改讀 --heading-weight 變數、fallback 回原本的值——這條
                     // 現在收在 introHeadTextStyle 裡，跟卡片品名、內文粗細那幾格同一個作法。
@@ -3690,13 +3699,7 @@ export default async function StoreHomePage({
               <div
                 data-edit-drag={FREE_POS_KEYS.journalIntro}
                 className="absolute"
-                style={{
-                  left: `${journalPos!.x * 100}%`,
-                  top: `${journalPos!.y * 100}%`,
-                  transform: "translate(-50%, -50%)",
-                  maxWidth: "min(560px, 80vw)",
-                  width: "100%",
-                }}
+                style={freeIntroPosStyle(journalPos!)}
               >
                 <p
                   data-edit-text
@@ -4112,13 +4115,7 @@ export default async function StoreHomePage({
                   <div
                     data-edit-drag={FREE_POS_KEYS.testimonialsTitle}
                     className="absolute"
-                    style={{
-                      left: `${testimonialsPos!.x * 100}%`,
-                      top: `${testimonialsPos!.y * 100}%`,
-                      transform: "translate(-50%, -50%)",
-                      maxWidth: "min(560px, 80vw)",
-                      width: "100%",
-                    }}
+                    style={freeIntroPosStyle(testimonialsPos!)}
                   >
                     <p
                       data-edit-text
@@ -4341,13 +4338,7 @@ export default async function StoreHomePage({
                   <div
                     data-edit-drag={FREE_POS_KEYS.faqIntro}
                     className="absolute"
-                    style={{
-                      left: `${faqPos!.x * 100}%`,
-                      top: `${faqPos!.y * 100}%`,
-                      transform: "translate(-50%, -50%)",
-                      maxWidth: "min(560px, 80vw)",
-                      width: "100%",
-                    }}
+                    style={freeIntroPosStyle(faqPos!)}
                   >
                     <p
                       className="sproutly-section-eyebrow text-[10px] tracking-[0.4em] uppercase mb-5"
@@ -4560,13 +4551,7 @@ export default async function StoreHomePage({
                   <div
                     data-edit-drag={FREE_POS_KEYS.statsIntro}
                     className="absolute"
-                    style={{
-                      left: `${statsPos!.x * 100}%`,
-                      top: `${statsPos!.y * 100}%`,
-                      transform: "translate(-50%, -50%)",
-                      maxWidth: "min(560px, 80vw)",
-                      width: "100%",
-                    }}
+                    style={freeIntroPosStyle(statsPos!)}
                   >
                     {statsEyebrow && (
                       <p
@@ -4911,13 +4896,7 @@ export default async function StoreHomePage({
                   <div
                     data-edit-drag={FREE_POS_KEYS.galleryIntro}
                     className="absolute"
-                    style={{
-                      left: `${galleryPos!.x * 100}%`,
-                      top: `${galleryPos!.y * 100}%`,
-                      transform: "translate(-50%, -50%)",
-                      maxWidth: "min(560px, 80vw)",
-                      width: "100%",
-                    }}
+                    style={freeIntroPosStyle(galleryPos!)}
                   >
                     <p
                       data-edit-text
