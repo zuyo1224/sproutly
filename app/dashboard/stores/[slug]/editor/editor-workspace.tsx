@@ -2221,54 +2221,30 @@ export function EditorWorkspace({
               </p>
             </Field>
             <Field label="小標大小寫">
-              <div className="grid grid-cols-3 gap-1.5">
-                {([
-                  { v: "upper", label: "全大寫", tt: "uppercase" },
-                  { v: "capitalize", label: "字首大寫", tt: "capitalize" },
-                  { v: "none", label: "照原樣", tt: "none" },
-                ] as const).map((opt) => (
-                  <button
-                    key={opt.v}
-                    type="button"
-                    onClick={() => updateLayout({ heroEyebrowCase: opt.v })}
-                    aria-pressed={theme.layout.heroEyebrowCase === opt.v}
-                    className={`rounded-lg border py-2 text-xs transition ${
-                      theme.layout.heroEyebrowCase === opt.v
-                        ? "border-emerald-500 bg-emerald-50 text-emerald-900"
-                        : "border-stone-200 text-stone-600 hover:border-stone-400"
-                    }`}
-                  >
-                    {opt.label}
-                  </button>
-                ))}
-              </div>
+              <OptionGrid
+                options={[
+                  { v: "upper", label: "全大寫" },
+                  { v: "capitalize", label: "字首大寫" },
+                  { v: "none", label: "照原樣" },
+                ] as const}
+                selected={theme.layout.heroEyebrowCase}
+                onSelect={(v) => updateLayout({ heroEyebrowCase: v })}
+              />
               <p className="text-[10px] text-stone-500 mt-1">
                 小標打中文的話這格沒有作用（中文沒有大小寫）。打英文才看得出來：原本一律轉成
                 全大寫，「Est. 2019」會變 EST. 2019、英文店名也會被拉大寫，選照原樣就照你打的顯示
               </p>
             </Field>
             <Field label="小標粗細">
-              <div className="grid grid-cols-3 gap-1.5">
-                {([
+              <OptionGrid
+                options={[
                   { v: "normal", label: "原樣" },
                   { v: "medium", label: "稍重" },
                   { v: "bold", label: "重" },
-                ] as const).map((opt) => (
-                  <button
-                    key={opt.v}
-                    type="button"
-                    onClick={() => updateLayout({ heroEyebrowWeight: opt.v })}
-                    aria-pressed={theme.layout.heroEyebrowWeight === opt.v}
-                    className={`rounded-lg border py-2 text-xs transition ${
-                      theme.layout.heroEyebrowWeight === opt.v
-                        ? "border-emerald-500 bg-emerald-50 text-emerald-900"
-                        : "border-stone-200 text-stone-600 hover:border-stone-400"
-                    }`}
-                  >
-                    {opt.label}
-                  </button>
-                ))}
-              </div>
+                ] as const}
+                selected={theme.layout.heroEyebrowWeight}
+                onSelect={(v) => updateLayout({ heroEyebrowWeight: v })}
+              />
               <p className="text-[10px] text-stone-500 mt-1">
                 客人由上往下讀到的第一行字有多重。它原本是全站最小的字級配最鬆的字距再配最輕的
                 字重，三個往淡的方向疊在一起，壓在照片上就像浮在圖上的一排灰點。想讓它讀得出來，
@@ -2277,23 +2253,11 @@ export function EditorWorkspace({
               </p>
             </Field>
             <Field label="小標行距">
-              <div className="grid grid-cols-3 gap-1.5">
-                {LEADING_OPTIONS.map((opt) => (
-                  <button
-                    key={opt.v}
-                    type="button"
-                    onClick={() => updateLayout({ heroEyebrowLeading: opt.v })}
-                    aria-pressed={theme.layout.heroEyebrowLeading === opt.v}
-                    className={`rounded-lg border py-2 text-xs transition ${
-                      theme.layout.heroEyebrowLeading === opt.v
-                        ? "border-emerald-500 bg-emerald-50 text-emerald-900"
-                        : "border-stone-200 text-stone-600 hover:border-stone-400"
-                    }`}
-                  >
-                    {opt.label}
-                  </button>
-                ))}
-              </div>
+              <OptionGrid
+                options={LEADING_OPTIONS}
+                selected={theme.layout.heroEyebrowLeading}
+                onSelect={(v) => updateLayout({ heroEyebrowLeading: v })}
+              />
               <p className="text-[10px] text-stone-500 mt-1">
                 小標換行的時候，上下兩行隔多遠。打英文通常一行就放得下看不出來；中文的小標
                 長一點（「本月選物 · 春天的第一批」），手機上會斷成兩行，而它原本用的是內文
@@ -2363,28 +2327,17 @@ export function EditorWorkspace({
                   </div>
                 </Field>
                 <Field label="副標對齊">
-                  <div className="grid grid-cols-4 gap-1.5">
-                    {([
+                  <OptionGrid
+                    cols={4}
+                    options={[
                       { v: "inherit", label: "預設" },
                       { v: "left", label: "左" },
                       { v: "center", label: "置中" },
                       { v: "right", label: "右" },
-                    ] as const).map((opt) => (
-                      <button
-                        key={opt.v}
-                        type="button"
-                        onClick={() => updateLayout({ heroSubtitleAlign: opt.v })}
-                        aria-pressed={theme.layout.heroSubtitleAlign === opt.v}
-                        className={`rounded-lg border py-2 text-xs transition ${
-                          theme.layout.heroSubtitleAlign === opt.v
-                            ? "border-emerald-500 bg-emerald-50 text-emerald-900"
-                            : "border-stone-200 text-stone-600 hover:border-stone-400"
-                        }`}
-                      >
-                        {opt.label}
-                      </button>
-                    ))}
-                  </div>
+                    ] as const}
+                    selected={theme.layout.heroSubtitleAlign}
+                    onSelect={(v) => updateLayout({ heroSubtitleAlign: v })}
+                  />
                   <p className="text-[10px] text-stone-500 mt-1">
                     預設跟版型走（Split 靠左 / Magazine · Minimal 置中 / 滿版圖跟主標）
                   </p>
@@ -2451,23 +2404,11 @@ export function EditorWorkspace({
                   </p>
                 </Field>
                 <Field label="副標行距">
-                  <div className="grid grid-cols-3 gap-1.5">
-                    {LEADING_OPTIONS.map((opt) => (
-                      <button
-                        key={opt.v}
-                        type="button"
-                        onClick={() => updateLayout({ heroSubtitleLeading: opt.v })}
-                        aria-pressed={theme.layout.heroSubtitleLeading === opt.v}
-                        className={`rounded-lg border py-2 text-xs transition ${
-                          theme.layout.heroSubtitleLeading === opt.v
-                            ? "border-emerald-500 bg-emerald-50 text-emerald-900"
-                            : "border-stone-200 text-stone-600 hover:border-stone-400"
-                        }`}
-                      >
-                        {opt.label}
-                      </button>
-                    ))}
-                  </div>
+                  <OptionGrid
+                    options={LEADING_OPTIONS}
+                    selected={theme.layout.heroSubtitleLeading}
+                    onSelect={(v) => updateLayout({ heroSubtitleLeading: v })}
+                  />
                   <p className="text-[10px] text-stone-500 mt-1">
                     四種版型的副標原本都用內文段落的行距，套在只有兩三行的副標上偏鬆，
                     那幾行會散開成一整塊灰色反而搶了主標。收緊會讓副標更像主標底下的一句話
@@ -2528,23 +2469,11 @@ export function EditorWorkspace({
               </p>
             </Field>
             <Field label="按鈕字距">
-              <div className="grid grid-cols-3 gap-1.5">
-                {TRACKING_OPTIONS.map((opt) => (
-                  <button
-                    key={opt.v}
-                    type="button"
-                    onClick={() => updateLayout({ heroCtaTracking: opt.v })}
-                    aria-pressed={theme.layout.heroCtaTracking === opt.v}
-                    className={`rounded-lg border py-2 text-xs transition ${
-                      theme.layout.heroCtaTracking === opt.v
-                        ? "border-emerald-500 bg-emerald-50 text-emerald-900"
-                        : "border-stone-200 text-stone-600 hover:border-stone-400"
-                    }`}
-                  >
-                    {opt.label}
-                  </button>
-                ))}
-              </div>
+              <OptionGrid
+                options={TRACKING_OPTIONS}
+                selected={theme.layout.heroCtaTracking}
+                onSelect={(v) => updateLayout({ heroCtaTracking: v })}
+              />
               <p className="text-[10px] text-stone-500 mt-1">
                 按鈕上每個字之間的空隙。原本空 0.18em，那是給英文全大寫用的；中文的
                 「立即選購」四個字會散開，而且上面那格把字放大以後空隙也跟著變大，散得更開。
@@ -2552,27 +2481,15 @@ export function EditorWorkspace({
               </p>
             </Field>
             <Field label="按鈕大小寫">
-              <div className="grid grid-cols-3 gap-1.5">
-                {([
+              <OptionGrid
+                options={[
                   { v: "default", label: "照版型預設" },
                   { v: "capitalize", label: "字首大寫" },
                   { v: "none", label: "照原樣" },
-                ] as const).map((opt) => (
-                  <button
-                    key={opt.v}
-                    type="button"
-                    onClick={() => updateLayout({ heroCtaCase: opt.v })}
-                    aria-pressed={theme.layout.heroCtaCase === opt.v}
-                    className={`rounded-lg border py-2 text-xs transition ${
-                      theme.layout.heroCtaCase === opt.v
-                        ? "border-emerald-500 bg-emerald-50 text-emerald-900"
-                        : "border-stone-200 text-stone-600 hover:border-stone-400"
-                    }`}
-                  >
-                    {opt.label}
-                  </button>
-                ))}
-              </div>
+                ] as const}
+                selected={theme.layout.heroCtaCase}
+                onSelect={(v) => updateLayout({ heroCtaCase: v })}
+              />
               <p className="text-[10px] text-stone-500 mt-1">
                 按鈕打中文的話這格沒有作用（中文沒有大小寫）。打英文才看得出來：左右分割、
                 極簡、雜誌三種版型會把按鈕字一律轉成全大寫，「Shop Now」變 SHOP NOW，
@@ -2580,28 +2497,17 @@ export function EditorWorkspace({
               </p>
             </Field>
             <Field label="按鈕粗細">
-              <div className="grid grid-cols-4 gap-1.5">
-                {([
+              <OptionGrid
+                cols={4}
+                options={[
                   { v: "default", label: "照版型預設" },
                   { v: "normal", label: "細" },
                   { v: "medium", label: "中" },
                   { v: "bold", label: "粗" },
-                ] as const).map((opt) => (
-                  <button
-                    key={opt.v}
-                    type="button"
-                    onClick={() => updateLayout({ heroCtaWeight: opt.v })}
-                    aria-pressed={theme.layout.heroCtaWeight === opt.v}
-                    className={`rounded-lg border py-2 text-xs transition ${
-                      theme.layout.heroCtaWeight === opt.v
-                        ? "border-emerald-500 bg-emerald-50 text-emerald-900"
-                        : "border-stone-200 text-stone-600 hover:border-stone-400"
-                    }`}
-                  >
-                    {opt.label}
-                  </button>
-                ))}
-              </div>
+                ] as const}
+                selected={theme.layout.heroCtaWeight}
+                onSelect={(v) => updateLayout({ heroCtaWeight: v })}
+              />
               <p className="text-[10px] text-stone-500 mt-1">
                 按鈕文字有多重。原本兩種：實心／描邊那種按鈕是中等，帶底線的連結型是
                 跟內文一樣細——連結型的字放大之後容易看起來像一行普通的字，加粗會更像
@@ -2717,23 +2623,11 @@ export function EditorWorkspace({
               </p>
             </Field>
             <Field label="byline 字距">
-              <div className="grid grid-cols-3 gap-1.5">
-                {TRACKING_OPTIONS.map((opt) => (
-                  <button
-                    key={opt.v}
-                    type="button"
-                    onClick={() => updateLayout({ heroBylineTracking: opt.v })}
-                    aria-pressed={theme.layout.heroBylineTracking === opt.v}
-                    className={`rounded-lg border py-2 text-xs transition ${
-                      theme.layout.heroBylineTracking === opt.v
-                        ? "border-emerald-500 bg-emerald-50 text-emerald-900"
-                        : "border-stone-200 text-stone-600 hover:border-stone-400"
-                    }`}
-                  >
-                    {opt.label}
-                  </button>
-                ))}
-              </div>
+              <OptionGrid
+                options={TRACKING_OPTIONS}
+                selected={theme.layout.heroBylineTracking}
+                onSelect={(v) => updateLayout({ heroBylineTracking: v })}
+              />
               <p className="text-[10px] text-stone-500 mt-1">
                 那行 byline 每個字之間的空隙，原本空 0.32em、是全站最寬的一格。那個寬度
                 跟 10px 一樣是照英文全大寫挑的，byline 打中文（「由 XX 選件」）七八個字會
@@ -2742,27 +2636,15 @@ export function EditorWorkspace({
               </p>
             </Field>
             <Field label="byline 大小寫">
-              <div className="grid grid-cols-3 gap-1.5">
-                {([
+              <OptionGrid
+                options={[
                   { v: "upper", label: "全大寫" },
                   { v: "capitalize", label: "字首大寫" },
                   { v: "none", label: "照原樣" },
-                ] as const).map((opt) => (
-                  <button
-                    key={opt.v}
-                    type="button"
-                    onClick={() => updateLayout({ heroBylineCase: opt.v })}
-                    aria-pressed={theme.layout.heroBylineCase === opt.v}
-                    className={`rounded-lg border py-2 text-xs transition ${
-                      theme.layout.heroBylineCase === opt.v
-                        ? "border-emerald-500 bg-emerald-50 text-emerald-900"
-                        : "border-stone-200 text-stone-600 hover:border-stone-400"
-                    }`}
-                  >
-                    {opt.label}
-                  </button>
-                ))}
-              </div>
+                ] as const}
+                selected={theme.layout.heroBylineCase}
+                onSelect={(v) => updateLayout({ heroBylineCase: v })}
+              />
               <p className="text-[10px] text-stone-500 mt-1">
                 byline 打中文的話這格沒有作用（中文沒有大小寫）。打英文才看得出來：那行字
                 一律被轉成全大寫，「Photography by Wang」變 PHOTOGRAPHY BY WANG，打 IG
@@ -2771,27 +2653,15 @@ export function EditorWorkspace({
               </p>
             </Field>
             <Field label="byline 粗細">
-              <div className="grid grid-cols-3 gap-1.5">
-                {([
+              <OptionGrid
+                options={[
                   { v: "normal", label: "原樣" },
                   { v: "medium", label: "稍重" },
                   { v: "bold", label: "重" },
-                ] as const).map((opt) => (
-                  <button
-                    key={opt.v}
-                    type="button"
-                    onClick={() => updateLayout({ heroBylineWeight: opt.v })}
-                    aria-pressed={theme.layout.heroBylineWeight === opt.v}
-                    className={`rounded-lg border py-2 text-xs transition ${
-                      theme.layout.heroBylineWeight === opt.v
-                        ? "border-emerald-500 bg-emerald-50 text-emerald-900"
-                        : "border-stone-200 text-stone-600 hover:border-stone-400"
-                    }`}
-                  >
-                    {opt.label}
-                  </button>
-                ))}
-              </div>
+                ] as const}
+                selected={theme.layout.heroBylineWeight}
+                onSelect={(v) => updateLayout({ heroBylineWeight: v })}
+              />
               <p className="text-[10px] text-stone-500 mt-1">
                 那行字有多重。原本跟內文一樣輕，是整個版面最不明顯的一行——想讓客人真的
                 讀到它，上面的顏色那格只能拉深，拉深了又會跟同一行的其他字打架。這格是
@@ -2800,23 +2670,11 @@ export function EditorWorkspace({
               </p>
             </Field>
             <Field label="byline 行距">
-              <div className="grid grid-cols-3 gap-1.5">
-                {LEADING_OPTIONS.map((opt) => (
-                  <button
-                    key={opt.v}
-                    type="button"
-                    onClick={() => updateLayout({ heroBylineLeading: opt.v })}
-                    aria-pressed={theme.layout.heroBylineLeading === opt.v}
-                    className={`rounded-lg border py-2 text-xs transition ${
-                      theme.layout.heroBylineLeading === opt.v
-                        ? "border-emerald-500 bg-emerald-50 text-emerald-900"
-                        : "border-stone-200 text-stone-600 hover:border-stone-400"
-                    }`}
-                  >
-                    {opt.label}
-                  </button>
-                ))}
-              </div>
+              <OptionGrid
+                options={LEADING_OPTIONS}
+                selected={theme.layout.heroBylineLeading}
+                onSelect={(v) => updateLayout({ heroBylineLeading: v })}
+              />
               <p className="text-[10px] text-stone-500 mt-1">
                 那行字換行的時候，上下兩行隔多遠。byline 比上面的小標更容易換兩行——它是
                 你自己打的一句話，那一行左邊還要跟右邊的按鈕分掉寬度，手機上兩行是常態。
@@ -2913,53 +2771,29 @@ export function EditorWorkspace({
               </div>
             </Field>
             <Field label="主標對齊">
-              <div className="grid grid-cols-3 gap-1.5">
-                {([
+              <OptionGrid
+                options={[
                   { v: "left", label: "左" },
                   { v: "center", label: "置中" },
                   { v: "right", label: "右" },
-                ] as const).map((opt) => (
-                  <button
-                    key={opt.v}
-                    type="button"
-                    onClick={() => updateLayout({ heroTaglineAlign: opt.v })}
-                    aria-pressed={theme.layout.heroTaglineAlign === opt.v}
-                    className={`rounded-lg border py-2 text-xs transition ${
-                      theme.layout.heroTaglineAlign === opt.v
-                        ? "border-emerald-500 bg-emerald-50 text-emerald-900"
-                        : "border-stone-200 text-stone-600 hover:border-stone-400"
-                    }`}
-                  >
-                    {opt.label}
-                  </button>
-                ))}
-              </div>
+                ] as const}
+                selected={theme.layout.heroTaglineAlign}
+                onSelect={(v) => updateLayout({ heroTaglineAlign: v })}
+              />
               <p className="text-[10px] text-stone-500 mt-1">
                 對齊只有「整版圖片」版型會套用；其他版型的主標位置是版型設計的一部分，先跟著版型走
               </p>
             </Field>
             <Field label="主標粗細">
-              <div className="grid grid-cols-3 gap-1.5">
-                {([
+              <OptionGrid
+                options={[
                   { v: "normal", label: "常規" },
                   { v: "medium", label: "中黑" },
                   { v: "bold", label: "粗" },
-                ] as const).map((opt) => (
-                  <button
-                    key={opt.v}
-                    type="button"
-                    onClick={() => updateLayout({ heroTaglineWeight: opt.v })}
-                    aria-pressed={theme.layout.heroTaglineWeight === opt.v}
-                    className={`rounded-lg border py-2 text-xs transition ${
-                      theme.layout.heroTaglineWeight === opt.v
-                        ? "border-emerald-500 bg-emerald-50 text-emerald-900"
-                        : "border-stone-200 text-stone-600 hover:border-stone-400"
-                    }`}
-                  >
-                    {opt.label}
-                  </button>
-                ))}
-              </div>
+                ] as const}
+                selected={theme.layout.heroTaglineWeight}
+                onSelect={(v) => updateLayout({ heroTaglineWeight: v })}
+              />
               <p className="text-[10px] text-stone-500 mt-1">
                 四種版型都會套用。字最大的那一句原本一律是最輕的常規，短主標容易撐不起整頁
               </p>
@@ -2992,23 +2826,11 @@ export function EditorWorkspace({
               </p>
             </Field>
             <Field label="主標行距">
-              <div className="grid grid-cols-3 gap-1.5">
-                {LEADING_OPTIONS.map((opt) => (
-                  <button
-                    key={opt.v}
-                    type="button"
-                    onClick={() => updateLayout({ heroTaglineLeading: opt.v })}
-                    aria-pressed={theme.layout.heroTaglineLeading === opt.v}
-                    className={`rounded-lg border py-2 text-xs transition ${
-                      theme.layout.heroTaglineLeading === opt.v
-                        ? "border-emerald-500 bg-emerald-50 text-emerald-900"
-                        : "border-stone-200 text-stone-600 hover:border-stone-400"
-                    }`}
-                  >
-                    {opt.label}
-                  </button>
-                ))}
-              </div>
+              <OptionGrid
+                options={LEADING_OPTIONS}
+                selected={theme.layout.heroTaglineLeading}
+                onSelect={(v) => updateLayout({ heroTaglineLeading: v })}
+              />
               <p className="text-[10px] text-stone-500 mt-1">
                 上下兩行之間隔多遠（字距是左右、行距是上下）。中文沒有空格，一句十幾個字的
                 標語在手機上會直接斷成三行；四種版型原本的行距是照英文主標挑的，中文方塊字
@@ -3082,27 +2904,15 @@ export function EditorWorkspace({
             {theme.layout.heroStyle === "full-image" &&
               theme.layout.heroHeight !== "auto" && (
               <Field label="文字段裡的字靠哪">
-                <div className="grid grid-cols-3 gap-1.5">
-                  {([
+                <OptionGrid
+                  options={[
                     { v: "top", label: "靠上" },
                     { v: "center", label: "置中" },
                     { v: "bottom", label: "靠下" },
-                  ] as const).map((opt) => (
-                    <button
-                      key={opt.v}
-                      type="button"
-                      onClick={() => updateLayout({ heroFullTextAlignY: opt.v })}
-                      aria-pressed={theme.layout.heroFullTextAlignY === opt.v}
-                      className={`rounded-lg border py-2 text-xs transition ${
-                        theme.layout.heroFullTextAlignY === opt.v
-                          ? "border-emerald-500 bg-emerald-50 text-emerald-900"
-                          : "border-stone-200 text-stone-600 hover:border-stone-400"
-                      }`}
-                    >
-                      {opt.label}
-                    </button>
-                  ))}
-                </div>
+                  ] as const}
+                  selected={theme.layout.heroFullTextAlignY}
+                  onSelect={(v) => updateLayout({ heroFullTextAlignY: v })}
+                />
                 <p className="text-[10px] text-stone-500 mt-1">
                   上面「Hero 高度」選了矮 / 高 / 全屏之後，照片加字比那個矮的店，多出來的
                   高度全給了文字段那塊色塊，可是字還是貼著色塊上緣排：只有店名一行加一句話
@@ -3230,28 +3040,17 @@ export function EditorWorkspace({
             )}
             {theme.layout.heroStyle === "split" && (
               <Field label="圖文比例">
-                <div className="grid grid-cols-4 gap-1.5">
-                  {([
+                <OptionGrid
+                  cols={4}
+                  options={[
                     { v: "image-narrow", label: "圖窄" },
                     { v: "normal", label: "跟預設" },
                     { v: "image-wide", label: "圖寬" },
                     { v: "photo", label: "跟照片" },
-                  ] as const).map((opt) => (
-                    <button
-                      key={opt.v}
-                      type="button"
-                      onClick={() => updateLayout({ heroSplitRatio: opt.v })}
-                      aria-pressed={theme.layout.heroSplitRatio === opt.v}
-                      className={`rounded-lg border py-2 text-xs transition ${
-                        theme.layout.heroSplitRatio === opt.v
-                          ? "border-emerald-500 bg-emerald-50 text-emerald-900"
-                          : "border-stone-200 text-stone-600 hover:border-stone-400"
-                      }`}
-                    >
-                      {opt.label}
-                    </button>
-                  ))}
-                </div>
+                  ] as const}
+                  selected={theme.layout.heroSplitRatio}
+                  onSelect={(v) => updateLayout({ heroSplitRatio: v })}
+                />
                 <p className="text-[10px] text-stone-500 mt-1">
                   圖跟文字各占多寬。原本剛好一半一半，那個比例是配「方形的圖 + 一行主標」
                   的——放直式商品照的話左右兩邊會被裁掉一大塊，選圖寬（六成）就少裁一點；
@@ -3281,27 +3080,15 @@ export function EditorWorkspace({
             )}
             {theme.layout.heroStyle === "split" && (
               <Field label="照片取景">
-                <div className="grid grid-cols-3 gap-1.5">
-                  {([
+                <OptionGrid
+                  options={[
                     { v: "top", label: "留上緣" },
                     { v: "center", label: "跟預設" },
                     { v: "bottom", label: "留下緣" },
-                  ] as const).map((opt) => (
-                    <button
-                      key={opt.v}
-                      type="button"
-                      onClick={() => updateLayout({ heroImageFocus: opt.v })}
-                      aria-pressed={theme.layout.heroImageFocus === opt.v}
-                      className={`rounded-lg border py-2 text-xs transition ${
-                        theme.layout.heroImageFocus === opt.v
-                          ? "border-emerald-500 bg-emerald-50 text-emerald-900"
-                          : "border-stone-200 text-stone-600 hover:border-stone-400"
-                      }`}
-                    >
-                      {opt.label}
-                    </button>
-                  ))}
-                </div>
+                  ] as const}
+                  selected={theme.layout.heroImageFocus}
+                  onSelect={(v) => updateLayout({ heroImageFocus: v })}
+                />
                 <p className="text-[10px] text-stone-500 mt-1">
                   照片鋪滿圖框、比例對不上時要切掉一邊，原本一律從正中間切。直式的商品照
                   被切掉的上面（葉冠、瓶口）跟下面（盆器、落款）常常就是想給人看的地方——
@@ -3312,27 +3099,15 @@ export function EditorWorkspace({
             )}
             {theme.layout.heroStyle === "split" && (
               <Field label="照片左右取景">
-                <div className="grid grid-cols-3 gap-1.5">
-                  {([
+                <OptionGrid
+                  options={[
                     { v: "left", label: "留左緣" },
                     { v: "center", label: "跟預設" },
                     { v: "right", label: "留右緣" },
-                  ] as const).map((opt) => (
-                    <button
-                      key={opt.v}
-                      type="button"
-                      onClick={() => updateLayout({ heroImageFocusX: opt.v })}
-                      aria-pressed={theme.layout.heroImageFocusX === opt.v}
-                      className={`rounded-lg border py-2 text-xs transition ${
-                        theme.layout.heroImageFocusX === opt.v
-                          ? "border-emerald-500 bg-emerald-50 text-emerald-900"
-                          : "border-stone-200 text-stone-600 hover:border-stone-400"
-                      }`}
-                    >
-                      {opt.label}
-                    </button>
-                  ))}
-                </div>
+                  ] as const}
+                  selected={theme.layout.heroImageFocusX}
+                  onSelect={(v) => updateLayout({ heroImageFocusX: v })}
+                />
                 <p className="text-[10px] text-stone-500 mt-1">
                   上一格管上下，這格管左右。平板以上這張圖的框是整屏高、半屏寬的直式框，
                   橫式照片（店面外觀、桌上一排商品）放進去被切掉的是左右兩邊——主體站在
@@ -3343,26 +3118,15 @@ export function EditorWorkspace({
             )}
             {theme.layout.heroStyle === "split" && (
               <Field label="照片完整度">
-                <div className="grid grid-cols-2 gap-1.5">
-                  {([
+                <OptionGrid
+                  cols={2}
+                  options={[
                     { v: "cover", label: "鋪滿框" },
                     { v: "contain", label: "整張顯示" },
-                  ] as const).map((opt) => (
-                    <button
-                      key={opt.v}
-                      type="button"
-                      onClick={() => updateLayout({ heroSplitImageFit: opt.v })}
-                      aria-pressed={theme.layout.heroSplitImageFit === opt.v}
-                      className={`rounded-lg border py-2 text-xs transition ${
-                        theme.layout.heroSplitImageFit === opt.v
-                          ? "border-emerald-500 bg-emerald-50 text-emerald-900"
-                          : "border-stone-200 text-stone-600 hover:border-stone-400"
-                      }`}
-                    >
-                      {opt.label}
-                    </button>
-                  ))}
-                </div>
+                  ] as const}
+                  selected={theme.layout.heroSplitImageFit}
+                  onSelect={(v) => updateLayout({ heroSplitImageFit: v })}
+                />
                 <p className="text-[10px] text-stone-500 mt-1">
                   上面兩格取景挑的是切哪一邊，前提是照片一定會被切。有些照片哪邊都不能切
                   ——整株連盆的植物、四邊帶留白的商品棚拍——選整張顯示就一點都不裁，放不滿
@@ -3373,28 +3137,17 @@ export function EditorWorkspace({
             )}
             {theme.layout.heroStyle === "split" && (
               <Field label="手機上圖片的形狀">
-                <div className="grid grid-cols-4 gap-1.5">
-                  {([
+                <OptionGrid
+                  cols={4}
+                  options={[
                     { v: "tall", label: "直式" },
                     { v: "square", label: "跟預設" },
                     { v: "wide", label: "橫式" },
                     { v: "photo", label: "跟照片" },
-                  ] as const).map((opt) => (
-                    <button
-                      key={opt.v}
-                      type="button"
-                      onClick={() => updateLayout({ heroSplitImageAspect: opt.v })}
-                      aria-pressed={theme.layout.heroSplitImageAspect === opt.v}
-                      className={`rounded-lg border py-2 text-xs transition ${
-                        theme.layout.heroSplitImageAspect === opt.v
-                          ? "border-emerald-500 bg-emerald-50 text-emerald-900"
-                          : "border-stone-200 text-stone-600 hover:border-stone-400"
-                      }`}
-                    >
-                      {opt.label}
-                    </button>
-                  ))}
-                </div>
+                  ] as const}
+                  selected={theme.layout.heroSplitImageAspect}
+                  onSelect={(v) => updateLayout({ heroSplitImageAspect: v })}
+                />
                 <p className="text-[10px] text-stone-500 mt-1">
                   上面兩格只管平板跟桌機。手機上這個版型是圖在上、文字在下，圖框永遠是正方形，
                   跟你上傳什麼圖無關——一株連盆兩尺高的植物、一支細長的水壺，要從上下各切掉
@@ -3416,27 +3169,15 @@ export function EditorWorkspace({
             )}
             {theme.layout.heroStyle === "split" && (
               <Field label="文字靠哪">
-                <div className="grid grid-cols-3 gap-1.5">
-                  {([
+                <OptionGrid
+                  options={[
                     { v: "top", label: "靠上" },
                     { v: "center", label: "跟預設" },
                     { v: "bottom", label: "靠下" },
-                  ] as const).map((opt) => (
-                    <button
-                      key={opt.v}
-                      type="button"
-                      onClick={() => updateLayout({ heroSplitTextAlign: opt.v })}
-                      aria-pressed={theme.layout.heroSplitTextAlign === opt.v}
-                      className={`rounded-lg border py-2 text-xs transition ${
-                        theme.layout.heroSplitTextAlign === opt.v
-                          ? "border-emerald-500 bg-emerald-50 text-emerald-900"
-                          : "border-stone-200 text-stone-600 hover:border-stone-400"
-                      }`}
-                    >
-                      {opt.label}
-                    </button>
-                  ))}
-                </div>
+                  ] as const}
+                  selected={theme.layout.heroSplitTextAlign}
+                  onSelect={(v) => updateLayout({ heroSplitTextAlign: v })}
+                />
                 <p className="text-[10px] text-stone-500 mt-1">
                   上面三格動的都是照片那半，文字那半的字則是一律擺在正中間。這一段在平板
                   以上是整個螢幕高，所以只放一行店名的店，那行字會孤零零浮在中央、照片
@@ -3448,23 +3189,11 @@ export function EditorWorkspace({
             )}
             {theme.layout.heroStyle === "split" && (
               <Field label="文字靠左右哪邊">
-                <div className="grid grid-cols-3 gap-1.5">
-                  {ALIGN_X_OPTIONS.map((opt) => (
-                    <button
-                      key={opt.v}
-                      type="button"
-                      onClick={() => updateLayout({ heroSplitTextAlignX: opt.v })}
-                      aria-pressed={theme.layout.heroSplitTextAlignX === opt.v}
-                      className={`rounded-lg border py-2 text-xs transition ${
-                        theme.layout.heroSplitTextAlignX === opt.v
-                          ? "border-emerald-500 bg-emerald-50 text-emerald-900"
-                          : "border-stone-200 text-stone-600 hover:border-stone-400"
-                      }`}
-                    >
-                      {opt.label}
-                    </button>
-                  ))}
-                </div>
+                <OptionGrid
+                  options={ALIGN_X_OPTIONS}
+                  selected={theme.layout.heroSplitTextAlignX}
+                  onSelect={(v) => updateLayout({ heroSplitTextAlignX: v })}
+                />
                 <p className="text-[10px] text-stone-500 mt-1">
                   上一格是這欄的字擺多高，這格是同一欄的另一個方向。左右那半是一張整欄高
                   的照片，兩邊都切得筆直；文字這半的字全部靠左，右邊那側就是一條長短不齊
@@ -3476,23 +3205,11 @@ export function EditorWorkspace({
             )}
             {theme.layout.heroStyle === "split" && (
               <Field label="文字欄左右留白">
-                <div className="grid grid-cols-3 gap-1.5">
-                  {HERO_SPLIT_PAD_OPTIONS.map((opt) => (
-                    <button
-                      key={opt.v}
-                      type="button"
-                      onClick={() => updateLayout({ heroSplitTextPadding: opt.v })}
-                      aria-pressed={theme.layout.heroSplitTextPadding === opt.v}
-                      className={`rounded-lg border py-2 text-xs transition ${
-                        theme.layout.heroSplitTextPadding === opt.v
-                          ? "border-emerald-500 bg-emerald-50 text-emerald-900"
-                          : "border-stone-200 text-stone-600 hover:border-stone-400"
-                      }`}
-                    >
-                      {opt.label}
-                    </button>
-                  ))}
-                </div>
+                <OptionGrid
+                  options={HERO_SPLIT_PAD_OPTIONS}
+                  selected={theme.layout.heroSplitTextPadding}
+                  onSelect={(v) => updateLayout({ heroSplitTextPadding: v })}
+                />
                 <p className="text-[10px] text-stone-500 mt-1">
                   「圖文比例」讓的是文字那半有多寬，這格管的是那一半裡面兩邊再空多少。
                   桌機原本左右各空一大截——選了圖寬之後文字只剩四成，還照樣空這麼多，
@@ -3504,23 +3221,11 @@ export function EditorWorkspace({
             )}
             {theme.layout.heroStyle === "split" && (
               <Field label="手機上文字段上下留白">
-                <div className="grid grid-cols-3 gap-1.5">
-                  {HERO_SPLIT_PAD_OPTIONS.map((opt) => (
-                    <button
-                      key={opt.v}
-                      type="button"
-                      onClick={() => updateLayout({ heroSplitMobilePadY: opt.v })}
-                      aria-pressed={theme.layout.heroSplitMobilePadY === opt.v}
-                      className={`rounded-lg border py-2 text-xs transition ${
-                        theme.layout.heroSplitMobilePadY === opt.v
-                          ? "border-emerald-500 bg-emerald-50 text-emerald-900"
-                          : "border-stone-200 text-stone-600 hover:border-stone-400"
-                      }`}
-                    >
-                      {opt.label}
-                    </button>
-                  ))}
-                </div>
+                <OptionGrid
+                  options={HERO_SPLIT_PAD_OPTIONS}
+                  selected={theme.layout.heroSplitMobilePadY}
+                  onSelect={(v) => updateLayout({ heroSplitMobilePadY: v })}
+                />
                 <p className="text-[10px] text-stone-500 mt-1">
                   上一格管的是左右、而且只影響平板以上；這格剛好相反，只影響手機的上下。
                   手機上文字那段的上下各空一截，那個空白是配正方形照片、字只有店名加
@@ -3532,23 +3237,11 @@ export function EditorWorkspace({
             )}
             {theme.layout.heroStyle === "split" && (
               <Field label="這段字裡面的行距">
-                <div className="grid grid-cols-3 gap-1.5">
-                  {HERO_GAP_OPTIONS.map((opt) => (
-                    <button
-                      key={opt.v}
-                      type="button"
-                      onClick={() => updateLayout({ heroSplitGap: opt.v })}
-                      aria-pressed={theme.layout.heroSplitGap === opt.v}
-                      className={`rounded-lg border py-2 text-xs transition ${
-                        theme.layout.heroSplitGap === opt.v
-                          ? "border-emerald-500 bg-emerald-50 text-emerald-900"
-                          : "border-stone-200 text-stone-600 hover:border-stone-400"
-                      }`}
-                    >
-                      {opt.label}
-                    </button>
-                  ))}
-                </div>
+                <OptionGrid
+                  options={HERO_GAP_OPTIONS}
+                  selected={theme.layout.heroSplitGap}
+                  onSelect={(v) => updateLayout({ heroSplitGap: v })}
+                />
                 <p className="text-[10px] text-stone-500 mt-1">
                   小標、主標、副標、那排按鈕，這四樣東西彼此之間隔多遠。上面兩格管的是
                   這一欄的邊界離字有多遠，這格管的是欄裡面各行之間的疏密。原本那組間距
@@ -3561,26 +3254,15 @@ export function EditorWorkspace({
             )}
             {theme.layout.heroStyle === "split" && (
               <Field label="手機上誰排在上面">
-                <div className="grid grid-cols-2 gap-1.5">
-                  {([
+                <OptionGrid
+                  cols={2}
+                  options={[
                     { v: "image-first", label: "跟預設（照片）" },
                     { v: "text-first", label: "文字" },
-                  ] as const).map((opt) => (
-                    <button
-                      key={opt.v}
-                      type="button"
-                      onClick={() => updateLayout({ heroSplitMobileOrder: opt.v })}
-                      aria-pressed={theme.layout.heroSplitMobileOrder === opt.v}
-                      className={`rounded-lg border py-2 text-xs transition ${
-                        theme.layout.heroSplitMobileOrder === opt.v
-                          ? "border-emerald-500 bg-emerald-50 text-emerald-900"
-                          : "border-stone-200 text-stone-600 hover:border-stone-400"
-                      }`}
-                    >
-                      {opt.label}
-                    </button>
-                  ))}
-                </div>
+                  ] as const}
+                  selected={theme.layout.heroSplitMobileOrder}
+                  onSelect={(v) => updateLayout({ heroSplitMobileOrder: v })}
+                />
                 <p className="text-[10px] text-stone-500 mt-1">
                   「圖片靠左 / 靠右」只管平板以上的左右。手機是上下堆疊，永遠是照片先——
                   滿寬的照片光自己就吃掉一個螢幕寬的高度，客人從 IG 點進來第一屏只看得到
@@ -3592,27 +3274,15 @@ export function EditorWorkspace({
             )}
             {theme.layout.heroStyle === "split" && (
               <Field label="這一段有多高">
-                <div className="grid grid-cols-3 gap-1.5">
-                  {([
+                <OptionGrid
+                  options={[
                     { v: "content", label: "跟著內容" },
                     { v: "compact", label: "七成螢幕" },
                     { v: "normal", label: "跟預設" },
-                  ] as const).map((opt) => (
-                    <button
-                      key={opt.v}
-                      type="button"
-                      onClick={() => updateLayout({ heroSplitHeight: opt.v })}
-                      aria-pressed={theme.layout.heroSplitHeight === opt.v}
-                      className={`rounded-lg border py-2 text-xs transition ${
-                        theme.layout.heroSplitHeight === opt.v
-                          ? "border-emerald-500 bg-emerald-50 text-emerald-900"
-                          : "border-stone-200 text-stone-600 hover:border-stone-400"
-                      }`}
-                    >
-                      {opt.label}
-                    </button>
-                  ))}
-                </div>
+                  ] as const}
+                  selected={theme.layout.heroSplitHeight}
+                  onSelect={(v) => updateLayout({ heroSplitHeight: v })}
+                />
                 <p className="text-[10px] text-stone-500 mt-1">
                   上面幾格動的都是這一段裡面怎麼分，這一段本身多高是寫死的整屏（上面那格
                   「Hero 高度」只有整版圖片版型會套用）。右半只放店名一行加一句話的店，
@@ -3708,28 +3378,17 @@ export function EditorWorkspace({
             )}
             {theme.layout.heroStyle === "split" && (
               <Field label="圖文之間的線">
-                <div className="grid grid-cols-4 gap-1.5">
-                  {([
+                <OptionGrid
+                  cols={4}
+                  options={[
                     { v: "none", label: "沒有" },
                     { v: "thin", label: "細" },
                     { v: "medium", label: "中" },
                     { v: "thick", label: "粗" },
-                  ] as const).map((opt) => (
-                    <button
-                      key={opt.v}
-                      type="button"
-                      onClick={() => updateLayout({ heroSplitDivider: opt.v })}
-                      aria-pressed={theme.layout.heroSplitDivider === opt.v}
-                      className={`rounded-lg border py-2 text-xs transition ${
-                        theme.layout.heroSplitDivider === opt.v
-                          ? "border-emerald-500 bg-emerald-50 text-emerald-900"
-                          : "border-stone-200 text-stone-600 hover:border-stone-400"
-                      }`}
-                    >
-                      {opt.label}
-                    </button>
-                  ))}
-                </div>
+                  ] as const}
+                  selected={theme.layout.heroSplitDivider}
+                  onSelect={(v) => updateLayout({ heroSplitDivider: v })}
+                />
                 {theme.layout.heroSplitDivider !== "none" && (
                   <div className="grid grid-cols-3 gap-1.5 mt-1.5">
                     {([
@@ -3763,27 +3422,15 @@ export function EditorWorkspace({
             )}
             {theme.layout.heroStyle === "magazine" && (
               <Field label="上下橫線粗細">
-                <div className="grid grid-cols-3 gap-1.5">
-                  {([
+                <OptionGrid
+                  options={[
                     { v: "normal", label: "跟預設" },
                     { v: "medium", label: "稍粗" },
                     { v: "thick", label: "粗" },
-                  ] as const).map((opt) => (
-                    <button
-                      key={opt.v}
-                      type="button"
-                      onClick={() => updateLayout({ heroMagazineRuleWeight: opt.v })}
-                      aria-pressed={theme.layout.heroMagazineRuleWeight === opt.v}
-                      className={`rounded-lg border py-2 text-xs transition ${
-                        theme.layout.heroMagazineRuleWeight === opt.v
-                          ? "border-emerald-500 bg-emerald-50 text-emerald-900"
-                          : "border-stone-200 text-stone-600 hover:border-stone-400"
-                      }`}
-                    >
-                      {opt.label}
-                    </button>
-                  ))}
-                </div>
+                  ] as const}
+                  selected={theme.layout.heroMagazineRuleWeight}
+                  onSelect={(v) => updateLayout({ heroMagazineRuleWeight: v })}
+                />
                 <p className="text-[10px] text-stone-500 mt-1">
                   雜誌版型上面那條（框住小標跟店名）跟下面那條（框住落款跟按鈕）的粗細。
                   兩條一起動——它們是上下對稱的一對，只加粗一條會變成沒關係的兩條線。
@@ -3793,28 +3440,17 @@ export function EditorWorkspace({
             )}
             {theme.layout.heroStyle === "magazine" && (
               <Field label="上下橫線深淺">
-                <div className="grid grid-cols-2 gap-1.5">
-                  {([
+                <OptionGrid
+                  cols={2}
+                  options={[
                     { v: "normal", label: "跟預設" },
                     { v: "faint", label: "更淡" },
                     { v: "strong", label: "同文字" },
                     { v: "accent", label: "主色" },
-                  ] as const).map((opt) => (
-                    <button
-                      key={opt.v}
-                      type="button"
-                      onClick={() => updateLayout({ heroMagazineRuleTone: opt.v })}
-                      aria-pressed={theme.layout.heroMagazineRuleTone === opt.v}
-                      className={`rounded-lg border py-2 text-xs transition ${
-                        theme.layout.heroMagazineRuleTone === opt.v
-                          ? "border-emerald-500 bg-emerald-50 text-emerald-900"
-                          : "border-stone-200 text-stone-600 hover:border-stone-400"
-                      }`}
-                    >
-                      {opt.label}
-                    </button>
-                  ))}
-                </div>
+                  ] as const}
+                  selected={theme.layout.heroMagazineRuleTone}
+                  onSelect={(v) => updateLayout({ heroMagazineRuleTone: v })}
+                />
                 <p className="text-[10px] text-stone-500 mt-1">
                   那兩條線的顏色。原本用的是全站畫卡片邊界的那階淡色，底色深一點的店根本
                   看不見，等於整個版型的骨架不見了、只剩中間一團字。選同文字就跟字一樣深
@@ -3825,27 +3461,15 @@ export function EditorWorkspace({
             )}
             {theme.layout.heroStyle === "magazine" && (
               <Field label="大字離上下橫線多遠">
-                <div className="grid grid-cols-3 gap-1.5">
-                  {([
+                <OptionGrid
+                  options={[
                     { v: "tight", label: "貼著" },
                     { v: "medium", label: "中等" },
                     { v: "normal", label: "跟預設" },
-                  ] as const).map((opt) => (
-                    <button
-                      key={opt.v}
-                      type="button"
-                      onClick={() => updateLayout({ heroMagazineGap: opt.v })}
-                      aria-pressed={theme.layout.heroMagazineGap === opt.v}
-                      className={`rounded-lg border py-2 text-xs transition ${
-                        theme.layout.heroMagazineGap === opt.v
-                          ? "border-emerald-500 bg-emerald-50 text-emerald-900"
-                          : "border-stone-200 text-stone-600 hover:border-stone-400"
-                      }`}
-                    >
-                      {opt.label}
-                    </button>
-                  ))}
-                </div>
+                  ] as const}
+                  selected={theme.layout.heroMagazineGap}
+                  onSelect={(v) => updateLayout({ heroMagazineGap: v })}
+                />
                 <p className="text-[10px] text-stone-500 mt-1">
                   這一段本來一定佔滿一整個螢幕，上下兩條線被推到螢幕的最上跟最下、中間浮
                   著主標，螢幕越大三塊離得越開，看起來像三件沒關係的東西——可是雜誌封面
@@ -3855,28 +3479,17 @@ export function EditorWorkspace({
             )}
             {theme.layout.heroStyle === "magazine" && (
               <Field label="手機上大字離上下橫線多遠">
-                <div className="grid grid-cols-2 gap-1.5">
-                  {([
+                <OptionGrid
+                  cols={2}
+                  options={[
                     { v: "same", label: "跟桌機一樣" },
                     { v: "tight", label: "貼著" },
                     { v: "medium", label: "中等" },
                     { v: "normal", label: "整個螢幕" },
-                  ] as const).map((opt) => (
-                    <button
-                      key={opt.v}
-                      type="button"
-                      onClick={() => updateLayout({ heroMagazineGapMobile: opt.v })}
-                      aria-pressed={theme.layout.heroMagazineGapMobile === opt.v}
-                      className={`rounded-lg border py-2 text-xs transition ${
-                        theme.layout.heroMagazineGapMobile === opt.v
-                          ? "border-emerald-500 bg-emerald-50 text-emerald-900"
-                          : "border-stone-200 text-stone-600 hover:border-stone-400"
-                      }`}
-                    >
-                      {opt.label}
-                    </button>
-                  ))}
-                </div>
+                  ] as const}
+                  selected={theme.layout.heroMagazineGapMobile}
+                  onSelect={(v) => updateLayout({ heroMagazineGapMobile: v })}
+                />
                 <p className="text-[10px] text-stone-500 mt-1">
                   上面那格在手機跟桌機是同一把尺，可是量出來差很多：桌機的大字有八十幾
                   px、佔一整個螢幕剛好；手機的字只有三十幾 px，一整個螢幕就是上下各一條線、
@@ -3887,28 +3500,17 @@ export function EditorWorkspace({
             )}
             {theme.layout.heroStyle === "magazine" && (
               <Field label="大字排多寬">
-                <div className="grid grid-cols-2 gap-1.5">
-                  {([
+                <OptionGrid
+                  cols={2}
+                  options={[
                     { v: "narrow", label: "窄" },
                     { v: "normal", label: "跟預設" },
                     { v: "rule", label: "跟橫線切齊" },
                     { v: "full", label: "滿版" },
-                  ] as const).map((opt) => (
-                    <button
-                      key={opt.v}
-                      type="button"
-                      onClick={() => updateLayout({ heroMagazineTextWidth: opt.v })}
-                      aria-pressed={theme.layout.heroMagazineTextWidth === opt.v}
-                      className={`rounded-lg border py-2 text-xs transition ${
-                        theme.layout.heroMagazineTextWidth === opt.v
-                          ? "border-emerald-500 bg-emerald-50 text-emerald-900"
-                          : "border-stone-200 text-stone-600 hover:border-stone-400"
-                      }`}
-                    >
-                      {opt.label}
-                    </button>
-                  ))}
-                </div>
+                  ] as const}
+                  selected={theme.layout.heroMagazineTextWidth}
+                  onSelect={(v) => updateLayout({ heroMagazineTextWidth: v })}
+                />
                 <p className="text-[10px] text-stone-500 mt-1">
                   上下那兩條線的長度跟中間主標的寬度本來就不一樣，主標長一點就會排到比線
                   更外面去，看起來像字撐破了框。選跟橫線切齊，字的左右兩端會跟兩條線的頭
@@ -3918,27 +3520,15 @@ export function EditorWorkspace({
             )}
             {theme.layout.heroStyle === "magazine" && (
               <Field label="上下那兩條線排多寬">
-                <div className="grid grid-cols-3 gap-1.5">
-                  {([
+                <OptionGrid
+                  options={[
                     { v: "narrow", label: "窄" },
                     { v: "normal", label: "跟預設" },
                     { v: "full", label: "滿版" },
-                  ] as const).map((opt) => (
-                    <button
-                      key={opt.v}
-                      type="button"
-                      onClick={() => updateLayout({ heroMagazineRuleWidth: opt.v })}
-                      aria-pressed={theme.layout.heroMagazineRuleWidth === opt.v}
-                      className={`rounded-lg border py-2 text-xs transition ${
-                        theme.layout.heroMagazineRuleWidth === opt.v
-                          ? "border-emerald-500 bg-emerald-50 text-emerald-900"
-                          : "border-stone-200 text-stone-600 hover:border-stone-400"
-                      }`}
-                    >
-                      {opt.label}
-                    </button>
-                  ))}
-                </div>
+                  ] as const}
+                  selected={theme.layout.heroMagazineRuleWidth}
+                  onSelect={(v) => updateLayout({ heroMagazineRuleWidth: v })}
+                />
                 <p className="text-[10px] text-stone-500 mt-1">
                   這格動的是上下那兩條線，連同貼著線的小標、店名、落款跟按鈕一起。前面兩
                   格放寬的都是中間的字，兩條線一直停在原來的長度，所以中間選滿版之後，字
@@ -3950,23 +3540,11 @@ export function EditorWorkspace({
             )}
             {theme.layout.heroStyle === "magazine" && (
               <Field label="這一段離螢幕邊多遠">
-                <div className="grid grid-cols-3 gap-1.5">
-                  {HERO_PAD_X_OPTIONS.map((opt) => (
-                    <button
-                      key={opt.v}
-                      type="button"
-                      onClick={() => updateLayout({ heroMagazinePadX: opt.v })}
-                      aria-pressed={theme.layout.heroMagazinePadX === opt.v}
-                      className={`rounded-lg border py-2 text-xs transition ${
-                        theme.layout.heroMagazinePadX === opt.v
-                          ? "border-emerald-500 bg-emerald-50 text-emerald-900"
-                          : "border-stone-200 text-stone-600 hover:border-stone-400"
-                      }`}
-                    >
-                      {opt.label}
-                    </button>
-                  ))}
-                </div>
+                <OptionGrid
+                  options={HERO_PAD_X_OPTIONS}
+                  selected={theme.layout.heroMagazinePadX}
+                  onSelect={(v) => updateLayout({ heroMagazinePadX: v })}
+                />
                 <p className="text-[10px] text-stone-500 mt-1">
                   前面幾格挑的是字跟線排多寬，這格挑的是外面那一圈留白。中間選滿版之後，
                   大字的左右兩端就停在這道留白上，整段到底離螢幕邊多遠就由這格決定。窄是
@@ -3977,27 +3555,15 @@ export function EditorWorkspace({
             )}
             {theme.layout.heroStyle === "magazine" && (
               <Field label="上下那兩條線離段的邊多遠">
-                <div className="grid grid-cols-3 gap-1.5">
-                  {([
+                <OptionGrid
+                  options={[
                     { v: "tight", label: "少" },
                     { v: "normal", label: "跟預設" },
                     { v: "roomy", label: "多" },
-                  ] as const).map((opt) => (
-                    <button
-                      key={opt.v}
-                      type="button"
-                      onClick={() => updateLayout({ heroMagazinePadY: opt.v })}
-                      aria-pressed={theme.layout.heroMagazinePadY === opt.v}
-                      className={`rounded-lg border py-2 text-xs transition ${
-                        theme.layout.heroMagazinePadY === opt.v
-                          ? "border-emerald-500 bg-emerald-50 text-emerald-900"
-                          : "border-stone-200 text-stone-600 hover:border-stone-400"
-                      }`}
-                    >
-                      {opt.label}
-                    </button>
-                  ))}
-                </div>
+                  ] as const}
+                  selected={theme.layout.heroMagazinePadY}
+                  onSelect={(v) => updateLayout({ heroMagazinePadY: v })}
+                />
                 <p className="text-[10px] text-stone-500 mt-1">
                   上面那格「大字與上下橫線的距離」動的是線跟字之間；這格動的是線外面、
                   離這一段上下邊的那一圈。那格選貼緊之後線是貼到字了，可是線外面還固定留
@@ -4043,23 +3609,11 @@ export function EditorWorkspace({
             )}
             {theme.layout.heroStyle === "magazine" && (
               <Field label="這段字裡面的行距">
-                <div className="grid grid-cols-3 gap-1.5">
-                  {HERO_GAP_OPTIONS.map((opt) => (
-                    <button
-                      key={opt.v}
-                      type="button"
-                      onClick={() => updateLayout({ heroMagazineTextGap: opt.v })}
-                      aria-pressed={theme.layout.heroMagazineTextGap === opt.v}
-                      className={`rounded-lg border py-2 text-xs transition ${
-                        theme.layout.heroMagazineTextGap === opt.v
-                          ? "border-emerald-500 bg-emerald-50 text-emerald-900"
-                          : "border-stone-200 text-stone-600 hover:border-stone-400"
-                      }`}
-                    >
-                      {opt.label}
-                    </button>
-                  ))}
-                </div>
+                <OptionGrid
+                  options={HERO_GAP_OPTIONS}
+                  selected={theme.layout.heroMagazineTextGap}
+                  onSelect={(v) => updateLayout({ heroMagazineTextGap: v })}
+                />
                 <p className="text-[10px] text-stone-500 mt-1">
                   上面那行小字離線多近、主標跟下面那行小字離多近、下面那條線離落款多近。
                   前面「大字跟上下橫線的距離」那格動的是三塊之間被撐開多遠，這格動的
@@ -4109,23 +3663,11 @@ export function EditorWorkspace({
             )}
             {theme.layout.heroStyle === "minimal" && (
               <Field label="文字欄寬">
-                <div className="grid grid-cols-3 gap-1.5">
-                  {HERO_PAD_X_OPTIONS.map((opt) => (
-                    <button
-                      key={opt.v}
-                      type="button"
-                      onClick={() => updateLayout({ heroMinimalWidth: opt.v })}
-                      aria-pressed={theme.layout.heroMinimalWidth === opt.v}
-                      className={`rounded-lg border py-2 text-xs transition ${
-                        theme.layout.heroMinimalWidth === opt.v
-                          ? "border-emerald-500 bg-emerald-50 text-emerald-900"
-                          : "border-stone-200 text-stone-600 hover:border-stone-400"
-                      }`}
-                    >
-                      {opt.label}
-                    </button>
-                  ))}
-                </div>
+                <OptionGrid
+                  options={HERO_PAD_X_OPTIONS}
+                  selected={theme.layout.heroMinimalWidth}
+                  onSelect={(v) => updateLayout({ heroMinimalWidth: v })}
+                />
                 <p className="text-[10px] text-stone-500 mt-1">
                   這個版型沒有圖也沒有線，只有中間一段字，所以字排多寬幾乎就是它的全部。
                   主標只有兩三個字時，原本的寬度會讓字左右各空一大塊、像沒排完；
@@ -4135,23 +3677,11 @@ export function EditorWorkspace({
             )}
             {theme.layout.heroStyle === "minimal" && (
               <Field label="上下留白">
-                <div className="grid grid-cols-3 gap-1.5">
-                  {HERO_PAD_Y_OPTIONS.map((opt) => (
-                    <button
-                      key={opt.v}
-                      type="button"
-                      onClick={() => updateLayout({ heroMinimalPadding: opt.v })}
-                      aria-pressed={theme.layout.heroMinimalPadding === opt.v}
-                      className={`rounded-lg border py-2 text-xs transition ${
-                        theme.layout.heroMinimalPadding === opt.v
-                          ? "border-emerald-500 bg-emerald-50 text-emerald-900"
-                          : "border-stone-200 text-stone-600 hover:border-stone-400"
-                      }`}
-                    >
-                      {opt.label}
-                    </button>
-                  ))}
-                </div>
+                <OptionGrid
+                  options={HERO_PAD_Y_OPTIONS}
+                  selected={theme.layout.heroMinimalPadding}
+                  onSelect={(v) => updateLayout({ heroMinimalPadding: v })}
+                />
                 <p className="text-[10px] text-stone-500 mt-1">
                   字上下各留多少空。原本那個留白是配「只有一行大主標」挑的，加了副標跟按鈕
                   之後整段變高，上下再各留那麼多會把後面的段落推到要捲一頁才看得到；
@@ -4161,23 +3691,12 @@ export function EditorWorkspace({
             )}
             {theme.layout.heroStyle === "minimal" && (
               <Field label="手機上的上下留白">
-                <div className="grid grid-cols-2 gap-1.5">
-                  {([{ v: "same", label: "跟桌機一樣" }, ...HERO_PAD_Y_OPTIONS] as const).map((opt) => (
-                    <button
-                      key={opt.v}
-                      type="button"
-                      onClick={() => updateLayout({ heroMinimalPaddingMobile: opt.v })}
-                      aria-pressed={theme.layout.heroMinimalPaddingMobile === opt.v}
-                      className={`rounded-lg border py-2 text-xs transition ${
-                        theme.layout.heroMinimalPaddingMobile === opt.v
-                          ? "border-emerald-500 bg-emerald-50 text-emerald-900"
-                          : "border-stone-200 text-stone-600 hover:border-stone-400"
-                      }`}
-                    >
-                      {opt.label}
-                    </button>
-                  ))}
-                </div>
+                <OptionGrid
+                  cols={2}
+                  options={[{ v: "same", label: "跟桌機一樣" }, ...HERO_PAD_Y_OPTIONS] as const}
+                  selected={theme.layout.heroMinimalPaddingMobile}
+                  onSelect={(v) => updateLayout({ heroMinimalPaddingMobile: v })}
+                />
                 <p className="text-[10px] text-stone-500 mt-1">
                   上面那格是同一把尺量兩種螢幕：桌機主標有七八十 px、上下各留那麼多撐得住；
                   手機的字只有三十幾 px，同一份留白就是開頭一整屏幾乎全空、要捲一頁才看得到
@@ -4188,23 +3707,11 @@ export function EditorWorkspace({
             )}
             {theme.layout.heroStyle === "minimal" && (
               <Field label="這段字離螢幕邊多遠">
-                <div className="grid grid-cols-3 gap-1.5">
-                  {HERO_PAD_X_OPTIONS.map((opt) => (
-                    <button
-                      key={opt.v}
-                      type="button"
-                      onClick={() => updateLayout({ heroMinimalPadX: opt.v })}
-                      aria-pressed={theme.layout.heroMinimalPadX === opt.v}
-                      className={`rounded-lg border py-2 text-xs transition ${
-                        theme.layout.heroMinimalPadX === opt.v
-                          ? "border-emerald-500 bg-emerald-50 text-emerald-900"
-                          : "border-stone-200 text-stone-600 hover:border-stone-400"
-                      }`}
-                    >
-                      {opt.label}
-                    </button>
-                  ))}
-                </div>
+                <OptionGrid
+                  options={HERO_PAD_X_OPTIONS}
+                  selected={theme.layout.heroMinimalPadX}
+                  onSelect={(v) => updateLayout({ heroMinimalPadX: v })}
+                />
                 <p className="text-[10px] text-stone-500 mt-1">
                   「排多寬」那格給的是上限，電腦上才碰得到；手機螢幕比最窄那檔還窄，字離
                   螢幕邊多遠其實只由這格決定。窄是字幾乎貼到邊的那種大版面，寬是四周留一
@@ -4214,23 +3721,12 @@ export function EditorWorkspace({
             )}
             {theme.layout.heroStyle === "minimal" && (
               <Field label="手機上離螢幕邊多遠">
-                <div className="grid grid-cols-2 gap-1.5">
-                  {([{ v: "same", label: "跟桌機一樣" }, ...HERO_PAD_X_OPTIONS] as const).map((opt) => (
-                    <button
-                      key={opt.v}
-                      type="button"
-                      onClick={() => updateLayout({ heroMinimalPadXMobile: opt.v })}
-                      aria-pressed={theme.layout.heroMinimalPadXMobile === opt.v}
-                      className={`rounded-lg border py-2 text-xs transition ${
-                        theme.layout.heroMinimalPadXMobile === opt.v
-                          ? "border-emerald-500 bg-emerald-50 text-emerald-900"
-                          : "border-stone-200 text-stone-600 hover:border-stone-400"
-                      }`}
-                    >
-                      {opt.label}
-                    </button>
-                  ))}
-                </div>
+                <OptionGrid
+                  cols={2}
+                  options={[{ v: "same", label: "跟桌機一樣" }, ...HERO_PAD_X_OPTIONS] as const}
+                  selected={theme.layout.heroMinimalPadXMobile}
+                  onSelect={(v) => updateLayout({ heroMinimalPadXMobile: v })}
+                />
                 <p className="text-[10px] text-stone-500 mt-1">
                   上面那格一按，手機跟電腦一起動。但這兩種螢幕要的其實不一樣：電腦上留一
                   大片白很好看，同一份留白搬到手機，一行字被擠成三行、每行只剩五六個字。
@@ -4241,23 +3737,11 @@ export function EditorWorkspace({
             )}
             {theme.layout.heroStyle === "minimal" && (
               <Field label="這段字裡面的行距">
-                <div className="grid grid-cols-3 gap-1.5">
-                  {HERO_GAP_OPTIONS.map((opt) => (
-                    <button
-                      key={opt.v}
-                      type="button"
-                      onClick={() => updateLayout({ heroMinimalGap: opt.v })}
-                      aria-pressed={theme.layout.heroMinimalGap === opt.v}
-                      className={`rounded-lg border py-2 text-xs transition ${
-                        theme.layout.heroMinimalGap === opt.v
-                          ? "border-emerald-500 bg-emerald-50 text-emerald-900"
-                          : "border-stone-200 text-stone-600 hover:border-stone-400"
-                      }`}
-                    >
-                      {opt.label}
-                    </button>
-                  ))}
-                </div>
+                <OptionGrid
+                  options={HERO_GAP_OPTIONS}
+                  selected={theme.layout.heroMinimalGap}
+                  onSelect={(v) => updateLayout({ heroMinimalGap: v })}
+                />
                 <p className="text-[10px] text-stone-500 mt-1">
                   小標、主標、副標、那條短橫線、按鈕，這五樣東西彼此之間隔多遠。上面那格
                   「上下留白」管的是整段字離前後段多遠，這格管的是這段字自己內部的疏密，
@@ -4270,23 +3754,11 @@ export function EditorWorkspace({
             )}
             {theme.layout.heroStyle === "minimal" && (
               <Field label="文字對齊">
-                <div className="grid grid-cols-3 gap-1.5">
-                  {ALIGN_X_OPTIONS.map((opt) => (
-                    <button
-                      key={opt.v}
-                      type="button"
-                      onClick={() => updateLayout({ heroMinimalAlign: opt.v })}
-                      aria-pressed={theme.layout.heroMinimalAlign === opt.v}
-                      className={`rounded-lg border py-2 text-xs transition ${
-                        theme.layout.heroMinimalAlign === opt.v
-                          ? "border-emerald-500 bg-emerald-50 text-emerald-900"
-                          : "border-stone-200 text-stone-600 hover:border-stone-400"
-                      }`}
-                    >
-                      {opt.label}
-                    </button>
-                  ))}
-                </div>
+                <OptionGrid
+                  options={ALIGN_X_OPTIONS}
+                  selected={theme.layout.heroMinimalAlign}
+                  onSelect={(v) => updateLayout({ heroMinimalAlign: v })}
+                />
                 <p className="text-[10px] text-stone-500 mt-1">
                   整段字靠哪一邊。上面幾格調的都是這段字的框有多大，字在框裡面一直是
                   置中的。這個版型沒有圖，一進站就是一片空白配中間一段字：置中那版像
@@ -4298,28 +3770,17 @@ export function EditorWorkspace({
             )}
             {theme.layout.heroStyle === "minimal" && (
               <Field label="短橫線長度">
-                <div className="grid grid-cols-4 gap-1.5">
-                  {([
+                <OptionGrid
+                  cols={4}
+                  options={[
                     { v: "none", label: "不顯示" },
                     { v: "short", label: "短" },
                     { v: "normal", label: "跟預設" },
                     { v: "long", label: "長" },
-                  ] as const).map((opt) => (
-                    <button
-                      key={opt.v}
-                      type="button"
-                      onClick={() => updateLayout({ heroMinimalRule: opt.v })}
-                      aria-pressed={theme.layout.heroMinimalRule === opt.v}
-                      className={`rounded-lg border py-2 text-xs transition ${
-                        theme.layout.heroMinimalRule === opt.v
-                          ? "border-emerald-500 bg-emerald-50 text-emerald-900"
-                          : "border-stone-200 text-stone-600 hover:border-stone-400"
-                      }`}
-                    >
-                      {opt.label}
-                    </button>
-                  ))}
-                </div>
+                  ] as const}
+                  selected={theme.layout.heroMinimalRule}
+                  onSelect={(v) => updateLayout({ heroMinimalRule: v })}
+                />
                 <p className="text-[10px] text-stone-500 mt-1">
                   主標跟按鈕中間那條短橫線。它是這個版型唯一的圖形，作用是把上面的字跟
                   下面的按鈕斷開。主標拉大或欄寬選寬的店，原本的長度在一整排大字底下細到
@@ -4331,27 +3792,15 @@ export function EditorWorkspace({
             {theme.layout.heroStyle === "minimal" &&
               theme.layout.heroMinimalRule !== "none" && (
               <Field label="短橫線粗細">
-                <div className="grid grid-cols-3 gap-1.5">
-                  {([
+                <OptionGrid
+                  options={[
                     { v: "normal", label: "跟預設" },
                     { v: "medium", label: "粗" },
                     { v: "thick", label: "更粗" },
-                  ] as const).map((opt) => (
-                    <button
-                      key={opt.v}
-                      type="button"
-                      onClick={() => updateLayout({ heroMinimalRuleWeight: opt.v })}
-                      aria-pressed={theme.layout.heroMinimalRuleWeight === opt.v}
-                      className={`rounded-lg border py-2 text-xs transition ${
-                        theme.layout.heroMinimalRuleWeight === opt.v
-                          ? "border-emerald-500 bg-emerald-50 text-emerald-900"
-                          : "border-stone-200 text-stone-600 hover:border-stone-400"
-                      }`}
-                    >
-                      {opt.label}
-                    </button>
-                  ))}
-                </div>
+                  ] as const}
+                  selected={theme.layout.heroMinimalRuleWeight}
+                  onSelect={(v) => updateLayout({ heroMinimalRuleWeight: v })}
+                />
                 <p className="text-[10px] text-stone-500 mt-1">
                   那條線有多厚。長度跟顏色都能挑了，厚度一直是最細的那一階：選了長的
                   那檔又把主標放大的店，一條細線在一排大字底下還是像沒對齊的痕跡；
@@ -4474,23 +3923,11 @@ export function EditorWorkspace({
             )}
             {theme.layout.heroStyle === "full-image" && (
               <Field label="文字段上下留白">
-                <div className="grid grid-cols-3 gap-1.5">
-                  {HERO_PAD_Y_OPTIONS.map((opt) => (
-                    <button
-                      key={opt.v}
-                      type="button"
-                      onClick={() => updateLayout({ heroTextPadding: opt.v })}
-                      aria-pressed={theme.layout.heroTextPadding === opt.v}
-                      className={`rounded-lg border py-2 text-xs transition ${
-                        theme.layout.heroTextPadding === opt.v
-                          ? "border-emerald-500 bg-emerald-50 text-emerald-900"
-                          : "border-stone-200 text-stone-600 hover:border-stone-400"
-                      }`}
-                    >
-                      {opt.label}
-                    </button>
-                  ))}
-                </div>
+                <OptionGrid
+                  options={HERO_PAD_Y_OPTIONS}
+                  selected={theme.layout.heroTextPadding}
+                  onSelect={(v) => updateLayout({ heroTextPadding: v })}
+                />
                 <p className="text-[10px] text-stone-500 mt-1">
                   那一塊上下各留多少空。只放一行主標時，原本的留白會讓那塊顯得空；
                   主標加副標加小標加按鈕全開的店，同樣的留白會讓那塊拖得很長，
@@ -4500,28 +3937,17 @@ export function EditorWorkspace({
             )}
             {theme.layout.heroStyle === "full-image" && (
               <Field label="文字段欄寬">
-                <div className="grid grid-cols-4 gap-1.5">
-                  {([
+                <OptionGrid
+                  cols={4}
+                  options={[
                     { v: "narrow", label: "窄" },
                     { v: "normal", label: "跟預設" },
                     { v: "wide", label: "寬" },
                     { v: "full", label: "滿版" },
-                  ] as const).map((opt) => (
-                    <button
-                      key={opt.v}
-                      type="button"
-                      onClick={() => updateLayout({ heroTextWidth: opt.v })}
-                      aria-pressed={theme.layout.heroTextWidth === opt.v}
-                      className={`rounded-lg border py-2 text-xs transition ${
-                        theme.layout.heroTextWidth === opt.v
-                          ? "border-emerald-500 bg-emerald-50 text-emerald-900"
-                          : "border-stone-200 text-stone-600 hover:border-stone-400"
-                      }`}
-                    >
-                      {opt.label}
-                    </button>
-                  ))}
-                </div>
+                  ] as const}
+                  selected={theme.layout.heroTextWidth}
+                  onSelect={(v) => updateLayout({ heroTextWidth: v })}
+                />
                 <p className="text-[10px] text-stone-500 mt-1">
                   上面那格動的是那塊色塊有多高，這格動的是裡面的字排多寬。色塊本身是
                   滿版的，字被關在中間一道看不見的欄裡：主標拉大或副標寫成兩三句的店，
@@ -4532,23 +3958,11 @@ export function EditorWorkspace({
             )}
             {theme.layout.heroStyle === "full-image" && (
               <Field label="文字段擺哪邊">
-                <div className="grid grid-cols-3 gap-1.5">
-                  {ALIGN_X_OPTIONS.map((opt) => (
-                    <button
-                      key={opt.v}
-                      type="button"
-                      onClick={() => updateLayout({ heroTextAlignX: opt.v })}
-                      aria-pressed={theme.layout.heroTextAlignX === opt.v}
-                      className={`rounded-lg border py-2 text-xs transition ${
-                        theme.layout.heroTextAlignX === opt.v
-                          ? "border-emerald-500 bg-emerald-50 text-emerald-900"
-                          : "border-stone-200 text-stone-600 hover:border-stone-400"
-                      }`}
-                    >
-                      {opt.label}
-                    </button>
-                  ))}
-                </div>
+                <OptionGrid
+                  options={ALIGN_X_OPTIONS}
+                  selected={theme.layout.heroTextAlignX}
+                  onSelect={(v) => updateLayout({ heroTextAlignX: v })}
+                />
                 <p className="text-[10px] text-stone-500 mt-1">
                   上面那格決定那道欄有多寬，這格決定那道欄擺在照片的哪一邊。欄選窄之後
                   整塊停在正中間，裡面的字再靠左，左緣就落在一個誰也對不到的位置——不是
@@ -4560,23 +3974,11 @@ export function EditorWorkspace({
             )}
             {theme.layout.heroStyle === "full-image" && (
               <Field label="這段字裡面的行距">
-                <div className="grid grid-cols-3 gap-1.5">
-                  {HERO_GAP_OPTIONS.map((opt) => (
-                    <button
-                      key={opt.v}
-                      type="button"
-                      onClick={() => updateLayout({ heroTextGap: opt.v })}
-                      aria-pressed={theme.layout.heroTextGap === opt.v}
-                      className={`rounded-lg border py-2 text-xs transition ${
-                        theme.layout.heroTextGap === opt.v
-                          ? "border-emerald-500 bg-emerald-50 text-emerald-900"
-                          : "border-stone-200 text-stone-600 hover:border-stone-400"
-                      }`}
-                    >
-                      {opt.label}
-                    </button>
-                  ))}
-                </div>
+                <OptionGrid
+                  options={HERO_GAP_OPTIONS}
+                  selected={theme.layout.heroTextGap}
+                  onSelect={(v) => updateLayout({ heroTextGap: v })}
+                />
                 <p className="text-[10px] text-stone-500 mt-1">
                   小標、主標、副標、按鈕，這四樣東西彼此之間隔多遠。上面兩格管的是那塊
                   色塊的邊界離字有多遠，這格管的是字跟字之間。原本那組間距是配預設主標
@@ -4590,27 +3992,15 @@ export function EditorWorkspace({
             )}
             {theme.layout.heroStyle === "full-image" && (
               <Field label="照片最高佔多少螢幕">
-                <div className="grid grid-cols-3 gap-1.5">
-                  {([
+                <OptionGrid
+                  options={[
                     { v: "none", label: "不限" },
                     { v: "screen", label: "一個螢幕" },
                     { v: "short", label: "七成螢幕" },
-                  ] as const).map((opt) => (
-                    <button
-                      key={opt.v}
-                      type="button"
-                      onClick={() => updateLayout({ heroImageMaxHeight: opt.v })}
-                      aria-pressed={theme.layout.heroImageMaxHeight === opt.v}
-                      className={`rounded-lg border py-2 text-xs transition ${
-                        theme.layout.heroImageMaxHeight === opt.v
-                          ? "border-emerald-500 bg-emerald-50 text-emerald-900"
-                          : "border-stone-200 text-stone-600 hover:border-stone-400"
-                      }`}
-                    >
-                      {opt.label}
-                    </button>
-                  ))}
-                </div>
+                  ] as const}
+                  selected={theme.layout.heroImageMaxHeight}
+                  onSelect={(v) => updateLayout({ heroImageMaxHeight: v })}
+                />
                 <p className="text-[10px] text-stone-500 mt-1">
                   這個版型的照片會自己算高度：系統看那張圖四周留了多少白邊，把版位調成
                   剛好框住主體，所以不管上傳哪種圖都不會把主體切掉。代價是照片有多高完全
@@ -4626,26 +4016,15 @@ export function EditorWorkspace({
             {theme.layout.heroStyle === "full-image" &&
               theme.layout.heroImageMaxHeight !== "none" && (
               <Field label="照片完整度">
-                <div className="grid grid-cols-2 gap-1.5">
-                  {([
+                <OptionGrid
+                  cols={2}
+                  options={[
                     { v: "cover", label: "裁上下" },
                     { v: "contain", label: "整張顯示" },
-                  ] as const).map((opt) => (
-                    <button
-                      key={opt.v}
-                      type="button"
-                      onClick={() => updateLayout({ heroFullImageFit: opt.v })}
-                      aria-pressed={theme.layout.heroFullImageFit === opt.v}
-                      className={`rounded-lg border py-2 text-xs transition ${
-                        theme.layout.heroFullImageFit === opt.v
-                          ? "border-emerald-500 bg-emerald-50 text-emerald-900"
-                          : "border-stone-200 text-stone-600 hover:border-stone-400"
-                      }`}
-                    >
-                      {opt.label}
-                    </button>
-                  ))}
-                </div>
+                  ] as const}
+                  selected={theme.layout.heroFullImageFit}
+                  onSelect={(v) => updateLayout({ heroFullImageFit: v })}
+                />
                 <p className="text-[10px] text-stone-500 mt-1">
                   上一格把太高的照片收到上限之後，多出來的那截怎麼辦。裁上下是照原本對齊
                   主體的位置切掉頭尾，店面照、桌面照這樣就對；有些照片哪一截都不能切——
@@ -5319,27 +4698,15 @@ export function EditorWorkspace({
               </span>
             </button>
             <Field label="一進來先攤開">
-              <div className="grid grid-cols-3 gap-1.5">
-                {([
+              <OptionGrid
+                options={[
                   { v: "none", label: "都收起來" },
                   { v: "first", label: "第一題" },
                   { v: "all", label: "全部" },
-                ] as const).map((opt) => (
-                  <button
-                    key={opt.v}
-                    type="button"
-                    onClick={() => updateLayout({ faqDefaultOpen: opt.v })}
-                    aria-pressed={theme.layout.faqDefaultOpen === opt.v}
-                    className={`rounded-lg border py-2 text-xs transition ${
-                      theme.layout.faqDefaultOpen === opt.v
-                        ? "border-emerald-500 bg-emerald-50 text-emerald-900"
-                        : "border-stone-200 text-stone-600 hover:border-stone-400"
-                    }`}
-                  >
-                    {opt.label}
-                  </button>
-                ))}
-              </div>
+                ] as const}
+                selected={theme.layout.faqDefaultOpen}
+                onSelect={(v) => updateLayout({ faqDefaultOpen: v })}
+              />
               <p className="mt-1 text-[11px] text-stone-500 leading-relaxed">
                 你寫這一段的理由就是少回一次「幾點開」「怎麼去」。可是每題都收起來的話，
                 客人看到的是一排短句加一個加號，答案一個字都沒露出來——願意一題一題點的人
@@ -6538,173 +5905,90 @@ export function EditorWorkspace({
                 </p>
               </div>
               <Field label="標題對齊">
-                <div className="grid grid-cols-3 gap-1.5">
-                  {([
+                <OptionGrid
+                  options={[
                     { v: "left", label: "左" },
                     { v: "center", label: "置中" },
                     { v: "right", label: "右" },
-                  ] as const).map((opt) => (
-                    <button
-                      key={opt.v}
-                      type="button"
-                      onClick={() => patch({ headingAlign: opt.v })}
-                      aria-pressed={align === opt.v}
-                      className={`rounded-lg border py-2 text-xs transition ${
-                        align === opt.v
-                          ? "border-emerald-500 bg-emerald-50 text-emerald-900"
-                          : "border-stone-200 text-stone-600 hover:border-stone-400"
-                      }`}
-                    >
-                      {opt.label}
-                    </button>
-                  ))}
-                </div>
+                  ] as const}
+                  selected={align}
+                  onSelect={(v) => patch({ headingAlign: v })}
+                />
               </Field>
               <Field label="內文對齊">
-                <div className="grid grid-cols-4 gap-1.5">
-                  {([
+                <OptionGrid
+                  cols={4}
+                  options={[
                     { v: "auto", label: "同標題" },
                     { v: "left", label: "左" },
                     { v: "center", label: "置中" },
                     { v: "right", label: "右" },
-                  ] as const).map((opt) => (
-                    <button
-                      key={opt.v}
-                      type="button"
-                      onClick={() => patch({ bodyAlign: opt.v })}
-                      aria-pressed={(bodyAlign ?? "auto") === opt.v}
-                      className={`rounded-lg border py-2 text-xs transition ${
-                        (bodyAlign ?? "auto") === opt.v
-                          ? "border-emerald-500 bg-emerald-50 text-emerald-900"
-                          : "border-stone-200 text-stone-600 hover:border-stone-400"
-                      }`}
-                    >
-                      {opt.label}
-                    </button>
-                  ))}
-                </div>
+                  ] as const}
+                  selected={bodyAlign ?? "auto"}
+                  onSelect={(v) => patch({ bodyAlign: v })}
+                />
                 <HintRow showClear={bodyAlign} onClear={() => patch({ bodyAlign: null })}>
                   只管段落文字，標題另外走上面那條
                 </HintRow>
               </Field>
               <Field label="一行字數">
-                <div className="grid grid-cols-3 gap-1.5">
-                  {([
+                <OptionGrid
+                  options={[
                     { v: "auto", label: "不限制" },
                     { v: "normal", label: "約 34 字" },
                     { v: "narrow", label: "約 24 字" },
-                  ] as const).map((opt) => (
-                    <button
-                      key={opt.v}
-                      type="button"
-                      onClick={() => patch({ bodyMeasure: opt.v })}
-                      aria-pressed={(bodyMeasure ?? "auto") === opt.v}
-                      className={`rounded-lg border py-2 text-xs transition ${
-                        (bodyMeasure ?? "auto") === opt.v
-                          ? "border-emerald-500 bg-emerald-50 text-emerald-900"
-                          : "border-stone-200 text-stone-600 hover:border-stone-400"
-                      }`}
-                    >
-                      {opt.label}
-                    </button>
-                  ))}
-                </div>
+                  ] as const}
+                  selected={bodyMeasure ?? "auto"}
+                  onSelect={(v) => patch({ bodyMeasure: v })}
+                />
                 <HintRow showClear={bodyMeasure} onClear={() => patch({ bodyMeasure: null })}>
                   長段落收成窄欄好讀，標題與照片不跟著變窄
                 </HintRow>
               </Field>
               <Field label="內文大小">
-                <div className="grid grid-cols-3 gap-1.5">
-                  {SECTION_TEXT_SCALE_OPTIONS.map((opt) => (
-                    <button
-                      key={opt.v}
-                      type="button"
-                      onClick={() => patch({ bodyScale: opt.v })}
-                      aria-pressed={(bodyScale ?? "default") === opt.v}
-                      className={`rounded-lg border py-2 text-xs transition ${
-                        (bodyScale ?? "default") === opt.v
-                          ? "border-emerald-500 bg-emerald-50 text-emerald-900"
-                          : "border-stone-200 text-stone-600 hover:border-stone-400"
-                      }`}
-                    >
-                      {opt.label}
-                    </button>
-                  ))}
-                </div>
+                <OptionGrid
+                  options={SECTION_TEXT_SCALE_OPTIONS}
+                  selected={bodyScale ?? "default"}
+                  onSelect={(v) => patch({ bodyScale: v })}
+                />
                 <HintRow showClear={bodyScale} onClear={() => patch({ bodyScale: null })}>
                   只縮放段落文字，標題另有「標題大小」那一組
                 </HintRow>
               </Field>
               <Field label="內文濃淡">
-                <div className="grid grid-cols-3 gap-1.5">
-                  {([
+                <OptionGrid
+                  options={[
                     { v: "muted", label: "淡" },
                     { v: "default", label: "預設" },
                     { v: "strong", label: "濃" },
-                  ] as const).map((opt) => (
-                    <button
-                      key={opt.v}
-                      type="button"
-                      onClick={() => patch({ bodyTone: opt.v })}
-                      aria-pressed={(bodyTone ?? "default") === opt.v}
-                      className={`rounded-lg border py-2 text-xs transition ${
-                        (bodyTone ?? "default") === opt.v
-                          ? "border-emerald-500 bg-emerald-50 text-emerald-900"
-                          : "border-stone-200 text-stone-600 hover:border-stone-400"
-                      }`}
-                    >
-                      {opt.label}
-                    </button>
-                  ))}
-                </div>
+                  ] as const}
+                  selected={bodyTone ?? "default"}
+                  onSelect={(v) => patch({ bodyTone: v })}
+                />
                 <HintRow showClear={bodyTone} onClear={() => patch({ bodyTone: null })}>
                   描述、說明這類次要文字的深淺，選「濃」跟標題一樣深、長描述最好讀
                 </HintRow>
               </Field>
               <Field label="內文粗細">
-                <div className="grid grid-cols-3 gap-1.5">
-                  {([
+                <OptionGrid
+                  options={[
                     { v: "normal", label: "常規" },
                     { v: "medium", label: "中黑" },
                     { v: "bold", label: "粗" },
-                  ] as const).map((opt) => (
-                    <button
-                      key={opt.v}
-                      type="button"
-                      onClick={() => patch({ bodyWeight: opt.v })}
-                      aria-pressed={(bodyWeight ?? "normal") === opt.v}
-                      className={`rounded-lg border py-2 text-xs transition ${
-                        (bodyWeight ?? "normal") === opt.v
-                          ? "border-emerald-500 bg-emerald-50 text-emerald-900"
-                          : "border-stone-200 text-stone-600 hover:border-stone-400"
-                      }`}
-                    >
-                      {opt.label}
-                    </button>
-                  ))}
-                </div>
+                  ] as const}
+                  selected={bodyWeight ?? "normal"}
+                  onSelect={(v) => patch({ bodyWeight: v })}
+                />
                 <HintRow showClear={bodyWeight} onClear={() => patch({ bodyWeight: null })}>
                   描述、引言、答案那幾行的粗細，不佔空間也不換顏色就讓字站出來
                 </HintRow>
               </Field>
               <Field label="內文字距">
-                <div className="grid grid-cols-3 gap-1.5">
-                  {TRACKING_OPTIONS.map((opt) => (
-                    <button
-                      key={opt.v}
-                      type="button"
-                      onClick={() => patch({ bodyTracking: opt.v })}
-                      aria-pressed={(bodyTracking ?? "normal") === opt.v}
-                      className={`rounded-lg border py-2 text-xs transition ${
-                        (bodyTracking ?? "normal") === opt.v
-                          ? "border-emerald-500 bg-emerald-50 text-emerald-900"
-                          : "border-stone-200 text-stone-600 hover:border-stone-400"
-                      }`}
-                    >
-                      {opt.label}
-                    </button>
-                  ))}
-                </div>
+                <OptionGrid
+                  options={TRACKING_OPTIONS}
+                  selected={bodyTracking ?? "normal"}
+                  onSelect={(v) => patch({ bodyTracking: v })}
+                />
                 <HintRow showClear={bodyTracking} onClear={() => patch({ bodyTracking: null })}>
                   那幾行字與字之間的距離，只動內文不動大標（上面「字距」是整段一起走）
                 </HintRow>
@@ -6851,27 +6135,15 @@ export function EditorWorkspace({
                 </p>
               </div>
               <Field label="這段的上下空白">
-                <div className="grid grid-cols-3 gap-1.5">
-                  {([
+                <OptionGrid
+                  options={[
                     { v: "compact", label: "緊湊" },
                     { v: "default", label: "預設" },
                     { v: "spacious", label: "寬鬆" },
-                  ] as const).map((opt) => (
-                    <button
-                      key={opt.v}
-                      type="button"
-                      onClick={() => patch({ paddingScale: opt.v })}
-                      aria-pressed={pad === opt.v}
-                      className={`rounded-lg border py-2 text-xs transition ${
-                        pad === opt.v
-                          ? "border-emerald-500 bg-emerald-50 text-emerald-900"
-                          : "border-stone-200 text-stone-600 hover:border-stone-400"
-                      }`}
-                    >
-                      {opt.label}
-                    </button>
-                  ))}
-                </div>
+                  ] as const}
+                  selected={pad}
+                  onSelect={(v) => patch({ paddingScale: v })}
+                />
                 <HintRow showClear={pad} onClear={() => patch({ paddingScale: null })}>
                   沒選 = 跟著全站「區段上下空白」
                 </HintRow>
@@ -6880,23 +6152,11 @@ export function EditorWorkspace({
                   SECTIONS_WITH_SECTION_HEAD），只在真的有那塊標題的八段列出來。 */}
               {SECTIONS_WITH_SECTION_HEAD.includes(selectedSection) && (
               <Field label="標題與內容">
-                <div className="grid grid-cols-3 gap-1.5">
-                  {SECTION_GAP_OPTIONS.map((opt) => (
-                    <button
-                      key={opt.v}
-                      type="button"
-                      onClick={() => patch({ headingGap: opt.v })}
-                      aria-pressed={(headingGap ?? "normal") === opt.v}
-                      className={`rounded-lg border py-2 text-xs transition ${
-                        (headingGap ?? "normal") === opt.v
-                          ? "border-emerald-500 bg-emerald-50 text-emerald-900"
-                          : "border-stone-200 text-stone-600 hover:border-stone-400"
-                      }`}
-                    >
-                      {opt.label}
-                    </button>
-                  ))}
-                </div>
+                <OptionGrid
+                  options={SECTION_GAP_OPTIONS}
+                  selected={headingGap ?? "normal"}
+                  onSelect={(v) => patch({ headingGap: v })}
+                />
                 <HintRow showClear={headingGap} onClear={() => patch({ headingGap: null })}>
                   這段最上面那塊標題跟底下內容之間空多少。標題只有幾個字時中間空太多會像兩段沒關係的東西，選「收緊」；標題底下還有引言、想讓底下的卡片獨立一點時選「放寬」（上面那格調的是整段外圍的上下）
                 </HintRow>
@@ -6905,192 +6165,99 @@ export function EditorWorkspace({
               {/* 「標題塊裡面」比上面那格再少一段合作 logo（見上面 SECTIONS_WITH_HEADING_INNER）。 */}
               {SECTIONS_WITH_HEADING_INNER.includes(selectedSection) && (
               <Field label="標題塊裡面">
-                <div className="grid grid-cols-3 gap-1.5">
-                  {SECTION_GAP_OPTIONS.map((opt) => (
-                    <button
-                      key={opt.v}
-                      type="button"
-                      onClick={() => patch({ headingInnerGap: opt.v })}
-                      aria-pressed={(headingInnerGap ?? "normal") === opt.v}
-                      className={`rounded-lg border py-2 text-xs transition ${
-                        (headingInnerGap ?? "normal") === opt.v
-                          ? "border-emerald-500 bg-emerald-50 text-emerald-900"
-                          : "border-stone-200 text-stone-600 hover:border-stone-400"
-                      }`}
-                    >
-                      {opt.label}
-                    </button>
-                  ))}
-                </div>
+                <OptionGrid
+                  options={SECTION_GAP_OPTIONS}
+                  selected={headingInnerGap ?? "normal"}
+                  onSelect={(v) => patch({ headingInnerGap: v })}
+                />
                 <HintRow showClear={headingInnerGap} onClear={() => patch({ headingInnerGap: null })}>
                   上面那格調的是這塊標題跟底下卡片之間；這格調的是這塊裡面——小標跟大標之間、大標跟底下那行引言或短線之間。小標寫得長、大標又是兩行時選「收緊」讓三行看起來是同一塊；標題只有兩三個字時選「放寬」
                 </HintRow>
               </Field>
               )}
               <Field label="小標字距">
-                <div className="grid grid-cols-3 gap-1.5">
-                  {SECTION_TRACKING_OPTIONS.map((opt) => (
-                    <button
-                      key={opt.v}
-                      type="button"
-                      onClick={() => patch({ eyebrowTracking: opt.v })}
-                      aria-pressed={(eyebrowTracking ?? "normal") === opt.v}
-                      className={`rounded-lg border py-2 text-xs transition ${
-                        (eyebrowTracking ?? "normal") === opt.v
-                          ? "border-emerald-500 bg-emerald-50 text-emerald-900"
-                          : "border-stone-200 text-stone-600 hover:border-stone-400"
-                      }`}
-                    >
-                      {opt.label}
-                    </button>
-                  ))}
-                </div>
+                <OptionGrid
+                  options={SECTION_TRACKING_OPTIONS}
+                  selected={eyebrowTracking ?? "normal"}
+                  onSelect={(v) => patch({ eyebrowTracking: v })}
+                />
                 <HintRow showClear={eyebrowTracking} onClear={() => patch({ eyebrowTracking: null })}>
                   這段最上面那行小標（大標上面那行小字）每個字之間空多少。中文小標、或字多一點被撐到換行時選「收緊」；英文短詞想要雜誌那種一字一字排開的感覺選「撐開」（整段的「字距」動不到這行，它自己帶著一個值）
                 </HintRow>
               </Field>
               <Field label="小標字級">
-                <div className="grid grid-cols-3 gap-1.5">
-                  {SECTION_SCALE_OPTIONS.map((opt) => (
-                    <button
-                      key={opt.v}
-                      type="button"
-                      onClick={() => patch({ eyebrowScale: opt.v })}
-                      aria-pressed={(eyebrowScale ?? "default") === opt.v}
-                      className={`rounded-lg border py-2 text-xs transition ${
-                        (eyebrowScale ?? "default") === opt.v
-                          ? "border-emerald-500 bg-emerald-50 text-emerald-900"
-                          : "border-stone-200 text-stone-600 hover:border-stone-400"
-                      }`}
-                    >
-                      {opt.label}
-                    </button>
-                  ))}
-                </div>
+                <OptionGrid
+                  options={SECTION_SCALE_OPTIONS}
+                  selected={eyebrowScale ?? "default"}
+                  onSelect={(v) => patch({ eyebrowScale: v })}
+                />
                 <HintRow showClear={eyebrowScale} onClear={() => patch({ eyebrowScale: null })}>
                   上面那格調的是那行小標的字距，這格調的是那行字本身多大。小標打中文、在手機上糊成一團看不清楚時選「大」；把小標當這段主標用（大標只有兩個字）也選「大」（「標題大小」動的是大標，這行不跟著動）
                 </HintRow>
               </Field>
               <Field label="小標粗細">
-                <div className="grid grid-cols-4 gap-1.5">
-                  {SECTION_WEIGHT_OPTIONS.map((opt) => (
-                    <button
-                      key={opt.v}
-                      type="button"
-                      onClick={() => patch({ eyebrowWeight: opt.v })}
-                      aria-pressed={(eyebrowWeight ?? "normal") === opt.v}
-                      className={`rounded-lg border py-2 text-xs transition ${
-                        (eyebrowWeight ?? "normal") === opt.v
-                          ? "border-emerald-500 bg-emerald-50 text-emerald-900"
-                          : "border-stone-200 text-stone-600 hover:border-stone-400"
-                      }`}
-                    >
-                      {opt.label}
-                    </button>
-                  ))}
-                </div>
+                <OptionGrid
+                  cols={4}
+                  options={SECTION_WEIGHT_OPTIONS}
+                  selected={eyebrowWeight ?? "normal"}
+                  onSelect={(v) => patch({ eyebrowWeight: v })}
+                />
                 <HintRow showClear={eyebrowWeight} onClear={() => patch({ eyebrowWeight: null })}>
                   那行小標的字本身多重。小標的字最小、又撐開字距，在淺色底上細到看不清楚時選「中黑」或「粗」；選物與精選那兩段的小標本來就比較重、又是用主色印的，想讓它退回配角選「常規」（「內文粗細」也會動到這行，但會把整段的描述、答案一起變粗）
                 </HintRow>
               </Field>
               <Field label="小標行距">
-                <div className="grid grid-cols-3 gap-1.5">
-                  {SECTION_LEADING_OPTIONS.map((opt) => (
-                    <button
-                      key={opt.v}
-                      type="button"
-                      onClick={() => patch({ eyebrowLeading: opt.v })}
-                      aria-pressed={(eyebrowLeading ?? "normal") === opt.v}
-                      className={`rounded-lg border py-2 text-xs transition ${
-                        (eyebrowLeading ?? "normal") === opt.v
-                          ? "border-emerald-500 bg-emerald-50 text-emerald-900"
-                          : "border-stone-200 text-stone-600 hover:border-stone-400"
-                      }`}
-                    >
-                      {opt.label}
-                    </button>
-                  ))}
-                </div>
+                <OptionGrid
+                  options={SECTION_LEADING_OPTIONS}
+                  selected={eyebrowLeading ?? "normal"}
+                  onSelect={(v) => patch({ eyebrowLeading: v })}
+                />
                 <HintRow showClear={eyebrowLeading} onClear={() => patch({ eyebrowLeading: null })}>
                   上兩格調的是那行小標的字距與大小，這格調的是它排到兩行時上下隔多遠。小標打長一點、或字級按到「大」之後在手機上換行，兩行散得像兩個小標時選「收緊」（整段的「行高」也動得到這行，但會把底下的描述、答案一起收緊）
                 </HintRow>
               </Field>
               <Field label="小標用色">
-                <div className="grid grid-cols-4 gap-1.5">
-                  {([
+                <OptionGrid
+                  cols={4}
+                  options={[
                     { v: "normal", label: "跟預設" },
                     { v: "accent", label: "主色" },
                     { v: "text", label: "內文色" },
                     { v: "muted", label: "淡" },
-                  ] as const).map((opt) => (
-                    <button
-                      key={opt.v}
-                      type="button"
-                      onClick={() => patch({ eyebrowTone: opt.v })}
-                      aria-pressed={(eyebrowTone ?? "normal") === opt.v}
-                      className={`rounded-lg border py-2 text-xs transition ${
-                        (eyebrowTone ?? "normal") === opt.v
-                          ? "border-emerald-500 bg-emerald-50 text-emerald-900"
-                          : "border-stone-200 text-stone-600 hover:border-stone-400"
-                      }`}
-                    >
-                      {opt.label}
-                    </button>
-                  ))}
-                </div>
+                  ] as const}
+                  selected={eyebrowTone ?? "normal"}
+                  onSelect={(v) => patch({ eyebrowTone: v })}
+                />
                 <HintRow showClear={eyebrowTone} onClear={() => patch({ eyebrowTone: null })}>
                   那行小標是什麼顏色。大部分段落的小標是用全站主色印的，主色深的時候跟底下的大標搶、亮的時候在淺底上糊掉，想讓它退回一般文字選「內文色」或「淡」；合作那段的小標本來就是淡的，想跟別段一致選「主色」（「文字顏色」換的是整段的色，小標帶著自己的顏色反而不會跟著動）
                 </HintRow>
               </Field>
               <Field label="小標大小寫">
-                <div className="grid grid-cols-3 gap-1.5">
-                  {([
+                <OptionGrid
+                  options={[
                     { v: "upper", label: "全大寫" },
                     { v: "capitalize", label: "字首大寫" },
                     { v: "none", label: "照原樣" },
-                  ] as const).map((opt) => (
-                    <button
-                      key={opt.v}
-                      type="button"
-                      onClick={() => patch({ eyebrowCase: opt.v })}
-                      aria-pressed={(eyebrowCase ?? "upper") === opt.v}
-                      className={`rounded-lg border py-2 text-xs transition ${
-                        (eyebrowCase ?? "upper") === opt.v
-                          ? "border-emerald-500 bg-emerald-50 text-emerald-900"
-                          : "border-stone-200 text-stone-600 hover:border-stone-400"
-                      }`}
-                    >
-                      {opt.label}
-                    </button>
-                  ))}
-                </div>
+                  ] as const}
+                  selected={eyebrowCase ?? "upper"}
+                  onSelect={(v) => patch({ eyebrowCase: v })}
+                />
                 <HintRow showClear={eyebrowCase} onClear={() => patch({ eyebrowCase: null })}>
                   那行小標的英文字母要不要被轉成大寫。前面幾格調的是那行字的字距、大小、粗細、行距、顏色，這格調的是字形本身。小標一律轉全大寫，中文沒有大小寫、按了不會動；打英文的話會被整行拉成大寫——自己的英文店名（Plantae Market → PLANTAE MARKET）或「Est. 2019」想照自己打的樣子顯示選「照原樣」（改輸入框裡的字沒用，大寫是顯示的時候才轉的）
                 </HintRow>
               </Field>
               <Field label="分隔線">
-                <div className="grid grid-cols-4 gap-1.5">
-                  {([
+                <OptionGrid
+                  cols={4}
+                  options={[
                     { v: "none", label: "無" },
                     { v: "top", label: "上" },
                     { v: "bottom", label: "下" },
                     { v: "both", label: "上下" },
-                  ] as const).map((opt) => (
-                    <button
-                      key={opt.v}
-                      type="button"
-                      onClick={() => patch({ divider: opt.v })}
-                      aria-pressed={divider === opt.v}
-                      className={`rounded-lg border py-2 text-xs transition ${
-                        divider === opt.v
-                          ? "border-emerald-500 bg-emerald-50 text-emerald-900"
-                          : "border-stone-200 text-stone-600 hover:border-stone-400"
-                      }`}
-                    >
-                      {opt.label}
-                    </button>
-                  ))}
-                </div>
+                  ] as const}
+                  selected={divider}
+                  onSelect={(v) => patch({ divider: v })}
+                />
                 <p className="mt-1.5 text-[11px] text-stone-500">
                   在這段加細線分隔（顏色跟著全網站邊框色）
                 </p>
@@ -7099,27 +6266,15 @@ export function EditorWorkspace({
                   跟底線粗細同一個處理，設了線才長出來。 */}
               {divider !== "none" && (
                 <Field label="分隔線粗細">
-                  <div className="grid grid-cols-3 gap-1.5">
-                    {([
+                  <OptionGrid
+                    options={[
                       { v: "normal", label: "跟預設" },
                       { v: "medium", label: "中" },
                       { v: "thick", label: "粗" },
-                    ] as const).map((opt) => (
-                      <button
-                        key={opt.v}
-                        type="button"
-                        onClick={() => patch({ dividerWeight: opt.v })}
-                        aria-pressed={(dividerWeight ?? "normal") === opt.v}
-                        className={`rounded-lg border py-2 text-xs transition ${
-                          (dividerWeight ?? "normal") === opt.v
-                            ? "border-emerald-500 bg-emerald-50 text-emerald-900"
-                            : "border-stone-200 text-stone-600 hover:border-stone-400"
-                        }`}
-                      >
-                        {opt.label}
-                      </button>
-                    ))}
-                  </div>
+                    ] as const}
+                    selected={dividerWeight ?? "normal"}
+                    onSelect={(v) => patch({ dividerWeight: v })}
+                  />
                   <HintRow showClear={dividerWeight} onClear={() => patch({ dividerWeight: null })}>
                     預設那條又細又淡，常常看起來像沒畫；段落之間要斷得明確就調粗
                   </HintRow>
@@ -7129,23 +6284,11 @@ export function EditorWorkspace({
                   「又細又淡」，粗細只救了細那一半，這格補淡那一半。 */}
               {divider !== "none" && (
                 <Field label="分隔線深淺">
-                  <div className="grid grid-cols-3 gap-1.5">
-                    {SECTION_LINE_TONE_OPTIONS.map((opt) => (
-                      <button
-                        key={opt.v}
-                        type="button"
-                        onClick={() => patch({ dividerTone: opt.v })}
-                        aria-pressed={(dividerTone ?? "normal") === opt.v}
-                        className={`rounded-lg border py-2 text-xs transition ${
-                          (dividerTone ?? "normal") === opt.v
-                            ? "border-emerald-500 bg-emerald-50 text-emerald-900"
-                            : "border-stone-200 text-stone-600 hover:border-stone-400"
-                        }`}
-                      >
-                        {opt.label}
-                      </button>
-                    ))}
-                  </div>
+                  <OptionGrid
+                    options={SECTION_LINE_TONE_OPTIONS}
+                    selected={dividerTone ?? "normal"}
+                    onSelect={(v) => patch({ dividerTone: v })}
+                  />
                   <HintRow showClear={dividerTone} onClear={() => patch({ dividerTone: null })}>
                     調粗了還是看不清就調深：同文字跟這段的字一樣深，主色拿來當裝飾線
                   </HintRow>
@@ -7156,27 +6299,15 @@ export function EditorWorkspace({
                   虛線點線那種軟一點的線。 */}
               {divider !== "none" && (
                 <Field label="分隔線線型">
-                  <div className="grid grid-cols-3 gap-1.5">
-                    {([
+                  <OptionGrid
+                    options={[
                       { v: "solid", label: "實線" },
                       { v: "dashed", label: "虛線" },
                       { v: "dotted", label: "點線" },
-                    ] as const).map((opt) => (
-                      <button
-                        key={opt.v}
-                        type="button"
-                        onClick={() => patch({ dividerStyle: opt.v })}
-                        aria-pressed={(dividerStyle ?? "solid") === opt.v}
-                        className={`rounded-lg border py-2 text-xs transition ${
-                          (dividerStyle ?? "solid") === opt.v
-                            ? "border-emerald-500 bg-emerald-50 text-emerald-900"
-                            : "border-stone-200 text-stone-600 hover:border-stone-400"
-                        }`}
-                      >
-                        {opt.label}
-                      </button>
-                    ))}
-                  </div>
+                    ] as const}
+                    selected={dividerStyle ?? "solid"}
+                    onSelect={(v) => patch({ dividerStyle: v })}
+                  />
                   <HintRow showClear={dividerStyle} onClear={() => patch({ dividerStyle: null })}>
                     實線像明確的分界，虛線點線比較軟，拿線當裝飾時用
                   </HintRow>
@@ -7188,23 +6319,11 @@ export function EditorWorkspace({
                 </p>
               </div>
               <Field label="標題大小">
-                <div className="grid grid-cols-3 gap-1.5">
-                  {SECTION_TEXT_SCALE_OPTIONS.map((opt) => (
-                    <button
-                      key={opt.v}
-                      type="button"
-                      onClick={() => patch({ headingScale: opt.v })}
-                      aria-pressed={headingScale === opt.v}
-                      className={`rounded-lg border py-2 text-xs transition ${
-                        headingScale === opt.v
-                          ? "border-emerald-500 bg-emerald-50 text-emerald-900"
-                          : "border-stone-200 text-stone-600 hover:border-stone-400"
-                      }`}
-                    >
-                      {opt.label}
-                    </button>
-                  ))}
-                </div>
+                <OptionGrid
+                  options={SECTION_TEXT_SCALE_OPTIONS}
+                  selected={headingScale}
+                  onSelect={(v) => patch({ headingScale: v })}
+                />
                 <HintRow showClear={headingScale} onClear={() => patch({ headingScale: null })}>
                   小 {SECTION_HEADING_SCALE.small}x · 預設 1x · 大 {SECTION_HEADING_SCALE.large}x
                 </HintRow>
@@ -7240,27 +6359,15 @@ export function EditorWorkspace({
                 </HintRow>
               </Field>
               <Field label="標題行距">
-                <div className="grid grid-cols-3 gap-1.5">
-                  {([
+                <OptionGrid
+                  options={[
                     { v: "tight", label: "收緊" },
                     { v: "normal", label: "預設" },
                     { v: "loose", label: "拉開" },
-                  ] as const).map((opt) => (
-                    <button
-                      key={opt.v}
-                      type="button"
-                      onClick={() => patch({ headingLeading: opt.v })}
-                      aria-pressed={(headingLeading ?? "normal") === opt.v}
-                      className={`rounded-lg border py-2 text-xs transition ${
-                        (headingLeading ?? "normal") === opt.v
-                          ? "border-emerald-500 bg-emerald-50 text-emerald-900"
-                          : "border-stone-200 text-stone-600 hover:border-stone-400"
-                      }`}
-                    >
-                      {opt.label}
-                    </button>
-                  ))}
-                </div>
+                  ] as const}
+                  selected={headingLeading ?? "normal"}
+                  onSelect={(v) => patch({ headingLeading: v })}
+                />
                 <HintRow showClear={headingLeading} onClear={() => patch({ headingLeading: null })}>
                   標題換行後兩行之間的距離
                 </HintRow>
@@ -7304,49 +6411,25 @@ export function EditorWorkspace({
                 </div>
               </Field>
               <Field label="標題用色">
-                <div className="grid grid-cols-3 gap-1.5">
-                  {SECTION_TEXT_TONE_OPTIONS.map((opt) => (
-                    <button
-                      key={opt.v}
-                      type="button"
-                      onClick={() => patch({ headingTone: opt.v })}
-                      aria-pressed={(headingTone ?? "default") === opt.v}
-                      className={`rounded-lg border py-2 text-xs transition ${
-                        (headingTone ?? "default") === opt.v
-                          ? "border-emerald-500 bg-emerald-50 text-emerald-900"
-                          : "border-stone-200 text-stone-600 hover:border-stone-400"
-                      }`}
-                    >
-                      {opt.label}
-                    </button>
-                  ))}
-                </div>
+                <OptionGrid
+                  options={SECTION_TEXT_TONE_OPTIONS}
+                  selected={headingTone ?? "default"}
+                  onSelect={(v) => patch({ headingTone: v })}
+                />
                 <HintRow showClear={headingTone} onClear={() => patch({ headingTone: null })}>
                   只動標題：主色跟小標同色、柔和跟次要文字同深淺
                 </HintRow>
               </Field>
               <Field label="標題底線">
-                <div className="grid grid-cols-3 gap-1.5">
-                  {([
+                <OptionGrid
+                  options={[
                     { v: "none", label: "無" },
                     { v: "short", label: "短線" },
                     { v: "full", label: "整條" },
-                  ] as const).map((opt) => (
-                    <button
-                      key={opt.v}
-                      type="button"
-                      onClick={() => patch({ headingRule: opt.v })}
-                      aria-pressed={(headingRule ?? "none") === opt.v}
-                      className={`rounded-lg border py-2 text-xs transition ${
-                        (headingRule ?? "none") === opt.v
-                          ? "border-emerald-500 bg-emerald-50 text-emerald-900"
-                          : "border-stone-200 text-stone-600 hover:border-stone-400"
-                      }`}
-                    >
-                      {opt.label}
-                    </button>
-                  ))}
-                </div>
+                  ] as const}
+                  selected={headingRule ?? "none"}
+                  onSelect={(v) => patch({ headingRule: v })}
+                />
                 <HintRow showClear={headingRule} onClear={() => patch({ headingRule: null })}>
                   畫在標題底下，跟著標題對齊走
                 </HintRow>
@@ -7355,23 +6438,11 @@ export function EditorWorkspace({
                   跟照片佔寬同一個處理，設了線才長出來。 */}
               {headingRule && (
                 <Field label="底線粗細">
-                  <div className="grid grid-cols-3 gap-1.5">
-                    {SECTION_LINE_WEIGHT_OPTIONS.map((opt) => (
-                      <button
-                        key={opt.v}
-                        type="button"
-                        onClick={() => patch({ headingRuleWeight: opt.v })}
-                        aria-pressed={(headingRuleWeight ?? "normal") === opt.v}
-                        className={`rounded-lg border py-2 text-xs transition ${
-                          (headingRuleWeight ?? "normal") === opt.v
-                            ? "border-emerald-500 bg-emerald-50 text-emerald-900"
-                            : "border-stone-200 text-stone-600 hover:border-stone-400"
-                        }`}
-                      >
-                        {opt.label}
-                      </button>
-                    ))}
-                  </div>
+                  <OptionGrid
+                    options={SECTION_LINE_WEIGHT_OPTIONS}
+                    selected={headingRuleWeight ?? "normal"}
+                    onSelect={(v) => patch({ headingRuleWeight: v })}
+                  />
                   <HintRow showClear={headingRuleWeight} onClear={() => patch({ headingRuleWeight: null })}>
                     標題調大的段落用粗一點才配得上，整條橫過整個螢幕時用細的才不會比標題還搶眼
                   </HintRow>
@@ -7382,23 +6453,11 @@ export function EditorWorkspace({
                   深底淺字的段落淡色線更是直接看不見。 */}
               {headingRule && (
                 <Field label="底線深淺">
-                  <div className="grid grid-cols-3 gap-1.5">
-                    {SECTION_LINE_TONE_OPTIONS.map((opt) => (
-                      <button
-                        key={opt.v}
-                        type="button"
-                        onClick={() => patch({ headingRuleTone: opt.v })}
-                        aria-pressed={(headingRuleTone ?? "normal") === opt.v}
-                        className={`rounded-lg border py-2 text-xs transition ${
-                          (headingRuleTone ?? "normal") === opt.v
-                            ? "border-emerald-500 bg-emerald-50 text-emerald-900"
-                            : "border-stone-200 text-stone-600 hover:border-stone-400"
-                        }`}
-                      >
-                        {opt.label}
-                      </button>
-                    ))}
-                  </div>
+                  <OptionGrid
+                    options={SECTION_LINE_TONE_OPTIONS}
+                    selected={headingRuleTone ?? "normal"}
+                    onSelect={(v) => patch({ headingRuleTone: v })}
+                  />
                   <HintRow showClear={headingRuleTone} onClear={() => patch({ headingRuleTone: null })}>
                     深底的段落看不到線就調深：同文字跟這段的字一樣深，主色是標題底下壓色線那種用法
                   </HintRow>
@@ -7408,132 +6467,72 @@ export function EditorWorkspace({
                   之後，最常拿來當裝飾的這條線反而還是只有實線一種語氣。 */}
               {headingRule && (
                 <Field label="底線線型">
-                  <div className="grid grid-cols-3 gap-1.5">
-                    {([
+                  <OptionGrid
+                    options={[
                       { v: "solid", label: "實線" },
                       { v: "dashed", label: "虛線" },
                       { v: "dotted", label: "點線" },
-                    ] as const).map((opt) => (
-                      <button
-                        key={opt.v}
-                        type="button"
-                        onClick={() => patch({ headingRuleStyle: opt.v })}
-                        aria-pressed={(headingRuleStyle ?? "solid") === opt.v}
-                        className={`rounded-lg border py-2 text-xs transition ${
-                          (headingRuleStyle ?? "solid") === opt.v
-                            ? "border-emerald-500 bg-emerald-50 text-emerald-900"
-                            : "border-stone-200 text-stone-600 hover:border-stone-400"
-                        }`}
-                      >
-                        {opt.label}
-                      </button>
-                    ))}
-                  </div>
+                    ] as const}
+                    selected={headingRuleStyle ?? "solid"}
+                    onSelect={(v) => patch({ headingRuleStyle: v })}
+                  />
                   <HintRow showClear={headingRuleStyle} onClear={() => patch({ headingRuleStyle: null })}>
                     實線像明確的收尾，虛線點線比較軟，標題底下壓裝飾線時用
                   </HintRow>
                 </Field>
               )}
               <Field label="最小高度">
-                <div className="grid grid-cols-3 gap-1.5">
-                  {([
+                <OptionGrid
+                  options={[
                     { v: "auto", label: "普通" },
                     { v: "tall", label: "高" },
                     { v: "fullscreen", label: "滿屏" },
-                  ] as const).map((opt) => (
-                    <button
-                      key={opt.v}
-                      type="button"
-                      onClick={() => patch({ minHeight: opt.v })}
-                      aria-pressed={minHeight === opt.v}
-                      className={`rounded-lg border py-2 text-xs transition ${
-                        minHeight === opt.v
-                          ? "border-emerald-500 bg-emerald-50 text-emerald-900"
-                          : "border-stone-200 text-stone-600 hover:border-stone-400"
-                      }`}
-                    >
-                      {opt.label}
-                    </button>
-                  ))}
-                </div>
+                  ] as const}
+                  selected={minHeight}
+                  onSelect={(v) => patch({ minHeight: v })}
+                />
                 <HintRow showClear={minHeight} onClear={() => patch({ minHeight: null })}>
                   普通 跟著內容 · 高 {SECTION_MIN_HEIGHT_VH.tall}vh · 滿屏 {SECTION_MIN_HEIGHT_VH.fullscreen}vh
                 </HintRow>
               </Field>
               <Field label="內容垂直位置">
-                <div className="grid grid-cols-3 gap-1.5">
-                  {([
+                <OptionGrid
+                  options={[
                     { v: "top", label: "靠上" },
                     { v: "middle", label: "置中" },
                     { v: "bottom", label: "靠下" },
-                  ] as const).map((opt) => (
-                    <button
-                      key={opt.v}
-                      type="button"
-                      onClick={() => patch({ contentAlign: opt.v })}
-                      aria-pressed={(contentAlign ?? "top") === opt.v}
-                      className={`rounded-lg border py-2 text-xs transition ${
-                        (contentAlign ?? "top") === opt.v
-                          ? "border-emerald-500 bg-emerald-50 text-emerald-900"
-                          : "border-stone-200 text-stone-600 hover:border-stone-400"
-                      }`}
-                    >
-                      {opt.label}
-                    </button>
-                  ))}
-                </div>
+                  ] as const}
+                  selected={contentAlign ?? "top"}
+                  onSelect={(v) => patch({ contentAlign: v })}
+                />
                 <p className="mt-1.5 text-[11px] text-stone-500 leading-snug">
                   這一段比內容高的時候，多出來的空白留在哪邊。要先把上面的「最小高度」設成高或滿屏才看得出差別
                 </p>
               </Field>
               <Field label="在這台裝置隱藏">
-                <div className="grid grid-cols-3 gap-1.5">
-                  {([
+                <OptionGrid
+                  options={[
                     { v: "none", label: "都顯示" },
                     { v: "mobile", label: "手機" },
                     { v: "desktop", label: "桌機" },
-                  ] as const).map((opt) => (
-                    <button
-                      key={opt.v}
-                      type="button"
-                      onClick={() => patch({ hideOn: opt.v })}
-                      aria-pressed={(hideOn ?? "none") === opt.v}
-                      className={`rounded-lg border py-2 text-xs transition ${
-                        (hideOn ?? "none") === opt.v
-                          ? "border-emerald-500 bg-emerald-50 text-emerald-900"
-                          : "border-stone-200 text-stone-600 hover:border-stone-400"
-                      }`}
-                    >
-                      {opt.label}
-                    </button>
-                  ))}
-                </div>
+                  ] as const}
+                  selected={hideOn ?? "none"}
+                  onSelect={(v) => patch({ hideOn: v })}
+                />
                 <p className="mt-1.5 text-[11px] text-stone-500 leading-snug">
                   橫著排的段落（合作品牌、照片牆）到手機上會擠成一長條，這裡可以只讓它在手機不出現，桌機照舊。平板一律顯示。編輯畫布上會留在原地淡掉、框一圈虛線，客人那邊是真的看不到
                 </p>
               </Field>
               <Field label="區段寬度">
-                <div className="grid grid-cols-3 gap-1.5">
-                  {([
+                <OptionGrid
+                  options={[
                     { v: "full", label: "滿版" },
                     { v: "boxed", label: "置中" },
                     { v: "narrow", label: "窄欄" },
-                  ] as const).map((opt) => (
-                    <button
-                      key={opt.v}
-                      type="button"
-                      onClick={() => patch({ sectionWidth: opt.v })}
-                      aria-pressed={(sectionWidth ?? "full") === opt.v}
-                      className={`rounded-lg border py-2 text-xs transition ${
-                        (sectionWidth ?? "full") === opt.v
-                          ? "border-emerald-500 bg-emerald-50 text-emerald-900"
-                          : "border-stone-200 text-stone-600 hover:border-stone-400"
-                      }`}
-                    >
-                      {opt.label}
-                    </button>
-                  ))}
-                </div>
+                  ] as const}
+                  selected={sectionWidth ?? "full"}
+                  onSelect={(v) => patch({ sectionWidth: v })}
+                />
                 <p className="mt-1.5 text-[11px] text-stone-500 leading-snug">
                   滿版 寬度撐滿 · 置中 1100px · 窄欄 760px。配背景色 + 陰影 + 圓角就成置中的卡片式區段
                 </p>
@@ -7542,28 +6541,17 @@ export function EditorWorkspace({
                   （見上面 SECTIONS_WITH_CONTENT_COLUMN），只在真的有那道欄的七段列出來。 */}
               {SECTIONS_WITH_CONTENT_COLUMN.includes(selectedSection) && (
               <Field label="內容欄寬">
-                <div className="grid grid-cols-4 gap-1.5">
-                  {([
+                <OptionGrid
+                  cols={4}
+                  options={[
                     { v: "narrow", label: "窄" },
                     { v: "normal", label: "照原本" },
                     { v: "wide", label: "寬" },
                     { v: "full", label: "滿版" },
-                  ] as const).map((opt) => (
-                    <button
-                      key={opt.v}
-                      type="button"
-                      onClick={() => patch({ contentWidth: opt.v })}
-                      aria-pressed={(contentWidth ?? "normal") === opt.v}
-                      className={`rounded-lg border py-2 text-xs transition ${
-                        (contentWidth ?? "normal") === opt.v
-                          ? "border-emerald-500 bg-emerald-50 text-emerald-900"
-                          : "border-stone-200 text-stone-600 hover:border-stone-400"
-                      }`}
-                    >
-                      {opt.label}
-                    </button>
-                  ))}
-                </div>
+                  ] as const}
+                  selected={contentWidth ?? "normal"}
+                  onSelect={(v) => patch({ contentWidth: v })}
+                />
                 <p className="mt-1.5 text-[11px] text-stone-500 leading-snug">
                   這一段的字跟卡片排多寬。上面那格「區段寬度」收的是這一段的底色跟外框畫到哪，裡面的字跟卡片不會跟著動，這格才是。窄 768px · 照原本 1024px（照片牆 1152px）· 寬 1280px · 滿版 排到畫面左右邊界為止。卡片調成 4 欄、或想讓照片牆變成跨頁大圖時用這格
                 </p>
@@ -7571,23 +6559,11 @@ export function EditorWorkspace({
               )}
               {SECTIONS_WITH_CONTENT_COLUMN.includes(selectedSection) && (
               <Field label="內容欄位置">
-                <div className="grid grid-cols-3 gap-1.5">
-                  {ALIGN_X_OPTIONS.map((opt) => (
-                    <button
-                      key={opt.v}
-                      type="button"
-                      onClick={() => patch({ contentAlignX: opt.v })}
-                      aria-pressed={(contentAlignX ?? "center") === opt.v}
-                      className={`rounded-lg border py-2 text-xs transition ${
-                        (contentAlignX ?? "center") === opt.v
-                          ? "border-emerald-500 bg-emerald-50 text-emerald-900"
-                          : "border-stone-200 text-stone-600 hover:border-stone-400"
-                      }`}
-                    >
-                      {opt.label}
-                    </button>
-                  ))}
-                </div>
+                <OptionGrid
+                  options={ALIGN_X_OPTIONS}
+                  selected={contentAlignX ?? "center"}
+                  onSelect={(v) => patch({ contentAlignX: v })}
+                />
                 <p className="mt-1.5 text-[11px] text-stone-500 leading-snug">
                   上面那格排出來的欄擺在這一段的哪一邊。平常置中；把欄寬設成窄之後選靠左，字會貼著跟導覽列同一道左邊界起排（雜誌常見的收法）。跟「區段對齊」不一樣——那格是欄裡每行字各自靠哪邊，這格是整道欄搬家。欄寬選滿版時欄已經佔滿，這格看不出差別
                 </p>
@@ -7595,80 +6571,44 @@ export function EditorWorkspace({
               )}
               {SECTIONS_WITH_CONTENT_COLUMN.includes(selectedSection) && (
               <Field label="內容欄內距">
-                <div className="grid grid-cols-3 gap-1.5">
-                  {([
+                <OptionGrid
+                  options={[
                     { v: "tight", label: "收窄" },
                     { v: "normal", label: "照原本" },
                     { v: "wide", label: "加寬" },
-                  ] as const).map((opt) => (
-                    <button
-                      key={opt.v}
-                      type="button"
-                      onClick={() => patch({ contentPadX: opt.v })}
-                      aria-pressed={(contentPadX ?? "normal") === opt.v}
-                      className={`rounded-lg border py-2 text-xs transition ${
-                        (contentPadX ?? "normal") === opt.v
-                          ? "border-emerald-500 bg-emerald-50 text-emerald-900"
-                          : "border-stone-200 text-stone-600 hover:border-stone-400"
-                      }`}
-                    >
-                      {opt.label}
-                    </button>
-                  ))}
-                </div>
+                  ] as const}
+                  selected={contentPadX ?? "normal"}
+                  onSelect={(v) => patch({ contentPadX: v })}
+                />
                 <p className="mt-1.5 text-[11px] text-stone-500 leading-snug">
                   這道欄自己左右兩側留多少空白。照原本是跟導覽列、商品同一道邊界（手機 32px · 電腦 48px）。欄寬選了滿版之後，字跟卡片離畫面邊多遠就是這格在管：照片牆想幾乎頂到邊選收窄；想讓整段四周留一大片白、字只佔中間選加寬。手機上會自動縮小一點，不會擠成一條
                 </p>
               </Field>
               )}
               <Field label="區段外距">
-                <div className="grid grid-cols-3 gap-1.5">
-                  {([
+                <OptionGrid
+                  options={[
                     { v: "none", label: "貼緊" },
                     { v: "normal", label: "適中" },
                     { v: "large", label: "寬鬆" },
-                  ] as const).map((opt) => (
-                    <button
-                      key={opt.v}
-                      type="button"
-                      onClick={() => patch({ sectionGap: opt.v })}
-                      aria-pressed={(sectionGap ?? "none") === opt.v}
-                      className={`rounded-lg border py-2 text-xs transition ${
-                        (sectionGap ?? "none") === opt.v
-                          ? "border-emerald-500 bg-emerald-50 text-emerald-900"
-                          : "border-stone-200 text-stone-600 hover:border-stone-400"
-                      }`}
-                    >
-                      {opt.label}
-                    </button>
-                  ))}
-                </div>
+                  ] as const}
+                  selected={sectionGap ?? "none"}
+                  onSelect={(v) => patch({ sectionGap: v })}
+                />
                 <p className="mt-1.5 text-[11px] text-stone-500 leading-snug">
                   貼緊 跟上下區段相連 · 適中 64px · 寬鬆 112px。做置中卡片式區段時，留外距才能讓卡片從上下拉開、浮出來
                 </p>
               </Field>
               <Field label="外框">
-                <div className="grid grid-cols-3 gap-1.5">
-                  {([
+                <OptionGrid
+                  options={[
                     { v: "none", label: "無" },
                     { v: "subtle", label: "細邊" },
                     { v: "strong", label: "粗邊" },
-                  ] as const).map((opt) => (
-                    <button
-                      key={opt.v}
-                      type="button"
-                      onClick={() => patch({ outline: opt.v })}
-                      aria-pressed={(outline ?? "none") === opt.v}
-                      className={`rounded-lg border py-2 text-xs transition ${
-                        (outline ?? "none") === opt.v
-                          ? "border-emerald-500 bg-emerald-50 text-emerald-900"
-                          : "border-stone-200 text-stone-600 hover:border-stone-400"
-                      }`}
-                    >
-                      {opt.label}
-                    </button>
-                  ))}
-                </div>
+                  ] as const}
+                  selected={outline ?? "none"}
+                  onSelect={(v) => patch({ outline: v })}
+                />
                 <HintRow showClear={outline} onClear={() => patch({ outline: null })}>
                   細邊 1px · 粗邊 2px（用全網站邊框色，不影響 layout）
                 </HintRow>
@@ -7678,23 +6618,11 @@ export function EditorWorkspace({
                   淡色圈在淺底上幾乎看不出有框，粗邊也救不回來。 */}
               {outline && outline !== "none" && (
                 <Field label="外框深淺">
-                  <div className="grid grid-cols-3 gap-1.5">
-                    {SECTION_LINE_TONE_OPTIONS.map((opt) => (
-                      <button
-                        key={opt.v}
-                        type="button"
-                        onClick={() => patch({ outlineTone: opt.v })}
-                        aria-pressed={(outlineTone ?? "normal") === opt.v}
-                        className={`rounded-lg border py-2 text-xs transition ${
-                          (outlineTone ?? "normal") === opt.v
-                            ? "border-emerald-500 bg-emerald-50 text-emerald-900"
-                            : "border-stone-200 text-stone-600 hover:border-stone-400"
-                        }`}
-                      >
-                        {opt.label}
-                      </button>
-                    ))}
-                  </div>
+                  <OptionGrid
+                    options={SECTION_LINE_TONE_OPTIONS}
+                    selected={outlineTone ?? "normal"}
+                    onSelect={(v) => patch({ outlineTone: v })}
+                  />
                   <HintRow showClear={outlineTone} onClear={() => patch({ outlineTone: null })}>
                     選了粗邊還是看不出框就調深：同文字跟這段的字一樣深，主色描邊像優惠卡
                   </HintRow>
@@ -7704,54 +6632,30 @@ export function EditorWorkspace({
                   才全齊——一圈實線是名片框的正式語氣，虛線是優惠券「沿線剪下」那圈。 */}
               {outline && outline !== "none" && (
                 <Field label="外框線型">
-                  <div className="grid grid-cols-3 gap-1.5">
-                    {([
+                  <OptionGrid
+                    options={[
                       { v: "solid", label: "實線" },
                       { v: "dashed", label: "虛線" },
                       { v: "dotted", label: "點線" },
-                    ] as const).map((opt) => (
-                      <button
-                        key={opt.v}
-                        type="button"
-                        onClick={() => patch({ outlineStyle: opt.v })}
-                        aria-pressed={(outlineStyle ?? "solid") === opt.v}
-                        className={`rounded-lg border py-2 text-xs transition ${
-                          (outlineStyle ?? "solid") === opt.v
-                            ? "border-emerald-500 bg-emerald-50 text-emerald-900"
-                            : "border-stone-200 text-stone-600 hover:border-stone-400"
-                        }`}
-                      >
-                        {opt.label}
-                      </button>
-                    ))}
-                  </div>
+                    ] as const}
+                    selected={outlineStyle ?? "solid"}
+                    onSelect={(v) => patch({ outlineStyle: v })}
+                  />
                   <HintRow showClear={outlineStyle} onClear={() => patch({ outlineStyle: null })}>
                     實線正式，虛線配主色像優惠券的沿線剪下，點線是手帳貼紙那圈
                   </HintRow>
                 </Field>
               )}
               <Field label="側邊色條">
-                <div className="grid grid-cols-3 gap-1.5">
-                  {([
+                <OptionGrid
+                  options={[
                     { v: "none", label: "無" },
                     { v: "left", label: "左邊" },
                     { v: "right", label: "右邊" },
-                  ] as const).map((opt) => (
-                    <button
-                      key={opt.v}
-                      type="button"
-                      onClick={() => patch({ accentBar: opt.v })}
-                      aria-pressed={(accentBar ?? "none") === opt.v}
-                      className={`rounded-lg border py-2 text-xs transition ${
-                        (accentBar ?? "none") === opt.v
-                          ? "border-emerald-500 bg-emerald-50 text-emerald-900"
-                          : "border-stone-200 text-stone-600 hover:border-stone-400"
-                      }`}
-                    >
-                      {opt.label}
-                    </button>
-                  ))}
-                </div>
+                  ] as const}
+                  selected={accentBar ?? "none"}
+                  onSelect={(v) => patch({ accentBar: v })}
+                />
                 <HintRow showClear={accentBar} onClear={() => patch({ accentBar: null })}>
                   邊緣一條粗色條，用來標重點段落（4px）
                 </HintRow>
@@ -7760,23 +6664,11 @@ export function EditorWorkspace({
                   設了色條才長出來。 */}
               {accentBar && (
                 <Field label="色條粗細">
-                  <div className="grid grid-cols-3 gap-1.5">
-                    {SECTION_LINE_WEIGHT_OPTIONS.map((opt) => (
-                      <button
-                        key={opt.v}
-                        type="button"
-                        onClick={() => patch({ accentBarWeight: opt.v })}
-                        aria-pressed={(accentBarWeight ?? "normal") === opt.v}
-                        className={`rounded-lg border py-2 text-xs transition ${
-                          (accentBarWeight ?? "normal") === opt.v
-                            ? "border-emerald-500 bg-emerald-50 text-emerald-900"
-                            : "border-stone-200 text-stone-600 hover:border-stone-400"
-                        }`}
-                      >
-                        {opt.label}
-                      </button>
-                    ))}
-                  </div>
+                  <OptionGrid
+                    options={SECTION_LINE_WEIGHT_OPTIONS}
+                    selected={accentBarWeight ?? "normal"}
+                    onSelect={(v) => patch({ accentBarWeight: v })}
+                  />
                   <HintRow showClear={accentBarWeight} onClear={() => patch({ accentBarWeight: null })}>
                     窄欄的段落用細一點才不搶內文，滿屏的段落要粗才立得住
                   </HintRow>
@@ -7787,28 +6679,17 @@ export function EditorWorkspace({
                   一樣要讓兩種能互相切換。 */}
               {accentBar && (
                 <Field label="色條深淺">
-                  <div className="grid grid-cols-4 gap-1.5">
-                    {([
+                  <OptionGrid
+                    cols={4}
+                    options={[
                       { v: "normal", label: "跟預設" },
                       { v: "soft", label: "淡" },
                       { v: "strong", label: "同文字" },
                       { v: "accent", label: "主色" },
-                    ] as const).map((opt) => (
-                      <button
-                        key={opt.v}
-                        type="button"
-                        onClick={() => patch({ accentBarTone: opt.v })}
-                        aria-pressed={(accentBarTone ?? "normal") === opt.v}
-                        className={`rounded-lg border py-2 text-xs transition ${
-                          (accentBarTone ?? "normal") === opt.v
-                            ? "border-emerald-500 bg-emerald-50 text-emerald-900"
-                            : "border-stone-200 text-stone-600 hover:border-stone-400"
-                        }`}
-                      >
-                        {opt.label}
-                      </button>
-                    ))}
-                  </div>
+                    ] as const}
+                    selected={accentBarTone ?? "normal"}
+                    onSelect={(v) => patch({ accentBarTone: v })}
+                  />
                   <HintRow showClear={accentBarTone} onClear={() => patch({ accentBarTone: null })}>
                     粗色條太搶就淡，退成裝飾；同文字跟這段的字一樣深，主色是品牌色實色
                   </HintRow>
@@ -7818,106 +6699,58 @@ export function EditorWorkspace({
                   是最後補上的一條——色條偏偏最當裝飾用，實心帶再淡還是一塊面。 */}
               {accentBar && (
                 <Field label="色條線型">
-                  <div className="grid grid-cols-3 gap-1.5">
-                    {([
+                  <OptionGrid
+                    options={[
                       { v: "solid", label: "實線" },
                       { v: "dashed", label: "虛線" },
                       { v: "dotted", label: "點線" },
-                    ] as const).map((opt) => (
-                      <button
-                        key={opt.v}
-                        type="button"
-                        onClick={() => patch({ accentBarStyle: opt.v })}
-                        aria-pressed={(accentBarStyle ?? "solid") === opt.v}
-                        className={`rounded-lg border py-2 text-xs transition ${
-                          (accentBarStyle ?? "solid") === opt.v
-                            ? "border-emerald-500 bg-emerald-50 text-emerald-900"
-                            : "border-stone-200 text-stone-600 hover:border-stone-400"
-                        }`}
-                      >
-                        {opt.label}
-                      </button>
-                    ))}
-                  </div>
+                    ] as const}
+                    selected={accentBarStyle ?? "solid"}
+                    onSelect={(v) => patch({ accentBarStyle: v })}
+                  />
                   <HintRow showClear={accentBarStyle} onClear={() => patch({ accentBarStyle: null })}>
                     實線是一塊面，虛線點線有孔隙、當裝飾更輕；粗的點線會變一排圓點
                   </HintRow>
                 </Field>
               )}
               <Field label="陰影">
-                <div className="grid grid-cols-3 gap-1.5">
-                  {([
+                <OptionGrid
+                  options={[
                     { v: "none", label: "無" },
                     { v: "soft", label: "淺" },
                     { v: "deep", label: "深" },
-                  ] as const).map((opt) => (
-                    <button
-                      key={opt.v}
-                      type="button"
-                      onClick={() => patch({ shadow: opt.v })}
-                      aria-pressed={(shadow ?? "none") === opt.v}
-                      className={`rounded-lg border py-2 text-xs transition ${
-                        (shadow ?? "none") === opt.v
-                          ? "border-emerald-500 bg-emerald-50 text-emerald-900"
-                          : "border-stone-200 text-stone-600 hover:border-stone-400"
-                      }`}
-                    >
-                      {opt.label}
-                    </button>
-                  ))}
-                </div>
+                  ] as const}
+                  selected={shadow ?? "none"}
+                  onSelect={(v) => patch({ shadow: v })}
+                />
                 <HintRow showClear={shadow} onClear={() => patch({ shadow: null })}>
                   有設背景色的 section 加陰影像卡片浮起來
                 </HintRow>
               </Field>
               <Field label="圓角">
-                <div className="grid grid-cols-3 gap-1.5">
-                  {([
+                <OptionGrid
+                  options={[
                     { v: "none", label: "無" },
                     { v: "soft", label: "微圓" },
                     { v: "strong", label: "大圓" },
-                  ] as const).map((opt) => (
-                    <button
-                      key={opt.v}
-                      type="button"
-                      onClick={() => patch({ borderRadius: opt.v })}
-                      aria-pressed={(borderRadius ?? "none") === opt.v}
-                      className={`rounded-lg border py-2 text-xs transition ${
-                        (borderRadius ?? "none") === opt.v
-                          ? "border-emerald-500 bg-emerald-50 text-emerald-900"
-                          : "border-stone-200 text-stone-600 hover:border-stone-400"
-                      }`}
-                    >
-                      {opt.label}
-                    </button>
-                  ))}
-                </div>
+                  ] as const}
+                  selected={borderRadius ?? "none"}
+                  onSelect={(v) => patch({ borderRadius: v })}
+                />
                 <HintRow showClear={borderRadius} onClear={() => patch({ borderRadius: null })}>
                   微圓 {SECTION_BORDER_RADIUS_PX.soft}px · 大圓 {SECTION_BORDER_RADIUS_PX.strong}px（搭配背景色 / 陰影像卡片）
                 </HintRow>
               </Field>
               <Field label="照片圓角">
-                <div className="grid grid-cols-3 gap-1.5">
-                  {([
+                <OptionGrid
+                  options={[
                     { v: "none", label: "直角" },
                     { v: "soft", label: "微圓" },
                     { v: "round", label: "圓潤" },
-                  ] as const).map((opt) => (
-                    <button
-                      key={opt.v}
-                      type="button"
-                      onClick={() => patch({ mediaRadius: opt.v })}
-                      aria-pressed={(mediaRadius ?? "none") === opt.v}
-                      className={`rounded-lg border py-2 text-xs transition ${
-                        (mediaRadius ?? "none") === opt.v
-                          ? "border-emerald-500 bg-emerald-50 text-emerald-900"
-                          : "border-stone-200 text-stone-600 hover:border-stone-400"
-                      }`}
-                    >
-                      {opt.label}
-                    </button>
-                  ))}
-                </div>
+                  ] as const}
+                  selected={mediaRadius ?? "none"}
+                  onSelect={(v) => patch({ mediaRadius: v })}
+                />
                 <HintRow showClear={mediaRadius} onClear={() => patch({ mediaRadius: null })}>
                   只圓這一段裡的照片（上面那欄圓的是整段的框）
                 </HintRow>
@@ -7929,105 +6762,59 @@ export function EditorWorkspace({
               {SECTIONS_WITH_CARD_IMAGE.includes(selectedSection) && (
               <>
               <Field label="照片比例">
-                <div className="grid grid-cols-4 gap-1.5">
-                  {([
+                <OptionGrid
+                  cols={4}
+                  options={[
                     { v: "auto", label: "預設" },
                     { v: "square", label: "正方" },
                     { v: "portrait", label: "直式" },
                     { v: "landscape", label: "橫式" },
-                  ] as const).map((opt) => (
-                    <button
-                      key={opt.v}
-                      type="button"
-                      onClick={() => patch({ mediaAspect: opt.v })}
-                      aria-pressed={(mediaAspect ?? "auto") === opt.v}
-                      className={`rounded-lg border py-2 text-xs transition ${
-                        (mediaAspect ?? "auto") === opt.v
-                          ? "border-emerald-500 bg-emerald-50 text-emerald-900"
-                          : "border-stone-200 text-stone-600 hover:border-stone-400"
-                      }`}
-                    >
-                      {opt.label}
-                    </button>
-                  ))}
-                </div>
+                  ] as const}
+                  selected={mediaAspect ?? "auto"}
+                  onSelect={(v) => patch({ mediaAspect: v })}
+                />
                 <HintRow showClear={mediaAspect} onClear={() => patch({ mediaAspect: null })}>
                   換這一段照片框的裁法（直式商品選「直式」不會被裁頭去尾）
                 </HintRow>
               </Field>
               <Field label="照片取景">
-                <div className="grid grid-cols-3 gap-1.5">
-                  {([
+                <OptionGrid
+                  options={[
                     { v: "auto", label: "置中" },
                     { v: "top", label: "靠上" },
                     { v: "bottom", label: "靠下" },
-                  ] as const).map((opt) => (
-                    <button
-                      key={opt.v}
-                      type="button"
-                      onClick={() => patch({ mediaFocus: opt.v })}
-                      aria-pressed={(mediaFocus ?? "auto") === opt.v}
-                      className={`rounded-lg border py-2 text-xs transition ${
-                        (mediaFocus ?? "auto") === opt.v
-                          ? "border-emerald-500 bg-emerald-50 text-emerald-900"
-                          : "border-stone-200 text-stone-600 hover:border-stone-400"
-                      }`}
-                    >
-                      {opt.label}
-                    </button>
-                  ))}
-                </div>
+                  ] as const}
+                  selected={mediaFocus ?? "auto"}
+                  onSelect={(v) => patch({ mediaFocus: v })}
+                />
                 <HintRow showClear={mediaFocus} onClear={() => patch({ mediaFocus: null })}>
                   照片被框裁掉時保留哪一端（直式商品照選「靠上」保住瓶口、葉冠）
                 </HintRow>
               </Field>
               <Field label="照片左右取景">
-                <div className="grid grid-cols-3 gap-1.5">
-                  {([
+                <OptionGrid
+                  options={[
                     { v: "left", label: "靠左" },
                     { v: "auto", label: "置中" },
                     { v: "right", label: "靠右" },
-                  ] as const).map((opt) => (
-                    <button
-                      key={opt.v}
-                      type="button"
-                      onClick={() => patch({ mediaFocusX: opt.v })}
-                      aria-pressed={(mediaFocusX ?? "auto") === opt.v}
-                      className={`rounded-lg border py-2 text-xs transition ${
-                        (mediaFocusX ?? "auto") === opt.v
-                          ? "border-emerald-500 bg-emerald-50 text-emerald-900"
-                          : "border-stone-200 text-stone-600 hover:border-stone-400"
-                      }`}
-                    >
-                      {opt.label}
-                    </button>
-                  ))}
-                </div>
+                  ] as const}
+                  selected={mediaFocusX ?? "auto"}
+                  onSelect={(v) => patch({ mediaFocusX: v })}
+                />
                 <HintRow showClear={mediaFocusX} onClear={() => patch({ mediaFocusX: null })}>
                   橫式照片放進正方或直式的框時保留哪一側，可跟上面那格疊著用
                 </HintRow>
               </Field>
               <Field label="照片完整度">
-                <div className="grid grid-cols-2 gap-1.5">
-                  {([
+                <OptionGrid
+                  cols={2}
+                  options={[
                     { v: "cover", label: "鋪滿框" },
                     { v: "contain", label: "整張顯示" },
-                  ] as const).map((opt) => (
-                    <button
-                      key={opt.v}
-                      type="button"
-                      onClick={() => patch({ mediaFit: opt.v })}
-                      aria-pressed={(mediaFit ?? "cover") === opt.v}
-                      className={`rounded-lg border py-2 text-xs transition ${
-                        (mediaFit ?? "cover") === opt.v
-                          ? "border-emerald-500 bg-emerald-50 text-emerald-900"
-                          : "border-stone-200 text-stone-600 hover:border-stone-400"
-                      }`}
-                    >
-                      {opt.label}
-                    </button>
-                  ))}
-                </div>
+                  ] as const}
+                  selected={mediaFit ?? "cover"}
+                  onSelect={(v) => patch({ mediaFit: v })}
+                />
                 <HintRow showClear={mediaFit} onClear={() => patch({ mediaFit: null })}>
                   整張顯示＝照片一點都不裁，放不滿的地方露出底色（整株盆栽、帶留白的商品圖）
                 </HintRow>
@@ -8036,27 +6823,15 @@ export function EditorWorkspace({
                   框的底根本看不到，擺出來會是按了畫面不動的死按鈕。 */}
               {mediaFit === "contain" && (
                 <Field label="框底色">
-                  <div className="grid grid-cols-3 gap-1.5">
-                    {([
+                  <OptionGrid
+                    options={[
                       { v: "auto", label: "跟段落" },
                       { v: "white", label: "白" },
                       { v: "dark", label: "深" },
-                    ] as const).map((opt) => (
-                      <button
-                        key={opt.v}
-                        type="button"
-                        onClick={() => patch({ mediaFrameBg: opt.v, mediaFrameColor: null })}
-                        aria-pressed={!mediaFrameColor && (mediaFrameBg ?? "auto") === opt.v}
-                        className={`rounded-lg border py-2 text-xs transition ${
-                          !mediaFrameColor && (mediaFrameBg ?? "auto") === opt.v
-                            ? "border-emerald-500 bg-emerald-50 text-emerald-900"
-                            : "border-stone-200 text-stone-600 hover:border-stone-400"
-                        }`}
-                      >
-                        {opt.label}
-                      </button>
-                    ))}
-                  </div>
+                    ] as const}
+                    selected={mediaFrameColor ? null : mediaFrameBg ?? "auto"}
+                    onSelect={(v) => patch({ mediaFrameBg: v, mediaFrameColor: null })}
+                  />
                   {/* 自訂色跟上面三檔互斥：挑了色就清掉三檔、按了三檔就清掉色。不然商家按「白」
                       畫面卻停在自訂色，會以為那顆按鈕壞了。白 / 深是寫死的純白與暖黑，商品圖的
                       底不一定是那兩種（圖庫圖常見的灰白、自拍的淡奶油底），這格讓商家直接對色。 */}
@@ -8090,49 +6865,25 @@ export function EditorWorkspace({
               {selectedSection === "partners" && (
                 <>
               <Field label="合作 logo 大小">
-                <div className="grid grid-cols-3 gap-1.5">
-                  {SECTION_SCALE_OPTIONS.map((opt) => (
-                    <button
-                      key={opt.v}
-                      type="button"
-                      onClick={() => patch({ partnerLogoScale: opt.v })}
-                      aria-pressed={(partnerLogoScale ?? "default") === opt.v}
-                      className={`rounded-lg border py-2 text-xs transition ${
-                        (partnerLogoScale ?? "default") === opt.v
-                          ? "border-emerald-500 bg-emerald-50 text-emerald-900"
-                          : "border-stone-200 text-stone-600 hover:border-stone-400"
-                      }`}
-                    >
-                      {opt.label}
-                    </button>
-                  ))}
-                </div>
+                <OptionGrid
+                  options={SECTION_SCALE_OPTIONS}
+                  selected={partnerLogoScale ?? "default"}
+                  onSelect={(v) => patch({ partnerLogoScale: v })}
+                />
                 <HintRow showClear={partnerLogoScale} onClear={() => patch({ partnerLogoScale: null })}>
                   那排 logo 本身多高（手機 / 平板 / 桌機一起跟著調）。預設值是照橫式字標挑的，方形的商圈標章、上圖下字的兩層式 logo 在裡面只剩一小塊是字，選大才認得出來；只放兩三個 logo 想排得安靜一點就選小。上面那幾格照片的設定管的是卡片裡的照片，動不到這排
                 </HintRow>
               </Field>
               <Field label="合作 logo 濃淡">
-                <div className="grid grid-cols-3 gap-1.5">
-                  {([
+                <OptionGrid
+                  options={[
                     { v: "faint", label: "更淡" },
                     { v: "default", label: "跟預設" },
                     { v: "solid", label: "清楚" },
-                  ] as const).map((opt) => (
-                    <button
-                      key={opt.v}
-                      type="button"
-                      onClick={() => patch({ partnerLogoOpacity: opt.v })}
-                      aria-pressed={(partnerLogoOpacity ?? "default") === opt.v}
-                      className={`rounded-lg border py-2 text-xs transition ${
-                        (partnerLogoOpacity ?? "default") === opt.v
-                          ? "border-emerald-500 bg-emerald-50 text-emerald-900"
-                          : "border-stone-200 text-stone-600 hover:border-stone-400"
-                      }`}
-                    >
-                      {opt.label}
-                    </button>
-                  ))}
-                </div>
+                  ] as const}
+                  selected={partnerLogoOpacity ?? "default"}
+                  onSelect={(v) => patch({ partnerLogoOpacity: v })}
+                />
                 <HintRow showClear={partnerLogoOpacity} onClear={() => patch({ partnerLogoOpacity: null })}>
                   那排 logo 印得多淡。預設是半透明（滑鼠移上去才變清楚，手機沒有這個動作），要客人認出是哪家媒體、哪個品牌就選清楚；當背景紋理排一整列就選更淡。「淡化」那格淡的是整段連小標一起，「濾鏡」換的是黑白或復古，都不是這一層
                 </HintRow>
@@ -8146,27 +6897,15 @@ export function EditorWorkspace({
                   店值還留在資料裡（本來就沒效果）。 */}
               {SECTIONS_WITH_CARD_GRID.includes(selectedSection) && (
                 <Field label="卡片間距">
-                  <div className="grid grid-cols-3 gap-1.5">
-                    {([
+                  <OptionGrid
+                    options={[
                       { v: "tight", label: "緊湊" },
                       { v: "normal", label: "預設" },
                       { v: "loose", label: "寬鬆" },
-                    ] as const).map((opt) => (
-                      <button
-                        key={opt.v}
-                        type="button"
-                        onClick={() => patch({ gridGap: opt.v })}
-                        aria-pressed={(gridGap ?? "normal") === opt.v}
-                        className={`rounded-lg border py-2 text-xs transition ${
-                          (gridGap ?? "normal") === opt.v
-                            ? "border-emerald-500 bg-emerald-50 text-emerald-900"
-                            : "border-stone-200 text-stone-600 hover:border-stone-400"
-                        }`}
-                      >
-                        {opt.label}
-                      </button>
-                    ))}
-                  </div>
+                    ] as const}
+                    selected={gridGap ?? "normal"}
+                    onSelect={(v) => patch({ gridGap: v })}
+                  />
                   <HintRow showClear={gridGap} onClear={() => patch({ gridGap: null })}>
                     調這一段卡片、照片彼此的距離（不是段落外圍的空白）
                   </HintRow>
@@ -8181,27 +6920,15 @@ export function EditorWorkspace({
                   值還留在資料裡，只是它從頭到尾就沒有畫面上的效果。 */}
               {!SECTIONS_WITHOUT_HOVER_CARDS.includes(selectedSection) && (
               <Field label="滑過卡片">
-                <div className="grid grid-cols-3 gap-1.5">
-                  {([
+                <OptionGrid
+                  options={[
                     { v: "default", label: "預設" },
                     { v: "calm", label: "輕微" },
                     { v: "none", label: "不動" },
-                  ] as const).map((opt) => (
-                    <button
-                      key={opt.v}
-                      type="button"
-                      onClick={() => patch({ cardHover: opt.v })}
-                      aria-pressed={(cardHover ?? "default") === opt.v}
-                      className={`rounded-lg border py-2 text-xs transition ${
-                        (cardHover ?? "default") === opt.v
-                          ? "border-emerald-500 bg-emerald-50 text-emerald-900"
-                          : "border-stone-200 text-stone-600 hover:border-stone-400"
-                      }`}
-                    >
-                      {opt.label}
-                    </button>
-                  ))}
-                </div>
+                  ] as const}
+                  selected={cardHover ?? "default"}
+                  onSelect={(v) => patch({ cardHover: v })}
+                />
                 <HintRow showClear={cardHover} onClear={() => patch({ cardHover: null })}>
                   滑鼠移到卡片上要不要動（照片放大、浮起、壓暗；手機沒有這件事）
                 </HintRow>
@@ -8211,56 +6938,34 @@ export function EditorWorkspace({
                   data-card-text 也只印在有卡片格線的那四段。 */}
               {SECTIONS_WITH_CARD_IMAGE.includes(selectedSection) && (
               <Field label="卡片文字">
-                <div className="grid grid-cols-4 gap-1.5">
-                  {([
+                <OptionGrid
+                  cols={4}
+                  options={[
                     { v: "auto", label: "跟著整段" },
                     { v: "left", label: "靠左" },
                     { v: "center", label: "置中" },
                     { v: "right", label: "靠右" },
-                  ] as const).map((opt) => (
-                    <button
-                      key={opt.v}
-                      type="button"
-                      onClick={() => patch({ cardText: opt.v })}
-                      aria-pressed={(cardText ?? "auto") === opt.v}
-                      className={`rounded-lg border py-2 text-xs transition ${
-                        (cardText ?? "auto") === opt.v
-                          ? "border-emerald-500 bg-emerald-50 text-emerald-900"
-                          : "border-stone-200 text-stone-600 hover:border-stone-400"
-                      }`}
-                    >
-                      {opt.label}
-                    </button>
-                  ))}
-                </div>
+                  ] as const}
+                  selected={cardText ?? "auto"}
+                  onSelect={(v) => patch({ cardText: v })}
+                />
                 <HintRow showClear={cardText} onClear={() => patch({ cardText: null })}>
                   卡片下面的品名、價錢站哪（大標置中、卡片文字靠左最常見）
                 </HintRow>
               </Field>
               )}
               <Field label="卡片外觀">
-                <div className="grid grid-cols-4 gap-1.5">
-                  {([
+                <OptionGrid
+                  cols={4}
+                  options={[
                     { v: "none", label: "原樣" },
                     { v: "panel", label: "淡底色" },
                     { v: "outline", label: "細框" },
                     { v: "both", label: "底＋框" },
-                  ] as const).map((opt) => (
-                    <button
-                      key={opt.v}
-                      type="button"
-                      onClick={() => patch({ cardSurface: opt.v })}
-                      aria-pressed={(cardSurface ?? "none") === opt.v}
-                      className={`rounded-lg border py-2 text-xs transition ${
-                        (cardSurface ?? "none") === opt.v
-                          ? "border-emerald-500 bg-emerald-50 text-emerald-900"
-                          : "border-stone-200 text-stone-600 hover:border-stone-400"
-                      }`}
-                    >
-                      {opt.label}
-                    </button>
-                  ))}
-                </div>
+                  ] as const}
+                  selected={cardSurface ?? "none"}
+                  onSelect={(v) => patch({ cardSurface: v })}
+                />
                 <HintRow showClear={cardSurface} onClear={() => patch({ cardSurface: null })}>
                   每張卡片有沒有自己的邊界（欄數多、品名長短不一時，有底或有框才分得出哪行字配哪張照片；兩個一起上最像一般網購站的商品卡）
                 </HintRow>
@@ -8269,23 +6974,11 @@ export function EditorWorkspace({
                   跟底線粗細同一個處理，設了外觀才長出來。 */}
               {cardSurface && (
                 <Field label="卡片內距">
-                  <div className="grid grid-cols-3 gap-1.5">
-                    {SECTION_GAP_OPTIONS.map((opt) => (
-                      <button
-                        key={opt.v}
-                        type="button"
-                        onClick={() => patch({ cardPadding: opt.v })}
-                        aria-pressed={(cardPadding ?? "normal") === opt.v}
-                        className={`rounded-lg border py-2 text-xs transition ${
-                          (cardPadding ?? "normal") === opt.v
-                            ? "border-emerald-500 bg-emerald-50 text-emerald-900"
-                            : "border-stone-200 text-stone-600 hover:border-stone-400"
-                        }`}
-                      >
-                        {opt.label}
-                      </button>
-                    ))}
-                  </div>
+                  <OptionGrid
+                    options={SECTION_GAP_OPTIONS}
+                    selected={cardPadding ?? "normal"}
+                    onSelect={(v) => patch({ cardPadding: v })}
+                  />
                   <HintRow showClear={cardPadding} onClear={() => patch({ cardPadding: null })}>
                     卡片裡的東西跟框之間留多少（一列四張的小卡收緊、一列一張的大卡放寬，圓角跟著一起走）
                   </HintRow>
@@ -8295,27 +6988,15 @@ export function EditorWorkspace({
                   上面那格把兩件事綁在一起，想單獨動四個角的商家只能靠改內距換。 */}
               {cardSurface && (
                 <Field label="卡片圓角">
-                  <div className="grid grid-cols-3 gap-1.5">
-                    {([
+                  <OptionGrid
+                    options={[
                       { v: "square", label: "直角" },
                       { v: "auto", label: "跟內距走" },
                       { v: "round", label: "更圓" },
-                    ] as const).map((opt) => (
-                      <button
-                        key={opt.v}
-                        type="button"
-                        onClick={() => patch({ cardRadius: opt.v })}
-                        aria-pressed={(cardRadius ?? "auto") === opt.v}
-                        className={`rounded-lg border py-2 text-xs transition ${
-                          (cardRadius ?? "auto") === opt.v
-                            ? "border-emerald-500 bg-emerald-50 text-emerald-900"
-                            : "border-stone-200 text-stone-600 hover:border-stone-400"
-                        }`}
-                      >
-                        {opt.label}
-                      </button>
-                    ))}
-                  </div>
+                    ] as const}
+                    selected={cardRadius ?? "auto"}
+                    onSelect={(v) => patch({ cardRadius: v })}
+                  />
                   <HintRow showClear={cardRadius} onClear={() => patch({ cardRadius: null })}>
                     卡片四個角有多圓（報紙、型錄那種硬邊排版選直角；不選的話跟著上面的內距一起走）
                   </HintRow>
@@ -8325,27 +7006,15 @@ export function EditorWorkspace({
                   上面兩格畫的是卡片的形狀，這格畫的是它浮不浮起來。 */}
               {cardSurface && (
                 <Field label="卡片陰影">
-                  <div className="grid grid-cols-3 gap-1.5">
-                    {([
+                  <OptionGrid
+                    options={[
                       { v: "none", label: "無" },
                       { v: "soft", label: "輕" },
                       { v: "strong", label: "明顯" },
-                    ] as const).map((opt) => (
-                      <button
-                        key={opt.v}
-                        type="button"
-                        onClick={() => patch({ cardShadow: opt.v })}
-                        aria-pressed={(cardShadow ?? "none") === opt.v}
-                        className={`rounded-lg border py-2 text-xs transition ${
-                          (cardShadow ?? "none") === opt.v
-                            ? "border-emerald-500 bg-emerald-50 text-emerald-900"
-                            : "border-stone-200 text-stone-600 hover:border-stone-400"
-                        }`}
-                      >
-                        {opt.label}
-                      </button>
-                    ))}
-                  </div>
+                    ] as const}
+                    selected={cardShadow ?? "none"}
+                    onSelect={(v) => patch({ cardShadow: v })}
+                  />
                   <HintRow showClear={cardShadow} onClear={() => patch({ cardShadow: null })}>
                     卡片靜止時浮起來多少（不選的話只有滑鼠移上去才有影子，手機看不到）
                   </HintRow>
@@ -8355,27 +7024,15 @@ export function EditorWorkspace({
                   面板那檔畫的是底色、沒有線可以加粗或加深；底＋框那檔有線，跟細框一起給。 */}
               {(cardSurface === "outline" || cardSurface === "both") && (
                 <Field label="框線粗細">
-                  <div className="grid grid-cols-3 gap-1.5">
-                    {([
+                  <OptionGrid
+                    options={[
                       { v: "normal", label: "照原本" },
                       { v: "medium", label: "中" },
                       { v: "thick", label: "粗" },
-                    ] as const).map((opt) => (
-                      <button
-                        key={opt.v}
-                        type="button"
-                        onClick={() => patch({ cardBorderWeight: opt.v })}
-                        aria-pressed={(cardBorderWeight ?? "normal") === opt.v}
-                        className={`rounded-lg border py-2 text-xs transition ${
-                          (cardBorderWeight ?? "normal") === opt.v
-                            ? "border-emerald-500 bg-emerald-50 text-emerald-900"
-                            : "border-stone-200 text-stone-600 hover:border-stone-400"
-                        }`}
-                      >
-                        {opt.label}
-                      </button>
-                    ))}
-                  </div>
+                    ] as const}
+                    selected={cardBorderWeight ?? "normal"}
+                    onSelect={(v) => patch({ cardBorderWeight: v })}
+                  />
                   <HintRow showClear={cardBorderWeight} onClear={() => patch({ cardBorderWeight: null })}>
                     卡片那圈框有多粗（原本是最細的一格，一列排三四張時遠看幾乎看不到）
                   </HintRow>
@@ -8383,27 +7040,15 @@ export function EditorWorkspace({
               )}
               {(cardSurface === "outline" || cardSurface === "both") && (
                 <Field label="框線深淺">
-                  <div className="grid grid-cols-3 gap-1.5">
-                    {([
+                  <OptionGrid
+                    options={[
                       { v: "normal", label: "照原本" },
                       { v: "soft", label: "淡" },
                       { v: "strong", label: "明顯" },
-                    ] as const).map((opt) => (
-                      <button
-                        key={opt.v}
-                        type="button"
-                        onClick={() => patch({ cardBorderTone: opt.v })}
-                        aria-pressed={(cardBorderTone ?? "normal") === opt.v}
-                        className={`rounded-lg border py-2 text-xs transition ${
-                          (cardBorderTone ?? "normal") === opt.v
-                            ? "border-emerald-500 bg-emerald-50 text-emerald-900"
-                            : "border-stone-200 text-stone-600 hover:border-stone-400"
-                        }`}
-                      >
-                        {opt.label}
-                      </button>
-                    ))}
-                  </div>
+                    ] as const}
+                    selected={cardBorderTone ?? "normal"}
+                    onSelect={(v) => patch({ cardBorderTone: v })}
+                  />
                   <HintRow showClear={cardBorderTone} onClear={() => patch({ cardBorderTone: null })}>
                     框的顏色有多明顯（跟著這一段的文字色走，深底淺字會自動變成淺色的框）
                   </HintRow>
@@ -8414,27 +7059,15 @@ export function EditorWorkspace({
                   佔位卡，以及拼貼、手作那類店要的語氣。 */}
               {(cardSurface === "outline" || cardSurface === "both") && (
                 <Field label="框線樣式">
-                  <div className="grid grid-cols-3 gap-1.5">
-                    {([
+                  <OptionGrid
+                    options={[
                       { v: "solid", label: "實線" },
                       { v: "dashed", label: "虛線" },
                       { v: "dotted", label: "點線" },
-                    ] as const).map((opt) => (
-                      <button
-                        key={opt.v}
-                        type="button"
-                        onClick={() => patch({ cardBorderStyle: opt.v })}
-                        aria-pressed={(cardBorderStyle ?? "solid") === opt.v}
-                        className={`rounded-lg border py-2 text-xs transition ${
-                          (cardBorderStyle ?? "solid") === opt.v
-                            ? "border-emerald-500 bg-emerald-50 text-emerald-900"
-                            : "border-stone-200 text-stone-600 hover:border-stone-400"
-                        }`}
-                      >
-                        {opt.label}
-                      </button>
-                    ))}
-                  </div>
+                    ] as const}
+                    selected={cardBorderStyle ?? "solid"}
+                    onSelect={(v) => patch({ cardBorderStyle: v })}
+                  />
                   <HintRow showClear={cardBorderStyle} onClear={() => patch({ cardBorderStyle: null })}>
                     那條線是不是連續的（虛線、點線適合預告與還沒上架的卡；細線配虛線遠看不明顯，搭配上面的粗細一起調）
                   </HintRow>
@@ -8444,27 +7077,15 @@ export function EditorWorkspace({
                   那塊底寫死成 6%，淺底的店按了看不出卡片在哪、深底的店又亮得比照片還搶。 */}
               {(cardSurface === "panel" || cardSurface === "both") && (
                 <Field label="底色深淺">
-                  <div className="grid grid-cols-3 gap-1.5">
-                    {([
+                  <OptionGrid
+                    options={[
                       { v: "normal", label: "照原本" },
                       { v: "soft", label: "淡" },
                       { v: "strong", label: "明顯" },
-                    ] as const).map((opt) => (
-                      <button
-                        key={opt.v}
-                        type="button"
-                        onClick={() => patch({ cardPanelTone: opt.v })}
-                        aria-pressed={(cardPanelTone ?? "normal") === opt.v}
-                        className={`rounded-lg border py-2 text-xs transition ${
-                          (cardPanelTone ?? "normal") === opt.v
-                            ? "border-emerald-500 bg-emerald-50 text-emerald-900"
-                            : "border-stone-200 text-stone-600 hover:border-stone-400"
-                        }`}
-                      >
-                        {opt.label}
-                      </button>
-                    ))}
-                  </div>
+                    ] as const}
+                    selected={cardPanelTone ?? "normal"}
+                    onSelect={(v) => patch({ cardPanelTone: v })}
+                  />
                   <HintRow showClear={cardPanelTone} onClear={() => patch({ cardPanelTone: null })}>
                     那塊底有多明顯（跟著這一段的文字色走，深底淺字會自動變成淺色的板子）
                   </HintRow>
@@ -8477,27 +7098,15 @@ export function EditorWorkspace({
               {SECTIONS_WITH_CARD_LAYOUT.includes(selectedSection) && (
               <>
               <Field label="卡片排法">
-                <div className="grid grid-cols-3 gap-1.5">
-                  {([
+                <OptionGrid
+                  options={[
                     { v: "stack", label: "照片在上" },
                     { v: "side", label: "照片在左" },
                     { v: "side-reverse", label: "照片在右" },
-                  ] as const).map((opt) => (
-                    <button
-                      key={opt.v}
-                      type="button"
-                      onClick={() => patch({ cardLayout: opt.v })}
-                      aria-pressed={(cardLayout ?? "stack") === opt.v}
-                      className={`rounded-lg border py-2 text-xs transition ${
-                        (cardLayout ?? "stack") === opt.v
-                          ? "border-emerald-500 bg-emerald-50 text-emerald-900"
-                          : "border-stone-200 text-stone-600 hover:border-stone-400"
-                      }`}
-                    >
-                      {opt.label}
-                    </button>
-                  ))}
-                </div>
+                  ] as const}
+                  selected={cardLayout ?? "stack"}
+                  onSelect={(v) => patch({ cardLayout: v })}
+                />
                 <HintRow showClear={cardLayout} onClear={() => patch({ cardLayout: null })}>
                   照片在左＝一般網購站的清單模式，一個螢幕看得到的品項多很多；照片在右先讀到字，適合先講故事的段落（兩者手機都自動收成一列一張）
                 </HintRow>
@@ -8506,27 +7115,15 @@ export function EditorWorkspace({
                   與其擺一格按下去沒事發生的選項，設成橫排才長出來。 */}
               {(cardLayout === "side" || cardLayout === "side-reverse") && (
                 <Field label="照片佔寬">
-                  <div className="grid grid-cols-3 gap-1.5">
-                    {([
+                  <OptionGrid
+                    options={[
                       { v: "auto", label: "跟預設" },
                       { v: "narrow", label: "小張" },
                       { v: "wide", label: "大張" },
-                    ] as const).map((opt) => (
-                      <button
-                        key={opt.v}
-                        type="button"
-                        onClick={() => patch({ cardMediaWidth: opt.v })}
-                        aria-pressed={(cardMediaWidth ?? "auto") === opt.v}
-                        className={`rounded-lg border py-2 text-xs transition ${
-                          (cardMediaWidth ?? "auto") === opt.v
-                            ? "border-emerald-500 bg-emerald-50 text-emerald-900"
-                            : "border-stone-200 text-stone-600 hover:border-stone-400"
-                        }`}
-                      >
-                        {opt.label}
-                      </button>
-                    ))}
-                  </div>
+                    ] as const}
+                    selected={cardMediaWidth ?? "auto"}
+                    onSelect={(v) => patch({ cardMediaWidth: v })}
+                  />
                   <HintRow showClear={cardMediaWidth} onClear={() => patch({ cardMediaWidth: null })}>
                     橫著排時照片佔一張卡的幾成寬（跟預設約四成）。字多的段落用小張讓文字有寬度寫完整，配橫幅生活照的段落用大張
                   </HintRow>
@@ -8538,27 +7135,15 @@ export function EditorWorkspace({
                   排到滿自動換行，沒有欄數可設。 */}
               {SECTIONS_WITH_MOBILE_COLS.includes(selectedSection) && (
                 <Field label="手機一列幾張">
-                  <div className="grid grid-cols-3 gap-1.5">
-                    {([
+                  <OptionGrid
+                    options={[
                       { v: "auto", label: "跟預設" },
                       { v: "one", label: "一張" },
                       { v: "two", label: "兩張" },
-                    ] as const).map((opt) => (
-                      <button
-                        key={opt.v}
-                        type="button"
-                        onClick={() => patch({ mobileColumns: opt.v })}
-                        aria-pressed={(mobileColumns ?? "auto") === opt.v}
-                        className={`rounded-lg border py-2 text-xs transition ${
-                          (mobileColumns ?? "auto") === opt.v
-                            ? "border-emerald-500 bg-emerald-50 text-emerald-900"
-                            : "border-stone-200 text-stone-600 hover:border-stone-400"
-                        }`}
-                      >
-                        {opt.label}
-                      </button>
-                    ))}
-                  </div>
+                    ] as const}
+                    selected={mobileColumns ?? "auto"}
+                    onSelect={(v) => patch({ mobileColumns: v })}
+                  />
                   <HintRow showClear={mobileColumns} onClear={() => patch({ mobileColumns: null })}>
                     只管手機畫面（上面那個「一列幾張」調的是桌機）。小商品用兩張一次看得多，主打商品、橫幅照片用一張看得清楚
                   </HintRow>
@@ -8568,28 +7153,17 @@ export function EditorWorkspace({
                   SECTIONS_WITH_CARD_TITLE_LINES）。 */}
               {SECTIONS_WITH_CARD_TITLE_LINES.includes(selectedSection) && (
                 <Field label="卡片標題行數">
-                  <div className="grid grid-cols-4 gap-1.5">
-                    {([
+                  <OptionGrid
+                    cols={4}
+                    options={[
                       { v: "auto", label: "跟預設" },
                       { v: "one", label: "一行" },
                       { v: "two", label: "兩行" },
                       { v: "full", label: "完整" },
-                    ] as const).map((opt) => (
-                      <button
-                        key={opt.v}
-                        type="button"
-                        onClick={() => patch({ cardTitleLines: opt.v })}
-                        aria-pressed={(cardTitleLines ?? "auto") === opt.v}
-                        className={`rounded-lg border py-2 text-xs transition ${
-                          (cardTitleLines ?? "auto") === opt.v
-                            ? "border-emerald-500 bg-emerald-50 text-emerald-900"
-                            : "border-stone-200 text-stone-600 hover:border-stone-400"
-                        }`}
-                      >
-                        {opt.label}
-                      </button>
-                    ))}
-                  </div>
+                    ] as const}
+                    selected={cardTitleLines ?? "auto"}
+                    onSelect={(v) => patch({ cardTitleLines: v })}
+                  />
                   <HintRow showClear={cardTitleLines} onClear={() => patch({ cardTitleLines: null })}>
                     卡片上那行品名（或文章標題）最多顯示幾行。精選商品原本只顯示一行，品名帶規格的選「完整」才看得完；標題長短不一撐得卡片高低不齊時選固定行數
                   </HintRow>
@@ -8599,29 +7173,18 @@ export function EditorWorkspace({
                   SECTIONS_WITH_CARD_DESC_LINES）。 */}
               {SECTIONS_WITH_CARD_DESC_LINES.includes(selectedSection) && (
                 <Field label="卡片描述行數">
-                  <div className="grid grid-cols-5 gap-1.5">
-                    {([
+                  <OptionGrid
+                    cols={5}
+                    options={[
                       { v: "auto", label: "跟預設" },
                       { v: "one", label: "一行" },
                       { v: "two", label: "兩行" },
                       { v: "three", label: "三行" },
                       { v: "full", label: "完整" },
-                    ] as const).map((opt) => (
-                      <button
-                        key={opt.v}
-                        type="button"
-                        onClick={() => patch({ cardDescLines: opt.v })}
-                        aria-pressed={(cardDescLines ?? "auto") === opt.v}
-                        className={`rounded-lg border py-2 text-xs transition ${
-                          (cardDescLines ?? "auto") === opt.v
-                            ? "border-emerald-500 bg-emerald-50 text-emerald-900"
-                            : "border-stone-200 text-stone-600 hover:border-stone-400"
-                        }`}
-                      >
-                        {opt.label}
-                      </button>
-                    ))}
-                  </div>
+                    ] as const}
+                    selected={cardDescLines ?? "auto"}
+                    onSelect={(v) => patch({ cardDescLines: v })}
+                  />
                   <HintRow showClear={cardDescLines} onClear={() => patch({ cardDescLines: null })}>
                     品名底下那段描述最多顯示幾行（選物的副標、慢讀的摘要）。描述長短不一撐得同一列卡片高低不齊時選固定行數；精選商品那段底下是價錢，不受這格影響
                   </HintRow>
@@ -8629,23 +7192,11 @@ export function EditorWorkspace({
               )}
               {SECTIONS_WITH_CARD_TITLE_TEXT.includes(selectedSection) && (
                 <Field label="卡片標題字級">
-                  <div className="grid grid-cols-3 gap-1.5">
-                    {SECTION_SCALE_OPTIONS.map((opt) => (
-                      <button
-                        key={opt.v}
-                        type="button"
-                        onClick={() => patch({ cardTitleScale: opt.v })}
-                        aria-pressed={(cardTitleScale ?? "default") === opt.v}
-                        className={`rounded-lg border py-2 text-xs transition ${
-                          (cardTitleScale ?? "default") === opt.v
-                            ? "border-emerald-500 bg-emerald-50 text-emerald-900"
-                            : "border-stone-200 text-stone-600 hover:border-stone-400"
-                        }`}
-                      >
-                        {opt.label}
-                      </button>
-                    ))}
-                  </div>
+                  <OptionGrid
+                    options={SECTION_SCALE_OPTIONS}
+                    selected={cardTitleScale ?? "default"}
+                    onSelect={(v) => patch({ cardTitleScale: v })}
+                  />
                   <HintRow showClear={cardTitleScale} onClear={() => patch({ cardTitleScale: null })}>
                     卡片上那行品名（或文章標題）本身多大，上面兩格管的是它佔幾行。卡片變寬（欄數少、照片在左）時選大，一列四張的小卡選小
                   </HintRow>
@@ -8653,27 +7204,15 @@ export function EditorWorkspace({
               )}
               {SECTIONS_WITH_CARD_TITLE_TEXT.includes(selectedSection) && (
                 <Field label="卡片標題粗細">
-                  <div className="grid grid-cols-3 gap-1.5">
-                    {([
+                  <OptionGrid
+                    options={[
                       { v: "normal", label: "常規" },
                       { v: "medium", label: "中黑" },
                       { v: "bold", label: "粗" },
-                    ] as const).map((opt) => (
-                      <button
-                        key={opt.v}
-                        type="button"
-                        onClick={() => patch({ cardTitleWeight: opt.v })}
-                        aria-pressed={(cardTitleWeight ?? "normal") === opt.v}
-                        className={`rounded-lg border py-2 text-xs transition ${
-                          (cardTitleWeight ?? "normal") === opt.v
-                            ? "border-emerald-500 bg-emerald-50 text-emerald-900"
-                            : "border-stone-200 text-stone-600 hover:border-stone-400"
-                        }`}
-                      >
-                        {opt.label}
-                      </button>
-                    ))}
-                  </div>
+                    ] as const}
+                    selected={cardTitleWeight ?? "normal"}
+                    onSelect={(v) => patch({ cardTitleWeight: v })}
+                  />
                   <HintRow showClear={cardTitleWeight} onClear={() => patch({ cardTitleWeight: null })}>
                     上一格管的是品名多大，這格管的是它多粗。品名跟底下的描述、價錢分不出主次時選中黑或粗（「標題粗細」那格動的是段落大標，不是卡片裡這行）
                   </HintRow>
@@ -8681,23 +7220,11 @@ export function EditorWorkspace({
               )}
               {SECTIONS_WITH_CARD_TITLE_LEADING.includes(selectedSection) && (
                 <Field label="卡片標題行距">
-                  <div className="grid grid-cols-3 gap-1.5">
-                    {SECTION_LEADING_OPTIONS.map((opt) => (
-                      <button
-                        key={opt.v}
-                        type="button"
-                        onClick={() => patch({ cardTitleLeading: opt.v })}
-                        aria-pressed={(cardTitleLeading ?? "normal") === opt.v}
-                        className={`rounded-lg border py-2 text-xs transition ${
-                          (cardTitleLeading ?? "normal") === opt.v
-                            ? "border-emerald-500 bg-emerald-50 text-emerald-900"
-                            : "border-stone-200 text-stone-600 hover:border-stone-400"
-                        }`}
-                      >
-                        {opt.label}
-                      </button>
-                    ))}
-                  </div>
+                  <OptionGrid
+                    options={SECTION_LEADING_OPTIONS}
+                    selected={cardTitleLeading ?? "normal"}
+                    onSelect={(v) => patch({ cardTitleLeading: v })}
+                  />
                   <HintRow showClear={cardTitleLeading} onClear={() => patch({ cardTitleLeading: null })}>
                     品名排到兩行以上時，上下兩行之間隔多遠（品名只有一行的話這格看不出差別）。「卡片標題行數」選了兩行或完整、或品名本來就長的段落才用得到：兩行中文黏在一起就拉開，字級調大之後間隙太空就收緊。「卡片行距」那格調的是品名跟照片、價錢之間，不是同一行字自己換行
                   </HintRow>
@@ -8705,23 +7232,11 @@ export function EditorWorkspace({
               )}
               {SECTIONS_WITH_CARD_TITLE_TEXT.includes(selectedSection) && (
                 <Field label="卡片品名字距">
-                  <div className="grid grid-cols-3 gap-1.5">
-                    {SECTION_TRACKING_OPTIONS.map((opt) => (
-                      <button
-                        key={opt.v}
-                        type="button"
-                        onClick={() => patch({ cardTitleTracking: opt.v })}
-                        aria-pressed={(cardTitleTracking ?? "normal") === opt.v}
-                        className={`rounded-lg border py-2 text-xs transition ${
-                          (cardTitleTracking ?? "normal") === opt.v
-                            ? "border-emerald-500 bg-emerald-50 text-emerald-900"
-                            : "border-stone-200 text-stone-600 hover:border-stone-400"
-                        }`}
-                      >
-                        {opt.label}
-                      </button>
-                    ))}
-                  </div>
+                  <OptionGrid
+                    options={SECTION_TRACKING_OPTIONS}
+                    selected={cardTitleTracking ?? "normal"}
+                    onSelect={(v) => patch({ cardTitleTracking: v })}
+                  />
                   <HintRow showClear={cardTitleTracking} onClear={() => patch({ cardTitleTracking: null })}>
                     品名同一行裡，字與字之間空多少。筆畫多的中文品名（像「觀葉植物」）字級一大就會跟隔壁黏在一起，撐開一點看得清楚；只有兩三個字的短品名撐開會更像選物店。上一格「卡片標題行距」調的是換行之後上下隔多遠，這格是同一行左右之間。只動品名，描述、價錢與那幾行小字不跟著變
                   </HintRow>
@@ -8729,23 +7244,11 @@ export function EditorWorkspace({
               )}
               {SECTIONS_WITH_CARD_TITLE_TEXT.includes(selectedSection) && (
                 <Field label="卡片品名用色">
-                  <div className="grid grid-cols-3 gap-1.5">
-                    {SECTION_TEXT_TONE_OPTIONS.map((opt) => (
-                      <button
-                        key={opt.v}
-                        type="button"
-                        onClick={() => patch({ cardTitleTone: opt.v })}
-                        aria-pressed={(cardTitleTone ?? "default") === opt.v}
-                        className={`rounded-lg border py-2 text-xs transition ${
-                          (cardTitleTone ?? "default") === opt.v
-                            ? "border-emerald-500 bg-emerald-50 text-emerald-900"
-                            : "border-stone-200 text-stone-600 hover:border-stone-400"
-                        }`}
-                      >
-                        {opt.label}
-                      </button>
-                    ))}
-                  </div>
+                  <OptionGrid
+                    options={SECTION_TEXT_TONE_OPTIONS}
+                    selected={cardTitleTone ?? "default"}
+                    onSelect={(v) => patch({ cardTitleTone: v })}
+                  />
                   <HintRow showClear={cardTitleTone} onClear={() => patch({ cardTitleTone: null })}>
                     卡片上那行品名是什麼顏色。三段的品名本來都跟內文同深，整張卡上沒有一個顏色的落點，品名跟底下的描述、價錢只差在字大一點；換成主色能讓客人掃過一列卡片時先看到商品名，柔和則是讓品名退半階、把重量留給照片。上面幾格動的是字多大、多粗、隔多遠，都不換顏色。只動品名，描述、價錢與那幾行小字不跟著變
                   </HintRow>
@@ -8753,23 +7256,11 @@ export function EditorWorkspace({
               )}
               {SECTIONS_WITH_CARD_DESC_TEXT.includes(selectedSection) && (
                 <Field label="卡片描述字級">
-                  <div className="grid grid-cols-3 gap-1.5">
-                    {SECTION_SCALE_OPTIONS.map((opt) => (
-                      <button
-                        key={opt.v}
-                        type="button"
-                        onClick={() => patch({ cardDescScale: opt.v })}
-                        aria-pressed={(cardDescScale ?? "default") === opt.v}
-                        className={`rounded-lg border py-2 text-xs transition ${
-                          (cardDescScale ?? "default") === opt.v
-                            ? "border-emerald-500 bg-emerald-50 text-emerald-900"
-                            : "border-stone-200 text-stone-600 hover:border-stone-400"
-                        }`}
-                      >
-                        {opt.label}
-                      </button>
-                    ))}
-                  </div>
+                  <OptionGrid
+                    options={SECTION_SCALE_OPTIONS}
+                    selected={cardDescScale ?? "default"}
+                    onSelect={(v) => patch({ cardDescScale: v })}
+                  />
                   <HintRow showClear={cardDescScale} onClear={() => patch({ cardDescScale: null })}>
                     品名底下那段描述本身多大（選物的副標、慢讀的摘要）。想讓摘要真的被讀完選大，品名調大之後想讓描述退一步選小；精選商品那段底下是價錢，不受這格影響
                   </HintRow>
@@ -8777,23 +7268,11 @@ export function EditorWorkspace({
               )}
               {SECTIONS_WITH_CARD_DESC_TEXT.includes(selectedSection) && (
                 <Field label="卡片描述行距">
-                  <div className="grid grid-cols-3 gap-1.5">
-                    {SECTION_LEADING_OPTIONS.map((opt) => (
-                      <button
-                        key={opt.v}
-                        type="button"
-                        onClick={() => patch({ cardDescLeading: opt.v })}
-                        aria-pressed={(cardDescLeading ?? "normal") === opt.v}
-                        className={`rounded-lg border py-2 text-xs transition ${
-                          (cardDescLeading ?? "normal") === opt.v
-                            ? "border-emerald-500 bg-emerald-50 text-emerald-900"
-                            : "border-stone-200 text-stone-600 hover:border-stone-400"
-                        }`}
-                      >
-                        {opt.label}
-                      </button>
-                    ))}
-                  </div>
+                  <OptionGrid
+                    options={SECTION_LEADING_OPTIONS}
+                    selected={cardDescLeading ?? "normal"}
+                    onSelect={(v) => patch({ cardDescLeading: v })}
+                  />
                   <HintRow showClear={cardDescLeading} onClear={() => patch({ cardDescLeading: null })}>
                     那段描述排到第二行以後，上下兩行之間隔多遠。原本選物那邊照英文短句的密度排（兩行中文會黏在一起，選拉開）、慢讀那邊排得比較鬆（一段話會散開，選收緊）。「卡片行距」那格調的是描述跟品名、照片之間，不是同一段字自己換行
                   </HintRow>
@@ -8801,27 +7280,15 @@ export function EditorWorkspace({
               )}
               {SECTIONS_WITH_CARD_DESC_TEXT.includes(selectedSection) && (
                 <Field label="卡片描述粗細">
-                  <div className="grid grid-cols-3 gap-1.5">
-                    {([
+                  <OptionGrid
+                    options={[
                       { v: "normal", label: "常規" },
                       { v: "medium", label: "中黑" },
                       { v: "bold", label: "粗" },
-                    ] as const).map((opt) => (
-                      <button
-                        key={opt.v}
-                        type="button"
-                        onClick={() => patch({ cardDescWeight: opt.v })}
-                        aria-pressed={(cardDescWeight ?? "normal") === opt.v}
-                        className={`rounded-lg border py-2 text-xs transition ${
-                          (cardDescWeight ?? "normal") === opt.v
-                            ? "border-emerald-500 bg-emerald-50 text-emerald-900"
-                            : "border-stone-200 text-stone-600 hover:border-stone-400"
-                        }`}
-                      >
-                        {opt.label}
-                      </button>
-                    ))}
-                  </div>
+                    ] as const}
+                    selected={cardDescWeight ?? "normal"}
+                    onSelect={(v) => patch({ cardDescWeight: v })}
+                  />
                   <HintRow showClear={cardDescWeight} onClear={() => patch({ cardDescWeight: null })}>
                     那段描述的筆畫多粗。原本是最細的一級、又被「卡片副文字深淺」淡過一層，慢讀那種客人真的要讀的摘要在卡片上輕得像圖說，想讓它站出來選中黑或粗；小卡上描述只是一句副標、想讓品名獨大就留常規
                   </HintRow>
@@ -8829,23 +7296,11 @@ export function EditorWorkspace({
               )}
               {SECTIONS_WITH_CARD_DESC_TEXT.includes(selectedSection) && (
                 <Field label="卡片描述字距">
-                  <div className="grid grid-cols-3 gap-1.5">
-                    {SECTION_TRACKING_OPTIONS.map((opt) => (
-                      <button
-                        key={opt.v}
-                        type="button"
-                        onClick={() => patch({ cardDescTracking: opt.v })}
-                        aria-pressed={(cardDescTracking ?? "normal") === opt.v}
-                        className={`rounded-lg border py-2 text-xs transition ${
-                          (cardDescTracking ?? "normal") === opt.v
-                            ? "border-emerald-500 bg-emerald-50 text-emerald-900"
-                            : "border-stone-200 text-stone-600 hover:border-stone-400"
-                        }`}
-                      >
-                        {opt.label}
-                      </button>
-                    ))}
-                  </div>
+                  <OptionGrid
+                    options={SECTION_TRACKING_OPTIONS}
+                    selected={cardDescTracking ?? "normal"}
+                    onSelect={(v) => patch({ cardDescTracking: v })}
+                  />
                   <HintRow showClear={cardDescTracking} onClear={() => patch({ cardDescTracking: null })}>
                     那段描述同一行裡，字與字之間空多少。把品名字距撐開之後，底下那句副標還是原本的密度，一鬆一緊疊在同一張卡上——這格讓描述跟得上；慢讀那種一整段的摘要收緊一點能多塞回半行。只動描述，品名、價錢與那幾行小字不跟著變
                   </HintRow>
@@ -8853,27 +7308,15 @@ export function EditorWorkspace({
               )}
               {SECTIONS_WITH_CARD_DESC_TEXT.includes(selectedSection) && (
                 <Field label="卡片描述用色">
-                  <div className="grid grid-cols-3 gap-1.5">
-                    {([
+                  <OptionGrid
+                    options={[
                       { v: "default", label: "跟預設" },
                       { v: "accent", label: "主色" },
                       { v: "text", label: "跟品名同深" },
-                    ] as const).map((opt) => (
-                      <button
-                        key={opt.v}
-                        type="button"
-                        onClick={() => patch({ cardDescTone: opt.v })}
-                        aria-pressed={(cardDescTone ?? "default") === opt.v}
-                        className={`rounded-lg border py-2 text-xs transition ${
-                          (cardDescTone ?? "default") === opt.v
-                            ? "border-emerald-500 bg-emerald-50 text-emerald-900"
-                            : "border-stone-200 text-stone-600 hover:border-stone-400"
-                        }`}
-                      >
-                        {opt.label}
-                      </button>
-                    ))}
-                  </div>
+                    ] as const}
+                    selected={cardDescTone ?? "default"}
+                    onSelect={(v) => patch({ cardDescTone: v })}
+                  />
                   <HintRow showClear={cardDescTone} onClear={() => patch({ cardDescTone: null })}>
                     前面三格動的是那段描述多大、行距多開、多粗，這格動的是它什麼顏色。描述現在固定比品名淡一階（選物那段外面還多淡一層），放大、加粗都追不上那個淺灰——慢讀那種摘要才是客人要讀完的段落，選「跟品名同深」就不再退在後面；想讓副標帶點品牌感選「主色」
                   </HintRow>
@@ -8881,23 +7324,11 @@ export function EditorWorkspace({
               )}
               {SECTIONS_WITH_CARD_MICRO_TEXT.includes(selectedSection) && (
                 <Field label="卡片小字字級">
-                  <div className="grid grid-cols-3 gap-1.5">
-                    {SECTION_SCALE_OPTIONS.map((opt) => (
-                      <button
-                        key={opt.v}
-                        type="button"
-                        onClick={() => patch({ cardMicroScale: opt.v })}
-                        aria-pressed={(cardMicroScale ?? "default") === opt.v}
-                        className={`rounded-lg border py-2 text-xs transition ${
-                          (cardMicroScale ?? "default") === opt.v
-                            ? "border-emerald-500 bg-emerald-50 text-emerald-900"
-                            : "border-stone-200 text-stone-600 hover:border-stone-400"
-                        }`}
-                      >
-                        {opt.label}
-                      </button>
-                    ))}
-                  </div>
+                  <OptionGrid
+                    options={SECTION_SCALE_OPTIONS}
+                    selected={cardMicroScale ?? "default"}
+                    onSelect={(v) => patch({ cardMicroScale: v })}
+                  />
                   <HintRow showClear={cardMicroScale} onClear={() => patch({ cardMicroScale: null })}>
                     卡片上那幾行全大寫的小字多大（選物卡片底下的「看更多」、慢讀卡片的分類與標籤、精選商品價錢底下的「剩 N」）。那行只有 10px，是照英文挑的，中文擠在裡面會糊成一條灰線看不出是字，選大能救回來
                   </HintRow>
@@ -8905,23 +7336,11 @@ export function EditorWorkspace({
               )}
               {SECTIONS_WITH_CARD_MICRO_TEXT.includes(selectedSection) && (
                 <Field label="卡片小字字距">
-                  <div className="grid grid-cols-3 gap-1.5">
-                    {SECTION_TRACKING_OPTIONS.map((opt) => (
-                      <button
-                        key={opt.v}
-                        type="button"
-                        onClick={() => patch({ cardMicroTracking: opt.v })}
-                        aria-pressed={(cardMicroTracking ?? "normal") === opt.v}
-                        className={`rounded-lg border py-2 text-xs transition ${
-                          (cardMicroTracking ?? "normal") === opt.v
-                            ? "border-emerald-500 bg-emerald-50 text-emerald-900"
-                            : "border-stone-200 text-stone-600 hover:border-stone-400"
-                        }`}
-                      >
-                        {opt.label}
-                      </button>
-                    ))}
-                  </div>
+                  <OptionGrid
+                    options={SECTION_TRACKING_OPTIONS}
+                    selected={cardMicroTracking ?? "normal"}
+                    onSelect={(v) => patch({ cardMicroTracking: v })}
+                  />
                   <HintRow showClear={cardMicroTracking} onClear={() => patch({ cardMicroTracking: null })}>
                     上一格那幾行小字，字跟字之間空多少。那個間隙是照英文短詞挑的，中文放進去會變成一個個站開的單字、在手機上還會被撐到換行——中文小字選收緊，英文短詞想要雜誌感選撐開
                   </HintRow>
@@ -8929,23 +7348,11 @@ export function EditorWorkspace({
               )}
               {SECTIONS_WITH_CARD_MICRO_TEXT.includes(selectedSection) && (
                 <Field label="卡片小字行距">
-                  <div className="grid grid-cols-3 gap-1.5">
-                    {SECTION_LEADING_OPTIONS.map((opt) => (
-                      <button
-                        key={opt.v}
-                        type="button"
-                        onClick={() => patch({ cardMicroLeading: opt.v })}
-                        aria-pressed={(cardMicroLeading ?? "normal") === opt.v}
-                        className={`rounded-lg border py-2 text-xs transition ${
-                          (cardMicroLeading ?? "normal") === opt.v
-                            ? "border-emerald-500 bg-emerald-50 text-emerald-900"
-                            : "border-stone-200 text-stone-600 hover:border-stone-400"
-                        }`}
-                      >
-                        {opt.label}
-                      </button>
-                    ))}
-                  </div>
+                  <OptionGrid
+                    options={SECTION_LEADING_OPTIONS}
+                    selected={cardMicroLeading ?? "normal"}
+                    onSelect={(v) => patch({ cardMicroLeading: v })}
+                  />
                   <HintRow showClear={cardMicroLeading} onClear={() => patch({ cardMicroLeading: null })}>
                     同樣那幾行小字排到第二行時，上下兩行隔多遠。它們沒有自己的行距、跟著整段內文走（那是給一整段文字挑的值），套在那麼小的字上兩行之間空得比字還高——分類、標籤打長一點就會換行，選收緊讓兩行貼回一組
                   </HintRow>
@@ -8953,23 +7360,12 @@ export function EditorWorkspace({
               )}
               {SECTIONS_WITH_CARD_MICRO_TEXT.includes(selectedSection) && (
                 <Field label="卡片小字粗細">
-                  <div className="grid grid-cols-4 gap-1.5">
-                    {SECTION_WEIGHT_OPTIONS.map((opt) => (
-                      <button
-                        key={opt.v}
-                        type="button"
-                        onClick={() => patch({ cardMicroWeight: opt.v })}
-                        aria-pressed={(cardMicroWeight ?? "normal") === opt.v}
-                        className={`rounded-lg border py-2 text-xs transition ${
-                          (cardMicroWeight ?? "normal") === opt.v
-                            ? "border-emerald-500 bg-emerald-50 text-emerald-900"
-                            : "border-stone-200 text-stone-600 hover:border-stone-400"
-                        }`}
-                      >
-                        {opt.label}
-                      </button>
-                    ))}
-                  </div>
+                  <OptionGrid
+                    cols={4}
+                    options={SECTION_WEIGHT_OPTIONS}
+                    selected={cardMicroWeight ?? "normal"}
+                    onSelect={(v) => patch({ cardMicroWeight: v })}
+                  />
                   <HintRow showClear={cardMicroWeight} onClear={() => patch({ cardMicroWeight: null })}>
                     同樣那幾行小字的筆畫多粗。「看更多」、分類、標籤那三行是最細的一級，10px 又撐開字距，在淺色底上看起來像一條灰線不像字，想讓客人看得出那裡可以點選「中黑」或「粗」；精選商品那行「剩 N」本來就比較重、又是琥珀色，想讓它退成一句提示選「常規」
                   </HintRow>
@@ -8977,28 +7373,17 @@ export function EditorWorkspace({
               )}
               {SECTIONS_WITH_CARD_MICRO_TEXT.includes(selectedSection) && (
                 <Field label="卡片小字用色">
-                  <div className="grid grid-cols-4 gap-1.5">
-                    {([
+                  <OptionGrid
+                    cols={4}
+                    options={[
                       { v: "normal", label: "跟預設" },
                       { v: "accent", label: "主色" },
                       { v: "text", label: "跟品名同深" },
                       { v: "muted", label: "淡" },
-                    ] as const).map((opt) => (
-                      <button
-                        key={opt.v}
-                        type="button"
-                        onClick={() => patch({ cardMicroTone: opt.v })}
-                        aria-pressed={(cardMicroTone ?? "normal") === opt.v}
-                        className={`rounded-lg border py-2 text-xs transition ${
-                          (cardMicroTone ?? "normal") === opt.v
-                            ? "border-emerald-500 bg-emerald-50 text-emerald-900"
-                            : "border-stone-200 text-stone-600 hover:border-stone-400"
-                        }`}
-                      >
-                        {opt.label}
-                      </button>
-                    ))}
-                  </div>
+                    ] as const}
+                    selected={cardMicroTone ?? "normal"}
+                    onSelect={(v) => patch({ cardMicroTone: v })}
+                  />
                   <HintRow showClear={cardMicroTone} onClear={() => patch({ cardMicroTone: null })}>
                     前面三格動的是那幾行小字多大、字距多開、多粗，這格動的是它們什麼顏色。那幾行現在各是各的顏色：「看更多」跟慢讀的分類用主色、慢讀底下的標籤是淡灰、精選那行「剩 N」是橘色的警示色（跟店的配色沒關係）。主色深就跟品名撞在一起、主色亮在淺底上看不見、橘色那行又比價錢還搶——想讓整張卡的小字統一，四個都會一起換
                   </HintRow>
@@ -9006,27 +7391,15 @@ export function EditorWorkspace({
               )}
               {SECTIONS_WITH_CARD_MICRO_TEXT.includes(selectedSection) && (
                 <Field label="卡片小字大小寫">
-                  <div className="grid grid-cols-3 gap-1.5">
-                    {([
+                  <OptionGrid
+                    options={[
                       { v: "upper", label: "全大寫" },
                       { v: "capitalize", label: "字首大寫" },
                       { v: "none", label: "照原樣" },
-                    ] as const).map((opt) => (
-                      <button
-                        key={opt.v}
-                        type="button"
-                        onClick={() => patch({ cardMicroCase: opt.v })}
-                        aria-pressed={(cardMicroCase ?? "upper") === opt.v}
-                        className={`rounded-lg border py-2 text-xs transition ${
-                          (cardMicroCase ?? "upper") === opt.v
-                            ? "border-emerald-500 bg-emerald-50 text-emerald-900"
-                            : "border-stone-200 text-stone-600 hover:border-stone-400"
-                        }`}
-                      >
-                        {opt.label}
-                      </button>
-                    ))}
-                  </div>
+                    ] as const}
+                    selected={cardMicroCase ?? "upper"}
+                    onSelect={(v) => patch({ cardMicroCase: v })}
+                  />
                   <HintRow showClear={cardMicroCase} onClear={() => patch({ cardMicroCase: null })}>
                     同樣那幾行小字的英文字母要不要被轉成大寫。前面五格調的是它們多大、字距多開、換行後隔多遠、多粗、什麼顏色，這格調的是字形本身。那幾行一律轉全大寫，中文沒有大小寫、按了不會動；打英文就會被整行拉大寫——「Shop all」變 SHOP ALL、自己訂的分類標籤（Care 照顧只有前半被改）、好評那行的職稱或 IG 帳號，想照自己打的樣子顯示選「照原樣」（改輸入框裡的字沒用，大寫是顯示的時候才轉的）
                   </HintRow>
@@ -9034,23 +7407,11 @@ export function EditorWorkspace({
               )}
               {SECTIONS_WITH_CARD_PRICE.includes(selectedSection) && (
                 <Field label="卡片價錢字級">
-                  <div className="grid grid-cols-3 gap-1.5">
-                    {SECTION_SCALE_OPTIONS.map((opt) => (
-                      <button
-                        key={opt.v}
-                        type="button"
-                        onClick={() => patch({ cardPriceScale: opt.v })}
-                        aria-pressed={(cardPriceScale ?? "default") === opt.v}
-                        className={`rounded-lg border py-2 text-xs transition ${
-                          (cardPriceScale ?? "default") === opt.v
-                            ? "border-emerald-500 bg-emerald-50 text-emerald-900"
-                            : "border-stone-200 text-stone-600 hover:border-stone-400"
-                        }`}
-                      >
-                        {opt.label}
-                      </button>
-                    ))}
-                  </div>
+                  <OptionGrid
+                    options={SECTION_SCALE_OPTIONS}
+                    selected={cardPriceScale ?? "default"}
+                    onSelect={(v) => patch({ cardPriceScale: v })}
+                  />
                   <HintRow showClear={cardPriceScale} onClear={() => patch({ cardPriceScale: null })}>
                     精選商品卡片上那行價錢多大。價錢只有 14px、比品名還小一級，客人在首頁掃過去常常正是在找它；品名調大之後想讓價錢跟上也是這格。只有精選商品那段的卡片有價錢，其他段不受影響
                   </HintRow>
@@ -9058,27 +7419,15 @@ export function EditorWorkspace({
               )}
               {SECTIONS_WITH_CARD_PRICE.includes(selectedSection) && (
                 <Field label="卡片價錢粗細">
-                  <div className="grid grid-cols-3 gap-1.5">
-                    {([
+                  <OptionGrid
+                    options={[
                       { v: "normal", label: "常規" },
                       { v: "medium", label: "中黑" },
                       { v: "bold", label: "粗" },
-                    ] as const).map((opt) => (
-                      <button
-                        key={opt.v}
-                        type="button"
-                        onClick={() => patch({ cardPriceWeight: opt.v })}
-                        aria-pressed={(cardPriceWeight ?? "normal") === opt.v}
-                        className={`rounded-lg border py-2 text-xs transition ${
-                          (cardPriceWeight ?? "normal") === opt.v
-                            ? "border-emerald-500 bg-emerald-50 text-emerald-900"
-                            : "border-stone-200 text-stone-600 hover:border-stone-400"
-                        }`}
-                      >
-                        {opt.label}
-                      </button>
-                    ))}
-                  </div>
+                    ] as const}
+                    selected={cardPriceWeight ?? "normal"}
+                    onSelect={(v) => patch({ cardPriceWeight: v })}
+                  />
                   <HintRow showClear={cardPriceWeight} onClear={() => patch({ cardPriceWeight: null })}>
                     上一格管的是價錢多大，這格管的是它多粗。想讓價錢一眼看得到，加粗比放大省——不會把卡片下半撐開，也不用改顏色；反過來想讓首頁先講商品不先講價，就留常規。同樣只有精選商品那段的卡片有價錢
                   </HintRow>
@@ -9086,23 +7435,11 @@ export function EditorWorkspace({
               )}
               {SECTIONS_WITH_CARD_PRICE.includes(selectedSection) && (
                 <Field label="卡片價錢字距">
-                  <div className="grid grid-cols-3 gap-1.5">
-                    {SECTION_TRACKING_OPTIONS.map((opt) => (
-                      <button
-                        key={opt.v}
-                        type="button"
-                        onClick={() => patch({ cardPriceTracking: opt.v })}
-                        aria-pressed={(cardPriceTracking ?? "normal") === opt.v}
-                        className={`rounded-lg border py-2 text-xs transition ${
-                          (cardPriceTracking ?? "normal") === opt.v
-                            ? "border-emerald-500 bg-emerald-50 text-emerald-900"
-                            : "border-stone-200 text-stone-600 hover:border-stone-400"
-                        }`}
-                      >
-                        {opt.label}
-                      </button>
-                    ))}
-                  </div>
+                  <OptionGrid
+                    options={SECTION_TRACKING_OPTIONS}
+                    selected={cardPriceTracking ?? "normal"}
+                    onSelect={(v) => patch({ cardPriceTracking: v })}
+                  />
                   <HintRow showClear={cardPriceTracking} onClear={() => patch({ cardPriceTracking: null })}>
                     那行價錢同一行裡，數字與數字之間空多少。把品名字距撐開之後，貼在底下的價錢還是原本的密度，一鬆一緊疊在同一張卡上——這格讓價錢跟得上；撐開一點也有實體標價牌那種數字隔開的味道。只動價錢，品名、描述與那幾行小字不跟著變
                   </HintRow>
@@ -9110,27 +7447,15 @@ export function EditorWorkspace({
               )}
               {SECTIONS_WITH_CARD_PRICE.includes(selectedSection) && (
                 <Field label="卡片價錢用色">
-                  <div className="grid grid-cols-3 gap-1.5">
-                    {([
+                  <OptionGrid
+                    options={[
                       { v: "default", label: "預設" },
                       { v: "accent", label: "主色" },
                       { v: "text", label: "跟品名同深" },
-                    ] as const).map((opt) => (
-                      <button
-                        key={opt.v}
-                        type="button"
-                        onClick={() => patch({ cardPriceTone: opt.v })}
-                        aria-pressed={(cardPriceTone ?? "default") === opt.v}
-                        className={`rounded-lg border py-2 text-xs transition ${
-                          (cardPriceTone ?? "default") === opt.v
-                            ? "border-emerald-500 bg-emerald-50 text-emerald-900"
-                            : "border-stone-200 text-stone-600 hover:border-stone-400"
-                        }`}
-                      >
-                        {opt.label}
-                      </button>
-                    ))}
-                  </div>
+                    ] as const}
+                    selected={cardPriceTone ?? "default"}
+                    onSelect={(v) => patch({ cardPriceTone: v })}
+                  />
                   <HintRow showClear={cardPriceTone} onClear={() => patch({ cardPriceTone: null })}>
                     前面兩格動的是價錢多大、多粗，這格動的是它什麼顏色。那行本來比品名淡一階，是整張卡上最淡的一行，可是一株賣多少常常正是客人在首頁在找的東西——換成主色或跟品名同深，掃過一列卡片時才看得到。「卡片副文字深淺」動的是那層透明度，跟這格是兩回事，可以疊著用。只有精選商品那段的卡片有價錢
                   </HintRow>
@@ -9138,23 +7463,11 @@ export function EditorWorkspace({
               )}
               {SECTIONS_WITH_CARD_ROW_GAP.includes(selectedSection) && (
                 <Field label="卡片行距">
-                  <div className="grid grid-cols-3 gap-1.5">
-                    {SECTION_GAP_OPTIONS.map((opt) => (
-                      <button
-                        key={opt.v}
-                        type="button"
-                        onClick={() => patch({ cardRowGap: opt.v })}
-                        aria-pressed={(cardRowGap ?? "normal") === opt.v}
-                        className={`rounded-lg border py-2 text-xs transition ${
-                          (cardRowGap ?? "normal") === opt.v
-                            ? "border-emerald-500 bg-emerald-50 text-emerald-900"
-                            : "border-stone-200 text-stone-600 hover:border-stone-400"
-                        }`}
-                      >
-                        {opt.label}
-                      </button>
-                    ))}
-                  </div>
+                  <OptionGrid
+                    options={SECTION_GAP_OPTIONS}
+                    selected={cardRowGap ?? "normal"}
+                    onSelect={(v) => patch({ cardRowGap: v })}
+                  />
                   <HintRow showClear={cardRowGap} onClear={() => patch({ cardRowGap: null })}>
                     同一張卡片裡上下幾行之間隔多遠（照片到品名、品名到描述或價錢、描述到底下那行小字）。卡片變寬、四行字散在一片空白裡就收緊，字調大之後幾行黏成一團就放寬；幾行之間原本的遠近會照比例保留，不會被拉成一樣
                   </HintRow>
@@ -9162,55 +7475,32 @@ export function EditorWorkspace({
               )}
               {SECTIONS_WITH_CARD_META_TONE.includes(selectedSection) && (
                 <Field label="卡片副文字深淺">
-                  <div className="grid grid-cols-3 gap-1.5">
-                    {([
+                  <OptionGrid
+                    options={[
                       { v: "muted", label: "更淡" },
                       { v: "default", label: "跟預設" },
                       { v: "strong", label: "加深" },
-                    ] as const).map((opt) => (
-                      <button
-                        key={opt.v}
-                        type="button"
-                        onClick={() => patch({ cardMetaTone: opt.v })}
-                        aria-pressed={(cardMetaTone ?? "default") === opt.v}
-                        className={`rounded-lg border py-2 text-xs transition ${
-                          (cardMetaTone ?? "default") === opt.v
-                            ? "border-emerald-500 bg-emerald-50 text-emerald-900"
-                            : "border-stone-200 text-stone-600 hover:border-stone-400"
-                        }`}
-                      >
-                        {opt.label}
-                      </button>
-                    ))}
-                  </div>
+                    ] as const}
+                    selected={cardMetaTone ?? "default"}
+                    onSelect={(v) => patch({ cardMetaTone: v })}
+                  />
                   <HintRow showClear={cardMetaTone} onClear={() => patch({ cardMetaTone: null })}>
                     卡片上品名底下那行有多濃（選物的副標、精選商品的價錢）。那行現在被淡了兩次，實際只剩不到五成，字放大了還是一行讀不太到的淺灰——想讓客人在首頁一眼看到價錢就選加深；想讓卡片先講品名、價錢退到後面就選更淡。慢讀那段的摘要不受這格影響
                   </HintRow>
                 </Field>
               )}
               <Field label="底紋">
-                <div className="grid grid-cols-4 gap-1.5">
-                  {([
+                <OptionGrid
+                  cols={4}
+                  options={[
                     { v: "none", label: "無" },
                     { v: "grid", label: "格線" },
                     { v: "dots", label: "點陣" },
                     { v: "lines", label: "斜紋" },
-                  ] as const).map((opt) => (
-                    <button
-                      key={opt.v}
-                      type="button"
-                      onClick={() => patch({ texture: opt.v })}
-                      aria-pressed={(texture ?? "none") === opt.v}
-                      className={`rounded-lg border py-2 text-xs transition ${
-                        (texture ?? "none") === opt.v
-                          ? "border-emerald-500 bg-emerald-50 text-emerald-900"
-                          : "border-stone-200 text-stone-600 hover:border-stone-400"
-                      }`}
-                    >
-                      {opt.label}
-                    </button>
-                  ))}
-                </div>
+                  ] as const}
+                  selected={texture ?? "none"}
+                  onSelect={(v) => patch({ texture: v })}
+                />
                 <HintRow showClear={texture} onClear={() => patch({ texture: null })}>
                   很淡的紋路疊在底色上，顏色跟著這段的文字色走
                 </HintRow>
@@ -9219,23 +7509,11 @@ export function EditorWorkspace({
                   一個寫死的濃度上，底色跟文字色拉不開的段落按了三種花樣都像壞的。 */}
               {texture && texture !== "none" && (
                 <Field label="底紋濃淡">
-                  <div className="grid grid-cols-3 gap-1.5">
-                    {SECTION_BG_STRENGTH_OPTIONS.map((opt) => (
-                      <button
-                        key={opt.v}
-                        type="button"
-                        onClick={() => patch({ textureTone: opt.v })}
-                        aria-pressed={(textureTone ?? "default") === opt.v}
-                        className={`rounded-lg border py-2 text-xs transition ${
-                          (textureTone ?? "default") === opt.v
-                            ? "border-emerald-500 bg-emerald-50 text-emerald-900"
-                            : "border-stone-200 text-stone-600 hover:border-stone-400"
-                        }`}
-                      >
-                        {opt.label}
-                      </button>
-                    ))}
-                  </div>
+                  <OptionGrid
+                    options={SECTION_BG_STRENGTH_OPTIONS}
+                    selected={textureTone ?? "default"}
+                    onSelect={(v) => patch({ textureTone: v })}
+                  />
                   <HintRow showClear={textureTone} onClear={() => patch({ textureTone: null })}>
                     底紋看不出來就加深；更淡是留一點若有似無的質感，加深後點陣可以當滿版圓點主視覺
                   </HintRow>
@@ -9246,27 +7524,15 @@ export function EditorWorkspace({
                   疏得像表格——缺這格的話商家只能拿濃淡硬湊。 */}
               {texture && texture !== "none" && (
                 <Field label="底紋密度">
-                  <div className="grid grid-cols-3 gap-1.5">
-                    {([
+                  <OptionGrid
+                    options={[
                       { v: "dense", label: "更密" },
                       { v: "default", label: "跟預設" },
                       { v: "sparse", label: "更疏" },
-                    ] as const).map((opt) => (
-                      <button
-                        key={opt.v}
-                        type="button"
-                        onClick={() => patch({ textureScale: opt.v })}
-                        aria-pressed={(textureScale ?? "default") === opt.v}
-                        className={`rounded-lg border py-2 text-xs transition ${
-                          (textureScale ?? "default") === opt.v
-                            ? "border-emerald-500 bg-emerald-50 text-emerald-900"
-                            : "border-stone-200 text-stone-600 hover:border-stone-400"
-                        }`}
-                      >
-                        {opt.label}
-                      </button>
-                    ))}
-                  </div>
+                    ] as const}
+                    selected={textureScale ?? "default"}
+                    onSelect={(v) => patch({ textureScale: v })}
+                  />
                   <HintRow showClear={textureScale} onClear={() => patch({ textureScale: null })}>
                     更密是織物那種細密質感；更疏讓點跟點拉開距離，配加深可以當滿版圓點主視覺
                   </HintRow>
@@ -9277,54 +7543,32 @@ export function EditorWorkspace({
                   的話商家調完濃淡密度拿到的還是一片灰點。 */}
               {texture && texture !== "none" && (
                 <Field label="底紋用色">
-                  <div className="grid grid-cols-2 gap-1.5">
-                    {([
+                  <OptionGrid
+                    cols={2}
+                    options={[
                       { v: "text", label: "跟文字色" },
                       { v: "accent", label: "全站主色" },
-                    ] as const).map((opt) => (
-                      <button
-                        key={opt.v}
-                        type="button"
-                        onClick={() => patch({ textureColor: opt.v })}
-                        aria-pressed={(textureColor ?? "text") === opt.v}
-                        className={`rounded-lg border py-2 text-xs transition ${
-                          (textureColor ?? "text") === opt.v
-                            ? "border-emerald-500 bg-emerald-50 text-emerald-900"
-                            : "border-stone-200 text-stone-600 hover:border-stone-400"
-                        }`}
-                      >
-                        {opt.label}
-                      </button>
-                    ))}
-                  </div>
+                    ] as const}
+                    selected={textureColor ?? "text"}
+                    onSelect={(v) => patch({ textureColor: v })}
+                  />
                   <HintRow showClear={textureColor} onClear={() => patch({ textureColor: null })}>
                     跟文字色是安靜的襯底；全站主色讓紋帶品牌色，配加深、更疏就是品牌色圓點主視覺
                   </HintRow>
                 </Field>
               )}
               <Field label="底色明暗">
-                <div className="grid grid-cols-4 gap-1.5">
-                  {([
+                <OptionGrid
+                  cols={4}
+                  options={[
                     { v: "none", label: "無" },
                     { v: "top", label: "上緣" },
                     { v: "bottom", label: "下緣" },
                     { v: "vignette", label: "暈影" },
-                  ] as const).map((opt) => (
-                    <button
-                      key={opt.v}
-                      type="button"
-                      onClick={() => patch({ bgGradient: opt.v })}
-                      aria-pressed={(bgGradient ?? "none") === opt.v}
-                      className={`rounded-lg border py-2 text-xs transition ${
-                        (bgGradient ?? "none") === opt.v
-                          ? "border-emerald-500 bg-emerald-50 text-emerald-900"
-                          : "border-stone-200 text-stone-600 hover:border-stone-400"
-                      }`}
-                    >
-                      {opt.label}
-                    </button>
-                  ))}
-                </div>
+                  ] as const}
+                  selected={bgGradient ?? "none"}
+                  onSelect={(v) => patch({ bgGradient: v })}
+                />
                 <HintRow showClear={bgGradient} onClear={() => patch({ bgGradient: null })}>
                   底色從一邊淡淡加深（暈影＝四周壓暗），可以跟底紋一起用
                 </HintRow>
@@ -9333,23 +7577,11 @@ export function EditorWorkspace({
                   寫死的 12% 上，底色跟文字色拉不開的段落按了三個方向都像壞的。 */}
               {bgGradient && bgGradient !== "none" && (
                 <Field label="底色明暗濃淡">
-                  <div className="grid grid-cols-3 gap-1.5">
-                    {SECTION_BG_STRENGTH_OPTIONS.map((opt) => (
-                      <button
-                        key={opt.v}
-                        type="button"
-                        onClick={() => patch({ bgGradientTone: opt.v })}
-                        aria-pressed={(bgGradientTone ?? "default") === opt.v}
-                        className={`rounded-lg border py-2 text-xs transition ${
-                          (bgGradientTone ?? "default") === opt.v
-                            ? "border-emerald-500 bg-emerald-50 text-emerald-900"
-                            : "border-stone-200 text-stone-600 hover:border-stone-400"
-                        }`}
-                      >
-                        {opt.label}
-                      </button>
-                    ))}
-                  </div>
+                  <OptionGrid
+                    options={SECTION_BG_STRENGTH_OPTIONS}
+                    selected={bgGradientTone ?? "default"}
+                    onSelect={(v) => patch({ bgGradientTone: v })}
+                  />
                   <HintRow showClear={bgGradientTone} onClear={() => patch({ bgGradientTone: null })}>
                     明暗看不出來就加深；加深後暈影像舞台打光，把視線收到段落中央
                   </HintRow>
@@ -9361,105 +7593,57 @@ export function EditorWorkspace({
                 </p>
               </div>
               <Field label="進場動畫">
-                <div className="grid grid-cols-3 gap-1.5">
-                  {([
+                <OptionGrid
+                  options={[
                     { v: "none", label: "無" },
                     { v: "fade", label: "淡入" },
                     { v: "slide-up", label: "上滑" },
-                  ] as const).map((opt) => (
-                    <button
-                      key={opt.v}
-                      type="button"
-                      onClick={() => patch({ entrance: opt.v })}
-                      aria-pressed={(entrance ?? "none") === opt.v}
-                      className={`rounded-lg border py-2 text-xs transition ${
-                        (entrance ?? "none") === opt.v
-                          ? "border-emerald-500 bg-emerald-50 text-emerald-900"
-                          : "border-stone-200 text-stone-600 hover:border-stone-400"
-                      }`}
-                    >
-                      {opt.label}
-                    </button>
-                  ))}
-                </div>
+                  ] as const}
+                  selected={entrance ?? "none"}
+                  onSelect={(v) => patch({ entrance: v })}
+                />
                 <HintRow showClear={entrance} onClear={() => patch({ entrance: null })}>
                   滾到該段時觸發（編輯模式不會看到動畫）
                 </HintRow>
               </Field>
               <Field label="字體">
-                <div className="grid grid-cols-3 gap-1.5">
-                  {([
+                <OptionGrid
+                  options={[
                     { v: "default", label: "預設" },
                     { v: "serif", label: "宋體" },
                     { v: "sans", label: "黑體" },
-                  ] as const).map((opt) => (
-                    <button
-                      key={opt.v}
-                      type="button"
-                      onClick={() => patch({ fontFamily: opt.v })}
-                      aria-pressed={(fontFamily ?? "default") === opt.v}
-                      className={`rounded-lg border py-2 text-xs transition ${
-                        (fontFamily ?? "default") === opt.v
-                          ? "border-emerald-500 bg-emerald-50 text-emerald-900"
-                          : "border-stone-200 text-stone-600 hover:border-stone-400"
-                      }`}
-                    >
-                      {opt.label}
-                    </button>
-                  ))}
-                </div>
+                  ] as const}
+                  selected={fontFamily ?? "default"}
+                  onSelect={(v) => patch({ fontFamily: v })}
+                />
                 <HintRow showClear={fontFamily} onClear={() => patch({ fontFamily: null })}>
                   沒選 = 跟著全站字體
                 </HintRow>
               </Field>
               <Field label="字距">
-                <div className="grid grid-cols-3 gap-1.5">
-                  {([
+                <OptionGrid
+                  options={[
                     { v: "tight", label: "緊" },
                     { v: "normal", label: "預設" },
                     { v: "wide", label: "寬" },
-                  ] as const).map((opt) => (
-                    <button
-                      key={opt.v}
-                      type="button"
-                      onClick={() => patch({ letterSpacing: opt.v })}
-                      aria-pressed={(letterSpacing ?? "normal") === opt.v}
-                      className={`rounded-lg border py-2 text-xs transition ${
-                        (letterSpacing ?? "normal") === opt.v
-                          ? "border-emerald-500 bg-emerald-50 text-emerald-900"
-                          : "border-stone-200 text-stone-600 hover:border-stone-400"
-                      }`}
-                    >
-                      {opt.label}
-                    </button>
-                  ))}
-                </div>
+                  ] as const}
+                  selected={letterSpacing ?? "normal"}
+                  onSelect={(v) => patch({ letterSpacing: v })}
+                />
                 <HintRow showClear={letterSpacing} onClear={() => patch({ letterSpacing: null })}>
                   「寬」適合雜誌大標 / 全大寫字
                 </HintRow>
               </Field>
               <Field label="行高">
-                <div className="grid grid-cols-3 gap-1.5">
-                  {([
+                <OptionGrid
+                  options={[
                     { v: "tight", label: "緊湊" },
                     { v: "normal", label: "預設" },
                     { v: "relaxed", label: "舒展" },
-                  ] as const).map((opt) => (
-                    <button
-                      key={opt.v}
-                      type="button"
-                      onClick={() => patch({ lineHeight: opt.v })}
-                      aria-pressed={(lineHeight ?? "normal") === opt.v}
-                      className={`rounded-lg border py-2 text-xs transition ${
-                        (lineHeight ?? "normal") === opt.v
-                          ? "border-emerald-500 bg-emerald-50 text-emerald-900"
-                          : "border-stone-200 text-stone-600 hover:border-stone-400"
-                      }`}
-                    >
-                      {opt.label}
-                    </button>
-                  ))}
-                </div>
+                  ] as const}
+                  selected={lineHeight ?? "normal"}
+                  onSelect={(v) => patch({ lineHeight: v })}
+                />
                 <HintRow showClear={lineHeight} onClear={() => patch({ lineHeight: null })}>
                   「舒展」適合長段內文 / 慢讀區
                 </HintRow>
@@ -9470,53 +7654,29 @@ export function EditorWorkspace({
                 </p>
               </div>
               <Field label="淡化">
-                <div className="grid grid-cols-3 gap-1.5">
-                  {([
+                <OptionGrid
+                  options={[
                     { v: "default", label: "普通" },
                     { v: "muted", label: "半透" },
                     { v: "faint", label: "淡" },
-                  ] as const).map((opt) => (
-                    <button
-                      key={opt.v}
-                      type="button"
-                      onClick={() => patch({ opacity: opt.v })}
-                      aria-pressed={(opacity ?? "default") === opt.v}
-                      className={`rounded-lg border py-2 text-xs transition ${
-                        (opacity ?? "default") === opt.v
-                          ? "border-emerald-500 bg-emerald-50 text-emerald-900"
-                          : "border-stone-200 text-stone-600 hover:border-stone-400"
-                      }`}
-                    >
-                      {opt.label}
-                    </button>
-                  ))}
-                </div>
+                  ] as const}
+                  selected={opacity ?? "default"}
+                  onSelect={(v) => patch({ opacity: v })}
+                />
                 <HintRow showClear={opacity} onClear={() => patch({ opacity: null })}>
                   讓次要 section（合作 / 數字 / FAQ）變淡，襯托 hero 跳出
                 </HintRow>
               </Field>
               <Field label="濾鏡">
-                <div className="grid grid-cols-3 gap-1.5">
-                  {([
+                <OptionGrid
+                  options={[
                     { v: "none", label: "無" },
                     { v: "grayscale", label: "黑白" },
                     { v: "sepia", label: "復古" },
-                  ] as const).map((opt) => (
-                    <button
-                      key={opt.v}
-                      type="button"
-                      onClick={() => patch({ filter: opt.v })}
-                      aria-pressed={(filter ?? "none") === opt.v}
-                      className={`rounded-lg border py-2 text-xs transition ${
-                        (filter ?? "none") === opt.v
-                          ? "border-emerald-500 bg-emerald-50 text-emerald-900"
-                          : "border-stone-200 text-stone-600 hover:border-stone-400"
-                      }`}
-                    >
-                      {opt.label}
-                    </button>
-                  ))}
-                </div>
+                  ] as const}
+                  selected={filter ?? "none"}
+                  onSelect={(v) => patch({ filter: v })}
+                />
                 <HintRow showClear={filter} onClear={() => patch({ filter: null })}>
                   套在這段的照片上（文字與配色不動），合作 / 相簿黑白做雜誌感、慢讀區復古做懷舊感
                 </HintRow>
@@ -9544,50 +7704,26 @@ export function EditorWorkspace({
               </div>
             </Field>
             <Field label="區段上下空白">
-              <div className="grid grid-cols-3 gap-1.5">
-                {([
+              <OptionGrid
+                options={[
                   { v: "compact", label: "緊湊" },
                   { v: "default", label: "標準" },
                   { v: "spacious", label: "寬鬆" },
-                ] as const).map((opt) => (
-                  <button
-                    key={opt.v}
-                    type="button"
-                    onClick={() => updateLayout({ sectionPaddingScale: opt.v })}
-                    aria-pressed={theme.layout.sectionPaddingScale === opt.v}
-                    className={`rounded-lg border py-2 text-xs transition ${
-                      theme.layout.sectionPaddingScale === opt.v
-                        ? "border-emerald-500 bg-emerald-50 text-emerald-900"
-                        : "border-stone-200 text-stone-600 hover:border-stone-400"
-                    }`}
-                  >
-                    {opt.label}
-                  </button>
-                ))}
-              </div>
+                ] as const}
+                selected={theme.layout.sectionPaddingScale}
+                onSelect={(v) => updateLayout({ sectionPaddingScale: v })}
+              />
             </Field>
             <Field label="按鈕圓角">
-              <div className="grid grid-cols-3 gap-1.5">
-                {([
+              <OptionGrid
+                options={[
                   { v: "pill", label: "整圓" },
                   { v: "soft", label: "微圓" },
                   { v: "square", label: "直角" },
-                ] as const).map((opt) => (
-                  <button
-                    key={opt.v}
-                    type="button"
-                    onClick={() => updateLayout({ buttonRadius: opt.v })}
-                    aria-pressed={theme.layout.buttonRadius === opt.v}
-                    className={`rounded-lg border py-2 text-xs transition ${
-                      theme.layout.buttonRadius === opt.v
-                        ? "border-emerald-500 bg-emerald-50 text-emerald-900"
-                        : "border-stone-200 text-stone-600 hover:border-stone-400"
-                    }`}
-                  >
-                    {opt.label}
-                  </button>
-                ))}
-              </div>
+                ] as const}
+                selected={theme.layout.buttonRadius}
+                onSelect={(v) => updateLayout({ buttonRadius: v })}
+              />
               <p className="text-[10px] text-stone-500 leading-relaxed">
                 全站的按鈕一起換 — 首頁的行動按鈕、加入購物車、結帳、表單送出。
               </p>
@@ -10129,6 +8265,53 @@ function HintRow({
           清除
         </button>
       ) : null}
+    </div>
+  );
+}
+
+/**
+ * 每格樣式控制的「幾選一」按鈕格。
+ * 之前 158 格各抄一份一模一樣的 <div grid>＋<button>（aria-pressed、選中／未選中
+ * 的框線底色、字級全同），改一格（例如選中色要換）另外 157 格不會跟著動，所以收成一支。
+ * options 多帶 hint 之類的欄位沒關係，這裡只讀 v 跟 label；帶 style／title 的那幾格
+ * 不是同一包，留在原地。
+ */
+function OptionGrid<V extends string>({
+  cols = 3,
+  options,
+  selected,
+  onSelect,
+}: {
+  cols?: 2 | 3 | 4 | 5;
+  options: ReadonlyArray<{ v: V; label: string }>;
+  selected: string | null | undefined;
+  onSelect: (v: V) => void;
+}) {
+  const gridClass =
+    cols === 2
+      ? "grid grid-cols-2 gap-1.5"
+      : cols === 4
+      ? "grid grid-cols-4 gap-1.5"
+      : cols === 5
+      ? "grid grid-cols-5 gap-1.5"
+      : "grid grid-cols-3 gap-1.5";
+  return (
+    <div className={gridClass}>
+      {options.map((opt) => (
+        <button
+          key={opt.v}
+          type="button"
+          onClick={() => onSelect(opt.v)}
+          aria-pressed={selected === opt.v}
+          className={`rounded-lg border py-2 text-xs transition ${
+            selected === opt.v
+              ? "border-emerald-500 bg-emerald-50 text-emerald-900"
+              : "border-stone-200 text-stone-600 hover:border-stone-400"
+          }`}
+        >
+          {opt.label}
+        </button>
+      ))}
     </div>
   );
 }
