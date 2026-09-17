@@ -6583,18 +6583,9 @@ export function EditorWorkspace({
                     </button>
                   ))}
                 </div>
-                <div className="mt-1.5 flex items-center justify-between text-[11px] text-stone-500">
-                  <span>只管段落文字，標題另外走上面那條</span>
-                  {bodyAlign && (
-                    <button
-                      type="button"
-                      onClick={() => patch({ bodyAlign: null })}
-                      className="text-stone-500 hover:text-stone-800 underline"
-                    >
-                      清除
-                    </button>
-                  )}
-                </div>
+                <HintRow showClear={bodyAlign} onClear={() => patch({ bodyAlign: null })}>
+                  只管段落文字，標題另外走上面那條
+                </HintRow>
               </Field>
               <Field label="一行字數">
                 <div className="grid grid-cols-3 gap-1.5">
@@ -6618,18 +6609,9 @@ export function EditorWorkspace({
                     </button>
                   ))}
                 </div>
-                <div className="mt-1.5 flex items-center justify-between text-[11px] text-stone-500">
-                  <span>長段落收成窄欄好讀，標題與照片不跟著變窄</span>
-                  {bodyMeasure && (
-                    <button
-                      type="button"
-                      onClick={() => patch({ bodyMeasure: null })}
-                      className="text-stone-500 hover:text-stone-800 underline"
-                    >
-                      清除
-                    </button>
-                  )}
-                </div>
+                <HintRow showClear={bodyMeasure} onClear={() => patch({ bodyMeasure: null })}>
+                  長段落收成窄欄好讀，標題與照片不跟著變窄
+                </HintRow>
               </Field>
               <Field label="內文大小">
                 <div className="grid grid-cols-3 gap-1.5">
@@ -6649,18 +6631,9 @@ export function EditorWorkspace({
                     </button>
                   ))}
                 </div>
-                <div className="mt-1.5 flex items-center justify-between text-[11px] text-stone-500">
-                  <span>只縮放段落文字，標題另有「標題大小」那一組</span>
-                  {bodyScale && (
-                    <button
-                      type="button"
-                      onClick={() => patch({ bodyScale: null })}
-                      className="text-stone-500 hover:text-stone-800 underline"
-                    >
-                      清除
-                    </button>
-                  )}
-                </div>
+                <HintRow showClear={bodyScale} onClear={() => patch({ bodyScale: null })}>
+                  只縮放段落文字，標題另有「標題大小」那一組
+                </HintRow>
               </Field>
               <Field label="內文濃淡">
                 <div className="grid grid-cols-3 gap-1.5">
@@ -6684,18 +6657,9 @@ export function EditorWorkspace({
                     </button>
                   ))}
                 </div>
-                <div className="mt-1.5 flex items-center justify-between text-[11px] text-stone-500">
-                  <span>描述、說明這類次要文字的深淺，選「濃」跟標題一樣深、長描述最好讀</span>
-                  {bodyTone && (
-                    <button
-                      type="button"
-                      onClick={() => patch({ bodyTone: null })}
-                      className="text-stone-500 hover:text-stone-800 underline"
-                    >
-                      清除
-                    </button>
-                  )}
-                </div>
+                <HintRow showClear={bodyTone} onClear={() => patch({ bodyTone: null })}>
+                  描述、說明這類次要文字的深淺，選「濃」跟標題一樣深、長描述最好讀
+                </HintRow>
               </Field>
               <Field label="內文粗細">
                 <div className="grid grid-cols-3 gap-1.5">
@@ -6719,18 +6683,9 @@ export function EditorWorkspace({
                     </button>
                   ))}
                 </div>
-                <div className="mt-1.5 flex items-center justify-between text-[11px] text-stone-500">
-                  <span>描述、引言、答案那幾行的粗細，不佔空間也不換顏色就讓字站出來</span>
-                  {bodyWeight && (
-                    <button
-                      type="button"
-                      onClick={() => patch({ bodyWeight: null })}
-                      className="text-stone-500 hover:text-stone-800 underline"
-                    >
-                      清除
-                    </button>
-                  )}
-                </div>
+                <HintRow showClear={bodyWeight} onClear={() => patch({ bodyWeight: null })}>
+                  描述、引言、答案那幾行的粗細，不佔空間也不換顏色就讓字站出來
+                </HintRow>
               </Field>
               <Field label="內文字距">
                 <div className="grid grid-cols-3 gap-1.5">
@@ -6750,18 +6705,9 @@ export function EditorWorkspace({
                     </button>
                   ))}
                 </div>
-                <div className="mt-1.5 flex items-center justify-between text-[11px] text-stone-500">
-                  <span>那幾行字與字之間的距離，只動內文不動大標（上面「字距」是整段一起走）</span>
-                  {bodyTracking && (
-                    <button
-                      type="button"
-                      onClick={() => patch({ bodyTracking: null })}
-                      className="text-stone-500 hover:text-stone-800 underline"
-                    >
-                      清除
-                    </button>
-                  )}
-                </div>
+                <HintRow showClear={bodyTracking} onClear={() => patch({ bodyTracking: null })}>
+                  那幾行字與字之間的距離，只動內文不動大標（上面「字距」是整段一起走）
+                </HintRow>
               </Field>
               <Field label="背景色">
                 <div className="flex items-center gap-2">
@@ -6926,18 +6872,9 @@ export function EditorWorkspace({
                     </button>
                   ))}
                 </div>
-                <div className="mt-1.5 flex items-center justify-between text-[11px] text-stone-500">
-                  <span>沒選 = 跟著全站「區段上下空白」</span>
-                  {pad && (
-                    <button
-                      type="button"
-                      onClick={() => patch({ paddingScale: null })}
-                      className="text-stone-500 hover:text-stone-800 underline"
-                    >
-                      清除
-                    </button>
-                  )}
-                </div>
+                <HintRow showClear={pad} onClear={() => patch({ paddingScale: null })}>
+                  沒選 = 跟著全站「區段上下空白」
+                </HintRow>
               </Field>
               {/* 「標題與內容」調的是最上面那塊標題跟底下內容之間的距離（見上面
                   SECTIONS_WITH_SECTION_HEAD），只在真的有那塊標題的八段列出來。 */}
@@ -6960,18 +6897,9 @@ export function EditorWorkspace({
                     </button>
                   ))}
                 </div>
-                <div className="mt-1.5 flex items-center justify-between text-[11px] text-stone-500">
-                  <span>這段最上面那塊標題跟底下內容之間空多少。標題只有幾個字時中間空太多會像兩段沒關係的東西，選「收緊」；標題底下還有引言、想讓底下的卡片獨立一點時選「放寬」（上面那格調的是整段外圍的上下）</span>
-                  {headingGap && (
-                    <button
-                      type="button"
-                      onClick={() => patch({ headingGap: null })}
-                      className="text-stone-500 hover:text-stone-800 underline"
-                    >
-                      清除
-                    </button>
-                  )}
-                </div>
+                <HintRow showClear={headingGap} onClear={() => patch({ headingGap: null })}>
+                  這段最上面那塊標題跟底下內容之間空多少。標題只有幾個字時中間空太多會像兩段沒關係的東西，選「收緊」；標題底下還有引言、想讓底下的卡片獨立一點時選「放寬」（上面那格調的是整段外圍的上下）
+                </HintRow>
               </Field>
               )}
               {/* 「標題塊裡面」比上面那格再少一段合作 logo（見上面 SECTIONS_WITH_HEADING_INNER）。 */}
@@ -6994,18 +6922,9 @@ export function EditorWorkspace({
                     </button>
                   ))}
                 </div>
-                <div className="mt-1.5 flex items-center justify-between text-[11px] text-stone-500">
-                  <span>上面那格調的是這塊標題跟底下卡片之間；這格調的是這塊裡面——小標跟大標之間、大標跟底下那行引言或短線之間。小標寫得長、大標又是兩行時選「收緊」讓三行看起來是同一塊；標題只有兩三個字時選「放寬」</span>
-                  {headingInnerGap && (
-                    <button
-                      type="button"
-                      onClick={() => patch({ headingInnerGap: null })}
-                      className="text-stone-500 hover:text-stone-800 underline"
-                    >
-                      清除
-                    </button>
-                  )}
-                </div>
+                <HintRow showClear={headingInnerGap} onClear={() => patch({ headingInnerGap: null })}>
+                  上面那格調的是這塊標題跟底下卡片之間；這格調的是這塊裡面——小標跟大標之間、大標跟底下那行引言或短線之間。小標寫得長、大標又是兩行時選「收緊」讓三行看起來是同一塊；標題只有兩三個字時選「放寬」
+                </HintRow>
               </Field>
               )}
               <Field label="小標字距">
@@ -7026,18 +6945,9 @@ export function EditorWorkspace({
                     </button>
                   ))}
                 </div>
-                <div className="mt-1.5 flex items-center justify-between text-[11px] text-stone-500">
-                  <span>這段最上面那行小標（大標上面那行小字）每個字之間空多少。中文小標、或字多一點被撐到換行時選「收緊」；英文短詞想要雜誌那種一字一字排開的感覺選「撐開」（整段的「字距」動不到這行，它自己帶著一個值）</span>
-                  {eyebrowTracking && (
-                    <button
-                      type="button"
-                      onClick={() => patch({ eyebrowTracking: null })}
-                      className="text-stone-500 hover:text-stone-800 underline"
-                    >
-                      清除
-                    </button>
-                  )}
-                </div>
+                <HintRow showClear={eyebrowTracking} onClear={() => patch({ eyebrowTracking: null })}>
+                  這段最上面那行小標（大標上面那行小字）每個字之間空多少。中文小標、或字多一點被撐到換行時選「收緊」；英文短詞想要雜誌那種一字一字排開的感覺選「撐開」（整段的「字距」動不到這行，它自己帶著一個值）
+                </HintRow>
               </Field>
               <Field label="小標字級">
                 <div className="grid grid-cols-3 gap-1.5">
@@ -7057,18 +6967,9 @@ export function EditorWorkspace({
                     </button>
                   ))}
                 </div>
-                <div className="mt-1.5 flex items-center justify-between text-[11px] text-stone-500">
-                  <span>上面那格調的是那行小標的字距，這格調的是那行字本身多大。小標打中文、在手機上糊成一團看不清楚時選「大」；把小標當這段主標用（大標只有兩個字）也選「大」（「標題大小」動的是大標，這行不跟著動）</span>
-                  {eyebrowScale && (
-                    <button
-                      type="button"
-                      onClick={() => patch({ eyebrowScale: null })}
-                      className="text-stone-500 hover:text-stone-800 underline"
-                    >
-                      清除
-                    </button>
-                  )}
-                </div>
+                <HintRow showClear={eyebrowScale} onClear={() => patch({ eyebrowScale: null })}>
+                  上面那格調的是那行小標的字距，這格調的是那行字本身多大。小標打中文、在手機上糊成一團看不清楚時選「大」；把小標當這段主標用（大標只有兩個字）也選「大」（「標題大小」動的是大標，這行不跟著動）
+                </HintRow>
               </Field>
               <Field label="小標粗細">
                 <div className="grid grid-cols-4 gap-1.5">
@@ -7088,18 +6989,9 @@ export function EditorWorkspace({
                     </button>
                   ))}
                 </div>
-                <div className="mt-1.5 flex items-center justify-between text-[11px] text-stone-500">
-                  <span>那行小標的字本身多重。小標的字最小、又撐開字距，在淺色底上細到看不清楚時選「中黑」或「粗」；選物與精選那兩段的小標本來就比較重、又是用主色印的，想讓它退回配角選「常規」（「內文粗細」也會動到這行，但會把整段的描述、答案一起變粗）</span>
-                  {eyebrowWeight && (
-                    <button
-                      type="button"
-                      onClick={() => patch({ eyebrowWeight: null })}
-                      className="text-stone-500 hover:text-stone-800 underline"
-                    >
-                      清除
-                    </button>
-                  )}
-                </div>
+                <HintRow showClear={eyebrowWeight} onClear={() => patch({ eyebrowWeight: null })}>
+                  那行小標的字本身多重。小標的字最小、又撐開字距，在淺色底上細到看不清楚時選「中黑」或「粗」；選物與精選那兩段的小標本來就比較重、又是用主色印的，想讓它退回配角選「常規」（「內文粗細」也會動到這行，但會把整段的描述、答案一起變粗）
+                </HintRow>
               </Field>
               <Field label="小標行距">
                 <div className="grid grid-cols-3 gap-1.5">
@@ -7119,18 +7011,9 @@ export function EditorWorkspace({
                     </button>
                   ))}
                 </div>
-                <div className="mt-1.5 flex items-center justify-between text-[11px] text-stone-500">
-                  <span>上兩格調的是那行小標的字距與大小，這格調的是它排到兩行時上下隔多遠。小標打長一點、或字級按到「大」之後在手機上換行，兩行散得像兩個小標時選「收緊」（整段的「行高」也動得到這行，但會把底下的描述、答案一起收緊）</span>
-                  {eyebrowLeading && (
-                    <button
-                      type="button"
-                      onClick={() => patch({ eyebrowLeading: null })}
-                      className="text-stone-500 hover:text-stone-800 underline"
-                    >
-                      清除
-                    </button>
-                  )}
-                </div>
+                <HintRow showClear={eyebrowLeading} onClear={() => patch({ eyebrowLeading: null })}>
+                  上兩格調的是那行小標的字距與大小，這格調的是它排到兩行時上下隔多遠。小標打長一點、或字級按到「大」之後在手機上換行，兩行散得像兩個小標時選「收緊」（整段的「行高」也動得到這行，但會把底下的描述、答案一起收緊）
+                </HintRow>
               </Field>
               <Field label="小標用色">
                 <div className="grid grid-cols-4 gap-1.5">
@@ -7155,18 +7038,9 @@ export function EditorWorkspace({
                     </button>
                   ))}
                 </div>
-                <div className="mt-1.5 flex items-center justify-between text-[11px] text-stone-500">
-                  <span>那行小標是什麼顏色。大部分段落的小標是用全站主色印的，主色深的時候跟底下的大標搶、亮的時候在淺底上糊掉，想讓它退回一般文字選「內文色」或「淡」；合作那段的小標本來就是淡的，想跟別段一致選「主色」（「文字顏色」換的是整段的色，小標帶著自己的顏色反而不會跟著動）</span>
-                  {eyebrowTone && (
-                    <button
-                      type="button"
-                      onClick={() => patch({ eyebrowTone: null })}
-                      className="text-stone-500 hover:text-stone-800 underline"
-                    >
-                      清除
-                    </button>
-                  )}
-                </div>
+                <HintRow showClear={eyebrowTone} onClear={() => patch({ eyebrowTone: null })}>
+                  那行小標是什麼顏色。大部分段落的小標是用全站主色印的，主色深的時候跟底下的大標搶、亮的時候在淺底上糊掉，想讓它退回一般文字選「內文色」或「淡」；合作那段的小標本來就是淡的，想跟別段一致選「主色」（「文字顏色」換的是整段的色，小標帶著自己的顏色反而不會跟著動）
+                </HintRow>
               </Field>
               <Field label="小標大小寫">
                 <div className="grid grid-cols-3 gap-1.5">
@@ -7190,18 +7064,9 @@ export function EditorWorkspace({
                     </button>
                   ))}
                 </div>
-                <div className="mt-1.5 flex items-center justify-between text-[11px] text-stone-500">
-                  <span>那行小標的英文字母要不要被轉成大寫。前面幾格調的是那行字的字距、大小、粗細、行距、顏色，這格調的是字形本身。小標一律轉全大寫，中文沒有大小寫、按了不會動；打英文的話會被整行拉成大寫——自己的英文店名（Plantae Market → PLANTAE MARKET）或「Est. 2019」想照自己打的樣子顯示選「照原樣」（改輸入框裡的字沒用，大寫是顯示的時候才轉的）</span>
-                  {eyebrowCase && (
-                    <button
-                      type="button"
-                      onClick={() => patch({ eyebrowCase: null })}
-                      className="text-stone-500 hover:text-stone-800 underline"
-                    >
-                      清除
-                    </button>
-                  )}
-                </div>
+                <HintRow showClear={eyebrowCase} onClear={() => patch({ eyebrowCase: null })}>
+                  那行小標的英文字母要不要被轉成大寫。前面幾格調的是那行字的字距、大小、粗細、行距、顏色，這格調的是字形本身。小標一律轉全大寫，中文沒有大小寫、按了不會動；打英文的話會被整行拉成大寫——自己的英文店名（Plantae Market → PLANTAE MARKET）或「Est. 2019」想照自己打的樣子顯示選「照原樣」（改輸入框裡的字沒用，大寫是顯示的時候才轉的）
+                </HintRow>
               </Field>
               <Field label="分隔線">
                 <div className="grid grid-cols-4 gap-1.5">
@@ -7255,18 +7120,9 @@ export function EditorWorkspace({
                       </button>
                     ))}
                   </div>
-                  <div className="mt-1.5 flex items-center justify-between text-[11px] text-stone-500">
-                    <span>預設那條又細又淡，常常看起來像沒畫；段落之間要斷得明確就調粗</span>
-                    {dividerWeight && (
-                      <button
-                        type="button"
-                        onClick={() => patch({ dividerWeight: null })}
-                        className="text-stone-500 hover:text-stone-800 underline"
-                      >
-                        清除
-                      </button>
-                    )}
-                  </div>
+                  <HintRow showClear={dividerWeight} onClear={() => patch({ dividerWeight: null })}>
+                    預設那條又細又淡，常常看起來像沒畫；段落之間要斷得明確就調粗
+                  </HintRow>
                 </Field>
               )}
               {/* 深淺跟粗細同一個道理：沒畫線就沒東西可調。粗細那格的說明自己講了
@@ -7290,18 +7146,9 @@ export function EditorWorkspace({
                       </button>
                     ))}
                   </div>
-                  <div className="mt-1.5 flex items-center justify-between text-[11px] text-stone-500">
-                    <span>調粗了還是看不清就調深：同文字跟這段的字一樣深，主色拿來當裝飾線</span>
-                    {dividerTone && (
-                      <button
-                        type="button"
-                        onClick={() => patch({ dividerTone: null })}
-                        className="text-stone-500 hover:text-stone-800 underline"
-                      >
-                        清除
-                      </button>
-                    )}
-                  </div>
+                  <HintRow showClear={dividerTone} onClear={() => patch({ dividerTone: null })}>
+                    調粗了還是看不清就調深：同文字跟這段的字一樣深，主色拿來當裝飾線
+                  </HintRow>
                 </Field>
               )}
               {/* 線型跟粗細、深淺同一個道理：沒畫線就沒東西可調。那三格調完線還是只有
@@ -7330,18 +7177,9 @@ export function EditorWorkspace({
                       </button>
                     ))}
                   </div>
-                  <div className="mt-1.5 flex items-center justify-between text-[11px] text-stone-500">
-                    <span>實線像明確的分界，虛線點線比較軟，拿線當裝飾時用</span>
-                    {dividerStyle && (
-                      <button
-                        type="button"
-                        onClick={() => patch({ dividerStyle: null })}
-                        className="text-stone-500 hover:text-stone-800 underline"
-                      >
-                        清除
-                      </button>
-                    )}
-                  </div>
+                  <HintRow showClear={dividerStyle} onClear={() => patch({ dividerStyle: null })}>
+                    實線像明確的分界，虛線點線比較軟，拿線當裝飾時用
+                  </HintRow>
                 </Field>
               )}
               <div className="mt-3 pt-3 border-t border-stone-200">
@@ -7367,18 +7205,9 @@ export function EditorWorkspace({
                     </button>
                   ))}
                 </div>
-                <div className="mt-1.5 flex items-center justify-between text-[11px] text-stone-500">
-                  <span>小 {SECTION_HEADING_SCALE.small}x · 預設 1x · 大 {SECTION_HEADING_SCALE.large}x</span>
-                  {headingScale && (
-                    <button
-                      type="button"
-                      onClick={() => patch({ headingScale: null })}
-                      className="text-stone-500 hover:text-stone-800 underline"
-                    >
-                      清除
-                    </button>
-                  )}
-                </div>
+                <HintRow showClear={headingScale} onClear={() => patch({ headingScale: null })}>
+                  小 {SECTION_HEADING_SCALE.small}x · 預設 1x · 大 {SECTION_HEADING_SCALE.large}x
+                </HintRow>
               </Field>
               <Field label="標題粗細">
                 <div className="grid grid-cols-3 gap-1.5">
@@ -7406,18 +7235,9 @@ export function EditorWorkspace({
                     </button>
                   ))}
                 </div>
-                <div className="mt-1.5 flex items-center justify-between text-[11px] text-stone-500">
-                  <span>細常規 · 預設維持原樣 · 粗</span>
-                  {headingWeight && (
-                    <button
-                      type="button"
-                      onClick={() => patch({ headingWeight: null })}
-                      className="text-stone-500 hover:text-stone-800 underline"
-                    >
-                      清除
-                    </button>
-                  )}
-                </div>
+                <HintRow showClear={headingWeight} onClear={() => patch({ headingWeight: null })}>
+                  細常規 · 預設維持原樣 · 粗
+                </HintRow>
               </Field>
               <Field label="標題行距">
                 <div className="grid grid-cols-3 gap-1.5">
@@ -7441,18 +7261,9 @@ export function EditorWorkspace({
                     </button>
                   ))}
                 </div>
-                <div className="mt-1.5 flex items-center justify-between text-[11px] text-stone-500">
-                  <span>標題換行後兩行之間的距離</span>
-                  {headingLeading && (
-                    <button
-                      type="button"
-                      onClick={() => patch({ headingLeading: null })}
-                      className="text-stone-500 hover:text-stone-800 underline"
-                    >
-                      清除
-                    </button>
-                  )}
-                </div>
+                <HintRow showClear={headingLeading} onClear={() => patch({ headingLeading: null })}>
+                  標題換行後兩行之間的距離
+                </HintRow>
               </Field>
               <Field label="標題字距">
                 <div className="grid grid-cols-3 gap-1.5">
@@ -7510,18 +7321,9 @@ export function EditorWorkspace({
                     </button>
                   ))}
                 </div>
-                <div className="mt-1.5 flex items-center justify-between text-[11px] text-stone-500">
-                  <span>只動標題：主色跟小標同色、柔和跟次要文字同深淺</span>
-                  {headingTone && (
-                    <button
-                      type="button"
-                      onClick={() => patch({ headingTone: null })}
-                      className="text-stone-500 hover:text-stone-800 underline"
-                    >
-                      清除
-                    </button>
-                  )}
-                </div>
+                <HintRow showClear={headingTone} onClear={() => patch({ headingTone: null })}>
+                  只動標題：主色跟小標同色、柔和跟次要文字同深淺
+                </HintRow>
               </Field>
               <Field label="標題底線">
                 <div className="grid grid-cols-3 gap-1.5">
@@ -7545,18 +7347,9 @@ export function EditorWorkspace({
                     </button>
                   ))}
                 </div>
-                <div className="mt-1.5 flex items-center justify-between text-[11px] text-stone-500">
-                  <span>畫在標題底下，跟著標題對齊走</span>
-                  {headingRule && (
-                    <button
-                      type="button"
-                      onClick={() => patch({ headingRule: null })}
-                      className="text-stone-500 hover:text-stone-800 underline"
-                    >
-                      清除
-                    </button>
-                  )}
-                </div>
+                <HintRow showClear={headingRule} onClear={() => patch({ headingRule: null })}>
+                  畫在標題底下，跟著標題對齊走
+                </HintRow>
               </Field>
               {/* 粗細只在真的畫了線之後才有東西可調，設成無的段落按了不會有任何反應——
                   跟照片佔寬同一個處理，設了線才長出來。 */}
@@ -7579,18 +7372,9 @@ export function EditorWorkspace({
                       </button>
                     ))}
                   </div>
-                  <div className="mt-1.5 flex items-center justify-between text-[11px] text-stone-500">
-                    <span>標題調大的段落用粗一點才配得上，整條橫過整個螢幕時用細的才不會比標題還搶眼</span>
-                    {headingRuleWeight && (
-                      <button
-                        type="button"
-                        onClick={() => patch({ headingRuleWeight: null })}
-                        className="text-stone-500 hover:text-stone-800 underline"
-                      >
-                        清除
-                      </button>
-                    )}
-                  </div>
+                  <HintRow showClear={headingRuleWeight} onClear={() => patch({ headingRuleWeight: null })}>
+                    標題調大的段落用粗一點才配得上，整條橫過整個螢幕時用細的才不會比標題還搶眼
+                  </HintRow>
                 </Field>
               )}
               {/* 深淺跟粗細同一個道理：沒畫線就沒東西可調。分隔線那組三格都補齊了，
@@ -7615,18 +7399,9 @@ export function EditorWorkspace({
                       </button>
                     ))}
                   </div>
-                  <div className="mt-1.5 flex items-center justify-between text-[11px] text-stone-500">
-                    <span>深底的段落看不到線就調深：同文字跟這段的字一樣深，主色是標題底下壓色線那種用法</span>
-                    {headingRuleTone && (
-                      <button
-                        type="button"
-                        onClick={() => patch({ headingRuleTone: null })}
-                        className="text-stone-500 hover:text-stone-800 underline"
-                      >
-                        清除
-                      </button>
-                    )}
-                  </div>
+                  <HintRow showClear={headingRuleTone} onClear={() => patch({ headingRuleTone: null })}>
+                    深底的段落看不到線就調深：同文字跟這段的字一樣深，主色是標題底下壓色線那種用法
+                  </HintRow>
                 </Field>
               )}
               {/* 線型跟粗細、深淺同一個道理：沒畫線就沒東西可調。分隔線那格開了虛線點線
@@ -7654,18 +7429,9 @@ export function EditorWorkspace({
                       </button>
                     ))}
                   </div>
-                  <div className="mt-1.5 flex items-center justify-between text-[11px] text-stone-500">
-                    <span>實線像明確的收尾，虛線點線比較軟，標題底下壓裝飾線時用</span>
-                    {headingRuleStyle && (
-                      <button
-                        type="button"
-                        onClick={() => patch({ headingRuleStyle: null })}
-                        className="text-stone-500 hover:text-stone-800 underline"
-                      >
-                        清除
-                      </button>
-                    )}
-                  </div>
+                  <HintRow showClear={headingRuleStyle} onClear={() => patch({ headingRuleStyle: null })}>
+                    實線像明確的收尾，虛線點線比較軟，標題底下壓裝飾線時用
+                  </HintRow>
                 </Field>
               )}
               <Field label="最小高度">
@@ -7690,18 +7456,9 @@ export function EditorWorkspace({
                     </button>
                   ))}
                 </div>
-                <div className="mt-1.5 flex items-center justify-between text-[11px] text-stone-500">
-                  <span>普通 跟著內容 · 高 {SECTION_MIN_HEIGHT_VH.tall}vh · 滿屏 {SECTION_MIN_HEIGHT_VH.fullscreen}vh</span>
-                  {minHeight && (
-                    <button
-                      type="button"
-                      onClick={() => patch({ minHeight: null })}
-                      className="text-stone-500 hover:text-stone-800 underline"
-                    >
-                      清除
-                    </button>
-                  )}
-                </div>
+                <HintRow showClear={minHeight} onClear={() => patch({ minHeight: null })}>
+                  普通 跟著內容 · 高 {SECTION_MIN_HEIGHT_VH.tall}vh · 滿屏 {SECTION_MIN_HEIGHT_VH.fullscreen}vh
+                </HintRow>
               </Field>
               <Field label="內容垂直位置">
                 <div className="grid grid-cols-3 gap-1.5">
@@ -7912,18 +7669,9 @@ export function EditorWorkspace({
                     </button>
                   ))}
                 </div>
-                <div className="mt-1.5 flex items-center justify-between text-[11px] text-stone-500">
-                  <span>細邊 1px · 粗邊 2px（用全網站邊框色，不影響 layout）</span>
-                  {outline && (
-                    <button
-                      type="button"
-                      onClick={() => patch({ outline: null })}
-                      className="text-stone-500 hover:text-stone-800 underline"
-                    >
-                      清除
-                    </button>
-                  )}
-                </div>
+                <HintRow showClear={outline} onClear={() => patch({ outline: null })}>
+                  細邊 1px · 粗邊 2px（用全網站邊框色，不影響 layout）
+                </HintRow>
               </Field>
               {/* 深淺跟分隔線那格同一個道理：沒畫框就沒東西可調。四條線裡分隔線、
                   標題底線、側邊色條的深淺都開了，外框是最後一條顏色寫死的——預設那個
@@ -7947,18 +7695,9 @@ export function EditorWorkspace({
                       </button>
                     ))}
                   </div>
-                  <div className="mt-1.5 flex items-center justify-between text-[11px] text-stone-500">
-                    <span>選了粗邊還是看不出框就調深：同文字跟這段的字一樣深，主色描邊像優惠卡</span>
-                    {outlineTone && (
-                      <button
-                        type="button"
-                        onClick={() => patch({ outlineTone: null })}
-                        className="text-stone-500 hover:text-stone-800 underline"
-                      >
-                        清除
-                      </button>
-                    )}
-                  </div>
+                  <HintRow showClear={outlineTone} onClear={() => patch({ outlineTone: null })}>
+                    選了粗邊還是看不出框就調深：同文字跟這段的字一樣深，主色描邊像優惠卡
+                  </HintRow>
                 </Field>
               )}
               {/* 線型跟深淺同一個道理：沒畫框就沒東西可調。四條線的線型這格補到外框
@@ -7986,18 +7725,9 @@ export function EditorWorkspace({
                       </button>
                     ))}
                   </div>
-                  <div className="mt-1.5 flex items-center justify-between text-[11px] text-stone-500">
-                    <span>實線正式，虛線配主色像優惠券的沿線剪下，點線是手帳貼紙那圈</span>
-                    {outlineStyle && (
-                      <button
-                        type="button"
-                        onClick={() => patch({ outlineStyle: null })}
-                        className="text-stone-500 hover:text-stone-800 underline"
-                      >
-                        清除
-                      </button>
-                    )}
-                  </div>
+                  <HintRow showClear={outlineStyle} onClear={() => patch({ outlineStyle: null })}>
+                    實線正式，虛線配主色像優惠券的沿線剪下，點線是手帳貼紙那圈
+                  </HintRow>
                 </Field>
               )}
               <Field label="側邊色條">
@@ -8022,18 +7752,9 @@ export function EditorWorkspace({
                     </button>
                   ))}
                 </div>
-                <div className="mt-1.5 flex items-center justify-between text-[11px] text-stone-500">
-                  <span>邊緣一條粗色條，用來標重點段落（4px）</span>
-                  {accentBar && (
-                    <button
-                      type="button"
-                      onClick={() => patch({ accentBar: null })}
-                      className="text-stone-500 hover:text-stone-800 underline"
-                    >
-                      清除
-                    </button>
-                  )}
-                </div>
+                <HintRow showClear={accentBar} onClear={() => patch({ accentBar: null })}>
+                  邊緣一條粗色條，用來標重點段落（4px）
+                </HintRow>
               </Field>
               {/* 粗細只在真的畫了色條之後才有東西可調——跟底線粗細同一個處理，
                   設了色條才長出來。 */}
@@ -8056,18 +7777,9 @@ export function EditorWorkspace({
                       </button>
                     ))}
                   </div>
-                  <div className="mt-1.5 flex items-center justify-between text-[11px] text-stone-500">
-                    <span>窄欄的段落用細一點才不搶內文，滿屏的段落要粗才立得住</span>
-                    {accentBarWeight && (
-                      <button
-                        type="button"
-                        onClick={() => patch({ accentBarWeight: null })}
-                        className="text-stone-500 hover:text-stone-800 underline"
-                      >
-                        清除
-                      </button>
-                    )}
-                  </div>
+                  <HintRow showClear={accentBarWeight} onClear={() => patch({ accentBarWeight: null })}>
+                    窄欄的段落用細一點才不搶內文，滿屏的段落要粗才立得住
+                  </HintRow>
                 </Field>
               )}
               {/* 深淺跟粗細同一個處理：沒畫色條就沒東西可調。四檔不是三檔——色條的
@@ -8097,18 +7809,9 @@ export function EditorWorkspace({
                       </button>
                     ))}
                   </div>
-                  <div className="mt-1.5 flex items-center justify-between text-[11px] text-stone-500">
-                    <span>粗色條太搶就淡，退成裝飾；同文字跟這段的字一樣深，主色是品牌色實色</span>
-                    {accentBarTone && (
-                      <button
-                        type="button"
-                        onClick={() => patch({ accentBarTone: null })}
-                        className="text-stone-500 hover:text-stone-800 underline"
-                      >
-                        清除
-                      </button>
-                    )}
-                  </div>
+                  <HintRow showClear={accentBarTone} onClear={() => patch({ accentBarTone: null })}>
+                    粗色條太搶就淡，退成裝飾；同文字跟這段的字一樣深，主色是品牌色實色
+                  </HintRow>
                 </Field>
               )}
               {/* 線型跟粗細、深淺同一個處理：沒畫色條就沒東西可調。三條線的線型這格
@@ -8136,18 +7839,9 @@ export function EditorWorkspace({
                       </button>
                     ))}
                   </div>
-                  <div className="mt-1.5 flex items-center justify-between text-[11px] text-stone-500">
-                    <span>實線是一塊面，虛線點線有孔隙、當裝飾更輕；粗的點線會變一排圓點</span>
-                    {accentBarStyle && (
-                      <button
-                        type="button"
-                        onClick={() => patch({ accentBarStyle: null })}
-                        className="text-stone-500 hover:text-stone-800 underline"
-                      >
-                        清除
-                      </button>
-                    )}
-                  </div>
+                  <HintRow showClear={accentBarStyle} onClear={() => patch({ accentBarStyle: null })}>
+                    實線是一塊面，虛線點線有孔隙、當裝飾更輕；粗的點線會變一排圓點
+                  </HintRow>
                 </Field>
               )}
               <Field label="陰影">
@@ -8172,18 +7866,9 @@ export function EditorWorkspace({
                     </button>
                   ))}
                 </div>
-                <div className="mt-1.5 flex items-center justify-between text-[11px] text-stone-500">
-                  <span>有設背景色的 section 加陰影像卡片浮起來</span>
-                  {shadow && (
-                    <button
-                      type="button"
-                      onClick={() => patch({ shadow: null })}
-                      className="text-stone-500 hover:text-stone-800 underline"
-                    >
-                      清除
-                    </button>
-                  )}
-                </div>
+                <HintRow showClear={shadow} onClear={() => patch({ shadow: null })}>
+                  有設背景色的 section 加陰影像卡片浮起來
+                </HintRow>
               </Field>
               <Field label="圓角">
                 <div className="grid grid-cols-3 gap-1.5">
@@ -8207,18 +7892,9 @@ export function EditorWorkspace({
                     </button>
                   ))}
                 </div>
-                <div className="mt-1.5 flex items-center justify-between text-[11px] text-stone-500">
-                  <span>微圓 {SECTION_BORDER_RADIUS_PX.soft}px · 大圓 {SECTION_BORDER_RADIUS_PX.strong}px（搭配背景色 / 陰影像卡片）</span>
-                  {borderRadius && (
-                    <button
-                      type="button"
-                      onClick={() => patch({ borderRadius: null })}
-                      className="text-stone-500 hover:text-stone-800 underline"
-                    >
-                      清除
-                    </button>
-                  )}
-                </div>
+                <HintRow showClear={borderRadius} onClear={() => patch({ borderRadius: null })}>
+                  微圓 {SECTION_BORDER_RADIUS_PX.soft}px · 大圓 {SECTION_BORDER_RADIUS_PX.strong}px（搭配背景色 / 陰影像卡片）
+                </HintRow>
               </Field>
               <Field label="照片圓角">
                 <div className="grid grid-cols-3 gap-1.5">
@@ -8242,18 +7918,9 @@ export function EditorWorkspace({
                     </button>
                   ))}
                 </div>
-                <div className="mt-1.5 flex items-center justify-between text-[11px] text-stone-500">
-                  <span>只圓這一段裡的照片（上面那欄圓的是整段的框）</span>
-                  {mediaRadius && (
-                    <button
-                      type="button"
-                      onClick={() => patch({ mediaRadius: null })}
-                      className="text-stone-500 hover:text-stone-800 underline"
-                    >
-                      清除
-                    </button>
-                  )}
-                </div>
+                <HintRow showClear={mediaRadius} onClear={() => patch({ mediaRadius: null })}>
+                  只圓這一段裡的照片（上面那欄圓的是整段的框）
+                </HintRow>
               </Field>
               {/* 底下這四格（比例 / 取景 / 左右取景 / 完整度，跟著完整度長出來的框底色）
                   動的都是卡片格線裡那個圖框（見上面 SECTIONS_WITH_CARD_IMAGE），只在有圖框
@@ -8284,18 +7951,9 @@ export function EditorWorkspace({
                     </button>
                   ))}
                 </div>
-                <div className="mt-1.5 flex items-center justify-between text-[11px] text-stone-500">
-                  <span>換這一段照片框的裁法（直式商品選「直式」不會被裁頭去尾）</span>
-                  {mediaAspect && (
-                    <button
-                      type="button"
-                      onClick={() => patch({ mediaAspect: null })}
-                      className="text-stone-500 hover:text-stone-800 underline"
-                    >
-                      清除
-                    </button>
-                  )}
-                </div>
+                <HintRow showClear={mediaAspect} onClear={() => patch({ mediaAspect: null })}>
+                  換這一段照片框的裁法（直式商品選「直式」不會被裁頭去尾）
+                </HintRow>
               </Field>
               <Field label="照片取景">
                 <div className="grid grid-cols-3 gap-1.5">
@@ -8319,18 +7977,9 @@ export function EditorWorkspace({
                     </button>
                   ))}
                 </div>
-                <div className="mt-1.5 flex items-center justify-between text-[11px] text-stone-500">
-                  <span>照片被框裁掉時保留哪一端（直式商品照選「靠上」保住瓶口、葉冠）</span>
-                  {mediaFocus && (
-                    <button
-                      type="button"
-                      onClick={() => patch({ mediaFocus: null })}
-                      className="text-stone-500 hover:text-stone-800 underline"
-                    >
-                      清除
-                    </button>
-                  )}
-                </div>
+                <HintRow showClear={mediaFocus} onClear={() => patch({ mediaFocus: null })}>
+                  照片被框裁掉時保留哪一端（直式商品照選「靠上」保住瓶口、葉冠）
+                </HintRow>
               </Field>
               <Field label="照片左右取景">
                 <div className="grid grid-cols-3 gap-1.5">
@@ -8354,18 +8003,9 @@ export function EditorWorkspace({
                     </button>
                   ))}
                 </div>
-                <div className="mt-1.5 flex items-center justify-between text-[11px] text-stone-500">
-                  <span>橫式照片放進正方或直式的框時保留哪一側，可跟上面那格疊著用</span>
-                  {mediaFocusX && (
-                    <button
-                      type="button"
-                      onClick={() => patch({ mediaFocusX: null })}
-                      className="text-stone-500 hover:text-stone-800 underline"
-                    >
-                      清除
-                    </button>
-                  )}
-                </div>
+                <HintRow showClear={mediaFocusX} onClear={() => patch({ mediaFocusX: null })}>
+                  橫式照片放進正方或直式的框時保留哪一側，可跟上面那格疊著用
+                </HintRow>
               </Field>
               <Field label="照片完整度">
                 <div className="grid grid-cols-2 gap-1.5">
@@ -8388,18 +8028,9 @@ export function EditorWorkspace({
                     </button>
                   ))}
                 </div>
-                <div className="mt-1.5 flex items-center justify-between text-[11px] text-stone-500">
-                  <span>整張顯示＝照片一點都不裁，放不滿的地方露出底色（整株盆栽、帶留白的商品圖）</span>
-                  {mediaFit && (
-                    <button
-                      type="button"
-                      onClick={() => patch({ mediaFit: null })}
-                      className="text-stone-500 hover:text-stone-800 underline"
-                    >
-                      清除
-                    </button>
-                  )}
-                </div>
+                <HintRow showClear={mediaFit} onClear={() => patch({ mediaFit: null })}>
+                  整張顯示＝照片一點都不裁，放不滿的地方露出底色（整株盆栽、帶留白的商品圖）
+                </HintRow>
               </Field>
               {/* 框底色只在選了「整張顯示」之後才長出來：鋪滿框的時候照片蓋住整個框，
                   框的底根本看不到，擺出來會是按了畫面不動的死按鈕。 */}
@@ -8447,18 +8078,9 @@ export function EditorWorkspace({
                       className="flex-1 rounded-lg border border-stone-200 px-3 py-2 text-sm font-mono"
                     />
                   </div>
-                  <div className="mt-1.5 flex items-center justify-between text-[11px] text-stone-500">
-                    <span>照片放不滿的邊露出的底色。白底商品圖選「白」會跟照片接成一片；圖的底不是純白就填它的色碼</span>
-                    {(mediaFrameBg || mediaFrameColor) && (
-                      <button
-                        type="button"
-                        onClick={() => patch({ mediaFrameBg: null, mediaFrameColor: null })}
-                        className="text-stone-500 hover:text-stone-800 underline"
-                      >
-                        清除
-                      </button>
-                    )}
-                  </div>
+                  <HintRow showClear={(mediaFrameBg || mediaFrameColor)} onClear={() => patch({ mediaFrameBg: null, mediaFrameColor: null })}>
+                    照片放不滿的邊露出的底色。白底商品圖選「白」會跟照片接成一片；圖的底不是純白就填它的色碼
+                  </HintRow>
                 </Field>
               )}
               </>
@@ -8485,18 +8107,9 @@ export function EditorWorkspace({
                     </button>
                   ))}
                 </div>
-                <div className="mt-1.5 flex items-center justify-between text-[11px] text-stone-500">
-                  <span>那排 logo 本身多高（手機 / 平板 / 桌機一起跟著調）。預設值是照橫式字標挑的，方形的商圈標章、上圖下字的兩層式 logo 在裡面只剩一小塊是字，選大才認得出來；只放兩三個 logo 想排得安靜一點就選小。上面那幾格照片的設定管的是卡片裡的照片，動不到這排</span>
-                  {partnerLogoScale && (
-                    <button
-                      type="button"
-                      onClick={() => patch({ partnerLogoScale: null })}
-                      className="text-stone-500 hover:text-stone-800 underline"
-                    >
-                      清除
-                    </button>
-                  )}
-                </div>
+                <HintRow showClear={partnerLogoScale} onClear={() => patch({ partnerLogoScale: null })}>
+                  那排 logo 本身多高（手機 / 平板 / 桌機一起跟著調）。預設值是照橫式字標挑的，方形的商圈標章、上圖下字的兩層式 logo 在裡面只剩一小塊是字，選大才認得出來；只放兩三個 logo 想排得安靜一點就選小。上面那幾格照片的設定管的是卡片裡的照片，動不到這排
+                </HintRow>
               </Field>
               <Field label="合作 logo 濃淡">
                 <div className="grid grid-cols-3 gap-1.5">
@@ -8520,18 +8133,9 @@ export function EditorWorkspace({
                     </button>
                   ))}
                 </div>
-                <div className="mt-1.5 flex items-center justify-between text-[11px] text-stone-500">
-                  <span>那排 logo 印得多淡。預設是半透明（滑鼠移上去才變清楚，手機沒有這個動作），要客人認出是哪家媒體、哪個品牌就選清楚；當背景紋理排一整列就選更淡。「淡化」那格淡的是整段連小標一起，「濾鏡」換的是黑白或復古，都不是這一層</span>
-                  {partnerLogoOpacity && (
-                    <button
-                      type="button"
-                      onClick={() => patch({ partnerLogoOpacity: null })}
-                      className="text-stone-500 hover:text-stone-800 underline"
-                    >
-                      清除
-                    </button>
-                  )}
-                </div>
+                <HintRow showClear={partnerLogoOpacity} onClear={() => patch({ partnerLogoOpacity: null })}>
+                  那排 logo 印得多淡。預設是半透明（滑鼠移上去才變清楚，手機沒有這個動作），要客人認出是哪家媒體、哪個品牌就選清楚；當背景紋理排一整列就選更淡。「淡化」那格淡的是整段連小標一起，「濾鏡」換的是黑白或復古，都不是這一層
+                </HintRow>
               </Field>
                 </>
               )}
@@ -8563,18 +8167,9 @@ export function EditorWorkspace({
                       </button>
                     ))}
                   </div>
-                  <div className="mt-1.5 flex items-center justify-between text-[11px] text-stone-500">
-                    <span>調這一段卡片、照片彼此的距離（不是段落外圍的空白）</span>
-                    {gridGap && (
-                      <button
-                        type="button"
-                        onClick={() => patch({ gridGap: null })}
-                        className="text-stone-500 hover:text-stone-800 underline"
-                      >
-                        清除
-                      </button>
-                    )}
-                  </div>
+                  <HintRow showClear={gridGap} onClear={() => patch({ gridGap: null })}>
+                    調這一段卡片、照片彼此的距離（不是段落外圍的空白）
+                  </HintRow>
                 </Field>
               )}
               {/* 「滑過卡片」只在真的有可以滑的卡片那幾段列出來（見上面
@@ -8607,18 +8202,9 @@ export function EditorWorkspace({
                     </button>
                   ))}
                 </div>
-                <div className="mt-1.5 flex items-center justify-between text-[11px] text-stone-500">
-                  <span>滑鼠移到卡片上要不要動（照片放大、浮起、壓暗；手機沒有這件事）</span>
-                  {cardHover && (
-                    <button
-                      type="button"
-                      onClick={() => patch({ cardHover: null })}
-                      className="text-stone-500 hover:text-stone-800 underline"
-                    >
-                      清除
-                    </button>
-                  )}
-                </div>
+                <HintRow showClear={cardHover} onClear={() => patch({ cardHover: null })}>
+                  滑鼠移到卡片上要不要動（照片放大、浮起、壓暗；手機沒有這件事）
+                </HintRow>
               </Field>
               )}
               {/* 「卡片文字」規則落在 .sproutly-card 裡的每個文字元素上，
@@ -8647,18 +8233,9 @@ export function EditorWorkspace({
                     </button>
                   ))}
                 </div>
-                <div className="mt-1.5 flex items-center justify-between text-[11px] text-stone-500">
-                  <span>卡片下面的品名、價錢站哪（大標置中、卡片文字靠左最常見）</span>
-                  {cardText && (
-                    <button
-                      type="button"
-                      onClick={() => patch({ cardText: null })}
-                      className="text-stone-500 hover:text-stone-800 underline"
-                    >
-                      清除
-                    </button>
-                  )}
-                </div>
+                <HintRow showClear={cardText} onClear={() => patch({ cardText: null })}>
+                  卡片下面的品名、價錢站哪（大標置中、卡片文字靠左最常見）
+                </HintRow>
               </Field>
               )}
               <Field label="卡片外觀">
@@ -8684,18 +8261,9 @@ export function EditorWorkspace({
                     </button>
                   ))}
                 </div>
-                <div className="mt-1.5 flex items-center justify-between text-[11px] text-stone-500">
-                  <span>每張卡片有沒有自己的邊界（欄數多、品名長短不一時，有底或有框才分得出哪行字配哪張照片；兩個一起上最像一般網購站的商品卡）</span>
-                  {cardSurface && (
-                    <button
-                      type="button"
-                      onClick={() => patch({ cardSurface: null })}
-                      className="text-stone-500 hover:text-stone-800 underline"
-                    >
-                      清除
-                    </button>
-                  )}
-                </div>
+                <HintRow showClear={cardSurface} onClear={() => patch({ cardSurface: null })}>
+                  每張卡片有沒有自己的邊界（欄數多、品名長短不一時，有底或有框才分得出哪行字配哪張照片；兩個一起上最像一般網購站的商品卡）
+                </HintRow>
               </Field>
               {/* 內距只在卡片真的有底或有框之後才看得出來（沒邊界的話那圈是看不見的空白），
                   跟底線粗細同一個處理，設了外觀才長出來。 */}
@@ -8718,18 +8286,9 @@ export function EditorWorkspace({
                       </button>
                     ))}
                   </div>
-                  <div className="mt-1.5 flex items-center justify-between text-[11px] text-stone-500">
-                    <span>卡片裡的東西跟框之間留多少（一列四張的小卡收緊、一列一張的大卡放寬，圓角跟著一起走）</span>
-                    {cardPadding && (
-                      <button
-                        type="button"
-                        onClick={() => patch({ cardPadding: null })}
-                        className="text-stone-500 hover:text-stone-800 underline"
-                      >
-                        清除
-                      </button>
-                    )}
-                  </div>
+                  <HintRow showClear={cardPadding} onClear={() => patch({ cardPadding: null })}>
+                    卡片裡的東西跟框之間留多少（一列四張的小卡收緊、一列一張的大卡放寬，圓角跟著一起走）
+                  </HintRow>
                 </Field>
               )}
               {/* 圓角跟內距同一個條件（有底或有框才看得到四個角），但獨立一格：
@@ -8757,18 +8316,9 @@ export function EditorWorkspace({
                       </button>
                     ))}
                   </div>
-                  <div className="mt-1.5 flex items-center justify-between text-[11px] text-stone-500">
-                    <span>卡片四個角有多圓（報紙、型錄那種硬邊排版選直角；不選的話跟著上面的內距一起走）</span>
-                    {cardRadius && (
-                      <button
-                        type="button"
-                        onClick={() => patch({ cardRadius: null })}
-                        className="text-stone-500 hover:text-stone-800 underline"
-                      >
-                        清除
-                      </button>
-                    )}
-                  </div>
+                  <HintRow showClear={cardRadius} onClear={() => patch({ cardRadius: null })}>
+                    卡片四個角有多圓（報紙、型錄那種硬邊排版選直角；不選的話跟著上面的內距一起走）
+                  </HintRow>
                 </Field>
               )}
               {/* 陰影跟圓角、內距同一個條件（有底或有框才看得到卡片的邊界）：
@@ -8796,18 +8346,9 @@ export function EditorWorkspace({
                       </button>
                     ))}
                   </div>
-                  <div className="mt-1.5 flex items-center justify-between text-[11px] text-stone-500">
-                    <span>卡片靜止時浮起來多少（不選的話只有滑鼠移上去才有影子，手機看不到）</span>
-                    {cardShadow && (
-                      <button
-                        type="button"
-                        onClick={() => patch({ cardShadow: null })}
-                        className="text-stone-500 hover:text-stone-800 underline"
-                      >
-                        清除
-                      </button>
-                    )}
-                  </div>
+                  <HintRow showClear={cardShadow} onClear={() => patch({ cardShadow: null })}>
+                    卡片靜止時浮起來多少（不選的話只有滑鼠移上去才有影子，手機看不到）
+                  </HintRow>
                 </Field>
               )}
               {/* 框線這兩格的條件比上面幾格再窄一層：選了「一圈細框」或「底＋框」才長出來，
@@ -8835,18 +8376,9 @@ export function EditorWorkspace({
                       </button>
                     ))}
                   </div>
-                  <div className="mt-1.5 flex items-center justify-between text-[11px] text-stone-500">
-                    <span>卡片那圈框有多粗（原本是最細的一格，一列排三四張時遠看幾乎看不到）</span>
-                    {cardBorderWeight && (
-                      <button
-                        type="button"
-                        onClick={() => patch({ cardBorderWeight: null })}
-                        className="text-stone-500 hover:text-stone-800 underline"
-                      >
-                        清除
-                      </button>
-                    )}
-                  </div>
+                  <HintRow showClear={cardBorderWeight} onClear={() => patch({ cardBorderWeight: null })}>
+                    卡片那圈框有多粗（原本是最細的一格，一列排三四張時遠看幾乎看不到）
+                  </HintRow>
                 </Field>
               )}
               {(cardSurface === "outline" || cardSurface === "both") && (
@@ -8872,18 +8404,9 @@ export function EditorWorkspace({
                       </button>
                     ))}
                   </div>
-                  <div className="mt-1.5 flex items-center justify-between text-[11px] text-stone-500">
-                    <span>框的顏色有多明顯（跟著這一段的文字色走，深底淺字會自動變成淺色的框）</span>
-                    {cardBorderTone && (
-                      <button
-                        type="button"
-                        onClick={() => patch({ cardBorderTone: null })}
-                        className="text-stone-500 hover:text-stone-800 underline"
-                      >
-                        清除
-                      </button>
-                    )}
-                  </div>
+                  <HintRow showClear={cardBorderTone} onClear={() => patch({ cardBorderTone: null })}>
+                    框的顏色有多明顯（跟著這一段的文字色走，深底淺字會自動變成淺色的框）
+                  </HintRow>
                 </Field>
               )}
               {/* 框線樣式：同樣只在有線的兩檔給——面板那檔畫的是底色，沒有線可以
@@ -8912,18 +8435,9 @@ export function EditorWorkspace({
                       </button>
                     ))}
                   </div>
-                  <div className="mt-1.5 flex items-center justify-between text-[11px] text-stone-500">
-                    <span>那條線是不是連續的（虛線、點線適合預告與還沒上架的卡；細線配虛線遠看不明顯，搭配上面的粗細一起調）</span>
-                    {cardBorderStyle && (
-                      <button
-                        type="button"
-                        onClick={() => patch({ cardBorderStyle: null })}
-                        className="text-stone-500 hover:text-stone-800 underline"
-                      >
-                        清除
-                      </button>
-                    )}
-                  </div>
+                  <HintRow showClear={cardBorderStyle} onClear={() => patch({ cardBorderStyle: null })}>
+                    那條線是不是連續的（虛線、點線適合預告與還沒上架的卡；細線配虛線遠看不明顯，搭配上面的粗細一起調）
+                  </HintRow>
                 </Field>
               )}
               {/* 底色深淺：跟上面那三格相反的條件——有底的兩檔（一塊底色面板 / 底＋框）才給。
@@ -8951,18 +8465,9 @@ export function EditorWorkspace({
                       </button>
                     ))}
                   </div>
-                  <div className="mt-1.5 flex items-center justify-between text-[11px] text-stone-500">
-                    <span>那塊底有多明顯（跟著這一段的文字色走，深底淺字會自動變成淺色的板子）</span>
-                    {cardPanelTone && (
-                      <button
-                        type="button"
-                        onClick={() => patch({ cardPanelTone: null })}
-                        className="text-stone-500 hover:text-stone-800 underline"
-                      >
-                        清除
-                      </button>
-                    )}
-                  </div>
+                  <HintRow showClear={cardPanelTone} onClear={() => patch({ cardPanelTone: null })}>
+                    那塊底有多明顯（跟著這一段的文字色走，深底淺字會自動變成淺色的板子）
+                  </HintRow>
                 </Field>
               )}
               {/* 「卡片排法 / 照片佔寬」只在照片配文字的那三段列出來（見上面
@@ -8993,18 +8498,9 @@ export function EditorWorkspace({
                     </button>
                   ))}
                 </div>
-                <div className="mt-1.5 flex items-center justify-between text-[11px] text-stone-500">
-                  <span>照片在左＝一般網購站的清單模式，一個螢幕看得到的品項多很多；照片在右先讀到字，適合先講故事的段落（兩者手機都自動收成一列一張）</span>
-                  {cardLayout && (
-                    <button
-                      type="button"
-                      onClick={() => patch({ cardLayout: null })}
-                      className="text-stone-500 hover:text-stone-800 underline"
-                    >
-                      清除
-                    </button>
-                  )}
-                </div>
+                <HintRow showClear={cardLayout} onClear={() => patch({ cardLayout: null })}>
+                  照片在左＝一般網購站的清單模式，一個螢幕看得到的品項多很多；照片在右先讀到字，適合先講故事的段落（兩者手機都自動收成一列一張）
+                </HintRow>
               </Field>
               {/* 照片佔寬只在橫著排的時候有東西可分，照片在上那檔按了不會有任何反應——
                   與其擺一格按下去沒事發生的選項，設成橫排才長出來。 */}
@@ -9031,18 +8527,9 @@ export function EditorWorkspace({
                       </button>
                     ))}
                   </div>
-                  <div className="mt-1.5 flex items-center justify-between text-[11px] text-stone-500">
-                    <span>橫著排時照片佔一張卡的幾成寬（跟預設約四成）。字多的段落用小張讓文字有寬度寫完整，配橫幅生活照的段落用大張</span>
-                    {cardMediaWidth && (
-                      <button
-                        type="button"
-                        onClick={() => patch({ cardMediaWidth: null })}
-                        className="text-stone-500 hover:text-stone-800 underline"
-                      >
-                        清除
-                      </button>
-                    )}
-                  </div>
+                  <HintRow showClear={cardMediaWidth} onClear={() => patch({ cardMediaWidth: null })}>
+                    橫著排時照片佔一張卡的幾成寬（跟預設約四成）。字多的段落用小張讓文字有寬度寫完整，配橫幅生活照的段落用大張
+                  </HintRow>
                 </Field>
               )}
               </>
@@ -9072,18 +8559,9 @@ export function EditorWorkspace({
                       </button>
                     ))}
                   </div>
-                  <div className="mt-1.5 flex items-center justify-between text-[11px] text-stone-500">
-                    <span>只管手機畫面（上面那個「一列幾張」調的是桌機）。小商品用兩張一次看得多，主打商品、橫幅照片用一張看得清楚</span>
-                    {mobileColumns && (
-                      <button
-                        type="button"
-                        onClick={() => patch({ mobileColumns: null })}
-                        className="text-stone-500 hover:text-stone-800 underline"
-                      >
-                        清除
-                      </button>
-                    )}
-                  </div>
+                  <HintRow showClear={mobileColumns} onClear={() => patch({ mobileColumns: null })}>
+                    只管手機畫面（上面那個「一列幾張」調的是桌機）。小商品用兩張一次看得多，主打商品、橫幅照片用一張看得清楚
+                  </HintRow>
                 </Field>
               )}
               {/* 只有印了 data-card-title-lines 的三段列（見上面
@@ -9112,18 +8590,9 @@ export function EditorWorkspace({
                       </button>
                     ))}
                   </div>
-                  <div className="mt-1.5 flex items-center justify-between text-[11px] text-stone-500">
-                    <span>卡片上那行品名（或文章標題）最多顯示幾行。精選商品原本只顯示一行，品名帶規格的選「完整」才看得完；標題長短不一撐得卡片高低不齊時選固定行數</span>
-                    {cardTitleLines && (
-                      <button
-                        type="button"
-                        onClick={() => patch({ cardTitleLines: null })}
-                        className="text-stone-500 hover:text-stone-800 underline"
-                      >
-                        清除
-                      </button>
-                    )}
-                  </div>
+                  <HintRow showClear={cardTitleLines} onClear={() => patch({ cardTitleLines: null })}>
+                    卡片上那行品名（或文章標題）最多顯示幾行。精選商品原本只顯示一行，品名帶規格的選「完整」才看得完；標題長短不一撐得卡片高低不齊時選固定行數
+                  </HintRow>
                 </Field>
               )}
               {/* 只有印了 data-card-desc-lines 的三段列（見上面
@@ -9153,18 +8622,9 @@ export function EditorWorkspace({
                       </button>
                     ))}
                   </div>
-                  <div className="mt-1.5 flex items-center justify-between text-[11px] text-stone-500">
-                    <span>品名底下那段描述最多顯示幾行（選物的副標、慢讀的摘要）。描述長短不一撐得同一列卡片高低不齊時選固定行數；精選商品那段底下是價錢，不受這格影響</span>
-                    {cardDescLines && (
-                      <button
-                        type="button"
-                        onClick={() => patch({ cardDescLines: null })}
-                        className="text-stone-500 hover:text-stone-800 underline"
-                      >
-                        清除
-                      </button>
-                    )}
-                  </div>
+                  <HintRow showClear={cardDescLines} onClear={() => patch({ cardDescLines: null })}>
+                    品名底下那段描述最多顯示幾行（選物的副標、慢讀的摘要）。描述長短不一撐得同一列卡片高低不齊時選固定行數；精選商品那段底下是價錢，不受這格影響
+                  </HintRow>
                 </Field>
               )}
               {SECTIONS_WITH_CARD_TITLE_TEXT.includes(selectedSection) && (
@@ -9186,18 +8646,9 @@ export function EditorWorkspace({
                       </button>
                     ))}
                   </div>
-                  <div className="mt-1.5 flex items-center justify-between text-[11px] text-stone-500">
-                    <span>卡片上那行品名（或文章標題）本身多大，上面兩格管的是它佔幾行。卡片變寬（欄數少、照片在左）時選大，一列四張的小卡選小</span>
-                    {cardTitleScale && (
-                      <button
-                        type="button"
-                        onClick={() => patch({ cardTitleScale: null })}
-                        className="text-stone-500 hover:text-stone-800 underline"
-                      >
-                        清除
-                      </button>
-                    )}
-                  </div>
+                  <HintRow showClear={cardTitleScale} onClear={() => patch({ cardTitleScale: null })}>
+                    卡片上那行品名（或文章標題）本身多大，上面兩格管的是它佔幾行。卡片變寬（欄數少、照片在左）時選大，一列四張的小卡選小
+                  </HintRow>
                 </Field>
               )}
               {SECTIONS_WITH_CARD_TITLE_TEXT.includes(selectedSection) && (
@@ -9223,18 +8674,9 @@ export function EditorWorkspace({
                       </button>
                     ))}
                   </div>
-                  <div className="mt-1.5 flex items-center justify-between text-[11px] text-stone-500">
-                    <span>上一格管的是品名多大，這格管的是它多粗。品名跟底下的描述、價錢分不出主次時選中黑或粗（「標題粗細」那格動的是段落大標，不是卡片裡這行）</span>
-                    {cardTitleWeight && (
-                      <button
-                        type="button"
-                        onClick={() => patch({ cardTitleWeight: null })}
-                        className="text-stone-500 hover:text-stone-800 underline"
-                      >
-                        清除
-                      </button>
-                    )}
-                  </div>
+                  <HintRow showClear={cardTitleWeight} onClear={() => patch({ cardTitleWeight: null })}>
+                    上一格管的是品名多大，這格管的是它多粗。品名跟底下的描述、價錢分不出主次時選中黑或粗（「標題粗細」那格動的是段落大標，不是卡片裡這行）
+                  </HintRow>
                 </Field>
               )}
               {SECTIONS_WITH_CARD_TITLE_LEADING.includes(selectedSection) && (
@@ -9256,18 +8698,9 @@ export function EditorWorkspace({
                       </button>
                     ))}
                   </div>
-                  <div className="mt-1.5 flex items-center justify-between text-[11px] text-stone-500">
-                    <span>品名排到兩行以上時，上下兩行之間隔多遠（品名只有一行的話這格看不出差別）。「卡片標題行數」選了兩行或完整、或品名本來就長的段落才用得到：兩行中文黏在一起就拉開，字級調大之後間隙太空就收緊。「卡片行距」那格調的是品名跟照片、價錢之間，不是同一行字自己換行</span>
-                    {cardTitleLeading && (
-                      <button
-                        type="button"
-                        onClick={() => patch({ cardTitleLeading: null })}
-                        className="text-stone-500 hover:text-stone-800 underline"
-                      >
-                        清除
-                      </button>
-                    )}
-                  </div>
+                  <HintRow showClear={cardTitleLeading} onClear={() => patch({ cardTitleLeading: null })}>
+                    品名排到兩行以上時，上下兩行之間隔多遠（品名只有一行的話這格看不出差別）。「卡片標題行數」選了兩行或完整、或品名本來就長的段落才用得到：兩行中文黏在一起就拉開，字級調大之後間隙太空就收緊。「卡片行距」那格調的是品名跟照片、價錢之間，不是同一行字自己換行
+                  </HintRow>
                 </Field>
               )}
               {SECTIONS_WITH_CARD_TITLE_TEXT.includes(selectedSection) && (
@@ -9289,18 +8722,9 @@ export function EditorWorkspace({
                       </button>
                     ))}
                   </div>
-                  <div className="mt-1.5 flex items-center justify-between text-[11px] text-stone-500">
-                    <span>品名同一行裡，字與字之間空多少。筆畫多的中文品名（像「觀葉植物」）字級一大就會跟隔壁黏在一起，撐開一點看得清楚；只有兩三個字的短品名撐開會更像選物店。上一格「卡片標題行距」調的是換行之後上下隔多遠，這格是同一行左右之間。只動品名，描述、價錢與那幾行小字不跟著變</span>
-                    {cardTitleTracking && (
-                      <button
-                        type="button"
-                        onClick={() => patch({ cardTitleTracking: null })}
-                        className="text-stone-500 hover:text-stone-800 underline"
-                      >
-                        清除
-                      </button>
-                    )}
-                  </div>
+                  <HintRow showClear={cardTitleTracking} onClear={() => patch({ cardTitleTracking: null })}>
+                    品名同一行裡，字與字之間空多少。筆畫多的中文品名（像「觀葉植物」）字級一大就會跟隔壁黏在一起，撐開一點看得清楚；只有兩三個字的短品名撐開會更像選物店。上一格「卡片標題行距」調的是換行之後上下隔多遠，這格是同一行左右之間。只動品名，描述、價錢與那幾行小字不跟著變
+                  </HintRow>
                 </Field>
               )}
               {SECTIONS_WITH_CARD_TITLE_TEXT.includes(selectedSection) && (
@@ -9322,18 +8746,9 @@ export function EditorWorkspace({
                       </button>
                     ))}
                   </div>
-                  <div className="mt-1.5 flex items-center justify-between text-[11px] text-stone-500">
-                    <span>卡片上那行品名是什麼顏色。三段的品名本來都跟內文同深，整張卡上沒有一個顏色的落點，品名跟底下的描述、價錢只差在字大一點；換成主色能讓客人掃過一列卡片時先看到商品名，柔和則是讓品名退半階、把重量留給照片。上面幾格動的是字多大、多粗、隔多遠，都不換顏色。只動品名，描述、價錢與那幾行小字不跟著變</span>
-                    {cardTitleTone && (
-                      <button
-                        type="button"
-                        onClick={() => patch({ cardTitleTone: null })}
-                        className="text-stone-500 hover:text-stone-800 underline"
-                      >
-                        清除
-                      </button>
-                    )}
-                  </div>
+                  <HintRow showClear={cardTitleTone} onClear={() => patch({ cardTitleTone: null })}>
+                    卡片上那行品名是什麼顏色。三段的品名本來都跟內文同深，整張卡上沒有一個顏色的落點，品名跟底下的描述、價錢只差在字大一點；換成主色能讓客人掃過一列卡片時先看到商品名，柔和則是讓品名退半階、把重量留給照片。上面幾格動的是字多大、多粗、隔多遠，都不換顏色。只動品名，描述、價錢與那幾行小字不跟著變
+                  </HintRow>
                 </Field>
               )}
               {SECTIONS_WITH_CARD_DESC_TEXT.includes(selectedSection) && (
@@ -9355,18 +8770,9 @@ export function EditorWorkspace({
                       </button>
                     ))}
                   </div>
-                  <div className="mt-1.5 flex items-center justify-between text-[11px] text-stone-500">
-                    <span>品名底下那段描述本身多大（選物的副標、慢讀的摘要）。想讓摘要真的被讀完選大，品名調大之後想讓描述退一步選小；精選商品那段底下是價錢，不受這格影響</span>
-                    {cardDescScale && (
-                      <button
-                        type="button"
-                        onClick={() => patch({ cardDescScale: null })}
-                        className="text-stone-500 hover:text-stone-800 underline"
-                      >
-                        清除
-                      </button>
-                    )}
-                  </div>
+                  <HintRow showClear={cardDescScale} onClear={() => patch({ cardDescScale: null })}>
+                    品名底下那段描述本身多大（選物的副標、慢讀的摘要）。想讓摘要真的被讀完選大，品名調大之後想讓描述退一步選小；精選商品那段底下是價錢，不受這格影響
+                  </HintRow>
                 </Field>
               )}
               {SECTIONS_WITH_CARD_DESC_TEXT.includes(selectedSection) && (
@@ -9388,18 +8794,9 @@ export function EditorWorkspace({
                       </button>
                     ))}
                   </div>
-                  <div className="mt-1.5 flex items-center justify-between text-[11px] text-stone-500">
-                    <span>那段描述排到第二行以後，上下兩行之間隔多遠。原本選物那邊照英文短句的密度排（兩行中文會黏在一起，選拉開）、慢讀那邊排得比較鬆（一段話會散開，選收緊）。「卡片行距」那格調的是描述跟品名、照片之間，不是同一段字自己換行</span>
-                    {cardDescLeading && (
-                      <button
-                        type="button"
-                        onClick={() => patch({ cardDescLeading: null })}
-                        className="text-stone-500 hover:text-stone-800 underline"
-                      >
-                        清除
-                      </button>
-                    )}
-                  </div>
+                  <HintRow showClear={cardDescLeading} onClear={() => patch({ cardDescLeading: null })}>
+                    那段描述排到第二行以後，上下兩行之間隔多遠。原本選物那邊照英文短句的密度排（兩行中文會黏在一起，選拉開）、慢讀那邊排得比較鬆（一段話會散開，選收緊）。「卡片行距」那格調的是描述跟品名、照片之間，不是同一段字自己換行
+                  </HintRow>
                 </Field>
               )}
               {SECTIONS_WITH_CARD_DESC_TEXT.includes(selectedSection) && (
@@ -9425,18 +8822,9 @@ export function EditorWorkspace({
                       </button>
                     ))}
                   </div>
-                  <div className="mt-1.5 flex items-center justify-between text-[11px] text-stone-500">
-                    <span>那段描述的筆畫多粗。原本是最細的一級、又被「卡片副文字深淺」淡過一層，慢讀那種客人真的要讀的摘要在卡片上輕得像圖說，想讓它站出來選中黑或粗；小卡上描述只是一句副標、想讓品名獨大就留常規</span>
-                    {cardDescWeight && (
-                      <button
-                        type="button"
-                        onClick={() => patch({ cardDescWeight: null })}
-                        className="text-stone-500 hover:text-stone-800 underline"
-                      >
-                        清除
-                      </button>
-                    )}
-                  </div>
+                  <HintRow showClear={cardDescWeight} onClear={() => patch({ cardDescWeight: null })}>
+                    那段描述的筆畫多粗。原本是最細的一級、又被「卡片副文字深淺」淡過一層，慢讀那種客人真的要讀的摘要在卡片上輕得像圖說，想讓它站出來選中黑或粗；小卡上描述只是一句副標、想讓品名獨大就留常規
+                  </HintRow>
                 </Field>
               )}
               {SECTIONS_WITH_CARD_DESC_TEXT.includes(selectedSection) && (
@@ -9458,18 +8846,9 @@ export function EditorWorkspace({
                       </button>
                     ))}
                   </div>
-                  <div className="mt-1.5 flex items-center justify-between text-[11px] text-stone-500">
-                    <span>那段描述同一行裡，字與字之間空多少。把品名字距撐開之後，底下那句副標還是原本的密度，一鬆一緊疊在同一張卡上——這格讓描述跟得上；慢讀那種一整段的摘要收緊一點能多塞回半行。只動描述，品名、價錢與那幾行小字不跟著變</span>
-                    {cardDescTracking && (
-                      <button
-                        type="button"
-                        onClick={() => patch({ cardDescTracking: null })}
-                        className="text-stone-500 hover:text-stone-800 underline"
-                      >
-                        清除
-                      </button>
-                    )}
-                  </div>
+                  <HintRow showClear={cardDescTracking} onClear={() => patch({ cardDescTracking: null })}>
+                    那段描述同一行裡，字與字之間空多少。把品名字距撐開之後，底下那句副標還是原本的密度，一鬆一緊疊在同一張卡上——這格讓描述跟得上；慢讀那種一整段的摘要收緊一點能多塞回半行。只動描述，品名、價錢與那幾行小字不跟著變
+                  </HintRow>
                 </Field>
               )}
               {SECTIONS_WITH_CARD_DESC_TEXT.includes(selectedSection) && (
@@ -9495,18 +8874,9 @@ export function EditorWorkspace({
                       </button>
                     ))}
                   </div>
-                  <div className="mt-1.5 flex items-center justify-between text-[11px] text-stone-500">
-                    <span>前面三格動的是那段描述多大、行距多開、多粗，這格動的是它什麼顏色。描述現在固定比品名淡一階（選物那段外面還多淡一層），放大、加粗都追不上那個淺灰——慢讀那種摘要才是客人要讀完的段落，選「跟品名同深」就不再退在後面；想讓副標帶點品牌感選「主色」</span>
-                    {cardDescTone && (
-                      <button
-                        type="button"
-                        onClick={() => patch({ cardDescTone: null })}
-                        className="text-stone-500 hover:text-stone-800 underline"
-                      >
-                        清除
-                      </button>
-                    )}
-                  </div>
+                  <HintRow showClear={cardDescTone} onClear={() => patch({ cardDescTone: null })}>
+                    前面三格動的是那段描述多大、行距多開、多粗，這格動的是它什麼顏色。描述現在固定比品名淡一階（選物那段外面還多淡一層），放大、加粗都追不上那個淺灰——慢讀那種摘要才是客人要讀完的段落，選「跟品名同深」就不再退在後面；想讓副標帶點品牌感選「主色」
+                  </HintRow>
                 </Field>
               )}
               {SECTIONS_WITH_CARD_MICRO_TEXT.includes(selectedSection) && (
@@ -9528,18 +8898,9 @@ export function EditorWorkspace({
                       </button>
                     ))}
                   </div>
-                  <div className="mt-1.5 flex items-center justify-between text-[11px] text-stone-500">
-                    <span>卡片上那幾行全大寫的小字多大（選物卡片底下的「看更多」、慢讀卡片的分類與標籤、精選商品價錢底下的「剩 N」）。那行只有 10px，是照英文挑的，中文擠在裡面會糊成一條灰線看不出是字，選大能救回來</span>
-                    {cardMicroScale && (
-                      <button
-                        type="button"
-                        onClick={() => patch({ cardMicroScale: null })}
-                        className="text-stone-500 hover:text-stone-800 underline"
-                      >
-                        清除
-                      </button>
-                    )}
-                  </div>
+                  <HintRow showClear={cardMicroScale} onClear={() => patch({ cardMicroScale: null })}>
+                    卡片上那幾行全大寫的小字多大（選物卡片底下的「看更多」、慢讀卡片的分類與標籤、精選商品價錢底下的「剩 N」）。那行只有 10px，是照英文挑的，中文擠在裡面會糊成一條灰線看不出是字，選大能救回來
+                  </HintRow>
                 </Field>
               )}
               {SECTIONS_WITH_CARD_MICRO_TEXT.includes(selectedSection) && (
@@ -9561,18 +8922,9 @@ export function EditorWorkspace({
                       </button>
                     ))}
                   </div>
-                  <div className="mt-1.5 flex items-center justify-between text-[11px] text-stone-500">
-                    <span>上一格那幾行小字，字跟字之間空多少。那個間隙是照英文短詞挑的，中文放進去會變成一個個站開的單字、在手機上還會被撐到換行——中文小字選收緊，英文短詞想要雜誌感選撐開</span>
-                    {cardMicroTracking && (
-                      <button
-                        type="button"
-                        onClick={() => patch({ cardMicroTracking: null })}
-                        className="text-stone-500 hover:text-stone-800 underline"
-                      >
-                        清除
-                      </button>
-                    )}
-                  </div>
+                  <HintRow showClear={cardMicroTracking} onClear={() => patch({ cardMicroTracking: null })}>
+                    上一格那幾行小字，字跟字之間空多少。那個間隙是照英文短詞挑的，中文放進去會變成一個個站開的單字、在手機上還會被撐到換行——中文小字選收緊，英文短詞想要雜誌感選撐開
+                  </HintRow>
                 </Field>
               )}
               {SECTIONS_WITH_CARD_MICRO_TEXT.includes(selectedSection) && (
@@ -9594,18 +8946,9 @@ export function EditorWorkspace({
                       </button>
                     ))}
                   </div>
-                  <div className="mt-1.5 flex items-center justify-between text-[11px] text-stone-500">
-                    <span>同樣那幾行小字排到第二行時，上下兩行隔多遠。它們沒有自己的行距、跟著整段內文走（那是給一整段文字挑的值），套在那麼小的字上兩行之間空得比字還高——分類、標籤打長一點就會換行，選收緊讓兩行貼回一組</span>
-                    {cardMicroLeading && (
-                      <button
-                        type="button"
-                        onClick={() => patch({ cardMicroLeading: null })}
-                        className="text-stone-500 hover:text-stone-800 underline"
-                      >
-                        清除
-                      </button>
-                    )}
-                  </div>
+                  <HintRow showClear={cardMicroLeading} onClear={() => patch({ cardMicroLeading: null })}>
+                    同樣那幾行小字排到第二行時，上下兩行隔多遠。它們沒有自己的行距、跟著整段內文走（那是給一整段文字挑的值），套在那麼小的字上兩行之間空得比字還高——分類、標籤打長一點就會換行，選收緊讓兩行貼回一組
+                  </HintRow>
                 </Field>
               )}
               {SECTIONS_WITH_CARD_MICRO_TEXT.includes(selectedSection) && (
@@ -9627,18 +8970,9 @@ export function EditorWorkspace({
                       </button>
                     ))}
                   </div>
-                  <div className="mt-1.5 flex items-center justify-between text-[11px] text-stone-500">
-                    <span>同樣那幾行小字的筆畫多粗。「看更多」、分類、標籤那三行是最細的一級，10px 又撐開字距，在淺色底上看起來像一條灰線不像字，想讓客人看得出那裡可以點選「中黑」或「粗」；精選商品那行「剩 N」本來就比較重、又是琥珀色，想讓它退成一句提示選「常規」</span>
-                    {cardMicroWeight && (
-                      <button
-                        type="button"
-                        onClick={() => patch({ cardMicroWeight: null })}
-                        className="text-stone-500 hover:text-stone-800 underline"
-                      >
-                        清除
-                      </button>
-                    )}
-                  </div>
+                  <HintRow showClear={cardMicroWeight} onClear={() => patch({ cardMicroWeight: null })}>
+                    同樣那幾行小字的筆畫多粗。「看更多」、分類、標籤那三行是最細的一級，10px 又撐開字距，在淺色底上看起來像一條灰線不像字，想讓客人看得出那裡可以點選「中黑」或「粗」；精選商品那行「剩 N」本來就比較重、又是琥珀色，想讓它退成一句提示選「常規」
+                  </HintRow>
                 </Field>
               )}
               {SECTIONS_WITH_CARD_MICRO_TEXT.includes(selectedSection) && (
@@ -9665,18 +8999,9 @@ export function EditorWorkspace({
                       </button>
                     ))}
                   </div>
-                  <div className="mt-1.5 flex items-center justify-between text-[11px] text-stone-500">
-                    <span>前面三格動的是那幾行小字多大、字距多開、多粗，這格動的是它們什麼顏色。那幾行現在各是各的顏色：「看更多」跟慢讀的分類用主色、慢讀底下的標籤是淡灰、精選那行「剩 N」是橘色的警示色（跟店的配色沒關係）。主色深就跟品名撞在一起、主色亮在淺底上看不見、橘色那行又比價錢還搶——想讓整張卡的小字統一，四個都會一起換</span>
-                    {cardMicroTone && (
-                      <button
-                        type="button"
-                        onClick={() => patch({ cardMicroTone: null })}
-                        className="text-stone-500 hover:text-stone-800 underline"
-                      >
-                        清除
-                      </button>
-                    )}
-                  </div>
+                  <HintRow showClear={cardMicroTone} onClear={() => patch({ cardMicroTone: null })}>
+                    前面三格動的是那幾行小字多大、字距多開、多粗，這格動的是它們什麼顏色。那幾行現在各是各的顏色：「看更多」跟慢讀的分類用主色、慢讀底下的標籤是淡灰、精選那行「剩 N」是橘色的警示色（跟店的配色沒關係）。主色深就跟品名撞在一起、主色亮在淺底上看不見、橘色那行又比價錢還搶——想讓整張卡的小字統一，四個都會一起換
+                  </HintRow>
                 </Field>
               )}
               {SECTIONS_WITH_CARD_MICRO_TEXT.includes(selectedSection) && (
@@ -9702,18 +9027,9 @@ export function EditorWorkspace({
                       </button>
                     ))}
                   </div>
-                  <div className="mt-1.5 flex items-center justify-between text-[11px] text-stone-500">
-                    <span>同樣那幾行小字的英文字母要不要被轉成大寫。前面五格調的是它們多大、字距多開、換行後隔多遠、多粗、什麼顏色，這格調的是字形本身。那幾行一律轉全大寫，中文沒有大小寫、按了不會動；打英文就會被整行拉大寫——「Shop all」變 SHOP ALL、自己訂的分類標籤（Care 照顧只有前半被改）、好評那行的職稱或 IG 帳號，想照自己打的樣子顯示選「照原樣」（改輸入框裡的字沒用，大寫是顯示的時候才轉的）</span>
-                    {cardMicroCase && (
-                      <button
-                        type="button"
-                        onClick={() => patch({ cardMicroCase: null })}
-                        className="text-stone-500 hover:text-stone-800 underline"
-                      >
-                        清除
-                      </button>
-                    )}
-                  </div>
+                  <HintRow showClear={cardMicroCase} onClear={() => patch({ cardMicroCase: null })}>
+                    同樣那幾行小字的英文字母要不要被轉成大寫。前面五格調的是它們多大、字距多開、換行後隔多遠、多粗、什麼顏色，這格調的是字形本身。那幾行一律轉全大寫，中文沒有大小寫、按了不會動；打英文就會被整行拉大寫——「Shop all」變 SHOP ALL、自己訂的分類標籤（Care 照顧只有前半被改）、好評那行的職稱或 IG 帳號，想照自己打的樣子顯示選「照原樣」（改輸入框裡的字沒用，大寫是顯示的時候才轉的）
+                  </HintRow>
                 </Field>
               )}
               {SECTIONS_WITH_CARD_PRICE.includes(selectedSection) && (
@@ -9735,18 +9051,9 @@ export function EditorWorkspace({
                       </button>
                     ))}
                   </div>
-                  <div className="mt-1.5 flex items-center justify-between text-[11px] text-stone-500">
-                    <span>精選商品卡片上那行價錢多大。價錢只有 14px、比品名還小一級，客人在首頁掃過去常常正是在找它；品名調大之後想讓價錢跟上也是這格。只有精選商品那段的卡片有價錢，其他段不受影響</span>
-                    {cardPriceScale && (
-                      <button
-                        type="button"
-                        onClick={() => patch({ cardPriceScale: null })}
-                        className="text-stone-500 hover:text-stone-800 underline"
-                      >
-                        清除
-                      </button>
-                    )}
-                  </div>
+                  <HintRow showClear={cardPriceScale} onClear={() => patch({ cardPriceScale: null })}>
+                    精選商品卡片上那行價錢多大。價錢只有 14px、比品名還小一級，客人在首頁掃過去常常正是在找它；品名調大之後想讓價錢跟上也是這格。只有精選商品那段的卡片有價錢，其他段不受影響
+                  </HintRow>
                 </Field>
               )}
               {SECTIONS_WITH_CARD_PRICE.includes(selectedSection) && (
@@ -9772,18 +9079,9 @@ export function EditorWorkspace({
                       </button>
                     ))}
                   </div>
-                  <div className="mt-1.5 flex items-center justify-between text-[11px] text-stone-500">
-                    <span>上一格管的是價錢多大，這格管的是它多粗。想讓價錢一眼看得到，加粗比放大省——不會把卡片下半撐開，也不用改顏色；反過來想讓首頁先講商品不先講價，就留常規。同樣只有精選商品那段的卡片有價錢</span>
-                    {cardPriceWeight && (
-                      <button
-                        type="button"
-                        onClick={() => patch({ cardPriceWeight: null })}
-                        className="text-stone-500 hover:text-stone-800 underline"
-                      >
-                        清除
-                      </button>
-                    )}
-                  </div>
+                  <HintRow showClear={cardPriceWeight} onClear={() => patch({ cardPriceWeight: null })}>
+                    上一格管的是價錢多大，這格管的是它多粗。想讓價錢一眼看得到，加粗比放大省——不會把卡片下半撐開，也不用改顏色；反過來想讓首頁先講商品不先講價，就留常規。同樣只有精選商品那段的卡片有價錢
+                  </HintRow>
                 </Field>
               )}
               {SECTIONS_WITH_CARD_PRICE.includes(selectedSection) && (
@@ -9805,18 +9103,9 @@ export function EditorWorkspace({
                       </button>
                     ))}
                   </div>
-                  <div className="mt-1.5 flex items-center justify-between text-[11px] text-stone-500">
-                    <span>那行價錢同一行裡，數字與數字之間空多少。把品名字距撐開之後，貼在底下的價錢還是原本的密度，一鬆一緊疊在同一張卡上——這格讓價錢跟得上；撐開一點也有實體標價牌那種數字隔開的味道。只動價錢，品名、描述與那幾行小字不跟著變</span>
-                    {cardPriceTracking && (
-                      <button
-                        type="button"
-                        onClick={() => patch({ cardPriceTracking: null })}
-                        className="text-stone-500 hover:text-stone-800 underline"
-                      >
-                        清除
-                      </button>
-                    )}
-                  </div>
+                  <HintRow showClear={cardPriceTracking} onClear={() => patch({ cardPriceTracking: null })}>
+                    那行價錢同一行裡，數字與數字之間空多少。把品名字距撐開之後，貼在底下的價錢還是原本的密度，一鬆一緊疊在同一張卡上——這格讓價錢跟得上；撐開一點也有實體標價牌那種數字隔開的味道。只動價錢，品名、描述與那幾行小字不跟著變
+                  </HintRow>
                 </Field>
               )}
               {SECTIONS_WITH_CARD_PRICE.includes(selectedSection) && (
@@ -9842,18 +9131,9 @@ export function EditorWorkspace({
                       </button>
                     ))}
                   </div>
-                  <div className="mt-1.5 flex items-center justify-between text-[11px] text-stone-500">
-                    <span>前面兩格動的是價錢多大、多粗，這格動的是它什麼顏色。那行本來比品名淡一階，是整張卡上最淡的一行，可是一株賣多少常常正是客人在首頁在找的東西——換成主色或跟品名同深，掃過一列卡片時才看得到。「卡片副文字深淺」動的是那層透明度，跟這格是兩回事，可以疊著用。只有精選商品那段的卡片有價錢</span>
-                    {cardPriceTone && (
-                      <button
-                        type="button"
-                        onClick={() => patch({ cardPriceTone: null })}
-                        className="text-stone-500 hover:text-stone-800 underline"
-                      >
-                        清除
-                      </button>
-                    )}
-                  </div>
+                  <HintRow showClear={cardPriceTone} onClear={() => patch({ cardPriceTone: null })}>
+                    前面兩格動的是價錢多大、多粗，這格動的是它什麼顏色。那行本來比品名淡一階，是整張卡上最淡的一行，可是一株賣多少常常正是客人在首頁在找的東西——換成主色或跟品名同深，掃過一列卡片時才看得到。「卡片副文字深淺」動的是那層透明度，跟這格是兩回事，可以疊著用。只有精選商品那段的卡片有價錢
+                  </HintRow>
                 </Field>
               )}
               {SECTIONS_WITH_CARD_ROW_GAP.includes(selectedSection) && (
@@ -9875,18 +9155,9 @@ export function EditorWorkspace({
                       </button>
                     ))}
                   </div>
-                  <div className="mt-1.5 flex items-center justify-between text-[11px] text-stone-500">
-                    <span>同一張卡片裡上下幾行之間隔多遠（照片到品名、品名到描述或價錢、描述到底下那行小字）。卡片變寬、四行字散在一片空白裡就收緊，字調大之後幾行黏成一團就放寬；幾行之間原本的遠近會照比例保留，不會被拉成一樣</span>
-                    {cardRowGap && (
-                      <button
-                        type="button"
-                        onClick={() => patch({ cardRowGap: null })}
-                        className="text-stone-500 hover:text-stone-800 underline"
-                      >
-                        清除
-                      </button>
-                    )}
-                  </div>
+                  <HintRow showClear={cardRowGap} onClear={() => patch({ cardRowGap: null })}>
+                    同一張卡片裡上下幾行之間隔多遠（照片到品名、品名到描述或價錢、描述到底下那行小字）。卡片變寬、四行字散在一片空白裡就收緊，字調大之後幾行黏成一團就放寬；幾行之間原本的遠近會照比例保留，不會被拉成一樣
+                  </HintRow>
                 </Field>
               )}
               {SECTIONS_WITH_CARD_META_TONE.includes(selectedSection) && (
@@ -9912,18 +9183,9 @@ export function EditorWorkspace({
                       </button>
                     ))}
                   </div>
-                  <div className="mt-1.5 flex items-center justify-between text-[11px] text-stone-500">
-                    <span>卡片上品名底下那行有多濃（選物的副標、精選商品的價錢）。那行現在被淡了兩次，實際只剩不到五成，字放大了還是一行讀不太到的淺灰——想讓客人在首頁一眼看到價錢就選加深；想讓卡片先講品名、價錢退到後面就選更淡。慢讀那段的摘要不受這格影響</span>
-                    {cardMetaTone && (
-                      <button
-                        type="button"
-                        onClick={() => patch({ cardMetaTone: null })}
-                        className="text-stone-500 hover:text-stone-800 underline"
-                      >
-                        清除
-                      </button>
-                    )}
-                  </div>
+                  <HintRow showClear={cardMetaTone} onClear={() => patch({ cardMetaTone: null })}>
+                    卡片上品名底下那行有多濃（選物的副標、精選商品的價錢）。那行現在被淡了兩次，實際只剩不到五成，字放大了還是一行讀不太到的淺灰——想讓客人在首頁一眼看到價錢就選加深；想讓卡片先講品名、價錢退到後面就選更淡。慢讀那段的摘要不受這格影響
+                  </HintRow>
                 </Field>
               )}
               <Field label="底紋">
@@ -9949,18 +9211,9 @@ export function EditorWorkspace({
                     </button>
                   ))}
                 </div>
-                <div className="mt-1.5 flex items-center justify-between text-[11px] text-stone-500">
-                  <span>很淡的紋路疊在底色上，顏色跟著這段的文字色走</span>
-                  {texture && (
-                    <button
-                      type="button"
-                      onClick={() => patch({ texture: null })}
-                      className="text-stone-500 hover:text-stone-800 underline"
-                    >
-                      清除
-                    </button>
-                  )}
-                </div>
+                <HintRow showClear={texture} onClear={() => patch({ texture: null })}>
+                  很淡的紋路疊在底色上，顏色跟著這段的文字色走
+                </HintRow>
               </Field>
               {/* 濃淡跟分隔線、色條的深淺同一個處理：沒設底紋就沒東西可調。三種花樣都畫在
                   一個寫死的濃度上，底色跟文字色拉不開的段落按了三種花樣都像壞的。 */}
@@ -9983,18 +9236,9 @@ export function EditorWorkspace({
                       </button>
                     ))}
                   </div>
-                  <div className="mt-1.5 flex items-center justify-between text-[11px] text-stone-500">
-                    <span>底紋看不出來就加深；更淡是留一點若有似無的質感，加深後點陣可以當滿版圓點主視覺</span>
-                    {textureTone && (
-                      <button
-                        type="button"
-                        onClick={() => patch({ textureTone: null })}
-                        className="text-stone-500 hover:text-stone-800 underline"
-                      >
-                        清除
-                      </button>
-                    )}
-                  </div>
+                  <HintRow showClear={textureTone} onClear={() => patch({ textureTone: null })}>
+                    底紋看不出來就加深；更淡是留一點若有似無的質感，加深後點陣可以當滿版圓點主視覺
+                  </HintRow>
                 </Field>
               )}
               {/* 密度跟濃淡是一對：濃淡調的是一顆點多黑，密度調的是點跟點隔多遠。點陣加深
@@ -10023,18 +9267,9 @@ export function EditorWorkspace({
                       </button>
                     ))}
                   </div>
-                  <div className="mt-1.5 flex items-center justify-between text-[11px] text-stone-500">
-                    <span>更密是織物那種細密質感；更疏讓點跟點拉開距離，配加深可以當滿版圓點主視覺</span>
-                    {textureScale && (
-                      <button
-                        type="button"
-                        onClick={() => patch({ textureScale: null })}
-                        className="text-stone-500 hover:text-stone-800 underline"
-                      >
-                        清除
-                      </button>
-                    )}
-                  </div>
+                  <HintRow showClear={textureScale} onClear={() => patch({ textureScale: null })}>
+                    更密是織物那種細密質感；更疏讓點跟點拉開距離，配加深可以當滿版圓點主視覺
+                  </HintRow>
                 </Field>
               )}
               {/* 用色跟濃淡、密度是一組：濃淡調多黑、密度調多密，這格調什麼色。密度開了
@@ -10062,18 +9297,9 @@ export function EditorWorkspace({
                       </button>
                     ))}
                   </div>
-                  <div className="mt-1.5 flex items-center justify-between text-[11px] text-stone-500">
-                    <span>跟文字色是安靜的襯底；全站主色讓紋帶品牌色，配加深、更疏就是品牌色圓點主視覺</span>
-                    {textureColor && (
-                      <button
-                        type="button"
-                        onClick={() => patch({ textureColor: null })}
-                        className="text-stone-500 hover:text-stone-800 underline"
-                      >
-                        清除
-                      </button>
-                    )}
-                  </div>
+                  <HintRow showClear={textureColor} onClear={() => patch({ textureColor: null })}>
+                    跟文字色是安靜的襯底；全站主色讓紋帶品牌色，配加深、更疏就是品牌色圓點主視覺
+                  </HintRow>
                 </Field>
               )}
               <Field label="底色明暗">
@@ -10099,18 +9325,9 @@ export function EditorWorkspace({
                     </button>
                   ))}
                 </div>
-                <div className="mt-1.5 flex items-center justify-between text-[11px] text-stone-500">
-                  <span>底色從一邊淡淡加深（暈影＝四周壓暗），可以跟底紋一起用</span>
-                  {bgGradient && (
-                    <button
-                      type="button"
-                      onClick={() => patch({ bgGradient: null })}
-                      className="text-stone-500 hover:text-stone-800 underline"
-                    >
-                      清除
-                    </button>
-                  )}
-                </div>
+                <HintRow showClear={bgGradient} onClear={() => patch({ bgGradient: null })}>
+                  底色從一邊淡淡加深（暈影＝四周壓暗），可以跟底紋一起用
+                </HintRow>
               </Field>
               {/* 濃淡跟底紋濃淡同一個處理：沒選明暗方向就沒東西可調。三個方向都疊在一個
                   寫死的 12% 上，底色跟文字色拉不開的段落按了三個方向都像壞的。 */}
@@ -10133,18 +9350,9 @@ export function EditorWorkspace({
                       </button>
                     ))}
                   </div>
-                  <div className="mt-1.5 flex items-center justify-between text-[11px] text-stone-500">
-                    <span>明暗看不出來就加深；加深後暈影像舞台打光，把視線收到段落中央</span>
-                    {bgGradientTone && (
-                      <button
-                        type="button"
-                        onClick={() => patch({ bgGradientTone: null })}
-                        className="text-stone-500 hover:text-stone-800 underline"
-                      >
-                        清除
-                      </button>
-                    )}
-                  </div>
+                  <HintRow showClear={bgGradientTone} onClear={() => patch({ bgGradientTone: null })}>
+                    明暗看不出來就加深；加深後暈影像舞台打光，把視線收到段落中央
+                  </HintRow>
                 </Field>
               )}
               <div className="mt-3 pt-3 border-t border-stone-200">
@@ -10174,18 +9382,9 @@ export function EditorWorkspace({
                     </button>
                   ))}
                 </div>
-                <div className="mt-1.5 flex items-center justify-between text-[11px] text-stone-500">
-                  <span>滾到該段時觸發（編輯模式不會看到動畫）</span>
-                  {entrance && (
-                    <button
-                      type="button"
-                      onClick={() => patch({ entrance: null })}
-                      className="text-stone-500 hover:text-stone-800 underline"
-                    >
-                      清除
-                    </button>
-                  )}
-                </div>
+                <HintRow showClear={entrance} onClear={() => patch({ entrance: null })}>
+                  滾到該段時觸發（編輯模式不會看到動畫）
+                </HintRow>
               </Field>
               <Field label="字體">
                 <div className="grid grid-cols-3 gap-1.5">
@@ -10209,18 +9408,9 @@ export function EditorWorkspace({
                     </button>
                   ))}
                 </div>
-                <div className="mt-1.5 flex items-center justify-between text-[11px] text-stone-500">
-                  <span>沒選 = 跟著全站字體</span>
-                  {fontFamily && (
-                    <button
-                      type="button"
-                      onClick={() => patch({ fontFamily: null })}
-                      className="text-stone-500 hover:text-stone-800 underline"
-                    >
-                      清除
-                    </button>
-                  )}
-                </div>
+                <HintRow showClear={fontFamily} onClear={() => patch({ fontFamily: null })}>
+                  沒選 = 跟著全站字體
+                </HintRow>
               </Field>
               <Field label="字距">
                 <div className="grid grid-cols-3 gap-1.5">
@@ -10244,18 +9434,9 @@ export function EditorWorkspace({
                     </button>
                   ))}
                 </div>
-                <div className="mt-1.5 flex items-center justify-between text-[11px] text-stone-500">
-                  <span>「寬」適合雜誌大標 / 全大寫字</span>
-                  {letterSpacing && (
-                    <button
-                      type="button"
-                      onClick={() => patch({ letterSpacing: null })}
-                      className="text-stone-500 hover:text-stone-800 underline"
-                    >
-                      清除
-                    </button>
-                  )}
-                </div>
+                <HintRow showClear={letterSpacing} onClear={() => patch({ letterSpacing: null })}>
+                  「寬」適合雜誌大標 / 全大寫字
+                </HintRow>
               </Field>
               <Field label="行高">
                 <div className="grid grid-cols-3 gap-1.5">
@@ -10279,18 +9460,9 @@ export function EditorWorkspace({
                     </button>
                   ))}
                 </div>
-                <div className="mt-1.5 flex items-center justify-between text-[11px] text-stone-500">
-                  <span>「舒展」適合長段內文 / 慢讀區</span>
-                  {lineHeight && (
-                    <button
-                      type="button"
-                      onClick={() => patch({ lineHeight: null })}
-                      className="text-stone-500 hover:text-stone-800 underline"
-                    >
-                      清除
-                    </button>
-                  )}
-                </div>
+                <HintRow showClear={lineHeight} onClear={() => patch({ lineHeight: null })}>
+                  「舒展」適合長段內文 / 慢讀區
+                </HintRow>
               </Field>
               <div className="mt-3 pt-3 border-t border-stone-200">
                 <p className="text-[10px] font-medium tracking-[0.3em] uppercase text-stone-500">
@@ -10319,18 +9491,9 @@ export function EditorWorkspace({
                     </button>
                   ))}
                 </div>
-                <div className="mt-1.5 flex items-center justify-between text-[11px] text-stone-500">
-                  <span>讓次要 section（合作 / 數字 / FAQ）變淡，襯托 hero 跳出</span>
-                  {opacity && (
-                    <button
-                      type="button"
-                      onClick={() => patch({ opacity: null })}
-                      className="text-stone-500 hover:text-stone-800 underline"
-                    >
-                      清除
-                    </button>
-                  )}
-                </div>
+                <HintRow showClear={opacity} onClear={() => patch({ opacity: null })}>
+                  讓次要 section（合作 / 數字 / FAQ）變淡，襯托 hero 跳出
+                </HintRow>
               </Field>
               <Field label="濾鏡">
                 <div className="grid grid-cols-3 gap-1.5">
@@ -10354,18 +9517,9 @@ export function EditorWorkspace({
                     </button>
                   ))}
                 </div>
-                <div className="mt-1.5 flex items-center justify-between text-[11px] text-stone-500">
-                  <span>套在這段的照片上（文字與配色不動），合作 / 相簿黑白做雜誌感、慢讀區復古做懷舊感</span>
-                  {filter && (
-                    <button
-                      type="button"
-                      onClick={() => patch({ filter: null })}
-                      className="text-stone-500 hover:text-stone-800 underline"
-                    >
-                      清除
-                    </button>
-                  )}
-                </div>
+                <HintRow showClear={filter} onClear={() => patch({ filter: null })}>
+                  套在這段的照片上（文字與配色不動），合作 / 相簿黑白做雜誌感、慢讀區復古做懷舊感
+                </HintRow>
               </Field>
             </PanelSection>
           );
@@ -10943,6 +10097,38 @@ function Field({
         {label}
       </label>
       {children}
+    </div>
+  );
+}
+
+/**
+ * 每格控制底下那條「說明文字＋（有值時）清除」列。
+ * 之前 94 格各抄一份一模一樣的 <div>＋<span>＋<button>，改一格（例如字級
+ * 11px 要改 12px、清除的 hover 色）另外 93 格不會跟著動，所以收成一支。
+ * 每個欄位都是 `cur.X ?? null` 的字串選項，有值才顯示清除，跟原本
+ * `{X && (<button…>)}` 的判斷一樣。
+ */
+function HintRow({
+  showClear,
+  onClear,
+  children,
+}: {
+  showClear: string | null;
+  onClear: () => void;
+  children: React.ReactNode;
+}) {
+  return (
+    <div className="mt-1.5 flex items-center justify-between text-[11px] text-stone-500">
+      <span>{children}</span>
+      {showClear ? (
+        <button
+          type="button"
+          onClick={onClear}
+          className="text-stone-500 hover:text-stone-800 underline"
+        >
+          清除
+        </button>
+      ) : null}
     </div>
   );
 }
