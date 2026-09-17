@@ -257,6 +257,12 @@ export default async function StoreHomePage({
   // 同一包，留在原地。四個 utility class 仍以字面出現在這行，Tailwind 掃描照樣抓得到。
   const sectionInnerClass = "sproutly-section-inner max-w-5xl mx-auto px-8 sm:px-12";
 
+  // 顧客回饋／常見問題／數字／相簿四個區段的 h2 字級（各拖過版位與沒定位兩支）共八處的
+  // className 以前各抄一份一模一樣的三個 class（text-2xl sm:text-3xl md:text-4xl），改一格
+  // （例如 md:text-4xl 要改 md:text-5xl）另七處不會跟著動；收成一個常數。慢讀區兩支是
+  // text-3xl sm:text-4xl lg:text-[2.5rem]、來訪那支多 mb-4，不是同一包，留在原地。
+  const sectionHeadingClass = "text-2xl sm:text-3xl md:text-4xl";
+
   // 區段裡用全站主色畫的東西（小標 eyebrow、標題底下那截短線、常見問題的＋、數字底下
   // 的短線）一律走這個值，不再直接寫 theme.accent。--store-accent 只有在該段的自訂底色
   // 把主色吃掉時才由 mergeSectionStyle 設（見那裡），沒設就退回全站主色、畫面完全不變。
@@ -4177,7 +4183,7 @@ export default async function StoreHomePage({
                     <h2
                       data-edit-text
                       data-edit-field="testimonialsTitle"
-                      className="text-2xl sm:text-3xl md:text-4xl"
+                      className={sectionHeadingClass}
                       style={{
                         ...sectionHeadTextStyle(400),
                       }}
@@ -4205,7 +4211,7 @@ export default async function StoreHomePage({
                     <h2
                       data-edit-text
                       data-edit-field="testimonialsTitle"
-                      className="text-2xl sm:text-3xl md:text-4xl"
+                      className={sectionHeadingClass}
                       style={{
                         ...sectionHeadTextStyle(400),
                       }}
@@ -4396,7 +4402,7 @@ export default async function StoreHomePage({
                       {faqEyebrow}
                     </p>
                     <h2
-                      className="text-2xl sm:text-3xl md:text-4xl"
+                      className={sectionHeadingClass}
                       style={{
                         ...sectionHeadTextStyle(400),
                       }}
@@ -4421,7 +4427,7 @@ export default async function StoreHomePage({
                   <h2
                     data-edit-text
                     data-edit-field="faqTitle"
-                    className="text-2xl sm:text-3xl md:text-4xl"
+                    className={sectionHeadingClass}
                     style={{
                       ...sectionHeadTextStyle(400),
                     }}
@@ -4616,7 +4622,7 @@ export default async function StoreHomePage({
                       <h2
                         data-edit-text
                         data-edit-field="statsTitle"
-                        className="text-2xl sm:text-3xl md:text-4xl"
+                        className={sectionHeadingClass}
                         style={{
                           ...sectionHeadTextStyle(500),
                         }}
@@ -4646,7 +4652,7 @@ export default async function StoreHomePage({
                       <h2
                         data-edit-text
                         data-edit-field="statsTitle"
-                        className="text-2xl sm:text-3xl md:text-4xl"
+                        className={sectionHeadingClass}
                         style={{
                           ...sectionHeadTextStyle(500),
                         }}
@@ -4956,7 +4962,7 @@ export default async function StoreHomePage({
                     <h2
                       data-edit-text
                       data-edit-field="galleryTitle"
-                      className="text-2xl sm:text-3xl md:text-4xl"
+                      className={sectionHeadingClass}
                       style={{
                         ...sectionHeadTextStyle(400),
                       }}
@@ -4981,7 +4987,7 @@ export default async function StoreHomePage({
                   <h2
                     data-edit-text
                     data-edit-field="galleryTitle"
-                    className="text-2xl sm:text-3xl md:text-4xl"
+                    className={sectionHeadingClass}
                     style={{
                       ...sectionHeadTextStyle(400),
                     }}
