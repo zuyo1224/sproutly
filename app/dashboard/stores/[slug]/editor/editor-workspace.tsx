@@ -2156,7 +2156,7 @@ export function EditorWorkspace({
                 <span>標準 1.0x</span>
                 <span>大</span>
               </div>
-              <p className="text-[10px] text-stone-500 mt-1">
+              <p className={hintClass}>
                 四種版型都會套用。原本一律 10px，那是照英文大寫字挑的——中文小標在 10px
                 上只剩一團墨，手機看更明顯
               </p>
@@ -2183,7 +2183,7 @@ export function EditorWorkspace({
                   </button>
                 ))}
               </div>
-              <p className="text-[10px] text-stone-500 mt-1">
+              <p className={hintClass}>
                 原本每個字之間空 0.4em，那是給英文全大寫用的；中文方塊字本來就自帶留白，
                 四個字的小標會散成四個不相干的字，選收緊會靠回來
               </p>
@@ -2215,7 +2215,7 @@ export function EditorWorkspace({
                   </button>
                 )}
               </div>
-              <p className="text-[10px] text-stone-500 mt-1">
+              <p className={hintClass}>
                 原本用店的主色，那是整頁最搶眼的顏色押在最小的一行字上，壓在照片上容易糊；
                 雜誌版型原本用淡文字色，設了以後兩種版型一起走這個色
               </p>
@@ -2230,7 +2230,7 @@ export function EditorWorkspace({
                 selected={theme.layout.heroEyebrowCase}
                 onSelect={(v) => updateLayout({ heroEyebrowCase: v })}
               />
-              <p className="text-[10px] text-stone-500 mt-1">
+              <p className={hintClass}>
                 小標打中文的話這格沒有作用（中文沒有大小寫）。打英文才看得出來：原本一律轉成
                 全大寫，「Est. 2019」會變 EST. 2019、英文店名也會被拉大寫，選照原樣就照你打的顯示
               </p>
@@ -2245,7 +2245,7 @@ export function EditorWorkspace({
                 selected={theme.layout.heroEyebrowWeight}
                 onSelect={(v) => updateLayout({ heroEyebrowWeight: v })}
               />
-              <p className="text-[10px] text-stone-500 mt-1">
+              <p className={hintClass}>
                 客人由上往下讀到的第一行字有多重。它原本是全站最小的字級配最鬆的字距再配最輕的
                 字重，三個往淡的方向疊在一起，壓在照片上就像浮在圖上的一排灰點。想讓它讀得出來，
                 上面只有拉深顏色（那行字會變成跟主標搶的一塊深色）或放大字級（一放大就不是小標
@@ -2258,7 +2258,7 @@ export function EditorWorkspace({
                 selected={theme.layout.heroEyebrowLeading}
                 onSelect={(v) => updateLayout({ heroEyebrowLeading: v })}
               />
-              <p className="text-[10px] text-stone-500 mt-1">
+              <p className={hintClass}>
                 小標換行的時候，上下兩行隔多遠。打英文通常一行就放得下看不出來；中文的小標
                 長一點（「本月選物 · 春天的第一批」），手機上會斷成兩行，而它原本用的是內文
                 段落的行距，配上小標本來就很寬的字距，那兩行會鬆得像兩個不相干的標籤，
@@ -2338,7 +2338,7 @@ export function EditorWorkspace({
                     selected={theme.layout.heroSubtitleAlign}
                     onSelect={(v) => updateLayout({ heroSubtitleAlign: v })}
                   />
-                  <p className="text-[10px] text-stone-500 mt-1">
+                  <p className={hintClass}>
                     預設跟版型走（Split 靠左 / Magazine · Minimal 置中 / 滿版圖跟主標）
                   </p>
                 </Field>
@@ -2368,7 +2368,7 @@ export function EditorWorkspace({
                       </button>
                     ))}
                   </div>
-                  <p className="text-[10px] text-stone-500 mt-1">
+                  <p className={hintClass}>
                     四種版型都會套用。副標壓在 hero 照片上時，淡文字色配常規字重讀起來很吃力，
                     加一點重量比把顏色調深不傷版面
                   </p>
@@ -2399,7 +2399,7 @@ export function EditorWorkspace({
                       </button>
                     ))}
                   </div>
-                  <p className="text-[10px] text-stone-500 mt-1">
+                  <p className={hintClass}>
                     雜誌 / 極簡版型的副標是斜體引文，撐開字距會更像引文、更不像一般內文
                   </p>
                 </Field>
@@ -2409,7 +2409,7 @@ export function EditorWorkspace({
                     selected={theme.layout.heroSubtitleLeading}
                     onSelect={(v) => updateLayout({ heroSubtitleLeading: v })}
                   />
-                  <p className="text-[10px] text-stone-500 mt-1">
+                  <p className={hintClass}>
                     四種版型的副標原本都用內文段落的行距，套在只有兩三行的副標上偏鬆，
                     那幾行會散開成一整塊灰色反而搶了主標。收緊會讓副標更像主標底下的一句話
                   </p>
@@ -2427,7 +2427,7 @@ export function EditorWorkspace({
                 maxLength={60}
                 className={inputClass}
               />
-              <p className="text-[10px] text-stone-500 mt-1">
+              <p className={hintClass}>
                 Hero 區段大按鈕的文字，預設「{HOMEPAGE_DEFAULTS.heroCta}」
               </p>
             </Field>
@@ -2442,7 +2442,7 @@ export function EditorWorkspace({
                 maxLength={60}
                 className={inputClass}
               />
-              <p className="text-[10px] text-stone-500 mt-1">
+              <p className={hintClass}>
                 Split 版型 Hero 區段的次要按鈕（連到關於頁），預設「{HOMEPAGE_DEFAULTS.heroSecondaryCta}」
               </p>
             </Field>
@@ -2461,7 +2461,7 @@ export function EditorWorkspace({
                 <span>標準 1.0x</span>
                 <span>大</span>
               </div>
-              <p className="text-[10px] text-stone-500 mt-1">
+              <p className={hintClass}>
                 四種版型的按鈕（含次要按鈕）一起套。按鈕是 hero 上唯一可以按的東西，
                 但原本的字級固定不動——主標拉大之後，按鈕會被主標壓成最不起眼的一行；
                 雜誌版型那條更小（跟下面 byline 同一個字級），手機上不容易看出來可以按。
@@ -2474,7 +2474,7 @@ export function EditorWorkspace({
                 selected={theme.layout.heroCtaTracking}
                 onSelect={(v) => updateLayout({ heroCtaTracking: v })}
               />
-              <p className="text-[10px] text-stone-500 mt-1">
+              <p className={hintClass}>
                 按鈕上每個字之間的空隙。原本空 0.18em，那是給英文全大寫用的；中文的
                 「立即選購」四個字會散開，而且上面那格把字放大以後空隙也跟著變大，散得更開。
                 選收緊會靠回來
@@ -2490,7 +2490,7 @@ export function EditorWorkspace({
                 selected={theme.layout.heroCtaCase}
                 onSelect={(v) => updateLayout({ heroCtaCase: v })}
               />
-              <p className="text-[10px] text-stone-500 mt-1">
+              <p className={hintClass}>
                 按鈕打中文的話這格沒有作用（中文沒有大小寫）。打英文才看得出來：左右分割、
                 極簡、雜誌三種版型會把按鈕字一律轉成全大寫，「Shop Now」變 SHOP NOW，
                 選照原樣就照你打的顯示（全屏沉浸那顆本來就沒轉，維持原樣）
@@ -2508,7 +2508,7 @@ export function EditorWorkspace({
                 selected={theme.layout.heroCtaWeight}
                 onSelect={(v) => updateLayout({ heroCtaWeight: v })}
               />
-              <p className="text-[10px] text-stone-500 mt-1">
+              <p className={hintClass}>
                 按鈕文字有多重。原本兩種：實心／描邊那種按鈕是中等，帶底線的連結型是
                 跟內文一樣細——連結型的字放大之後容易看起來像一行普通的字，加粗會更像
                 可以按的；反過來整個 hero 走輕盈路線時，也可以把按鈕退細一點
@@ -2543,7 +2543,7 @@ export function EditorWorkspace({
                   </button>
                 )}
               </div>
-              <p className="text-[10px] text-stone-500 mt-1">
+              <p className={hintClass}>
                 前面幾格只能把按鈕的字弄大弄粗，弄到最後那顆還是跟主標同一個顏色。
                 挑一個顏色就整顆換掉：帶底線的連結型換的是字（底線跟著換），
                 實心那種換的是底色、上面的字會自動挑讀得清楚的那個，
@@ -2561,7 +2561,7 @@ export function EditorWorkspace({
                 maxLength={60}
                 className={inputClass}
               />
-              <p className="text-[10px] text-stone-500 mt-1">
+              <p className={hintClass}>
                 Magazine 版型 Hero 底部那行小字，預設「Curated by 店名」
               </p>
             </Field>
@@ -2582,7 +2582,7 @@ export function EditorWorkspace({
                 <span>標準 1.0x</span>
                 <span>大</span>
               </div>
-              <p className="text-[10px] text-stone-500 mt-1">
+              <p className={hintClass}>
                 只動上面那行 byline，右邊的按鈕不跟（按鈕有自己的那格）。原本固定 10px，
                 那個大小是照英文大寫字母挑的，byline 打中文的話在 10px 幾乎糊成一團，
                 而全網站字級那格也動不到它
@@ -2617,7 +2617,7 @@ export function EditorWorkspace({
                   </button>
                 )}
               </div>
-              <p className="text-[10px] text-stone-500 mt-1">
+              <p className={hintClass}>
                 原本用淡文字色，是整個雜誌版型最淡的一行。想讓它退成純裝飾、或反過來讓
                 客人讀得清楚都從這裡調，右邊的按鈕不跟
               </p>
@@ -2628,7 +2628,7 @@ export function EditorWorkspace({
                 selected={theme.layout.heroBylineTracking}
                 onSelect={(v) => updateLayout({ heroBylineTracking: v })}
               />
-              <p className="text-[10px] text-stone-500 mt-1">
+              <p className={hintClass}>
                 那行 byline 每個字之間的空隙，原本空 0.32em、是全站最寬的一格。那個寬度
                 跟 10px 一樣是照英文全大寫挑的，byline 打中文（「由 XX 選件」）七八個字會
                 散成七八個不相干的字，而上面那格把字放大以後空隙也跟著等比例變大、散得更開。
@@ -2645,7 +2645,7 @@ export function EditorWorkspace({
                 selected={theme.layout.heroBylineCase}
                 onSelect={(v) => updateLayout({ heroBylineCase: v })}
               />
-              <p className="text-[10px] text-stone-500 mt-1">
+              <p className={hintClass}>
                 byline 打中文的話這格沒有作用（中文沒有大小寫）。打英文才看得出來：那行字
                 一律被轉成全大寫，「Photography by Wang」變 PHOTOGRAPHY BY WANG，打 IG
                 帳號也會被改掉。選照原樣就照你打的顯示（改上面輸入框的字沒有用，大寫是
@@ -2662,7 +2662,7 @@ export function EditorWorkspace({
                 selected={theme.layout.heroBylineWeight}
                 onSelect={(v) => updateLayout({ heroBylineWeight: v })}
               />
-              <p className="text-[10px] text-stone-500 mt-1">
+              <p className={hintClass}>
                 那行字有多重。原本跟內文一樣輕，是整個版面最不明顯的一行——想讓客人真的
                 讀到它，上面的顏色那格只能拉深，拉深了又會跟同一行的其他字打架。這格是
                 「一樣的淡，但看得出是一行字」。反過來當落款用的話，選稍重配收緊的字距，
@@ -2675,7 +2675,7 @@ export function EditorWorkspace({
                 selected={theme.layout.heroBylineLeading}
                 onSelect={(v) => updateLayout({ heroBylineLeading: v })}
               />
-              <p className="text-[10px] text-stone-500 mt-1">
+              <p className={hintClass}>
                 那行字換行的時候，上下兩行隔多遠。byline 比上面的小標更容易換兩行——它是
                 你自己打的一句話，那一行左邊還要跟右邊的按鈕分掉寬度，手機上兩行是常態。
                 它原本用的是內文段落的行距，套在一行落款上偏鬆。收緊會讓那兩行結成一塊
@@ -2737,7 +2737,7 @@ export function EditorWorkspace({
                   改回跟桌機一樣
                 </button>
               )}
-              <p className="text-[10px] text-stone-500 mt-1">
+              <p className={hintClass}>
                 上面那格手機桌機同一把尺，可是版型內建的字級在手機那端只有桌機的一半上下：
                 桌機調到剛好，手機常常還是一行小字壓不住整張封面；拉大遷就手機，桌機又大到
                 破版。這格只管 767px 以下、只動主標這一句，沒動過就一直跟著上面那格走。
@@ -2780,7 +2780,7 @@ export function EditorWorkspace({
                 selected={theme.layout.heroTaglineAlign}
                 onSelect={(v) => updateLayout({ heroTaglineAlign: v })}
               />
-              <p className="text-[10px] text-stone-500 mt-1">
+              <p className={hintClass}>
                 對齊只有「整版圖片」版型會套用；其他版型的主標位置是版型設計的一部分，先跟著版型走
               </p>
             </Field>
@@ -2794,7 +2794,7 @@ export function EditorWorkspace({
                 selected={theme.layout.heroTaglineWeight}
                 onSelect={(v) => updateLayout({ heroTaglineWeight: v })}
               />
-              <p className="text-[10px] text-stone-500 mt-1">
+              <p className={hintClass}>
                 四種版型都會套用。字最大的那一句原本一律是最輕的常規，短主標容易撐不起整頁
               </p>
             </Field>
@@ -2820,7 +2820,7 @@ export function EditorWorkspace({
                   </button>
                 ))}
               </div>
-              <p className="text-[10px] text-stone-500 mt-1">
+              <p className={hintClass}>
                 同一行裡字跟字之間的距離。四種版型原本的字距都是照英文主標調的，中文主標的
                 筆畫會黏在一起，選撐開拉開；主標只有四五個字時撐開也能把那一行拉滿版面
               </p>
@@ -2831,7 +2831,7 @@ export function EditorWorkspace({
                 selected={theme.layout.heroTaglineLeading}
                 onSelect={(v) => updateLayout({ heroTaglineLeading: v })}
               />
-              <p className="text-[10px] text-stone-500 mt-1">
+              <p className={hintClass}>
                 上下兩行之間隔多遠（字距是左右、行距是上下）。中文沒有空格，一句十幾個字的
                 標語在手機上會直接斷成三行；四種版型原本的行距是照英文主標挑的，中文方塊字
                 排起來上下容易貼太近，選舒展分開。收緊則是把換行的主標收成一整塊
@@ -2861,7 +2861,7 @@ export function EditorWorkspace({
                   </button>
                 ))}
               </div>
-              <p className="text-[10px] text-stone-500 mt-1">
+              <p className={hintClass}>
                 高度只有「整版圖片」版型會套用；其他版型的高度是版型設計的一部分，先跟著版型走。
                 三檔都是「至少多高」：照片加文字段比這矮時，多出來的高度會給文字段、色塊一路鋪到底，
                 不會在文字段下面露出一條別的顏色；比這高時整段照內容長、不裁字
@@ -2893,7 +2893,7 @@ export function EditorWorkspace({
                     </button>
                   ))}
                 </div>
-                <p className="text-[10px] text-stone-500 mt-1">
+                <p className={hintClass}>
                   上面那格在手機跟桌機是同一把尺，可是同一張照片在手機是滿寬顯示、比桌機
                   高得多，字又小一半：桌機選全屏剛好的店，手機常常是文字段被硬撐一大截空
                   色塊；想手機做滿屏封面、桌機照內容走的也動不了。這格只管手機（767px
@@ -2913,7 +2913,7 @@ export function EditorWorkspace({
                   selected={theme.layout.heroFullTextAlignY}
                   onSelect={(v) => updateLayout({ heroFullTextAlignY: v })}
                 />
-                <p className="text-[10px] text-stone-500 mt-1">
+                <p className={hintClass}>
                   上面「Hero 高度」選了矮 / 高 / 全屏之後，照片加字比那個矮的店，多出來的
                   高度全給了文字段那塊色塊，可是字還是貼著色塊上緣排：只有店名一行加一句話
                   的店選全屏，上面一排字、底下一大片空色塊，看起來像字掉了一半。置中把字擺到
@@ -3051,7 +3051,7 @@ export function EditorWorkspace({
                   selected={theme.layout.heroSplitRatio}
                   onSelect={(v) => updateLayout({ heroSplitRatio: v })}
                 />
-                <p className="text-[10px] text-stone-500 mt-1">
+                <p className={hintClass}>
                   圖跟文字各占多寬。原本剛好一半一半，那個比例是配「方形的圖 + 一行主標」
                   的——放直式商品照的話左右兩邊會被裁掉一大塊，選圖寬（六成）就少裁一點；
                   反過來主標長、又有副標跟兩顆按鈕的話，文字那半會擠到一直換行，選圖窄
@@ -3089,7 +3089,7 @@ export function EditorWorkspace({
                   selected={theme.layout.heroImageFocus}
                   onSelect={(v) => updateLayout({ heroImageFocus: v })}
                 />
-                <p className="text-[10px] text-stone-500 mt-1">
+                <p className={hintClass}>
                   照片鋪滿圖框、比例對不上時要切掉一邊，原本一律從正中間切。直式的商品照
                   被切掉的上面（葉冠、瓶口）跟下面（盆器、落款）常常就是想給人看的地方——
                   選留上緣就往下切，選留下緣就往上切。上一格「圖文比例」讓的是寬度，這格
@@ -3108,7 +3108,7 @@ export function EditorWorkspace({
                   selected={theme.layout.heroImageFocusX}
                   onSelect={(v) => updateLayout({ heroImageFocusX: v })}
                 />
-                <p className="text-[10px] text-stone-500 mt-1">
+                <p className={hintClass}>
                   上一格管上下，這格管左右。平板以上這張圖的框是整屏高、半屏寬的直式框，
                   橫式照片（店面外觀、桌上一排商品）放進去被切掉的是左右兩邊——主體站在
                   畫面左邊的照片，從正中間切下去主體只剩半個。選留左緣就往右切，留右緣就
@@ -3127,7 +3127,7 @@ export function EditorWorkspace({
                   selected={theme.layout.heroSplitImageFit}
                   onSelect={(v) => updateLayout({ heroSplitImageFit: v })}
                 />
-                <p className="text-[10px] text-stone-500 mt-1">
+                <p className={hintClass}>
                   上面兩格取景挑的是切哪一邊，前提是照片一定會被切。有些照片哪邊都不能切
                   ——整株連盆的植物、四邊帶留白的商品棚拍——選整張顯示就一點都不裁，放不滿
                   的地方露出這一段的底色；取景那兩格照樣有用，變成整張圖往框的哪一邊靠。
@@ -3148,7 +3148,7 @@ export function EditorWorkspace({
                   selected={theme.layout.heroSplitImageAspect}
                   onSelect={(v) => updateLayout({ heroSplitImageAspect: v })}
                 />
-                <p className="text-[10px] text-stone-500 mt-1">
+                <p className={hintClass}>
                   上面兩格只管平板跟桌機。手機上這個版型是圖在上、文字在下，圖框永遠是正方形，
                   跟你上傳什麼圖無關——一株連盆兩尺高的植物、一支細長的水壺，要從上下各切掉
                   快三分之一才塞得進去，「照片取景」那格只能決定犧牲葉冠還是犧牲盆器。選直式
@@ -3178,7 +3178,7 @@ export function EditorWorkspace({
                   selected={theme.layout.heroSplitTextAlign}
                   onSelect={(v) => updateLayout({ heroSplitTextAlign: v })}
                 />
-                <p className="text-[10px] text-stone-500 mt-1">
+                <p className={hintClass}>
                   上面三格動的都是照片那半，文字那半的字則是一律擺在正中間。這一段在平板
                   以上是整個螢幕高，所以只放一行店名的店，那行字會孤零零浮在中央、照片
                   上緣到字之間空掉半個螢幕；反過來主標兩三行加副標加按鈕的店，字團本來
@@ -3194,7 +3194,7 @@ export function EditorWorkspace({
                   selected={theme.layout.heroSplitTextAlignX}
                   onSelect={(v) => updateLayout({ heroSplitTextAlignX: v })}
                 />
-                <p className="text-[10px] text-stone-500 mt-1">
+                <p className={hintClass}>
                   上一格是這欄的字擺多高，這格是同一欄的另一個方向。左右那半是一張整欄高
                   的照片，兩邊都切得筆直；文字這半的字全部靠左，右邊那側就是一條長短不齊
                   的邊，跟旁邊那張照片擺在一起看起來不像一組的。置中讓兩半各自對稱、中軸
@@ -3210,7 +3210,7 @@ export function EditorWorkspace({
                   selected={theme.layout.heroSplitTextPadding}
                   onSelect={(v) => updateLayout({ heroSplitTextPadding: v })}
                 />
-                <p className="text-[10px] text-stone-500 mt-1">
+                <p className={hintClass}>
                   「圖文比例」讓的是文字那半有多寬，這格管的是那一半裡面兩邊再空多少。
                   桌機原本左右各空一大截——選了圖寬之後文字只剩四成，還照樣空這麼多，
                   一行常常只排得下四五個字，整段變成一條細長的字柱，這時候選窄；反過來
@@ -3226,7 +3226,7 @@ export function EditorWorkspace({
                   selected={theme.layout.heroSplitMobilePadY}
                   onSelect={(v) => updateLayout({ heroSplitMobilePadY: v })}
                 />
-                <p className="text-[10px] text-stone-500 mt-1">
+                <p className={hintClass}>
                   上一格管的是左右、而且只影響平板以上；這格剛好相反，只影響手機的上下。
                   手機上文字那段的上下各空一截，那個空白是配正方形照片、字只有店名加
                   一句話挑的。照片改成直式之後，光那張圖就超過一個螢幕高，底下再接一塊
@@ -3242,7 +3242,7 @@ export function EditorWorkspace({
                   selected={theme.layout.heroSplitGap}
                   onSelect={(v) => updateLayout({ heroSplitGap: v })}
                 />
-                <p className="text-[10px] text-stone-500 mt-1">
+                <p className={hintClass}>
                   小標、主標、副標、那排按鈕，這四樣東西彼此之間隔多遠。上面兩格管的是
                   這一欄的邊界離字有多遠，這格管的是欄裡面各行之間的疏密。原本那組間距
                   是配預設主標字級挑的：字級拉大之後，一行大字跟下一行之間只剩原本那點空，
@@ -3263,7 +3263,7 @@ export function EditorWorkspace({
                   selected={theme.layout.heroSplitMobileOrder}
                   onSelect={(v) => updateLayout({ heroSplitMobileOrder: v })}
                 />
-                <p className="text-[10px] text-stone-500 mt-1">
+                <p className={hintClass}>
                   「圖片靠左 / 靠右」只管平板以上的左右。手機是上下堆疊，永遠是照片先——
                   滿寬的照片光自己就吃掉一個螢幕寬的高度，客人從 IG 點進來第一屏只看得到
                   那張圖，店名、那句話、兩顆按鈕全在下面，要滑一下才出現。照片本身就是招牌
@@ -3283,7 +3283,7 @@ export function EditorWorkspace({
                   selected={theme.layout.heroSplitHeight}
                   onSelect={(v) => updateLayout({ heroSplitHeight: v })}
                 />
-                <p className="text-[10px] text-stone-500 mt-1">
+                <p className={hintClass}>
                   上面幾格動的都是這一段裡面怎麼分，這一段本身多高是寫死的整屏（上面那格
                   「Hero 高度」只有整版圖片版型會套用）。右半只放店名一行加一句話的店，
                   那半欄會空一大片，客人得再滑一整個螢幕才碰得到下一段——選跟著內容，整段
@@ -3330,7 +3330,7 @@ export function EditorWorkspace({
                     </button>
                   )}
                 </div>
-                <p className="text-[10px] text-stone-500 mt-1">
+                <p className={hintClass}>
                   照片旁邊那半欄。它原本跟後面每一段同一個顏色，所以往下捲是一整片同色，
                   開頭在哪裡結束看不出來；手機上圖上文下，照片以下到頁尾也全是同一塊色。
                   換個顏色就能把開頭這段跟後面分開。照片那半不會受影響
@@ -3367,7 +3367,7 @@ export function EditorWorkspace({
                     </button>
                   )}
                 </div>
-                <p className="text-[10px] text-stone-500 mt-1">
+                <p className={hintClass}>
                   「照片完整度」選了整張顯示，照片放不滿的那兩條邊露出來的是全站底色。
                   白底的商品棚拍放進米色的框會接成兩截、設了文字那半的底色之後照片那半又
                   是另一個顏色。填照片自己的底色（白底就填 #ffffff）讓邊跟照片接成一片，
@@ -3412,7 +3412,7 @@ export function EditorWorkspace({
                     ))}
                   </div>
                 )}
-                <p className="text-[10px] text-stone-500 mt-1">
+                <p className={hintClass}>
                   照片跟文字那半相接的地方原本什麼都沒有，兩邊底色只差一階的店看起來像
                   照片下面糊了一塊。開一條線把兩塊分清楚：桌機畫在兩欄中間、手機畫在照片
                   跟文字之間，照片靠哪一邊、手機誰在上面都會自己跟著換邊。淡是全站分隔線
@@ -3431,7 +3431,7 @@ export function EditorWorkspace({
                   selected={theme.layout.heroMagazineRuleWeight}
                   onSelect={(v) => updateLayout({ heroMagazineRuleWeight: v })}
                 />
-                <p className="text-[10px] text-stone-500 mt-1">
+                <p className={hintClass}>
                   雜誌版型上面那條（框住小標跟店名）跟下面那條（框住落款跟按鈕）的粗細。
                   兩條一起動——它們是上下對稱的一對，只加粗一條會變成沒關係的兩條線。
                   原本是最細的那種，旁邊擺著超大的主標時常常細到像沒對齊的痕跡
@@ -3451,7 +3451,7 @@ export function EditorWorkspace({
                   selected={theme.layout.heroMagazineRuleTone}
                   onSelect={(v) => updateLayout({ heroMagazineRuleTone: v })}
                 />
-                <p className="text-[10px] text-stone-500 mt-1">
+                <p className={hintClass}>
                   那兩條線的顏色。原本用的是全站畫卡片邊界的那階淡色，底色深一點的店根本
                   看不見，等於整個版型的骨架不見了、只剩中間一團字。選同文字就跟字一樣深
                   （深底淺字的店會自動變成淺線，不用自己挑色），選主色可以把它當開章的
@@ -3470,7 +3470,7 @@ export function EditorWorkspace({
                   selected={theme.layout.heroMagazineGap}
                   onSelect={(v) => updateLayout({ heroMagazineGap: v })}
                 />
-                <p className="text-[10px] text-stone-500 mt-1">
+                <p className={hintClass}>
                   這一段本來一定佔滿一整個螢幕，上下兩條線被推到螢幕的最上跟最下、中間浮
                   著主標，螢幕越大三塊離得越開，看起來像三件沒關係的東西——可是雜誌封面
                   的樣子就是靠那兩條線框住中間的字。只放一行主標的店選貼著或中等會收回來
@@ -3490,7 +3490,7 @@ export function EditorWorkspace({
                   selected={theme.layout.heroMagazineGapMobile}
                   onSelect={(v) => updateLayout({ heroMagazineGapMobile: v })}
                 />
-                <p className="text-[10px] text-stone-500 mt-1">
+                <p className={hintClass}>
                   上面那格在手機跟桌機是同一把尺，可是量出來差很多：桌機的大字有八十幾
                   px、佔一整個螢幕剛好；手機的字只有三十幾 px，一整個螢幕就是上下各一條線、
                   中間一小行字、其餘全空。這格只管手機（767px 以下），想桌機留整屏封面、
@@ -3511,7 +3511,7 @@ export function EditorWorkspace({
                   selected={theme.layout.heroMagazineTextWidth}
                   onSelect={(v) => updateLayout({ heroMagazineTextWidth: v })}
                 />
-                <p className="text-[10px] text-stone-500 mt-1">
+                <p className={hintClass}>
                   上下那兩條線的長度跟中間主標的寬度本來就不一樣，主標長一點就會排到比線
                   更外面去，看起來像字撐破了框。選跟橫線切齊，字的左右兩端會跟兩條線的頭
                   尾對齊；只放兩三個字的店選窄，那行字才不會散在中間
@@ -3529,7 +3529,7 @@ export function EditorWorkspace({
                   selected={theme.layout.heroMagazineRuleWidth}
                   onSelect={(v) => updateLayout({ heroMagazineRuleWidth: v })}
                 />
-                <p className="text-[10px] text-stone-500 mt-1">
+                <p className={hintClass}>
                   這格動的是上下那兩條線，連同貼著線的小標、店名、落款跟按鈕一起。前面兩
                   格放寬的都是中間的字，兩條線一直停在原來的長度，所以中間選滿版之後，字
                   會排到比線更外面、看起來像撐破了框；中間選窄則反過來，線比字長出一大截。
@@ -3545,7 +3545,7 @@ export function EditorWorkspace({
                   selected={theme.layout.heroMagazinePadX}
                   onSelect={(v) => updateLayout({ heroMagazinePadX: v })}
                 />
-                <p className="text-[10px] text-stone-500 mt-1">
+                <p className={hintClass}>
                   前面幾格挑的是字跟線排多寬，這格挑的是外面那一圈留白。中間選滿版之後，
                   大字的左右兩端就停在這道留白上，整段到底離螢幕邊多遠就由這格決定。窄是
                   字幾乎頂到紙邊的那種大版面，寬是四周留一大片白、中間一小團字的那種。
@@ -3564,7 +3564,7 @@ export function EditorWorkspace({
                   selected={theme.layout.heroMagazinePadY}
                   onSelect={(v) => updateLayout({ heroMagazinePadY: v })}
                 />
-                <p className="text-[10px] text-stone-500 mt-1">
+                <p className={hintClass}>
                   上面那格「大字與上下橫線的距離」動的是線跟字之間；這格動的是線外面、
                   離這一段上下邊的那一圈。那格選貼緊之後線是貼到字了，可是線外面還固定留
                   一截，整段收不扁；選少就能讓線幾乎頂到段的邊。多是四周留一大片白、線往
@@ -3600,7 +3600,7 @@ export function EditorWorkspace({
                     </button>
                   ))}
                 </div>
-                <p className="text-[10px] text-stone-500 mt-1">
+                <p className={hintClass}>
                   上一格放寬的只有主標，主標下面那行小字是另外一條寫死的窄欄，所以主標拉
                   寬之後會變成上面一行很寬、下面一條很窄，中間對齊但左右差一大截。選跟主
                   標一樣寬，兩行字的左右兩端才會切齊
@@ -3614,7 +3614,7 @@ export function EditorWorkspace({
                   selected={theme.layout.heroMagazineTextGap}
                   onSelect={(v) => updateLayout({ heroMagazineTextGap: v })}
                 />
-                <p className="text-[10px] text-stone-500 mt-1">
+                <p className={hintClass}>
                   上面那行小字離線多近、主標跟下面那行小字離多近、下面那條線離落款多近。
                   前面「大字跟上下橫線的距離」那格動的是三塊之間被撐開多遠，這格動的
                   是每一塊自己裡面。主標字級拉大之後，主標跟副標只剩原本那點空、兩行
@@ -3652,7 +3652,7 @@ export function EditorWorkspace({
                     </button>
                   )}
                 </div>
-                <p className="text-[10px] text-stone-500 mt-1">
+                <p className={hintClass}>
                   這個版型沒有圖，畫面上只有上下兩條細線跟中間一段大字，其餘全是這片底色。
                   它原本跟底下的商品、慢讀、頁尾同一個顏色，往下捲是一整片同色，那兩條線
                   看起來就像頁面中間兩條沒來由的橫線。換個顏色，封面才有一個自己的色塊。
@@ -3668,7 +3668,7 @@ export function EditorWorkspace({
                   selected={theme.layout.heroMinimalWidth}
                   onSelect={(v) => updateLayout({ heroMinimalWidth: v })}
                 />
-                <p className="text-[10px] text-stone-500 mt-1">
+                <p className={hintClass}>
                   這個版型沒有圖也沒有線，只有中間一段字，所以字排多寬幾乎就是它的全部。
                   主標只有兩三個字時，原本的寬度會讓字左右各空一大塊、像沒排完；
                   主標長或副標寫了三四行時，每一行會拖得很長，置中的長行讀起來要一直找行頭
@@ -3682,7 +3682,7 @@ export function EditorWorkspace({
                   selected={theme.layout.heroMinimalPadding}
                   onSelect={(v) => updateLayout({ heroMinimalPadding: v })}
                 />
-                <p className="text-[10px] text-stone-500 mt-1">
+                <p className={hintClass}>
                   字上下各留多少空。原本那個留白是配「只有一行大主標」挑的，加了副標跟按鈕
                   之後整段變高，上下再各留那麼多會把後面的段落推到要捲一頁才看得到；
                   反過來只放一行短主標時，留白不夠這個版型就不成立，它靠的就是空
@@ -3697,7 +3697,7 @@ export function EditorWorkspace({
                   selected={theme.layout.heroMinimalPaddingMobile}
                   onSelect={(v) => updateLayout({ heroMinimalPaddingMobile: v })}
                 />
-                <p className="text-[10px] text-stone-500 mt-1">
+                <p className={hintClass}>
                   上面那格是同一把尺量兩種螢幕：桌機主標有七八十 px、上下各留那麼多撐得住；
                   手機的字只有三十幾 px，同一份留白就是開頭一整屏幾乎全空、要捲一頁才看得到
                   商品。想桌機留大片空、手機收緊的店在這裡選少；跟桌機一樣就照上面那格走。
@@ -3712,7 +3712,7 @@ export function EditorWorkspace({
                   selected={theme.layout.heroMinimalPadX}
                   onSelect={(v) => updateLayout({ heroMinimalPadX: v })}
                 />
-                <p className="text-[10px] text-stone-500 mt-1">
+                <p className={hintClass}>
                   「排多寬」那格給的是上限，電腦上才碰得到；手機螢幕比最窄那檔還窄，字離
                   螢幕邊多遠其實只由這格決定。窄是字幾乎貼到邊的那種大版面，寬是四周留一
                   大片白、中間一小團字的那種。整段連同短橫線、按鈕一起移，不會有一層對不齊
@@ -3727,7 +3727,7 @@ export function EditorWorkspace({
                   selected={theme.layout.heroMinimalPadXMobile}
                   onSelect={(v) => updateLayout({ heroMinimalPadXMobile: v })}
                 />
-                <p className="text-[10px] text-stone-500 mt-1">
+                <p className={hintClass}>
                   上面那格一按，手機跟電腦一起動。但這兩種螢幕要的其實不一樣：電腦上留一
                   大片白很好看，同一份留白搬到手機，一行字被擠成三行、每行只剩五六個字。
                   想電腦留白、手機收緊的店在這裡選窄；跟桌機一樣就照上面那格走。切到手機
@@ -3742,7 +3742,7 @@ export function EditorWorkspace({
                   selected={theme.layout.heroMinimalGap}
                   onSelect={(v) => updateLayout({ heroMinimalGap: v })}
                 />
-                <p className="text-[10px] text-stone-500 mt-1">
+                <p className={hintClass}>
                   小標、主標、副標、那條短橫線、按鈕，這五樣東西彼此之間隔多遠。上面那格
                   「上下留白」管的是整段字離前後段多遠，這格管的是這段字自己內部的疏密，
                   兩件事一直只有前者能動。原本那組間距是配預設主標字級挑的：主標字級拉大
@@ -3759,7 +3759,7 @@ export function EditorWorkspace({
                   selected={theme.layout.heroMinimalAlign}
                   onSelect={(v) => updateLayout({ heroMinimalAlign: v })}
                 />
-                <p className="text-[10px] text-stone-500 mt-1">
+                <p className={hintClass}>
                   整段字靠哪一邊。上面幾格調的都是這段字的框有多大，字在框裡面一直是
                   置中的。這個版型沒有圖，一進站就是一片空白配中間一段字：置中那版像
                   海報、像開場白；靠左那版像信紙、像店主自己寫的一段話。上面那格「主標
@@ -3781,7 +3781,7 @@ export function EditorWorkspace({
                   selected={theme.layout.heroMinimalRule}
                   onSelect={(v) => updateLayout({ heroMinimalRule: v })}
                 />
-                <p className="text-[10px] text-stone-500 mt-1">
+                <p className={hintClass}>
                   主標跟按鈕中間那條短橫線。它是這個版型唯一的圖形，作用是把上面的字跟
                   下面的按鈕斷開。主標拉大或欄寬選寬的店，原本的長度在一整排大字底下細到
                   像沒擦乾淨的痕跡；主標只有兩三個字又選窄欄的店，它幾乎跟主標一樣長，
@@ -3801,7 +3801,7 @@ export function EditorWorkspace({
                   selected={theme.layout.heroMinimalRuleWeight}
                   onSelect={(v) => updateLayout({ heroMinimalRuleWeight: v })}
                 />
-                <p className="text-[10px] text-stone-500 mt-1">
+                <p className={hintClass}>
                   那條線有多厚。長度跟顏色都能挑了，厚度一直是最細的那一階：選了長的
                   那檔又把主標放大的店，一條細線在一排大字底下還是像沒對齊的痕跡；
                   挑了深色想讓它真的看得見的店，細的深線又像一條下劃線。粗細跟長度
@@ -3841,7 +3841,7 @@ export function EditorWorkspace({
                     </button>
                   )}
                 </div>
-                <p className="text-[10px] text-stone-500 mt-1">
+                <p className={hintClass}>
                   它原本畫的是全站主色的淡版，在淺底的店看起來只是一條灰痕。挑了顏色就
                   照挑的畫、不再壓淡，所以挑深一點的可以讓它真的看得見，挑跟底色相近的
                   可以讓它幾乎消失、但字跟按鈕之間的距離還留著
@@ -3877,7 +3877,7 @@ export function EditorWorkspace({
                     </button>
                   )}
                 </div>
-                <p className="text-[10px] text-stone-500 mt-1">
+                <p className={hintClass}>
                   這個版型沒有圖也沒有色塊，一進站看到的就是這一片底色配中間一段字，
                   可是它原本跟底下的商品、慢讀、頁尾同一個顏色，客人往下捲是一整片同色，
                   開頭這段在哪裡結束看不出來。換個顏色就能把它跟後面分開。
@@ -3914,7 +3914,7 @@ export function EditorWorkspace({
                     </button>
                   )}
                 </div>
-                <p className="text-[10px] text-stone-500 mt-1">
+                <p className={hintClass}>
                   照片底下裝主標跟按鈕的那一塊。它原本跟後面每一段同一個顏色，
                   所以照片以下整頁變成一長條同色，開頭那段跟下一段之間沒有任何界線。
                   換個顏色就能把開頭這段跟後面分開
@@ -3928,7 +3928,7 @@ export function EditorWorkspace({
                   selected={theme.layout.heroTextPadding}
                   onSelect={(v) => updateLayout({ heroTextPadding: v })}
                 />
-                <p className="text-[10px] text-stone-500 mt-1">
+                <p className={hintClass}>
                   那一塊上下各留多少空。只放一行主標時，原本的留白會讓那塊顯得空；
                   主標加副標加小標加按鈕全開的店，同樣的留白會讓那塊拖得很長，
                   照片跟後面的商品之間隔了一大段。左右的邊界不動，那是跟導覽列對齊用的
@@ -3948,7 +3948,7 @@ export function EditorWorkspace({
                   selected={theme.layout.heroTextWidth}
                   onSelect={(v) => updateLayout({ heroTextWidth: v })}
                 />
-                <p className="text-[10px] text-stone-500 mt-1">
+                <p className={hintClass}>
                   上面那格動的是那塊色塊有多高，這格動的是裡面的字排多寬。色塊本身是
                   滿版的，字被關在中間一道看不見的欄裡：主標拉大或副標寫成兩三句的店，
                   每一行會拖得很長，置中的長行讀起來每行都要重新找行頭；只放店名兩三個
@@ -3963,7 +3963,7 @@ export function EditorWorkspace({
                   selected={theme.layout.heroTextAlignX}
                   onSelect={(v) => updateLayout({ heroTextAlignX: v })}
                 />
-                <p className="text-[10px] text-stone-500 mt-1">
+                <p className={hintClass}>
                   上面那格決定那道欄有多寬，這格決定那道欄擺在照片的哪一邊。欄選窄之後
                   整塊停在正中間，裡面的字再靠左，左緣就落在一個誰也對不到的位置——不是
                   照片的左緣，也不是導覽列跟底下商品那道邊界。要做「照片下面一段字貼著
@@ -3979,7 +3979,7 @@ export function EditorWorkspace({
                   selected={theme.layout.heroTextGap}
                   onSelect={(v) => updateLayout({ heroTextGap: v })}
                 />
-                <p className="text-[10px] text-stone-500 mt-1">
+                <p className={hintClass}>
                   小標、主標、副標、按鈕，這四樣東西彼此之間隔多遠。上面兩格管的是那塊
                   色塊的邊界離字有多遠，這格管的是字跟字之間。原本那組間距是配預設主標
                   字級挑的：字級拉大之後，一行大字跟下一行之間只剩原本那點空，而這段字
@@ -4001,7 +4001,7 @@ export function EditorWorkspace({
                   selected={theme.layout.heroImageMaxHeight}
                   onSelect={(v) => updateLayout({ heroImageMaxHeight: v })}
                 />
-                <p className="text-[10px] text-stone-500 mt-1">
+                <p className={hintClass}>
                   這個版型的照片會自己算高度：系統看那張圖四周留了多少白邊，把版位調成
                   剛好框住主體，所以不管上傳哪種圖都不會把主體切掉。代價是照片有多高完全
                   由那張圖的形狀決定——手機直拍那種長圖算出來會比一個螢幕還高，客人一進站
@@ -4025,7 +4025,7 @@ export function EditorWorkspace({
                   selected={theme.layout.heroFullImageFit}
                   onSelect={(v) => updateLayout({ heroFullImageFit: v })}
                 />
-                <p className="text-[10px] text-stone-500 mt-1">
+                <p className={hintClass}>
                   上一格把太高的照片收到上限之後，多出來的那截怎麼辦。裁上下是照原本對齊
                   主體的位置切掉頭尾，店面照、桌面照這樣就對；有些照片哪一截都不能切——
                   整株連盆的植物、上下都有字的海報——選整張顯示就把主體整個縮進那個框裡
@@ -4064,7 +4064,7 @@ export function EditorWorkspace({
                     </button>
                   )}
                 </div>
-                <p className="text-[10px] text-stone-500 mt-1">
+                <p className={hintClass}>
                   上一格選了整張顯示，照片放不滿的那兩條邊露出來的是全站底色。白底的商品
                   棚拍放進米色底會接成兩截、深色構圖配淺底邊界整個跳出來。填照片自己的
                   底色（白底就填 #ffffff）讓邊跟照片接成一片，或填深色讓整張像放在相框裡。
@@ -4133,7 +4133,7 @@ export function EditorWorkspace({
                 maxLength={60}
                 className={inputClass}
               />
-              <p className="text-[10px] text-stone-500 mt-1">
+              <p className={hintClass}>
                 每張選物提案卡片底部的小字行動按鈕，預設「{HOMEPAGE_DEFAULTS.collectionsCardCta}」
               </p>
             </Field>
@@ -8228,6 +8228,11 @@ function PanelSection({
  */
 const inputClass = "w-full rounded-lg border border-stone-200 px-3 py-2 text-sm";
 const textareaClass = `${inputClass} resize-none`;
+// 每格控制底下那段 10px 灰字說明，78 處各抄一份一模一樣的 class，
+// 改一格（例如字級要放到 11px 或換灰階）其他 77 處不會跟著動，所以收成常數。
+// HintRow 那條是 11px 且帶「清除」按鈕、`flex justify-between text-[10px]` 是
+// slider 兩端的刻度標籤，都不是同一包，留在原地。
+const hintClass = "text-[10px] text-stone-500 mt-1";
 
 function Field({
   label,
