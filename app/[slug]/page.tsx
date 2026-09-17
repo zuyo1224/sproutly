@@ -2493,39 +2493,34 @@ export default async function StoreHomePage({
                         </p>
                       );
                     })()}
-                    {ctaPos ? (
-                      // 拖過版位 → absolute（座標系跟主標 / 副標一樣是 cream block），
-                      // 定過位就不再被主標連坐藏掉。
+                    {/* 拖過版位 → absolute（座標系跟主標 / 副標一樣是 cream block），
+                        定過位就不再被主標連坐藏掉；沒定位 → 跟在副標下面、主標拖走就一起藏。
+                        以前這兩種各抄一份一模一樣的 Link（連結、class、可編輯標記、顏色、字體、
+                        文字 style 七項全同），只差有沒有 mt-8 跟 style 裡是定位還是間距那一塊；
+                        改一格（例如 text-sm 要改 text-base）另一支不會跟著動，收成一支。 */}
+                    {(ctaPos || !taglinePos) && (
                       <Link
                         href={`/${slug}/shop`}
-                        className={`sproutly-link inline-block text-sm tracking-wider ${theme.layout.heroSubtitle ? fade3 : fade2}`}
+                        className={`sproutly-link${ctaPos ? "" : " mt-8"} inline-block text-sm tracking-wider ${theme.layout.heroSubtitle ? fade3 : fade2}`}
                         data-default-line="true"
                         data-edit-text
                         data-edit-field="heroCta"
                         data-edit-drag={FREE_POS_KEYS.heroCta}
-                        style={{
-                          ...heroFreePosStyle(ctaPos, "24rem"),
-                          color: theme.text,
-                          fontFamily: "var(--store-font)",
-                          ...ctaLinkStyle,
-                        }}
-                      >
-                        {heroCta}
-                      </Link>
-                    ) : !taglinePos && (
-                      <Link
-                        href={`/${slug}/shop`}
-                        className={`sproutly-link mt-8 inline-block text-sm tracking-wider ${theme.layout.heroSubtitle ? fade3 : fade2}`}
-                        data-default-line="true"
-                        data-edit-text
-                        data-edit-field="heroCta"
-                        data-edit-drag={FREE_POS_KEYS.heroCta}
-                        style={{
-                          color: theme.text,
-                          fontFamily: "var(--store-font)",
-                          ...ctaLinkStyle,
-                          ...heroTextGapTop(2),
-                        }}
+                        style={
+                          ctaPos
+                            ? {
+                                ...heroFreePosStyle(ctaPos, "24rem"),
+                                color: theme.text,
+                                fontFamily: "var(--store-font)",
+                                ...ctaLinkStyle,
+                              }
+                            : {
+                                color: theme.text,
+                                fontFamily: "var(--store-font)",
+                                ...ctaLinkStyle,
+                                ...heroTextGapTop(2),
+                              }
+                        }
                       >
                         {heroCta}
                       </Link>
