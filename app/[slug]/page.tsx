@@ -2397,32 +2397,29 @@ export default async function StoreHomePage({
                   >
                     {/* Eyebrow 小標：其他三版型都有渲染，full-image 一直漏掉。
                         跟副標 / CTA 同邏輯：定過位走 absolute（不再被主標連坐藏），
-                        沒定位維持 flow、主標拖走就跟著藏（flow 內容會疊到 absolute 主標）。 */}
-                    {eyebrowPos && theme.layout.heroEyebrow ? (
+                        沒定位維持 flow、主標拖走就跟著藏（flow 內容會疊到 absolute 主標）。
+                        以前這兩種各抄一份一模一樣的 <p>（可編輯標記、基底 class、顏色、文字 style 全同），
+                        只差有沒有 mb-6 跟 style 裡是定位還是下方間距那一塊；
+                        改一格（例如 eyebrowTextStyle 的字距）另一支不會跟著動，收成一支。 */}
+                    {(eyebrowPos || !taglinePos) && theme.layout.heroEyebrow ? (
                       <p
                         data-edit-text
                         data-edit-field="heroEyebrow"
                         data-edit-drag={FREE_POS_KEYS.heroEyebrow}
-                        className={`${eyebrowBaseClass} ${fade1}`}
-                        style={{
-                          ...heroFreePosStyle(eyebrowPos, "24rem"),
-                          color: eyebrowAccentColor,
-                          ...eyebrowTextStyle(0.4),
-                        }}
-                      >
-                        {theme.layout.heroEyebrow}
-                      </p>
-                    ) : !taglinePos && theme.layout.heroEyebrow ? (
-                      <p
-                        data-edit-text
-                        data-edit-field="heroEyebrow"
-                        data-edit-drag={FREE_POS_KEYS.heroEyebrow}
-                        className={`${eyebrowBaseClass} mb-6 ${fade1}`}
-                        style={{
-                          color: eyebrowAccentColor,
-                          ...eyebrowTextStyle(0.4),
-                          ...heroTextGapBottom(1.5),
-                        }}
+                        className={`${eyebrowBaseClass}${eyebrowPos ? "" : " mb-6"} ${fade1}`}
+                        style={
+                          eyebrowPos
+                            ? {
+                                ...heroFreePosStyle(eyebrowPos, "24rem"),
+                                color: eyebrowAccentColor,
+                                ...eyebrowTextStyle(0.4),
+                              }
+                            : {
+                                color: eyebrowAccentColor,
+                                ...eyebrowTextStyle(0.4),
+                                ...heroTextGapBottom(1.5),
+                              }
+                        }
                       >
                         {theme.layout.heroEyebrow}
                       </p>
