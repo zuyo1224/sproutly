@@ -4088,7 +4088,7 @@ export function EditorWorkspace({
                 maxLength={60}
                 className={inputClass}
               />
-              <p className="mt-1 text-[11px] text-stone-500 leading-relaxed">
+              <p className={noteClass}>
                 Intro 文案上方那行小字，例如「Collections」或「選物提案」。
                 留空 = 不顯示。
               </p>
@@ -4156,7 +4156,7 @@ export function EditorWorkspace({
                 maxLength={60}
                 className={inputClass}
               />
-              <p className="mt-1 text-[11px] text-stone-500 leading-relaxed">
+              <p className={noteClass}>
                 Promise 卡片上方那行小字，預設「{HOMEPAGE_DEFAULTS.promiseEyebrow}」。
               </p>
             </Field>
@@ -4188,7 +4188,7 @@ export function EditorWorkspace({
                 maxLength={60}
                 className={inputClass}
               />
-              <p className="mt-1 text-[11px] text-stone-500 leading-relaxed">
+              <p className={noteClass}>
                 Visit 區段標題上方那行小字，預設「{HOMEPAGE_DEFAULTS.visitEyebrow}」。
               </p>
             </Field>
@@ -4250,7 +4250,7 @@ export function EditorWorkspace({
                 maxLength={60}
                 className={inputClass}
               />
-              <p className="mt-1 text-[11px] text-stone-500 leading-relaxed">
+              <p className={noteClass}>
                 Stats 區段上方那行小字，預設不顯示。填了才會出現。
               </p>
             </Field>
@@ -4265,7 +4265,7 @@ export function EditorWorkspace({
                 maxLength={60}
                 className={inputClass}
               />
-              <p className="mt-1 text-[11px] text-stone-500 leading-relaxed">
+              <p className={noteClass}>
                 Stats 區段上方那行大字，預設不顯示。填了才會出現。
               </p>
             </Field>
@@ -4340,7 +4340,7 @@ export function EditorWorkspace({
                   </button>
                 ))}
               </div>
-              <p className="mt-1 text-[11px] text-stone-500 leading-relaxed">
+              <p className={noteClass}>
                 桌機排幾欄。手機一律 2 欄不受影響。
               </p>
             </Field>
@@ -4360,7 +4360,7 @@ export function EditorWorkspace({
                 maxLength={60}
                 className={inputClass}
               />
-              <p className="mt-1 text-[11px] text-stone-500 leading-relaxed">
+              <p className={noteClass}>
                 Partners 區段上方那行小字，預設「{HOMEPAGE_DEFAULTS.partnersEyebrow}」。
               </p>
             </Field>
@@ -4484,7 +4484,7 @@ export function EditorWorkspace({
                 maxLength={60}
                 className={inputClass}
               />
-              <p className="mt-1 text-[11px] text-stone-500 leading-relaxed">
+              <p className={noteClass}>
                 Gallery 區段上方那行小字，預設「{HOMEPAGE_DEFAULTS.galleryEyebrow}」。
               </p>
             </Field>
@@ -4499,7 +4499,7 @@ export function EditorWorkspace({
                 maxLength={60}
                 className={inputClass}
               />
-              <p className="mt-1 text-[11px] text-stone-500 leading-relaxed">
+              <p className={noteClass}>
                 Gallery 區段大字，預設「{HOMEPAGE_DEFAULTS.galleryTitle}」。
               </p>
             </Field>
@@ -4602,7 +4602,7 @@ export function EditorWorkspace({
                   </button>
                 ))}
               </div>
-              <p className="mt-1 text-[11px] text-stone-500 leading-relaxed">
+              <p className={noteClass}>
                 桌機排幾欄。手機一律 2 欄不受影響。
               </p>
             </Field>
@@ -4622,7 +4622,7 @@ export function EditorWorkspace({
                 maxLength={60}
                 className={inputClass}
               />
-              <p className="mt-1 text-[11px] text-stone-500 leading-relaxed">
+              <p className={noteClass}>
                 FAQ 區段上方那行小字，預設「{HOMEPAGE_DEFAULTS.faqEyebrow}」。
               </p>
             </Field>
@@ -4637,7 +4637,7 @@ export function EditorWorkspace({
                 maxLength={60}
                 className={inputClass}
               />
-              <p className="mt-1 text-[11px] text-stone-500 leading-relaxed">
+              <p className={noteClass}>
                 FAQ 區段大字，預設「{HOMEPAGE_DEFAULTS.faqTitle}」。
               </p>
             </Field>
@@ -4707,7 +4707,7 @@ export function EditorWorkspace({
                 selected={theme.layout.faqDefaultOpen}
                 onSelect={(v) => updateLayout({ faqDefaultOpen: v })}
               />
-              <p className="mt-1 text-[11px] text-stone-500 leading-relaxed">
+              <p className={noteClass}>
                 你寫這一段的理由就是少回一次「幾點開」「怎麼去」。可是每題都收起來的話，
                 客人看到的是一排短句加一個加號，答案一個字都沒露出來——願意一題一題點的人
                 才讀得到，滑過去的人照樣去 IG 私訊問。題目只有三五題就選全部，整段變成一頁
@@ -4731,7 +4731,7 @@ export function EditorWorkspace({
                 maxLength={60}
                 className={inputClass}
               />
-              <p className="mt-1 text-[11px] text-stone-500 leading-relaxed">
+              <p className={noteClass}>
                 顧客評語區段上方那行小字，預設「{HOMEPAGE_DEFAULTS.testimonialsEyebrow}」。
               </p>
             </Field>
@@ -4746,7 +4746,7 @@ export function EditorWorkspace({
                 maxLength={60}
                 className={inputClass}
               />
-              <p className="mt-1 text-[11px] text-stone-500 leading-relaxed">
+              <p className={noteClass}>
                 顧客評語區段大字，預設「{HOMEPAGE_DEFAULTS.testimonialsTitle}」。
               </p>
             </Field>
@@ -4834,7 +4834,7 @@ export function EditorWorkspace({
                   </button>
                 ))}
               </div>
-              <p className="mt-1 text-[11px] text-stone-500 leading-relaxed">
+              <p className={noteClass}>
                 桌機排幾欄。手機一律 1 欄不受影響。
               </p>
             </Field>
@@ -4855,7 +4855,7 @@ export function EditorWorkspace({
                   maxLength={60}
                   className={inputClass}
                 />
-                <p className="mt-1 text-[11px] text-stone-500 leading-relaxed">
+                <p className={noteClass}>
                   標題上方那行小字，例如「Featured」或「本月精選」。
                   留空 = 不顯示。
                 </p>
@@ -4871,7 +4871,7 @@ export function EditorWorkspace({
                   maxLength={60}
                   className={inputClass}
                 />
-                <p className="mt-1 text-[11px] text-stone-500 leading-relaxed">
+                <p className={noteClass}>
                   Featured 區段上方那行大字，預設「{HOMEPAGE_DEFAULTS.featuredTitle}」。
                 </p>
               </Field>
@@ -4886,7 +4886,7 @@ export function EditorWorkspace({
                   maxLength={60}
                   className={inputClass}
                 />
-                <p className="mt-1 text-[11px] text-stone-500 leading-relaxed">
+                <p className={noteClass}>
                   區段底部跳到 /shop 的連結文字。預設「{HOMEPAGE_DEFAULTS.featuredCta}」，
                   非盆栽店家可改成「看所有商品 / 逛全部 / 看更多選品」。
                 </p>
@@ -4943,7 +4943,7 @@ export function EditorWorkspace({
                 maxLength={60}
                 className={inputClass}
               />
-              <p className="mt-1 text-[11px] text-stone-500 leading-relaxed">
+              <p className={noteClass}>
                 Journal 區段上方那行小字，預設「{HOMEPAGE_DEFAULTS.journalEyebrow}」。
               </p>
             </Field>
@@ -4958,7 +4958,7 @@ export function EditorWorkspace({
                 maxLength={60}
                 className={inputClass}
               />
-              <p className="mt-1 text-[11px] text-stone-500 leading-relaxed">
+              <p className={noteClass}>
                 Journal 區段大字，預設「{HOMEPAGE_DEFAULTS.journalTitle}」。
               </p>
             </Field>
@@ -4973,7 +4973,7 @@ export function EditorWorkspace({
                 maxLength={160}
                 className={textareaClass}
               />
-              <p className="mt-1 text-[11px] text-stone-500 leading-relaxed">
+              <p className={noteClass}>
                 標題下方那段短說明。
               </p>
             </Field>
@@ -4988,7 +4988,7 @@ export function EditorWorkspace({
                 maxLength={60}
                 className={inputClass}
               />
-              <p className="mt-1 text-[11px] text-stone-500 leading-relaxed">
+              <p className={noteClass}>
                 每張 Journal 卡片底部那行小字，預設「{HOMEPAGE_DEFAULTS.journalCardLabel}」。
               </p>
             </Field>
@@ -5064,7 +5064,7 @@ export function EditorWorkspace({
                   </button>
                 ))}
               </div>
-              <p className="mt-1 text-[11px] text-stone-500 leading-relaxed">
+              <p className={noteClass}>
                 桌機排幾欄。固定三張卡，4 欄一定留空格所以不開。手機一律 1 欄不受影響。
               </p>
             </Field>
@@ -8239,6 +8239,11 @@ const hexInputClass = "flex-1 rounded-lg border border-stone-200 px-3 py-2 text-
 // HintRow 那條是 11px 且帶「清除」按鈕、`flex justify-between text-[10px]` 是
 // slider 兩端的刻度標籤，都不是同一包，留在原地。
 const hintClass = "text-[10px] text-stone-500 mt-1";
+// 區段設定那一頁每格底下那段 11px 說明（比 hintClass 大一號、行距鬆一點），
+// 24 處各抄一份一模一樣的 class，改一格其他 23 處不會跟著動，所以收成常數。
+// 跟 hintClass 的 10px 是兩款，故意不統一字級（統一就是改到畫面）；
+// 沒帶 mt-1、帶 mt-2／mb-3／-mt-2 的那 7 處間距各自不同，不是同一包，留在原地。
+const noteClass = "mt-1 text-[11px] text-stone-500 leading-relaxed";
 
 function Field({
   label,
