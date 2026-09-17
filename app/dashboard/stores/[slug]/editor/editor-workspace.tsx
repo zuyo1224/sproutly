@@ -1903,7 +1903,7 @@ export function EditorWorkspace({
                 onChange={(e) => {
                   if (isHeroStyle(e.target.value)) updateLayout({ heroStyle: e.target.value });
                 }}
-                className="w-full rounded-lg border border-stone-200 px-3 py-2 text-sm"
+                className={inputClass}
               >
                 {HERO_STYLE_KEYS.map(
                   (k) => (
@@ -2136,7 +2136,7 @@ export function EditorWorkspace({
                 value={theme.layout.heroEyebrow ?? ""}
                 onChange={(e) => updateLayout({ heroEyebrow: e.target.value })}
                 placeholder="Est. 2019 / Issue 03..."
-                className="w-full rounded-lg border border-stone-200 px-3 py-2 text-sm"
+                className={inputClass}
               />
             </Field>
             <Field label={`小標字體大小（${theme.layout.heroEyebrowFontScale.toFixed(2)}x）`}>
@@ -2270,7 +2270,7 @@ export function EditorWorkspace({
                 value={theme.tagline}
                 onChange={(e) => update("tagline", e.target.value)}
                 rows={3}
-                className="w-full rounded-lg border border-stone-200 px-3 py-2 text-sm resize-none"
+                className={textareaClass}
               />
             </Field>
             <Field label="副標 / 引文">
@@ -2279,7 +2279,7 @@ export function EditorWorkspace({
                 onChange={(e) => updateLayout({ heroSubtitle: e.target.value })}
                 rows={2}
                 placeholder="主標下面那行說明，四種版型都會顯示"
-                className="w-full rounded-lg border border-stone-200 px-3 py-2 text-sm resize-none"
+                className={textareaClass}
               />
             </Field>
             {(
@@ -2425,7 +2425,7 @@ export function EditorWorkspace({
                 }
                 placeholder={HOMEPAGE_DEFAULTS.heroCta}
                 maxLength={60}
-                className="w-full rounded-lg border border-stone-200 px-3 py-2 text-sm"
+                className={inputClass}
               />
               <p className="text-[10px] text-stone-500 mt-1">
                 Hero 區段大按鈕的文字，預設「{HOMEPAGE_DEFAULTS.heroCta}」
@@ -2440,7 +2440,7 @@ export function EditorWorkspace({
                 }
                 placeholder={HOMEPAGE_DEFAULTS.heroSecondaryCta}
                 maxLength={60}
-                className="w-full rounded-lg border border-stone-200 px-3 py-2 text-sm"
+                className={inputClass}
               />
               <p className="text-[10px] text-stone-500 mt-1">
                 Split 版型 Hero 區段的次要按鈕（連到關於頁），預設「{HOMEPAGE_DEFAULTS.heroSecondaryCta}」
@@ -2559,7 +2559,7 @@ export function EditorWorkspace({
                 }
                 placeholder={`Curated by 店名`}
                 maxLength={60}
-                className="w-full rounded-lg border border-stone-200 px-3 py-2 text-sm"
+                className={inputClass}
               />
               <p className="text-[10px] text-stone-500 mt-1">
                 Magazine 版型 Hero 底部那行小字，預設「Curated by 店名」
@@ -4086,7 +4086,7 @@ export function EditorWorkspace({
                 }
                 placeholder="留空 = 不顯示"
                 maxLength={60}
-                className="w-full rounded-lg border border-stone-200 px-3 py-2 text-sm"
+                className={inputClass}
               />
               <p className="mt-1 text-[11px] text-stone-500 leading-relaxed">
                 Intro 文案上方那行小字，例如「Collections」或「選物提案」。
@@ -4101,7 +4101,7 @@ export function EditorWorkspace({
                 }
                 rows={3}
                 placeholder={HOMEPAGE_DEFAULTS.collectionsIntro}
-                className="w-full rounded-lg border border-stone-200 px-3 py-2 text-sm resize-none"
+                className={textareaClass}
               />
             </Field>
             <Field label="排幾欄">
@@ -4131,7 +4131,7 @@ export function EditorWorkspace({
                 }
                 placeholder={HOMEPAGE_DEFAULTS.collectionsCardCta}
                 maxLength={60}
-                className="w-full rounded-lg border border-stone-200 px-3 py-2 text-sm"
+                className={inputClass}
               />
               <p className="text-[10px] text-stone-500 mt-1">
                 每張選物提案卡片底部的小字行動按鈕，預設「{HOMEPAGE_DEFAULTS.collectionsCardCta}」
@@ -4154,7 +4154,7 @@ export function EditorWorkspace({
                 }
                 placeholder={HOMEPAGE_DEFAULTS.promiseEyebrow}
                 maxLength={60}
-                className="w-full rounded-lg border border-stone-200 px-3 py-2 text-sm"
+                className={inputClass}
               />
               <p className="mt-1 text-[11px] text-stone-500 leading-relaxed">
                 Promise 卡片上方那行小字，預設「{HOMEPAGE_DEFAULTS.promiseEyebrow}」。
@@ -4166,7 +4166,7 @@ export function EditorWorkspace({
                 onChange={(e) => updateHomepage({ promise: e.target.value })}
                 rows={5}
                 placeholder="多行直接 enter 換行"
-                className="w-full rounded-lg border border-stone-200 px-3 py-2 text-sm resize-none"
+                className={textareaClass}
               />
             </Field>
             <p className="text-xs text-stone-500 leading-relaxed">
@@ -4186,7 +4186,7 @@ export function EditorWorkspace({
                 }
                 placeholder={HOMEPAGE_DEFAULTS.visitEyebrow}
                 maxLength={60}
-                className="w-full rounded-lg border border-stone-200 px-3 py-2 text-sm"
+                className={inputClass}
               />
               <p className="mt-1 text-[11px] text-stone-500 leading-relaxed">
                 Visit 區段標題上方那行小字，預設「{HOMEPAGE_DEFAULTS.visitEyebrow}」。
@@ -4198,7 +4198,7 @@ export function EditorWorkspace({
                 value={theme.homepage.visitTitle}
                 onChange={(e) => updateHomepage({ visitTitle: e.target.value })}
                 placeholder={HOMEPAGE_DEFAULTS.visitTitle}
-                className="w-full rounded-lg border border-stone-200 px-3 py-2 text-sm"
+                className={inputClass}
               />
             </Field>
             <Field label="Google Maps 嵌入網址">
@@ -4248,7 +4248,7 @@ export function EditorWorkspace({
                 }
                 placeholder="例如：By the Numbers"
                 maxLength={60}
-                className="w-full rounded-lg border border-stone-200 px-3 py-2 text-sm"
+                className={inputClass}
               />
               <p className="mt-1 text-[11px] text-stone-500 leading-relaxed">
                 Stats 區段上方那行小字，預設不顯示。填了才會出現。
@@ -4263,7 +4263,7 @@ export function EditorWorkspace({
                 }
                 placeholder="例如：這間店的小成就"
                 maxLength={60}
-                className="w-full rounded-lg border border-stone-200 px-3 py-2 text-sm"
+                className={inputClass}
               />
               <p className="mt-1 text-[11px] text-stone-500 leading-relaxed">
                 Stats 區段上方那行大字，預設不顯示。填了才會出現。
@@ -4358,7 +4358,7 @@ export function EditorWorkspace({
                 }
                 placeholder={HOMEPAGE_DEFAULTS.partnersEyebrow}
                 maxLength={60}
-                className="w-full rounded-lg border border-stone-200 px-3 py-2 text-sm"
+                className={inputClass}
               />
               <p className="mt-1 text-[11px] text-stone-500 leading-relaxed">
                 Partners 區段上方那行小字，預設「{HOMEPAGE_DEFAULTS.partnersEyebrow}」。
@@ -4482,7 +4482,7 @@ export function EditorWorkspace({
                 }
                 placeholder={HOMEPAGE_DEFAULTS.galleryEyebrow}
                 maxLength={60}
-                className="w-full rounded-lg border border-stone-200 px-3 py-2 text-sm"
+                className={inputClass}
               />
               <p className="mt-1 text-[11px] text-stone-500 leading-relaxed">
                 Gallery 區段上方那行小字，預設「{HOMEPAGE_DEFAULTS.galleryEyebrow}」。
@@ -4497,7 +4497,7 @@ export function EditorWorkspace({
                 }
                 placeholder={HOMEPAGE_DEFAULTS.galleryTitle}
                 maxLength={60}
-                className="w-full rounded-lg border border-stone-200 px-3 py-2 text-sm"
+                className={inputClass}
               />
               <p className="mt-1 text-[11px] text-stone-500 leading-relaxed">
                 Gallery 區段大字，預設「{HOMEPAGE_DEFAULTS.galleryTitle}」。
@@ -4620,7 +4620,7 @@ export function EditorWorkspace({
                 }
                 placeholder={HOMEPAGE_DEFAULTS.faqEyebrow}
                 maxLength={60}
-                className="w-full rounded-lg border border-stone-200 px-3 py-2 text-sm"
+                className={inputClass}
               />
               <p className="mt-1 text-[11px] text-stone-500 leading-relaxed">
                 FAQ 區段上方那行小字，預設「{HOMEPAGE_DEFAULTS.faqEyebrow}」。
@@ -4635,7 +4635,7 @@ export function EditorWorkspace({
                 }
                 placeholder={HOMEPAGE_DEFAULTS.faqTitle}
                 maxLength={60}
-                className="w-full rounded-lg border border-stone-200 px-3 py-2 text-sm"
+                className={inputClass}
               />
               <p className="mt-1 text-[11px] text-stone-500 leading-relaxed">
                 FAQ 區段大字，預設「{HOMEPAGE_DEFAULTS.faqTitle}」。
@@ -4729,7 +4729,7 @@ export function EditorWorkspace({
                 }
                 placeholder={HOMEPAGE_DEFAULTS.testimonialsEyebrow}
                 maxLength={60}
-                className="w-full rounded-lg border border-stone-200 px-3 py-2 text-sm"
+                className={inputClass}
               />
               <p className="mt-1 text-[11px] text-stone-500 leading-relaxed">
                 顧客評語區段上方那行小字，預設「{HOMEPAGE_DEFAULTS.testimonialsEyebrow}」。
@@ -4744,7 +4744,7 @@ export function EditorWorkspace({
                 }
                 placeholder={HOMEPAGE_DEFAULTS.testimonialsTitle}
                 maxLength={60}
-                className="w-full rounded-lg border border-stone-200 px-3 py-2 text-sm"
+                className={inputClass}
               />
               <p className="mt-1 text-[11px] text-stone-500 leading-relaxed">
                 顧客評語區段大字，預設「{HOMEPAGE_DEFAULTS.testimonialsTitle}」。
@@ -4853,7 +4853,7 @@ export function EditorWorkspace({
                   }
                   placeholder="留空 = 不顯示"
                   maxLength={60}
-                  className="w-full rounded-lg border border-stone-200 px-3 py-2 text-sm"
+                  className={inputClass}
                 />
                 <p className="mt-1 text-[11px] text-stone-500 leading-relaxed">
                   標題上方那行小字，例如「Featured」或「本月精選」。
@@ -4869,7 +4869,7 @@ export function EditorWorkspace({
                   }
                   placeholder={HOMEPAGE_DEFAULTS.featuredTitle}
                   maxLength={60}
-                  className="w-full rounded-lg border border-stone-200 px-3 py-2 text-sm"
+                  className={inputClass}
                 />
                 <p className="mt-1 text-[11px] text-stone-500 leading-relaxed">
                   Featured 區段上方那行大字，預設「{HOMEPAGE_DEFAULTS.featuredTitle}」。
@@ -4884,7 +4884,7 @@ export function EditorWorkspace({
                   }
                   placeholder={HOMEPAGE_DEFAULTS.featuredCta}
                   maxLength={60}
-                  className="w-full rounded-lg border border-stone-200 px-3 py-2 text-sm"
+                  className={inputClass}
                 />
                 <p className="mt-1 text-[11px] text-stone-500 leading-relaxed">
                   區段底部跳到 /shop 的連結文字。預設「{HOMEPAGE_DEFAULTS.featuredCta}」，
@@ -4941,7 +4941,7 @@ export function EditorWorkspace({
                 }
                 placeholder={HOMEPAGE_DEFAULTS.journalEyebrow}
                 maxLength={60}
-                className="w-full rounded-lg border border-stone-200 px-3 py-2 text-sm"
+                className={inputClass}
               />
               <p className="mt-1 text-[11px] text-stone-500 leading-relaxed">
                 Journal 區段上方那行小字，預設「{HOMEPAGE_DEFAULTS.journalEyebrow}」。
@@ -4956,7 +4956,7 @@ export function EditorWorkspace({
                 }
                 placeholder={HOMEPAGE_DEFAULTS.journalTitle}
                 maxLength={60}
-                className="w-full rounded-lg border border-stone-200 px-3 py-2 text-sm"
+                className={inputClass}
               />
               <p className="mt-1 text-[11px] text-stone-500 leading-relaxed">
                 Journal 區段大字，預設「{HOMEPAGE_DEFAULTS.journalTitle}」。
@@ -4971,7 +4971,7 @@ export function EditorWorkspace({
                 rows={3}
                 placeholder={HOMEPAGE_DEFAULTS.journalSubtitle}
                 maxLength={160}
-                className="w-full rounded-lg border border-stone-200 px-3 py-2 text-sm resize-none"
+                className={textareaClass}
               />
               <p className="mt-1 text-[11px] text-stone-500 leading-relaxed">
                 標題下方那段短說明。
@@ -4986,7 +4986,7 @@ export function EditorWorkspace({
                 }
                 placeholder={HOMEPAGE_DEFAULTS.journalCardLabel}
                 maxLength={60}
-                className="w-full rounded-lg border border-stone-200 px-3 py-2 text-sm"
+                className={inputClass}
               />
               <p className="mt-1 text-[11px] text-stone-500 leading-relaxed">
                 每張 Journal 卡片底部那行小字，預設「{HOMEPAGE_DEFAULTS.journalCardLabel}」。
@@ -5025,7 +5025,7 @@ export function EditorWorkspace({
                       onChange={(e) => patchCard(i, "eyebrow", e.target.value)}
                       placeholder="小標（如 Care）"
                       maxLength={40}
-                      className="w-full rounded-lg border border-stone-200 px-3 py-2 text-sm"
+                      className={inputClass}
                     />
                     <input
                       type="text"
@@ -5033,7 +5033,7 @@ export function EditorWorkspace({
                       onChange={(e) => patchCard(i, "title", e.target.value)}
                       placeholder="標題"
                       maxLength={80}
-                      className="w-full rounded-lg border border-stone-200 px-3 py-2 text-sm"
+                      className={inputClass}
                     />
                     <textarea
                       value={cards[i]?.excerpt ?? ""}
@@ -5041,7 +5041,7 @@ export function EditorWorkspace({
                       rows={2}
                       placeholder="一兩句說明"
                       maxLength={200}
-                      className="w-full rounded-lg border border-stone-200 px-3 py-2 text-sm resize-none"
+                      className={textareaClass}
                     />
                   </div>
                 ));
@@ -7870,7 +7870,7 @@ export function EditorWorkspace({
                 value={theme.tagline}
                 onChange={(e) => update("tagline", e.target.value)}
                 rows={2}
-                className="w-full rounded-lg border border-stone-200 px-3 py-2 text-sm resize-none"
+                className={textareaClass}
               />
             </Field>
             <div className="space-y-2 mt-2">
@@ -7923,7 +7923,7 @@ export function EditorWorkspace({
                 }
                 maxLength={60}
                 placeholder={HOMEPAGE_DEFAULTS.aboutEyebrow}
-                className="w-full rounded-lg border border-stone-200 px-3 py-2 text-sm"
+                className={inputClass}
               />
             </Field>
             <Field label="關於頁標題">
@@ -7935,7 +7935,7 @@ export function EditorWorkspace({
                 }
                 maxLength={60}
                 placeholder={HOMEPAGE_DEFAULTS.aboutTitle}
-                className="w-full rounded-lg border border-stone-200 px-3 py-2 text-sm"
+                className={inputClass}
               />
             </Field>
             <Field label="聯絡頁 eyebrow">
@@ -7947,7 +7947,7 @@ export function EditorWorkspace({
                 }
                 maxLength={60}
                 placeholder={HOMEPAGE_DEFAULTS.contactEyebrow}
-                className="w-full rounded-lg border border-stone-200 px-3 py-2 text-sm"
+                className={inputClass}
               />
             </Field>
             <Field label="聯絡頁標題">
@@ -7959,7 +7959,7 @@ export function EditorWorkspace({
                 }
                 maxLength={60}
                 placeholder={HOMEPAGE_DEFAULTS.contactTitle}
-                className="w-full rounded-lg border border-stone-200 px-3 py-2 text-sm"
+                className={inputClass}
               />
             </Field>
             <Field label="商品頁 eyebrow">
@@ -7971,7 +7971,7 @@ export function EditorWorkspace({
                 }
                 maxLength={60}
                 placeholder={HOMEPAGE_DEFAULTS.shopEyebrow}
-                className="w-full rounded-lg border border-stone-200 px-3 py-2 text-sm"
+                className={inputClass}
               />
             </Field>
             <Field label="商品頁標題">
@@ -7983,7 +7983,7 @@ export function EditorWorkspace({
                 }
                 maxLength={60}
                 placeholder={HOMEPAGE_DEFAULTS.shopTitle}
-                className="w-full rounded-lg border border-stone-200 px-3 py-2 text-sm"
+                className={inputClass}
               />
             </Field>
           </PanelSection>
@@ -8003,7 +8003,7 @@ export function EditorWorkspace({
                 }
                 maxLength={60}
                 placeholder={HOMEPAGE_DEFAULTS.footerWordsLabel}
-                className="w-full rounded-lg border border-stone-200 px-3 py-2 text-sm"
+                className={inputClass}
               />
             </Field>
             <Field label="店面資訊小標">
@@ -8015,7 +8015,7 @@ export function EditorWorkspace({
                 }
                 maxLength={60}
                 placeholder={HOMEPAGE_DEFAULTS.footerVisitLabel}
-                className="w-full rounded-lg border border-stone-200 px-3 py-2 text-sm"
+                className={inputClass}
               />
             </Field>
             <Field label="社群區小標">
@@ -8027,7 +8027,7 @@ export function EditorWorkspace({
                 }
                 maxLength={60}
                 placeholder={HOMEPAGE_DEFAULTS.footerFollowLabel}
-                className="w-full rounded-lg border border-stone-200 px-3 py-2 text-sm"
+                className={inputClass}
               />
             </Field>
             <Field label="訂單追蹤連結文字">
@@ -8039,7 +8039,7 @@ export function EditorWorkspace({
                 }
                 maxLength={60}
                 placeholder={HOMEPAGE_DEFAULTS.footerTrackLabel}
-                className="w-full rounded-lg border border-stone-200 px-3 py-2 text-sm"
+                className={inputClass}
               />
             </Field>
           </PanelSection>
@@ -8219,6 +8219,15 @@ function PanelSection({
     </div>
   );
 }
+
+/**
+ * 編輯器裡文字框／下拉選單的共用 class。之前 44 個 input／select／textarea 各抄一份
+ * 一模一樣的字串，改一格（例如圓角 rounded-lg 要換、框線色要換）另外 43 格不會跟著動，
+ * 所以收成常數；textarea 多一個 resize-none 不讓使用者拉大小。
+ * 色碼那種 `flex-1 … font-mono` 的窄框、清單裡 `px-2 py-1.5` 的小框不是同一包，留在原地。
+ */
+const inputClass = "w-full rounded-lg border border-stone-200 px-3 py-2 text-sm";
+const textareaClass = `${inputClass} resize-none`;
 
 function Field({
   label,
