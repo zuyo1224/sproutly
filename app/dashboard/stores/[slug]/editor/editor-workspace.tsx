@@ -2194,7 +2194,7 @@ export function EditorWorkspace({
                   type="color"
                   value={theme.layout.heroEyebrowColor ?? theme.accent}
                   onChange={(e) => updateLayout({ heroEyebrowColor: e.target.value })}
-                  className="h-8 w-12 rounded border border-stone-200"
+                  className={colorPickerClass}
                 />
                 <input
                   type="text"
@@ -2203,7 +2203,7 @@ export function EditorWorkspace({
                     updateLayout({ heroEyebrowColor: e.target.value || null })
                   }
                   placeholder="預設用主色"
-                  className="flex-1 rounded-lg border border-stone-200 px-3 py-2 text-sm font-mono"
+                  className={hexInputClass}
                 />
                 {theme.layout.heroEyebrowColor && (
                   <button
@@ -2306,14 +2306,14 @@ export function EditorWorkspace({
                       type="color"
                       value={theme.layout.heroSubtitleColor ?? "#6B6B6B"}
                       onChange={(e) => updateLayout({ heroSubtitleColor: e.target.value })}
-                      className="h-8 w-12 rounded border border-stone-200"
+                      className={colorPickerClass}
                     />
                     <input
                       type="text"
                       value={theme.layout.heroSubtitleColor ?? ""}
                       onChange={(e) => updateLayout({ heroSubtitleColor: e.target.value || null })}
                       placeholder="預設用淡文字色"
-                      className="flex-1 rounded-lg border border-stone-200 px-3 py-2 text-sm font-mono"
+                      className={hexInputClass}
                     />
                     {theme.layout.heroSubtitleColor && (
                       <button
@@ -2522,7 +2522,7 @@ export function EditorWorkspace({
                   type="color"
                   value={theme.layout.heroCtaColor ?? theme.accent}
                   onChange={(e) => updateLayout({ heroCtaColor: e.target.value })}
-                  className="h-8 w-12 rounded border border-stone-200"
+                  className={colorPickerClass}
                 />
                 <input
                   type="text"
@@ -2531,7 +2531,7 @@ export function EditorWorkspace({
                     updateLayout({ heroCtaColor: e.target.value || null })
                   }
                   placeholder="預設用版型原本的顏色"
-                  className="flex-1 rounded-lg border border-stone-200 px-3 py-2 text-sm font-mono"
+                  className={hexInputClass}
                 />
                 {theme.layout.heroCtaColor && (
                   <button
@@ -2596,7 +2596,7 @@ export function EditorWorkspace({
                   type="color"
                   value={theme.layout.heroBylineColor ?? "#6B6B6B"}
                   onChange={(e) => updateLayout({ heroBylineColor: e.target.value })}
-                  className="h-8 w-12 rounded border border-stone-200"
+                  className={colorPickerClass}
                 />
                 <input
                   type="text"
@@ -2605,7 +2605,7 @@ export function EditorWorkspace({
                     updateLayout({ heroBylineColor: e.target.value || null })
                   }
                   placeholder="預設用淡文字色"
-                  className="flex-1 rounded-lg border border-stone-200 px-3 py-2 text-sm font-mono"
+                  className={hexInputClass}
                 />
                 {theme.layout.heroBylineColor && (
                   <button
@@ -2750,14 +2750,14 @@ export function EditorWorkspace({
                   type="color"
                   value={theme.layout.heroTaglineColor ?? "#1A1A1A"}
                   onChange={(e) => updateLayout({ heroTaglineColor: e.target.value })}
-                  className="h-8 w-12 rounded border border-stone-200"
+                  className={colorPickerClass}
                 />
                 <input
                   type="text"
                   value={theme.layout.heroTaglineColor ?? ""}
                   onChange={(e) => updateLayout({ heroTaglineColor: e.target.value || null })}
                   placeholder="預設用文字色"
-                  className="flex-1 rounded-lg border border-stone-200 px-3 py-2 text-sm font-mono"
+                  className={hexInputClass}
                 />
                 {theme.layout.heroTaglineColor && (
                   <button
@@ -3309,7 +3309,7 @@ export function EditorWorkspace({
                     type="color"
                     value={theme.layout.heroSplitTextBg ?? theme.bg}
                     onChange={(e) => updateLayout({ heroSplitTextBg: e.target.value })}
-                    className="h-8 w-12 rounded border border-stone-200"
+                    className={colorPickerClass}
                   />
                   <input
                     type="text"
@@ -3318,7 +3318,7 @@ export function EditorWorkspace({
                       updateLayout({ heroSplitTextBg: e.target.value || null })
                     }
                     placeholder="預設跟全站底色一樣"
-                    className="flex-1 rounded-lg border border-stone-200 px-3 py-2 text-sm font-mono"
+                    className={hexInputClass}
                   />
                   {theme.layout.heroSplitTextBg && (
                     <button
@@ -3346,7 +3346,7 @@ export function EditorWorkspace({
                     type="color"
                     value={theme.layout.heroSplitImageBg ?? theme.bg}
                     onChange={(e) => updateLayout({ heroSplitImageBg: e.target.value })}
-                    className="h-8 w-12 rounded border border-stone-200"
+                    className={colorPickerClass}
                   />
                   <input
                     type="text"
@@ -3355,7 +3355,7 @@ export function EditorWorkspace({
                       updateLayout({ heroSplitImageBg: e.target.value || null })
                     }
                     placeholder="預設跟全站底色一樣"
-                    className="flex-1 rounded-lg border border-stone-200 px-3 py-2 text-sm font-mono"
+                    className={hexInputClass}
                   />
                   {theme.layout.heroSplitImageBg && (
                     <button
@@ -3631,7 +3631,7 @@ export function EditorWorkspace({
                     type="color"
                     value={theme.layout.heroMagazineBg ?? theme.bg}
                     onChange={(e) => updateLayout({ heroMagazineBg: e.target.value })}
-                    className="h-8 w-12 rounded border border-stone-200"
+                    className={colorPickerClass}
                   />
                   <input
                     type="text"
@@ -3640,7 +3640,7 @@ export function EditorWorkspace({
                       updateLayout({ heroMagazineBg: e.target.value || null })
                     }
                     placeholder="預設跟全站底色一樣"
-                    className="flex-1 rounded-lg border border-stone-200 px-3 py-2 text-sm font-mono"
+                    className={hexInputClass}
                   />
                   {theme.layout.heroMagazineBg && (
                     <button
@@ -3820,7 +3820,7 @@ export function EditorWorkspace({
                     onChange={(e) =>
                       updateLayout({ heroMinimalRuleColor: e.target.value })
                     }
-                    className="h-8 w-12 rounded border border-stone-200"
+                    className={colorPickerClass}
                   />
                   <input
                     type="text"
@@ -3829,7 +3829,7 @@ export function EditorWorkspace({
                       updateLayout({ heroMinimalRuleColor: e.target.value || null })
                     }
                     placeholder="預設是全站主色的淡版"
-                    className="flex-1 rounded-lg border border-stone-200 px-3 py-2 text-sm font-mono"
+                    className={hexInputClass}
                   />
                   {theme.layout.heroMinimalRuleColor && (
                     <button
@@ -3856,7 +3856,7 @@ export function EditorWorkspace({
                     type="color"
                     value={theme.layout.heroMinimalBg ?? theme.bg}
                     onChange={(e) => updateLayout({ heroMinimalBg: e.target.value })}
-                    className="h-8 w-12 rounded border border-stone-200"
+                    className={colorPickerClass}
                   />
                   <input
                     type="text"
@@ -3865,7 +3865,7 @@ export function EditorWorkspace({
                       updateLayout({ heroMinimalBg: e.target.value || null })
                     }
                     placeholder="預設跟全站底色一樣"
-                    className="flex-1 rounded-lg border border-stone-200 px-3 py-2 text-sm font-mono"
+                    className={hexInputClass}
                   />
                   {theme.layout.heroMinimalBg && (
                     <button
@@ -3893,7 +3893,7 @@ export function EditorWorkspace({
                     type="color"
                     value={theme.layout.heroTextBg ?? theme.bg}
                     onChange={(e) => updateLayout({ heroTextBg: e.target.value })}
-                    className="h-8 w-12 rounded border border-stone-200"
+                    className={colorPickerClass}
                   />
                   <input
                     type="text"
@@ -3902,7 +3902,7 @@ export function EditorWorkspace({
                       updateLayout({ heroTextBg: e.target.value || null })
                     }
                     placeholder="預設跟全站底色一樣"
-                    className="flex-1 rounded-lg border border-stone-200 px-3 py-2 text-sm font-mono"
+                    className={hexInputClass}
                   />
                   {theme.layout.heroTextBg && (
                     <button
@@ -4043,7 +4043,7 @@ export function EditorWorkspace({
                     type="color"
                     value={theme.layout.heroFullImageBg ?? theme.bg}
                     onChange={(e) => updateLayout({ heroFullImageBg: e.target.value })}
-                    className="h-8 w-12 rounded border border-stone-200"
+                    className={colorPickerClass}
                   />
                   <input
                     type="text"
@@ -4052,7 +4052,7 @@ export function EditorWorkspace({
                       updateLayout({ heroFullImageBg: e.target.value || null })
                     }
                     placeholder="預設跟全站底色一樣"
-                    className="flex-1 rounded-lg border border-stone-200 px-3 py-2 text-sm font-mono"
+                    className={hexInputClass}
                   />
                   {theme.layout.heroFullImageBg && (
                     <button
@@ -5999,14 +5999,14 @@ export function EditorWorkspace({
                     type="color"
                     value={bg ?? "#F7F4ED"}
                     onChange={(e) => patch({ bgColor: e.target.value })}
-                    className="h-8 w-12 rounded border border-stone-200"
+                    className={colorPickerClass}
                   />
                   <input
                     type="text"
                     value={bg ?? ""}
                     onChange={(e) => patch({ bgColor: e.target.value || null })}
                     placeholder="預設用全站背景"
-                    className="flex-1 rounded-lg border border-stone-200 px-3 py-2 text-sm font-mono"
+                    className={hexInputClass}
                   />
                   {bg && (
                     <button
@@ -6044,14 +6044,14 @@ export function EditorWorkspace({
                     type="color"
                     value={textCol ?? "#1A1A1A"}
                     onChange={(e) => patch({ textColor: e.target.value })}
-                    className="h-8 w-12 rounded border border-stone-200"
+                    className={colorPickerClass}
                   />
                   <input
                     type="text"
                     value={textCol ?? ""}
                     onChange={(e) => patch({ textColor: e.target.value || null })}
                     placeholder="預設用全站文字色"
-                    className="flex-1 rounded-lg border border-stone-200 px-3 py-2 text-sm font-mono"
+                    className={hexInputClass}
                   />
                   {textCol && (
                     <button
@@ -6840,7 +6840,7 @@ export function EditorWorkspace({
                       type="color"
                       value={mediaFrameColor ?? "#FFFFFF"}
                       onChange={(e) => patch({ mediaFrameColor: e.target.value, mediaFrameBg: null })}
-                      className="h-8 w-12 rounded border border-stone-200"
+                      className={colorPickerClass}
                       aria-label="框底色自訂色"
                     />
                     <input
@@ -6850,7 +6850,7 @@ export function EditorWorkspace({
                         patch({ mediaFrameColor: e.target.value || null, mediaFrameBg: null })
                       }
                       placeholder="或直接填色碼，例如 #F5F5F5"
-                      className="flex-1 rounded-lg border border-stone-200 px-3 py-2 text-sm font-mono"
+                      className={hexInputClass}
                     />
                   </div>
                   <HintRow showClear={(mediaFrameBg || mediaFrameColor)} onClear={() => patch({ mediaFrameBg: null, mediaFrameColor: null })}>
@@ -7735,14 +7735,14 @@ export function EditorWorkspace({
                   type="color"
                   value={theme.layout.footerBg ?? theme.surface}
                   onChange={(e) => updateLayout({ footerBg: e.target.value })}
-                  className="h-8 w-12 rounded border border-stone-200"
+                  className={colorPickerClass}
                 />
                 <input
                   type="text"
                   value={theme.layout.footerBg ?? ""}
                   onChange={(e) => updateLayout({ footerBg: e.target.value || null })}
                   placeholder="預設跟卡片底色一樣"
-                  className="flex-1 rounded-lg border border-stone-200 px-3 py-2 text-sm font-mono"
+                  className={hexInputClass}
                 />
                 {theme.layout.footerBg && (
                   <button
@@ -7766,14 +7766,14 @@ export function EditorWorkspace({
                   type="color"
                   value={theme.layout.footerText ?? theme.text}
                   onChange={(e) => updateLayout({ footerText: e.target.value })}
-                  className="h-8 w-12 rounded border border-stone-200"
+                  className={colorPickerClass}
                 />
                 <input
                   type="text"
                   value={theme.layout.footerText ?? ""}
                   onChange={(e) => updateLayout({ footerText: e.target.value || null })}
                   placeholder="預設跟全站文字色一樣"
-                  className="flex-1 rounded-lg border border-stone-200 px-3 py-2 text-sm font-mono"
+                  className={hexInputClass}
                 />
                 {theme.layout.footerText && (
                   <button
@@ -7840,7 +7840,7 @@ export function EditorWorkspace({
                   type="text"
                   value={theme.primary}
                   onChange={(e) => update("primary", e.target.value)}
-                  className="flex-1 rounded-lg border border-stone-200 px-3 py-2 text-sm font-mono"
+                  className={hexInputClass}
                 />
               </div>
             </Field>
@@ -7856,7 +7856,7 @@ export function EditorWorkspace({
                   type="text"
                   value={theme.accent}
                   onChange={(e) => update("accent", e.target.value)}
-                  className="flex-1 rounded-lg border border-stone-200 px-3 py-2 text-sm font-mono"
+                  className={hexInputClass}
                 />
               </div>
             </Field>
@@ -8228,6 +8228,12 @@ function PanelSection({
  */
 const inputClass = "w-full rounded-lg border border-stone-200 px-3 py-2 text-sm";
 const textareaClass = `${inputClass} resize-none`;
+// 顏色那格是「取色器＋色碼窄框」一組，19 處色碼框、17 顆取色器各抄一份一模一樣的 class，
+// 改一格（例如取色器要放大、色碼框要換等寬字）其他處不會跟著動，所以收成常數。
+// 色碼框跟 inputClass 差在 flex-1（跟取色器並排分寬）與 font-mono（色碼等寬好對），不是同一包；
+// 主題色那兩顆 `w-10 h-10` 取色器是另一款，留在原地。
+const colorPickerClass = "h-8 w-12 rounded border border-stone-200";
+const hexInputClass = "flex-1 rounded-lg border border-stone-200 px-3 py-2 text-sm font-mono";
 // 每格控制底下那段 10px 灰字說明，78 處各抄一份一模一樣的 class，
 // 改一格（例如字級要放到 11px 或換灰階）其他 77 處不會跟著動，所以收成常數。
 // HintRow 那條是 11px 且帶「清除」按鈕、`flex justify-between text-[10px]` 是
