@@ -2444,28 +2444,15 @@ export default async function StoreHomePage({
                     >
                       {blockLines(taglineLines)}
                     </h1>
+                    {/* 拖過版位 → absolute（座標系跟主標一樣是 cream block）；沒定位 → 跟在
+                        主標下面、主標拖走就一起藏。以前這兩種各抄一份一模一樣的 <p>（可編輯標記、
+                        字級行距、顏色、字體、文字 style 全同），只差有沒有 mt-5 跟 style 裡是定位
+                        還是「限寬 + 靠邊 + 間距」那一塊；改一格（例如 text-lg 要改 text-xl）
+                        另一支不會跟著動，收成一支。 */}
                     {(subtitlePos || !taglinePos) && theme.layout.heroSubtitle && (() => {
-                      // 拖過版位 → absolute（座標系跟主標一樣是 cream block）
-                      if (subtitlePos) {
-                        return (
-                          <p
-                            data-edit-text
-                            data-edit-field="heroSubtitle"
-                            data-edit-drag={FREE_POS_KEYS.heroSubtitle}
-                            className={`text-base sm:text-lg leading-[1.9] ${fade2}`}
-                            style={{
-                              ...heroFreePosStyle(subtitlePos, "32rem"),
-                              color: subtitleColor,
-                              fontFamily: "var(--store-font)",
-                              ...subtitleTextStyle,
-                            }}
-                          >
-                            {theme.layout.heroSubtitle}
-                          </p>
-                        );
-                      }
                       // 副標對齊預設跟主標走（inherit），block 寬度限縮後靠 margin
                       // 把整段推到對應邊，避免置中主標卻配一段靠左的副標。
+                      // （只有沒定位那支用得到；拖過版位的座標本身就決定了位置。）
                       const effAlign =
                         subtitleAlign !== "inherit" ? subtitleAlign : taglineAlign;
                       const blockAlign =
@@ -2479,15 +2466,24 @@ export default async function StoreHomePage({
                           data-edit-text
                           data-edit-field="heroSubtitle"
                           data-edit-drag={FREE_POS_KEYS.heroSubtitle}
-                          className={`mt-5 text-base sm:text-lg leading-[1.9] ${fade2}`}
-                          style={{
-                            color: subtitleColor,
-                            fontFamily: "var(--store-font)",
-                            maxWidth: "32rem",
-                            ...blockAlign,
-                            ...subtitleTextStyle,
-                            ...heroTextGapTop(1.25),
-                          }}
+                          className={`${subtitlePos ? "" : "mt-5 "}text-base sm:text-lg leading-[1.9] ${fade2}`}
+                          style={
+                            subtitlePos
+                              ? {
+                                  ...heroFreePosStyle(subtitlePos, "32rem"),
+                                  color: subtitleColor,
+                                  fontFamily: "var(--store-font)",
+                                  ...subtitleTextStyle,
+                                }
+                              : {
+                                  color: subtitleColor,
+                                  fontFamily: "var(--store-font)",
+                                  maxWidth: "32rem",
+                                  ...blockAlign,
+                                  ...subtitleTextStyle,
+                                  ...heroTextGapTop(1.25),
+                                }
+                          }
                         >
                           {theme.layout.heroSubtitle}
                         </p>
