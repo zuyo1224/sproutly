@@ -4029,14 +4029,11 @@ export function EditorWorkspace({
             ) : (
               <div className="space-y-3">
                 {theme.layout.stats.map((s, i) => (
-                  <div
+                  <ListItemCard
                     key={i}
-                    className="rounded-lg border border-stone-200 p-3 space-y-2 bg-stone-50/50"
+                    label={`#${i + 1}`}
+                    onRemove={() => removeListItem("stats", i)}
                   >
-                    <ListItemHeader
-                      label={`#${i + 1}`}
-                      onRemove={() => removeListItem("stats", i)}
-                    />
                     <input
                       type="text"
                       value={s.value}
@@ -4055,7 +4052,7 @@ export function EditorWorkspace({
                       placeholder="標籤（成立年份 / 植物種數 / 客人累計）"
                       className="w-full rounded border border-stone-200 px-2 py-1.5 text-sm"
                     />
-                  </div>
+                  </ListItemCard>
                 ))}
               </div>
             )}
@@ -4102,14 +4099,11 @@ export function EditorWorkspace({
             ) : (
               <div className="space-y-3">
                 {theme.layout.partners.map((p, i) => (
-                  <div
+                  <ListItemCard
                     key={i}
-                    className="rounded-lg border border-stone-200 p-3 space-y-2 bg-stone-50/50"
+                    label={`#${i + 1}`}
+                    onRemove={() => removeListItem("partners", i)}
                   >
-                    <ListItemHeader
-                      label={`#${i + 1}`}
-                      onRemove={() => removeListItem("partners", i)}
-                    />
                     <input
                       type="text"
                       value={p.name}
@@ -4176,7 +4170,7 @@ export function EditorWorkspace({
                         https://www.example.com/shop。
                       </p>
                     )}
-                  </div>
+                  </ListItemCard>
                 ))}
               </div>
             )}
@@ -4228,14 +4222,11 @@ export function EditorWorkspace({
             ) : (
               <div className="space-y-3">
                 {theme.layout.gallery.map((g, i) => (
-                  <div
+                  <ListItemCard
                     key={i}
-                    className="rounded-lg border border-stone-200 p-3 space-y-2 bg-stone-50/50"
+                    label={`#${i + 1}`}
+                    onRemove={() => removeListItem("gallery", i)}
                   >
-                    <ListItemHeader
-                      label={`#${i + 1}`}
-                      onRemove={() => removeListItem("gallery", i)}
-                    />
                     <input
                       type="text"
                       value={g.url}
@@ -4270,7 +4261,7 @@ export function EditorWorkspace({
                       placeholder="圖說 / caption（選填）"
                       className="w-full rounded border border-stone-200 px-2 py-1.5 text-sm"
                     />
-                  </div>
+                  </ListItemCard>
                 ))}
               </div>
             )}
@@ -4347,14 +4338,11 @@ export function EditorWorkspace({
             ) : (
               <div className="space-y-3">
                 {theme.layout.faqItems.map((f, i) => (
-                  <div
+                  <ListItemCard
                     key={i}
-                    className="rounded-lg border border-stone-200 p-3 space-y-2 bg-stone-50/50"
+                    label={`FAQ #${i + 1}`}
+                    onRemove={() => removeFaq(i)}
                   >
-                    <ListItemHeader
-                      label={`FAQ #${i + 1}`}
-                      onRemove={() => removeFaq(i)}
-                    />
                     <input
                       type="text"
                       value={f.question}
@@ -4373,7 +4361,7 @@ export function EditorWorkspace({
                       placeholder="答案... 換行用 Enter"
                       className="w-full rounded border border-stone-200 px-2 py-1.5 text-sm resize-none"
                     />
-                  </div>
+                  </ListItemCard>
                 ))}
               </div>
             )}
@@ -4443,14 +4431,11 @@ export function EditorWorkspace({
             ) : (
               <div className="space-y-4">
                 {theme.layout.testimonials.map((t, i) => (
-                  <div
+                  <ListItemCard
                     key={i}
-                    className="rounded-lg border border-stone-200 p-3 space-y-2 bg-stone-50/50"
+                    label={`評語 #${i + 1}`}
+                    onRemove={() => removeTestimonial(i)}
                   >
-                    <ListItemHeader
-                      label={`評語 #${i + 1}`}
-                      onRemove={() => removeTestimonial(i)}
-                    />
                     <textarea
                       value={t.quote}
                       onChange={(e) =>
@@ -4480,7 +4465,7 @@ export function EditorWorkspace({
                       placeholder="頭銜或描述（選填）"
                       className="w-full rounded border border-stone-200 px-2 py-1.5 text-sm"
                     />
-                  </div>
+                  </ListItemCard>
                 ))}
               </div>
             )}
@@ -7869,30 +7854,36 @@ function ClearButton({ onClick }: { onClick: () => void }) {
 }
 
 /**
- * 清單區塊每一筆卡片最上面那一列：左邊「#1」序號小標、右邊紅字「移除」
- * （數字／logo／相簿／FAQ／評語 5 處）。之前 5 處各抄一份一模一樣的
- * <div>＋<p>＋<button>，改一格（例如紅色深淺或字級要換）另外 4 處不會跟著動，
- * 所以收成一支。label 由呼叫端組好（有的前面帶「FAQ 」「評語 」），輸出跟原本一樣。
+ * 清單區塊每一筆的卡片（數字／logo／相簿／FAQ／評語 5 處）：淺灰圓角外框，
+ * 最上面一列左邊「#1」序號小標、右邊紅字「移除」，底下放各自的欄位（children）。
+ * 之前 5 處各抄一份一模一樣的外框 <div>＋標題列，改一格（例如外框色、圓角、
+ * 紅字深淺）另外 4 處不會跟著動，所以收成一支。label 由呼叫端組好
+ * （有的前面帶「FAQ 」「評語 」），輸出跟原本一樣。
  */
-function ListItemHeader({
+function ListItemCard({
   label,
   onRemove,
+  children,
 }: {
   label: string;
   onRemove: () => void;
+  children: React.ReactNode;
 }) {
   return (
-    <div className="flex justify-between items-center">
-      <p className="text-[10px] uppercase tracking-wider text-stone-500">
-        {label}
-      </p>
-      <button
-        type="button"
-        onClick={onRemove}
-        className="text-xs text-red-600 hover:text-red-800"
-      >
-        移除
-      </button>
+    <div className="rounded-lg border border-stone-200 p-3 space-y-2 bg-stone-50/50">
+      <div className="flex justify-between items-center">
+        <p className="text-[10px] uppercase tracking-wider text-stone-500">
+          {label}
+        </p>
+        <button
+          type="button"
+          onClick={onRemove}
+          className="text-xs text-red-600 hover:text-red-800"
+        >
+          移除
+        </button>
+      </div>
+      {children}
     </div>
   );
 }
