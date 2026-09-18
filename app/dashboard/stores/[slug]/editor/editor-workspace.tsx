@@ -2206,13 +2206,7 @@ export function EditorWorkspace({
                   className={hexInputClass}
                 />
                 {theme.layout.heroEyebrowColor && (
-                  <button
-                    type="button"
-                    onClick={() => updateLayout({ heroEyebrowColor: null })}
-                    className="text-xs text-stone-500 hover:text-stone-800 underline"
-                  >
-                    清除
-                  </button>
+                  <ClearButton onClick={() => updateLayout({ heroEyebrowColor: null })} />
                 )}
               </div>
               <p className={hintClass}>
@@ -2316,13 +2310,7 @@ export function EditorWorkspace({
                       className={hexInputClass}
                     />
                     {theme.layout.heroSubtitleColor && (
-                      <button
-                        type="button"
-                        onClick={() => updateLayout({ heroSubtitleColor: null })}
-                        className="text-xs text-stone-500 hover:text-stone-800 underline"
-                      >
-                        清除
-                      </button>
+                      <ClearButton onClick={() => updateLayout({ heroSubtitleColor: null })} />
                     )}
                   </div>
                 </Field>
@@ -2534,13 +2522,7 @@ export function EditorWorkspace({
                   className={hexInputClass}
                 />
                 {theme.layout.heroCtaColor && (
-                  <button
-                    type="button"
-                    onClick={() => updateLayout({ heroCtaColor: null })}
-                    className="text-xs text-stone-500 hover:text-stone-800 underline"
-                  >
-                    清除
-                  </button>
+                  <ClearButton onClick={() => updateLayout({ heroCtaColor: null })} />
                 )}
               </div>
               <p className={hintClass}>
@@ -2608,13 +2590,7 @@ export function EditorWorkspace({
                   className={hexInputClass}
                 />
                 {theme.layout.heroBylineColor && (
-                  <button
-                    type="button"
-                    onClick={() => updateLayout({ heroBylineColor: null })}
-                    className="text-xs text-stone-500 hover:text-stone-800 underline"
-                  >
-                    清除
-                  </button>
+                  <ClearButton onClick={() => updateLayout({ heroBylineColor: null })} />
                 )}
               </div>
               <p className={hintClass}>
@@ -2760,13 +2736,7 @@ export function EditorWorkspace({
                   className={hexInputClass}
                 />
                 {theme.layout.heroTaglineColor && (
-                  <button
-                    type="button"
-                    onClick={() => updateLayout({ heroTaglineColor: null })}
-                    className="text-xs text-stone-500 hover:text-stone-800 underline"
-                  >
-                    清除
-                  </button>
+                  <ClearButton onClick={() => updateLayout({ heroTaglineColor: null })} />
                 )}
               </div>
             </Field>
@@ -3321,13 +3291,7 @@ export function EditorWorkspace({
                     className={hexInputClass}
                   />
                   {theme.layout.heroSplitTextBg && (
-                    <button
-                      type="button"
-                      onClick={() => updateLayout({ heroSplitTextBg: null })}
-                      className="text-xs text-stone-500 hover:text-stone-800 underline"
-                    >
-                      清除
-                    </button>
+                    <ClearButton onClick={() => updateLayout({ heroSplitTextBg: null })} />
                   )}
                 </div>
                 <p className={hintClass}>
@@ -3358,13 +3322,7 @@ export function EditorWorkspace({
                     className={hexInputClass}
                   />
                   {theme.layout.heroSplitImageBg && (
-                    <button
-                      type="button"
-                      onClick={() => updateLayout({ heroSplitImageBg: null })}
-                      className="text-xs text-stone-500 hover:text-stone-800 underline"
-                    >
-                      清除
-                    </button>
+                    <ClearButton onClick={() => updateLayout({ heroSplitImageBg: null })} />
                   )}
                 </div>
                 <p className={hintClass}>
@@ -3643,13 +3601,7 @@ export function EditorWorkspace({
                     className={hexInputClass}
                   />
                   {theme.layout.heroMagazineBg && (
-                    <button
-                      type="button"
-                      onClick={() => updateLayout({ heroMagazineBg: null })}
-                      className="text-xs text-stone-500 hover:text-stone-800 underline"
-                    >
-                      清除
-                    </button>
+                    <ClearButton onClick={() => updateLayout({ heroMagazineBg: null })} />
                   )}
                 </div>
                 <p className={hintClass}>
@@ -3832,13 +3784,7 @@ export function EditorWorkspace({
                     className={hexInputClass}
                   />
                   {theme.layout.heroMinimalRuleColor && (
-                    <button
-                      type="button"
-                      onClick={() => updateLayout({ heroMinimalRuleColor: null })}
-                      className="text-xs text-stone-500 hover:text-stone-800 underline"
-                    >
-                      清除
-                    </button>
+                    <ClearButton onClick={() => updateLayout({ heroMinimalRuleColor: null })} />
                   )}
                 </div>
                 <p className={hintClass}>
@@ -3868,13 +3814,7 @@ export function EditorWorkspace({
                     className={hexInputClass}
                   />
                   {theme.layout.heroMinimalBg && (
-                    <button
-                      type="button"
-                      onClick={() => updateLayout({ heroMinimalBg: null })}
-                      className="text-xs text-stone-500 hover:text-stone-800 underline"
-                    >
-                      清除
-                    </button>
+                    <ClearButton onClick={() => updateLayout({ heroMinimalBg: null })} />
                   )}
                 </div>
                 <p className={hintClass}>
@@ -3905,13 +3845,7 @@ export function EditorWorkspace({
                     className={hexInputClass}
                   />
                   {theme.layout.heroTextBg && (
-                    <button
-                      type="button"
-                      onClick={() => updateLayout({ heroTextBg: null })}
-                      className="text-xs text-stone-500 hover:text-stone-800 underline"
-                    >
-                      清除
-                    </button>
+                    <ClearButton onClick={() => updateLayout({ heroTextBg: null })} />
                   )}
                 </div>
                 <p className={hintClass}>
@@ -4055,13 +3989,7 @@ export function EditorWorkspace({
                     className={hexInputClass}
                   />
                   {theme.layout.heroFullImageBg && (
-                    <button
-                      type="button"
-                      onClick={() => updateLayout({ heroFullImageBg: null })}
-                      className="text-xs text-stone-500 hover:text-stone-800 underline"
-                    >
-                      清除
-                    </button>
+                    <ClearButton onClick={() => updateLayout({ heroFullImageBg: null })} />
                   )}
                 </div>
                 <p className={hintClass}>
@@ -6009,13 +5937,7 @@ export function EditorWorkspace({
                     className={hexInputClass}
                   />
                   {bg && (
-                    <button
-                      type="button"
-                      onClick={() => patch({ bgColor: null })}
-                      className="text-xs text-stone-500 hover:text-stone-800 underline"
-                    >
-                      清除
-                    </button>
+                    <ClearButton onClick={() => patch({ bgColor: null })} />
                   )}
                 </div>
                 <div className="mt-2 flex flex-wrap gap-1.5">
@@ -6054,13 +5976,7 @@ export function EditorWorkspace({
                     className={hexInputClass}
                   />
                   {textCol && (
-                    <button
-                      type="button"
-                      onClick={() => patch({ textColor: null })}
-                      className="text-xs text-stone-500 hover:text-stone-800 underline"
-                    >
-                      清除
-                    </button>
+                    <ClearButton onClick={() => patch({ textColor: null })} />
                   )}
                 </div>
                 <div className="mt-2 flex flex-wrap gap-1.5">
@@ -7745,13 +7661,7 @@ export function EditorWorkspace({
                   className={hexInputClass}
                 />
                 {theme.layout.footerBg && (
-                  <button
-                    type="button"
-                    onClick={() => updateLayout({ footerBg: null })}
-                    className="text-xs text-stone-500 hover:text-stone-800 underline"
-                  >
-                    清除
-                  </button>
+                  <ClearButton onClick={() => updateLayout({ footerBg: null })} />
                 )}
               </div>
               <p className="text-[10px] text-stone-500 leading-relaxed mt-1">
@@ -7776,13 +7686,7 @@ export function EditorWorkspace({
                   className={hexInputClass}
                 />
                 {theme.layout.footerText && (
-                  <button
-                    type="button"
-                    onClick={() => updateLayout({ footerText: null })}
-                    className="text-xs text-stone-500 hover:text-stone-800 underline"
-                  >
-                    清除
-                  </button>
+                  <ClearButton onClick={() => updateLayout({ footerText: null })} />
                 )}
               </div>
               <p className="text-[10px] text-stone-500 leading-relaxed mt-1">
@@ -8291,6 +8195,26 @@ function HintRow({
         </button>
       ) : null}
     </div>
+  );
+}
+
+/**
+ * 顏色格旁邊那顆 inline 的「清除」小按鈕（有自訂色才出現）。
+ * 之前 16 處各抄一份一模一樣的 <button type="button" className="text-xs …">清除</button>，
+ * 改一格（例如字級或 hover 色要換）其他 15 處不會跟著動，所以收成一支。
+ * 跟 HintRow 裡那顆不同款：這顆自帶 text-xs（12px），HintRow 那顆吃父層 11px，
+ * 所以沒合併；「改回跟桌機一樣」那顆文字不同也留在原地。
+ * 「有值才顯示」的判斷 `{X && (…)}` 留在呼叫端，跟原本一樣。
+ */
+function ClearButton({ onClick }: { onClick: () => void }) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      className="text-xs text-stone-500 hover:text-stone-800 underline"
+    >
+      清除
+    </button>
   );
 }
 
