@@ -2164,26 +2164,12 @@ export function EditorWorkspace({
               </p>
             </Field>
             <Field label="小標顏色">
-              <div className="flex items-center gap-2">
-                <input
-                  type="color"
-                  value={theme.layout.heroEyebrowColor ?? theme.accent}
-                  onChange={(e) => updateLayout({ heroEyebrowColor: e.target.value })}
-                  className={colorPickerClass}
-                />
-                <input
-                  type="text"
-                  value={theme.layout.heroEyebrowColor ?? ""}
-                  onChange={(e) =>
-                    updateLayout({ heroEyebrowColor: e.target.value || null })
-                  }
-                  placeholder="預設用主色"
-                  className={hexInputClass}
-                />
-                {theme.layout.heroEyebrowColor && (
-                  <ClearButton onClick={() => updateLayout({ heroEyebrowColor: null })} />
-                )}
-              </div>
+              <LayoutColorRow
+                value={theme.layout.heroEyebrowColor}
+                fallback={theme.accent}
+                placeholder="預設用主色"
+                onChange={(v) => updateLayout({ heroEyebrowColor: v })}
+              />
               <p className={hintClass}>
                 原本用店的主色，那是整頁最搶眼的顏色押在最小的一行字上，壓在照片上容易糊；
                 雜誌版型原本用淡文字色，設了以後兩種版型一起走這個色
@@ -2260,24 +2246,12 @@ export function EditorWorkspace({
                   />
                 </Field>
                 <Field label="副標顏色">
-                  <div className="flex items-center gap-2">
-                    <input
-                      type="color"
-                      value={theme.layout.heroSubtitleColor ?? "#6B6B6B"}
-                      onChange={(e) => updateLayout({ heroSubtitleColor: e.target.value })}
-                      className={colorPickerClass}
-                    />
-                    <input
-                      type="text"
-                      value={theme.layout.heroSubtitleColor ?? ""}
-                      onChange={(e) => updateLayout({ heroSubtitleColor: e.target.value || null })}
-                      placeholder="預設用淡文字色"
-                      className={hexInputClass}
-                    />
-                    {theme.layout.heroSubtitleColor && (
-                      <ClearButton onClick={() => updateLayout({ heroSubtitleColor: null })} />
-                    )}
-                  </div>
+                  <LayoutColorRow
+                    value={theme.layout.heroSubtitleColor}
+                    fallback="#6B6B6B"
+                    placeholder="預設用淡文字色"
+                    onChange={(v) => updateLayout({ heroSubtitleColor: v })}
+                  />
                 </Field>
                 <Field label="副標對齊">
                   <OptionGrid
@@ -2433,28 +2407,14 @@ export function EditorWorkspace({
               </p>
             </Field>
             <Field label="按鈕顏色">
-              <div className="flex items-center gap-2">
-                {/* 取色器需要一個具體的 hex 當初始值；沒設的時候公開頁走的還是各版型
-                    原本的顏色（連結型跟主標同色、實心那種是全站文字色反白） */}
-                <input
-                  type="color"
-                  value={theme.layout.heroCtaColor ?? theme.accent}
-                  onChange={(e) => updateLayout({ heroCtaColor: e.target.value })}
-                  className={colorPickerClass}
-                />
-                <input
-                  type="text"
-                  value={theme.layout.heroCtaColor ?? ""}
-                  onChange={(e) =>
-                    updateLayout({ heroCtaColor: e.target.value || null })
-                  }
-                  placeholder="預設用版型原本的顏色"
-                  className={hexInputClass}
-                />
-                {theme.layout.heroCtaColor && (
-                  <ClearButton onClick={() => updateLayout({ heroCtaColor: null })} />
-                )}
-              </div>
+              {/* 取色器需要一個具體的 hex 當初始值；沒設的時候公開頁走的還是各版型
+                  原本的顏色（連結型跟主標同色、實心那種是全站文字色反白） */}
+              <LayoutColorRow
+                value={theme.layout.heroCtaColor}
+                fallback={theme.accent}
+                placeholder="預設用版型原本的顏色"
+                onChange={(v) => updateLayout({ heroCtaColor: v })}
+              />
               <p className={hintClass}>
                 前面幾格只能把按鈕的字弄大弄粗，弄到最後那顆還是跟主標同一個顏色。
                 挑一個顏色就整顆換掉：帶底線的連結型換的是字（底線跟著換），
@@ -2489,28 +2449,14 @@ export function EditorWorkspace({
               </p>
             </Field>
             <Field label="byline 顏色">
-              <div className="flex items-center gap-2">
-                {/* 取色器需要一個具體的 hex 當初始值（EditorTheme 沒帶 textMuted）；
-                    沒設的時候公開頁走的還是各 preset 自己的淡文字色 */}
-                <input
-                  type="color"
-                  value={theme.layout.heroBylineColor ?? "#6B6B6B"}
-                  onChange={(e) => updateLayout({ heroBylineColor: e.target.value })}
-                  className={colorPickerClass}
-                />
-                <input
-                  type="text"
-                  value={theme.layout.heroBylineColor ?? ""}
-                  onChange={(e) =>
-                    updateLayout({ heroBylineColor: e.target.value || null })
-                  }
-                  placeholder="預設用淡文字色"
-                  className={hexInputClass}
-                />
-                {theme.layout.heroBylineColor && (
-                  <ClearButton onClick={() => updateLayout({ heroBylineColor: null })} />
-                )}
-              </div>
+              {/* 取色器需要一個具體的 hex 當初始值（EditorTheme 沒帶 textMuted）；
+                  沒設的時候公開頁走的還是各 preset 自己的淡文字色 */}
+              <LayoutColorRow
+                value={theme.layout.heroBylineColor}
+                fallback="#6B6B6B"
+                placeholder="預設用淡文字色"
+                onChange={(v) => updateLayout({ heroBylineColor: v })}
+              />
               <p className={hintClass}>
                 原本用淡文字色，是整個雜誌版型最淡的一行。想讓它退成純裝飾、或反過來讓
                 客人讀得清楚都從這裡調，右邊的按鈕不跟
@@ -2612,24 +2558,12 @@ export function EditorWorkspace({
               </p>
             </Field>
             <Field label="主標顏色">
-              <div className="flex items-center gap-2">
-                <input
-                  type="color"
-                  value={theme.layout.heroTaglineColor ?? "#1A1A1A"}
-                  onChange={(e) => updateLayout({ heroTaglineColor: e.target.value })}
-                  className={colorPickerClass}
-                />
-                <input
-                  type="text"
-                  value={theme.layout.heroTaglineColor ?? ""}
-                  onChange={(e) => updateLayout({ heroTaglineColor: e.target.value || null })}
-                  placeholder="預設用文字色"
-                  className={hexInputClass}
-                />
-                {theme.layout.heroTaglineColor && (
-                  <ClearButton onClick={() => updateLayout({ heroTaglineColor: null })} />
-                )}
-              </div>
+              <LayoutColorRow
+                value={theme.layout.heroTaglineColor}
+                fallback="#1A1A1A"
+                placeholder="預設用文字色"
+                onChange={(v) => updateLayout({ heroTaglineColor: v })}
+              />
             </Field>
             <Field label="主標對齊">
               <OptionGrid
@@ -3127,28 +3061,14 @@ export function EditorWorkspace({
             )}
             {theme.layout.heroStyle === "split" && (
               <Field label="文字那半的底色">
-                <div className="flex items-center gap-2">
-                  {/* 沒設的時候公開頁透出來的是整段的底色（等於全站底色），
-                      所以取色器拿全站底色當初始值 */}
-                  <input
-                    type="color"
-                    value={theme.layout.heroSplitTextBg ?? theme.bg}
-                    onChange={(e) => updateLayout({ heroSplitTextBg: e.target.value })}
-                    className={colorPickerClass}
-                  />
-                  <input
-                    type="text"
-                    value={theme.layout.heroSplitTextBg ?? ""}
-                    onChange={(e) =>
-                      updateLayout({ heroSplitTextBg: e.target.value || null })
-                    }
-                    placeholder="預設跟全站底色一樣"
-                    className={hexInputClass}
-                  />
-                  {theme.layout.heroSplitTextBg && (
-                    <ClearButton onClick={() => updateLayout({ heroSplitTextBg: null })} />
-                  )}
-                </div>
+                {/* 沒設的時候公開頁透出來的是整段的底色（等於全站底色），
+                    所以取色器拿全站底色當初始值 */}
+                <LayoutColorRow
+                  value={theme.layout.heroSplitTextBg}
+                  fallback={theme.bg}
+                  placeholder="預設跟全站底色一樣"
+                  onChange={(v) => updateLayout({ heroSplitTextBg: v })}
+                />
                 <p className={hintClass}>
                   照片旁邊那半欄。它原本跟後面每一段同一個顏色，所以往下捲是一整片同色，
                   開頭在哪裡結束看不出來；手機上圖上文下，照片以下到頁尾也全是同一塊色。
@@ -3159,27 +3079,13 @@ export function EditorWorkspace({
             {theme.layout.heroStyle === "split" &&
               theme.layout.heroSplitImageFit === "contain" && (
               <Field label="照片那半的底色">
-                <div className="flex items-center gap-2">
-                  {/* 沒設的時候露出來的是整段的底色（等於全站底色），取色器拿它當初始值 */}
-                  <input
-                    type="color"
-                    value={theme.layout.heroSplitImageBg ?? theme.bg}
-                    onChange={(e) => updateLayout({ heroSplitImageBg: e.target.value })}
-                    className={colorPickerClass}
-                  />
-                  <input
-                    type="text"
-                    value={theme.layout.heroSplitImageBg ?? ""}
-                    onChange={(e) =>
-                      updateLayout({ heroSplitImageBg: e.target.value || null })
-                    }
-                    placeholder="預設跟全站底色一樣"
-                    className={hexInputClass}
-                  />
-                  {theme.layout.heroSplitImageBg && (
-                    <ClearButton onClick={() => updateLayout({ heroSplitImageBg: null })} />
-                  )}
-                </div>
+                {/* 沒設的時候露出來的是整段的底色（等於全站底色），取色器拿它當初始值 */}
+                <LayoutColorRow
+                  value={theme.layout.heroSplitImageBg}
+                  fallback={theme.bg}
+                  placeholder="預設跟全站底色一樣"
+                  onChange={(v) => updateLayout({ heroSplitImageBg: v })}
+                />
                 <p className={hintClass}>
                   「照片完整度」選了整張顯示，照片放不滿的那兩條邊露出來的是全站底色。
                   白底的商品棚拍放進米色的框會接成兩截、設了文字那半的底色之後照片那半又
@@ -3423,27 +3329,13 @@ export function EditorWorkspace({
             )}
             {theme.layout.heroStyle === "magazine" && (
               <Field label="整段底色">
-                <div className="flex items-center gap-2">
-                  {/* 沒設的時候公開頁走的還是全站底色，所以取色器拿全站底色當初始值 */}
-                  <input
-                    type="color"
-                    value={theme.layout.heroMagazineBg ?? theme.bg}
-                    onChange={(e) => updateLayout({ heroMagazineBg: e.target.value })}
-                    className={colorPickerClass}
-                  />
-                  <input
-                    type="text"
-                    value={theme.layout.heroMagazineBg ?? ""}
-                    onChange={(e) =>
-                      updateLayout({ heroMagazineBg: e.target.value || null })
-                    }
-                    placeholder="預設跟全站底色一樣"
-                    className={hexInputClass}
-                  />
-                  {theme.layout.heroMagazineBg && (
-                    <ClearButton onClick={() => updateLayout({ heroMagazineBg: null })} />
-                  )}
-                </div>
+                {/* 沒設的時候公開頁走的還是全站底色，所以取色器拿全站底色當初始值 */}
+                <LayoutColorRow
+                  value={theme.layout.heroMagazineBg}
+                  fallback={theme.bg}
+                  placeholder="預設跟全站底色一樣"
+                  onChange={(v) => updateLayout({ heroMagazineBg: v })}
+                />
                 <p className={hintClass}>
                   這個版型沒有圖，畫面上只有上下兩條細線跟中間一段大字，其餘全是這片底色。
                   它原本跟底下的商品、慢讀、頁尾同一個顏色，往下捲是一整片同色，那兩條線
@@ -3604,29 +3496,13 @@ export function EditorWorkspace({
             {theme.layout.heroStyle === "minimal" &&
               theme.layout.heroMinimalRule !== "none" && (
               <Field label="短橫線顏色">
-                <div className="flex items-center gap-2">
-                  {/* 沒挑的時候公開頁畫的是全站主色壓半透明，所以取色器拿主色當初始值 */}
-                  <input
-                    type="color"
-                    value={theme.layout.heroMinimalRuleColor ?? theme.accent}
-                    onChange={(e) =>
-                      updateLayout({ heroMinimalRuleColor: e.target.value })
-                    }
-                    className={colorPickerClass}
-                  />
-                  <input
-                    type="text"
-                    value={theme.layout.heroMinimalRuleColor ?? ""}
-                    onChange={(e) =>
-                      updateLayout({ heroMinimalRuleColor: e.target.value || null })
-                    }
-                    placeholder="預設是全站主色的淡版"
-                    className={hexInputClass}
-                  />
-                  {theme.layout.heroMinimalRuleColor && (
-                    <ClearButton onClick={() => updateLayout({ heroMinimalRuleColor: null })} />
-                  )}
-                </div>
+                {/* 沒挑的時候公開頁畫的是全站主色壓半透明，所以取色器拿主色當初始值 */}
+                <LayoutColorRow
+                  value={theme.layout.heroMinimalRuleColor}
+                  fallback={theme.accent}
+                  placeholder="預設是全站主色的淡版"
+                  onChange={(v) => updateLayout({ heroMinimalRuleColor: v })}
+                />
                 <p className={hintClass}>
                   它原本畫的是全站主色的淡版，在淺底的店看起來只是一條灰痕。挑了顏色就
                   照挑的畫、不再壓淡，所以挑深一點的可以讓它真的看得見，挑跟底色相近的
@@ -3636,27 +3512,13 @@ export function EditorWorkspace({
             )}
             {theme.layout.heroStyle === "minimal" && (
               <Field label="整段底色">
-                <div className="flex items-center gap-2">
-                  {/* 沒設的時候公開頁走的還是全站底色，所以取色器拿全站底色當初始值 */}
-                  <input
-                    type="color"
-                    value={theme.layout.heroMinimalBg ?? theme.bg}
-                    onChange={(e) => updateLayout({ heroMinimalBg: e.target.value })}
-                    className={colorPickerClass}
-                  />
-                  <input
-                    type="text"
-                    value={theme.layout.heroMinimalBg ?? ""}
-                    onChange={(e) =>
-                      updateLayout({ heroMinimalBg: e.target.value || null })
-                    }
-                    placeholder="預設跟全站底色一樣"
-                    className={hexInputClass}
-                  />
-                  {theme.layout.heroMinimalBg && (
-                    <ClearButton onClick={() => updateLayout({ heroMinimalBg: null })} />
-                  )}
-                </div>
+                {/* 沒設的時候公開頁走的還是全站底色，所以取色器拿全站底色當初始值 */}
+                <LayoutColorRow
+                  value={theme.layout.heroMinimalBg}
+                  fallback={theme.bg}
+                  placeholder="預設跟全站底色一樣"
+                  onChange={(v) => updateLayout({ heroMinimalBg: v })}
+                />
                 <p className={hintClass}>
                   這個版型沒有圖也沒有色塊，一進站看到的就是這一片底色配中間一段字，
                   可是它原本跟底下的商品、慢讀、頁尾同一個顏色，客人往下捲是一整片同色，
@@ -3667,27 +3529,13 @@ export function EditorWorkspace({
             )}
             {theme.layout.heroStyle === "full-image" && (
               <Field label="文字段底色">
-                <div className="flex items-center gap-2">
-                  {/* 沒設的時候公開頁走的還是全站底色，所以取色器拿全站底色當初始值 */}
-                  <input
-                    type="color"
-                    value={theme.layout.heroTextBg ?? theme.bg}
-                    onChange={(e) => updateLayout({ heroTextBg: e.target.value })}
-                    className={colorPickerClass}
-                  />
-                  <input
-                    type="text"
-                    value={theme.layout.heroTextBg ?? ""}
-                    onChange={(e) =>
-                      updateLayout({ heroTextBg: e.target.value || null })
-                    }
-                    placeholder="預設跟全站底色一樣"
-                    className={hexInputClass}
-                  />
-                  {theme.layout.heroTextBg && (
-                    <ClearButton onClick={() => updateLayout({ heroTextBg: null })} />
-                  )}
-                </div>
+                {/* 沒設的時候公開頁走的還是全站底色，所以取色器拿全站底色當初始值 */}
+                <LayoutColorRow
+                  value={theme.layout.heroTextBg}
+                  fallback={theme.bg}
+                  placeholder="預設跟全站底色一樣"
+                  onChange={(v) => updateLayout({ heroTextBg: v })}
+                />
                 <p className={hintClass}>
                   照片底下裝主標跟按鈕的那一塊。它原本跟後面每一段同一個顏色，
                   所以照片以下整頁變成一長條同色，開頭那段跟下一段之間沒有任何界線。
@@ -3811,27 +3659,13 @@ export function EditorWorkspace({
               theme.layout.heroImageMaxHeight !== "none" &&
               theme.layout.heroFullImageFit === "contain" && (
               <Field label="照片框的底色">
-                <div className="flex items-center gap-2">
-                  {/* 沒設的時候露出來的是整段的底色（等於全站底色），取色器拿它當初始值 */}
-                  <input
-                    type="color"
-                    value={theme.layout.heroFullImageBg ?? theme.bg}
-                    onChange={(e) => updateLayout({ heroFullImageBg: e.target.value })}
-                    className={colorPickerClass}
-                  />
-                  <input
-                    type="text"
-                    value={theme.layout.heroFullImageBg ?? ""}
-                    onChange={(e) =>
-                      updateLayout({ heroFullImageBg: e.target.value || null })
-                    }
-                    placeholder="預設跟全站底色一樣"
-                    className={hexInputClass}
-                  />
-                  {theme.layout.heroFullImageBg && (
-                    <ClearButton onClick={() => updateLayout({ heroFullImageBg: null })} />
-                  )}
-                </div>
+                {/* 沒設的時候露出來的是整段的底色（等於全站底色），取色器拿它當初始值 */}
+                <LayoutColorRow
+                  value={theme.layout.heroFullImageBg}
+                  fallback={theme.bg}
+                  placeholder="預設跟全站底色一樣"
+                  onChange={(v) => updateLayout({ heroFullImageBg: v })}
+                />
                 <p className={hintClass}>
                   上一格選了整張顯示，照片放不滿的那兩條邊露出來的是全站底色。白底的商品
                   棚拍放進米色底會接成兩截、深色構圖配淺底邊界整個跳出來。填照片自己的
@@ -7255,25 +7089,13 @@ export function EditorWorkspace({
               </p>
             </Field>
             <Field label="頁尾底色">
-              <div className="flex items-center gap-2">
-                {/* 沒設的時候頁尾坐的是卡片底色，所以取色器拿它當初始值 */}
-                <input
-                  type="color"
-                  value={theme.layout.footerBg ?? theme.surface}
-                  onChange={(e) => updateLayout({ footerBg: e.target.value })}
-                  className={colorPickerClass}
-                />
-                <input
-                  type="text"
-                  value={theme.layout.footerBg ?? ""}
-                  onChange={(e) => updateLayout({ footerBg: e.target.value || null })}
-                  placeholder="預設跟卡片底色一樣"
-                  className={hexInputClass}
-                />
-                {theme.layout.footerBg && (
-                  <ClearButton onClick={() => updateLayout({ footerBg: null })} />
-                )}
-              </div>
+              {/* 沒設的時候頁尾坐的是卡片底色，所以取色器拿它當初始值 */}
+              <LayoutColorRow
+                value={theme.layout.footerBg}
+                fallback={theme.surface}
+                placeholder="預設跟卡片底色一樣"
+                onChange={(v) => updateLayout({ footerBg: v })}
+              />
               <p className="text-[10px] text-stone-500 leading-relaxed mt-1">
                 每一頁最後那一塊（首頁、商品、購物車、結帳、會員都是同一個）。原本它跟
                 卡片同一個顏色，全站底色也調成白的店，最後一段到頁尾是一整片白、只剩一條
@@ -7281,24 +7103,12 @@ export function EditorWorkspace({
               </p>
             </Field>
             <Field label="頁尾文字色">
-              <div className="flex items-center gap-2">
-                <input
-                  type="color"
-                  value={theme.layout.footerText ?? theme.text}
-                  onChange={(e) => updateLayout({ footerText: e.target.value })}
-                  className={colorPickerClass}
-                />
-                <input
-                  type="text"
-                  value={theme.layout.footerText ?? ""}
-                  onChange={(e) => updateLayout({ footerText: e.target.value || null })}
-                  placeholder="預設跟全站文字色一樣"
-                  className={hexInputClass}
-                />
-                {theme.layout.footerText && (
-                  <ClearButton onClick={() => updateLayout({ footerText: null })} />
-                )}
-              </div>
+              <LayoutColorRow
+                value={theme.layout.footerText}
+                fallback={theme.text}
+                placeholder="預設跟全站文字色一樣"
+                onChange={(v) => updateLayout({ footerText: v })}
+              />
               <p className="text-[10px] text-stone-500 leading-relaxed mt-1">
                 上面那格挑深色的話這格要跟著挑淺色，不然整塊看不見。只要挑一個顏色就好，
                 地址、營業時間、社群、版權那幾行的深淺跟中間那幾條短線都會自己從它算出來
@@ -7834,6 +7644,49 @@ function ClearButton({ onClick }: { onClick: () => void }) {
     >
       清除
     </button>
+  );
+}
+
+/**
+ * 版面設定裡「取色器＋色碼框＋清除」那一列（小標色／副標色／按鈕色／byline 色／主標色／
+ * split 兩邊底色／magazine 底色／minimal 線色與底色／文字區底色／full-image 底色／
+ * 頁尾底色與文字色，共 14 處），全部都是 theme.layout 底下一個顏色欄位：
+ * 取色器沒值時顯示 fallback、色碼框沒值時顯示空字串、清空色碼框就存 null、有值才出現「清除」。
+ * 之前 14 處各抄一份一模一樣的 <div flex items-center gap-2>＋兩顆 <input>＋ClearButton，
+ * 改一格（例如間距或清除規則要換）其他 13 處不會跟著動，所以收成一支，輸出跟原本一模一樣。
+ * onChange 收 string | null：取色器給色碼、色碼框清空給 null、清除鈕給 null，跟原本三處各自
+ * 呼叫 updateLayout 的值完全相同。
+ * （全站主色那幾格 value 不會是空、沒有清除鈕，是另一款留在原地；區塊背景色那格走 patch
+ * 不是 updateLayout、氣氛框底色那格沒清除鈕，也留在原地。）
+ */
+function LayoutColorRow({
+  value,
+  fallback,
+  placeholder,
+  onChange,
+}: {
+  value: string | null | undefined;
+  fallback: string;
+  placeholder: string;
+  onChange: (v: string | null) => void;
+}) {
+  return (
+    <div className="flex items-center gap-2">
+      <input
+        type="color"
+        value={value ?? fallback}
+        onChange={(e) => onChange(e.target.value)}
+        className={colorPickerClass}
+      />
+      <input
+        type="text"
+        value={value ?? ""}
+        onChange={(e) => onChange(e.target.value || null)}
+        placeholder={placeholder}
+        className={hexInputClass}
+      />
+      {value && <ClearButton onClick={() => onChange(null)} />}
+    </div>
   );
 }
 
