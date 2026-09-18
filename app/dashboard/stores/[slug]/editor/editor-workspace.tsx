@@ -2771,11 +2771,13 @@ export function EditorWorkspace({
                       }
                       className="w-full"
                     />
-                    <div className="flex justify-between text-[10px] text-stone-500">
-                      <span>{HERO_ZOOM_MIN.toFixed(1)}x（原始）</span>
-                      <span>{zoomValue.toFixed(2)}x</span>
-                      <span>{HERO_ZOOM_MAX.toFixed(1)}x</span>
-                    </div>
+                    <SliderTicks
+                      labels={[
+                        `${HERO_ZOOM_MIN.toFixed(1)}x（原始）`,
+                        `${zoomValue.toFixed(2)}x`,
+                        `${HERO_ZOOM_MAX.toFixed(1)}x`,
+                      ]}
+                    />
                     <p className="text-[10px] text-stone-500 leading-relaxed pt-1">
                       手機 / 平板 / 桌機 各自一個值。切上面預覽裝置調對應的。
                       <br />
@@ -4548,10 +4550,7 @@ export function EditorWorkspace({
                   onChange={(e) => updateLayout({ featuredCount: parseInt(e.target.value, 10) })}
                   className="w-full"
                 />
-                <div className="flex justify-between text-[10px] text-stone-500">
-                  <span>3</span>
-                  <span>12</span>
-                </div>
+                <SliderTicks labels={["3", "12"]} />
               </Field>
               <Field label="排幾欄">
                 <ColumnsGrid
@@ -7228,11 +7227,7 @@ export function EditorWorkspace({
                 onChange={(e) => updateLayout({ fontScale: parseFloat(e.target.value) })}
                 className="w-full"
               />
-              <div className="flex justify-between text-[10px] text-stone-500">
-                <span>小</span>
-                <span>標準</span>
-                <span>大</span>
-              </div>
+              <SliderTicks labels={["小", "標準", "大"]} />
             </Field>
             <Field label="區段上下空白">
               <OptionGrid
@@ -7756,7 +7751,7 @@ const hexInputClass = "flex-1 rounded-lg border border-stone-200 px-3 py-2 text-
 // 每格控制底下那段 10px 灰字說明，78 處各抄一份一模一樣的 class，
 // 改一格（例如字級要放到 11px 或換灰階）其他 77 處不會跟著動，所以收成常數。
 // HintRow 那條是 11px 且帶「清除」按鈕、`flex justify-between text-[10px]` 是
-// slider 兩端的刻度標籤，都不是同一包，留在原地。
+// slider 兩端的刻度標籤（已另收成 SliderTicks），都不是同一包。
 const hintClass = "text-[10px] text-stone-500 mt-1";
 // 區段設定那一頁每格底下那段 11px 說明（比 hintClass 大一號、行距鬆一點），
 // 24 處各抄一份一模一樣的 class，改一格其他 23 處不會跟著動，所以收成常數。
@@ -7934,6 +7929,19 @@ function AddListButton({
  * min／max 固定吃 HERO_FONT_SCALE_MIN／MAX、step 0.05，輸出跟原本一模一樣；
  * 全站字體那格的刻度是「標準」沒有 1.0x、本月選物那格是「3／12」，不是同一款留在原地。
  */
+// slider 兩端（或三格）的刻度標籤，4 處（hero 放大、本月選物數量、全站字體、主標字體）
+// 各抄一份一模一樣的 <div flex justify-between>＋<span>，改一格（例如字級或灰階要換）
+// 其他 3 處不會跟著動，所以收成元件；每處刻度文字不同由 labels 帶進來。
+function SliderTicks({ labels }: { labels: string[] }) {
+  return (
+    <div className="flex justify-between text-[10px] text-stone-500">
+      {labels.map((l, i) => (
+        <span key={i}>{l}</span>
+      ))}
+    </div>
+  );
+}
+
 function HeroFontScaleSlider({
   value,
   onChange,
@@ -7952,11 +7960,7 @@ function HeroFontScaleSlider({
         onChange={(e) => onChange(parseFloat(e.target.value))}
         className="w-full"
       />
-      <div className="flex justify-between text-[10px] text-stone-500">
-        <span>小</span>
-        <span>標準 1.0x</span>
-        <span>大</span>
-      </div>
+      <SliderTicks labels={["小", "標準 1.0x", "大"]} />
     </>
   );
 }
