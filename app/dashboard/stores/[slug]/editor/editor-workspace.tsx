@@ -5622,53 +5622,17 @@ export function EditorWorkspace({
                   同一排換另一個會取代掉前一個。
                 </p>
                 <p className="mb-1 text-[10px] text-stone-400">整段的樣子</p>
-                <div className="grid grid-cols-2 gap-1.5">
-                  {presets.filter((p) => p.group === "section").map((p) => {
-                    const isActive = activePresetByGroup.section === p.key;
-                    return (
-                      <button
-                        key={p.key}
-                        type="button"
-                        onClick={() => applyPreset(p)}
-                        title={p.hint}
-                        className={`rounded-lg border px-2 py-2 text-xs transition text-left leading-tight ${
-                          isActive
-                            ? "border-emerald-500 bg-emerald-50 text-emerald-900"
-                            : "border-stone-200 text-stone-700 hover:border-emerald-500 hover:bg-emerald-50 hover:text-emerald-900"
-                        }`}
-                      >
-                        {p.label}
-                        {isActive && (
-                          <span className="ml-1 text-[10px] font-normal text-emerald-600">· 目前</span>
-                        )}
-                      </button>
-                    );
-                  })}
-                </div>
+                <PresetGrid
+                  items={presets.filter((p) => p.group === "section")}
+                  activeKey={activePresetByGroup.section}
+                  onSelect={applyPreset}
+                />
                 <p className="mt-2 mb-1 text-[10px] text-stone-400">卡片的樣子</p>
-                <div className="grid grid-cols-2 gap-1.5">
-                  {presets.filter((p) => p.group === "card").map((p) => {
-                    const isActive = activePresetByGroup.card === p.key;
-                    return (
-                      <button
-                        key={p.key}
-                        type="button"
-                        onClick={() => applyPreset(p)}
-                        title={p.hint}
-                        className={`rounded-lg border px-2 py-2 text-xs transition text-left leading-tight ${
-                          isActive
-                            ? "border-emerald-500 bg-emerald-50 text-emerald-900"
-                            : "border-stone-200 text-stone-700 hover:border-emerald-500 hover:bg-emerald-50 hover:text-emerald-900"
-                        }`}
-                      >
-                        {p.label}
-                        {isActive && (
-                          <span className="ml-1 text-[10px] font-normal text-emerald-600">· 目前</span>
-                        )}
-                      </button>
-                    );
-                  })}
-                </div>
+                <PresetGrid
+                  items={presets.filter((p) => p.group === "card")}
+                  activeKey={activePresetByGroup.card}
+                  onSelect={applyPreset}
+                />
               </Field>
               <div className="mt-3 pt-3 border-t border-stone-200">
                 <p className="text-[10px] font-medium tracking-[0.3em] uppercase text-stone-500">
@@ -8067,6 +8031,49 @@ function ColumnsGrid<N extends number>({
           {n} 欄
         </button>
       ))}
+    </div>
+  );
+}
+
+/**
+ * 「快速風格」那格：preset 幾選一（整段的樣子／卡片的樣子各一格）。
+ * 之前 2 格各抄一份一模一樣的 <div grid>＋<button>（整顆 hover 變綠、選中加「· 目前」
+ * 小標、title 帶 hint），改一格另一格不會跟著動，所以收成一支。
+ * 跟 OptionGrid 不同款（這顆 px-2 靠左 leading-tight、hover 整顆變綠、多「· 目前」），
+ * 所以沒併進去；輸出跟原本一模一樣。
+ */
+function PresetGrid<P extends { key: string; label: string; hint: string }>({
+  items,
+  activeKey,
+  onSelect,
+}: {
+  items: ReadonlyArray<P>;
+  activeKey: string | null;
+  onSelect: (p: P) => void;
+}) {
+  return (
+    <div className="grid grid-cols-2 gap-1.5">
+      {items.map((p) => {
+        const isActive = activeKey === p.key;
+        return (
+          <button
+            key={p.key}
+            type="button"
+            onClick={() => onSelect(p)}
+            title={p.hint}
+            className={`rounded-lg border px-2 py-2 text-xs transition text-left leading-tight ${
+              isActive
+                ? "border-emerald-500 bg-emerald-50 text-emerald-900"
+                : "border-stone-200 text-stone-700 hover:border-emerald-500 hover:bg-emerald-50 hover:text-emerald-900"
+            }`}
+          >
+            {p.label}
+            {isActive && (
+              <span className="ml-1 text-[10px] font-normal text-emerald-600">· 目前</span>
+            )}
+          </button>
+        );
+      })}
     </div>
   );
 }
