@@ -2162,27 +2162,14 @@ export function EditorWorkspace({
               </p>
             </Field>
             <Field label="小標字距">
-              <div className="grid grid-cols-3 gap-1.5">
-                {TRACKING_OPTIONS.map((opt) => (
-                  <button
-                    key={opt.v}
-                    type="button"
-                    onClick={() => updateLayout({ heroEyebrowTracking: opt.v })}
-                    aria-pressed={theme.layout.heroEyebrowTracking === opt.v}
-                    className={`rounded-lg border py-2 text-xs transition ${
-                      theme.layout.heroEyebrowTracking === opt.v
-                        ? "border-emerald-500 bg-emerald-50 text-emerald-900"
-                        : "border-stone-200 text-stone-600 hover:border-stone-400"
-                    }`}
-                    style={{
-                      letterSpacing:
-                        opt.v === "tight" ? "0.05em" : opt.v === "wide" ? "0.3em" : "0.18em",
-                    }}
-                  >
-                    {opt.label}
-                  </button>
-                ))}
-              </div>
+              <OptionGrid
+                options={TRACKING_OPTIONS}
+                selected={theme.layout.heroEyebrowTracking}
+                onSelect={(v) => updateLayout({ heroEyebrowTracking: v })}
+                optionStyle={(v) => ({
+                  letterSpacing: v === "tight" ? "0.05em" : v === "wide" ? "0.3em" : "0.18em",
+                })}
+              />
               <p className={hintClass}>
                 原本每個字之間空 0.4em，那是給英文全大寫用的；中文方塊字本來就自帶留白，
                 四個字的小標會散成四個不相干的字，選收緊會靠回來
@@ -2331,62 +2318,37 @@ export function EditorWorkspace({
                   </p>
                 </Field>
                 <Field label="副標粗細">
-                  <div className="grid grid-cols-3 gap-1.5">
-                    {([
+                  <OptionGrid
+                    options={[
                       { v: "normal", label: "常規" },
                       { v: "medium", label: "中黑" },
                       { v: "bold", label: "粗" },
-                    ] as const).map((opt) => (
-                      <button
-                        key={opt.v}
-                        type="button"
-                        onClick={() => updateLayout({ heroSubtitleWeight: opt.v })}
-                        aria-pressed={theme.layout.heroSubtitleWeight === opt.v}
-                        className={`rounded-lg border py-2 text-xs transition ${
-                          theme.layout.heroSubtitleWeight === opt.v
-                            ? "border-emerald-500 bg-emerald-50 text-emerald-900"
-                            : "border-stone-200 text-stone-600 hover:border-stone-400"
-                        }`}
-                        style={{
-                          fontWeight:
-                            opt.v === "bold" ? 700 : opt.v === "medium" ? 500 : undefined,
-                        }}
-                      >
-                        {opt.label}
-                      </button>
-                    ))}
-                  </div>
+                    ] as const}
+                    selected={theme.layout.heroSubtitleWeight}
+                    onSelect={(v) => updateLayout({ heroSubtitleWeight: v })}
+                    optionStyle={(v) => ({
+                      fontWeight: v === "bold" ? 700 : v === "medium" ? 500 : undefined,
+                    })}
+                  />
                   <p className={hintClass}>
                     四種版型都會套用。副標壓在 hero 照片上時，淡文字色配常規字重讀起來很吃力，
                     加一點重量比把顏色調深不傷版面
                   </p>
                 </Field>
                 <Field label="副標字距">
-                  <div className="grid grid-cols-3 gap-1.5">
-                    {TRACKING_OPTIONS.map((opt) => (
-                      <button
-                        key={opt.v}
-                        type="button"
-                        onClick={() => updateLayout({ heroSubtitleTracking: opt.v })}
-                        aria-pressed={theme.layout.heroSubtitleTracking === opt.v}
-                        className={`rounded-lg border py-2 text-xs transition ${
-                          theme.layout.heroSubtitleTracking === opt.v
-                            ? "border-emerald-500 bg-emerald-50 text-emerald-900"
-                            : "border-stone-200 text-stone-600 hover:border-stone-400"
-                        }`}
-                        style={{
-                          letterSpacing:
-                            opt.v === "tight"
-                              ? `${SECTION_BODY_TRACKING_EM.tight}em`
-                              : opt.v === "wide"
-                              ? `${SECTION_BODY_TRACKING_EM.wide}em`
-                              : undefined,
-                        }}
-                      >
-                        {opt.label}
-                      </button>
-                    ))}
-                  </div>
+                  <OptionGrid
+                    options={TRACKING_OPTIONS}
+                    selected={theme.layout.heroSubtitleTracking}
+                    onSelect={(v) => updateLayout({ heroSubtitleTracking: v })}
+                    optionStyle={(v) => ({
+                      letterSpacing:
+                        v === "tight"
+                          ? `${SECTION_BODY_TRACKING_EM.tight}em`
+                          : v === "wide"
+                          ? `${SECTION_BODY_TRACKING_EM.wide}em`
+                          : undefined,
+                    })}
+                  />
                   <p className={hintClass}>
                     雜誌 / 極簡版型的副標是斜體引文，撐開字距會更像引文、更不像一般內文
                   </p>
@@ -2769,27 +2731,14 @@ export function EditorWorkspace({
               </p>
             </Field>
             <Field label="主標字距">
-              <div className="grid grid-cols-3 gap-1.5">
-                {TRACKING_OPTIONS.map((opt) => (
-                  <button
-                    key={opt.v}
-                    type="button"
-                    onClick={() => updateLayout({ heroTaglineTracking: opt.v })}
-                    aria-pressed={theme.layout.heroTaglineTracking === opt.v}
-                    className={`rounded-lg border py-2 text-xs transition ${
-                      theme.layout.heroTaglineTracking === opt.v
-                        ? "border-emerald-500 bg-emerald-50 text-emerald-900"
-                        : "border-stone-200 text-stone-600 hover:border-stone-400"
-                    }`}
-                    style={{
-                      letterSpacing:
-                        opt.v === "tight" ? "-0.05em" : opt.v === "wide" ? "0.08em" : undefined,
-                    }}
-                  >
-                    {opt.label}
-                  </button>
-                ))}
-              </div>
+              <OptionGrid
+                options={TRACKING_OPTIONS}
+                selected={theme.layout.heroTaglineTracking}
+                onSelect={(v) => updateLayout({ heroTaglineTracking: v })}
+                optionStyle={(v) => ({
+                  letterSpacing: v === "tight" ? "-0.05em" : v === "wide" ? "0.08em" : undefined,
+                })}
+              />
               <p className={hintClass}>
                 同一行裡字跟字之間的距離。四種版型原本的字距都是照英文主標調的，中文主標的
                 筆畫會黏在一起，選撐開拉開；主標只有四五個字時撐開也能把那一行拉滿版面
@@ -2808,29 +2757,17 @@ export function EditorWorkspace({
               </p>
             </Field>
             <Field label="Hero 高度">
-              <div className="grid grid-cols-4 gap-1.5">
-                {([
-                  { v: "auto", label: "自適應", hint: "跟著照片比例" },
-                  { v: "short", label: "矮", hint: `${HERO_FULL_HEIGHT_VH.short}vh` },
-                  { v: "tall", label: "高", hint: `${HERO_FULL_HEIGHT_VH.tall}vh` },
-                  { v: "full", label: "全屏", hint: `${HERO_FULL_HEIGHT_VH.full}vh` },
-                ] as const).map((opt) => (
-                  <button
-                    key={opt.v}
-                    type="button"
-                    onClick={() => updateLayout({ heroHeight: opt.v })}
-                    aria-pressed={theme.layout.heroHeight === opt.v}
-                    className={`rounded-lg border py-2 text-xs transition ${
-                      theme.layout.heroHeight === opt.v
-                        ? "border-emerald-500 bg-emerald-50 text-emerald-900"
-                        : "border-stone-200 text-stone-600 hover:border-stone-400"
-                    }`}
-                    title={opt.hint}
-                  >
-                    {opt.label}
-                  </button>
-                ))}
-              </div>
+              <OptionGrid
+                cols={4}
+                options={[
+                  { v: "auto", label: "自適應", title: "跟著照片比例" },
+                  { v: "short", label: "矮", title: `${HERO_FULL_HEIGHT_VH.short}vh` },
+                  { v: "tall", label: "高", title: `${HERO_FULL_HEIGHT_VH.tall}vh` },
+                  { v: "full", label: "全屏", title: `${HERO_FULL_HEIGHT_VH.full}vh` },
+                ] as const}
+                selected={theme.layout.heroHeight}
+                onSelect={(v) => updateLayout({ heroHeight: v })}
+              />
               <p className={hintClass}>
                 高度只有「整版圖片」版型會套用；其他版型的高度是版型設計的一部分，先跟著版型走。
                 三檔都是「至少多高」：照片加文字段比這矮時，多出來的高度會給文字段、色塊一路鋪到底，
@@ -2839,30 +2776,17 @@ export function EditorWorkspace({
             </Field>
             {theme.layout.heroStyle === "full-image" && (
               <Field label="手機上的 Hero 高度">
-                <div className="grid grid-cols-3 gap-1.5">
-                  {([
+                <OptionGrid
+                  options={[
                     { v: "same", label: "跟桌機一樣" },
                     { v: "auto", label: "自適應" },
-                    { v: "short", label: "矮", hint: `${HERO_FULL_HEIGHT_VH.short}vh` },
-                    { v: "tall", label: "高", hint: `${HERO_FULL_HEIGHT_VH.tall}vh` },
-                    { v: "full", label: "全屏", hint: `${HERO_FULL_HEIGHT_VH.full}vh` },
-                  ] as const).map((opt) => (
-                    <button
-                      key={opt.v}
-                      type="button"
-                      onClick={() => updateLayout({ heroHeightMobile: opt.v })}
-                      aria-pressed={theme.layout.heroHeightMobile === opt.v}
-                      className={`rounded-lg border py-2 text-xs transition ${
-                        theme.layout.heroHeightMobile === opt.v
-                          ? "border-emerald-500 bg-emerald-50 text-emerald-900"
-                          : "border-stone-200 text-stone-600 hover:border-stone-400"
-                      }`}
-                      title={"hint" in opt ? opt.hint : undefined}
-                    >
-                      {opt.label}
-                    </button>
-                  ))}
-                </div>
+                    { v: "short", label: "矮", title: `${HERO_FULL_HEIGHT_VH.short}vh` },
+                    { v: "tall", label: "高", title: `${HERO_FULL_HEIGHT_VH.tall}vh` },
+                    { v: "full", label: "全屏", title: `${HERO_FULL_HEIGHT_VH.full}vh` },
+                  ] as const}
+                  selected={theme.layout.heroHeightMobile}
+                  onSelect={(v) => updateLayout({ heroHeightMobile: v })}
+                />
                 <p className={hintClass}>
                   上面那格在手機跟桌機是同一把尺，可是同一張照片在手機是滿寬顯示、比桌機
                   高得多，字又小一半：桌機選全屏剛好的店，手機常常是文字段被硬撐一大截空
@@ -3532,32 +3456,17 @@ export function EditorWorkspace({
             )}
             {theme.layout.heroStyle === "magazine" && (
               <Field label="第二行小字排多寬">
-                <div className="grid grid-cols-2 gap-1.5">
-                  {([
+                <OptionGrid
+                  cols={2}
+                  options={[
                     { v: "narrow", label: "窄" },
                     { v: "normal", label: "跟預設" },
                     { v: "wide", label: "寬" },
                     { v: "title", label: "跟主標一樣寬" },
-                  ] as const).map((opt) => (
-                    <button
-                      key={opt.v}
-                      type="button"
-                      onClick={() =>
-                        updateLayout({ heroMagazineSubtitleWidth: opt.v })
-                      }
-                      aria-pressed={
-                        theme.layout.heroMagazineSubtitleWidth === opt.v
-                      }
-                      className={`rounded-lg border py-2 text-xs transition ${
-                        theme.layout.heroMagazineSubtitleWidth === opt.v
-                          ? "border-emerald-500 bg-emerald-50 text-emerald-900"
-                          : "border-stone-200 text-stone-600 hover:border-stone-400"
-                      }`}
-                    >
-                      {opt.label}
-                    </button>
-                  ))}
-                </div>
+                  ] as const}
+                  selected={theme.layout.heroMagazineSubtitleWidth}
+                  onSelect={(v) => updateLayout({ heroMagazineSubtitleWidth: v })}
+                />
                 <p className={hintClass}>
                   上一格放寬的只有主標，主標下面那行小字是另外一條寫死的窄欄，所以主標拉
                   寬之後會變成上面一行很寬、下面一條很窄，中間對齊但左右差一大截。選跟主
@@ -6245,31 +6154,18 @@ export function EditorWorkspace({
                 </HintRow>
               </Field>
               <Field label="標題粗細">
-                <div className="grid grid-cols-3 gap-1.5">
-                  {([
+                <OptionGrid
+                  options={[
                     { v: "light", label: "細" },
                     { v: "normal", label: "預設" },
                     { v: "bold", label: "粗" },
-                  ] as const).map((opt) => (
-                    <button
-                      key={opt.v}
-                      type="button"
-                      onClick={() => patch({ headingWeight: opt.v })}
-                      aria-pressed={(headingWeight ?? "normal") === opt.v}
-                      className={`rounded-lg border py-2 text-xs transition ${
-                        (headingWeight ?? "normal") === opt.v
-                          ? "border-emerald-500 bg-emerald-50 text-emerald-900"
-                          : "border-stone-200 text-stone-600 hover:border-stone-400"
-                      }`}
-                      style={{
-                        fontWeight:
-                          opt.v === "light" ? 400 : opt.v === "bold" ? 700 : undefined,
-                      }}
-                    >
-                      {opt.label}
-                    </button>
-                  ))}
-                </div>
+                  ] as const}
+                  selected={headingWeight ?? "normal"}
+                  onSelect={(v) => patch({ headingWeight: v })}
+                  optionStyle={(v) => ({
+                    fontWeight: v === "light" ? 400 : v === "bold" ? 700 : undefined,
+                  })}
+                />
                 <HintRow showClear={headingWeight} onClear={() => patch({ headingWeight: null })}>
                   細常規 · 預設維持原樣 · 粗
                 </HintRow>
@@ -6289,27 +6185,14 @@ export function EditorWorkspace({
                 </HintRow>
               </Field>
               <Field label="標題字距">
-                <div className="grid grid-cols-3 gap-1.5">
-                  {TRACKING_OPTIONS.map((opt) => (
-                    <button
-                      key={opt.v}
-                      type="button"
-                      onClick={() => patch({ headingTracking: opt.v })}
-                      aria-pressed={(headingTracking ?? "normal") === opt.v}
-                      className={`rounded-lg border py-2 text-xs transition ${
-                        (headingTracking ?? "normal") === opt.v
-                          ? "border-emerald-500 bg-emerald-50 text-emerald-900"
-                          : "border-stone-200 text-stone-600 hover:border-stone-400"
-                      }`}
-                      style={{
-                        letterSpacing:
-                          opt.v === "tight" ? "-0.05em" : opt.v === "wide" ? "0.08em" : undefined,
-                      }}
-                    >
-                      {opt.label}
-                    </button>
-                  ))}
-                </div>
+                <OptionGrid
+                  options={TRACKING_OPTIONS}
+                  selected={headingTracking ?? "normal"}
+                  onSelect={(v) => patch({ headingTracking: v })}
+                  optionStyle={(v) => ({
+                    letterSpacing: v === "tight" ? "-0.05em" : v === "wide" ? "0.08em" : undefined,
+                  })}
+                />
                 <div className="mt-1.5 flex items-center justify-between text-[11px] text-stone-500">
                   <span>
                     上一格調的是大標換行後上下的距離，這格調的是同一行裡字跟字之間的距離。大標
@@ -8222,19 +8105,23 @@ function ClearButton({ onClick }: { onClick: () => void }) {
  * 每格樣式控制的「幾選一」按鈕格。
  * 之前 158 格各抄一份一模一樣的 <div grid>＋<button>（aria-pressed、選中／未選中
  * 的框線底色、字級全同），改一格（例如選中色要換）另外 157 格不會跟著動，所以收成一支。
- * options 多帶 hint 之類的欄位沒關係，這裡只讀 v 跟 label；帶 style／title 的那幾格
- * 不是同一包，留在原地。
+ * options 多帶 hint 之類的欄位沒關係，這裡只讀 v、label 跟（有給的話）title。
+ * - `title`：滑鼠停在按鈕上的提示（hero 高度那兩格用來標 vh）。
+ * - `optionStyle`：字距／字重那幾格要讓按鈕自己長成那個樣子當即時預覽，
+ *   給一個「選項值 → inline style」的函式；沒給就跟原本一樣不帶 style。
  */
 function OptionGrid<V extends string>({
   cols = 3,
   options,
   selected,
   onSelect,
+  optionStyle,
 }: {
   cols?: 2 | 3 | 4 | 5;
-  options: ReadonlyArray<{ v: V; label: string }>;
+  options: ReadonlyArray<{ v: V; label: string; title?: string }>;
   selected: string | null | undefined;
   onSelect: (v: V) => void;
+  optionStyle?: (v: V) => React.CSSProperties;
 }) {
   const gridClass =
     cols === 2
@@ -8257,6 +8144,8 @@ function OptionGrid<V extends string>({
               ? "border-emerald-500 bg-emerald-50 text-emerald-900"
               : "border-stone-200 text-stone-600 hover:border-stone-400"
           }`}
+          title={opt.title}
+          style={optionStyle ? optionStyle(opt.v) : undefined}
         >
           {opt.label}
         </button>
