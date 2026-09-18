@@ -5446,7 +5446,7 @@ export function EditorWorkspace({
                   </button>
                 </div>
                 {styleClipboard && (
-                  <p className="mt-1.5 text-[11px] text-stone-500 leading-snug">
+                  <p className={layoutNoteClass}>
                     已複製：{sectionLabels[styleClipboard.source]} 的 {clipboardCount} 項樣式
                   </p>
                 )}
@@ -6044,7 +6044,7 @@ export function EditorWorkspace({
                   selected={contentAlign ?? "top"}
                   onSelect={(v) => patch({ contentAlign: v })}
                 />
-                <p className="mt-1.5 text-[11px] text-stone-500 leading-snug">
+                <p className={layoutNoteClass}>
                   這一段比內容高的時候，多出來的空白留在哪邊。要先把上面的「最小高度」設成高或滿屏才看得出差別
                 </p>
               </Field>
@@ -6058,7 +6058,7 @@ export function EditorWorkspace({
                   selected={hideOn ?? "none"}
                   onSelect={(v) => patch({ hideOn: v })}
                 />
-                <p className="mt-1.5 text-[11px] text-stone-500 leading-snug">
+                <p className={layoutNoteClass}>
                   橫著排的段落（合作品牌、照片牆）到手機上會擠成一長條，這裡可以只讓它在手機不出現，桌機照舊。平板一律顯示。編輯畫布上會留在原地淡掉、框一圈虛線，客人那邊是真的看不到
                 </p>
               </Field>
@@ -6072,7 +6072,7 @@ export function EditorWorkspace({
                   selected={sectionWidth ?? "full"}
                   onSelect={(v) => patch({ sectionWidth: v })}
                 />
-                <p className="mt-1.5 text-[11px] text-stone-500 leading-snug">
+                <p className={layoutNoteClass}>
                   滿版 寬度撐滿 · 置中 1100px · 窄欄 760px。配背景色 + 陰影 + 圓角就成置中的卡片式區段
                 </p>
               </Field>
@@ -6091,7 +6091,7 @@ export function EditorWorkspace({
                   selected={contentWidth ?? "normal"}
                   onSelect={(v) => patch({ contentWidth: v })}
                 />
-                <p className="mt-1.5 text-[11px] text-stone-500 leading-snug">
+                <p className={layoutNoteClass}>
                   這一段的字跟卡片排多寬。上面那格「區段寬度」收的是這一段的底色跟外框畫到哪，裡面的字跟卡片不會跟著動，這格才是。窄 768px · 照原本 1024px（照片牆 1152px）· 寬 1280px · 滿版 排到畫面左右邊界為止。卡片調成 4 欄、或想讓照片牆變成跨頁大圖時用這格
                 </p>
               </Field>
@@ -6103,7 +6103,7 @@ export function EditorWorkspace({
                   selected={contentAlignX ?? "center"}
                   onSelect={(v) => patch({ contentAlignX: v })}
                 />
-                <p className="mt-1.5 text-[11px] text-stone-500 leading-snug">
+                <p className={layoutNoteClass}>
                   上面那格排出來的欄擺在這一段的哪一邊。平常置中；把欄寬設成窄之後選靠左，字會貼著跟導覽列同一道左邊界起排（雜誌常見的收法）。跟「區段對齊」不一樣——那格是欄裡每行字各自靠哪邊，這格是整道欄搬家。欄寬選滿版時欄已經佔滿，這格看不出差別
                 </p>
               </Field>
@@ -6119,7 +6119,7 @@ export function EditorWorkspace({
                   selected={contentPadX ?? "normal"}
                   onSelect={(v) => patch({ contentPadX: v })}
                 />
-                <p className="mt-1.5 text-[11px] text-stone-500 leading-snug">
+                <p className={layoutNoteClass}>
                   這道欄自己左右兩側留多少空白。照原本是跟導覽列、商品同一道邊界（手機 32px · 電腦 48px）。欄寬選了滿版之後，字跟卡片離畫面邊多遠就是這格在管：照片牆想幾乎頂到邊選收窄；想讓整段四周留一大片白、字只佔中間選加寬。手機上會自動縮小一點，不會擠成一條
                 </p>
               </Field>
@@ -6134,7 +6134,7 @@ export function EditorWorkspace({
                   selected={sectionGap ?? "none"}
                   onSelect={(v) => patch({ sectionGap: v })}
                 />
-                <p className="mt-1.5 text-[11px] text-stone-500 leading-snug">
+                <p className={layoutNoteClass}>
                   貼緊 跟上下區段相連 · 適中 64px · 寬鬆 112px。做置中卡片式區段時，留外距才能讓卡片從上下拉開、浮出來
                 </p>
               </Field>
@@ -7763,6 +7763,10 @@ const hintClass = "text-[10px] text-stone-500 mt-1";
 // 跟 hintClass 的 10px 是兩款，故意不統一字級（統一就是改到畫面）；
 // 沒帶 mt-1、帶 mt-2／mb-3／-mt-2 的那 7 處間距各自不同，不是同一包，留在原地。
 const noteClass = "mt-1 text-[11px] text-stone-500 leading-relaxed";
+// 版面那一頁（對齊／手機隱藏／區段寬度／欄寬／欄位置／欄內距／外距）跟樣式剪貼簿底下那段 11px 說明，
+// 8 處各抄一份一模一樣的 class，改一格其他 7 處不會跟著動，所以收成常數。
+// 跟 noteClass 差在 mt-1.5 與 leading-snug（說明比較長、行距收緊一點），不是同一包，故意不統一。
+const layoutNoteClass = "mt-1.5 text-[11px] text-stone-500 leading-snug";
 // 清單區塊（數字／logo／相簿／FAQ／評語）每一筆卡片裡的小文字框，9 處各抄一份一模一樣的 class，
 // 改一格（例如圓角或內距要換）其他 8 處不會跟著動，所以收成常數。
 // 跟 inputClass 差在 rounded（不是 rounded-lg）與 px-2 py-1.5（塞在卡片裡要小一號），不是同一包；
