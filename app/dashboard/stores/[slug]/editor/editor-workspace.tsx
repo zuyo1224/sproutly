@@ -5488,11 +5488,7 @@ export function EditorWorkspace({
                   onSelect={applyPreset}
                 />
               </Field>
-              <div className="mt-3 pt-3 border-t border-stone-200">
-                <p className="text-[10px] font-medium tracking-[0.3em] uppercase text-stone-500">
-                  常用
-                </p>
-              </div>
+              <SectionGroupLabel label="常用" />
               <Field label="標題對齊">
                 <OptionGrid
                   options={[
@@ -5706,11 +5702,7 @@ export function EditorWorkspace({
                   </div>
                 );
               })()}
-              <div className="mt-3 pt-3 border-t border-stone-200">
-                <p className="text-[10px] font-medium tracking-[0.3em] uppercase text-stone-500">
-                  結構
-                </p>
-              </div>
+              <SectionGroupLabel label="結構" />
               <Field label="這段的上下空白">
                 <OptionGrid
                   options={[
@@ -5890,11 +5882,7 @@ export function EditorWorkspace({
                   </HintRow>
                 </Field>
               )}
-              <div className="mt-3 pt-3 border-t border-stone-200">
-                <p className="text-[10px] font-medium tracking-[0.3em] uppercase text-stone-500">
-                  進階
-                </p>
-              </div>
+              <SectionGroupLabel label="進階" />
               <Field label="標題大小">
                 <OptionGrid
                   options={SECTION_TEXT_SCALE_OPTIONS}
@@ -7138,11 +7126,7 @@ export function EditorWorkspace({
                   </HintRow>
                 </Field>
               )}
-              <div className="mt-3 pt-3 border-t border-stone-200">
-                <p className="text-[10px] font-medium tracking-[0.3em] uppercase text-stone-500">
-                  字體 / 動效
-                </p>
-              </div>
+              <SectionGroupLabel label="字體 / 動效" />
               <Field label="進場動畫">
                 <OptionGrid
                   options={[
@@ -7199,11 +7183,7 @@ export function EditorWorkspace({
                   「舒展」適合長段內文 / 慢讀區
                 </HintRow>
               </Field>
-              <div className="mt-3 pt-3 border-t border-stone-200">
-                <p className="text-[10px] font-medium tracking-[0.3em] uppercase text-stone-500">
-                  氣氛
-                </p>
-              </div>
+              <SectionGroupLabel label="氣氛" />
               <Field label="淡化">
                 <OptionGrid
                   options={[
@@ -7855,6 +7835,23 @@ function ClearButton({ onClick }: { onClick: () => void }) {
     >
       清除
     </button>
+  );
+}
+
+/**
+ * 區塊設定面板裡的分組小標（常用／結構／進階／字體／動效／氣氛 5 處）：
+ * 上方一條淺灰分隔線，底下一行 10px 寬字距大寫小字。
+ * 之前 5 處各抄一份一模一樣的 <div border-t>＋<p>，改一格（例如分隔線色、
+ * 字距、上下間距要換）另外 4 處不會跟著動，所以收成一支，輸出跟原本一模一樣。
+ * （section 列表上方那顆 text-stone-400 沒分隔線的是另一款，留在原地。）
+ */
+function SectionGroupLabel({ label }: { label: string }) {
+  return (
+    <div className="mt-3 pt-3 border-t border-stone-200">
+      <p className="text-[10px] font-medium tracking-[0.3em] uppercase text-stone-500">
+        {label}
+      </p>
+    </div>
   );
 }
 
