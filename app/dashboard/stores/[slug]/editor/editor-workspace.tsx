@@ -4067,17 +4067,12 @@ export function EditorWorkspace({
                 ))}
               </div>
             )}
-            <button
-              type="button"
+            <AddListButton
               onClick={() => addListItem("stats")}
-              disabled={theme.layout.stats.length >= 6}
-              className="w-full mt-3 rounded-lg border border-dashed border-stone-300 hover:border-emerald-400 hover:bg-emerald-50/50 py-2.5 text-sm text-emerald-800 transition disabled:opacity-40 disabled:cursor-not-allowed"
-            >
-              + 加一筆數字{" "}
-              <span className="text-stone-400 text-xs">
-                ({theme.layout.stats.length}/6)
-              </span>
-            </button>
+              count={theme.layout.stats.length}
+              max={6}
+              label="+ 加一筆數字"
+            />
             <Field label="排幾欄">
               <ColumnsGrid
                 choices={[2, 3, 4] as const}
@@ -4201,17 +4196,12 @@ export function EditorWorkspace({
                 ))}
               </div>
             )}
-            <button
-              type="button"
+            <AddListButton
               onClick={() => addListItem("partners")}
-              disabled={theme.layout.partners.length >= 12}
-              className="w-full mt-3 rounded-lg border border-dashed border-stone-300 hover:border-emerald-400 hover:bg-emerald-50/50 py-2.5 text-sm text-emerald-800 transition disabled:opacity-40 disabled:cursor-not-allowed"
-            >
-              + 加一個 logo{" "}
-              <span className="text-stone-400 text-xs">
-                ({theme.layout.partners.length}/12)
-              </span>
-            </button>
+              count={theme.layout.partners.length}
+              max={12}
+              label="+ 加一個 logo"
+            />
           </PanelSection>
         )}
 
@@ -4419,17 +4409,12 @@ export function EditorWorkspace({
                 ))}
               </div>
             )}
-            <button
-              type="button"
+            <AddListButton
               onClick={addFaq}
-              disabled={theme.layout.faqItems.length >= 20}
-              className="w-full mt-3 rounded-lg border border-dashed border-stone-300 hover:border-emerald-400 hover:bg-emerald-50/50 py-2.5 text-sm text-emerald-800 transition disabled:opacity-40 disabled:cursor-not-allowed"
-            >
-              + 加一筆 FAQ{" "}
-              <span className="text-stone-400 text-xs">
-                ({theme.layout.faqItems.length}/20)
-              </span>
-            </button>
+              count={theme.layout.faqItems.length}
+              max={20}
+              label="+ 加一筆 FAQ"
+            />
             <Field label="一進來先攤開">
               <OptionGrid
                 options={[
@@ -4539,17 +4524,12 @@ export function EditorWorkspace({
                 ))}
               </div>
             )}
-            <button
-              type="button"
+            <AddListButton
               onClick={addTestimonial}
-              disabled={theme.layout.testimonials.length >= 6}
-              className="w-full mt-3 rounded-lg border border-dashed border-stone-300 hover:border-emerald-400 hover:bg-emerald-50/50 py-2.5 text-sm text-emerald-800 transition disabled:opacity-40 disabled:cursor-not-allowed"
-            >
-              + 加一筆評語{" "}
-              <span className="text-stone-400 text-xs">
-                ({theme.layout.testimonials.length}/6)
-              </span>
-            </button>
+              count={theme.layout.testimonials.length}
+              max={6}
+              label="+ 加一筆評語"
+            />
             <Field label="排幾欄">
               <ColumnsGrid
                 choices={[2, 3, 4] as const}
@@ -7924,6 +7904,39 @@ function ClearButton({ onClick }: { onClick: () => void }) {
       className="text-xs text-stone-500 hover:text-stone-800 underline"
     >
       清除
+    </button>
+  );
+}
+
+/**
+ * 清單區塊底下那顆虛線的「+ 加一筆」按鈕（數字／logo／FAQ／評語 4 處）。
+ * 之前 4 處各抄一份一模一樣的 <button>＋「(目前/上限)」小標，改一格
+ * （例如虛線色或 hover 色要換）另外 3 處不會跟著動，所以收成一支。
+ * 滿了（count >= max）就 disabled，跟原本一樣；相簿那顆「+ 貼 URL」是 text-xs、
+ * 沒 w-full mt-3 也沒計數，不是同一款留在原地。
+ */
+function AddListButton({
+  onClick,
+  count,
+  max,
+  label,
+}: {
+  onClick: () => void;
+  count: number;
+  max: number;
+  label: string;
+}) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      disabled={count >= max}
+      className="w-full mt-3 rounded-lg border border-dashed border-stone-300 hover:border-emerald-400 hover:bg-emerald-50/50 py-2.5 text-sm text-emerald-800 transition disabled:opacity-40 disabled:cursor-not-allowed"
+    >
+      {label}{" "}
+      <span className="text-stone-400 text-xs">
+        ({count}/{max})
+      </span>
     </button>
   );
 }
