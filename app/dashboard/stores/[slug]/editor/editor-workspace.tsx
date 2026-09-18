@@ -2140,22 +2140,10 @@ export function EditorWorkspace({
               />
             </Field>
             <Field label={`小標字體大小（${theme.layout.heroEyebrowFontScale.toFixed(2)}x）`}>
-              <input
-                type="range"
-                min={HERO_FONT_SCALE_MIN}
-                max={HERO_FONT_SCALE_MAX}
-                step="0.05"
+              <HeroFontScaleSlider
                 value={theme.layout.heroEyebrowFontScale}
-                onChange={(e) =>
-                  updateLayout({ heroEyebrowFontScale: parseFloat(e.target.value) })
-                }
-                className="w-full"
+                onChange={(v) => updateLayout({ heroEyebrowFontScale: v })}
               />
-              <div className="flex justify-between text-[10px] text-stone-500">
-                <span>小</span>
-                <span>標準 1.0x</span>
-                <span>大</span>
-              </div>
               <p className={hintClass}>
                 四種版型都會套用。原本一律 10px，那是照英文大寫字挑的——中文小標在 10px
                 上只剩一團墨，手機看更明顯
@@ -2266,20 +2254,10 @@ export function EditorWorkspace({
             {(
               <>
                 <Field label={`副標字體大小（${theme.layout.heroSubtitleFontScale.toFixed(2)}x）`}>
-                  <input
-                    type="range"
-                    min={HERO_FONT_SCALE_MIN}
-                    max={HERO_FONT_SCALE_MAX}
-                    step="0.05"
+                  <HeroFontScaleSlider
                     value={theme.layout.heroSubtitleFontScale}
-                    onChange={(e) => updateLayout({ heroSubtitleFontScale: parseFloat(e.target.value) })}
-                    className="w-full"
+                    onChange={(v) => updateLayout({ heroSubtitleFontScale: v })}
                   />
-                  <div className="flex justify-between text-[10px] text-stone-500">
-                    <span>小</span>
-                    <span>標準 1.0x</span>
-                    <span>大</span>
-                  </div>
                 </Field>
                 <Field label="副標顏色">
                   <div className="flex items-center gap-2">
@@ -2397,20 +2375,10 @@ export function EditorWorkspace({
               </p>
             </Field>
             <Field label={`按鈕文字大小（${theme.layout.heroCtaFontScale.toFixed(2)}x）`}>
-              <input
-                type="range"
-                min={HERO_FONT_SCALE_MIN}
-                max={HERO_FONT_SCALE_MAX}
-                step="0.05"
+              <HeroFontScaleSlider
                 value={theme.layout.heroCtaFontScale}
-                onChange={(e) => updateLayout({ heroCtaFontScale: parseFloat(e.target.value) })}
-                className="w-full"
+                onChange={(v) => updateLayout({ heroCtaFontScale: v })}
               />
-              <div className="flex justify-between text-[10px] text-stone-500">
-                <span>小</span>
-                <span>標準 1.0x</span>
-                <span>大</span>
-              </div>
               <p className={hintClass}>
                 四種版型的按鈕（含次要按鈕）一起套。按鈕是 hero 上唯一可以按的東西，
                 但原本的字級固定不動——主標拉大之後，按鈕會被主標壓成最不起眼的一行；
@@ -2510,22 +2478,10 @@ export function EditorWorkspace({
               </p>
             </Field>
             <Field label={`byline 文字大小（${theme.layout.heroBylineFontScale.toFixed(2)}x）`}>
-              <input
-                type="range"
-                min={HERO_FONT_SCALE_MIN}
-                max={HERO_FONT_SCALE_MAX}
-                step="0.05"
+              <HeroFontScaleSlider
                 value={theme.layout.heroBylineFontScale}
-                onChange={(e) =>
-                  updateLayout({ heroBylineFontScale: parseFloat(e.target.value) })
-                }
-                className="w-full"
+                onChange={(v) => updateLayout({ heroBylineFontScale: v })}
               />
-              <div className="flex justify-between text-[10px] text-stone-500">
-                <span>小</span>
-                <span>標準 1.0x</span>
-                <span>大</span>
-              </div>
               <p className={hintClass}>
                 只動上面那行 byline，右邊的按鈕不跟（按鈕有自己的那格）。原本固定 10px，
                 那個大小是照英文大寫字母挑的，byline 打中文的話在 10px 幾乎糊成一團，
@@ -2621,20 +2577,10 @@ export function EditorWorkspace({
               </p>
             </Field>
             <Field label={`主標字體大小（${theme.layout.heroTaglineFontScale.toFixed(2)}x）`}>
-              <input
-                type="range"
-                min={HERO_FONT_SCALE_MIN}
-                max={HERO_FONT_SCALE_MAX}
-                step="0.05"
+              <HeroFontScaleSlider
                 value={theme.layout.heroTaglineFontScale}
-                onChange={(e) => updateLayout({ heroTaglineFontScale: parseFloat(e.target.value) })}
-                className="w-full"
+                onChange={(v) => updateLayout({ heroTaglineFontScale: v })}
               />
-              <div className="flex justify-between text-[10px] text-stone-500">
-                <span>小</span>
-                <span>標準 1.0x</span>
-                <span>大</span>
-              </div>
             </Field>
             <Field
               label={`主標字體大小（手機）（${
@@ -2643,27 +2589,10 @@ export function EditorWorkspace({
                   : "跟桌機一樣"
               }）`}
             >
-              <input
-                type="range"
-                min={HERO_FONT_SCALE_MIN}
-                max={HERO_FONT_SCALE_MAX}
-                step="0.05"
-                value={
-                  theme.layout.heroTaglineFontScaleMobile ??
-                  theme.layout.heroTaglineFontScale
-                }
-                onChange={(e) =>
-                  updateLayout({
-                    heroTaglineFontScaleMobile: parseFloat(e.target.value),
-                  })
-                }
-                className="w-full"
+              <HeroFontScaleSlider
+                value={theme.layout.heroTaglineFontScaleMobile ?? theme.layout.heroTaglineFontScale}
+                onChange={(v) => updateLayout({ heroTaglineFontScaleMobile: v })}
               />
-              <div className="flex justify-between text-[10px] text-stone-500">
-                <span>小</span>
-                <span>標準 1.0x</span>
-                <span>大</span>
-              </div>
               {theme.layout.heroTaglineFontScaleMobile !== null && (
                 <button
                   type="button"
@@ -7996,6 +7925,40 @@ function ClearButton({ onClick }: { onClick: () => void }) {
     >
       清除
     </button>
+  );
+}
+
+/**
+ * Hero 那頁的字體大小拉桿（小標／副標／按鈕／byline／主標／主標手機 6 格）。
+ * 之前 6 格各抄一份一模一樣的 <input type="range">＋「小／標準 1.0x／大」刻度列，
+ * 改一格（例如 step 或刻度字要換）另外 5 格不會跟著動，所以收成一支。
+ * min／max 固定吃 HERO_FONT_SCALE_MIN／MAX、step 0.05，輸出跟原本一模一樣；
+ * 全站字體那格的刻度是「標準」沒有 1.0x、本月選物那格是「3／12」，不是同一款留在原地。
+ */
+function HeroFontScaleSlider({
+  value,
+  onChange,
+}: {
+  value: number;
+  onChange: (v: number) => void;
+}) {
+  return (
+    <>
+      <input
+        type="range"
+        min={HERO_FONT_SCALE_MIN}
+        max={HERO_FONT_SCALE_MAX}
+        step="0.05"
+        value={value}
+        onChange={(e) => onChange(parseFloat(e.target.value))}
+        className="w-full"
+      />
+      <div className="flex justify-between text-[10px] text-stone-500">
+        <span>小</span>
+        <span>標準 1.0x</span>
+        <span>大</span>
+      </div>
+    </>
   );
 }
 
