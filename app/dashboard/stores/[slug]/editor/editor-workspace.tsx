@@ -3942,22 +3942,11 @@ export function EditorWorkspace({
               />
             </Field>
             <Field label="排幾欄">
-              <div className="grid grid-cols-3 gap-1.5">
-                {([2, 3, 4] as const).map((n) => (
-                  <button
-                    key={n}
-                    type="button"
-                    onClick={() => updateLayout({ collectionsColumns: n })}
-                    className={`rounded-lg border py-2 text-xs transition ${
-                      theme.layout.collectionsColumns === n
-                        ? "border-emerald-500 bg-emerald-50 text-emerald-900"
-                        : "border-stone-200 text-stone-600 hover:border-stone-400"
-                    }`}
-                  >
-                    {n} 欄
-                  </button>
-                ))}
-              </div>
+              <ColumnsGrid
+                choices={[2, 3, 4] as const}
+                selected={theme.layout.collectionsColumns}
+                onSelect={(n) => updateLayout({ collectionsColumns: n })}
+              />
             </Field>
             <Field label="卡片按鈕文字">
               <input
@@ -4161,22 +4150,11 @@ export function EditorWorkspace({
               </span>
             </button>
             <Field label="排幾欄">
-              <div className="grid grid-cols-3 gap-1.5">
-                {([2, 3, 4] as const).map((n) => (
-                  <button
-                    key={n}
-                    type="button"
-                    onClick={() => updateLayout({ statsColumns: n })}
-                    className={`rounded-lg border py-2 text-xs transition ${
-                      theme.layout.statsColumns === n
-                        ? "border-emerald-500 bg-emerald-50 text-emerald-900"
-                        : "border-stone-200 text-stone-600 hover:border-stone-400"
-                    }`}
-                  >
-                    {n} 欄
-                  </button>
-                ))}
-              </div>
+              <ColumnsGrid
+                choices={[2, 3, 4] as const}
+                selected={theme.layout.statsColumns}
+                onSelect={(n) => updateLayout({ statsColumns: n })}
+              />
               <p className={noteClass}>
                 桌機排幾欄。手機一律 2 欄不受影響。
               </p>
@@ -4423,22 +4401,11 @@ export function EditorWorkspace({
               {theme.layout.gallery.length}/12 張 · 圖庫由 Pexels 提供商用免費
             </p>
             <Field label="排幾欄">
-              <div className="grid grid-cols-3 gap-1.5">
-                {([2, 3, 4] as const).map((n) => (
-                  <button
-                    key={n}
-                    type="button"
-                    onClick={() => updateLayout({ galleryColumns: n })}
-                    className={`rounded-lg border py-2 text-xs transition ${
-                      theme.layout.galleryColumns === n
-                        ? "border-emerald-500 bg-emerald-50 text-emerald-900"
-                        : "border-stone-200 text-stone-600 hover:border-stone-400"
-                    }`}
-                  >
-                    {n} 欄
-                  </button>
-                ))}
-              </div>
+              <ColumnsGrid
+                choices={[2, 3, 4] as const}
+                selected={theme.layout.galleryColumns}
+                onSelect={(n) => updateLayout({ galleryColumns: n })}
+              />
               <p className={noteClass}>
                 桌機排幾欄。手機一律 2 欄不受影響。
               </p>
@@ -4655,22 +4622,11 @@ export function EditorWorkspace({
               </span>
             </button>
             <Field label="排幾欄">
-              <div className="grid grid-cols-3 gap-1.5">
-                {([2, 3, 4] as const).map((n) => (
-                  <button
-                    key={n}
-                    type="button"
-                    onClick={() => updateLayout({ testimonialsColumns: n })}
-                    className={`rounded-lg border py-2 text-xs transition ${
-                      theme.layout.testimonialsColumns === n
-                        ? "border-emerald-500 bg-emerald-50 text-emerald-900"
-                        : "border-stone-200 text-stone-600 hover:border-stone-400"
-                    }`}
-                  >
-                    {n} 欄
-                  </button>
-                ))}
-              </div>
+              <ColumnsGrid
+                choices={[2, 3, 4] as const}
+                selected={theme.layout.testimonialsColumns}
+                onSelect={(n) => updateLayout({ testimonialsColumns: n })}
+              />
               <p className={noteClass}>
                 桌機排幾欄。手機一律 1 欄不受影響。
               </p>
@@ -4744,22 +4700,11 @@ export function EditorWorkspace({
                 </div>
               </Field>
               <Field label="排幾欄">
-                <div className="grid grid-cols-3 gap-1.5">
-                  {([2, 3, 4] as const).map((n) => (
-                    <button
-                      key={n}
-                      type="button"
-                      onClick={() => updateLayout({ featuredColumns: n })}
-                      className={`rounded-lg border py-2 text-xs transition ${
-                        theme.layout.featuredColumns === n
-                          ? "border-emerald-500 bg-emerald-50 text-emerald-900"
-                          : "border-stone-200 text-stone-600 hover:border-stone-400"
-                      }`}
-                    >
-                      {n} 欄
-                    </button>
-                  ))}
-                </div>
+                <ColumnsGrid
+                  choices={[2, 3, 4] as const}
+                  selected={theme.layout.featuredColumns}
+                  onSelect={(n) => updateLayout({ featuredColumns: n })}
+                />
               </Field>
               <p className="text-xs text-stone-500 leading-relaxed">
                 商品本身在「商品」頁編輯，這裡只控制首頁顯示幾個 / 怎麼排。
@@ -4885,22 +4830,11 @@ export function EditorWorkspace({
               })()}
             </div>
             <Field label="排幾欄">
-              <div className="grid grid-cols-2 gap-1.5">
-                {([2, 3] as const).map((n) => (
-                  <button
-                    key={n}
-                    type="button"
-                    onClick={() => updateLayout({ journalColumns: n })}
-                    className={`rounded-lg border py-2 text-xs transition ${
-                      theme.layout.journalColumns === n
-                        ? "border-emerald-500 bg-emerald-50 text-emerald-900"
-                        : "border-stone-200 text-stone-600 hover:border-stone-400"
-                    }`}
-                  >
-                    {n} 欄
-                  </button>
-                ))}
-              </div>
+              <ColumnsGrid
+                choices={[2, 3] as const}
+                selected={theme.layout.journalColumns}
+                onSelect={(n) => updateLayout({ journalColumns: n })}
+              />
               <p className={noteClass}>
                 桌機排幾欄。固定三張卡，4 欄一定留空格所以不開。手機一律 1 欄不受影響。
               </p>
@@ -8098,6 +8032,42 @@ function ClearButton({ onClick }: { onClick: () => void }) {
     >
       清除
     </button>
+  );
+}
+
+/**
+ * 「排幾欄」那格：數字幾選一。
+ * 之前 6 格（選物提案／數字／相簿／好評／本月選物／慢讀）各抄一份一模一樣的
+ * <div grid>＋<button>，改一格（例如選中色要換）另外 5 格不會跟著動，所以收成一支。
+ * 沒走 OptionGrid 是因為那支吃字串選項而且會多輸出 aria-pressed，這裡吃數字、
+ * 輸出跟原本一模一樣。欄數幾格就排幾欄（[2,3,4] 三欄、[2,3] 兩欄）。
+ */
+function ColumnsGrid<N extends number>({
+  choices,
+  selected,
+  onSelect,
+}: {
+  choices: ReadonlyArray<N>;
+  selected: number;
+  onSelect: (n: N) => void;
+}) {
+  return (
+    <div className={choices.length === 2 ? "grid grid-cols-2 gap-1.5" : "grid grid-cols-3 gap-1.5"}>
+      {choices.map((n) => (
+        <button
+          key={n}
+          type="button"
+          onClick={() => onSelect(n)}
+          className={`rounded-lg border py-2 text-xs transition ${
+            selected === n
+              ? "border-emerald-500 bg-emerald-50 text-emerald-900"
+              : "border-stone-200 text-stone-600 hover:border-stone-400"
+          }`}
+        >
+          {n} 欄
+        </button>
+      ))}
+    </div>
   );
 }
 
