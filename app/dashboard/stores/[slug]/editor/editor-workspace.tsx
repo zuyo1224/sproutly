@@ -4041,7 +4041,7 @@ export function EditorWorkspace({
                         updateListItem<StatItem>("stats", i, { value: e.target.value })
                       }
                       placeholder="2019 / 250+ / 1500"
-                      className="w-full rounded border border-stone-200 px-2 py-1.5 text-sm font-medium font-mono"
+                      className={`${listInputClass} font-medium font-mono`}
                     />
                     <input
                       type="text"
@@ -4050,7 +4050,7 @@ export function EditorWorkspace({
                         updateListItem<StatItem>("stats", i, { label: e.target.value })
                       }
                       placeholder="標籤（成立年份 / 植物種數 / 客人累計）"
-                      className="w-full rounded border border-stone-200 px-2 py-1.5 text-sm"
+                      className={listInputClass}
                     />
                   </ListItemCard>
                 ))}
@@ -4111,7 +4111,7 @@ export function EditorWorkspace({
                         updateListItem<PartnerItem>("partners", i, { name: e.target.value })
                       }
                       placeholder="名稱（給無障礙 alt 用）"
-                      className="w-full rounded border border-stone-200 px-2 py-1.5 text-sm"
+                      className={listInputClass}
                     />
                     <div className="flex gap-1.5">
                       <input
@@ -4259,7 +4259,7 @@ export function EditorWorkspace({
                         })
                       }
                       placeholder="圖說 / caption（選填）"
-                      className="w-full rounded border border-stone-200 px-2 py-1.5 text-sm"
+                      className={listInputClass}
                     />
                   </ListItemCard>
                 ))}
@@ -4350,7 +4350,7 @@ export function EditorWorkspace({
                         updateFaq(i, { question: e.target.value })
                       }
                       placeholder="問題..."
-                      className="w-full rounded border border-stone-200 px-2 py-1.5 text-sm font-medium"
+                      className={`${listInputClass} font-medium`}
                     />
                     <textarea
                       value={f.answer}
@@ -4359,7 +4359,7 @@ export function EditorWorkspace({
                       }
                       rows={3}
                       placeholder="答案... 換行用 Enter"
-                      className="w-full rounded border border-stone-200 px-2 py-1.5 text-sm resize-none"
+                      className={`${listInputClass} resize-none`}
                     />
                   </ListItemCard>
                 ))}
@@ -4443,7 +4443,7 @@ export function EditorWorkspace({
                       }
                       rows={3}
                       placeholder="顧客評語..."
-                      className="w-full rounded border border-stone-200 px-2 py-1.5 text-sm resize-none"
+                      className={`${listInputClass} resize-none`}
                     />
                     <input
                       type="text"
@@ -4452,7 +4452,7 @@ export function EditorWorkspace({
                         updateTestimonial(i, { author: e.target.value })
                       }
                       placeholder="顧客名字"
-                      className="w-full rounded border border-stone-200 px-2 py-1.5 text-sm"
+                      className={listInputClass}
                     />
                     <input
                       type="text"
@@ -4463,7 +4463,7 @@ export function EditorWorkspace({
                         })
                       }
                       placeholder="頭銜或描述（選填）"
-                      className="w-full rounded border border-stone-200 px-2 py-1.5 text-sm"
+                      className={listInputClass}
                     />
                   </ListItemCard>
                 ))}
@@ -7763,7 +7763,7 @@ function PanelSection({
  * 編輯器裡文字框／下拉選單的共用 class。之前 44 個 input／select／textarea 各抄一份
  * 一模一樣的字串，改一格（例如圓角 rounded-lg 要換、框線色要換）另外 43 格不會跟著動，
  * 所以收成常數；textarea 多一個 resize-none 不讓使用者拉大小。
- * 色碼那種 `flex-1 … font-mono` 的窄框、清單裡 `px-2 py-1.5` 的小框不是同一包，留在原地。
+ * 色碼那種 `flex-1 … font-mono` 的窄框（hexInputClass）、清單裡 `px-2 py-1.5` 的小框（listInputClass）不是同一包，各自另收。
  */
 const inputClass = "w-full rounded-lg border border-stone-200 px-3 py-2 text-sm";
 const textareaClass = `${inputClass} resize-none`;
@@ -7783,6 +7783,11 @@ const hintClass = "text-[10px] text-stone-500 mt-1";
 // 跟 hintClass 的 10px 是兩款，故意不統一字級（統一就是改到畫面）；
 // 沒帶 mt-1、帶 mt-2／mb-3／-mt-2 的那 7 處間距各自不同，不是同一包，留在原地。
 const noteClass = "mt-1 text-[11px] text-stone-500 leading-relaxed";
+// 清單區塊（數字／logo／相簿／FAQ／評語）每一筆卡片裡的小文字框，9 處各抄一份一模一樣的 class，
+// 改一格（例如圓角或內距要換）其他 8 處不會跟著動，所以收成常數。
+// 跟 inputClass 差在 rounded（不是 rounded-lg）與 px-2 py-1.5（塞在卡片裡要小一號），不是同一包；
+// 有的多帶 font-medium／font-mono／resize-none，在呼叫端用樣板字串接在後面。
+const listInputClass = "w-full rounded border border-stone-200 px-2 py-1.5 text-sm";
 
 function Field({
   label,
