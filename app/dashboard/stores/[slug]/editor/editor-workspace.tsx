@@ -4033,18 +4033,10 @@ export function EditorWorkspace({
                     key={i}
                     className="rounded-lg border border-stone-200 p-3 space-y-2 bg-stone-50/50"
                   >
-                    <div className="flex justify-between items-center">
-                      <p className="text-[10px] uppercase tracking-wider text-stone-500">
-                        #{i + 1}
-                      </p>
-                      <button
-                        type="button"
-                        onClick={() => removeListItem("stats", i)}
-                        className="text-xs text-red-600 hover:text-red-800"
-                      >
-                        移除
-                      </button>
-                    </div>
+                    <ListItemHeader
+                      label={`#${i + 1}`}
+                      onRemove={() => removeListItem("stats", i)}
+                    />
                     <input
                       type="text"
                       value={s.value}
@@ -4114,18 +4106,10 @@ export function EditorWorkspace({
                     key={i}
                     className="rounded-lg border border-stone-200 p-3 space-y-2 bg-stone-50/50"
                   >
-                    <div className="flex justify-between items-center">
-                      <p className="text-[10px] uppercase tracking-wider text-stone-500">
-                        #{i + 1}
-                      </p>
-                      <button
-                        type="button"
-                        onClick={() => removeListItem("partners", i)}
-                        className="text-xs text-red-600 hover:text-red-800"
-                      >
-                        移除
-                      </button>
-                    </div>
+                    <ListItemHeader
+                      label={`#${i + 1}`}
+                      onRemove={() => removeListItem("partners", i)}
+                    />
                     <input
                       type="text"
                       value={p.name}
@@ -4248,18 +4232,10 @@ export function EditorWorkspace({
                     key={i}
                     className="rounded-lg border border-stone-200 p-3 space-y-2 bg-stone-50/50"
                   >
-                    <div className="flex justify-between items-center">
-                      <p className="text-[10px] uppercase tracking-wider text-stone-500">
-                        #{i + 1}
-                      </p>
-                      <button
-                        type="button"
-                        onClick={() => removeListItem("gallery", i)}
-                        className="text-xs text-red-600 hover:text-red-800"
-                      >
-                        移除
-                      </button>
-                    </div>
+                    <ListItemHeader
+                      label={`#${i + 1}`}
+                      onRemove={() => removeListItem("gallery", i)}
+                    />
                     <input
                       type="text"
                       value={g.url}
@@ -4375,18 +4351,10 @@ export function EditorWorkspace({
                     key={i}
                     className="rounded-lg border border-stone-200 p-3 space-y-2 bg-stone-50/50"
                   >
-                    <div className="flex justify-between items-center">
-                      <p className="text-[10px] uppercase tracking-wider text-stone-500">
-                        FAQ #{i + 1}
-                      </p>
-                      <button
-                        type="button"
-                        onClick={() => removeFaq(i)}
-                        className="text-xs text-red-600 hover:text-red-800"
-                      >
-                        移除
-                      </button>
-                    </div>
+                    <ListItemHeader
+                      label={`FAQ #${i + 1}`}
+                      onRemove={() => removeFaq(i)}
+                    />
                     <input
                       type="text"
                       value={f.question}
@@ -4479,18 +4447,10 @@ export function EditorWorkspace({
                     key={i}
                     className="rounded-lg border border-stone-200 p-3 space-y-2 bg-stone-50/50"
                   >
-                    <div className="flex justify-between items-center">
-                      <p className="text-[10px] uppercase tracking-wider text-stone-500">
-                        評語 #{i + 1}
-                      </p>
-                      <button
-                        type="button"
-                        onClick={() => removeTestimonial(i)}
-                        className="text-xs text-red-600 hover:text-red-800"
-                      >
-                        移除
-                      </button>
-                    </div>
+                    <ListItemHeader
+                      label={`評語 #${i + 1}`}
+                      onRemove={() => removeTestimonial(i)}
+                    />
                     <textarea
                       value={t.quote}
                       onChange={(e) =>
@@ -7905,6 +7865,35 @@ function ClearButton({ onClick }: { onClick: () => void }) {
     >
       清除
     </button>
+  );
+}
+
+/**
+ * 清單區塊每一筆卡片最上面那一列：左邊「#1」序號小標、右邊紅字「移除」
+ * （數字／logo／相簿／FAQ／評語 5 處）。之前 5 處各抄一份一模一樣的
+ * <div>＋<p>＋<button>，改一格（例如紅色深淺或字級要換）另外 4 處不會跟著動，
+ * 所以收成一支。label 由呼叫端組好（有的前面帶「FAQ 」「評語 」），輸出跟原本一樣。
+ */
+function ListItemHeader({
+  label,
+  onRemove,
+}: {
+  label: string;
+  onRemove: () => void;
+}) {
+  return (
+    <div className="flex justify-between items-center">
+      <p className="text-[10px] uppercase tracking-wider text-stone-500">
+        {label}
+      </p>
+      <button
+        type="button"
+        onClick={onRemove}
+        className="text-xs text-red-600 hover:text-red-800"
+      >
+        移除
+      </button>
+    </div>
   );
 }
 
