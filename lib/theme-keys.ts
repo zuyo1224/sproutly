@@ -42,11 +42,21 @@ export function isAlignX(value: unknown): value is AlignX {
 // 滿版圖文字段、各區段「內容欄位置」四格以前各自手寫一份一模一樣的陣列，改一格的字
 // （例如「靠左」改「貼左」）另外三格不會跟著動，四格是同一個問題（一道欄擺哪邊）的
 // 四個位置，字要一樣。順序照 ALIGN_X_KEYS。主標／標題對齊那幾格用的是短字「左 / 置中 / 右」
-// 與帶「預設 / 同標題」第四檔的版本，不是這張表。
+// 與帶「預設 / 同標題」第四檔的版本，不是這張表，另收在下面的 ALIGN_X_SHORT_OPTIONS。
 export const ALIGN_X_OPTIONS = [
   { v: "left", label: "靠左" },
   { v: "center", label: "置中" },
   { v: "right", label: "靠右" },
+] as const satisfies ReadonlyArray<{ v: AlignX; label: string }>;
+
+// 上面那張表的短字版「左 / 置中 / 右」。Hero 主標對齊、副標對齊、各區段「標題對齊」「內文對齊」
+// 四格以前各自手寫一份，改一格的字其他三格不會跟著動。副標與內文那兩格前面各多一檔
+// （「預設」inherit／「同標題」auto），呼叫端用 [第一檔, ...ALIGN_X_SHORT_OPTIONS] 接上去，
+// 三檔的字仍只有這一份正本。順序照 ALIGN_X_KEYS。
+export const ALIGN_X_SHORT_OPTIONS = [
+  { v: "left", label: "左" },
+  { v: "center", label: "置中" },
+  { v: "right", label: "右" },
 ] as const satisfies ReadonlyArray<{ v: AlignX; label: string }>;
 
 // Hero 文字的三張「三檔」清單：粗細 normal/medium/bold、字距 tight/normal/wide、

@@ -63,6 +63,7 @@ import { contrastRatio, relativeLuminance } from "@/lib/color-contrast";
 import { HERO_GAP_OPTIONS, HERO_PAD_X_OPTIONS, HERO_PAD_Y_OPTIONS, HERO_SPLIT_PAD_OPTIONS, type LayoutChoice, type LayoutColumns } from "@/lib/theme-layout-choices";
 import {
   ALIGN_X_OPTIONS,
+  ALIGN_X_SHORT_OPTIONS,
   HERO_STYLE_KEYS,
   isHeroImageSide,
   isHeroStyle,
@@ -2257,9 +2258,7 @@ export function EditorWorkspace({
                     cols={4}
                     options={[
                       { v: "inherit", label: "預設" },
-                      { v: "left", label: "左" },
-                      { v: "center", label: "置中" },
-                      { v: "right", label: "右" },
+                      ...ALIGN_X_SHORT_OPTIONS,
                     ] as const}
                     selected={theme.layout.heroSubtitleAlign}
                     onSelect={(v) => updateLayout({ heroSubtitleAlign: v })}
@@ -2558,11 +2557,7 @@ export function EditorWorkspace({
             </Field>
             <Field label="主標對齊">
               <OptionGrid
-                options={[
-                  { v: "left", label: "左" },
-                  { v: "center", label: "置中" },
-                  { v: "right", label: "右" },
-                ] as const}
+                options={ALIGN_X_SHORT_OPTIONS}
                 selected={theme.layout.heroTaglineAlign}
                 onSelect={(v) => updateLayout({ heroTaglineAlign: v })}
               />
@@ -5311,11 +5306,7 @@ export function EditorWorkspace({
               <SectionGroupLabel label="常用" />
               <Field label="標題對齊">
                 <OptionGrid
-                  options={[
-                    { v: "left", label: "左" },
-                    { v: "center", label: "置中" },
-                    { v: "right", label: "右" },
-                  ] as const}
+                  options={ALIGN_X_SHORT_OPTIONS}
                   selected={align}
                   onSelect={(v) => patch({ headingAlign: v })}
                 />
@@ -5325,9 +5316,7 @@ export function EditorWorkspace({
                   cols={4}
                   options={[
                     { v: "auto", label: "同標題" },
-                    { v: "left", label: "左" },
-                    { v: "center", label: "置中" },
-                    { v: "right", label: "右" },
+                    ...ALIGN_X_SHORT_OPTIONS,
                   ] as const}
                   selected={bodyAlign ?? "auto"}
                   onSelect={(v) => patch({ bodyAlign: v })}
