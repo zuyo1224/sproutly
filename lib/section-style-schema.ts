@@ -1404,6 +1404,17 @@ export const SECTION_LINE_WEIGHT_OPTIONS = [
   { v: "thick", label: "粗" },
 ] as const satisfies ReadonlyArray<{ v: (typeof SECTION_STYLE_ENUMS)["headingRuleWeight"][number]; label: string }>;
 
+// 「線型」三顆按鈕的表（實線／虛線／點線）：分隔線線型、標題底線線型、卡片外框線型、
+// 側邊色條線型、卡片框線樣式五格共用，以前五格各手寫一份逐字相同的陣列，改一格的字另外四格
+// 不會跟著動。五欄合法值一字不差（都是 solid/dashed/dotted），這裡拿 dividerStyle 當型別代表，
+// 測試會逐欄對。這張表沒有「跟預設」那顆：solid 是「照原本的」但字寫「實線」，跟上面三張的
+// 中性檔命名法不同，所以不併進那條測試。
+export const SECTION_LINE_STYLE_OPTIONS = [
+  { v: "solid", label: "實線" },
+  { v: "dashed", label: "虛線" },
+  { v: "dotted", label: "點線" },
+] as const satisfies ReadonlyArray<{ v: (typeof SECTION_STYLE_ENUMS)["dividerStyle"][number]; label: string }>;
+
 export const SECTION_BG_STRENGTH_OPTIONS = [
   { v: "faint", label: "更淡" },
   { v: "default", label: "跟預設" },

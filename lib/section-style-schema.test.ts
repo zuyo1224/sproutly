@@ -28,6 +28,7 @@ import {
   SECTION_GAP_OPTIONS,
   SECTION_SCALE_OPTIONS,
   SECTION_WEIGHT_OPTIONS,
+  SECTION_LINE_STYLE_OPTIONS,
   SECTION_LINE_TONE_OPTIONS,
   SECTION_LINE_WEIGHT_OPTIONS,
   SECTION_BG_STRENGTH_OPTIONS,
@@ -411,6 +412,22 @@ describe("SECTION_LINE_TONE_OPTIONS／SECTION_LINE_WEIGHT_OPTIONS／SECTION_BG_S
       for (const l of labels) assert.ok(l.length > 0);
       assert.equal(new Set(labels).size, labels.length);
     }
+  });
+});
+
+describe("SECTION_LINE_STYLE_OPTIONS", () => {
+  it("v 跟五個線型欄的合法值同一組同一個順序，「實線」那顆對到每欄的中性值 solid，label 有字且不重複", () => {
+    const keys = ["dividerStyle", "headingRuleStyle", "outlineStyle", "accentBarStyle", "cardBorderStyle"] as const;
+    for (const key of keys) {
+      assert.deepEqual(SECTION_LINE_STYLE_OPTIONS.map((o) => o.v), [...SECTION_STYLE_ENUMS[key]]);
+      assert.equal(SECTION_STYLE_NEUTRAL_VALUES[key], "solid");
+    }
+    const hit = SECTION_LINE_STYLE_OPTIONS.find((o) => o.label === "實線");
+    assert.ok(hit);
+    assert.equal(hit.v, "solid");
+    const labels = SECTION_LINE_STYLE_OPTIONS.map((o) => o.label);
+    for (const l of labels) assert.ok(l.length > 0);
+    assert.equal(new Set(labels).size, labels.length);
   });
 });
 
