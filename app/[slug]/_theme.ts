@@ -8,6 +8,7 @@ import {
   clampFreePos,
 } from "@/lib/theme-scale";
 import { normalizeHexColor } from "@/lib/hex-color";
+import { clampOr } from "@/lib/clamp";
 import { isFiniteNumber } from "@/lib/is-finite-number";
 import { isPlainObject } from "@/lib/is-plain-object";
 import { pickLayoutChoice, pickLayoutColumns } from "@/lib/theme-layout-choices";
@@ -1314,95 +1315,38 @@ function resolveLayout(raw: unknown): StoreTheme["layout"] {
     // 更早存進 DB、沒經過檢查的舊值也不會變成任意網站的 iframe。
     mapEmbedUrl:
       typeof l.mapEmbedUrl === "string" ? cleanMapEmbedUrl(l.mapEmbedUrl) : null,
-    heroZoom: (() => {
-      const z = l.heroZoom;
-      if (!isFiniteNumber(z)) return 1.0;
-      return clampHeroZoom(z);
-    })(),
+    heroZoom: clampOr(l.heroZoom, clampHeroZoom, 1.0),
     // Per-viewport zoom — 預設不同 viewport 套不同值修米色 strip
     // 沒設定就 fallback：若 legacy heroZoom 有值就用它，否則套各 viewport 預設
-    heroZoomMobile: (() => {
-      const z = l.heroZoomMobile;
-      if (isFiniteNumber(z)) {
-        return clampHeroZoom(z);
-      }
-      const fallback = l.heroZoom;
-      if (isFiniteNumber(fallback)) {
-        return clampHeroZoom(fallback);
-      }
-      return 1.5;
-    })(),
-    heroZoomTablet: (() => {
-      const z = l.heroZoomTablet;
-      if (isFiniteNumber(z)) {
-        return clampHeroZoom(z);
-      }
-      const fallback = l.heroZoom;
-      if (isFiniteNumber(fallback)) {
-        return clampHeroZoom(fallback);
-      }
-      return 1.3;
-    })(),
-    heroZoomDesktop: (() => {
-      const z = l.heroZoomDesktop;
-      if (isFiniteNumber(z)) {
-        return clampHeroZoom(z);
-      }
-      const fallback = l.heroZoom;
-      if (isFiniteNumber(fallback)) {
-        return clampHeroZoom(fallback);
-      }
-      return 1.0;
-    })(),
-    heroTaglineFontScale: (() => {
-      const v = l.heroTaglineFontScale;
-      if (!isFiniteNumber(v)) return 1.0;
-      return clampHeroFontScale(v);
-    })(),
-    heroTaglineFontScaleMobile: (() => {
-      const v = l.heroTaglineFontScaleMobile;
-      if (!isFiniteNumber(v)) return null;
-      return clampHeroFontScale(v);
-    })(),
+    // （內層 clampOr 就是那個 fallback：legacy 夾過的值，沒有就各裝置預設）
+    heroZoomMobile: clampOr(l.heroZoomMobile, clampHeroZoom, clampOr(l.heroZoom, clampHeroZoom, 1.5)),
+    heroZoomTablet: clampOr(l.heroZoomTablet, clampHeroZoom, clampOr(l.heroZoom, clampHeroZoom, 1.3)),
+    heroZoomDesktop: clampOr(l.heroZoomDesktop, clampHeroZoom, clampOr(l.heroZoom, clampHeroZoom, 1.0)),
+    heroTaglineFontScale: clampOr(l.heroTaglineFontScale, clampHeroFontScale, 1.0),
+    heroTaglineFontScaleMobile: clampOr(l.heroTaglineFontScaleMobile, clampHeroFontScale, null),
     heroTaglineColor: normalizeHexColor(l.heroTaglineColor),
     heroTaglineAlign: isAlignX(l.heroTaglineAlign) ? l.heroTaglineAlign : "left",
     heroTaglineWeight: isFontWeight(l.heroTaglineWeight) ? l.heroTaglineWeight : "normal",
     heroTaglineTracking: isTracking(l.heroTaglineTracking) ? l.heroTaglineTracking : "normal",
     heroTaglineLeading: isLeading(l.heroTaglineLeading) ? l.heroTaglineLeading : "normal",
-    heroEyebrowFontScale: (() => {
-      const v = l.heroEyebrowFontScale;
-      if (!isFiniteNumber(v)) return 1.0;
-      return clampHeroFontScale(v);
-    })(),
+    heroEyebrowFontScale: clampOr(l.heroEyebrowFontScale, clampHeroFontScale, 1.0),
     heroEyebrowTracking: isTracking(l.heroEyebrowTracking) ? l.heroEyebrowTracking : "normal",
     heroEyebrowColor: normalizeHexColor(l.heroEyebrowColor),
     heroEyebrowCase: isTextCase(l.heroEyebrowCase) ? l.heroEyebrowCase : "upper",
     heroEyebrowWeight: isFontWeight(l.heroEyebrowWeight) ? l.heroEyebrowWeight : "normal",
     heroEyebrowLeading: isLeading(l.heroEyebrowLeading) ? l.heroEyebrowLeading : "normal",
-    heroSubtitleFontScale: (() => {
-      const v = l.heroSubtitleFontScale;
-      if (!isFiniteNumber(v)) return 1.0;
-      return clampHeroFontScale(v);
-    })(),
+    heroSubtitleFontScale: clampOr(l.heroSubtitleFontScale, clampHeroFontScale, 1.0),
     heroSubtitleColor: normalizeHexColor(l.heroSubtitleColor),
     heroSubtitleAlign: pickLayoutChoice("heroSubtitleAlign", l.heroSubtitleAlign),
     heroSubtitleWeight: isFontWeight(l.heroSubtitleWeight) ? l.heroSubtitleWeight : "normal",
     heroSubtitleTracking: isTracking(l.heroSubtitleTracking) ? l.heroSubtitleTracking : "normal",
     heroSubtitleLeading: isLeading(l.heroSubtitleLeading) ? l.heroSubtitleLeading : "normal",
-    heroCtaFontScale: (() => {
-      const v = l.heroCtaFontScale;
-      if (!isFiniteNumber(v)) return 1.0;
-      return clampHeroFontScale(v);
-    })(),
+    heroCtaFontScale: clampOr(l.heroCtaFontScale, clampHeroFontScale, 1.0),
     heroCtaTracking: isTracking(l.heroCtaTracking) ? l.heroCtaTracking : "normal",
     heroCtaCase: pickLayoutChoice("heroCtaCase", l.heroCtaCase),
     heroCtaWeight: pickLayoutChoice("heroCtaWeight", l.heroCtaWeight),
     heroCtaColor: normalizeHexColor(l.heroCtaColor),
-    heroBylineFontScale: (() => {
-      const v = l.heroBylineFontScale;
-      if (!isFiniteNumber(v)) return 1.0;
-      return clampHeroFontScale(v);
-    })(),
+    heroBylineFontScale: clampOr(l.heroBylineFontScale, clampHeroFontScale, 1.0),
     heroBylineColor: normalizeHexColor(l.heroBylineColor),
     heroBylineTracking: isTracking(l.heroBylineTracking) ? l.heroBylineTracking : "normal",
     heroBylineCase: isTextCase(l.heroBylineCase) ? l.heroBylineCase : "upper",
@@ -1458,20 +1402,12 @@ function resolveLayout(raw: unknown): StoreTheme["layout"] {
     heroHeight: pickLayoutChoice("heroHeight", l.heroHeight),
     heroHeightMobile: pickLayoutChoice("heroHeightMobile", l.heroHeightMobile),
     heroFullTextAlignY: pickLayoutChoice("heroFullTextAlignY", l.heroFullTextAlignY),
-    fontScale: (() => {
-      const v = l.fontScale;
-      if (!isFiniteNumber(v)) return 1.0;
-      return clampFontScale(v);
-    })(),
+    fontScale: clampOr(l.fontScale, clampFontScale, 1.0),
     sectionPaddingScale: pickLayoutChoice("sectionPaddingScale", l.sectionPaddingScale),
     buttonRadius: pickLayoutChoice("buttonRadius", l.buttonRadius),
     footerBg: normalizeHexColor(l.footerBg),
     footerText: normalizeHexColor(l.footerText),
-    featuredCount: (() => {
-      const v = l.featuredCount;
-      if (!isFiniteNumber(v)) return 6;
-      return clampFeaturedCount(v);
-    })(),
+    featuredCount: clampOr(l.featuredCount, clampFeaturedCount, 6),
     featuredColumns: pickLayoutColumns("featuredColumns", l.featuredColumns),
     collectionsColumns: pickLayoutColumns("collectionsColumns", l.collectionsColumns),
     testimonialsColumns: pickLayoutColumns("testimonialsColumns", l.testimonialsColumns),
