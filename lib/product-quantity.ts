@@ -10,6 +10,8 @@
 // - isValidQty：後端「不信任前端傳來的數量」用的驗證——必須是落在範圍內的整數，
 //   兩個結帳後端原本各自寫的 `!Number.isInteger(x) || x < 1 || x > 99` 就是這條，
 //   收成同一份、輸出零變化。
+import { clamp } from "./clamp.ts";
+
 export const QTY_MIN = 1;
 export const QTY_MAX = 99;
 
@@ -29,5 +31,5 @@ export function isValidQty(qty: unknown): qty is number {
 export function clampQty(v: unknown): number | null {
   const n = Math.floor(Number(v));
   if (Number.isNaN(n)) return null;
-  return Math.min(Math.max(n, QTY_MIN), QTY_MAX);
+  return clamp(n, QTY_MIN, QTY_MAX);
 }

@@ -10,6 +10,7 @@
 //
 // 收進這份：每組一對 MIN／MAX 常數 + 一支 clamp helper。slider 的 min／max 改吃常數，
 // 兩處夾值改呼叫對應 helper，範圍真正只剩這一處。
+import { clamp } from "./clamp.ts";
 
 // Hero 圖片縮放（修米色 strip 用的 per-viewport zoom）
 export const HERO_ZOOM_MIN = 1.0;
@@ -28,22 +29,22 @@ export const FEATURED_COUNT_MIN = 3;
 export const FEATURED_COUNT_MAX = 12;
 
 // 以下 helper 都假設呼叫端已先確認過 v 是有限數（typeof === "number" && Number.isFinite）；
-// 只負責把它夾進範圍，輸出與原本各處手寫的 Math.max/min 逐字相同。
+// 只負責把它夾進範圍，夾法走 lib/clamp.ts 的 clamp，輸出與原本各處手寫的 Math.max/min 逐字相同。
 export function clampHeroZoom(v: number): number {
-  return Math.max(HERO_ZOOM_MIN, Math.min(HERO_ZOOM_MAX, v));
+  return clamp(v, HERO_ZOOM_MIN, HERO_ZOOM_MAX);
 }
 
 export function clampHeroFontScale(v: number): number {
-  return Math.max(HERO_FONT_SCALE_MIN, Math.min(HERO_FONT_SCALE_MAX, v));
+  return clamp(v, HERO_FONT_SCALE_MIN, HERO_FONT_SCALE_MAX);
 }
 
 export function clampFontScale(v: number): number {
-  return Math.max(FONT_SCALE_MIN, Math.min(FONT_SCALE_MAX, v));
+  return clamp(v, FONT_SCALE_MIN, FONT_SCALE_MAX);
 }
 
 // featuredCount 是整數張數，夾值前先 Math.floor 去掉小數（原本各處也都這樣寫）。
 export function clampFeaturedCount(v: number): number {
-  return Math.max(FEATURED_COUNT_MIN, Math.min(FEATURED_COUNT_MAX, Math.floor(v)));
+  return clamp(Math.floor(v), FEATURED_COUNT_MIN, FEATURED_COUNT_MAX);
 }
 
 // 自由定位（freePositions）的座標是 0-1 的相對比例（左/上 0、右/下 1），
@@ -53,5 +54,5 @@ export function clampFeaturedCount(v: number): number {
 // 新路徑與 legacy migrate 各一組 x／y）。三邊夾的範圍一定要一致，否則拖到的位置、
 // 存進去的、畫出來的會對不上。收成同一支，每軸呼叫一次。
 export function clampFreePos(v: number): number {
-  return Math.max(0, Math.min(1, v));
+  return clamp(v, 0, 1);
 }

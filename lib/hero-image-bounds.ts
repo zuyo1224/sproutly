@@ -11,6 +11,7 @@
 // 存的是百分比不是像素：換了 CDN 尺寸、縮圖、retina 都不影響。
 
 import { isFiniteNumber } from "./is-finite-number.ts";
+import { clamp } from "./clamp.ts";
 
 export type HeroImageBounds = {
   /** 偵測時的照片網址。跟現在的 heroUrl 對不上就當沒存過（商家換了圖）。 */
@@ -82,7 +83,7 @@ export const HERO_SPLIT_PHOTO_ASPECT_MIN = 0.5;
 export const HERO_SPLIT_PHOTO_ASPECT_MAX = 3;
 
 export function clampHeroSplitPhotoAspect(fileAspect: number): number {
-  return Math.min(HERO_SPLIT_PHOTO_ASPECT_MAX, Math.max(HERO_SPLIT_PHOTO_ASPECT_MIN, fileAspect));
+  return clamp(fileAspect, HERO_SPLIT_PHOTO_ASPECT_MIN, HERO_SPLIT_PHOTO_ASPECT_MAX);
 }
 
 /**
@@ -180,7 +181,7 @@ export const HERO_PREVIEW_ASPECT_MIN = 0.75;
 export const HERO_PREVIEW_ASPECT_MAX = 3;
 
 export function clampHeroPreviewAspect(aspect: number): number {
-  return Math.min(HERO_PREVIEW_ASPECT_MAX, Math.max(HERO_PREVIEW_ASPECT_MIN, aspect));
+  return clamp(aspect, HERO_PREVIEW_ASPECT_MIN, HERO_PREVIEW_ASPECT_MAX);
 }
 
 /** 存下來的邊界只有在「就是現在這張圖」時才能用。 */
