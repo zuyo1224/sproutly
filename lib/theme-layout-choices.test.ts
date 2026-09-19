@@ -19,6 +19,13 @@ import {
   pickLayoutChoice,
   pickLayoutColumns,
 } from "./theme-layout-choices.ts";
+import {
+  ALIGN_X_KEYS,
+  FONT_WEIGHT_KEYS,
+  LEADING_KEYS,
+  TEXT_CASE_KEYS,
+  TRACKING_KEYS,
+} from "./theme-keys.ts";
 
 describe("LAYOUT_CHOICES", () => {
   it("每格的 fallback 都在自己的 values 裡，且 values 沒重複", () => {
@@ -45,6 +52,44 @@ describe("isLayoutChoice / pickLayoutChoice", () => {
     assert.equal(pickLayoutChoice("heroHeightMobile", null), "same");
     assert.equal(pickLayoutChoice("buttonRadius", 3), "pill");
     assert.equal(pickLayoutChoice("heroCtaCase", "upper"), "default");
+  });
+});
+
+describe("Hero 五段文字的對齊／粗細／字距／行距／大小寫那 20 格", () => {
+  it("values 就是 theme-keys 的共用清單本身（同一組同一個順序），fallback 對到讀回預設", () => {
+    const expect = {
+      heroTaglineAlign: [ALIGN_X_KEYS, "left"],
+      heroImageFocusX: [ALIGN_X_KEYS, "center"],
+      heroSplitTextAlignX: [ALIGN_X_KEYS, "left"],
+      heroMinimalAlign: [ALIGN_X_KEYS, "center"],
+      heroTextAlignX: [ALIGN_X_KEYS, "center"],
+      heroTaglineWeight: [FONT_WEIGHT_KEYS, "normal"],
+      heroEyebrowWeight: [FONT_WEIGHT_KEYS, "normal"],
+      heroSubtitleWeight: [FONT_WEIGHT_KEYS, "normal"],
+      heroBylineWeight: [FONT_WEIGHT_KEYS, "normal"],
+      heroTaglineTracking: [TRACKING_KEYS, "normal"],
+      heroEyebrowTracking: [TRACKING_KEYS, "normal"],
+      heroSubtitleTracking: [TRACKING_KEYS, "normal"],
+      heroCtaTracking: [TRACKING_KEYS, "normal"],
+      heroBylineTracking: [TRACKING_KEYS, "normal"],
+      heroTaglineLeading: [LEADING_KEYS, "normal"],
+      heroEyebrowLeading: [LEADING_KEYS, "normal"],
+      heroSubtitleLeading: [LEADING_KEYS, "normal"],
+      heroBylineLeading: [LEADING_KEYS, "normal"],
+      heroEyebrowCase: [TEXT_CASE_KEYS, "upper"],
+      heroBylineCase: [TEXT_CASE_KEYS, "upper"],
+    } as const;
+    assert.equal(Object.keys(expect).length, 20);
+    for (const [key, [keys, fallback]] of Object.entries(expect)) {
+      const cell = LAYOUT_CHOICES[key as keyof typeof expect];
+      assert.deepEqual([...cell.values], [...keys], `${key} 的 values 不是共用清單`);
+      assert.equal(cell.fallback, fallback, `${key} 的 fallback 不對`);
+    }
+    // 存檔端以前的 guard 行為：清單外整格不收；讀回端：清單外回預設
+    assert.equal(isLayoutChoice("heroTaglineAlign", "justify"), false);
+    assert.equal(pickLayoutChoice("heroTaglineAlign", "justify"), "left");
+    assert.equal(pickLayoutChoice("heroEyebrowCase", undefined), "upper");
+    assert.equal(pickLayoutChoice("heroBylineLeading", "relaxed"), "relaxed");
   });
 });
 

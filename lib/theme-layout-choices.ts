@@ -1,4 +1,4 @@
-// 店面版面「只認清單內的值」的 44 個選項欄位：合法值清單＋讀回時的預設值，唯一正本。
+// 店面版面「只認清單內的值」的 64 個選項欄位：合法值清單＋讀回時的預設值，唯一正本。
 //
 // 以前這批清單抄了兩份：編輯器存檔 actions.ts 一張 LAYOUT_ONE_OF 表（只有清單），公開頁
 // _theme.ts resolveLayout 每格一段 IIFE（清單少寫預設那個值、再 return 預設）。兩邊各管各的，
@@ -12,8 +12,21 @@
 // 補一個再展開；按鈕大小寫是 default/capitalize/none，跟 TEXT_CASE_KEYS（upper 開頭）語意不同，
 // 照原樣寫死（理由見 theme-keys.ts）。
 //
+// Hero 五段文字（主標／小標／副標／按鈕／byline）的對齊、粗細、字距、行距、大小寫共 20 格，合法值
+// 就是 theme-keys 那五張共用清單（ALIGN_X／FONT_WEIGHT／TRACKING／LEADING／TEXT_CASE_KEYS），以前
+// 沒進這張表：存檔端 actions.ts 五個迴圈各手抄一份 key 清單配 isAlignX 那類 guard、讀回端 _theme.ts
+// 20 行各寫 `isX(l.k) ? l.k : "預設"`，多一格要三處一起加、預設值只在讀回端看得到。現在也進表，
+// values 直接掛共用清單（清單多值這裡自動跟），fallback 寫在表裡一眼看得到；guard 函式留給
+// 編輯器面板那類單值判斷用。
+//
 // 放 lib 而不放 _theme.ts：lib 的測試用 node --test 直接跑，不能拖進 _theme.ts 那整包。
-import { ALIGN_X_KEYS, FONT_WEIGHT_KEYS } from "./theme-keys.ts";
+import {
+  ALIGN_X_KEYS,
+  FONT_WEIGHT_KEYS,
+  LEADING_KEYS,
+  TEXT_CASE_KEYS,
+  TRACKING_KEYS,
+} from "./theme-keys.ts";
 
 export const LAYOUT_CHOICES = {
   heroHeight: { values: ["auto", "short", "tall", "full"], fallback: "auto" },
@@ -22,6 +35,27 @@ export const LAYOUT_CHOICES = {
   heroSubtitleAlign: { values: ["inherit", ...ALIGN_X_KEYS], fallback: "inherit" },
   heroCtaCase: { values: ["default", "capitalize", "none"], fallback: "default" },
   heroCtaWeight: { values: ["default", ...FONT_WEIGHT_KEYS], fallback: "default" },
+  // Hero 五段文字的對齊／粗細／字距／行距／大小寫（合法值就是 theme-keys 的共用清單）
+  heroTaglineAlign: { values: ALIGN_X_KEYS, fallback: "left" },
+  heroTaglineWeight: { values: FONT_WEIGHT_KEYS, fallback: "normal" },
+  heroTaglineTracking: { values: TRACKING_KEYS, fallback: "normal" },
+  heroTaglineLeading: { values: LEADING_KEYS, fallback: "normal" },
+  heroEyebrowTracking: { values: TRACKING_KEYS, fallback: "normal" },
+  heroEyebrowCase: { values: TEXT_CASE_KEYS, fallback: "upper" },
+  heroEyebrowWeight: { values: FONT_WEIGHT_KEYS, fallback: "normal" },
+  heroEyebrowLeading: { values: LEADING_KEYS, fallback: "normal" },
+  heroSubtitleWeight: { values: FONT_WEIGHT_KEYS, fallback: "normal" },
+  heroSubtitleTracking: { values: TRACKING_KEYS, fallback: "normal" },
+  heroSubtitleLeading: { values: LEADING_KEYS, fallback: "normal" },
+  heroCtaTracking: { values: TRACKING_KEYS, fallback: "normal" },
+  heroBylineTracking: { values: TRACKING_KEYS, fallback: "normal" },
+  heroBylineCase: { values: TEXT_CASE_KEYS, fallback: "upper" },
+  heroBylineWeight: { values: FONT_WEIGHT_KEYS, fallback: "normal" },
+  heroBylineLeading: { values: LEADING_KEYS, fallback: "normal" },
+  heroImageFocusX: { values: ALIGN_X_KEYS, fallback: "center" },
+  heroSplitTextAlignX: { values: ALIGN_X_KEYS, fallback: "left" },
+  heroMinimalAlign: { values: ALIGN_X_KEYS, fallback: "center" },
+  heroTextAlignX: { values: ALIGN_X_KEYS, fallback: "center" },
   heroSplitRatio: { values: ["image-narrow", "normal", "image-wide", "photo"], fallback: "normal" },
   heroImageFocus: { values: ["top", "center", "bottom"], fallback: "center" },
   heroSplitImageFit: { values: ["cover", "contain"], fallback: "cover" },

@@ -37,14 +37,9 @@ import {
 } from "@/lib/section-style-schema";
 import {
   DEFAULT_SECTION_ORDER,
-  isAlignX,
-  isFontWeight,
   isHeroImageSide,
   isHeroStyle,
-  isLeading,
   isSectionKey,
-  isTextCase,
-  isTracking,
 } from "@/lib/theme-keys";
 
 type EditorPayload = {
@@ -388,55 +383,9 @@ export async function saveEditorState(slug: string, payload: EditorPayload) {
         layoutPatch.heroTaglineFontScaleMobile = clampHeroFontScale(v);
       }
     }
-    // 對齊／字重／字距／行高／大小寫這幾類「只認清單內的值」的欄位，每一類走同一支 guard，
-    // 判不過就不動 DB。帶 "inherit"／"default" 這種額外選項的（副標對齊、按鈕字重與大小寫）不在這裡
-    for (const key of [
-      "heroTaglineAlign",
-      "heroImageFocusX",
-      "heroSplitTextAlignX",
-      "heroMinimalAlign",
-      "heroTextAlignX",
-    ] as const) {
-      const v = payload.layout[key];
-      if (isAlignX(v)) layoutPatch[key] = v;
-    }
-    for (const key of [
-      "heroTaglineWeight",
-      "heroEyebrowWeight",
-      "heroSubtitleWeight",
-      "heroBylineWeight",
-    ] as const) {
-      const v = payload.layout[key];
-      if (isFontWeight(v)) layoutPatch[key] = v;
-    }
-    for (const key of [
-      "heroTaglineTracking",
-      "heroEyebrowTracking",
-      "heroSubtitleTracking",
-      "heroCtaTracking",
-      "heroBylineTracking",
-    ] as const) {
-      const v = payload.layout[key];
-      if (isTracking(v)) layoutPatch[key] = v;
-    }
-    for (const key of [
-      "heroTaglineLeading",
-      "heroEyebrowLeading",
-      "heroSubtitleLeading",
-      "heroBylineLeading",
-    ] as const) {
-      const v = payload.layout[key];
-      if (isLeading(v)) layoutPatch[key] = v;
-    }
-    for (const key of [
-      "heroEyebrowCase",
-      "heroBylineCase",
-    ] as const) {
-      const v = payload.layout[key];
-      if (isTextCase(v)) layoutPatch[key] = v;
-    }
-    // 「只認清單內的值」的 44 格版面欄位：值不在清單內就整格不動 DB。清單與預設值跟公開頁
-    // 讀回端共用 lib/theme-layout-choices 那張表，多一格只在那邊加一行。
+    // 「只認清單內的值」的 64 格版面欄位（含 Hero 五段文字的對齊／粗細／字距／行距／大小寫）：
+    // 值不在清單內就整格不動 DB。清單與預設值跟公開頁讀回端共用 lib/theme-layout-choices 那張表，
+    // 多一格只在那邊加一行。
     for (const key of LAYOUT_CHOICE_KEYS) {
       const v = payload.layout[key];
       if (isLayoutChoice(key, v)) layoutPatch[key] = v;
