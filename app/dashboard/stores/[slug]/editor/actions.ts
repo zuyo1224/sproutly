@@ -353,26 +353,26 @@ export async function saveEditorState(slug: string, payload: EditorPayload) {
         if (cleaned) layoutPatch.mapEmbedUrl = cleaned;
       }
     }
-    // 舊的單一 heroZoom 跟三個裝置各自的 zoom 走同一支 clamp，一起收在一個迴圈
-    for (const key of ["heroZoom", "heroZoomMobile", "heroZoomTablet", "heroZoomDesktop"] as const) {
-      const z = payload.layout[key];
-      if (z !== undefined && isFiniteNumber(z)) {
-        layoutPatch[key] = clampHeroZoom(z);
-      }
-    }
-    // Hero 五段文字（主標／眉標／副標／按鈕／署名）的字級倍率都是同一支 clampHeroFontScale，
-    // 沒帶就跳過、不是有限數字就不動 DB；主標的手機版另外要吃 null（見下面那段），不放進來
-    for (const key of [
-      "heroTaglineFontScale",
-      "heroEyebrowFontScale",
-      "heroSubtitleFontScale",
-      "heroCtaFontScale",
-      "heroBylineFontScale",
+    // 「沒帶就跳過、不是有限數字就整格不動 DB、是就夾進範圍存」的 11 格數值欄位，一張表
+    // 配各自那支 clamp 跑完：舊的單一 heroZoom 跟三個裝置各自的 zoom、Hero 五段文字（主標／
+    // 眉標／副標／按鈕／署名）的字級倍率、全站字級倍率、精選張數。主標的手機版字級另外要吃
+    // null（見下面那段），不放進來。公開頁讀回那端是「不是有限數就回預設」（lib/clamp 的
+    // clampOr），語意不同，這張表是存檔端自己的。
+    for (const [key, clampFn] of [
+      ["heroZoom", clampHeroZoom],
+      ["heroZoomMobile", clampHeroZoom],
+      ["heroZoomTablet", clampHeroZoom],
+      ["heroZoomDesktop", clampHeroZoom],
+      ["heroTaglineFontScale", clampHeroFontScale],
+      ["heroEyebrowFontScale", clampHeroFontScale],
+      ["heroSubtitleFontScale", clampHeroFontScale],
+      ["heroCtaFontScale", clampHeroFontScale],
+      ["heroBylineFontScale", clampHeroFontScale],
+      ["fontScale", clampFontScale],
+      ["featuredCount", clampFeaturedCount],
     ] as const) {
       const v = payload.layout[key];
-      if (v !== undefined && isFiniteNumber(v)) {
-        layoutPatch[key] = clampHeroFontScale(v);
-      }
+      if (isFiniteNumber(v)) layoutPatch[key] = clampFn(v);
     }
     if (payload.layout.heroTaglineFontScaleMobile !== undefined) {
       const v = payload.layout.heroTaglineFontScaleMobile;
@@ -396,12 +396,6 @@ export async function saveEditorState(slug: string, payload: EditorPayload) {
       layoutPatch.heroImageBounds = normalizeHeroImageBounds(
         payload.layout.heroImageBounds
       );
-    }
-    if (payload.layout.fontScale !== undefined) {
-      const v = payload.layout.fontScale;
-      if (isFiniteNumber(v)) {
-        layoutPatch.fontScale = clampFontScale(v);
-      }
     }
     // Hero 各段文字色／底色與頁尾底色／文字色全走同一套：空字串或 null = 清除回預設，非法色碼整格不存
     for (const field of [
@@ -428,12 +422,6 @@ export async function saveEditorState(slug: string, payload: EditorPayload) {
           const hex = normalizeHexColor(v);
           if (hex) layoutPatch[field] = hex;
         }
-      }
-    }
-    if (payload.layout.featuredCount !== undefined) {
-      const v = payload.layout.featuredCount;
-      if (isFiniteNumber(v)) {
-        layoutPatch.featuredCount = clampFeaturedCount(v);
       }
     }
     // 排成幾欄六格（2/3/4，慢讀只到 3）也走 lib/theme-layout-choices 那張表，跟讀回端同一份。
