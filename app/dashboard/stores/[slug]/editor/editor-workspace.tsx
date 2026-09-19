@@ -2751,7 +2751,7 @@ export function EditorWorkspace({
                     onClick={() => updateLayout({ heroImageSide: "left" })}
                     className={`px-3 py-2 rounded-lg text-sm border transition ${
                       theme.layout.heroImageSide === "left"
-                        ? "border-emerald-500 bg-emerald-50 text-emerald-900"
+                        ? selectedOptionClass
                         : "border-stone-200 text-stone-600 hover:border-stone-300"
                     }`}
                   >
@@ -2762,7 +2762,7 @@ export function EditorWorkspace({
                     onClick={() => updateLayout({ heroImageSide: "right" })}
                     className={`px-3 py-2 rounded-lg text-sm border transition ${
                       theme.layout.heroImageSide === "right"
-                        ? "border-emerald-500 bg-emerald-50 text-emerald-900"
+                        ? selectedOptionClass
                         : "border-stone-200 text-stone-600 hover:border-stone-300"
                     }`}
                   >
@@ -3096,8 +3096,8 @@ export function EditorWorkspace({
                         aria-pressed={theme.layout.heroSplitDividerTone === opt.v}
                         className={`rounded-lg border py-2 text-xs transition ${
                           theme.layout.heroSplitDividerTone === opt.v
-                            ? "border-emerald-500 bg-emerald-50 text-emerald-900"
-                            : "border-stone-200 text-stone-600 hover:border-stone-400"
+                            ? selectedOptionClass
+                            : unselectedOptionClass
                         }`}
                       >
                         {opt.label}
@@ -7492,10 +7492,16 @@ const listInputClass = "w-full rounded border border-stone-200 px-2 py-1.5 text-
 // 側欄裡「能按／不能按」兩態的小按鈕（上一段／下一段、複製這段／貼上樣式／套到全部區段）
 // 5 處各抄一份一模一樣的兩串 class 三元切換，改一格（例如停用色要換、hover 要改）其他 4 處不會跟著動，
 // 所以收成兩個常數；預設挑選格「沒被選中」那邊長得跟「能按」一模一樣也一起吃。
-// 選中那態 `border-emerald-500 bg-emerald-50 text-emerald-900` 只有預設挑選格一處，留在原地。
+// 預設挑選格「選中」那態另收在 selectedOptionClass。
 const enabledActionClass =
   "border-stone-200 text-stone-700 hover:border-emerald-500 hover:bg-emerald-50 hover:text-emerald-900";
 const disabledActionClass = "border-stone-100 text-stone-300 cursor-not-allowed";
+// 側欄裡「選一格」的挑選按鈕（圖位置、分隔線色調、排幾欄 ColumnsGrid、OptionGrid、預設挑選格）
+// 「選中」那態 6 處各抄一份一模一樣的綠框綠底，改一格（例如選中色要換）其他 5 處不會跟著動，所以收成常數。
+// 「沒選中」那態 hover 邊框 stone-400 的 3 處一起收；圖位置那 2 格是 hover:border-stone-300 另一色階，
+// 換成同一串是看得到的外觀改變，不當 refactor 做，留在原地。
+const selectedOptionClass = "border-emerald-500 bg-emerald-50 text-emerald-900";
+const unselectedOptionClass = "border-stone-200 text-stone-600 hover:border-stone-400";
 
 function Field({
   label,
@@ -7762,8 +7768,8 @@ function ColumnsGrid<N extends number>({
           onClick={() => onSelect(n)}
           className={`rounded-lg border py-2 text-xs transition ${
             selected === n
-              ? "border-emerald-500 bg-emerald-50 text-emerald-900"
-              : "border-stone-200 text-stone-600 hover:border-stone-400"
+              ? selectedOptionClass
+              : unselectedOptionClass
           }`}
         >
           {n} 欄
@@ -7801,7 +7807,7 @@ function PresetGrid<P extends { key: string; label: string; hint: string }>({
             title={p.hint}
             className={`rounded-lg border px-2 py-2 text-xs transition text-left leading-tight ${
               isActive
-                ? "border-emerald-500 bg-emerald-50 text-emerald-900"
+                ? selectedOptionClass
                 : enabledActionClass
             }`}
           >
@@ -7856,8 +7862,8 @@ function OptionGrid<V extends string>({
           aria-pressed={selected === opt.v}
           className={`rounded-lg border py-2 text-xs transition ${
             selected === opt.v
-              ? "border-emerald-500 bg-emerald-50 text-emerald-900"
-              : "border-stone-200 text-stone-600 hover:border-stone-400"
+              ? selectedOptionClass
+              : unselectedOptionClass
           }`}
           title={opt.title}
           style={optionStyle ? optionStyle(opt.v) : undefined}
