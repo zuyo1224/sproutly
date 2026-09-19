@@ -69,6 +69,7 @@ import {
   isSectionKey,
   FONT_WEIGHT_OPTIONS,
   LEADING_OPTIONS,
+  TEXT_CASE_OPTIONS,
   TRACKING_OPTIONS,
   type AlignX,
   type FontWeight,
@@ -2179,11 +2180,7 @@ export function EditorWorkspace({
             </Field>
             <Field label="小標大小寫">
               <OptionGrid
-                options={[
-                  { v: "upper", label: "全大寫" },
-                  { v: "capitalize", label: "字首大寫" },
-                  { v: "none", label: "照原樣" },
-                ] as const}
+                options={TEXT_CASE_OPTIONS}
                 selected={theme.layout.heroEyebrowCase}
                 onSelect={(v) => updateLayout({ heroEyebrowCase: v })}
               />
@@ -2475,11 +2472,7 @@ export function EditorWorkspace({
             </Field>
             <Field label="byline 大小寫">
               <OptionGrid
-                options={[
-                  { v: "upper", label: "全大寫" },
-                  { v: "capitalize", label: "字首大寫" },
-                  { v: "none", label: "照原樣" },
-                ] as const}
+                options={TEXT_CASE_OPTIONS}
                 selected={theme.layout.heroBylineCase}
                 onSelect={(v) => updateLayout({ heroBylineCase: v })}
               />
@@ -5626,11 +5619,7 @@ export function EditorWorkspace({
               </Field>
               <Field label="小標大小寫">
                 <OptionGrid
-                  options={[
-                    { v: "upper", label: "全大寫" },
-                    { v: "capitalize", label: "字首大寫" },
-                    { v: "none", label: "照原樣" },
-                  ] as const}
+                  options={TEXT_CASE_OPTIONS}
                   selected={eyebrowCase ?? "upper"}
                   onSelect={(v) => patch({ eyebrowCase: v })}
                 />
@@ -6726,11 +6715,7 @@ export function EditorWorkspace({
               {SECTIONS_WITH_CARD_MICRO_TEXT.includes(selectedSection) && (
                 <Field label="卡片小字大小寫">
                   <OptionGrid
-                    options={[
-                      { v: "upper", label: "全大寫" },
-                      { v: "capitalize", label: "字首大寫" },
-                      { v: "none", label: "照原樣" },
-                    ] as const}
+                    options={TEXT_CASE_OPTIONS}
                     selected={cardMicroCase ?? "upper"}
                     onSelect={(v) => patch({ cardMicroCase: v })}
                   />

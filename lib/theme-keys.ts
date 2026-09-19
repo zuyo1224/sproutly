@@ -121,6 +121,18 @@ export function isTextCase(value: unknown): value is TextCase {
   return typeof value === "string" && (TEXT_CASE_KEYS as readonly string[]).includes(value);
 }
 
+// 編輯器「大小寫」三顆按鈕那張 { v, label } 表。Hero 小標／byline 兩格，加上區段樣式的
+// 小標大小寫／卡片小字大小寫兩格，以前四格各自手寫一份一模一樣的陣列（全大寫／字首大寫／
+// 照原樣），改一格的字另外三格不會跟著動。順序照 TEXT_CASE_KEYS。區段那兩格的型別來自
+// section-style-schema 自己那張 eyebrowCase／cardMicroCase 的 upper/capitalize/none，跟 TextCase
+// 是同一個字面聯集，比照 FONT_WEIGHT_OPTIONS 的做法。按鈕那格（heroCtaCase）第一檔是
+// default「照版型預設」不是 upper，語意不一樣（見上面 TEXT_CASE_KEYS 的說明），不收。
+export const TEXT_CASE_OPTIONS = [
+  { v: "upper", label: "全大寫" },
+  { v: "capitalize", label: "字首大寫" },
+  { v: "none", label: "照原樣" },
+] as const satisfies ReadonlyArray<{ v: TextCase; label: string }>;
+
 // 風格底五種與字體六種。以前各手抄三份：公開頁 _theme.ts 的 type PresetKey / FontKey、
 // resolveTheme 內 `t.preset in PRESETS` 後 as 硬轉、設定頁存檔 actions.ts 自己的兩個 Set；
 // 設定頁選單還各有一處 Object.keys(...) as XKey[]。PRESETS / PRESET_LABELS / FONT_LABELS

@@ -14,6 +14,7 @@ import {
   TRACKING_KEYS,
   LEADING_KEYS,
   TEXT_CASE_KEYS,
+  TEXT_CASE_OPTIONS,
   PRESET_KEYS,
   FONT_KEYS,
   isAlignX,
@@ -132,11 +133,12 @@ test("編輯器對齊三顆按鈕的選項表跟 ALIGN_X_KEYS 同一組值同一
   assert.equal(new Set(labels).size, labels.length);
 });
 
-test("編輯器字距／行距／粗細三顆按鈕的選項表各跟 TRACKING_KEYS／LEADING_KEYS／FONT_WEIGHT_KEYS 同一組值同一個順序，label 都有字且不重複", () => {
+test("編輯器字距／行距／粗細／大小寫三顆按鈕的選項表各跟 TRACKING_KEYS／LEADING_KEYS／FONT_WEIGHT_KEYS／TEXT_CASE_KEYS 同一組值同一個順序，label 都有字且不重複", () => {
   for (const [options, keys] of [
     [TRACKING_OPTIONS, TRACKING_KEYS],
     [LEADING_OPTIONS, LEADING_KEYS],
     [FONT_WEIGHT_OPTIONS, FONT_WEIGHT_KEYS],
+    [TEXT_CASE_OPTIONS, TEXT_CASE_KEYS],
   ] as const) {
     assert.deepEqual(options.map((o) => o.v), [...keys]);
     const labels = options.map((o) => o.label);
