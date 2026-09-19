@@ -10,6 +10,10 @@
 // 重開時 key 換代——舊座標掛在舊 key 下，render 端查新 key 查不到就走正常 flow，
 // 等於不用碰 DB 就把殘留座標全部作廢；新拖動才會寫進新 key。
 // hero-tagline 從頭到尾沒停用（一直只綁 h1、行為正常），維持原 key 不換代。
+import { clampFreePos } from "./theme-scale.ts";
+import { isFiniteNumber } from "./is-finite-number.ts";
+import { isPlainObject } from "./is-plain-object.ts";
+
 export const FREE_POS_KEYS = {
   heroTagline: "hero-tagline",
   // 副標是主標之後才開拖動的，停用風波（3b081e7）時沒有這個 key，
@@ -46,6 +50,19 @@ const LEGACY_FREE_POS_KEYS = [
   "visit-card",
   "testimonials-title",
 ];
+
+// 一格座標「能不能用」的守門，存檔端與公開頁讀回端共用這一支。
+//
+// 以前兩邊各寫一遍「是物件、x／y 都是有限數、各夾進 0-1」——actions.ts 那份還手寫
+// typeof + Number.isFinite、_theme.ts 那份走 isFiniteNumber，同一件事兩種寫法；
+// 日後要改「不是有限數怎麼辦」（例如字串 "0.5" 要不要轉）得兩邊一起改，漏一邊就是
+// 「存得下去、重整就沒了」或反過來。不能用回 null，呼叫端自己決定跳過還是不寫。
+export function sanitizeFreePos(v: unknown): { x: number; y: number } | null {
+  if (!isPlainObject(v)) return null;
+  const { x, y } = v;
+  if (!isFiniteNumber(x) || !isFiniteNumber(y)) return null;
+  return { x: clampFreePos(x), y: clampFreePos(y) };
+}
 
 export function stripLegacyFreePositions(
   fp: Record<string, { x: number; y: number }>

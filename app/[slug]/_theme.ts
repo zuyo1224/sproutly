@@ -5,11 +5,10 @@ import {
   clampHeroFontScale,
   clampFontScale,
   clampFeaturedCount,
-  clampFreePos,
 } from "@/lib/theme-scale";
+import { sanitizeFreePos } from "@/lib/free-positions";
 import { normalizeHexColor } from "@/lib/hex-color";
 import { clampOr } from "@/lib/clamp";
-import { isFiniteNumber } from "@/lib/is-finite-number";
 import { isPlainObject } from "@/lib/is-plain-object";
 import { pickLayoutChoice, pickLayoutColumns } from "@/lib/theme-layout-choices";
 import { cleanMapEmbedUrl } from "@/lib/map-embed-url";
@@ -1419,25 +1418,15 @@ function resolveLayout(raw: unknown): StoreTheme["layout"] {
       const result: Record<string, { x: number; y: number }> = {};
       if (isPlainObject(fp)) {
         for (const [k, obj] of Object.entries(fp)) {
-          if (!isPlainObject(obj)) continue;
-          const { x, y } = obj;
-          if (!isFiniteNumber(x) || !isFiniteNumber(y)) continue;
-          result[k] = {
-            x: clampFreePos(x),
-            y: clampFreePos(y),
-          };
+          const pos = sanitizeFreePos(obj);
+          if (pos) result[k] = pos;
         }
       }
       // 2. legacy fallback：把舊 heroTaglinePosition 自動 migrate 到 freePositions["hero-tagline"]
       const legacy = (l as { heroTaglinePosition?: unknown }).heroTaglinePosition;
-      if (isPlainObject(legacy) && !result["hero-tagline"]) {
-        const { x, y } = legacy;
-        if (isFiniteNumber(x) && isFiniteNumber(y)) {
-          result["hero-tagline"] = {
-            x: clampFreePos(x),
-            y: clampFreePos(y),
-          };
-        }
+      if (!result["hero-tagline"]) {
+        const pos = sanitizeFreePos(legacy);
+        if (pos) result["hero-tagline"] = pos;
       }
       return result;
     })(),

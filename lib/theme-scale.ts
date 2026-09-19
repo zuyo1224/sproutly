@@ -52,7 +52,8 @@ export function clampFeaturedCount(v: number): number {
 // 拖動時跟著鼠標 follow（editor-click-bridge.tsx，每軸一次、兩個 handler 共四次）、
 // 存檔 sanitize（editor/actions.ts，x／y 各一）、公開頁 resolve（[slug]/_theme.ts，
 // 新路徑與 legacy migrate 各一組 x／y）。三邊夾的範圍一定要一致，否則拖到的位置、
-// 存進去的、畫出來的會對不上。收成同一支，每軸呼叫一次。
+// 存進去的、畫出來的會對不上。收成同一支，每軸呼叫一次；存檔端與讀回端那兩處
+// 現在再往上收成 lib/free-positions 的 sanitizeFreePos（守門＋夾值一起），這裡只剩夾值。
 export function clampFreePos(v: number): number {
   return clamp(v, 0, 1);
 }

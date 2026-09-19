@@ -11,6 +11,7 @@ import {
   FREE_POS_KEYS,
   stripLegacyFreePositions,
   SECTION_DRAG_ELEMENT,
+  sanitizeFreePos,
 } from "./free-positions.ts";
 
 describe("FREE_POS_KEYS", () => {
@@ -117,5 +118,24 @@ describe("SECTION_DRAG_ELEMENT", () => {
   it("兩個區段不會指到同一個 key", () => {
     const keys = Object.values(SECTION_DRAG_ELEMENT).map((e) => e!.key);
     assert.equal(new Set(keys).size, keys.length);
+  });
+});
+
+describe("sanitizeFreePos", () => {
+  it("有限數 x／y 各夾進 0-1，範圍內的原樣回", () => {
+    assert.deepEqual(sanitizeFreePos({ x: 0.25, y: 0.75 }), { x: 0.25, y: 0.75 });
+    assert.deepEqual(sanitizeFreePos({ x: -0.2, y: 1.7 }), { x: 0, y: 1 });
+    // 多帶的欄位不跟著回去，存進 DB 的只會是 x／y 兩格
+    assert.deepEqual(sanitizeFreePos({ x: 0.5, y: 0.5, z: 9 }), { x: 0.5, y: 0.5 });
+  });
+
+  it("不是物件、或 x／y 任一不是有限數，一律回 null", () => {
+    for (const v of [null, undefined, 0.5, "0.5,0.5", [0.5, 0.5], {}]) {
+      assert.equal(sanitizeFreePos(v), null, String(v));
+    }
+    for (const bad of [NaN, Infinity, -Infinity, "0.5", null, undefined, true]) {
+      assert.equal(sanitizeFreePos({ x: bad, y: 0.5 }), null, `x=${String(bad)}`);
+      assert.equal(sanitizeFreePos({ x: 0.5, y: bad }), null, `y=${String(bad)}`);
+    }
   });
 });

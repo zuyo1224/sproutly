@@ -18,8 +18,8 @@ import {
   clampHeroFontScale,
   clampFontScale,
   clampFeaturedCount,
-  clampFreePos,
 } from "@/lib/theme-scale";
+import { sanitizeFreePos } from "@/lib/free-positions";
 import { normalizeHexColor } from "@/lib/hex-color";
 import { isFiniteNumber } from "@/lib/is-finite-number";
 import { isPlainObject } from "@/lib/is-plain-object";
@@ -440,15 +440,9 @@ export async function saveEditorState(slug: string, payload: EditorPayload) {
       if (isPlainObject(fp)) {
         for (const [k, v] of Object.entries(fp)) {
           if (!k || typeof k !== "string" || k.length > 60) continue;
-          if (!isPlainObject(v)) continue;
-          const x = v.x;
-          const y = v.y;
-          if (typeof x !== "number" || typeof y !== "number") continue;
-          if (!Number.isFinite(x) || !Number.isFinite(y)) continue;
-          sanitized[k] = {
-            x: clampFreePos(x),
-            y: clampFreePos(y),
-          };
+          const pos = sanitizeFreePos(v);
+          if (!pos) continue;
+          sanitized[k] = pos;
         }
       }
       layoutPatch.freePositions = sanitized;
