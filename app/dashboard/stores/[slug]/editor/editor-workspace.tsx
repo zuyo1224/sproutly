@@ -1862,11 +1862,7 @@ export function EditorWorkspace({
                 type="button"
                 onClick={() => prev && setSelectedSection(prev)}
                 disabled={!prev}
-                className={`flex items-center gap-1 rounded-lg border px-2.5 py-1.5 text-[11px] font-medium transition ${
-                  prev
-                    ? "border-stone-200 text-stone-700 hover:border-emerald-500 hover:bg-emerald-50 hover:text-emerald-900"
-                    : "border-stone-100 text-stone-300 cursor-not-allowed"
-                }`}
+                className={`flex items-center gap-1 rounded-lg border px-2.5 py-1.5 text-[11px] font-medium transition ${prev ? enabledActionClass : disabledActionClass}`}
                 title={prev ? `上一段：${sectionLabels[prev]}（按 [）` : "已經是第一段"}
                 aria-label={prev ? `上一段：${sectionLabels[prev]}` : "已經是第一段"}
               >
@@ -1885,11 +1881,7 @@ export function EditorWorkspace({
                 type="button"
                 onClick={() => next && setSelectedSection(next)}
                 disabled={!next}
-                className={`flex items-center gap-1 rounded-lg border px-2.5 py-1.5 text-[11px] font-medium transition ${
-                  next
-                    ? "border-stone-200 text-stone-700 hover:border-emerald-500 hover:bg-emerald-50 hover:text-emerald-900"
-                    : "border-stone-100 text-stone-300 cursor-not-allowed"
-                }`}
+                className={`flex items-center gap-1 rounded-lg border px-2.5 py-1.5 text-[11px] font-medium transition ${next ? enabledActionClass : disabledActionClass}`}
                 title={next ? `下一段：${sectionLabels[next]}（按 ]）` : "已經是最後一段"}
                 aria-label={next ? `下一段：${sectionLabels[next]}` : "已經是最後一段"}
               >
@@ -5227,11 +5219,7 @@ export function EditorWorkspace({
                     type="button"
                     onClick={copyStyle}
                     disabled={!hasCustom}
-                    className={`rounded-lg border px-2 py-2 text-xs transition text-left leading-tight ${
-                      hasCustom
-                        ? "border-stone-200 text-stone-700 hover:border-emerald-500 hover:bg-emerald-50 hover:text-emerald-900"
-                        : "border-stone-100 text-stone-300 cursor-not-allowed"
-                    }`}
+                    className={`rounded-lg border px-2 py-2 text-xs transition text-left leading-tight ${hasCustom ? enabledActionClass : disabledActionClass}`}
                     title={
                       hasCustom
                         ? "複製這段所有樣式（含背景 / 字距 / 邊框等）"
@@ -5244,11 +5232,7 @@ export function EditorWorkspace({
                     type="button"
                     onClick={pasteStyle}
                     disabled={!canPaste}
-                    className={`rounded-lg border px-2 py-2 text-xs transition text-left leading-tight ${
-                      canPaste
-                        ? "border-stone-200 text-stone-700 hover:border-emerald-500 hover:bg-emerald-50 hover:text-emerald-900"
-                        : "border-stone-100 text-stone-300 cursor-not-allowed"
-                    }`}
+                    className={`rounded-lg border px-2 py-2 text-xs transition text-left leading-tight ${canPaste ? enabledActionClass : disabledActionClass}`}
                     title={
                       !styleClipboard
                         ? "還沒複製樣式 — 先複製一段才能貼"
@@ -5269,11 +5253,7 @@ export function EditorWorkspace({
                   type="button"
                   onClick={applyToAll}
                   disabled={!hasCustom || otherSections.length === 0}
-                  className={`mt-1.5 w-full rounded-lg border px-2 py-2 text-xs transition leading-tight ${
-                    hasCustom && otherSections.length > 0
-                      ? "border-stone-200 text-stone-700 hover:border-emerald-500 hover:bg-emerald-50 hover:text-emerald-900"
-                      : "border-stone-100 text-stone-300 cursor-not-allowed"
-                  }`}
+                  className={`mt-1.5 w-full rounded-lg border px-2 py-2 text-xs transition leading-tight ${hasCustom && otherSections.length > 0 ? enabledActionClass : disabledActionClass}`}
                   title={
                     !hasCustom
                       ? "這段沒有自訂樣式，先調一段才能套到全部"
@@ -7509,6 +7489,13 @@ const layoutNoteClass = "mt-1.5 text-[11px] text-stone-500 leading-snug";
 // 跟 inputClass 差在 rounded（不是 rounded-lg）與 px-2 py-1.5（塞在卡片裡要小一號），不是同一包；
 // 有的多帶 font-medium／font-mono／resize-none，在呼叫端用樣板字串接在後面。
 const listInputClass = "w-full rounded border border-stone-200 px-2 py-1.5 text-sm";
+// 側欄裡「能按／不能按」兩態的小按鈕（上一段／下一段、複製這段／貼上樣式／套到全部區段）
+// 5 處各抄一份一模一樣的兩串 class 三元切換，改一格（例如停用色要換、hover 要改）其他 4 處不會跟著動，
+// 所以收成兩個常數；預設挑選格「沒被選中」那邊長得跟「能按」一模一樣也一起吃。
+// 選中那態 `border-emerald-500 bg-emerald-50 text-emerald-900` 只有預設挑選格一處，留在原地。
+const enabledActionClass =
+  "border-stone-200 text-stone-700 hover:border-emerald-500 hover:bg-emerald-50 hover:text-emerald-900";
+const disabledActionClass = "border-stone-100 text-stone-300 cursor-not-allowed";
 
 function Field({
   label,
@@ -7815,7 +7802,7 @@ function PresetGrid<P extends { key: string; label: string; hint: string }>({
             className={`rounded-lg border px-2 py-2 text-xs transition text-left leading-tight ${
               isActive
                 ? "border-emerald-500 bg-emerald-50 text-emerald-900"
-                : "border-stone-200 text-stone-700 hover:border-emerald-500 hover:bg-emerald-50 hover:text-emerald-900"
+                : enabledActionClass
             }`}
           >
             {p.label}
