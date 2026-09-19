@@ -66,6 +66,7 @@ import {
   isHeroImageSide,
   isHeroStyle,
   isSectionKey,
+  FONT_WEIGHT_OPTIONS,
   LEADING_OPTIONS,
   TRACKING_OPTIONS,
   type AlignX,
@@ -2271,11 +2272,7 @@ export function EditorWorkspace({
                 </Field>
                 <Field label="副標粗細">
                   <OptionGrid
-                    options={[
-                      { v: "normal", label: "常規" },
-                      { v: "medium", label: "中黑" },
-                      { v: "bold", label: "粗" },
-                    ] as const}
+                    options={FONT_WEIGHT_OPTIONS}
                     selected={theme.layout.heroSubtitleWeight}
                     onSelect={(v) => updateLayout({ heroSubtitleWeight: v })}
                     optionStyle={(v) => ({
@@ -2581,11 +2578,7 @@ export function EditorWorkspace({
             </Field>
             <Field label="主標粗細">
               <OptionGrid
-                options={[
-                  { v: "normal", label: "常規" },
-                  { v: "medium", label: "中黑" },
-                  { v: "bold", label: "粗" },
-                ] as const}
+                options={FONT_WEIGHT_OPTIONS}
                 selected={theme.layout.heroTaglineWeight}
                 onSelect={(v) => updateLayout({ heroTaglineWeight: v })}
               />
@@ -5389,11 +5382,7 @@ export function EditorWorkspace({
               </Field>
               <Field label="內文粗細">
                 <OptionGrid
-                  options={[
-                    { v: "normal", label: "常規" },
-                    { v: "medium", label: "中黑" },
-                    { v: "bold", label: "粗" },
-                  ] as const}
+                  options={FONT_WEIGHT_OPTIONS}
                   selected={bodyWeight ?? "normal"}
                   onSelect={(v) => patch({ bodyWeight: v })}
                 />
@@ -6577,11 +6566,7 @@ export function EditorWorkspace({
               {SECTIONS_WITH_CARD_TITLE_TEXT.includes(selectedSection) && (
                 <Field label="卡片標題粗細">
                   <OptionGrid
-                    options={[
-                      { v: "normal", label: "常規" },
-                      { v: "medium", label: "中黑" },
-                      { v: "bold", label: "粗" },
-                    ] as const}
+                    options={FONT_WEIGHT_OPTIONS}
                     selected={cardTitleWeight ?? "normal"}
                     onSelect={(v) => patch({ cardTitleWeight: v })}
                   />
@@ -6653,11 +6638,7 @@ export function EditorWorkspace({
               {SECTIONS_WITH_CARD_DESC_TEXT.includes(selectedSection) && (
                 <Field label="卡片描述粗細">
                   <OptionGrid
-                    options={[
-                      { v: "normal", label: "常規" },
-                      { v: "medium", label: "中黑" },
-                      { v: "bold", label: "粗" },
-                    ] as const}
+                    options={FONT_WEIGHT_OPTIONS}
                     selected={cardDescWeight ?? "normal"}
                     onSelect={(v) => patch({ cardDescWeight: v })}
                   />
@@ -6792,11 +6773,7 @@ export function EditorWorkspace({
               {SECTIONS_WITH_CARD_PRICE.includes(selectedSection) && (
                 <Field label="卡片價錢粗細">
                   <OptionGrid
-                    options={[
-                      { v: "normal", label: "常規" },
-                      { v: "medium", label: "中黑" },
-                      { v: "bold", label: "粗" },
-                    ] as const}
+                    options={FONT_WEIGHT_OPTIONS}
                     selected={cardPriceWeight ?? "normal"}
                     onSelect={(v) => patch({ cardPriceWeight: v })}
                   />

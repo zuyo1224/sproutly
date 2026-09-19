@@ -63,6 +63,18 @@ export function isFontWeight(value: unknown): value is FontWeight {
   return typeof value === "string" && (FONT_WEIGHT_KEYS as readonly string[]).includes(value);
 }
 
+// 編輯器「粗細」三顆按鈕那張 { v, label } 表。Hero 副標／主標兩格，加上區段樣式的內文／
+// 卡片標題／卡片描述／卡片價錢四格，以前六格各自手寫一份一模一樣的陣列（常規／中黑／粗），
+// 改一格的字另外五格不會跟著動。順序照 FONT_WEIGHT_KEYS。區段那四格的型別來自
+// section-style-schema 自己那張 normal/medium/bold，跟 FontWeight 是同一個字面聯集，
+// 比照 TRACKING_OPTIONS 給區段字距用的做法。字不一樣的那幾格（小標／byline 的稍重／重、
+// 按鈕的中、split／magazine／minimal 版型裡的中／稍粗／中等）不是同一張表，留在原地。
+export const FONT_WEIGHT_OPTIONS = [
+  { v: "normal", label: "常規" },
+  { v: "medium", label: "中黑" },
+  { v: "bold", label: "粗" },
+] as const satisfies ReadonlyArray<{ v: FontWeight; label: string }>;
+
 export const TRACKING_KEYS = ["tight", "normal", "wide"] as const;
 export type Tracking = (typeof TRACKING_KEYS)[number];
 
@@ -75,7 +87,7 @@ export function isTracking(value: unknown): value is Tracking {
 // 另外六格不會跟著動；七格是同一個問題（字擠多開）的七個位置，字要一樣。順序照 TRACKING_KEYS。
 // 區段那兩格的型別來自 section-style-schema 自己那張 tight/normal/wide，跟 Tracking 是同一個
 // 字面聯集，比照 ALIGN_X_OPTIONS 給 contentAlignX 用的做法。中檔寫「跟預設」的那幾格
-// （卡片小字／卡片價錢／區段小標）與粗細那格五處字各不相同（稍重／中黑／中）不是同一張表，不收。
+// （卡片小字／卡片價錢／區段小標）不是同一張表，不收；粗細那格字一樣的六處另收成 FONT_WEIGHT_OPTIONS。
 export const TRACKING_OPTIONS = [
   { v: "tight", label: "收緊" },
   { v: "normal", label: "預設" },
