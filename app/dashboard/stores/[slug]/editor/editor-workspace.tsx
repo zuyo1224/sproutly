@@ -5146,8 +5146,11 @@ export function EditorWorkspace({
           const otherSections = theme.layout.sectionOrder.filter(
             (k) => k !== "hero" && k !== selectedSection,
           );
+          // 「能不能套」只算這一次，applyToAll 守門、按鈕 disabled／樣式／字尾三處都吃它；
+          // title 那格要分「沒自訂樣式」跟「沒別段可套」兩種原因，所以還是各自判。
+          const canApplyAll = hasCustom && otherSections.length > 0;
           function applyToAll() {
-            if (!hasCustom || otherSections.length === 0) return;
+            if (!canApplyAll) return;
             if (
               !window.confirm(
                 `要把這段的 ${Object.keys(cur).length} 項樣式套到其他 ${otherSections.length} 個區段嗎？那些區段原本的自訂樣式會被蓋掉（可⌘Z 復原）。`,
@@ -5252,8 +5255,8 @@ export function EditorWorkspace({
                 <button
                   type="button"
                   onClick={applyToAll}
-                  disabled={!hasCustom || otherSections.length === 0}
-                  className={`mt-1.5 w-full rounded-lg border px-2 py-2 text-xs transition leading-tight ${hasCustom && otherSections.length > 0 ? enabledActionClass : disabledActionClass}`}
+                  disabled={!canApplyAll}
+                  className={`mt-1.5 w-full rounded-lg border px-2 py-2 text-xs transition leading-tight ${canApplyAll ? enabledActionClass : disabledActionClass}`}
                   title={
                     !hasCustom
                       ? "這段沒有自訂樣式，先調一段才能套到全部"
@@ -5262,7 +5265,7 @@ export function EditorWorkspace({
                       : `把這段樣式一次套到其他 ${otherSections.length} 個區段（可⌘Z 復原）`
                   }
                 >
-                  套到全部區段{hasCustom && otherSections.length > 0 ? `（${otherSections.length} 段）` : ""}
+                  套到全部區段{canApplyAll ? `（${otherSections.length} 段）` : ""}
                 </button>
               </Field>
               <Field label="快速風格">
