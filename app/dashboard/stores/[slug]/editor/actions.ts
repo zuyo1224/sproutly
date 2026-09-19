@@ -250,18 +250,18 @@ export async function saveEditorState(slug: string, payload: EditorPayload) {
   // 或半截網址的只有手打的請求。以前照單全收，https 店面上 http:// 被瀏覽器當混合
   // 內容擋掉、「/hero.jpg」去抓 sproutly 自己網域下不存在的檔，那張圖開天窗、後台又
   // 看不出哪裡壞。判不過就不動原值，跟上面 primary／accent 的 sanitizeHex 同一態度。
-  if (payload.heroUrl !== undefined) {
-    if (!payload.heroUrl) merged.hero_url = null;
+  // 兩格規則逐字相同，只差 payload 的欄位名（camelCase）跟 theme jsonb 裡的欄位名
+  // （snake_case），一張表跑完；以前各抄一段，改判法要記得兩段一起改。
+  for (const [key, column] of [
+    ["heroUrl", "hero_url"],
+    ["logoUrl", "logo_url"],
+  ] as const) {
+    const v = payload[key];
+    if (v === undefined) continue;
+    if (!v) merged[column] = null;
     else {
-      const u = displayableImageUrl(String(payload.heroUrl).slice(0, 500));
-      if (u) merged.hero_url = u;
-    }
-  }
-  if (payload.logoUrl !== undefined) {
-    if (!payload.logoUrl) merged.logo_url = null;
-    else {
-      const u = displayableImageUrl(String(payload.logoUrl).slice(0, 500));
-      if (u) merged.logo_url = u;
+      const u = displayableImageUrl(String(v).slice(0, 500));
+      if (u) merged[column] = u;
     }
   }
 
