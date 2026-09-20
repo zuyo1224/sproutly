@@ -21,6 +21,7 @@ import {
 } from "@/lib/theme-scale";
 import { sanitizeFreePos } from "@/lib/free-positions";
 import { normalizeHexColor } from "@/lib/hex-color";
+import { sanitizeClearable } from "@/lib/clearable-field";
 import { isFiniteNumber } from "@/lib/is-finite-number";
 import { isPlainObject } from "@/lib/is-plain-object";
 import { displayableImageUrl } from "@/lib/image-url";
@@ -251,18 +252,14 @@ export async function saveEditorState(slug: string, payload: EditorPayload) {
   // 內容擋掉、「/hero.jpg」去抓 sproutly 自己網域下不存在的檔，那張圖開天窗、後台又
   // 看不出哪裡壞。判不過就不動原值，跟上面 primary／accent 的 sanitizeHex 同一態度。
   // 兩格規則逐字相同，只差 payload 的欄位名（camelCase）跟 theme jsonb 裡的欄位名
-  // （snake_case），一張表跑完；以前各抄一段，改判法要記得兩段一起改。
+  // （snake_case），一張表跑完；以前各抄一段，改判法要記得兩段一起改。三態（沒帶跳過／
+  // 空值存 null／有值走 helper）跟下面地圖網址、14 格顏色共用 lib/clearable-field。
   for (const [key, column] of [
     ["heroUrl", "hero_url"],
     ["logoUrl", "logo_url"],
   ] as const) {
-    const v = payload[key];
-    if (v === undefined) continue;
-    if (!v) merged[column] = null;
-    else {
-      const u = displayableImageUrl(String(v).slice(0, 500));
-      if (u) merged[column] = u;
-    }
+    const u = sanitizeClearable(payload[key], (s) => displayableImageUrl(s.slice(0, 500)));
+    if (u !== undefined) merged[column] = u;
   }
 
   if (payload.layout) {
@@ -340,19 +337,12 @@ export async function saveEditorState(slug: string, payload: EditorPayload) {
         .filter((p) => p.name && p.logoUrl)
         .slice(0, 12);
     }
-    if (payload.layout.mapEmbedUrl !== undefined) {
-      const v = payload.layout.mapEmbedUrl;
-      // 只接受 google.com/maps/embed 開頭的嵌入網址，防商家貼任意 iframe src。
-      // 判斷跟讀取端 resolveTheme、編輯器輸入框的即時提示共用 lib/map-embed-url 那一支，
-      // 整段 <iframe> HTML 貼過來也會挖出裡面的 src 照收。清空存 null；有字但判不過
-      // 就不動 DB（店面繼續用上一次存好的那張地圖），編輯器那格會即時提示商家貼錯了。
-      if (v === null || v === "") {
-        layoutPatch.mapEmbedUrl = null;
-      } else if (typeof v === "string") {
-        const cleaned = cleanMapEmbedUrl(v);
-        if (cleaned) layoutPatch.mapEmbedUrl = cleaned;
-      }
-    }
+    // 只接受 google.com/maps/embed 開頭的嵌入網址，防商家貼任意 iframe src。
+    // 判斷跟讀取端 resolveTheme、編輯器輸入框的即時提示共用 lib/map-embed-url 那一支，
+    // 整段 <iframe> HTML 貼過來也會挖出裡面的 src 照收。清空存 null；有字但判不過
+    // 就不動 DB（店面繼續用上一次存好的那張地圖），編輯器那格會即時提示商家貼錯了。
+    const mapEmbed = sanitizeClearable(payload.layout.mapEmbedUrl, cleanMapEmbedUrl);
+    if (mapEmbed !== undefined) layoutPatch.mapEmbedUrl = mapEmbed;
     // 「沒帶就跳過、不是有限數字就整格不動 DB、是就夾進範圍存」的 11 格數值欄位，一張表
     // 配各自那支 clamp 跑完：舊的單一 heroZoom 跟三個裝置各自的 zoom、Hero 五段文字（主標／
     // 眉標／副標／按鈕／署名）的字級倍率、全站字級倍率、精選張數。主標的手機版字級另外要吃
@@ -414,15 +404,8 @@ export async function saveEditorState(slug: string, payload: EditorPayload) {
       "footerBg",
       "footerText",
     ] as const) {
-      if (payload.layout[field] !== undefined) {
-        const v = payload.layout[field];
-        if (v === null || v === "") {
-          layoutPatch[field] = null;
-        } else {
-          const hex = normalizeHexColor(v);
-          if (hex) layoutPatch[field] = hex;
-        }
-      }
+      const hex = sanitizeClearable(payload.layout[field], normalizeHexColor);
+      if (hex !== undefined) layoutPatch[field] = hex;
     }
     // 排成幾欄六格（2/3/4，慢讀只到 3）也走 lib/theme-layout-choices 那張表，跟讀回端同一份。
     for (const key of LAYOUT_COLUMN_KEYS) {
