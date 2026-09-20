@@ -26,7 +26,8 @@ import {
   DEFAULT_SECTION_ORDER,
   isHeroImageSide,
   isHeroStyle,
-  isSectionKey,
+  sanitizeSectionOrder,
+  withRequiredSections,
   type AlignX,
   type FontWeight,
   type HeroImageSide,
@@ -1212,16 +1213,8 @@ function resolveLayout(raw: unknown): StoreTheme["layout"] {
   const l: Record<string, unknown> = isPlainObject(raw) ? raw : {};
   const heroStyle: HeroStyle = isHeroStyle(l.heroStyle) ? l.heroStyle : "full-image";
   const heroImageSide: HeroImageSide = isHeroImageSide(l.heroImageSide) ? l.heroImageSide : "left";
-  const orderRaw = Array.isArray(l.sectionOrder) ? l.sectionOrder : [];
-  const order: SectionKey[] = [];
-  for (const k of orderRaw) {
-    if (isSectionKey(k) && !order.includes(k)) order.push(k);
-  }
-  // DEFAULT_SECTION_ORDER（基本必要 section）沒在 user order 內就 append
-  // testimonials 不在 DEFAULT 內，商家手動加才會出現
-  for (const k of DEFAULT_SECTION_ORDER) {
-    if (!order.includes(k)) order.push(k);
-  }
+  // 濾合法 key、去重，基本 6 個沒列到的補在後面（testimonials 等可加區塊不補）
+  const order = withRequiredSections(sanitizeSectionOrder(l.sectionOrder));
   // testimonials array sanitize
   const testimonialsRaw = Array.isArray(l.testimonials) ? l.testimonials : [];
   const testimonials: Testimonial[] = testimonialsRaw

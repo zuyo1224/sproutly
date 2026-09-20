@@ -12,7 +12,7 @@
 
 import { normalizeHexColor } from "./hex-color.ts";
 import { isPlainObject } from "./is-plain-object.ts";
-import { isHeroImageSide, isHeroStyle, isSectionKey } from "./theme-keys.ts";
+import { isHeroImageSide, isHeroStyle, sanitizeSectionOrder } from "./theme-keys.ts";
 import type { ThemePatch } from "./theme-patch-summary.ts";
 
 // 模型偶爾會把 JSON 包在 ```json … ``` 裡，剝掉再交給 JSON.parse。
@@ -52,10 +52,8 @@ export function sanitizeThemePatch(input: unknown): ThemePatch | null {
     if (subtitle !== undefined) layout.heroSubtitle = subtitle;
     if (isHeroImageSide(l.heroImageSide)) layout.heroImageSide = l.heroImageSide;
     if (Array.isArray(l.sectionOrder)) {
-      const order: string[] = [];
-      for (const k of l.sectionOrder) {
-        if (isSectionKey(k) && !order.includes(k)) order.push(k);
-      }
+      // patch 語意：只濾不補，沒列到的區塊不動
+      const order = sanitizeSectionOrder(l.sectionOrder);
       if (order.length) layout.sectionOrder = order;
     }
     if (Object.keys(layout).length) out.layout = layout;

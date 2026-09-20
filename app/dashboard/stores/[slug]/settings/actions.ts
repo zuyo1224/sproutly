@@ -9,7 +9,15 @@ import { readPageSectionToggles } from "@/lib/page-section-toggles";
 import { readSocialLinks } from "@/lib/social-links";
 import { redirect } from "next/navigation";
 import { buildUrl, withErrorParam } from "@/lib/url";
-import { DEFAULT_SECTION_ORDER, isFontKey, isHeroImageSide, isHeroStyle, isPresetKey } from "@/lib/theme-keys";
+import {
+  DEFAULT_SECTION_ORDER,
+  isFontKey,
+  isHeroImageSide,
+  isHeroStyle,
+  isPresetKey,
+  sanitizeSectionOrder,
+  withRequiredSections,
+} from "@/lib/theme-keys";
 import { HOMEPAGE_DEFAULT_COLLECTIONS } from "@/app/[slug]/_theme";
 
 export async function updateStore(slug: string, formData: FormData) {
@@ -145,18 +153,14 @@ export async function updateStore(slug: string, formData: FormData) {
 
   // 設定頁的排序 UI 只列基本 6 個 section（沒有編輯器那五個可加的區塊），所以這裡
   // 也只認這 6 個；編輯器存檔那邊認的是完整 11 個（lib/theme-keys 的 SECTION_KEYS）。
-  const SECTION_KEYS: string[] = DEFAULT_SECTION_ORDER;
-  const sectionOrderRaw = String(formData.get("layout_section_order") ?? "")
-    .split(",")
-    .map((s) => s.trim())
-    .filter((s) => SECTION_KEYS.includes(s));
-  const sectionOrder: string[] = [];
-  for (const k of sectionOrderRaw) {
-    if (!sectionOrder.includes(k)) sectionOrder.push(k);
-  }
-  for (const k of SECTION_KEYS) {
-    if (!sectionOrder.includes(k)) sectionOrder.push(k);
-  }
+  const sectionOrder = withRequiredSections(
+    sanitizeSectionOrder(
+      String(formData.get("layout_section_order") ?? "")
+        .split(",")
+        .map((s) => s.trim()),
+      DEFAULT_SECTION_ORDER,
+    ),
+  );
 
   const layout = {
     ...existingLayout,

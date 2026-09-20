@@ -10,6 +10,8 @@ import {
   HERO_IMAGE_SIDES,
   SECTION_KEYS,
   DEFAULT_SECTION_ORDER,
+  sanitizeSectionOrder,
+  withRequiredSections,
   FONT_WEIGHT_KEYS,
   FONT_WEIGHT_OPTIONS,
   TRACKING_KEYS,
@@ -148,4 +150,28 @@ test("編輯器字距／行距／粗細／大小寫三顆按鈕的選項表各�
     for (const l of labels) assert.ok(l.length > 0);
     assert.equal(new Set(labels).size, labels.length);
   }
+});
+
+test("sanitizeSectionOrder：不是陣列當空、只留合法 key、重複留第一次；傳 DEFAULT_SECTION_ORDER 當 allowed 時可加區塊會被濾掉", () => {
+  assert.deepEqual(sanitizeSectionOrder(undefined), []);
+  assert.deepEqual(sanitizeSectionOrder("hero,visit"), []);
+  assert.deepEqual(
+    sanitizeSectionOrder(["visit", "nope", 3, "hero", "visit", "faq", ""]),
+    ["visit", "hero", "faq"],
+  );
+  assert.deepEqual(
+    sanitizeSectionOrder(["faq", "visit", "testimonials", "hero"], DEFAULT_SECTION_ORDER),
+    ["visit", "hero"],
+  );
+});
+
+test("withRequiredSections：基本 6 個沒列到的照 DEFAULT_SECTION_ORDER 順序補在後面、已有的不動位置、可加區塊不會被補進來也不會被拿掉", () => {
+  assert.deepEqual(withRequiredSections([]), [...DEFAULT_SECTION_ORDER]);
+  assert.deepEqual(
+    withRequiredSections(["visit", "faq", "hero"]),
+    ["visit", "faq", "hero", "collections", "featured", "journal", "promise"],
+  );
+  const full = withRequiredSections([...DEFAULT_SECTION_ORDER].reverse());
+  assert.deepEqual(full, [...DEFAULT_SECTION_ORDER].reverse());
+  assert.ok(!full.includes("testimonials"));
 });

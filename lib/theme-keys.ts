@@ -191,3 +191,29 @@ export const DEFAULT_SECTION_ORDER: SectionKey[] = [
   "promise",
   "visit",
 ];
+
+// 把商家存的 section 順序整理乾淨：不是陣列當空的、只留 allowed 裡有的 key、重複的
+// 留第一次出現的位置。allowed 預設是完整 11 個；設定頁排序 UI 只列基本 6 個，就傳
+// DEFAULT_SECTION_ORDER 進來。
+export function sanitizeSectionOrder(
+  raw: unknown,
+  allowed: readonly SectionKey[] = SECTION_KEYS,
+): SectionKey[] {
+  if (!Array.isArray(raw)) return [];
+  const order: SectionKey[] = [];
+  for (const k of raw) {
+    if (isSectionKey(k) && allowed.includes(k) && !order.includes(k)) order.push(k);
+  }
+  return order;
+}
+
+// 基本必要 6 個沒在順序裡的補在後面；其他五個可加區塊不補（商家手動加才出現）。
+// 以前設定頁存檔、編輯器存檔、公開頁讀回三處各抄一份「濾合法 key → 去重 → 補齊」；
+// AI 助手那邊只濾不補（patch 語意、沒列到的不動），所以拆成兩支。
+export function withRequiredSections(order: readonly SectionKey[]): SectionKey[] {
+  const out = [...order];
+  for (const k of DEFAULT_SECTION_ORDER) {
+    if (!out.includes(k)) out.push(k);
+  }
+  return out;
+}

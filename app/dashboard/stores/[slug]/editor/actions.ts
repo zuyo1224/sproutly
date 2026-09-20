@@ -37,10 +37,10 @@ import {
   type SectionStyle,
 } from "@/lib/section-style-schema";
 import {
-  DEFAULT_SECTION_ORDER,
   isHeroImageSide,
   isHeroStyle,
-  isSectionKey,
+  sanitizeSectionOrder,
+  withRequiredSections,
 } from "@/lib/theme-keys";
 
 type EditorPayload = {
@@ -276,16 +276,10 @@ export async function saveEditorState(slug: string, payload: EditorPayload) {
         : "left";
     }
     if (payload.layout.sectionOrder) {
-      const order: string[] = [];
-      for (const k of payload.layout.sectionOrder) {
-        if (isSectionKey(k) && !order.includes(k)) order.push(k);
-      }
-      // 基本必要 6 個 section（DEFAULT_SECTION_ORDER）沒在 user order 就 append
-      // testimonials 不 auto-append（商家自己加才會出現）
-      for (const k of DEFAULT_SECTION_ORDER) {
-        if (!order.includes(k)) order.push(k);
-      }
-      layoutPatch.sectionOrder = order;
+      // 濾合法 key、去重，基本 6 個沒列到的補在後面（testimonials 等可加區塊不補）
+      layoutPatch.sectionOrder = withRequiredSections(
+        sanitizeSectionOrder(payload.layout.sectionOrder),
+      );
     }
     if (payload.layout.testimonials !== undefined && Array.isArray(payload.layout.testimonials)) {
       layoutPatch.testimonials = payload.layout.testimonials
