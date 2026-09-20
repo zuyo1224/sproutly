@@ -15,6 +15,8 @@
 //
 // "use server" 的模組只准 export async function，常數放不進 actions.ts 給頁面 import，
 // 所以才另開這支純資料檔（跟 product-limits 同一種做法）。
+import { SOCIAL_LINKS, type SocialLinks } from "./social-links.ts";
+
 export const MAX_STORE_NAME_LEN = 60;
 export const MAX_STORE_DESC_LEN = 2000;
 export const MAX_STORE_PHONE_LEN = 40;
@@ -87,7 +89,7 @@ type StoreThemeTextFields = {
   visitTitle: string | null;
   businessHours: string;
   faq: string;
-  social: { instagram: string | null; facebook: string | null; line: string | null };
+  social: SocialLinks;
 };
 
 /**
@@ -129,13 +131,9 @@ export function storeThemeTextLimitError(f: StoreThemeTextFields): string | null
   if (f.faq.length > MAX_FAQ_TEXT_LEN) {
     return `常見問題最多 ${MAX_FAQ_TEXT_LEN.toLocaleString("zh-TW")} 個字`;
   }
-  for (const [label, v] of [
-    ["Instagram", f.social.instagram],
-    ["Facebook", f.social.facebook],
-    ["LINE", f.social.line],
-  ] as const) {
-    if (over(v, MAX_SOCIAL_URL_LEN)) {
-      return `${label} 連結最多 ${MAX_SOCIAL_URL_LEN} 個字`;
+  for (const s of SOCIAL_LINKS) {
+    if (over(f.social[s.key], MAX_SOCIAL_URL_LEN)) {
+      return `${s.shortLabel} 連結最多 ${MAX_SOCIAL_URL_LEN} 個字`;
     }
   }
   return null;

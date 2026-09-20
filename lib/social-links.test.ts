@@ -15,6 +15,9 @@ describe("SOCIAL_LINKS", () => {
       assert.equal(s.formName, `social_${s.key}`);
       assert.ok(s.placeholder.startsWith("https://"));
       assert.ok(s.label.length > 0);
+      // 短名是頁尾顯示字跟超限訊息用的，得跟輸入框標籤同一個牌子名開頭（LINE OA → LINE）
+      assert.ok(s.shortLabel.length > 0);
+      assert.ok(s.label.startsWith(s.shortLabel));
     }
   });
 });

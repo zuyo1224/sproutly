@@ -282,10 +282,9 @@ export default async function PublicStoreLayout({
   // 都不會冒出一個點了跑到站內 404 的壞連結（沒清乾淨的那項就不顯示那個社群）。
   // 三格照 lib/social-links 那張表的順序跑；頁尾顯示的字跟設定頁標籤不同
   // （LINE OA 在頁尾只寫 LINE），所以顯示字自己列一份，不拿表上的 label。
-  const FOOTER_SOCIAL_TEXT = { instagram: "Instagram", facebook: "Facebook", line: "LINE" } as const;
   const socialLinks = SOCIAL_LINKS.flatMap((s) => {
     const href = socialUrl(theme.social[s.key]);
-    return href ? [{ key: s.key, href, text: FOOTER_SOCIAL_TEXT[s.key] }] : [];
+    return href ? [{ key: s.key, href, text: s.shortLabel }] : [];
   });
   const showSocial = theme.sections.social && socialLinks.length > 0;
 

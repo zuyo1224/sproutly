@@ -8,6 +8,10 @@
 //
 // 讀回只做「是非空字串才收」，不在這裡清洗網址：頁尾真正要不要顯示、要不要補 https:// 是
 // contact-href 的 socialUrl 在用的地方判（跟改表前一樣）。
+//
+// label 是設定頁輸入框標籤（LINE 那格寫 LINE OA，提醒商家填官方帳號）；shortLabel 是店面
+// 頁尾顯示字跟超限訊息（「LINE 連結最多 500 個字」）用的短名。以前這組短名在頁尾 layout.tsx
+// 跟 store-limits.ts 各抄一份，改成表上第二欄。
 
 import { formStringOrNull } from "./form-fields.ts";
 
@@ -16,18 +20,21 @@ export const SOCIAL_LINKS = [
     key: "instagram",
     formName: "social_instagram",
     label: "Instagram",
+    shortLabel: "Instagram",
     placeholder: "https://www.instagram.com/your-store",
   },
   {
     key: "facebook",
     formName: "social_facebook",
     label: "Facebook",
+    shortLabel: "Facebook",
     placeholder: "https://www.facebook.com/your-store",
   },
   {
     key: "line",
     formName: "social_line",
     label: "LINE OA",
+    shortLabel: "LINE",
     placeholder: "https://line.me/R/ti/p/@xxx",
   },
 ] as const;
