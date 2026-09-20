@@ -48,7 +48,7 @@ import { FREE_POS_KEYS, SECTION_DRAG_ELEMENT, stripLegacyFreePositions } from "@
 // HOMEPAGE_DEFAULTS：面板每一格「空白就用預設」的 placeholder、以及格子底下 hint 散文裡
 // 「預設「xxx」」那段字，都直接查這張表，跟公開頁真正套上去的字是同一份；以前三十格各手抄
 // 一句，選物 intro 那格就抄成「…那一株...」而實品是「…那一株。」。
-import { HOMEPAGE_DEFAULTS, type SectionStyle } from "@/app/[slug]/_theme";
+import { HOMEPAGE_DEFAULTS, HOMEPAGE_DEFAULT_COLLECTIONS, JOURNAL_CARD_DEFAULTS, type SectionStyle } from "@/app/[slug]/_theme";
 // SECTION_TRACKING_OPTIONS／SECTION_LEADING_OPTIONS／SECTION_GAP_OPTIONS／SECTION_SCALE_OPTIONS／
 // SECTION_WEIGHT_OPTIONS／SECTION_LINE_TONE_OPTIONS／SECTION_LINE_WEIGHT_OPTIONS／SECTION_BG_STRENGTH_OPTIONS：
 // 區段面板裡中檔寫「跟預設」的字距五格、行距四格、間距四格、字級六格、粗細兩格、線條深淺三格、
@@ -451,23 +451,6 @@ type EditorTheme = {
 };
 
 type SelectedTab = "section" | "design" | "content" | "ai";
-
-// Journal 三張卡片預設內容（跟 _theme.ts 的 JOURNAL_CARD_DEFAULTS 對齊）
-const JOURNAL_CARD_DEFAULTS: { eyebrow: string; title: string; excerpt: string }[] = [
-  { eyebrow: "Care", title: "新手綠手指的第一步", excerpt: "光線、澆水頻率、換盆時機 — 把基本功講清楚，少走幾年彎路。" },
-  { eyebrow: "Space", title: "把植物放進小空間", excerpt: "套房、租屋、窗台一隅，不同光線條件下的擺放提案。" },
-  { eyebrow: "Story", title: "我們挑植物的方式", excerpt: "從花市到溫室，這些植物是怎麼被選進這間店的。" },
-];
-
-// 選物提案六張卡預設內容（跟 _theme.ts 的 HOMEPAGE_DEFAULT_COLLECTIONS 對齊）
-const COLLECTION_ITEM_DEFAULTS: { key: string; title: string; subtitle: string }[] = [
-  { key: "window", title: "給窗邊的", subtitle: "明亮散光也活得好" },
-  { key: "living", title: "給客廳的", subtitle: "撐起整個空間" },
-  { key: "desk", title: "給辦公桌的", subtitle: "小巧好顧" },
-  { key: "bathroom", title: "給浴室的", subtitle: "潮濕也不怕" },
-  { key: "nordic", title: "給北歐風的", subtitle: "搭淺木色家具" },
-  { key: "japanese", title: "給日式空間的", subtitle: "配榻榻米和障子" },
-];
 
 const HERO_STYLE_LABELS: Record<HeroStyle, string> = {
   "full-image": "全屏沉浸",
@@ -888,7 +871,7 @@ export function EditorWorkspace({
               const base =
                 t.homepage.collectionItems.length > 0
                   ? t.homepage.collectionItems
-                  : COLLECTION_ITEM_DEFAULTS;
+                  : HOMEPAGE_DEFAULT_COLLECTIONS;
               if (idx >= base.length) return t;
               pushHistory(t, `homepage:collectionItems:${idx}:${key}`);
               const next = base.map((c) => ({ ...c }));

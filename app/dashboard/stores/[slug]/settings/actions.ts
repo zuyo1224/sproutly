@@ -10,6 +10,7 @@ import { readSocialLinks } from "@/lib/social-links";
 import { redirect } from "next/navigation";
 import { buildUrl, withErrorParam } from "@/lib/url";
 import { DEFAULT_SECTION_ORDER, isFontKey, isHeroImageSide, isHeroStyle, isPresetKey } from "@/lib/theme-keys";
+import { HOMEPAGE_DEFAULT_COLLECTIONS } from "@/app/[slug]/_theme";
 
 export async function updateStore(slug: string, formData: FormData) {
   const baseRedirect = `/dashboard/stores/${slug}/settings`;
@@ -98,9 +99,9 @@ export async function updateStore(slug: string, formData: FormData) {
   if (formData.get("theme_remove_logo") === "on") logoUrl = null;
   if (formData.get("theme_remove_hero") === "on") heroUrl = null;
 
-  // 首頁文案
-  const HP_KEYS = ["window", "living", "desk", "bathroom", "nordic", "japanese"];
-  const collectionItems = HP_KEYS.map((k) => ({
+  // 首頁文案。六張選物卡的 key 跟設定頁表單、公開頁預設內容同一份
+  // （_theme.ts 的 HOMEPAGE_DEFAULT_COLLECTIONS），這裡不另抄一份 key 清單。
+  const collectionItems = HOMEPAGE_DEFAULT_COLLECTIONS.map(({ key: k }) => ({
     key: k,
     title: formString(formData, `hp_collection_${k}_title`),
     subtitle: formString(formData, `hp_collection_${k}_subtitle`),
