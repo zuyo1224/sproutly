@@ -10,6 +10,7 @@ import { sanitizeFreePos } from "@/lib/free-positions";
 import { normalizeHexColor } from "@/lib/hex-color";
 import { clampOr } from "@/lib/clamp";
 import { isPlainObject } from "@/lib/is-plain-object";
+import { resolvePageSectionToggles } from "@/lib/page-section-toggles";
 import { pickLayoutChoice, pickLayoutColumns } from "@/lib/theme-layout-choices";
 import { cleanMapEmbedUrl } from "@/lib/map-embed-url";
 import {
@@ -1190,13 +1191,7 @@ export function resolveTheme(raw: unknown): StoreTheme {
     font: fontKey,
     logoUrl: typeof t.logo_url === "string" && t.logo_url ? t.logo_url : null,
     heroUrl: typeof t.hero_url === "string" && t.hero_url ? t.hero_url : null,
-    sections: {
-      about: sections.about !== false,
-      contact: sections.contact !== false,
-      hours: sections.hours !== false,
-      faq: sections.faq !== false,
-      social: sections.social === true,
-    },
+    sections: resolvePageSectionToggles(sections),
     social: {
       instagram: typeof social.instagram === "string" && social.instagram ? social.instagram : null,
       facebook: typeof social.facebook === "string" && social.facebook ? social.facebook : null,

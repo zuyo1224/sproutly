@@ -31,6 +31,7 @@ import {
   HERO_STYLES,
 } from "@/app/[slug]/_theme";
 import { PRESET_KEYS, FONT_KEYS } from "@/lib/theme-keys";
+import { PAGE_SECTION_TOGGLES } from "@/lib/page-section-toggles";
 import { jsonbText } from "@/lib/jsonb-text";
 import { AIEditPanel } from "@/app/_components/ai-edit-panel";
 import { UnsavedChangesGuard } from "@/app/_components/unsaved-changes-guard";
@@ -577,18 +578,12 @@ A: 可以，地點為台北車站。`}</pre>
               顯示哪些區塊
             </label>
             <div className="grid grid-cols-2 gap-2">
-              {[
-                { name: "section_about", label: "關於頁", defaultChecked: theme.sections.about },
-                { name: "section_contact", label: "聯絡資訊", defaultChecked: theme.sections.contact },
-                { name: "section_hours", label: "營業時間", defaultChecked: theme.sections.hours },
-                { name: "section_faq", label: "FAQ", defaultChecked: theme.sections.faq },
-                { name: "section_social", label: "頁尾社群連結", defaultChecked: theme.sections.social },
-              ].map((s) => (
-                <label key={s.name} className="flex items-center gap-2 px-3 py-2 rounded-lg border border-emerald-100 hover:bg-emerald-50/40 transition cursor-pointer">
+              {PAGE_SECTION_TOGGLES.map((s) => (
+                <label key={s.formName} className="flex items-center gap-2 px-3 py-2 rounded-lg border border-emerald-100 hover:bg-emerald-50/40 transition cursor-pointer">
                   <input
                     type="checkbox"
-                    name={s.name}
-                    defaultChecked={s.defaultChecked}
+                    name={s.formName}
+                    defaultChecked={theme.sections[s.key]}
                     className="w-4 h-4 rounded text-emerald-700"
                   />
                   <span className="text-sm text-emerald-900">{s.label}</span>

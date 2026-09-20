@@ -5,6 +5,7 @@ import { storeTextLimitError, storeThemeTextLimitError } from "@/lib/store-limit
 import { requireUser } from "@/lib/require-user";
 import { uploadImage } from "@/lib/storage";
 import { normalizeHexColor } from "@/lib/hex-color";
+import { readPageSectionToggles } from "@/lib/page-section-toggles";
 import { redirect } from "next/navigation";
 import { buildUrl, withErrorParam } from "@/lib/url";
 import { DEFAULT_SECTION_ORDER, isFontKey, isHeroImageSide, isHeroStyle, isPresetKey } from "@/lib/theme-keys";
@@ -197,13 +198,7 @@ export async function updateStore(slug: string, formData: FormData) {
     accent,
     logo_url: logoUrl,
     hero_url: heroUrl,
-    sections: {
-      about: formData.get("section_about") === "on",
-      contact: formData.get("section_contact") === "on",
-      hours: formData.get("section_hours") === "on",
-      faq: formData.get("section_faq") === "on",
-      social: formData.get("section_social") === "on",
-    },
+    sections: readPageSectionToggles(formData),
     social,
     tagline,
     collections: existingCollections,
