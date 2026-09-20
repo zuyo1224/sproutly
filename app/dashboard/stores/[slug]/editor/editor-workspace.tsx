@@ -68,6 +68,7 @@ import {
   isHeroImageSide,
   isHeroStyle,
   isSectionKey,
+  sanitizeSectionOrder,
   FONT_WEIGHT_OPTIONS,
   LEADING_OPTIONS,
   TEXT_CASE_OPTIONS,
@@ -1649,15 +1650,15 @@ export function EditorWorkspace({
                 const l = patch.layout;
                 const patchObj: Partial<EditorTheme["layout"]> = {};
                 // patch 進來前已過 sanitizeThemePatch，這裡再用 guard 收一次而不硬轉：
-                // 型別上不再假設上游一定濾過，多一種版型也只要改 lib/theme-keys
+                // 型別上不再假設上游一定濾過，多一種版型也只要改 lib/theme-keys。
+                // sectionOrder 走跟 sanitizeThemePatch 同一支 sanitizeSectionOrder
+                //（濾合法 key＋去重、不補齊），不再自己 filter 一次。
                 if (isHeroStyle(l.heroStyle)) patchObj.heroStyle = l.heroStyle;
                 if (l.heroEyebrow !== undefined) patchObj.heroEyebrow = l.heroEyebrow;
                 if (l.heroSubtitle !== undefined) patchObj.heroSubtitle = l.heroSubtitle;
                 if (isHeroImageSide(l.heroImageSide)) patchObj.heroImageSide = l.heroImageSide;
-                if (Array.isArray(l.sectionOrder)) {
-                  const order = l.sectionOrder.filter(isSectionKey);
-                  if (order.length) patchObj.sectionOrder = order;
-                }
+                const order = sanitizeSectionOrder(l.sectionOrder);
+                if (order.length) patchObj.sectionOrder = order;
                 if (Object.keys(patchObj).length) {
                   next.layout = { ...theme.layout, ...patchObj };
                   changed = true;
