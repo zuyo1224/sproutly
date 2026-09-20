@@ -212,10 +212,6 @@ type EditorPayload = {
 };
 
 
-function sanitizeHex(s: unknown): string | undefined {
-  return normalizeHexColor(s) ?? undefined;
-}
-
 export async function saveEditorState(slug: string, payload: EditorPayload) {
   if (!slug) return { error: "missing slug" };
 
@@ -234,13 +230,12 @@ export async function saveEditorState(slug: string, payload: EditorPayload) {
   // 合併 — 只覆蓋 payload 提到的欄位
   const merged = { ...existing };
 
-  if (payload.primary !== undefined) {
-    const hex = sanitizeHex(payload.primary);
-    if (hex) merged.primary = hex;
-  }
-  if (payload.accent !== undefined) {
-    const hex = sanitizeHex(payload.accent);
-    if (hex) merged.accent = hex;
+  // 主色／強調色：店面一定要有這兩個色，所以沒有「清除」態（跟下面 14 格 Hero 文字色
+  // 不同），有帶才判、判不過就不動原值。兩格規則相同，一個迴圈跑完。
+  for (const key of ["primary", "accent"] as const) {
+    if (payload[key] === undefined) continue;
+    const hex = normalizeHexColor(payload[key]);
+    if (hex) merged[key] = hex;
   }
   if (payload.tagline !== undefined) {
     merged.tagline = String(payload.tagline).slice(0, MAX_THEME_TAGLINE_LEN);
@@ -250,7 +245,7 @@ export async function saveEditorState(slug: string, payload: EditorPayload) {
   // （Supabase Storage、Pexels 都是 https），正常操作不會送出別的東西；會送出 http://
   // 或半截網址的只有手打的請求。以前照單全收，https 店面上 http:// 被瀏覽器當混合
   // 內容擋掉、「/hero.jpg」去抓 sproutly 自己網域下不存在的檔，那張圖開天窗、後台又
-  // 看不出哪裡壞。判不過就不動原值，跟上面 primary／accent 的 sanitizeHex 同一態度。
+  // 看不出哪裡壞。判不過就不動原值，跟上面 primary／accent 同一態度。
   // 兩格規則逐字相同，只差 payload 的欄位名（camelCase）跟 theme jsonb 裡的欄位名
   // （snake_case），一張表跑完；以前各抄一段，改判法要記得兩段一起改。三態（沒帶跳過／
   // 空值存 null／有值走 helper）跟下面地圖網址、14 格顏色共用 lib/clearable-field。
