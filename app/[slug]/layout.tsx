@@ -11,6 +11,7 @@ import {
 } from "next/font/google";
 import { createClient } from "@/lib/supabase/server";
 import { telHref, socialUrl, mapsHref } from "@/lib/contact-href";
+import { SOCIAL_LINKS } from "@/lib/social-links";
 import { contrastRatio, NON_TEXT_CONTRAST_MIN } from "@/lib/color-contrast";
 import { HERO_FULL_HEIGHT_VH, HERO_SPLIT_HEIGHT_VH } from "@/lib/hero-image-bounds";
 import {
@@ -279,14 +280,14 @@ export default async function PublicStoreLayout({
 
   // 頁尾社群連結先清成乾淨的絕對網址再用，商家填了「@帳號」、純帳號名或只剩空白
   // 都不會冒出一個點了跑到站內 404 的壞連結（沒清乾淨的那項就不顯示那個社群）。
-  const socialLinks = {
-    instagram: socialUrl(theme.social.instagram),
-    facebook: socialUrl(theme.social.facebook),
-    line: socialUrl(theme.social.line),
-  };
-  const showSocial =
-    theme.sections.social &&
-    Boolean(socialLinks.instagram || socialLinks.facebook || socialLinks.line);
+  // 三格照 lib/social-links 那張表的順序跑；頁尾顯示的字跟設定頁標籤不同
+  // （LINE OA 在頁尾只寫 LINE），所以顯示字自己列一份，不拿表上的 label。
+  const FOOTER_SOCIAL_TEXT = { instagram: "Instagram", facebook: "Facebook", line: "LINE" } as const;
+  const socialLinks = SOCIAL_LINKS.flatMap((s) => {
+    const href = socialUrl(theme.social[s.key]);
+    return href ? [{ key: s.key, href, text: FOOTER_SOCIAL_TEXT[s.key] }] : [];
+  });
+  const showSocial = theme.sections.social && socialLinks.length > 0;
 
   return (
     <div
@@ -3195,9 +3196,10 @@ export default async function PublicStoreLayout({
                 />
               </div>
               <div className="flex justify-center gap-6">
-                {socialLinks.instagram && (
+                {socialLinks.map((s) => (
                   <a
-                    href={socialLinks.instagram}
+                    key={s.key}
+                    href={s.href}
                     target="_blank"
                     rel="noopener"
                     className="sproutly-link uppercase"
@@ -3207,39 +3209,9 @@ export default async function PublicStoreLayout({
                       letterSpacing: "0.3em",
                     }}
                   >
-                    Instagram
+                    {s.text}
                   </a>
-                )}
-                {socialLinks.facebook && (
-                  <a
-                    href={socialLinks.facebook}
-                    target="_blank"
-                    rel="noopener"
-                    className="sproutly-link uppercase"
-                    style={{
-                      color: fMuted,
-                      fontSize: "0.75rem",
-                      letterSpacing: "0.3em",
-                    }}
-                  >
-                    Facebook
-                  </a>
-                )}
-                {socialLinks.line && (
-                  <a
-                    href={socialLinks.line}
-                    target="_blank"
-                    rel="noopener"
-                    className="sproutly-link uppercase"
-                    style={{
-                      color: fMuted,
-                      fontSize: "0.75rem",
-                      letterSpacing: "0.3em",
-                    }}
-                  >
-                    LINE
-                  </a>
-                )}
+                ))}
               </div>
             </div>
           )}
