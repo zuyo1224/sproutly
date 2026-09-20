@@ -11,6 +11,7 @@ import { normalizeHexColor } from "@/lib/hex-color";
 import { clampOr } from "@/lib/clamp";
 import { isPlainObject } from "@/lib/is-plain-object";
 import { resolvePageSectionToggles } from "@/lib/page-section-toggles";
+import { resolveSocialLinks } from "@/lib/social-links";
 import { pickLayoutChoice, pickLayoutColumns } from "@/lib/theme-layout-choices";
 import { cleanMapEmbedUrl } from "@/lib/map-embed-url";
 import {
@@ -1192,11 +1193,7 @@ export function resolveTheme(raw: unknown): StoreTheme {
     logoUrl: typeof t.logo_url === "string" && t.logo_url ? t.logo_url : null,
     heroUrl: typeof t.hero_url === "string" && t.hero_url ? t.hero_url : null,
     sections: resolvePageSectionToggles(sections),
-    social: {
-      instagram: typeof social.instagram === "string" && social.instagram ? social.instagram : null,
-      facebook: typeof social.facebook === "string" && social.facebook ? social.facebook : null,
-      line: typeof social.line === "string" && social.line ? social.line : null,
-    },
+    social: resolveSocialLinks(social),
     tagline: typeof t.tagline === "string" && t.tagline ? t.tagline : null,
     collections:
       isPlainObject(t.collections)

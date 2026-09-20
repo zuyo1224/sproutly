@@ -32,6 +32,7 @@ import {
 } from "@/app/[slug]/_theme";
 import { PRESET_KEYS, FONT_KEYS } from "@/lib/theme-keys";
 import { PAGE_SECTION_TOGGLES } from "@/lib/page-section-toggles";
+import { SOCIAL_LINKS } from "@/lib/social-links";
 import { jsonbText } from "@/lib/jsonb-text";
 import { AIEditPanel } from "@/app/_components/ai-edit-panel";
 import { UnsavedChangesGuard } from "@/app/_components/unsaved-changes-guard";
@@ -597,42 +598,20 @@ A: 可以，地點為台北車站。`}</pre>
               社群連結（會出現在頁尾，只有勾選「頁尾社群連結」才顯示）
             </label>
             <div className="space-y-2">
-              <div className="flex items-start gap-2">
-                <label htmlFor="social_instagram" className="text-xs text-emerald-900/60 w-20 pt-2.5">Instagram</label>
-                <ContactHintInput
-                  kind="social"
-                  id="social_instagram"
-                  name="social_instagram"
-                  maxLength={MAX_SOCIAL_URL_LEN}
-                  defaultValue={theme.social.instagram ?? ""}
-                  placeholder="https://www.instagram.com/your-store"
-                  className="w-full rounded-lg border border-emerald-100 px-3 py-2 outline-none focus:border-emerald-400 transition text-sm"
-                />
-              </div>
-              <div className="flex items-start gap-2">
-                <label htmlFor="social_facebook" className="text-xs text-emerald-900/60 w-20 pt-2.5">Facebook</label>
-                <ContactHintInput
-                  kind="social"
-                  id="social_facebook"
-                  name="social_facebook"
-                  maxLength={MAX_SOCIAL_URL_LEN}
-                  defaultValue={theme.social.facebook ?? ""}
-                  placeholder="https://www.facebook.com/your-store"
-                  className="w-full rounded-lg border border-emerald-100 px-3 py-2 outline-none focus:border-emerald-400 transition text-sm"
-                />
-              </div>
-              <div className="flex items-start gap-2">
-                <label htmlFor="social_line" className="text-xs text-emerald-900/60 w-20 pt-2.5">LINE OA</label>
-                <ContactHintInput
-                  kind="social"
-                  id="social_line"
-                  name="social_line"
-                  maxLength={MAX_SOCIAL_URL_LEN}
-                  defaultValue={theme.social.line ?? ""}
-                  placeholder="https://line.me/R/ti/p/@xxx"
-                  className="w-full rounded-lg border border-emerald-100 px-3 py-2 outline-none focus:border-emerald-400 transition text-sm"
-                />
-              </div>
+              {SOCIAL_LINKS.map((s) => (
+                <div key={s.key} className="flex items-start gap-2">
+                  <label htmlFor={s.formName} className="text-xs text-emerald-900/60 w-20 pt-2.5">{s.label}</label>
+                  <ContactHintInput
+                    kind="social"
+                    id={s.formName}
+                    name={s.formName}
+                    maxLength={MAX_SOCIAL_URL_LEN}
+                    defaultValue={theme.social[s.key] ?? ""}
+                    placeholder={s.placeholder}
+                    className="w-full rounded-lg border border-emerald-100 px-3 py-2 outline-none focus:border-emerald-400 transition text-sm"
+                  />
+                </div>
+              ))}
             </div>
           </div>
 
