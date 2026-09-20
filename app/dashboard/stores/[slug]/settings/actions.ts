@@ -9,10 +9,6 @@ import { redirect } from "next/navigation";
 import { buildUrl, withErrorParam } from "@/lib/url";
 import { DEFAULT_SECTION_ORDER, isFontKey, isHeroImageSide, isHeroStyle, isPresetKey } from "@/lib/theme-keys";
 
-function safeHex(input: string, fallback: string): string {
-  return normalizeHexColor(input) ?? fallback;
-}
-
 export async function updateStore(slug: string, formData: FormData) {
   const baseRedirect = `/dashboard/stores/${slug}/settings`;
 
@@ -61,11 +57,11 @@ export async function updateStore(slug: string, formData: FormData) {
   const fontRaw = String(formData.get("theme_font") ?? "inter");
   const font = isFontKey(fontRaw) ? fontRaw : "inter";
 
-  const primary = safeHex(
-    String(formData.get("theme_primary") ?? ""),
-    ""
-  );
-  const accent = safeHex(String(formData.get("theme_accent") ?? ""), "");
+  // 主色／點綴色：判不過就不放進 theme（下面整份 theme 是重組的，這格省略等於退回
+  // 風格預設色，_theme.ts 讀回時補）。跟視覺編輯器那邊「判不過不動原值」語意不同，
+  // 兩邊各自維持。normalizeHexColor 自己擋非字串，FormData 拿到什麼直接丟進去就好。
+  const primary = normalizeHexColor(formData.get("theme_primary")) ?? undefined;
+  const accent = normalizeHexColor(formData.get("theme_accent")) ?? undefined;
   const tagline = formStringOrNull(formData, "theme_tagline");
 
   // logo / hero：設定頁只收「上傳檔案」跟「移除」勾選，沒上傳就保留原值。
@@ -197,8 +193,8 @@ export async function updateStore(slug: string, formData: FormData) {
   const theme = {
     preset,
     font,
-    primary: primary || undefined,
-    accent: accent || undefined,
+    primary,
+    accent,
     logo_url: logoUrl,
     hero_url: heroUrl,
     sections: {
