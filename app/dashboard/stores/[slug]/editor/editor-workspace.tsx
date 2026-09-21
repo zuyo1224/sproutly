@@ -451,6 +451,56 @@ type EditorTheme = {
   };
 };
 
+// 預覽 iframe 雙擊改字（sproutly-edit-text-update）能直接套進 homepage 的欄位：
+// 就是 homepage 底下所有 string 型別的 key（清單類 collectionItems／journalCards
+// 另走帶 index 的分支）。型別從 EditorTheme 推出來，表裡打錯字會被 satisfies 擋下；
+// 名稱跟公開頁 data-edit-field 一字不差。
+type InlineHomepageTextField = {
+  [K in keyof EditorTheme["homepage"]]: EditorTheme["homepage"][K] extends string ? K : never;
+}[keyof EditorTheme["homepage"]];
+const INLINE_HOMEPAGE_TEXT_FIELDS = [
+  "promise",
+  "promiseEyebrow",
+  "featuredTitle",
+  "featuredEyebrow",
+  "featuredCta",
+  "collectionsIntro",
+  "collectionsEyebrow",
+  "visitTitle",
+  "visitEyebrow",
+  "journalEyebrow",
+  "journalTitle",
+  "journalSubtitle",
+  "testimonialsEyebrow",
+  "testimonialsTitle",
+  "faqEyebrow",
+  "faqTitle",
+  "galleryEyebrow",
+  "galleryTitle",
+  "partnersEyebrow",
+  "statsEyebrow",
+  "statsTitle",
+  "heroCta",
+  "heroSecondaryCta",
+  "heroMagazineByline",
+  "collectionsCardCta",
+  "aboutEyebrow",
+  "aboutTitle",
+  "contactEyebrow",
+  "contactTitle",
+  "shopEyebrow",
+  "shopTitle",
+  "footerWordsLabel",
+  "footerFollowLabel",
+  "footerTrackLabel",
+  "footerVisitLabel",
+  "journalCardLabel",
+] as const satisfies readonly InlineHomepageTextField[];
+const INLINE_HOMEPAGE_TEXT_FIELD_SET: ReadonlySet<string> = new Set(INLINE_HOMEPAGE_TEXT_FIELDS);
+function isInlineHomepageTextField(field: string): field is InlineHomepageTextField {
+  return INLINE_HOMEPAGE_TEXT_FIELD_SET.has(field);
+}
+
 type SelectedTab = "section" | "design" | "content" | "ai";
 
 const HERO_STYLE_LABELS: Record<HeroStyle, string> = {
@@ -706,82 +756,14 @@ export function EditorWorkspace({
         const value = msg.value;
         if (msg.field === "tagline") {
           update("tagline", value);
-        } else if (msg.field === "promise") {
-          updateHomepage({ promise: value });
-        } else if (msg.field === "visitTitle") {
-          updateHomepage({ visitTitle: value });
-        } else if (msg.field === "visitEyebrow") {
-          updateHomepage({ visitEyebrow: value });
-        } else if (msg.field === "featuredTitle") {
-          updateHomepage({ featuredTitle: value });
-        } else if (msg.field === "featuredEyebrow") {
-          updateHomepage({ featuredEyebrow: value });
-        } else if (msg.field === "featuredCta") {
-          updateHomepage({ featuredCta: value });
-        } else if (msg.field === "collectionsIntro") {
-          updateHomepage({ collectionsIntro: value });
-        } else if (msg.field === "collectionsEyebrow") {
-          updateHomepage({ collectionsEyebrow: value });
         } else if (msg.field === "heroEyebrow") {
           updateLayout({ heroEyebrow: value || null });
         } else if (msg.field === "heroSubtitle") {
           updateLayout({ heroSubtitle: value || null });
-        } else if (msg.field === "galleryEyebrow") {
-          updateHomepage({ galleryEyebrow: value });
-        } else if (msg.field === "galleryTitle") {
-          updateHomepage({ galleryTitle: value });
-        } else if (msg.field === "partnersEyebrow") {
-          updateHomepage({ partnersEyebrow: value });
-        } else if (msg.field === "statsEyebrow") {
-          updateHomepage({ statsEyebrow: value });
-        } else if (msg.field === "statsTitle") {
-          updateHomepage({ statsTitle: value });
-        } else if (msg.field === "faqEyebrow") {
-          updateHomepage({ faqEyebrow: value });
-        } else if (msg.field === "faqTitle") {
-          updateHomepage({ faqTitle: value });
-        } else if (msg.field === "heroCta") {
-          updateHomepage({ heroCta: value });
-        } else if (msg.field === "heroSecondaryCta") {
-          updateHomepage({ heroSecondaryCta: value });
-        } else if (msg.field === "heroMagazineByline") {
-          updateHomepage({ heroMagazineByline: value });
-        } else if (msg.field === "collectionsCardCta") {
-          updateHomepage({ collectionsCardCta: value });
-        } else if (msg.field === "aboutEyebrow") {
-          updateHomepage({ aboutEyebrow: value });
-        } else if (msg.field === "aboutTitle") {
-          updateHomepage({ aboutTitle: value });
-        } else if (msg.field === "contactEyebrow") {
-          updateHomepage({ contactEyebrow: value });
-        } else if (msg.field === "contactTitle") {
-          updateHomepage({ contactTitle: value });
-        } else if (msg.field === "shopEyebrow") {
-          updateHomepage({ shopEyebrow: value });
-        } else if (msg.field === "shopTitle") {
-          updateHomepage({ shopTitle: value });
-        } else if (msg.field === "journalCardLabel") {
-          updateHomepage({ journalCardLabel: value });
-        } else if (msg.field === "journalEyebrow") {
-          updateHomepage({ journalEyebrow: value });
-        } else if (msg.field === "journalTitle") {
-          updateHomepage({ journalTitle: value });
-        } else if (msg.field === "journalSubtitle") {
-          updateHomepage({ journalSubtitle: value });
-        } else if (msg.field === "testimonialsEyebrow") {
-          updateHomepage({ testimonialsEyebrow: value });
-        } else if (msg.field === "testimonialsTitle") {
-          updateHomepage({ testimonialsTitle: value });
-        } else if (msg.field === "promiseEyebrow") {
-          updateHomepage({ promiseEyebrow: value });
-        } else if (msg.field === "footerWordsLabel") {
-          updateHomepage({ footerWordsLabel: value });
-        } else if (msg.field === "footerFollowLabel") {
-          updateHomepage({ footerFollowLabel: value });
-        } else if (msg.field === "footerTrackLabel") {
-          updateHomepage({ footerTrackLabel: value });
-        } else if (msg.field === "footerVisitLabel") {
-          updateHomepage({ footerVisitLabel: value });
+        } else if (isInlineHomepageTextField(msg.field)) {
+          // 首頁文案 36 格字串欄位：data-edit-field 名稱就是 homepage 的 key，
+          // 查表直接套，不再一格一個 else if
+          updateHomepage({ [msg.field]: value });
         } else if (typeof msg.index === "number" && Number.isInteger(msg.index) && msg.index >= 0) {
           // 清單卡片欄位：訊息多帶 index 說是第幾筆。
           // 這個 effect deps 是 []，closure 裡的 theme 是掛載當下的舊值，
