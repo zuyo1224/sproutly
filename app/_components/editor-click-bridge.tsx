@@ -4,7 +4,8 @@ import { useEffect } from "react";
 import { clampFreePos } from "@/lib/theme-scale";
 import { isPlainObject } from "@/lib/is-plain-object";
 import { sanitizeFreePos } from "@/lib/free-positions";
-import { splitByPunc } from "@/lib/split-by-punc";
+import { resolveInlineTextPreview } from "@/lib/inline-text-preview";
+import { HOMEPAGE_DEFAULTS } from "@/app/[slug]/_theme";
 
 /**
  * iframe 內公開頁 client island —
@@ -360,26 +361,34 @@ export function EditorClickBridge() {
         }
       }
 
-      // tagline / eyebrow 等 text 欄位（用 data-edit-field 對應）
-      const tagline = theme.tagline;
-      if (typeof tagline === "string") {
-        // 跟公開頁一樣按全形標點切行、一行一個 <span class="block">（同一支 splitByPunc）。
-        // 以前用 textContent 整串塞回去，預覽顯示成一行、存檔重讀後才拆行，
-        // 編輯時看到的換行跟存出去的對不上。
-        const lines = splitByPunc(tagline);
-        document
-          .querySelectorAll<HTMLElement>('[data-edit-field="tagline"]')
-          .forEach((el) => {
-            el.replaceChildren(
-              ...lines.map((line) => {
-                const span = document.createElement("span");
-                span.className = "block";
-                span.textContent = line;
-                return span;
-              }),
-            );
-          });
-      }
+      // 文字欄位：畫面上每格 [data-edit-field] 都去 theme 找同名的值套回去（讀哪裡、
+      // 沒填顯示什麼、要不要拆行，規則在 lib/inline-text-preview，跟公開頁 render 對齊）。
+      // 以前這裡只套 tagline 一格，副標、小標、各區段標題雙擊改字後按復原，theme 退了
+      // 但預覽的字留在原地，看起來像復原沒作用。
+      // 帶 data-edit-index 的清單卡片欄位（好評、FAQ、數字、相簿、慢讀卡、選物卡）
+      // 還沒接，先跳過；正在雙擊打字中的格子也別蓋掉。
+      document
+        .querySelectorAll<HTMLElement>("[data-edit-field]")
+        .forEach((el) => {
+          const field = el.dataset.editField;
+          if (!field || el.dataset.editIndex !== undefined) return;
+          if (el.hasAttribute("contenteditable")) return;
+          const preview = resolveInlineTextPreview(theme, field, HOMEPAGE_DEFAULTS);
+          if (!preview) return;
+          if (preview.kind === "text") {
+            el.textContent = preview.value;
+            return;
+          }
+          // 跟公開頁 blockLines 一樣一行一個 <span class="block">
+          el.replaceChildren(
+            ...preview.lines.map((line) => {
+              const span = document.createElement("span");
+              span.className = "block";
+              span.textContent = line;
+              return span;
+            }),
+          );
+        });
 
       // freePositions 套到 [data-edit-drag]。以前這裡有一張「不套座標」的名單擋舊
       // hero-tagline 殘留座標，主標重新打開拖動（只綁 h1、scope 在米色區塊內）後
