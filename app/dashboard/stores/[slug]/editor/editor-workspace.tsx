@@ -44,7 +44,7 @@ import {
   FEATURED_COUNT_MIN,
   FEATURED_COUNT_MAX,
 } from "@/lib/theme-scale";
-import { FREE_POS_KEYS, SECTION_DRAG_ELEMENT, stripLegacyFreePositions } from "@/lib/free-positions";
+import { FREE_POS_KEYS, SECTION_DRAG_ELEMENT, sanitizeFreePos, stripLegacyFreePositions } from "@/lib/free-positions";
 // HOMEPAGE_DEFAULTS：面板每一格「空白就用預設」的 placeholder、以及格子底下 hint 散文裡
 // 「預設「xxx」」那段字，都直接查這張表，跟公開頁真正套上去的字是同一份；以前三十格各手抄
 // 一句，選物 intro 那格就抄成「…那一株...」而實品是「…那一株。」。
@@ -675,11 +675,14 @@ export function EditorWorkspace({
         }
       } else if (
         msg.type === "sproutly-edit-position-update" &&
-        typeof (msg as { element?: string }).element === "string" &&
-        typeof (msg as { x?: number }).x === "number" &&
-        typeof (msg as { y?: number }).y === "number"
+        typeof (msg as { element?: string }).element === "string"
       ) {
-        const m = msg as unknown as { element: string; x: number; y: number };
+        // 座標守門走 lib/free-positions 的 sanitizeFreePos，跟存檔端／公開頁／
+        // 預覽套位同一支（擋 NaN／±Infinity＋夾 0-1）。bridge 送來前已 clampFreePos
+        // 過，正常路徑逐字同值；只有壞值才會在這裡被丟掉而不是寫進 theme。
+        const pos = sanitizeFreePos(msg);
+        if (!pos) return;
+        const element = (msg as { element: string }).element;
         // unified freePositions Record（任何 element 都走這條路徑）
         setTheme((t) => {
           pushHistory(t);
@@ -689,7 +692,7 @@ export function EditorWorkspace({
               ...t.layout,
               freePositions: {
                 ...t.layout.freePositions,
-                [m.element]: { x: m.x, y: m.y },
+                [element]: pos,
               },
             },
           };
