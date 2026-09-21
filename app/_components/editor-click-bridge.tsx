@@ -370,10 +370,9 @@ export function EditorClickBridge() {
           });
       }
 
-      // freePositions 套到 [data-edit-drag]
-      // hero-tagline 已重新打開 drag — 但只綁在 h1 上，scope 內 cream block，
-      // 不會跑出 hero section 外影響其他 section。
-      const SKIP_FREE_POSITION_KEYS = new Set<string>();
+      // freePositions 套到 [data-edit-drag]。以前這裡有一張「不套座標」的名單擋舊
+      // hero-tagline 殘留座標，主標重新打開拖動（只綁 h1、scope 在米色區塊內）後
+      // 名單就一直是空的，已拿掉；沒座標或座標不合法一律走下面清掉 inline 樣式那條。
       const layout = theme.layout;
       const freePositions = isPlainObject(layout) ? layout.freePositions : undefined;
       if (isPlainObject(freePositions)) {
@@ -382,14 +381,6 @@ export function EditorClickBridge() {
           .forEach((el) => {
             const key = el.dataset.editDrag;
             if (!key) return;
-            if (SKIP_FREE_POSITION_KEYS.has(key)) {
-              // 強制清掉 inline absolute styles 即使 DB 還留著舊值
-              el.style.left = "";
-              el.style.top = "";
-              el.style.transform = "";
-              el.style.position = "";
-              return;
-            }
             // 守門走 lib/free-positions 的 sanitizeFreePos，跟存檔端、公開頁讀回端同一支：
             // 以前這裡手寫 typeof === "number"，NaN／Infinity 也算過關，left 寫成 "NaN%"
             // 被瀏覽器忽略、position: absolute 卻照設，元素就飄到區塊左上角；超出 0-1 的
