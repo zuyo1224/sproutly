@@ -3,6 +3,7 @@
 import { useEffect } from "react";
 import { clampFreePos } from "@/lib/theme-scale";
 import { isPlainObject } from "@/lib/is-plain-object";
+import { sanitizeFreePos } from "@/lib/free-positions";
 
 /**
  * iframe 內公開頁 client island —
@@ -389,8 +390,12 @@ export function EditorClickBridge() {
               el.style.position = "";
               return;
             }
-            const pos = freePositions[key];
-            if (isPlainObject(pos) && typeof pos.x === "number" && typeof pos.y === "number") {
+            // 守門走 lib/free-positions 的 sanitizeFreePos，跟存檔端、公開頁讀回端同一支：
+            // 以前這裡手寫 typeof === "number"，NaN／Infinity 也算過關，left 寫成 "NaN%"
+            // 被瀏覽器忽略、position: absolute 卻照設，元素就飄到區塊左上角；超出 0-1 的
+            // 值也沒夾，預覽畫的位置跟存進去、公開頁畫出來的對不上。
+            const pos = sanitizeFreePos(freePositions[key]);
+            if (pos) {
               el.style.left = `${pos.x * 100}%`;
               el.style.top = `${pos.y * 100}%`;
               el.style.transform = "translate(-50%, -50%)";

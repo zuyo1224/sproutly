@@ -51,7 +51,8 @@ const LEGACY_FREE_POS_KEYS = [
   "testimonials-title",
 ];
 
-// 一格座標「能不能用」的守門，存檔端與公開頁讀回端共用這一支。
+// 一格座標「能不能用」的守門，存檔端、公開頁讀回端與編輯器預覽套位（editor-click-bridge）
+// 三邊共用這一支。
 //
 // 以前兩邊各寫一遍「是物件、x／y 都是有限數、各夾進 0-1」——actions.ts 那份還手寫
 // typeof + Number.isFinite、_theme.ts 那份走 isFiniteNumber，同一件事兩種寫法；
