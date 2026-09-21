@@ -29,12 +29,13 @@ export function isHeroImageSide(value: unknown): value is HeroImageSide {
 // 滿版圖文字段）的 type 以前在公開頁 _theme.ts 與編輯器 editor-workspace 各手抄六份，
 // 存檔 actions.ts 六段 v === "left" || v === "center" || v === "right" 再各抄一遍。
 // 三個值不太會變，但十八份抄本只要哪天多一種對齊（例如 justify）就得全部翻一次。
+//
+// 這張跟下面粗細／字距／行距／大小寫四張清單只導出 KEYS 與型別，不另附 isAlignX 那類 guard：
+// 存檔端與讀回端都走 lib/theme-layout-choices 的 LAYOUT_CHOICES（values 直接掛這幾張清單），
+// 用 isLayoutChoice／pickLayoutChoice 按欄位判；guard 曾經留給「編輯器面板單值判斷」用，
+// 結果沒有任何呼叫端，只剩測試在測它自己，已拿掉。
 export const ALIGN_X_KEYS = ["left", "center", "right"] as const;
 export type AlignX = (typeof ALIGN_X_KEYS)[number];
-
-export function isAlignX(value: unknown): value is AlignX {
-  return typeof value === "string" && (ALIGN_X_KEYS as readonly string[]).includes(value);
-}
 
 // 編輯器「靠左 / 置中 / 靠右」三顆按鈕那張 { v, label } 表。split 文字欄、minimal 整段、
 // 滿版圖文字段、各區段「內容欄位置」四格以前各自手寫一份一模一樣的陣列，改一格的字
@@ -67,10 +68,6 @@ export const ALIGN_X_SHORT_OPTIONS = [
 export const FONT_WEIGHT_KEYS = ["normal", "medium", "bold"] as const;
 export type FontWeight = (typeof FONT_WEIGHT_KEYS)[number];
 
-export function isFontWeight(value: unknown): value is FontWeight {
-  return typeof value === "string" && (FONT_WEIGHT_KEYS as readonly string[]).includes(value);
-}
-
 // 編輯器「粗細」三顆按鈕那張 { v, label } 表。Hero 副標／主標兩格，加上區段樣式的內文／
 // 卡片標題／卡片描述／卡片價錢四格，以前六格各自手寫一份一模一樣的陣列（常規／中黑／粗），
 // 改一格的字另外五格不會跟著動。順序照 FONT_WEIGHT_KEYS。區段那四格的型別來自
@@ -85,10 +82,6 @@ export const FONT_WEIGHT_OPTIONS = [
 
 export const TRACKING_KEYS = ["tight", "normal", "wide"] as const;
 export type Tracking = (typeof TRACKING_KEYS)[number];
-
-export function isTracking(value: unknown): value is Tracking {
-  return typeof value === "string" && (TRACKING_KEYS as readonly string[]).includes(value);
-}
 
 // 編輯器「字距」三顆按鈕那張 { v, label } 表。Hero 主標／小標／副標／按鈕／byline 五格，
 // 加上區段樣式的內文字距／標題字距兩格，以前七格各自手寫一份一模一樣的陣列，改一格的字
@@ -105,10 +98,6 @@ export const TRACKING_OPTIONS = [
 export const LEADING_KEYS = ["tight", "normal", "relaxed"] as const;
 export type Leading = (typeof LEADING_KEYS)[number];
 
-export function isLeading(value: unknown): value is Leading {
-  return typeof value === "string" && (LEADING_KEYS as readonly string[]).includes(value);
-}
-
 // 「行距」三顆按鈕的表，Hero 主標／小標／副標／byline 四格共用，理由同 TRACKING_OPTIONS。
 export const LEADING_OPTIONS = [
   { v: "tight", label: "收緊" },
@@ -124,10 +113,6 @@ export const LEADING_OPTIONS = [
 // 不併進來。section 樣式那套的 eyebrowCase 值也一樣，正本在 lib/section-style-schema。
 export const TEXT_CASE_KEYS = ["upper", "capitalize", "none"] as const;
 export type TextCase = (typeof TEXT_CASE_KEYS)[number];
-
-export function isTextCase(value: unknown): value is TextCase {
-  return typeof value === "string" && (TEXT_CASE_KEYS as readonly string[]).includes(value);
-}
 
 // 編輯器「大小寫」三顆按鈕那張 { v, label } 表。Hero 小標／byline 兩格，加上區段樣式的
 // 小標大小寫／卡片小字大小寫兩格，以前四格各自手寫一份一模一樣的陣列（全大寫／字首大寫／

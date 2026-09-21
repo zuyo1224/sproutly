@@ -14,10 +14,10 @@
 //
 // Hero 五段文字（主標／小標／副標／按鈕／byline）的對齊、粗細、字距、行距、大小寫共 20 格，合法值
 // 就是 theme-keys 那五張共用清單（ALIGN_X／FONT_WEIGHT／TRACKING／LEADING／TEXT_CASE_KEYS），以前
-// 沒進這張表：存檔端 actions.ts 五個迴圈各手抄一份 key 清單配 isAlignX 那類 guard、讀回端 _theme.ts
-// 20 行各寫 `isX(l.k) ? l.k : "預設"`，多一格要三處一起加、預設值只在讀回端看得到。現在也進表，
-// values 直接掛共用清單（清單多值這裡自動跟），fallback 寫在表裡一眼看得到；guard 函式留給
-// 編輯器面板那類單值判斷用。
+// 沒進這張表：存檔端 actions.ts 五個迴圈各手抄一份 key 清單配 theme-keys 當時的 isAlignX 那類 guard、
+// 讀回端 _theme.ts 20 行各寫 `isX(l.k) ? l.k : "預設"`，多一格要三處一起加、預設值只在讀回端看得到。
+// 現在也進表，values 直接掛共用清單（清單多值這裡自動跟），fallback 寫在表裡一眼看得到；那五支
+// guard 之後沒人呼叫，已從 theme-keys 拿掉，單值判斷一律用下面的 isLayoutChoice(key, value)。
 //
 // 放 lib 而不放 _theme.ts：lib 的測試用 node --test 直接跑，不能拖進 _theme.ts 那整包。
 import {

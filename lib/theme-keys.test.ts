@@ -20,11 +20,6 @@ import {
   TEXT_CASE_OPTIONS,
   PRESET_KEYS,
   FONT_KEYS,
-  isAlignX,
-  isFontWeight,
-  isTracking,
-  isLeading,
-  isTextCase,
   isPresetKey,
   isFontKey,
   isHeroStyle,
@@ -70,47 +65,23 @@ test("預設順序的 6 個都在 11 個之內，且順序照 hero 開頭、visi
   assert.equal(DEFAULT_SECTION_ORDER.at(-1), "visit");
 });
 
-test("水平對齊只有 left / center / right 三種，清單外與非字串不算", () => {
+// 這五張清單的「清單外的值不算、按鈕那格的 default 是它自己的一檔」由 theme-layout-choices.test
+// 對 isLayoutChoice／pickLayoutChoice 測（存檔與讀回實際走那條路）；這裡只守清單本身的值與順序。
+test("水平對齊只有 left / center / right 三種", () => {
   assert.deepEqual([...ALIGN_X_KEYS], ["left", "center", "right"]);
-  for (const k of ALIGN_X_KEYS) assert.equal(isAlignX(k), true);
-  assert.equal(isAlignX("inherit"), false);
-  assert.equal(isAlignX("justify"), false);
-  assert.equal(isAlignX("Left"), false);
-  assert.equal(isAlignX(""), false);
-  assert.equal(isAlignX(undefined), false);
-  assert.equal(isAlignX(null), false);
 });
 
-test("Hero 文字三張三檔清單：粗細 / 字距 / 行距，清單外與非字串不算", () => {
+test("Hero 文字三張三檔清單：粗細 / 字距 / 行距，字距的 wide 與行距的 relaxed 不互通", () => {
   assert.deepEqual([...FONT_WEIGHT_KEYS], ["normal", "medium", "bold"]);
   assert.deepEqual([...TRACKING_KEYS], ["tight", "normal", "wide"]);
   assert.deepEqual([...LEADING_KEYS], ["tight", "normal", "relaxed"]);
-  for (const k of FONT_WEIGHT_KEYS) assert.equal(isFontWeight(k), true);
-  for (const k of TRACKING_KEYS) assert.equal(isTracking(k), true);
-  for (const k of LEADING_KEYS) assert.equal(isLeading(k), true);
-  // 按鈕粗細的 "default" 不在清單裡，是 heroCtaWeight 那格自己多的一檔
-  assert.equal(isFontWeight("default"), false);
-  assert.equal(isFontWeight("light"), false);
-  // 字距的 wide 與行距的 relaxed 不能互通
-  assert.equal(isTracking("relaxed"), false);
-  assert.equal(isLeading("wide"), false);
-  assert.equal(isTracking("Tight"), false);
-  assert.equal(isLeading(""), false);
-  assert.equal(isFontWeight(undefined), false);
-  assert.equal(isTracking(null), false);
+  assert.equal((TRACKING_KEYS as readonly string[]).includes("relaxed"), false);
+  assert.equal((LEADING_KEYS as readonly string[]).includes("wide"), false);
 });
 
-test("Hero 小標 / byline 大小寫三檔：upper / capitalize / none，按鈕那格的 default 不算", () => {
+test("Hero 小標 / byline 大小寫三檔：upper / capitalize / none，沒有按鈕那格的 default", () => {
   assert.deepEqual([...TEXT_CASE_KEYS], ["upper", "capitalize", "none"]);
-  for (const k of TEXT_CASE_KEYS) assert.equal(isTextCase(k), true);
-  // heroCtaCase 的 "default"（照各版型原本）是那格自己的一檔，不在這張清單
-  assert.equal(isTextCase("default"), false);
-  assert.equal(isTextCase("uppercase"), false);
-  assert.equal(isTextCase("lower"), false);
-  assert.equal(isTextCase("Upper"), false);
-  assert.equal(isTextCase(""), false);
-  assert.equal(isTextCase(undefined), false);
-  assert.equal(isTextCase(null), false);
+  assert.equal((TEXT_CASE_KEYS as readonly string[]).includes("default"), false);
 });
 
 test("風格底五種與字體六種都算合法，清單外、大小寫不同與非字串不算", () => {
