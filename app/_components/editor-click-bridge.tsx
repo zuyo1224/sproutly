@@ -4,8 +4,14 @@ import { useEffect } from "react";
 import { clampFreePos } from "@/lib/theme-scale";
 import { isPlainObject } from "@/lib/is-plain-object";
 import { sanitizeFreePos } from "@/lib/free-positions";
-import { resolveInlineTextPreview } from "@/lib/inline-text-preview";
-import { HOMEPAGE_DEFAULTS } from "@/app/[slug]/_theme";
+import { resolveInlineListTextPreview, resolveInlineTextPreview } from "@/lib/inline-text-preview";
+import { HOMEPAGE_DEFAULTS, HOMEPAGE_DEFAULT_COLLECTIONS, JOURNAL_CARD_DEFAULTS } from "@/app/[slug]/_theme";
+
+// 慢讀卡／選物卡沒存過內容時公開頁畫的預設整組，復原時套字要照同一組對 index
+const HOMEPAGE_CARD_DEFAULTS = {
+  journalCards: JOURNAL_CARD_DEFAULTS,
+  collectionItems: HOMEPAGE_DEFAULT_COLLECTIONS,
+} as const;
 
 /**
  * iframe 內公開頁 client island —
@@ -366,17 +372,36 @@ export function EditorClickBridge() {
       // 以前這裡只套 tagline 一格，副標、小標、各區段標題雙擊改字後按復原，theme 退了
       // 但預覽的字留在原地，看起來像復原沒作用。
       // 帶 data-edit-index 的清單卡片欄位（好評、FAQ、數字、相簿、慢讀卡、選物卡）
-      // 還沒接，先跳過；正在雙擊打字中的格子也別蓋掉。
+      // 用 index 去 theme 那張清單撈同一筆（FAQ 畫面第幾條對回原始第幾筆的規則在 lib）。
+      // 正在雙擊打字中的格子別蓋掉。
       document
         .querySelectorAll<HTMLElement>("[data-edit-field]")
         .forEach((el) => {
           const field = el.dataset.editField;
-          if (!field || el.dataset.editIndex !== undefined) return;
+          if (!field) return;
           if (el.hasAttribute("contenteditable")) return;
-          const preview = resolveInlineTextPreview(theme, field, HOMEPAGE_DEFAULTS);
+          const indexRaw = el.dataset.editIndex;
+          let preview;
+          if (indexRaw === undefined) {
+            preview = resolveInlineTextPreview(theme, field, HOMEPAGE_DEFAULTS);
+          } else if (/^\d+$/.test(indexRaw)) {
+            preview = resolveInlineListTextPreview(theme, field, Number(indexRaw), HOMEPAGE_CARD_DEFAULTS);
+          }
           if (!preview) return;
           if (preview.kind === "text") {
             el.textContent = preview.value;
+            return;
+          }
+          if (preview.kind === "paragraphs") {
+            // 跟公開頁 FAQ 答案一樣一段一個 <p class="sproutly-card-desc">，第二段起 mt-3
+            el.replaceChildren(
+              ...preview.paragraphs.map((line, idx) => {
+                const p = document.createElement("p");
+                p.className = idx > 0 ? "sproutly-card-desc mt-3" : "sproutly-card-desc";
+                p.textContent = line;
+                return p;
+              }),
+            );
             return;
           }
           // 跟公開頁 blockLines 一樣一行一個 <span class="block">

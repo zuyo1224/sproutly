@@ -4,7 +4,7 @@
 // 這裡把「讀哪裡」「fallback」「拆行方式」「不是文字格就跳過」四件事寫死。
 import { describe, it } from "node:test";
 import assert from "node:assert/strict";
-import { resolveInlineTextPreview } from "./inline-text-preview.ts";
+import { resolveInlineListTextPreview, resolveInlineTextPreview } from "./inline-text-preview.ts";
 
 const DEFAULTS = {
   collectionsIntro: "告訴我們你的空間，我們幫你選對的那一株。",
@@ -61,5 +61,75 @@ describe("resolveInlineTextPreview", () => {
     assert.equal(resolveInlineTextPreview({ homepage: { journalCards: [] } }, "journalCards", DEFAULTS), null);
     assert.equal(resolveInlineTextPreview(null, "featuredTitle", DEFAULTS), null);
     assert.equal(resolveInlineTextPreview({ homepage: [] }, "featuredTitle", DEFAULTS), null);
+  });
+});
+
+const CARD_DEFAULTS = {
+  journalCards: [
+    { eyebrow: "Care", title: "預設一", excerpt: "預設摘要一" },
+    { eyebrow: "Space", title: "預設二", excerpt: "預設摘要二" },
+  ],
+  collectionItems: [
+    { key: "desk", title: "書桌", subtitle: "預設副標" },
+    { key: "window", title: "窗邊", subtitle: "" },
+  ],
+};
+
+describe("resolveInlineListTextPreview", () => {
+  it("好評／數字／相簿：畫面第 i 張就是原始第 i 筆，沒填的 key 套成空字串，超出清單回 null", () => {
+    const theme = {
+      layout: {
+        testimonials: [{ quote: "甲", author: "A" }, { quote: "乙", author: "B", role: "老客人" }],
+        stats: [{ value: "120", label: "株" }],
+        gallery: [{ url: "https://x/1.jpg", caption: "一" }, { url: "https://x/2.jpg" }],
+      },
+    };
+    assert.deepEqual(resolveInlineListTextPreview(theme, "testimonialQuote", 1, CARD_DEFAULTS), { kind: "text", value: "乙" });
+    assert.deepEqual(resolveInlineListTextPreview(theme, "testimonialRole", 0, CARD_DEFAULTS), { kind: "text", value: "" });
+    assert.deepEqual(resolveInlineListTextPreview(theme, "statLabel", 0, CARD_DEFAULTS), { kind: "text", value: "株" });
+    assert.deepEqual(resolveInlineListTextPreview(theme, "galleryCaption", 1, CARD_DEFAULTS), { kind: "text", value: "" });
+    assert.equal(resolveInlineListTextPreview(theme, "statValue", 1, CARD_DEFAULTS), null);
+    assert.equal(resolveInlineListTextPreview(theme, "statValue", -1, CARD_DEFAULTS), null);
+  });
+
+  it("FAQ：畫面第 i 條跳過空問空答對回原始第幾筆；答案按換行切段（不去空白不丟空段）", () => {
+    const theme = {
+      layout: {
+        faqItems: [
+          { question: "", answer: "沒問題的答" },
+          { question: "怎麼澆水", answer: "少量多次。\n\n看土乾了再澆。" },
+          { question: "空答", answer: "  " },
+          { question: "運費", answer: "滿千免運" },
+        ],
+      },
+    };
+    assert.deepEqual(resolveInlineListTextPreview(theme, "faqQuestion", 0, CARD_DEFAULTS), { kind: "text", value: "怎麼澆水" });
+    assert.deepEqual(resolveInlineListTextPreview(theme, "faqAnswer", 0, CARD_DEFAULTS), {
+      kind: "paragraphs",
+      paragraphs: ["少量多次。", "看土乾了再澆。"],
+    });
+    assert.deepEqual(resolveInlineListTextPreview(theme, "faqQuestion", 1, CARD_DEFAULTS), { kind: "text", value: "運費" });
+    assert.equal(resolveInlineListTextPreview(theme, "faqQuestion", 2, CARD_DEFAULTS), null);
+  });
+
+  it("慢讀卡／選物卡：沒存過內容用預設整組對 index，存過就用存的", () => {
+    assert.deepEqual(resolveInlineListTextPreview({ homepage: { journalCards: [] } }, "journalCardTitle", 1, CARD_DEFAULTS), {
+      kind: "text",
+      value: "預設二",
+    });
+    assert.deepEqual(resolveInlineListTextPreview({ homepage: {} }, "collectionCardSubtitle", 0, CARD_DEFAULTS), {
+      kind: "text",
+      value: "預設副標",
+    });
+    const saved = { homepage: { journalCards: [{ eyebrow: "Story", title: "自己寫的", excerpt: "" }] } };
+    assert.deepEqual(resolveInlineListTextPreview(saved, "journalCardTitle", 0, CARD_DEFAULTS), { kind: "text", value: "自己寫的" });
+    assert.equal(resolveInlineListTextPreview(saved, "journalCardTitle", 1, CARD_DEFAULTS), null);
+  });
+
+  it("不是清單卡片欄位、清單不是陣列、theme 不是物件都回 null", () => {
+    assert.equal(resolveInlineListTextPreview({ layout: { testimonials: [] } }, "featuredTitle", 0, CARD_DEFAULTS), null);
+    assert.equal(resolveInlineListTextPreview({ layout: { testimonials: "x" } }, "testimonialQuote", 0, CARD_DEFAULTS), null);
+    assert.equal(resolveInlineListTextPreview({ layout: { stats: [null] } }, "statValue", 0, CARD_DEFAULTS), null);
+    assert.equal(resolveInlineListTextPreview(null, "statValue", 0, CARD_DEFAULTS), null);
   });
 });

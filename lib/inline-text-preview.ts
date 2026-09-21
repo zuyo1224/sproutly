@@ -10,14 +10,24 @@
 // - 其他：theme.homepage 底下同名的字串欄位，沒填就用 HOMEPAGE_DEFAULTS 同名那格；
 //   collectionsIntro 按全形標點拆行、promise 按換行拆行，其餘整串當一行
 //
-// 帶 data-edit-index 的清單卡片欄位（好評、FAQ、數字、相簿、慢讀卡、選物卡）這裡不管，
-// 名稱不在 homepage 底下會直接回 null。
+// 帶 data-edit-index 的清單卡片欄位（好評、FAQ、數字、相簿、慢讀卡、選物卡）走下面的
+// resolveInlineListTextPreview，名稱丟進 resolveInlineTextPreview 不在 homepage 底下會回 null。
 import { isPlainObject } from "./is-plain-object.ts";
 import { splitByPunc } from "./split-by-punc.ts";
+import {
+  INLINE_HOMEPAGE_CARD_TEXT_FIELDS,
+  INLINE_LAYOUT_LIST_TEXT_FIELDS,
+  lookupInlineField,
+  resolveHomepageCardBase,
+  resolveListIndex,
+  type InlineHomepageCardList,
+} from "./inline-list-text-fields.ts";
 
 export type InlineTextPreview =
   | { kind: "text"; value: string }
-  | { kind: "lines"; lines: string[] };
+  | { kind: "lines"; lines: string[] }
+  // FAQ 答案：公開頁按換行切成多個 <p>（不去空白、不丟空段），跟 lines 的畫法不同
+  | { kind: "paragraphs"; paragraphs: string[] };
 
 const PUNC_LINE_FIELDS: ReadonlySet<string> = new Set(["tagline", "collectionsIntro"]);
 const NEWLINE_LINE_FIELDS: ReadonlySet<string> = new Set(["promise"]);
@@ -59,5 +69,54 @@ export function resolveInlineTextPreview(
 
   if (PUNC_LINE_FIELDS.has(field)) return { kind: "lines", lines: splitByPunc(value) };
   if (NEWLINE_LINE_FIELDS.has(field)) return { kind: "lines", lines: splitByNewline(value) };
+  return { kind: "text", value };
+}
+
+// 清單卡片欄位：畫面上「好評第 idx 張的引言」這一格，去 theme 找那筆的那個 key。
+// 規則跟公開頁 render 對齊：
+// - layout 清單（好評、FAQ、數字、相簿）：畫面 index 對回原始第幾筆（FAQ 要跳過空問空答）
+// - homepage 卡片（慢讀卡、選物卡）：沒存過內容時用預設整組，index 直接對那組
+// - 值不是字串（沒填）套成空字串：公開頁那格沒字時本來就不畫（好評身份、相簿圖說）
+// - faqAnswer 按換行切段，其餘整串一行
+// 對不到那筆（清單比畫面短、theme 形狀不對）回 null，畫面那格不動。
+export function resolveInlineListTextPreview(
+  theme: unknown,
+  field: string,
+  index: number,
+  cardDefaults: Readonly<Record<InlineHomepageCardList, ReadonlyArray<Record<string, string>>>>,
+): InlineTextPreview | null {
+  if (!isPlainObject(theme)) return null;
+
+  let item: unknown;
+  let key: string;
+  const listSpec = lookupInlineField(INLINE_LAYOUT_LIST_TEXT_FIELDS, field);
+  const cardSpec = lookupInlineField(INLINE_HOMEPAGE_CARD_TEXT_FIELDS, field);
+  if (listSpec) {
+    const layout = theme.layout;
+    const list = isPlainObject(layout) ? layout[listSpec.list] : undefined;
+    if (!Array.isArray(list)) return null;
+    const rows = list.filter(isPlainObject);
+    if (rows.length !== list.length) return null;
+    const real = resolveListIndex(rows, index, listSpec.isValid);
+    if (real < 0) return null;
+    item = rows[real];
+    key = listSpec.key;
+  } else if (cardSpec) {
+    const homepage = theme.homepage;
+    const base = resolveHomepageCardBase(
+      isPlainObject(homepage) ? homepage[cardSpec.list] : undefined,
+      cardDefaults[cardSpec.list],
+    );
+    if (!Number.isInteger(index) || index < 0 || index >= base.length) return null;
+    item = base[index];
+    key = cardSpec.key;
+  } else {
+    return null;
+  }
+
+  if (!isPlainObject(item)) return null;
+  const raw = item[key];
+  const value = typeof raw === "string" ? raw : "";
+  if (field === "faqAnswer") return { kind: "paragraphs", paragraphs: value.split(/\n+/) };
   return { kind: "text", value };
 }

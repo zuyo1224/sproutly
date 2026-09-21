@@ -49,6 +49,14 @@ import { FREE_POS_KEYS, SECTION_DRAG_ELEMENT, sanitizeFreePos, stripLegacyFreePo
 // 「預設「xxx」」那段字，都直接查這張表，跟公開頁真正套上去的字是同一份；以前三十格各手抄
 // 一句，選物 intro 那格就抄成「…那一株...」而實品是「…那一株。」。
 import { HOMEPAGE_DEFAULTS, HOMEPAGE_DEFAULT_COLLECTIONS, JOURNAL_CARD_DEFAULTS, type SectionStyle } from "@/app/[slug]/_theme";
+import {
+  INLINE_HOMEPAGE_CARD_TEXT_FIELDS,
+  INLINE_LAYOUT_LIST_TEXT_FIELDS,
+  lookupInlineField,
+  resolveListIndex,
+  type InlineHomepageCardList,
+  type InlineLayoutListTextSpec,
+} from "@/lib/inline-list-text-fields";
 // SECTION_TRACKING_OPTIONS／SECTION_LEADING_OPTIONS／SECTION_GAP_OPTIONS／SECTION_SCALE_OPTIONS／
 // SECTION_WEIGHT_OPTIONS／SECTION_LINE_TONE_OPTIONS／SECTION_LINE_WEIGHT_OPTIONS／SECTION_BG_STRENGTH_OPTIONS：
 // 區段面板裡中檔寫「跟預設」的字距五格、行距四格、間距四格、字級六格、粗細兩格、線條深淺三格、
@@ -501,47 +509,14 @@ function isInlineHomepageTextField(field: string): field is InlineHomepageTextFi
   return INLINE_HOMEPAGE_TEXT_FIELD_SET.has(field);
 }
 
-// 雙擊改字帶 index 的清單欄位（訊息多帶 index 說是第幾筆）：data-edit-field 名稱 →
-// 存在 layout 哪張清單、改那筆的哪個 key。FAQ 公開頁 render 前有先濾掉空問空答，
-// 畫面上的第 i 條不一定是原始清單的第 i 筆，多帶 isValid 把畫面 index 對回原始 index。
-type InlineLayoutListTextSpec = {
-  list: "testimonials" | "faqItems" | "stats" | "gallery";
-  key: string;
-  isValid?: (item: Record<string, unknown>) => boolean;
+// 雙擊改字帶 index 的清單卡片欄位（好評、FAQ、數字、相簿、慢讀卡、選物卡）：名稱 →
+// 存在哪張清單、改哪個 key，表在 lib/inline-list-text-fields，跟預覽 iframe 復原套字查同一張。
+// 慢讀卡／選物卡沒存過內容時公開頁顯示預設整組，第一次雙擊改字要先把預設整組帶進來
+// 再改那一格（跟側欄同一招），預設整組照清單名在這裡對。
+const HOMEPAGE_CARD_DEFAULTS: Readonly<Record<InlineHomepageCardList, ReadonlyArray<Record<string, string>>>> = {
+  journalCards: JOURNAL_CARD_DEFAULTS,
+  collectionItems: HOMEPAGE_DEFAULT_COLLECTIONS,
 };
-const faqItemValid = (item: Record<string, unknown>) =>
-  String(item.question ?? "").trim() !== "" && String(item.answer ?? "").trim() !== "";
-const INLINE_LAYOUT_LIST_TEXT_FIELDS: Readonly<Record<string, InlineLayoutListTextSpec>> = {
-  testimonialQuote: { list: "testimonials", key: "quote" },
-  testimonialAuthor: { list: "testimonials", key: "author" },
-  testimonialRole: { list: "testimonials", key: "role" },
-  faqQuestion: { list: "faqItems", key: "question", isValid: faqItemValid },
-  faqAnswer: { list: "faqItems", key: "answer", isValid: faqItemValid },
-  statValue: { list: "stats", key: "value" },
-  statLabel: { list: "stats", key: "label" },
-  galleryCaption: { list: "gallery", key: "caption" },
-};
-
-// 首頁卡片（慢讀卡／選物卡）帶 index 的欄位：沒存過內容時公開頁顯示預設整組，
-// 第一次雙擊改字要先把預設整組帶進來再改那一格（跟側欄同一招），所以表上多帶
-// defaults。選物卡的 index 是公開頁濾掉沒圖的卡「之前」的原始位置，直接用不必重對。
-type InlineHomepageCardTextSpec = {
-  list: "journalCards" | "collectionItems";
-  key: string;
-  defaults: ReadonlyArray<Record<string, string>>;
-};
-const INLINE_HOMEPAGE_CARD_TEXT_FIELDS: Readonly<Record<string, InlineHomepageCardTextSpec>> = {
-  journalCardEyebrow: { list: "journalCards", key: "eyebrow", defaults: JOURNAL_CARD_DEFAULTS },
-  journalCardTitle: { list: "journalCards", key: "title", defaults: JOURNAL_CARD_DEFAULTS },
-  journalCardExcerpt: { list: "journalCards", key: "excerpt", defaults: JOURNAL_CARD_DEFAULTS },
-  collectionCardTitle: { list: "collectionItems", key: "title", defaults: HOMEPAGE_DEFAULT_COLLECTIONS },
-  collectionCardSubtitle: { list: "collectionItems", key: "subtitle", defaults: HOMEPAGE_DEFAULT_COLLECTIONS },
-};
-
-// 表是 Record<string, …>，直接下標 TS 會當一定找得到；用 hasOwn 守一下才會拿到 undefined
-function lookupInlineField<T>(table: Readonly<Record<string, T>>, field: string): T | undefined {
-  return Object.hasOwn(table, field) ? table[field] : undefined;
-}
 
 type SelectedTab = "section" | "design" | "content" | "ai";
 
@@ -816,21 +791,8 @@ export function EditorWorkspace({
           const patchListText = ({ list: field, key, isValid }: InlineLayoutListTextSpec) => {
             setTheme((t) => {
               const list = t.layout[field] as Array<Record<string, unknown>>;
-              let real = idx;
-              if (isValid) {
-                real = -1;
-                let seen = -1;
-                for (let j = 0; j < list.length; j++) {
-                  if (isValid(list[j])) {
-                    seen++;
-                    if (seen === idx) {
-                      real = j;
-                      break;
-                    }
-                  }
-                }
-              }
-              if (real < 0 || real >= list.length) return t;
+              const real = resolveListIndex(list, idx, isValid);
+              if (real < 0) return t;
               pushHistory(t, `layout:${field}:${real}:${key}`);
               const next = [...list];
               next[real] = { ...next[real], [key]: value };
@@ -843,7 +805,8 @@ export function EditorWorkspace({
           if (listSpec) {
             patchListText(listSpec);
           } else if (cardSpec) {
-            const { list, key, defaults } = cardSpec;
+            const { list, key } = cardSpec;
+            const defaults = HOMEPAGE_CARD_DEFAULTS[list];
             setTheme((t) => {
               const saved = t.homepage[list] as Array<Record<string, string>>;
               const base = saved.length > 0 ? saved : defaults;
