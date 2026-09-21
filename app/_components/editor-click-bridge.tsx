@@ -4,6 +4,7 @@ import { useEffect } from "react";
 import { clampFreePos } from "@/lib/theme-scale";
 import { isPlainObject } from "@/lib/is-plain-object";
 import { sanitizeFreePos } from "@/lib/free-positions";
+import { splitByPunc } from "@/lib/split-by-punc";
 
 /**
  * iframe 內公開頁 client island —
@@ -362,11 +363,21 @@ export function EditorClickBridge() {
       // tagline / eyebrow 等 text 欄位（用 data-edit-field 對應）
       const tagline = theme.tagline;
       if (typeof tagline === "string") {
+        // 跟公開頁一樣按全形標點切行、一行一個 <span class="block">（同一支 splitByPunc）。
+        // 以前用 textContent 整串塞回去，預覽顯示成一行、存檔重讀後才拆行，
+        // 編輯時看到的換行跟存出去的對不上。
+        const lines = splitByPunc(tagline);
         document
           .querySelectorAll<HTMLElement>('[data-edit-field="tagline"]')
           .forEach((el) => {
-            // 用 textContent 直接替換（保留 <span class="block"> 結構不容易，先簡單 replace）
-            el.textContent = tagline;
+            el.replaceChildren(
+              ...lines.map((line) => {
+                const span = document.createElement("span");
+                span.className = "block";
+                span.textContent = line;
+                return span;
+              }),
+            );
           });
       }
 

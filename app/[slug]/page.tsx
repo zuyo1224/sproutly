@@ -49,6 +49,7 @@ export async function generateMetadata({
 import { formatPrice } from "@/lib/format-price";
 import { jsonbText } from "@/lib/jsonb-text";
 import { roundTo } from "@/lib/round-to";
+import { splitByPunc } from "@/lib/split-by-punc";
 import {
   SECTION_BODY_TRACKING_EM,
   SECTION_BORDER_RADIUS_PX,
@@ -119,13 +120,6 @@ export default async function StoreHomePage({
   const visibleCollections = collectionsConfig
     .map((c, i) => ({ ...c, image: theme.collections[c.key], index: i }))
     .filter((c) => c.image);
-
-  // 中文按全形標點自然分行
-  const splitByPunc = (s: string) =>
-    s
-      .split(/(?<=[，、。！？])/)
-      .map((line) => line.trim())
-      .filter((line) => line.length > 0);
 
   // 分好的行一行一個 <span className="block">，主標（四個版型）、精選開場 h2（兩支）、
   // 承諾引言 blockquote 共七處以前各抄一份一模一樣的 map；收成一個，改一格七處跟著動。
