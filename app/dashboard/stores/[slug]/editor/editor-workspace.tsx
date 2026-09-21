@@ -501,6 +501,48 @@ function isInlineHomepageTextField(field: string): field is InlineHomepageTextFi
   return INLINE_HOMEPAGE_TEXT_FIELD_SET.has(field);
 }
 
+// 雙擊改字帶 index 的清單欄位（訊息多帶 index 說是第幾筆）：data-edit-field 名稱 →
+// 存在 layout 哪張清單、改那筆的哪個 key。FAQ 公開頁 render 前有先濾掉空問空答，
+// 畫面上的第 i 條不一定是原始清單的第 i 筆，多帶 isValid 把畫面 index 對回原始 index。
+type InlineLayoutListTextSpec = {
+  list: "testimonials" | "faqItems" | "stats" | "gallery";
+  key: string;
+  isValid?: (item: Record<string, unknown>) => boolean;
+};
+const faqItemValid = (item: Record<string, unknown>) =>
+  String(item.question ?? "").trim() !== "" && String(item.answer ?? "").trim() !== "";
+const INLINE_LAYOUT_LIST_TEXT_FIELDS: Readonly<Record<string, InlineLayoutListTextSpec>> = {
+  testimonialQuote: { list: "testimonials", key: "quote" },
+  testimonialAuthor: { list: "testimonials", key: "author" },
+  testimonialRole: { list: "testimonials", key: "role" },
+  faqQuestion: { list: "faqItems", key: "question", isValid: faqItemValid },
+  faqAnswer: { list: "faqItems", key: "answer", isValid: faqItemValid },
+  statValue: { list: "stats", key: "value" },
+  statLabel: { list: "stats", key: "label" },
+  galleryCaption: { list: "gallery", key: "caption" },
+};
+
+// 首頁卡片（慢讀卡／選物卡）帶 index 的欄位：沒存過內容時公開頁顯示預設整組，
+// 第一次雙擊改字要先把預設整組帶進來再改那一格（跟側欄同一招），所以表上多帶
+// defaults。選物卡的 index 是公開頁濾掉沒圖的卡「之前」的原始位置，直接用不必重對。
+type InlineHomepageCardTextSpec = {
+  list: "journalCards" | "collectionItems";
+  key: string;
+  defaults: ReadonlyArray<Record<string, string>>;
+};
+const INLINE_HOMEPAGE_CARD_TEXT_FIELDS: Readonly<Record<string, InlineHomepageCardTextSpec>> = {
+  journalCardEyebrow: { list: "journalCards", key: "eyebrow", defaults: JOURNAL_CARD_DEFAULTS },
+  journalCardTitle: { list: "journalCards", key: "title", defaults: JOURNAL_CARD_DEFAULTS },
+  journalCardExcerpt: { list: "journalCards", key: "excerpt", defaults: JOURNAL_CARD_DEFAULTS },
+  collectionCardTitle: { list: "collectionItems", key: "title", defaults: HOMEPAGE_DEFAULT_COLLECTIONS },
+  collectionCardSubtitle: { list: "collectionItems", key: "subtitle", defaults: HOMEPAGE_DEFAULT_COLLECTIONS },
+};
+
+// 表是 Record<string, …>，直接下標 TS 會當一定找得到；用 hasOwn 守一下才會拿到 undefined
+function lookupInlineField<T>(table: Readonly<Record<string, T>>, field: string): T | undefined {
+  return Object.hasOwn(table, field) ? table[field] : undefined;
+}
+
 type SelectedTab = "section" | "design" | "content" | "ai";
 
 const HERO_STYLE_LABELS: Record<HeroStyle, string> = {
@@ -771,13 +813,7 @@ export function EditorWorkspace({
           // 要照上面 position-update 分支同款：setTheme functional form 拿最新 state。
           // coalesce key 也對齊側欄同欄位的格式，雙擊改字跟側欄打字共用合併行為。
           const idx = msg.index;
-          const patchListText = (
-            field: "testimonials" | "faqItems" | "stats" | "gallery",
-            key: string,
-            // 公開頁 FAQ render 前有先濾掉空問空答，畫面上的第 i 條不一定是
-            // 原始清單的第 i 筆；有給 isValid 就把畫面 index 對回原始 index
-            isValid?: (item: Record<string, unknown>) => boolean
-          ) => {
+          const patchListText = ({ list: field, key, isValid }: InlineLayoutListTextSpec) => {
             setTheme((t) => {
               const list = t.layout[field] as Array<Record<string, unknown>>;
               let real = idx;
@@ -802,67 +838,20 @@ export function EditorWorkspace({
             });
             setDirty(true);
           };
-          const faqValid = (item: Record<string, unknown>) =>
-            String(item.question ?? "").trim() !== "" && String(item.answer ?? "").trim() !== "";
-          if (msg.field === "testimonialQuote") {
-            patchListText("testimonials", "quote");
-          } else if (msg.field === "testimonialAuthor") {
-            patchListText("testimonials", "author");
-          } else if (msg.field === "testimonialRole") {
-            patchListText("testimonials", "role");
-          } else if (msg.field === "faqQuestion") {
-            patchListText("faqItems", "question", faqValid);
-          } else if (msg.field === "faqAnswer") {
-            patchListText("faqItems", "answer", faqValid);
-          } else if (msg.field === "statValue") {
-            patchListText("stats", "value");
-          } else if (msg.field === "statLabel") {
-            patchListText("stats", "label");
-          } else if (msg.field === "galleryCaption") {
-            patchListText("gallery", "caption");
-          } else if (
-            msg.field === "journalCardEyebrow" ||
-            msg.field === "journalCardTitle" ||
-            msg.field === "journalCardExcerpt"
-          ) {
-            const key =
-              msg.field === "journalCardEyebrow"
-                ? "eyebrow"
-                : msg.field === "journalCardTitle"
-                ? "title"
-                : "excerpt";
+          const listSpec = lookupInlineField(INLINE_LAYOUT_LIST_TEXT_FIELDS, msg.field);
+          const cardSpec = lookupInlineField(INLINE_HOMEPAGE_CARD_TEXT_FIELDS, msg.field);
+          if (listSpec) {
+            patchListText(listSpec);
+          } else if (cardSpec) {
+            const { list, key, defaults } = cardSpec;
             setTheme((t) => {
-              // 慢讀卡沒存過內容時公開頁顯示預設三張，第一次雙擊改字
-              // 要先把預設整組帶進來再改那一格（跟側欄同一招）
-              const base =
-                t.homepage.journalCards.length > 0
-                  ? t.homepage.journalCards
-                  : JOURNAL_CARD_DEFAULTS;
+              const saved = t.homepage[list] as Array<Record<string, string>>;
+              const base = saved.length > 0 ? saved : defaults;
               if (idx >= base.length) return t;
-              pushHistory(t, `homepage:journalCards:${idx}:${key}`);
+              pushHistory(t, `homepage:${list}:${idx}:${key}`);
               const next = base.map((c) => ({ ...c }));
               next[idx] = { ...next[idx], [key]: value };
-              return { ...t, homepage: { ...t.homepage, journalCards: next } };
-            });
-            setDirty(true);
-          } else if (
-            msg.field === "collectionCardTitle" ||
-            msg.field === "collectionCardSubtitle"
-          ) {
-            const key = msg.field === "collectionCardTitle" ? "title" : "subtitle";
-            setTheme((t) => {
-              // 沒存過選物卡時公開頁顯示預設六張，第一次雙擊改字
-              // 要先把預設整組帶進來再改那一格（跟慢讀卡同一招）。
-              // index 是公開頁濾掉沒圖的卡「之前」的原始位置，直接用不必重對。
-              const base =
-                t.homepage.collectionItems.length > 0
-                  ? t.homepage.collectionItems
-                  : HOMEPAGE_DEFAULT_COLLECTIONS;
-              if (idx >= base.length) return t;
-              pushHistory(t, `homepage:collectionItems:${idx}:${key}`);
-              const next = base.map((c) => ({ ...c }));
-              next[idx] = { ...next[idx], [key]: value };
-              return { ...t, homepage: { ...t.homepage, collectionItems: next } };
+              return { ...t, homepage: { ...t.homepage, [list]: next } };
             });
             setDirty(true);
           }
