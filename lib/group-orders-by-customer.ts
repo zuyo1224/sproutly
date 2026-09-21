@@ -9,8 +9,9 @@
 // 之後有人只在其中一處改了 fallback 規則），或兩份的訂單數 / 總額兜不攏。收成這支後，
 // 兩個出口吃同一條分群規則，日後要改「怎麼算同一個人」只改這裡一處。
 //
-// 只看得到 customer_id 與 customer_phone，所以用泛型收下任何帶這兩個欄位的訂單，
-// 原本各自的 OrderRow 型別都能直接套進來、回傳的 Map 也還是原本的訂單型別。
+// 只看得到 customer_id 與 customer_phone，所以用泛型收下任何帶這兩個欄位的訂單
+// （現在兩個出口都餵 lib/fetch-customer-orders 的 CustomerOrderRow；以前各自宣告的
+// 那份 OrderRow 已在收成共用撈單時併掉），回傳的 Map 也還是餵進來的訂單型別。
 
 import { phoneDigits } from "./phone-match.ts";
 
