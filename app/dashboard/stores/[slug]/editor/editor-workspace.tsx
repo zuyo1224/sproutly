@@ -57,6 +57,8 @@ import {
   type InlineHomepageCardList,
   type InlineLayoutListTextSpec,
 } from "@/lib/inline-list-text-fields";
+// 首頁文案 36 格字串欄位表：搬到 lib 讓測試能拿公開頁 data-edit-field 全集跟它對帳
+import { isInlineHomepageTextField } from "@/lib/inline-homepage-text-fields";
 // SECTION_TRACKING_OPTIONS／SECTION_LEADING_OPTIONS／SECTION_GAP_OPTIONS／SECTION_SCALE_OPTIONS／
 // SECTION_WEIGHT_OPTIONS／SECTION_LINE_TONE_OPTIONS／SECTION_LINE_WEIGHT_OPTIONS／SECTION_BG_STRENGTH_OPTIONS：
 // 區段面板裡中檔寫「跟預設」的字距五格、行距四格、間距四格、字級六格、粗細兩格、線條深淺三格、
@@ -459,55 +461,13 @@ type EditorTheme = {
   };
 };
 
-// 預覽 iframe 雙擊改字（sproutly-edit-text-update）能直接套進 homepage 的欄位：
-// 就是 homepage 底下所有 string 型別的 key（清單類 collectionItems／journalCards
-// 另走帶 index 的分支）。型別從 EditorTheme 推出來，表裡打錯字會被 satisfies 擋下；
-// 名稱跟公開頁 data-edit-field 一字不差。
-type InlineHomepageTextField = {
+// 預覽 iframe 雙擊改字（sproutly-edit-text-update）能直接套進 homepage 的 36 格字串欄位：
+// 表在 lib/inline-homepage-text-fields（測試拿它跟公開頁 data-edit-field 全集對帳）。
+// lib 看不到 EditorTheme，「表裡每個名字都是 homepage 的字串欄位」由這個型別守：
+// lib 的名單多了一個 homepage 沒有、或不是 string 的 key，下面收訊那行指派會被 tsc 擋下。
+type HomepageStringField = {
   [K in keyof EditorTheme["homepage"]]: EditorTheme["homepage"][K] extends string ? K : never;
 }[keyof EditorTheme["homepage"]];
-const INLINE_HOMEPAGE_TEXT_FIELDS = [
-  "promise",
-  "promiseEyebrow",
-  "featuredTitle",
-  "featuredEyebrow",
-  "featuredCta",
-  "collectionsIntro",
-  "collectionsEyebrow",
-  "visitTitle",
-  "visitEyebrow",
-  "journalEyebrow",
-  "journalTitle",
-  "journalSubtitle",
-  "testimonialsEyebrow",
-  "testimonialsTitle",
-  "faqEyebrow",
-  "faqTitle",
-  "galleryEyebrow",
-  "galleryTitle",
-  "partnersEyebrow",
-  "statsEyebrow",
-  "statsTitle",
-  "heroCta",
-  "heroSecondaryCta",
-  "heroMagazineByline",
-  "collectionsCardCta",
-  "aboutEyebrow",
-  "aboutTitle",
-  "contactEyebrow",
-  "contactTitle",
-  "shopEyebrow",
-  "shopTitle",
-  "footerWordsLabel",
-  "footerFollowLabel",
-  "footerTrackLabel",
-  "footerVisitLabel",
-  "journalCardLabel",
-] as const satisfies readonly InlineHomepageTextField[];
-const INLINE_HOMEPAGE_TEXT_FIELD_SET: ReadonlySet<string> = new Set(INLINE_HOMEPAGE_TEXT_FIELDS);
-function isInlineHomepageTextField(field: string): field is InlineHomepageTextField {
-  return INLINE_HOMEPAGE_TEXT_FIELD_SET.has(field);
-}
 
 // 雙擊改字帶 index 的清單卡片欄位（好評、FAQ、數字、相簿、慢讀卡、選物卡）：名稱 →
 // 存在哪張清單、改哪個 key，表在 lib/inline-list-text-fields，跟預覽 iframe 復原套字查同一張。
@@ -779,8 +739,10 @@ export function EditorWorkspace({
           updateLayout({ heroSubtitle: value || null });
         } else if (isInlineHomepageTextField(msg.field)) {
           // 首頁文案 36 格字串欄位：data-edit-field 名稱就是 homepage 的 key，
-          // 查表直接套，不再一格一個 else if
-          updateHomepage({ [msg.field]: value });
+          // 查表直接套，不再一格一個 else if。指派給 HomepageStringField 是給 tsc 守
+          // lib 那張表沒寫錯名字，不是多餘的。
+          const field: HomepageStringField = msg.field;
+          updateHomepage({ [field]: value });
         } else if (typeof msg.index === "number" && Number.isInteger(msg.index) && msg.index >= 0) {
           // 清單卡片欄位：訊息多帶 index 說是第幾筆。
           // 這個 effect deps 是 []，closure 裡的 theme 是掛載當下的舊值，
