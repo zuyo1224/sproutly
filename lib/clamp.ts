@@ -14,8 +14,8 @@ export function clamp(v: number, min: number, max: number): number {
 }
 
 // 「守門＋夾值＋預設」三件事一次做：不是有限數（沒填、null、NaN、"1.5" 字串）就回
-// fallback，是的話丟給該欄位自己的命名 clamp。公開頁讀 theme jsonb 那支
-// normalizeTheme 以前有 12 格各自寫一遍 IIFE
+// fallback，是的話丟給該欄位自己的命名 clamp。公開頁讀 theme jsonb 的 _theme.ts
+// resolveLayout（resolveTheme 底下讀 layout 那支）以前有 12 格各自寫一遍 IIFE
 // `(() => { const v = l.x; if (!isFiniteNumber(v)) return 預設; return clampX(v); })()`
 // ——Hero 縮放 4 格（含三個裝置各自的 fallback 鏈）、Hero 五段文字字級倍率、主標手機版
 // （預設是 null）、全站字級倍率、精選張數——同一件事 12 份、每份 5 行。收成這支之後每格

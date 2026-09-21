@@ -36,7 +36,7 @@ describe("clamp", () => {
   });
 });
 
-// clampOr：normalizeTheme 12 格「守門＋夾值＋預設」都改吃這支，最要緊的是
+// clampOr：_theme.ts resolveLayout 12 格「守門＋夾值＋預設」都改吃這支，最要緊的是
 // 「不是有限數一律回 fallback（含 null 預設）、是有限數才進 clamp」跟原本 IIFE 一樣。
 describe("clampOr", () => {
   const to1to3 = (n: number) => clamp(n, 1, 3);
