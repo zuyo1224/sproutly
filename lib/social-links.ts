@@ -49,6 +49,15 @@ export function readSocialLinks(formData: FormData): SocialLinks {
   return out;
 }
 
+/**
+ * 照表順序（Instagram → Facebook → LINE）把三格原始值攤成陣列，給 store-schema 的
+ * buildStoreJsonLd 組 sameAs 用。以前首頁與聯絡頁各自手列 [social.instagram, .facebook,
+ * .line]，多一格要兩處一起補；這裡不清洗網址，跟以前一樣交給 socialUrl。
+ */
+export function socialLinkValues(social: SocialLinks): (string | null)[] {
+  return SOCIAL_LINKS.map((s) => social[s.key]);
+}
+
 /** 公開頁讀回：jsonb 裡存什麼都不假設是 string；非空字串才收，其他一律 null。 */
 export function resolveSocialLinks(raw: Record<string, unknown>): SocialLinks {
   const out = {} as SocialLinks;

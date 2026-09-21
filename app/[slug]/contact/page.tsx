@@ -6,6 +6,7 @@ import { jsonLdHtml } from "@/lib/json-ld";
 import { displayableImageUrl } from "@/lib/image-url";
 import { buildStoreJsonLd, buildBreadcrumbJsonLd, siteBaseUrl } from "@/lib/store-schema";
 import { telHref, mailHref, telDigits, cleanEmail, mapsHref } from "@/lib/contact-href";
+import { socialLinkValues } from "@/lib/social-links";
 import { jsonbText } from "@/lib/jsonb-text";
 import { resolveTheme, HOMEPAGE_DEFAULTS } from "../_theme";
 import { StoreEmptyState } from "@/app/_components/store-empty-state";
@@ -146,7 +147,7 @@ export default async function ContactPage({ params }: { params: Params }) {
     phone: store.contact_phone,
     email: store.contact_email,
     address: store.address,
-    socialLinks: [theme.social.instagram, theme.social.facebook, theme.social.line],
+    socialLinks: socialLinkValues(theme.social),
     businessHoursText,
   });
   // 只有真的有任何一項聯絡資訊才放結構化資料，空店面不丟空殼給 Google。

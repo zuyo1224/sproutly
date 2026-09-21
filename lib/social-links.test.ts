@@ -4,7 +4,7 @@
 // null」跟「讀回只收非空字串」這兩條寫死在這裡，表多一格或改欄位名這裡先知道。
 import { describe, it } from "node:test";
 import assert from "node:assert/strict";
-import { SOCIAL_LINKS, readSocialLinks, resolveSocialLinks } from "./social-links.ts";
+import { SOCIAL_LINKS, readSocialLinks, resolveSocialLinks, socialLinkValues } from "./social-links.ts";
 
 describe("SOCIAL_LINKS", () => {
   it("三格、key 與表單欄位名各不重複、欄位名照 social_<key> 命名、placeholder 都是 https://", () => {
@@ -32,6 +32,15 @@ describe("readSocialLinks", () => {
       facebook: null,
       line: null,
     });
+  });
+});
+
+describe("socialLinkValues", () => {
+  it("照表順序 Instagram → Facebook → LINE 攤成陣列，null 原樣保留不清洗", () => {
+    assert.deepEqual(
+      socialLinkValues({ line: "line.me/@x", instagram: null, facebook: "https://fb.com/y" }),
+      [null, "https://fb.com/y", "line.me/@x"],
+    );
   });
 });
 

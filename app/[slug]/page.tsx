@@ -8,6 +8,7 @@ import { jsonLdHtml } from "@/lib/json-ld";
 import { resolveTheme, HOMEPAGE_DEFAULTS, HOMEPAGE_DEFAULT_COLLECTIONS, JOURNAL_CARD_DEFAULTS } from "./_theme";
 import { buildStoreJsonLd, buildFaqJsonLd, siteBaseUrl, storeSchemaId } from "@/lib/store-schema";
 import { telHref, mailHref, telDigits, cleanEmail, mapsHref, socialUrl } from "@/lib/contact-href";
+import { socialLinkValues } from "@/lib/social-links";
 import { isSoldOut, isLowStock, bySoldOutLast, stockAriaSuffix } from "@/lib/product-stock";
 import { FREE_POS_KEYS } from "@/lib/free-positions";
 import {
@@ -1673,7 +1674,7 @@ export default async function StoreHomePage({
     phone: store.contact_phone,
     email: store.contact_email,
     address: store.address,
-    socialLinks: [theme.social.instagram, theme.social.facebook, theme.social.line],
+    socialLinks: socialLinkValues(theme.social),
     businessHoursText,
   });
 
