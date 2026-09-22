@@ -33,11 +33,23 @@ export function SearchOverlay({ slug }: { slug: string }) {
   // 鍵盤族不會關掉面板後焦點掉回頁首得重新一路 Tab 找回原處。
   const prevFocusRef = useRef<HTMLElement | null>(null);
 
+  // 關面板一律走這支：關掉的同時把輸入字、結果、失敗標記、反白位置清回起點，
+  // 下次打開是乾淨的面板。以前是關掉後再由 effect 補清，會先多畫一次舊內容。
+  const closeSearch = () => {
+    setOpen(false);
+    setQ("");
+    setResults([]);
+    setFailed(false);
+    setLoading(false);
+    setSelectedIdx(0);
+  };
+
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
       if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "k") {
         e.preventDefault();
-        setOpen((o) => !o);
+        if (open) closeSearch();
+        else setOpen(true);
         return;
       }
       if (!open) return;
@@ -45,7 +57,7 @@ export function SearchOverlay({ slug }: { slug: string }) {
       // 不能被當成「開啟商品 / 移動選取」——否則台灣客人一打中文就被導去第一個結果。
       if (e.isComposing || e.keyCode === 229) return;
       if (e.key === "Escape") {
-        setOpen(false);
+        closeSearch();
       } else if (e.key === "Tab") {
         // 面板開著時把 Tab 圈在面板內。不然鍵盤族按一下 Tab 焦點就溜到面板背後
         // 那層還在的頁面（導覽列、頁面連結）上——焦點看不見、又得先摸到關閉鈕才回得來。
@@ -95,7 +107,7 @@ export function SearchOverlay({ slug }: { slug: string }) {
                 : `/${slug}/shop`
               : null;
         if (target) {
-          setOpen(false);
+          closeSearch();
           router.push(target);
         }
       }
@@ -112,9 +124,6 @@ export function SearchOverlay({ slug }: { slug: string }) {
       setTimeout(() => inputRef.current?.focus(), 50);
     } else {
       document.body.style.overflow = "";
-      setQ("");
-      setResults([]);
-      setSelectedIdx(0);
       // 把焦點還回開面板前那顆按鈕，鍵盤族不會關掉後焦點掉回頁首得重新 Tab 找回原處。
       prevFocusRef.current?.focus?.();
       prevFocusRef.current = null;
@@ -131,13 +140,9 @@ export function SearchOverlay({ slug }: { slug: string }) {
   }, [selectedIdx, open]);
 
   useEffect(() => {
-    if (!open || !q.trim()) {
-      setResults([]);
-      setFailed(false);
-      return;
-    }
+    // 「轉圈」與清空時的「結果歸零」都在輸入框 onChange 當下做，這裡只管有字時去查。
+    if (!open || !q.trim()) return;
     let cancelled = false;
-    setLoading(true);
     const t = setTimeout(async () => {
       try {
         const res = await fetch(
@@ -218,7 +223,7 @@ export function SearchOverlay({ slug }: { slug: string }) {
         <div
           className="fixed inset-0 z-50 bg-black/40 backdrop-blur-sm flex items-start justify-center pt-[10vh] px-4"
           style={{ animation: "sproutly-search-fade 0.25s ease-out both" }}
-          onClick={() => setOpen(false)}
+          onClick={closeSearch}
         >
           <div
             ref={dialogRef}
@@ -264,7 +269,19 @@ export function SearchOverlay({ slug }: { slug: string }) {
                 ref={inputRef}
                 type="search"
                 value={q}
-                onChange={(e) => setQ(e.target.value)}
+                onChange={(e) => {
+                  const value = e.target.value;
+                  setQ(value);
+                  // 有字就先轉圈等 debounce 後的查詢；清空就把結果、失敗、轉圈全歸零——
+                  // 以前查詢還在飛時清空輸入，被取消的那次不會把轉圈關掉，空框下一直轉。
+                  if (value.trim()) {
+                    setLoading(true);
+                  } else {
+                    setResults([]);
+                    setFailed(false);
+                    setLoading(false);
+                  }
+                }}
                 placeholder="搜尋商品⋯"
                 aria-label="搜尋商品名稱"
                 role="combobox"
@@ -289,7 +306,7 @@ export function SearchOverlay({ slug }: { slug: string }) {
               />
               <button
                 type="button"
-                onClick={() => setOpen(false)}
+                onClick={closeSearch}
                 className="font-medium uppercase transition hover:opacity-100"
                 style={{
                   fontSize: "0.6875rem",
@@ -367,7 +384,7 @@ export function SearchOverlay({ slug }: { slug: string }) {
                   </p>
                   <Link
                     href={`/${slug}/shop`}
-                    onClick={() => setOpen(false)}
+                    onClick={closeSearch}
                     className="sproutly-link mt-6 inline-block font-medium uppercase"
                     data-default-line="true"
                     style={{
@@ -413,7 +430,7 @@ export function SearchOverlay({ slug }: { slug: string }) {
                       關掉再找入口。給一條去全部商品頁的去路，跟其他頁面的空狀態一致。 */}
                   <Link
                     href={`/${slug}/shop`}
-                    onClick={() => setOpen(false)}
+                    onClick={closeSearch}
                     className="sproutly-link mt-6 inline-block font-medium uppercase"
                     data-default-line="true"
                     style={{
@@ -473,7 +490,7 @@ export function SearchOverlay({ slug }: { slug: string }) {
                   aria-label={`${p.name}，${formatPrice(p.price_cents, p.currency)}${stockAriaSuffix(p.stock)}`}
                   data-result-idx={i}
                   href={`/${slug}/products/${p.id}`}
-                  onClick={() => setOpen(false)}
+                  onClick={closeSearch}
                   className="flex items-center gap-4 px-5 py-3 transition"
                   style={{
                     background:
@@ -570,7 +587,7 @@ export function SearchOverlay({ slug }: { slug: string }) {
               {!loading && results.length > 0 && (
                 <Link
                   href={buildUrl(`/${slug}/shop`, { q: q.trim() })}
-                  onClick={() => setOpen(false)}
+                  onClick={closeSearch}
                   id="sproutly-search-opt-bridge"
                   role="option"
                   aria-selected={selectedIdx === results.length}
