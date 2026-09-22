@@ -28,9 +28,12 @@ export default function FavoritesPage() {
   // 收藏 id 存在 localStorage，fetch 只是去補商品的名稱/價格/圖。原本沒有任何
   // 錯誤處理：網路一閃失 res.json() 一丟錯，load() 就靜靜 reject，products 永遠
   // 停在 null → 整頁卡在「整理中⋯」骨架不動，客人以為收藏壞了，其實資料還在身上。
-  // 用 failed 標記讀取失敗、改顯示「沒不見、重試一下」的退路；reloadKey 讓重試鈕
-  // 重跑 effect。
-  const [failed, setFailed] = useState(false);
+  // 標記讀取失敗、改顯示「沒不見、重試一下」的退路；reloadKey 讓重試鈕重跑 effect。
+  // 記的是「哪一次抓取失敗了」而不是「有沒有失敗過」。以前是 failed 布林，每次要重抓
+  // 前得先在 effect 裡把它按回 false（等於多一次重畫，eslint 的 set-state-in-effect
+  // 擋的就是這個）；現在把失敗那次的識別字串存起來，跟當下要抓的那次比對，一按重試識別
+  // 字串就不一樣、退路畫面自動收起來，不用誰去按回去。
+  const [failedKey, setFailedKey] = useState<string | null>(null);
   const [reloadKey, setReloadKey] = useState(0);
   // 按 × 移除收藏原本一鍵就消失、沒退路，跟購物車一樣是 user 在意的「手滑弄掉沒復原」。
   // 暫存剛移除那株（含原本在清單裡的位置），復原時原封不動放回原處。
@@ -38,6 +41,10 @@ export default function FavoritesPage() {
     null
   );
   const undoTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  // 這一次要抓的是哪一輪（店＋重試次數）。失敗紀錄綁在這串上。
+  const loadKey = `${slug}|${reloadKey}`;
+  const failed = failedKey === loadKey;
 
   useEffect(() => {
     let cancelled = false;
@@ -82,17 +89,16 @@ export default function FavoritesPage() {
           }
         }
       } catch {
-        // 讀失敗就掛 failed、別讓 products 停在 null 整頁卡骨架；
+        // 讀失敗就記下是這一輪失敗、別讓 products 停在 null 整頁卡骨架；
         // 收藏 id 還在 localStorage，沒有不見，給重試退路即可。
-        if (!cancelled) setFailed(true);
+        if (!cancelled) setFailedKey(loadKey);
       }
     }
-    setFailed(false);
     load();
     return () => {
       cancelled = true;
     };
-  }, [slug, reloadKey]);
+  }, [slug, reloadKey, loadKey]);
 
   // 別處（商品頁愛心、其他分頁）取消收藏時，這頁即時跟著移除，不用重整
   useEffect(() => {

@@ -39,9 +39,13 @@ export default function CartCheckoutPage() {
   const [products, setProducts] = useState<Product[] | null>(null);
   // load() 原本對 fetch 零錯誤處理——網路一閃失或 API 回 500／非陣列時 res.json()
   // 一丟錯就靜靜 reject，products 永遠停在 null → 整頁卡在骨架、客人填不到表單也送不出單，
-  // 以為結帳壞了，其實車裡的 id／數量還在 localStorage、沒有不見。用 failed 標記讀取失敗、
-  // 改顯示「沒不見、重試一下」的退路；reloadKey 讓重試鈕重跑 effect。
-  const [failed, setFailed] = useState(false);
+  // 以為結帳壞了，其實車裡的 id／數量還在 localStorage、沒有不見。標記讀取失敗、改顯示
+  // 「沒不見、重試一下」的退路；reloadKey 讓重試鈕重跑 effect。
+  // 記的是「哪一次抓取失敗了」而不是「有沒有失敗過」。以前是 failed 布林，每次要重抓前
+  // 得先在 effect 裡把它按回 false（等於多一次重畫，eslint 的 set-state-in-effect 擋的
+  // 就是這個）；現在把失敗那次的識別字串存起來，跟當下要抓的那次比對，一按重試識別字串
+  // 就不一樣、退路畫面自動收起來，不用誰去按回去。
+  const [failedKey, setFailedKey] = useState<string | null>(null);
   const [reloadKey, setReloadKey] = useState(0);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -49,6 +53,10 @@ export default function CartCheckoutPage() {
   const [storeName, setStoreName] = useState("");
   const [address, setAddress] = useState("");
   const cartRef = useRef(typeof window !== "undefined" ? getCart(slug) : []);
+
+  // 這一次要抓的是哪一輪（店＋重試次數）。失敗紀錄綁在這串上。
+  const loadKey = `${slug}|${reloadKey}`;
+  const failed = failedKey === loadKey;
 
   useEffect(() => {
     let cancelled = false;
@@ -62,17 +70,16 @@ export default function CartCheckoutPage() {
         const data = await fetchProductsByIds<Product>(slug, ids.join(","));
         if (!cancelled) setProducts(data);
       } catch {
-        // 讀失敗就掛 failed、別讓 products 停在 null 整頁卡骨架；車裡的 id／數量
+        // 讀失敗就記下是這一輪失敗、別讓 products 停在 null 整頁卡骨架；車裡的 id／數量
         // 還在 localStorage，沒有不見，給重試退路即可。
-        if (!cancelled) setFailed(true);
+        if (!cancelled) setFailedKey(loadKey);
       }
     }
-    setFailed(false);
     load();
     return () => {
       cancelled = true;
     };
-  }, [slug, router, reloadKey]);
+  }, [slug, router, reloadKey, loadKey]);
 
   if (failed) {
     // 讀取失敗：車裡的 id／數量還在身上，沒不見，給一條「重試」退路而不是卡骨架。

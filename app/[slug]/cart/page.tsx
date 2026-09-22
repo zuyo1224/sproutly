@@ -28,9 +28,13 @@ export default function CartPage() {
   // 車裡的商品 id／數量都存在 localStorage，fetch 只是去補名稱/價格/庫存/圖。原本
   // load() 對 fetch 零錯誤處理：網路一閃失或 API 回 500/非陣列，res.json() 一丟錯就
   // 靜靜 reject，products 永遠停在 null → 整頁卡在「整理中⋯」骨架、到不了結帳，客人
-  // 以為購物車壞了，其實東西還在身上。用 failed 標記讀取失敗、改顯示「沒不見、重試
-  // 一下」的退路；reloadKey 讓重試鈕重跑 effect。
-  const [failed, setFailed] = useState(false);
+  // 以為購物車壞了，其實東西還在身上。標記讀取失敗、改顯示「沒不見、重試一下」的退路；
+  // reloadKey 讓重試鈕重跑 effect。
+  // 記的是「哪一次抓取失敗了」而不是「有沒有失敗過」。以前是 failed 布林，每次要重抓
+  // 前得先在 effect 裡把它按回 false（等於多一次重畫，eslint 的 set-state-in-effect
+  // 擋的就是這個）；現在把失敗那次的識別字串存起來，跟當下要抓的那次比對，一換車內容
+  // 或按重試，識別字串就不一樣、退路畫面自動收起來，不用誰去按回去。
+  const [failedKey, setFailedKey] = useState<string | null>(null);
   const [reloadKey, setReloadKey] = useState(0);
   // 純粹當重新渲染的觸發器：購物車變動時 +1 強制重算 cart / idsKey / 各列數量。
   const [, bumpCart] = useState(0);
@@ -85,6 +89,10 @@ export default function CartPage() {
     .sort()
     .join(",");
 
+  // 這一次要抓的是哪一批（車內容＋重試次數）。失敗紀錄綁在這串上。
+  const loadKey = `${slug}|${idsKey}|${reloadKey}`;
+  const failed = failedKey === loadKey;
+
   useEffect(() => {
     let cancelled = false;
     async function load() {
@@ -109,17 +117,16 @@ export default function CartPage() {
           }
         }
       } catch {
-        // 讀失敗就掛 failed、別讓 products 停在 null 整頁卡骨架；車裡的 id/數量
+        // 讀失敗就記下是這一輪失敗、別讓 products 停在 null 整頁卡骨架；車裡的 id/數量
         // 還在 localStorage，沒有不見，給重試退路即可。
-        if (!cancelled) setFailed(true);
+        if (!cancelled) setFailedKey(loadKey);
       }
     }
-    setFailed(false);
     load();
     return () => {
       cancelled = true;
     };
-  }, [idsKey, slug, reloadKey]);
+  }, [idsKey, slug, reloadKey, loadKey]);
 
   useEffect(() => {
     const onChange = () => bumpCart((v) => v + 1);
