@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import { getCart, clearCart } from "@/lib/cart";
@@ -52,7 +52,13 @@ export default function CartCheckoutPage() {
   const [shippingMethod, setShippingMethod] = useState("");
   const [storeName, setStoreName] = useState("");
   const [address, setAddress] = useState("");
-  const cartRef = useRef(typeof window !== "undefined" ? getCart(slug) : []);
+  // 掛載當下讀一次購物車當這頁的快照，之後不再變。原本放 useRef，但渲染時要讀它算每列
+  // 數量，eslint 的 react-hooks/refs 不准渲染時讀 ref；它本來就沒人改，改成只設不改的
+  // state（lazy 初始值）行為相同、渲染時讀也合規。伺服器上沒有 localStorage 給空陣列，
+  // 那時畫的是骨架、不會用到它。
+  const [cart] = useState(() =>
+    typeof window !== "undefined" ? getCart(slug) : []
+  );
 
   // 這一次要抓的是哪一輪（店＋重試次數）。失敗紀錄綁在這串上。
   const loadKey = `${slug}|${reloadKey}`;
@@ -61,7 +67,7 @@ export default function CartCheckoutPage() {
   useEffect(() => {
     let cancelled = false;
     async function load() {
-      const ids = cartRef.current.map((c) => c.productId);
+      const ids = cart.map((c) => c.productId);
       if (ids.length === 0) {
         router.replace(`/${slug}/cart`);
         return;
@@ -79,7 +85,7 @@ export default function CartCheckoutPage() {
     return () => {
       cancelled = true;
     };
-  }, [slug, router, reloadKey, loadKey]);
+  }, [slug, router, reloadKey, loadKey, cart]);
 
   if (failed) {
     // 讀取失敗：車裡的 id／數量還在身上，沒不見，給一條「重試」退路而不是卡骨架。
@@ -197,7 +203,7 @@ export default function CartCheckoutPage() {
   // 之間被別人買走（race）——沒夾的話這頁會照樣顯示一個結不掉的數量與總價，
   // 整張表單填完按送出才被伺服器退回「庫存不足」，等於白填一遍。
   const itemRows = products.map((p) => {
-    const qty = cartRef.current.find((c) => c.productId === p.id)?.qty ?? 0;
+    const qty = cart.find((c) => c.productId === p.id)?.qty ?? 0;
     // 夾取規則與單品結帳頁共用，見 clampToStock。
     const { effectiveQty, soldOut, clamped } = clampToStock(p.stock, qty);
     // 摘要縮圖先濾掉店面注定顯示不出的舊值（http://、半截網址、空白），跟逛街頁同一條線。
