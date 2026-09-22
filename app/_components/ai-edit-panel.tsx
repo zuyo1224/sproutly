@@ -11,7 +11,6 @@ type Message = {
   role: "user" | "ai";
   text: string;
   patch?: ThemePatch;
-  ts: number;
 };
 
 const SUGGESTIONS = [
@@ -44,7 +43,7 @@ export function AIEditPanel({
     if (!prompt.trim() || loading) return;
     setError(null);
     setInput("");
-    const userMsg: Message = { role: "user", text: prompt, ts: Date.now() };
+    const userMsg: Message = { role: "user", text: prompt };
     setMessages((m) => [...m, userMsg]);
     setLoading(true);
 
@@ -64,7 +63,6 @@ export function AIEditPanel({
         role: "ai",
         text: summarizeThemePatch(data.patch, FULL_PATCH_LABELS, 60),
         patch: data.patch,
-        ts: Date.now(),
       };
       setMessages((m) => [...m, aiMsg]);
     } catch (e) {
@@ -129,7 +127,6 @@ export function AIEditPanel({
       {
         role: "ai",
         text: `已套用 ${count} 個欄位到 form。按下方「儲存設定」才會真正存進去`,
-        ts: Date.now(),
       },
     ]);
   }
