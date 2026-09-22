@@ -1,8 +1,11 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useMemo, useSyncExternalStore } from "react";
 import Link from "next/link";
-import { getRecentOrders, type RecentOrder } from "@/lib/recent-orders";
+import {
+  parseRecentOrders,
+  readRecentOrdersRaw,
+} from "@/lib/recent-orders";
 
 import { formatPrice } from "@/lib/format-price";
 import { taipeiDateMonthDay } from "@/lib/format-date";
@@ -15,17 +18,26 @@ function formatDate(iso: string) {
   return taipeiDateMonthDay(iso);
 }
 
-// 查訂單頁的「這台裝置下過的單」捷徑。掛載後才讀 localStorage
-// （避免 SSR/client 渲染不一致），沒有紀錄就什麼都不顯示。
+// 這支不訂閱任何事件：查單頁上沒有會改動小抄的操作，跟以前「掛載時讀一次」一樣。
+function subscribeNothing() {
+  return () => {};
+}
+
+// 查訂單頁的「這台裝置下過的單」捷徑。沒有紀錄就什麼都不顯示。
 // 點任一筆會把編號＋電話一起帶進查詢，客人不用記也不用重打。
+// localStorage 不是 React 自己管的資料，以前「先畫空、再用 useEffect 補讀」等於每次
+// 載入多重畫一次（eslint set-state-in-effect 擋的就是這個）；改用 useSyncExternalStore
+// 讀原始字串（字串沒變就是同一個值，不會一直重畫），再 useMemo 解析。伺服器端與剛接手
+// 畫面那一下回 null（＝不顯示），跟以前的起始值一樣，SSR 與瀏覽器第一次畫的仍然對得上。
 export function RecentOrdersList({ slug }: { slug: string }) {
-  const [orders, setOrders] = useState<RecentOrder[] | null>(null);
+  const raw = useSyncExternalStore(
+    subscribeNothing,
+    () => readRecentOrdersRaw(slug),
+    () => null,
+  );
+  const orders = useMemo(() => parseRecentOrders(raw), [raw]);
 
-  useEffect(() => {
-    setOrders(getRecentOrders(slug));
-  }, [slug]);
-
-  if (!orders || orders.length === 0) return null;
+  if (orders.length === 0) return null;
 
   return (
     <section

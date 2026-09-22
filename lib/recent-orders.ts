@@ -13,10 +13,25 @@ export type RecentOrder = {
 const KEY_PREFIX = "sproutly_recent_orders_";
 const MAX_ORDERS = 10;
 
-export function getRecentOrders(slug: string): RecentOrder[] {
-  if (typeof window === "undefined") return [];
+// localStorage 裡這家店那格的原始字串（沒有 window、沒存過、不給讀都回 null）。
+// 給 useSyncExternalStore 當 snapshot 用：字串內容沒變，比較起來就是同一個值，
+// React 不會每次 render 都當成「資料變了」一直重畫；解析交給下面的 parseRecentOrders。
+export function readRecentOrdersRaw(slug: string): string | null {
+  if (typeof window === "undefined") return null;
   try {
-    const raw = localStorage.getItem(KEY_PREFIX + slug);
+    return localStorage.getItem(KEY_PREFIX + slug);
+  } catch {
+    return null;
+  }
+}
+
+export function getRecentOrders(slug: string): RecentOrder[] {
+  return parseRecentOrders(readRecentOrdersRaw(slug));
+}
+
+// 把原始字串清洗成訂單清單；壞 JSON、不是陣列、欄位型別不對的筆一律丟掉。
+export function parseRecentOrders(raw: string | null): RecentOrder[] {
+  try {
     if (!raw) return [];
     const arr = JSON.parse(raw);
     if (!Array.isArray(arr)) return [];

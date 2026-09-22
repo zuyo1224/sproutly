@@ -31,7 +31,12 @@ import {
   rememberProduct,
   removeRecentProducts,
 } from "./recent-products.ts";
-import { getRecentOrders, rememberOrder } from "./recent-orders.ts";
+import {
+  getRecentOrders,
+  parseRecentOrders,
+  readRecentOrdersRaw,
+  rememberOrder,
+} from "./recent-orders.ts";
 import { QTY_MAX } from "./product-quantity.ts";
 
 type FakeStorage = {
@@ -619,8 +624,40 @@ describe("recent-orders：這台裝置上的最近訂單小抄", () => {
     try {
       storage.setItem("sproutly_recent_orders_shop", JSON.stringify([sample]));
       assert.deepEqual(getRecentOrders("shop"), []);
+      assert.equal(readRecentOrdersRaw("shop"), null);
     } finally {
       g.window = fakeWindow;
     }
+  });
+
+  // 查單頁用 useSyncExternalStore 拿 readRecentOrdersRaw 當 snapshot：回的必須是原始字串
+  // 本身（內容沒變就相等），不能每次回新物件，否則 React 會一直判定資料變了重畫。
+  it("readRecentOrdersRaw 回原始字串、沒存過或讀取丟例外回 null", () => {
+    assert.equal(readRecentOrdersRaw("shop"), null);
+    rememberOrder("shop", sample);
+    const raw = readRecentOrdersRaw("shop");
+    assert.equal(raw, JSON.stringify([sample]));
+    assert.equal(readRecentOrdersRaw("shop"), raw);
+    assert.equal(readRecentOrdersRaw("other"), null);
+
+    const readBoom = makeStorage();
+    readBoom.getItem = () => {
+      throw new Error("SecurityError");
+    };
+    g.localStorage = readBoom;
+    assert.equal(readRecentOrdersRaw("shop"), null);
+  });
+
+  it("parseRecentOrders 跟 getRecentOrders 同一套清洗，壞字串回空陣列", () => {
+    assert.deepEqual(parseRecentOrders(null), []);
+    assert.deepEqual(parseRecentOrders(""), []);
+    assert.deepEqual(parseRecentOrders("{not json"), []);
+    assert.deepEqual(parseRecentOrders(JSON.stringify({ a: 1 })), []);
+    assert.deepEqual(
+      parseRecentOrders(
+        JSON.stringify([{ ...sample, totalCents: "199000" }, { shortId: 1 }])
+      ),
+      [sample]
+    );
   });
 });
