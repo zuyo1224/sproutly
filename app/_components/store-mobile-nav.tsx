@@ -36,10 +36,16 @@ export function StoreMobileNav({
   const buttonRef = useRef<HTMLButtonElement>(null);
   const homeHref = `/${slug}`;
 
-  // 換頁就收起（點了選單裡的連結之後不該還開著）
-  useEffect(() => {
+  // 換頁就收起（點了選單裡的連結之後不該還開著）。
+  // 以前寫在 useEffect 裡 setOpen(false)：畫面會先用「還展開」的舊狀態畫一次、
+  // 畫完才收起來，等於多跑一次沒必要的重畫（eslint 的 set-state-in-effect 擋的就是這個）。
+  // 改成 React 官方那套「渲染時自己比對上一次的網址」寫法：網址一變當場收起，
+  // 同一次渲染就定案，使用者看到的結果一樣。
+  const [lastPathname, setLastPathname] = useState(pathname);
+  if (lastPathname !== pathname) {
+    setLastPathname(pathname);
     setOpen(false);
-  }, [pathname]);
+  }
 
   // 展開時：點外面 / 按 Esc 收起
   useEffect(() => {

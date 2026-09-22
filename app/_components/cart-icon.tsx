@@ -1,22 +1,29 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useSyncExternalStore } from "react";
 import Link from "next/link";
 import { getCartCount } from "@/lib/cart";
 
 export function CartIcon({ slug }: { slug: string }) {
-  const [count, setCount] = useState(0);
-
-  useEffect(() => {
-    setCount(getCartCount(slug));
-    const onChange = () => setCount(getCartCount(slug));
+  // 購物車件數存在瀏覽器的 localStorage 裡，不是 React 自己管的資料。
+  // 以前的寫法是「先畫 0，再用 useEffect 補上真正的件數」，等於每次載入都多一次重畫
+  // （eslint 的 set-state-in-effect 擋的就是這個）。改用 React 專門對付這種「外部資料」
+  // 的 useSyncExternalStore：訂閱同兩個事件、要畫的時候現讀一次。
+  // 第三個參數是伺服器端（與剛接手畫面那一下）的值，維持 0，跟以前的起始值一樣，
+  // 所以伺服器畫出來的跟瀏覽器第一次畫的仍然對得上。
+  const subscribe = useCallback((onChange: () => void) => {
     window.addEventListener("sproutly-cart-changed", onChange);
     window.addEventListener("storage", onChange);
     return () => {
       window.removeEventListener("sproutly-cart-changed", onChange);
       window.removeEventListener("storage", onChange);
     };
-  }, [slug]);
+  }, []);
+  const count = useSyncExternalStore(
+    subscribe,
+    () => getCartCount(slug),
+    () => 0,
+  );
 
   return (
     <Link
