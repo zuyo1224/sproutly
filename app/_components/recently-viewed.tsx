@@ -1,9 +1,11 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState, useSyncExternalStore } from "react";
 import Link from "next/link";
 import {
   getRecentProducts,
+  parseRecentProducts,
+  readRecentProductsRaw,
   rememberProduct,
   removeRecentProducts,
   type RecentProduct,
@@ -12,6 +14,12 @@ import {
 import { formatPrice } from "@/lib/format-price";
 import { isSoldOut, isLowStock, stockAriaSuffix } from "@/lib/product-stock";
 import { buildUrl } from "@/lib/url";
+
+// 不訂閱任何事件：這排只在「清掉下架商品」時改小抄，那次會跟著 setStockById 重畫、
+// 重畫時會現讀一次小抄，不需要另外通知。跟以前「掛載時讀一次」一樣不跟其他分頁同步。
+function subscribeNothing() {
+  return () => {};
+}
 
 // 「最近看過」一排。兩種用法：
 //  1. 商品詳情頁底部 — 傳 current，先讀出之前看過的清單顯示（自然排除當前這株），
@@ -37,7 +45,17 @@ export function RecentlyViewed({
   };
   className?: string;
 }) {
-  const [items, setItems] = useState<RecentProduct[]>([]);
+  // localStorage 不是 React 自己管的資料，以前「先畫空、再用 useEffect 補讀」等於每次
+  // 載入多重畫一次（eslint set-state-in-effect 擋的就是這個）；改用 useSyncExternalStore
+  // 讀原始字串、useMemo 解析。伺服器端與剛接手畫面那一下回 null（＝不顯示），跟以前的
+  // 起始值一樣。effect 裡會把當前這株記進小抄，之後重畫讀到的清單最前面多了它，但下面
+  // 本來就濾掉當前這株；其餘順序不變、上限 12 筆扣掉一筆仍遠多於顯示的 4 筆，畫出來
+  // 跟「記錄前的清單」同一排。
+  const raw = useSyncExternalStore(
+    subscribeNothing,
+    () => readRecentProductsRaw(slug),
+    () => null,
+  );
   // 即時庫存（key = 商品 id）。小抄只是看過當下的快照、沒存庫存，
   // 客人回頭從這排點進去才發現沒貨會白跑。下面清死連結那次 fetch 本來就把
   // 還在架上的商品連同 stock 一起回了，順手收進來標售完／快沒貨，跟搜尋、
@@ -45,9 +63,12 @@ export function RecentlyViewed({
   const [stockById, setStockById] = useState<Record<string, number>>({});
 
   const currentId = current?.id;
+  const items = useMemo(
+    () => parseRecentProducts(raw).filter((p) => p.id !== currentId).slice(0, 4),
+    [raw, currentId],
+  );
   useEffect(() => {
     const prior = getRecentProducts(slug).filter((p) => p.id !== currentId);
-    setItems(prior.slice(0, 4));
     if (current) rememberProduct(slug, current);
 
     // 跟購物車／收藏徽章同款收斂：小抄存的只是看過當下的快照，那幾株可能已被商家下架／
@@ -72,15 +93,11 @@ export function RecentlyViewed({
             stockMap[String(d.id)] = d.stock;
           }
         }
-        setStockById(stockMap);
         const live = new Set(data.map((d) => String(d?.id)));
         const dead = ids.filter((id) => !live.has(id));
-        if (dead.length === 0) return;
-        removeRecentProducts(slug, dead);
-        const cleaned = getRecentProducts(slug).filter(
-          (p) => p.id !== currentId
-        );
-        setItems(cleaned.slice(0, 4));
+        // 先清小抄再 setStockById：這次 set 觸發的重畫會現讀小抄，下架的就跟著消失。
+        if (dead.length > 0) removeRecentProducts(slug, dead);
+        setStockById(stockMap);
       })
       .catch(() => {
         // 抓不到就維持快照顯示，不清小抄——可能只是一時連不上，不該因此把看過的紀錄清光。

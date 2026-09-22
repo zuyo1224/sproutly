@@ -28,6 +28,8 @@ import {
 } from "./favorites.ts";
 import {
   getRecentProducts,
+  parseRecentProducts,
+  readRecentProductsRaw,
   rememberProduct,
   removeRecentProducts,
 } from "./recent-products.ts";
@@ -470,6 +472,38 @@ describe("recent-products：最近看過小抄", () => {
     assert.deepEqual(
       getRecentProducts("shop").map((p) => p.id),
       ["p3", "p1"]
+    );
+  });
+
+  // 「最近看過」一排用 useSyncExternalStore 拿 readRecentProductsRaw 當 snapshot：回的必須是
+  // 原始字串本身（內容沒變就相等），不能每次回新物件，否則 React 會一直判定資料變了重畫。
+  it("readRecentProductsRaw 回原始字串、沒存過或讀取丟例外回 null", () => {
+    assert.equal(readRecentProductsRaw("shop"), null);
+    rememberProduct("shop", sample);
+    const raw = readRecentProductsRaw("shop");
+    assert.equal(typeof raw, "string");
+    assert.equal(readRecentProductsRaw("shop"), raw);
+    assert.equal(readRecentProductsRaw("other"), null);
+
+    const readBoom = makeStorage();
+    readBoom.getItem = () => {
+      throw new Error("SecurityError");
+    };
+    g.localStorage = readBoom;
+    assert.equal(readRecentProductsRaw("shop"), null);
+    assert.deepEqual(getRecentProducts("shop"), []);
+  });
+
+  it("parseRecentProducts 跟 getRecentProducts 同一套清洗，壞字串回空陣列", () => {
+    assert.deepEqual(parseRecentProducts(null), []);
+    assert.deepEqual(parseRecentProducts(""), []);
+    assert.deepEqual(parseRecentProducts("{not json"), []);
+    assert.deepEqual(parseRecentProducts(JSON.stringify({ a: 1 })), []);
+    rememberProduct("shop", sample);
+    rememberProduct("shop", { ...sample, id: "p2" });
+    assert.deepEqual(
+      parseRecentProducts(readRecentProductsRaw("shop")),
+      getRecentProducts("shop")
     );
   });
 
