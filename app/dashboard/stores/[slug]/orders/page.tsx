@@ -26,7 +26,12 @@ import {
 import { fetchAllRows } from "@/lib/fetch-all-rows";
 import { withQuery } from "@/lib/url";
 // 篩選參數白名單與「有沒有篩選」跟訂單匯出共用同一份（見檔內說明）。
-import { isOrderFilterActive, parseOrderFilters } from "@/lib/order-filters";
+import {
+  ORDER_RANGE_KEYS,
+  ORDER_RANGE_LABELS,
+  isOrderFilterActive,
+  parseOrderFilters,
+} from "@/lib/order-filters";
 import { advanceOrderStatus, markOrderPaid } from "./actions";
 import { SubmitButton } from "@/app/_components/submit-button";
 
@@ -38,11 +43,10 @@ type SearchParams = Promise<{
   pay?: string;
 }>;
 
+// 時間區間 chip 從篩選白名單衍生（標籤跟著白名單走），前面再補一顆「全部時間」。
 const DATE_RANGES: { key: string; label: string }[] = [
   { key: "all", label: "全部時間" },
-  { key: "today", label: "今天" },
-  { key: "week", label: "本週" },
-  { key: "month", label: "本月" },
+  ...ORDER_RANGE_KEYS.map((key) => ({ key, label: ORDER_RANGE_LABELS[key] })),
 ];
 
 const STATUS_FILTERS: { key: string; label: string }[] = [

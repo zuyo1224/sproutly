@@ -5,7 +5,12 @@
 // 檔名沒加註）。這裡把「白名單內照收、白名單外與空值退 all、q 去空白、四項任一有值才算篩選」寫死。
 import { describe, it } from "node:test";
 import assert from "node:assert/strict";
-import { isOrderFilterActive, parseOrderFilters } from "./order-filters.ts";
+import {
+  ORDER_RANGE_KEYS,
+  ORDER_RANGE_LABELS,
+  isOrderFilterActive,
+  parseOrderFilters,
+} from "./order-filters.ts";
 import { ORDER_STATUSES, PAYMENT_STATUSES } from "./order-labels.ts";
 
 describe("parseOrderFilters", () => {
@@ -64,5 +69,15 @@ describe("isOrderFilterActive", () => {
 
   it("只打空白的搜尋去掉後不算篩選", () => {
     assert.equal(isOrderFilterActive(parseOrderFilters({ q: "   " })), false);
+  });
+});
+
+describe("ORDER_RANGE_KEYS", () => {
+  it("白名單就是標籤表的 key，順序今天／本週／本月，每個都有中文標籤", () => {
+    assert.deepEqual(ORDER_RANGE_KEYS, ["today", "week", "month"]);
+    for (const key of ORDER_RANGE_KEYS) {
+      assert.ok(ORDER_RANGE_LABELS[key], `${key} 缺標籤`);
+      assert.equal(parseOrderFilters({ range: key }).range, key);
+    }
   });
 });

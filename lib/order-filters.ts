@@ -8,8 +8,16 @@
 
 import { ORDER_STATUSES, PAYMENT_STATUSES } from "./order-labels.ts";
 
-// 時間區間白名單，順序跟列表頁 chip 一致；「all」不在這裡，它是退回值。
-export const ORDER_RANGE_KEYS: string[] = ["today", "week", "month"];
+// 時間區間的中文標籤，順序即列表頁 chip 順序；「all」不在這裡，它是退回值。
+// 白名單（ORDER_RANGE_KEYS）從這份衍生：原本列表頁 chip 另寫一份 key，加一個區間要兩邊
+// 各改，漏改一邊就是 chip 點得到、解析卻退回全部（或反過來白名單有、畫面沒按鈕）。
+export const ORDER_RANGE_LABELS: Record<string, string> = {
+  today: "今天",
+  week: "本週",
+  month: "本月",
+};
+
+export const ORDER_RANGE_KEYS: string[] = Object.keys(ORDER_RANGE_LABELS);
 
 export type OrderFilters = {
   status: string;
