@@ -7,6 +7,9 @@ import { describe, it } from "node:test";
 import assert from "node:assert/strict";
 import {
   buildCustomerRows,
+  customerFilterQuery,
+  isCustomerFilterActive,
+  parseCustomerFilters,
   parseCustomerSort,
   sortCustomerRows,
 } from "./customer-rows.ts";
@@ -103,5 +106,23 @@ describe("sortCustomerRows", () => {
     const rs = rows();
     assert.equal(sortCustomerRows(rs, "spend"), rs);
     assert.deepEqual(phones(rs), ["2", "3", "1"]);
+  });
+});
+
+describe("parseCustomerFilters / isCustomerFilterActive / customerFilterQuery", () => {
+  it("q 去前後空白、sort 走白名單，缺值退預設", () => {
+    assert.deepEqual(parseCustomerFilters({ q: "  王  ", sort: "spend" }), { q: "王", sort: "spend" });
+    assert.deepEqual(parseCustomerFilters({ q: null, sort: "bogus" }), { q: "", sort: "recent" });
+    assert.deepEqual(parseCustomerFilters({}), { q: "", sort: "recent" });
+  });
+  it("有搜尋或排序不是 recent 才算篩選，純空白搜尋不算", () => {
+    assert.equal(isCustomerFilterActive(parseCustomerFilters({ q: "   " })), false);
+    assert.equal(isCustomerFilterActive(parseCustomerFilters({ q: "王" })), true);
+    assert.equal(isCustomerFilterActive(parseCustomerFilters({ sort: "orders" })), true);
+  });
+  it("預設值不帶，任一項有值才進查詢字串", () => {
+    assert.equal(customerFilterQuery(parseCustomerFilters({})), "");
+    assert.equal(customerFilterQuery(parseCustomerFilters({ q: "王 小明" })), "q=%E7%8E%8B+%E5%B0%8F%E6%98%8E");
+    assert.equal(customerFilterQuery(parseCustomerFilters({ q: "a", sort: "first" })), "q=a&sort=first");
   });
 });

@@ -48,6 +48,29 @@ export function parseCustomerSort(value: string | null | undefined): CustomerSor
     : "recent";
 }
 
+// 列表頁與匯出 route 共用的網址參數：q 去前後空白、sort 走白名單。
+export type CustomerFilters = { q: string; sort: CustomerSort };
+
+export function parseCustomerFilters(raw: {
+  q?: string | null;
+  sort?: string | null;
+}): CustomerFilters {
+  return { q: (raw.q ?? "").trim(), sort: parseCustomerSort(raw.sort) };
+}
+
+// 有搜尋或排序不是預設，匯出檔名就加註「篩選」。
+export function isCustomerFilterActive(f: CustomerFilters): boolean {
+  return f.q !== "" || f.sort !== "recent";
+}
+
+// 搜尋＋排序接回網址用的查詢字串（不含「?」），給 withQuery 接路徑；預設值不帶。
+export function customerFilterQuery(f: CustomerFilters): string {
+  const sp = new URLSearchParams();
+  if (f.q) sp.set("q", f.q);
+  if (f.sort !== "recent") sp.set("sort", f.sort);
+  return sp.toString();
+}
+
 // 訂單併成客人後每位一列，順序照分群的插入順序（排序另外呼叫 sortCustomerRows）。
 // 姓名／Email／電話取該客人最近一筆訂單上的。
 export function buildCustomerRows(orders: CustomerRowSource[]): CustomerRow[] {

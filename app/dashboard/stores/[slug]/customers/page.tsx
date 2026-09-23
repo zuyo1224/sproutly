@@ -19,7 +19,9 @@ import { matchesCustomerSearch } from "@/lib/customer-search";
 // 每位客人一列的彙總與排序跟 CSV 匯出共用同一份（見 lib/customer-rows 說明）。
 import {
   buildCustomerRows,
-  parseCustomerSort,
+  customerFilterQuery,
+  isCustomerFilterActive,
+  parseCustomerFilters,
   sortCustomerRows,
   type CustomerRow,
 } from "@/lib/customer-rows";
@@ -48,8 +50,8 @@ export default async function StoreCustomersPage({
 }) {
   const { slug } = await params;
   const sp = await searchParams;
-  const q = (sp.q ?? "").trim();
-  const sort = parseCustomerSort(sp.sort);
+  const filters = parseCustomerFilters(sp);
+  const { q, sort } = filters;
 
   const { supabase, user } = await requireUser();
 
@@ -93,13 +95,12 @@ export default async function StoreCustomersPage({
 
   // 匯出連結帶上當下的搜尋／排序，按下去拿到的就是眼前這份名單（跟訂單匯出同一套）
   function exportHref() {
-    const usp = new URLSearchParams();
-    if (q) usp.set("q", q);
-    if (sort !== "recent") usp.set("sort", sort);
-    const qs = usp.toString();
-    return withQuery(`/dashboard/stores/${slug}/customers/export`, qs);
+    return withQuery(
+      `/dashboard/stores/${slug}/customers/export`,
+      customerFilterQuery(filters)
+    );
   }
-  const filterActive = q !== "" || sort !== "recent";
+  const filterActive = isCustomerFilterActive(filters);
 
   return (
     <div>

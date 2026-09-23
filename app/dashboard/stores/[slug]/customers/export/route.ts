@@ -12,7 +12,8 @@ import { matchesCustomerSearch } from "@/lib/customer-search";
 // 每位客人一列的彙總、排序白名單與排序跟客人列表頁共用同一份（見 lib/customer-rows 說明）。
 import {
   buildCustomerRows,
-  parseCustomerSort,
+  isCustomerFilterActive,
+  parseCustomerFilters,
   sortCustomerRows,
 } from "@/lib/customer-rows";
 // 撈整家店未取消訂單的查詢跟客人列表頁共用同一份（分頁撈齊，不吃 1000 列上限，
@@ -42,9 +43,9 @@ export async function GET(request: Request, { params }: { params: Params }) {
   // 客人列表頁帶著當下的搜尋／排序跳來這支匯出，商家搜「VIP 那位」或排「總消費高→低」
   // 按匯出，期待拿到的就是眼前那份排序好的名單 —— 跟訂單匯出同一套「匯出 = 眼前所見」。
   const sp = new URL(request.url).searchParams;
-  const q = (sp.get("q") ?? "").trim();
-  const sort = parseCustomerSort(sp.get("sort"));
-  const filterActive = q !== "" || sort !== "recent";
+  const filters = parseCustomerFilters({ q: sp.get("q"), sort: sp.get("sort") });
+  const { q, sort } = filters;
+  const filterActive = isCustomerFilterActive(filters);
 
   // 取消的單不算。分群本身跟客人列表頁共用同一份口徑
   // （見 lib/group-orders-by-customer 說明），兩邊不再各抄一套。
