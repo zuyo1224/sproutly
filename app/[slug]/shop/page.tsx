@@ -136,13 +136,15 @@ export default async function ShopPage({
       case "name":
         query = query.order("name", { ascending: true });
         break;
-      default:
-        query = query
-          .order("sort_order", { ascending: true })
-          .order("created_at", { ascending: false });
     }
 
-    return query.order("id", { ascending: true }).range(from, to);
+    // 同價、同名的幾件（盆栽店常一排都 $350）原本直接落到 id，id 是隨機碼，
+    // 等於亂排；改成先照商家在後台排好的順序（跟「最新」預設同一套），再補 id。
+    return query
+      .order("sort_order", { ascending: true })
+      .order("created_at", { ascending: false })
+      .order("id", { ascending: true })
+      .range(from, to);
   });
   // 名稱或描述任一含關鍵字就算命中（跟後台商品列表、Cmd+K 搜尋同一套口徑）。
   const products = q
