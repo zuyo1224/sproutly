@@ -21,6 +21,8 @@ import { sumOrderCents } from "@/lib/sum-order-cents";
 import { fetchAllRows } from "@/lib/fetch-all-rows";
 // 照篩選撈訂單跟訂單匯出共用同一條查詢（見檔內說明）。
 import { fetchFilteredOrders } from "@/lib/fetch-filtered-orders";
+// 品項分批＋翻頁撈齊（每批也吃 1000 列上限）跟訂單匯出共用同一支（見檔內說明）。
+import { fetchOrderItems } from "@/lib/fetch-order-items";
 import { withQuery } from "@/lib/url";
 // 篩選參數白名單與「有沒有篩選」跟訂單匯出共用同一份（見檔內說明）。
 import {
@@ -131,34 +133,21 @@ export default async function OrdersListPage({
   // 每筆訂單帶「買了什麼」摘要。列表原本只有顧客跟金額，商家包貨、回訊息
   // 都得一筆筆點進詳情才知道內容——尤其一早起來十幾筆待確認的單，光是
   // 「哪筆是要那株龜背芋」就要點十幾次。把眼前這批訂單的明細一次批次撈回來
-  // （50 筆一組 chunk 進 .in()，避免訂單一多把查詢字串撐爆），組成
-  // 「商品名 ×數量、⋯」一行字，桌機塞進表格新欄、手機卡片加一行，
-  // 過長交給 CSS 截斷、完整內容留在 title 滑過可看。
+  // （走 lib/fetch-order-items：id 分批避免查詢字串撐爆，每批再翻頁撈齊——
+  // 原本這裡每批單發一次 select，一批 50 單平均超過 20 樣就撞 1000 列上限，
+  // 後面的單摘要整格空白），組成「商品名 ×數量、⋯」一行字，桌機塞進表格新欄、
+  // 手機卡片加一行，過長交給 CSS 截斷、完整內容留在 title 滑過可看。
   const orderIds = (orders ?? []).map((o) => o.id as string);
   const itemsByOrder = new Map<string, string[]>();
   if (orderIds.length > 0) {
-    const chunks: string[][] = [];
-    for (let i = 0; i < orderIds.length; i += 50) {
-      chunks.push(orderIds.slice(i, i + 50));
-    }
-    const results = await Promise.all(
-      chunks.map((chunk) =>
-        supabase
-          .from("sproutly_order_items")
-          .select("order_id, name_snapshot, quantity")
-          .in("order_id", chunk)
-      )
-    );
-    for (const { data } of results) {
-      for (const it of data ?? []) {
-        const label =
-          it.quantity > 1
-            ? `${it.name_snapshot} ×${it.quantity}`
-            : it.name_snapshot;
-        const list = itemsByOrder.get(it.order_id);
-        if (list) list.push(label);
-        else itemsByOrder.set(it.order_id, [label]);
-      }
+    for (const it of await fetchOrderItems(supabase, orderIds)) {
+      const label =
+        it.quantity > 1
+          ? `${it.name_snapshot} ×${it.quantity}`
+          : it.name_snapshot;
+      const list = itemsByOrder.get(it.order_id);
+      if (list) list.push(label);
+      else itemsByOrder.set(it.order_id, [label]);
     }
   }
   function itemsSummary(orderId: string) {
