@@ -5,6 +5,7 @@ import { createAdminClient } from "@/lib/supabase/admin";
 import { redirect } from "next/navigation";
 import { ORDER_STATUSES, PAYMENT_STATUSES } from "@/lib/order-labels";
 import { adjustStock } from "@/lib/stock-restore";
+import { fetchOrderItemsForOrder } from "@/lib/fetch-order-items";
 import { orderStatusUpdates, orderPaymentUpdates } from "@/lib/order-timestamps";
 import { withErrorParam } from "@/lib/url";
 
@@ -94,12 +95,11 @@ export async function updateOrderStatus(
   const leftCancelled =
     typeof updates.status === "string" && current.status === "cancelled";
   if (becameCancelled || leftCancelled) {
+    // 撈品項走跟訂單詳情頁同一支（照 id 排），每次切換調庫存的先後順序固定，
+    // 之後品項表欄位或撈法要改也只改一處。
     const admin = createAdminClient();
-    const { data: items } = await admin
-      .from("sproutly_order_items")
-      .select("product_id, quantity")
-      .eq("order_id", orderId);
-    for (const item of items ?? []) {
+    const items = await fetchOrderItemsForOrder(admin, orderId);
+    for (const item of items) {
       if (!item.product_id) continue;
       await adjustStock(
         admin,
