@@ -16,14 +16,11 @@ import {
   shortOrderId,
 } from "@/lib/order-labels";
 // 分日統計的台灣時區日期 key、時間戳、篩選區間起點跟店家首頁/匯出共用同一份（見檔內說明）。
-import { taipeiStampShort, taipeiRangeSince } from "@/lib/format-date";
+import { taipeiStampShort } from "@/lib/format-date";
 import { sumOrderCents } from "@/lib/sum-order-cents";
-import {
-  applyOrderSearch,
-  matchesOrderSearch,
-  needsMemoryOrderSearch,
-} from "@/lib/order-search";
 import { fetchAllRows } from "@/lib/fetch-all-rows";
+// 照篩選撈訂單跟訂單匯出共用同一條查詢（見檔內說明）。
+import { fetchFilteredOrders } from "@/lib/fetch-filtered-orders";
 import { withQuery } from "@/lib/url";
 // 篩選參數白名單與「有沒有篩選」跟訂單匯出共用同一份（見檔內說明）。
 import {
@@ -90,7 +87,6 @@ export default async function OrdersListPage({
   const { slug } = await params;
   const filters = parseOrderFilters(await searchParams);
   const { status, pay, range, q } = filters;
-  const rangeSince = taipeiRangeSince(range);
 
   const { supabase, user } = await requireUser();
 
@@ -128,43 +124,9 @@ export default async function OrdersListPage({
       (paymentCounts[o.payment_status] ?? 0) + 1;
   });
 
-  // 套用 filter + search 查訂單。同樣分頁撈齊——以前超過 1000 筆時，
-  // 列表尾端的舊單直接看不到，下面的已收/未收金額也跟著算少。
-  // 顯示維持新到舊，同時間再比 id 讓翻頁切點穩定。
-  //
-  // 搜尋字串含數字（搜電話、或客人頁「看訂單」帶原文電話跳過來）、或含 , ( )
-  // （PostgREST or() 的保留字元，塞進 DB 查詢會整條報錯，搜「Wang, Danny」
-  // 「王小明(阿明)」直接變 0 筆）時不交給 DB ilike——改撈回來在記憶體用
-  // matchesOrderSearch 逐筆比（正規化子字串 + 轉純數字比對），分流判斷收在
-  // lib/order-search 的 needsMemoryOrderSearch，跟匯出 route 同口徑。
-  // 其餘純文字查詢（姓名 / Email）維持 DB ilike，行為與成本不變。
-  const memorySearch = q !== "" && needsMemoryOrderSearch(q);
-  const fetchedOrders = await fetchAllRows(async (from, to) => {
-    let query = supabase
-      .from("sproutly_orders")
-      .select("*")
-      .eq("merchant_id", store.id);
-    if (status !== "all") {
-      query = query.eq("status", status);
-    }
-    if (pay !== "all") {
-      query = query.eq("payment_status", pay);
-    }
-    if (q && !memorySearch) {
-      query = applyOrderSearch(query, q);
-    }
-    if (rangeSince) {
-      query = query.gte("created_at", rangeSince.toISOString());
-    }
-    const { data } = await query
-      .order("created_at", { ascending: false })
-      .order("id", { ascending: false })
-      .range(from, to);
-    return { data };
-  });
-  const orders = memorySearch
-    ? fetchedOrders.filter((o) => matchesOrderSearch(o, q))
-    : fetchedOrders;
+  // 套用 filter + search 查訂單：分頁撈齊（超過 1000 筆不漏）、新到舊、搜尋分流
+  // DB ilike／記憶體比對，收在 lib/fetch-filtered-orders，跟匯出 route 同一條查詢。
+  const orders = await fetchFilteredOrders(supabase, store.id, filters);
 
   // 每筆訂單帶「買了什麼」摘要。列表原本只有顧客跟金額，商家包貨、回訊息
   // 都得一筆筆點進詳情才知道內容——尤其一早起來十幾筆待確認的單，光是

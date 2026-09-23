@@ -7,22 +7,14 @@ import {
   decodeShippingFromNote,
   shortOrderId,
 } from "@/lib/order-labels";
-// 檔名日期的台灣時區日期 key、篩選區間起點都跟訂單列表共用同一份（見檔內說明）。
-import {
-  taipeiDateKey,
-  taipeiRangeSince,
-  taipeiStampNumeric,
-} from "@/lib/format-date";
+// 檔名日期的台灣時區日期 key 跟訂單列表共用同一份（見檔內說明）。
+import { taipeiDateKey, taipeiStampNumeric } from "@/lib/format-date";
 // CSV 欄位轉義跟客人匯出共用同一份（見檔內說明）。
 import { csvDocument, csvDownloadHeaders, csvExportFilename, csvRow } from "@/lib/csv-escape";
-import {
-  applyOrderSearch,
-  matchesOrderSearch,
-  needsMemoryOrderSearch,
-} from "@/lib/order-search";
 // 分轉整數元的 CSV 金額欄跟客人匯出共用同一份（見檔內說明）。
 import { centsToYuan } from "@/lib/format-price";
-import { fetchAllRows } from "@/lib/fetch-all-rows";
+// 照篩選撈訂單跟訂單列表頁共用同一條查詢（見檔內說明）。
+import { fetchFilteredOrders } from "@/lib/fetch-filtered-orders";
 import { fetchOrderItems } from "@/lib/fetch-order-items";
 // 篩選參數白名單與「有沒有篩選」跟訂單列表頁共用同一份（見檔內說明）。
 import { isOrderFilterActive, parseOrderFilters } from "@/lib/order-filters";
@@ -60,41 +52,11 @@ export async function GET(
     range: sp.get("range"),
     q: sp.get("q"),
   });
-  const { status, pay, range, q } = filters;
-  const since = taipeiRangeSince(range);
   const filterActive = isOrderFilterActive(filters);
 
-  // 訂單本體分頁撈齊——以前一次 select 吃 Supabase 約 1000 列上限，
-  // 店累積訂單破千後，匯出的 CSV 默默少掉排在後面的舊單，商家只會以為
-  // 那些單不存在（7f9d6d0 修的是品項欄，這次少的是訂單列本身）。
-  // 排序維持新到舊，同時間再比 id 讓每頁切點穩定不漏不重。
-  //
-  // 搜尋字串含數字（搜電話）、或含 , ( )（PostgREST or() 保留字元，塞進
-  // DB 查詢整條報錯、搜「Wang, Danny」變 0 筆）時不交給 DB ilike——改跟
-  // 列表頁同款：撈回來在記憶體用 matchesOrderSearch 逐筆比，分流判斷收在
-  // lib/order-search 的 needsMemoryOrderSearch，「列表看到哪批、匯出就是
-  // 哪批」兩個出口才對得上。其餘純文字查詢（姓名 / Email）維持 DB ilike 不變。
-  const memorySearch = q !== "" && needsMemoryOrderSearch(q);
-  const fetchedOrders = await fetchAllRows(async (from, to) => {
-    let ordersQuery = supabase
-      .from("sproutly_orders")
-      .select("*")
-      .eq("merchant_id", store.id);
-    if (status !== "all") ordersQuery = ordersQuery.eq("status", status);
-    if (pay !== "all") ordersQuery = ordersQuery.eq("payment_status", pay);
-    if (q && !memorySearch) {
-      ordersQuery = applyOrderSearch(ordersQuery, q);
-    }
-    if (since) ordersQuery = ordersQuery.gte("created_at", since.toISOString());
-    const { data } = await ordersQuery
-      .order("created_at", { ascending: false })
-      .order("id", { ascending: false })
-      .range(from, to);
-    return { data };
-  });
-  const orders = memorySearch
-    ? fetchedOrders.filter((o) => matchesOrderSearch(o, q))
-    : fetchedOrders;
+  // 訂單本體照篩選撈齊（超過 1000 筆不漏、新到舊、搜尋分流 DB ilike／記憶體比對），
+  // 跟列表頁吃 lib/fetch-filtered-orders 同一條查詢，「列表看到哪批、匯出就是哪批」。
+  const orders = await fetchFilteredOrders(supabase, store.id, filters);
 
   // 品項只查「這次要匯出的訂單」的，不是全店歷史全部——原本用 merchant_id join
   // 撈整家店的品項，Supabase 一次最多回約 1000 列，店累積品項超過之後，落在
