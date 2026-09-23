@@ -16,7 +16,7 @@ import {
   taipeiStampNumeric,
 } from "@/lib/format-date";
 // CSV 欄位轉義跟客人匯出共用同一份（見檔內說明）。
-import { csvDocument, csvDownloadHeaders, csvRow } from "@/lib/csv-escape";
+import { csvDocument, csvDownloadHeaders, csvExportFilename, csvRow } from "@/lib/csv-escape";
 import {
   applyOrderSearch,
   matchesOrderSearch,
@@ -184,7 +184,7 @@ export async function GET(
   const csv = csvDocument(rows);
   const today = taipeiDateKey(new Date());
   // 篩選過的匯出檔名加註，避免商家把「只有未付款」那份誤當成全部訂單
-  const filename = `${store.name}-orders-${today}${filterActive ? "-篩選" : ""}.csv`;
+  const filename = csvExportFilename(store.name, "orders", today, filterActive);
 
   return new NextResponse(csv, {
     headers: csvDownloadHeaders(filename),

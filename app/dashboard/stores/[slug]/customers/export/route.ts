@@ -7,7 +7,7 @@ import { currencySymbol, centsToYuan } from "@/lib/format-price";
 // VIP / 回購標籤門檻跟客人列表頁共用同一份，避免列表標了 VIP 但 CSV 沒標。
 import { customerTier } from "@/lib/customer-tags";
 // CSV 欄位轉義跟訂單匯出共用同一份（見檔內說明）。
-import { csvDocument, csvDownloadHeaders, csvRow } from "@/lib/csv-escape";
+import { csvDocument, csvDownloadHeaders, csvExportFilename, csvRow } from "@/lib/csv-escape";
 import { matchesCustomerSearch } from "@/lib/customer-search";
 import { compareIsoAsc, compareIsoDesc } from "@/lib/date-compare";
 import { sumOrderCents } from "@/lib/sum-order-cents";
@@ -162,7 +162,7 @@ export async function GET(request: Request, { params }: { params: Params }) {
   const csv = csvDocument(csvRows);
   const today = taipeiDateKey(new Date());
   // 篩選過的匯出檔名加註，避免商家把「只搜到的那幾位」誤當成全部客人
-  const filename = `${store.name}-customers-${today}${filterActive ? "-篩選" : ""}.csv`;
+  const filename = csvExportFilename(store.name, "customers", today, filterActive);
 
   return new NextResponse(csv, {
     headers: csvDownloadHeaders(filename),

@@ -29,6 +29,17 @@ export function csvDocument(rows: readonly string[]): string {
   return "\uFEFF" + rows.join("\r\n");
 }
 
+// 匯出檔名：「店名-種類-日期[-篩選].csv」。日期由呼叫端給（台灣時區 date key），
+// 篩選過的加註「-篩選」，避免商家把只搜到的那一批誤當成全部。兩支匯出 route 共用。
+export function csvExportFilename(
+  storeName: string,
+  kind: "customers" | "orders",
+  dateKey: string,
+  filtered: boolean,
+): string {
+  return `${storeName}-${kind}-${dateKey}${filtered ? "-篩選" : ""}.csv`;
+}
+
 // 下載用的檔頭。檔名含店名（中文），filename* 要走 RFC 5987 的 UTF-8 百分比編碼。
 export function csvDownloadHeaders(filename: string): Record<string, string> {
   return {

@@ -8,7 +8,7 @@
 // 引號翻倍、其餘原樣」寫死。
 import { describe, it } from "node:test";
 import assert from "node:assert/strict";
-import { csvDocument, csvDownloadHeaders, csvEscape, csvRow } from "./csv-escape.ts";
+import { csvDocument, csvDownloadHeaders, csvExportFilename, csvEscape, csvRow } from "./csv-escape.ts";
 
 describe("csvEscape", () => {
   it("null 與 undefined 回空字串，不是 'null' 字樣", () => {
@@ -73,5 +73,13 @@ describe("csvRow／csvDocument／csvDownloadHeaders", () => {
       "Content-Disposition":
         "attachment; filename*=UTF-8''%E5%B0%8F%E8%8A%BD%E7%9B%86%E6%A0%BD-orders-2026-09-23-%E7%AF%A9%E9%81%B8.csv",
     });
+  });
+
+  it("csvExportFilename 店名-種類-日期，篩選過才加 -篩選", () => {
+    assert.equal(csvExportFilename("小芽盆栽", "orders", "2026-09-23", false), "小芽盆栽-orders-2026-09-23.csv");
+    assert.equal(
+      csvExportFilename("小芽盆栽", "customers", "2026-09-23", true),
+      "小芽盆栽-customers-2026-09-23-篩選.csv",
+    );
   });
 });
