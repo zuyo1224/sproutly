@@ -9,7 +9,7 @@
 // 跟 fetch-all-rows.test.ts 同一套：Node 內建 node:test + node:assert，import 寫 ./fetch-order-items.ts。
 import { describe, it } from "node:test";
 import assert from "node:assert/strict";
-import { fetchOrderItems } from "./fetch-order-items.ts";
+import { fetchOrderItems, fetchOrderItemsForOrder } from "./fetch-order-items.ts";
 
 type Item = {
   id: string;
@@ -185,5 +185,60 @@ describe("fetchOrderItems（id 每 100 筆一批、每批翻頁撈齊）", () =>
       ]
     );
     assert.equal(out.length, 1500);
+  });
+});
+
+// 單張訂單那支：鏈是 from → select → eq → order，await 在 order 上。
+// 寫死「欄位聯集」「只鎖這張單」「照 id 排」「沒資料回空陣列」四件事。
+function fakeSingleClient(rows: Array<Record<string, unknown>> | null) {
+  const seen: { table?: string; columns?: string; eq?: [string, string]; order?: [string, boolean] } = {};
+  const client = {
+    from(table: string) {
+      seen.table = table;
+      return {
+        select(columns: string) {
+          seen.columns = columns;
+          return {
+            eq(col: string, val: string) {
+              seen.eq = [col, val];
+              return {
+                order(col2: string, opts: { ascending: boolean }) {
+                  seen.order = [col2, opts.ascending];
+                  const data =
+                    rows === null
+                      ? null
+                      : rows
+                          .filter((r) => r.order_id === val)
+                          .sort((a, b) => String(a.id).localeCompare(String(b.id)));
+                  return Promise.resolve({ data });
+                },
+              };
+            },
+          };
+        },
+      };
+    },
+  };
+  return { client: client as never, seen };
+}
+
+describe("fetchOrderItemsForOrder", () => {
+  it("只撈這張單、欄位是四頁的聯集、照 id 排", async () => {
+    const { client, seen } = fakeSingleClient([
+      { id: "b", order_id: "o1", product_id: "p2", name_snapshot: "乙", quantity: 1, price_cents_snapshot: 200 },
+      { id: "a", order_id: "o1", product_id: null, name_snapshot: "甲", quantity: 2, price_cents_snapshot: 100 },
+      { id: "c", order_id: "o2", product_id: "p3", name_snapshot: "丙", quantity: 1, price_cents_snapshot: 300 },
+    ]);
+    const out = await fetchOrderItemsForOrder(client, "o1");
+    assert.equal(seen.table, "sproutly_order_items");
+    assert.equal(seen.columns, "id, product_id, name_snapshot, quantity, price_cents_snapshot");
+    assert.deepEqual(seen.eq, ["order_id", "o1"]);
+    assert.deepEqual(seen.order, ["id", true]);
+    assert.deepEqual(out.map((r) => r.id), ["a", "b"]);
+  });
+
+  it("查不到資料回空陣列，呼叫端不用再補 ?? []", async () => {
+    const { client } = fakeSingleClient(null);
+    assert.deepEqual(await fetchOrderItemsForOrder(client, "o1"), []);
   });
 });

@@ -20,6 +20,7 @@ import { telHref, mailHref } from "@/lib/contact-href";
 import { buildUrl } from "@/lib/url";
 import { siteBaseUrl } from "@/lib/store-schema";
 import { isUuid } from "@/lib/uuid";
+import { fetchOrderItemsForOrder } from "@/lib/fetch-order-items";
 
 type Params = Promise<{ slug: string; orderId: string }>;
 type SearchParams = Promise<{ error?: string; saved?: string }>;
@@ -67,13 +68,7 @@ export default async function OrderDetailPage({
     .maybeSingle();
   if (!order) notFound();
 
-  const { data: items } = await supabase
-    .from("sproutly_order_items")
-    .select("*")
-    .eq("order_id", order.id)
-    // 排序跟訂單列表摘要、匯出 CSV（lib/fetch-order-items）同一個切點：不下 order
-    // 的話 Postgres 不保證回傳順序，同一張單在列表、CSV、這頁三處品項排序可能不同。
-    .order("id", { ascending: true });
+  const items = await fetchOrderItemsForOrder(supabase, order.id);
 
   const updateBound = updateOrderStatus.bind(null, slug, order.id);
   const shortId = shortOrderId(order.id);

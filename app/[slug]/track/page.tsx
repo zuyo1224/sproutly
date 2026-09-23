@@ -4,6 +4,7 @@ import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { fetchAllRows } from "@/lib/fetch-all-rows";
+import { fetchOrderItemsForOrder } from "@/lib/fetch-order-items";
 import { resolveTheme } from "../_theme";
 import {
   paymentMethodLabel,
@@ -153,14 +154,7 @@ export default async function TrackPage({
       }
 
       if (order) {
-        const { data: it } = await admin
-          .from("sproutly_order_items")
-          .select("product_id, name_snapshot, quantity, price_cents_snapshot")
-          .eq("order_id", order.id)
-          // 排序跟訂單列表摘要、匯出 CSV（lib/fetch-order-items）同一個切點：不下 order
-          // 的話 Postgres 不保證回傳順序，同一張單在列表、CSV、這頁三處品項排序可能不同。
-          .order("id", { ascending: true });
-        items = it ?? [];
+        items = await fetchOrderItemsForOrder(admin, order.id);
       }
     }
   }

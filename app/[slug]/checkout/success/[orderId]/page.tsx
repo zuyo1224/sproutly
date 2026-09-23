@@ -17,6 +17,7 @@ import { telHref, mailHref } from "@/lib/contact-href";
 import { Confetti } from "@/app/_components/confetti";
 import { CopyOrderId } from "@/app/_components/copy-order-id";
 import { isUuid } from "@/lib/uuid";
+import { fetchOrderItemsForOrder } from "@/lib/fetch-order-items";
 import { RememberOrder } from "@/app/_components/remember-order";
 import { PrintButton } from "@/app/_components/print-button";
 
@@ -59,13 +60,7 @@ export default async function OrderSuccessPage({
     .maybeSingle();
   if (!order) notFound();
 
-  const { data: items } = await admin
-    .from("sproutly_order_items")
-    .select("*")
-    .eq("order_id", order.id)
-    // 排序跟訂單列表摘要、匯出 CSV（lib/fetch-order-items）同一個切點：不下 order
-    // 的話 Postgres 不保證回傳順序，同一張單在列表、CSV、這頁三處品項排序可能不同。
-    .order("id", { ascending: true });
+  const items = await fetchOrderItemsForOrder(admin, order.id);
 
   const shortId = shortOrderId(order.id);
   const decodedNote = decodeShippingFromNote(order.note);

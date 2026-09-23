@@ -1,7 +1,9 @@
 import type { createClient } from "@/lib/supabase/server";
+import type { createAdminClient } from "@/lib/supabase/admin";
 import { fetchAllRows } from "./fetch-all-rows.ts";
 
 type ServerClient = Awaited<ReturnType<typeof createClient>>;
+type AdminClient = ReturnType<typeof createAdminClient>;
 
 // 「一次撈一批訂單的品項」單一來源。訂單匯出 CSV（dashboard orders/export）與
 // 客人的訂單紀錄（[slug]/account/orders）都要把一整份訂單名單的品項湊回每張單上，
@@ -52,4 +54,31 @@ export async function fetchOrderItems(
     all.push(...page);
   }
   return all;
+}
+
+// 「一張訂單的品項」單一來源。後台訂單詳情、結帳成功頁、客人訂單詳情、查單頁四處
+// 各寫一份：欄位各挑各的（兩處 select *），排序是上一輪才逐處補上的 order("id")，
+// 之後有人新增第五頁很容易又忘了排序，同一張單在各頁品項順序又對不上。
+// 這裡把四頁用到的欄位聯集寫死、排序跟上面 fetchOrderItems 同一個切點（id）。
+// 單張訂單不會碰 1000 列上限，所以單發一次，不翻頁。
+// 查單頁與結帳成功頁用 admin client（客人未登入、靠短碼＋電話或訂單網址驗身分），
+// 後台與客人訂單詳情用一般 client，兩種都收。
+export type SingleOrderItemRow = {
+  id: string;
+  product_id: string | null;
+  name_snapshot: string;
+  quantity: number;
+  price_cents_snapshot: number;
+};
+
+export async function fetchOrderItemsForOrder(
+  supabase: ServerClient | AdminClient,
+  orderId: string
+): Promise<SingleOrderItemRow[]> {
+  const { data } = await (supabase as ServerClient)
+    .from("sproutly_order_items")
+    .select("id, product_id, name_snapshot, quantity, price_cents_snapshot")
+    .eq("order_id", orderId)
+    .order("id", { ascending: true });
+  return (data as SingleOrderItemRow[] | null) ?? [];
 }

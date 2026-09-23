@@ -19,6 +19,7 @@ import { PrintButton } from "@/app/_components/print-button";
 import { CopyOrderId } from "@/app/_components/copy-order-id";
 import { ReorderButton } from "@/app/_components/reorder-button";
 import { isUuid } from "@/lib/uuid";
+import { fetchOrderItemsForOrder } from "@/lib/fetch-order-items";
 
 // 蓋掉父層 account/layout 的「會員中心」，單筆訂單分頁顯示「訂單明細」。
 export const metadata: Metadata = { title: "訂單明細" };
@@ -69,13 +70,7 @@ export default async function CustomerOrderDetailPage({
     .maybeSingle();
   if (!order) notFound();
 
-  const { data: items } = await supabase
-    .from("sproutly_order_items")
-    .select("id, product_id, name_snapshot, quantity, price_cents_snapshot")
-    .eq("order_id", order.id)
-    // 排序跟訂單列表摘要、匯出 CSV（lib/fetch-order-items）同一個切點：不下 order
-    // 的話 Postgres 不保證回傳順序，同一張單在列表、CSV、這頁三處品項排序可能不同。
-    .order("id", { ascending: true });
+  const items = await fetchOrderItemsForOrder(supabase, order.id);
 
   const shortId = shortOrderId(order.id);
   const decodedNote = decodeShippingFromNote(order.note);
