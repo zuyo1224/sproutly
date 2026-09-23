@@ -80,8 +80,11 @@ export default async function StoreHomePage({
     .select("id, name, price_cents, currency, image_urls, stock")
     .eq("merchant_id", store.id)
     .eq("is_active", true)
+    // 先照商家在後台排好的順序（跟逛街頁「最新」預設、快搜同一套），商家把某件往前挪，
+    // 本月選物才會跟著變；同 sort_order 再新到舊。
+    .order("sort_order", { ascending: true })
     .order("created_at", { ascending: false })
-    // 一次匯入的商品 created_at 可能相同，補 id 當第二排序鍵，切在第 N 件時上榜的才固定。
+    // 一次匯入的商品 created_at 可能相同，補 id 當最後排序鍵，切在第 N 件時上榜的才固定。
     .order("id", { ascending: true })
     .limit(theme.layout.featuredCount);
 

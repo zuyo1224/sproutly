@@ -127,12 +127,14 @@ export default async function PublicProductPage({
     .eq("merchant_id", store.id)
     .eq("is_active", true)
     .neq("id", product.id)
+    // 跟逛街頁「最新」預設、首頁精選同一套：先照後台排序，再新到舊。
+    .order("sort_order", { ascending: true })
     .order("created_at", { ascending: false })
     // 同 created_at 補 id 排定，切在第 12 件時「這些也在店裡」不會每次換一批。
     .order("id", { ascending: true })
     .limit(12);
 
-  // Array.sort 穩定（ES2019+），有貨與售完兩群各自維持 created_at 倒序
+  // Array.sort 穩定（ES2019+），有貨與售完兩群各自維持後台排序
   const relatedProducts = (relatedRaw ?? [])
     .slice()
     .sort(bySoldOutLast)
