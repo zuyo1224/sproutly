@@ -35,12 +35,15 @@ export async function GET(
   // 商品破千後排序在後的舊品會默默搜不到——逛街頁、後台列表、sitemap
   // 都修過同一種病，這支快搜當時漏掉）；排序尾端補 id tiebreaker 釘住
   // 同時間列的順序，翻頁切點才不會浮動漏列或重複。
+  // 先照商家後台排好的 sort_order，跟逛街頁「最新」預設同一套，
+  // 商家把某件往前挪，快搜結果也跟著往前。
   const rows = await fetchAllRows((from, to) =>
     supabase
       .from("sproutly_products")
       .select("id, name, description, price_cents, currency, image_urls, stock")
       .eq("merchant_id", store.id)
       .eq("is_active", true)
+      .order("sort_order", { ascending: true })
       .order("created_at", { ascending: false })
       .order("id", { ascending: true })
       .range(from, to)
@@ -56,7 +59,7 @@ export async function GET(
   // shop 逛街頁、收藏頁、商品詳情「這些也在店裡」同一套——快搜面板明明標了
   // 售完角標，沒沉底的話售完的照樣佔住前排，還可能把第 11 筆之後有貨的命中
   // 擠出前 10。Array.sort 穩定（ES2019+），各群內有貨與售完兩批各自維持
-  // created_at 新到舊（上面的 .order 同時把原本沒指定、順序不保證的查詢釘住）。
+  // 後台排序（上面的 .order 同時把原本沒指定、順序不保證的查詢釘住）。
   named.sort(bySoldOutLast);
   described.sort(bySoldOutLast);
   const matched = [...named, ...described].slice(0, 10).map((p) => ({
