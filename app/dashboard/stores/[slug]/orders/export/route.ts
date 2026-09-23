@@ -16,7 +16,7 @@ import {
   taipeiStampNumeric,
 } from "@/lib/format-date";
 // CSV 欄位轉義跟客人匯出共用同一份（見檔內說明）。
-import { csvEscape } from "@/lib/csv-escape";
+import { csvDocument, csvDownloadHeaders, csvRow } from "@/lib/csv-escape";
 import {
   applyOrderSearch,
   matchesOrderSearch,
@@ -146,7 +146,7 @@ export async function GET(
     "出貨時間",
   ];
 
-  const rows: string[] = [headers.map(csvEscape).join(",")];
+  const rows: string[] = [csvRow(headers)];
 
   orders?.forEach((o) => {
     const items = itemsByOrder.get(o.id) ?? [];
@@ -178,19 +178,15 @@ export async function GET(
       o.paid_at ?? "",
       o.shipped_at ?? "",
     ];
-    rows.push(row.map(csvEscape).join(","));
+    rows.push(csvRow(row));
   });
 
-  // UTF-8 BOM 讓 Excel 開中文不亂碼
-  const csv = "﻿" + rows.join("\r\n");
+  const csv = csvDocument(rows);
   const today = taipeiDateKey(new Date());
   // 篩選過的匯出檔名加註，避免商家把「只有未付款」那份誤當成全部訂單
   const filename = `${store.name}-orders-${today}${filterActive ? "-篩選" : ""}.csv`;
 
   return new NextResponse(csv, {
-    headers: {
-      "Content-Type": "text/csv; charset=utf-8",
-      "Content-Disposition": `attachment; filename*=UTF-8''${encodeURIComponent(filename)}`,
-    },
+    headers: csvDownloadHeaders(filename),
   });
 }

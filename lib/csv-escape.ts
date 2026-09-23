@@ -1,5 +1,5 @@
-// CSV 欄位轉義：兩個匯出 route（客人匯出、訂單匯出）各抄一份逐字相同的函式，
-// 收成這裡的單一來源。日後想改轉義規則（例如加 BOM、改分隔符）只動一處。
+// CSV 組檔：兩個匯出 route（客人匯出、訂單匯出）原本各抄一份逐字相同的轉義、
+// 接列、BOM 與下載檔頭，收成這裡的單一來源。日後想改規則（例如改分隔符）只動一處。
 export function csvEscape(v: unknown): string {
   if (v === null || v === undefined) return "";
   let s = String(v);
@@ -16,4 +16,23 @@ export function csvEscape(v: unknown): string {
     return `"${s.replace(/"/g, '""')}"`;
   }
   return s;
+}
+
+// 一列：每格跳脫後用逗號接起來。
+export function csvRow(cells: readonly unknown[]): string {
+  return cells.map(csvEscape).join(",");
+}
+
+// 整份檔：開頭補 UTF-8 BOM（Excel 開中文才不會亂碼），列與列之間用 CRLF。
+// 兩個匯出 route 以前各自寫一次這兩個細節，漏一個 Excel 那邊就是整片亂碼。
+export function csvDocument(rows: readonly string[]): string {
+  return "\uFEFF" + rows.join("\r\n");
+}
+
+// 下載用的檔頭。檔名含店名（中文），filename* 要走 RFC 5987 的 UTF-8 百分比編碼。
+export function csvDownloadHeaders(filename: string): Record<string, string> {
+  return {
+    "Content-Type": "text/csv; charset=utf-8",
+    "Content-Disposition": `attachment; filename*=UTF-8''${encodeURIComponent(filename)}`,
+  };
 }

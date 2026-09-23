@@ -8,7 +8,7 @@
 // 引號翻倍、其餘原樣」寫死。
 import { describe, it } from "node:test";
 import assert from "node:assert/strict";
-import { csvEscape } from "./csv-escape.ts";
+import { csvDocument, csvDownloadHeaders, csvEscape, csvRow } from "./csv-escape.ts";
 
 describe("csvEscape", () => {
   it("null 與 undefined 回空字串，不是 'null' 字樣", () => {
@@ -48,5 +48,30 @@ describe("csvEscape", () => {
 
   it("負數金額字串化後也會被補單引號（跟 - 開頭的規則一致，匯出端要注意）", () => {
     assert.equal(csvEscape(-12), "'-12");
+  });
+});
+
+describe("csvRow／csvDocument／csvDownloadHeaders", () => {
+  it("csvRow 每格照 csvEscape 跳脫再用逗號接", () => {
+    assert.equal(
+      csvRow(["王小明", "台北市,大安區", null, 3, "=1+1"]),
+      '王小明,"台北市,大安區",,3,\'=1+1',
+    );
+    assert.equal(csvRow([]), "");
+  });
+
+  it("csvDocument 開頭補 BOM、列與列用 CRLF、結尾不多換行", () => {
+    const doc = csvDocument(["a,b", "1,2"]);
+    assert.equal(doc.charCodeAt(0), 0xfeff);
+    assert.equal(doc, "\uFEFFa,b\r\n1,2");
+    assert.equal(csvDocument([]), "\uFEFF");
+  });
+
+  it("csvDownloadHeaders 中文檔名走 filename* UTF-8 百分比編碼", () => {
+    assert.deepEqual(csvDownloadHeaders("小芽盆栽-orders-2026-09-23-篩選.csv"), {
+      "Content-Type": "text/csv; charset=utf-8",
+      "Content-Disposition":
+        "attachment; filename*=UTF-8''%E5%B0%8F%E8%8A%BD%E7%9B%86%E6%A0%BD-orders-2026-09-23-%E7%AF%A9%E9%81%B8.csv",
+    });
   });
 });

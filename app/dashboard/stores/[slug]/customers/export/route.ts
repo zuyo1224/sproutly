@@ -7,7 +7,7 @@ import { currencySymbol, centsToYuan } from "@/lib/format-price";
 // VIP / 回購標籤門檻跟客人列表頁共用同一份，避免列表標了 VIP 但 CSV 沒標。
 import { customerTier } from "@/lib/customer-tags";
 // CSV 欄位轉義跟訂單匯出共用同一份（見檔內說明）。
-import { csvEscape } from "@/lib/csv-escape";
+import { csvDocument, csvDownloadHeaders, csvRow } from "@/lib/csv-escape";
 import { matchesCustomerSearch } from "@/lib/customer-search";
 import { compareIsoAsc, compareIsoDesc } from "@/lib/date-compare";
 import { sumOrderCents } from "@/lib/sum-order-cents";
@@ -133,7 +133,7 @@ export async function GET(request: Request, { params }: { params: Params }) {
     "最近下單",
   ];
 
-  const csvRows: string[] = [headers.map(csvEscape).join(",")];
+  const csvRows: string[] = [csvRow(headers)];
 
   filtered.forEach((r) => {
     // 標籤判定跟列表頁同門檻：VIP = 累計 NT$ 2,000+，回購 = 2 筆以上
@@ -156,19 +156,15 @@ export async function GET(request: Request, { params }: { params: Params }) {
       taipeiDateNumeric(r.firstOrderAt),
       taipeiDateNumeric(r.lastOrderAt),
     ];
-    csvRows.push(row.map(csvEscape).join(","));
+    csvRows.push(csvRow(row));
   });
 
-  // UTF-8 BOM 讓 Excel 開中文不亂碼
-  const csv = "﻿" + csvRows.join("\r\n");
+  const csv = csvDocument(csvRows);
   const today = taipeiDateKey(new Date());
   // 篩選過的匯出檔名加註，避免商家把「只搜到的那幾位」誤當成全部客人
   const filename = `${store.name}-customers-${today}${filterActive ? "-篩選" : ""}.csv`;
 
   return new NextResponse(csv, {
-    headers: {
-      "Content-Type": "text/csv; charset=utf-8",
-      "Content-Disposition": `attachment; filename*=UTF-8''${encodeURIComponent(filename)}`,
-    },
+    headers: csvDownloadHeaders(filename),
   });
 }
