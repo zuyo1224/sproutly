@@ -3,6 +3,14 @@ import { notFound } from "next/navigation";
 import Link from "next/link";
 import { formatPrice } from "@/lib/format-price";
 import { isSoldOut, isLowStock } from "@/lib/product-stock";
+// 狀態 chip 清單、網址參數解析、篩選＋搜尋接回網址的組法都在 product-filters，見該檔說明。
+import {
+  PRODUCT_STATUS_FILTERS,
+  isProductFilterActive,
+  parseProductFilters,
+  productFilterQuery,
+  productStatusFilter,
+} from "@/lib/product-filters";
 import { MAX_STOCK } from "@/lib/product-limits";
 import { matchesProductSearch } from "@/lib/product-search";
 import {
@@ -35,25 +43,6 @@ type ProductRow = {
   is_active: boolean;
 };
 
-// 快沒貨判斷走 product-stock 的 isLowStock，跟卡片上的「剩 N 件」、後台首頁的
-// 快沒貨清單、客人端全站同一份門檻（LOW_STOCK_THRESHOLD），不會各說各話。
-// 以前這裡寫死 stock < 5（≤4），客人端卻是 ≤3，兩邊其實對不上才收成這一份。
-const STATUS_FILTERS: {
-  key: string;
-  label: string;
-  match: (p: ProductRow) => boolean;
-}[] = [
-  { key: "all", label: "全部", match: () => true },
-  { key: "active", label: "上架中", match: (p) => p.is_active },
-  { key: "inactive", label: "停售中", match: (p) => !p.is_active },
-  {
-    key: "low",
-    label: "快沒貨",
-    match: (p) => isLowStock(p.stock),
-  },
-  { key: "soldout", label: "已售完", match: (p) => isSoldOut(p.stock) },
-];
-
 export default async function ProductsListPage({
   params,
   searchParams,
@@ -63,13 +52,11 @@ export default async function ProductsListPage({
 }) {
   const { slug } = await params;
   const { q: rawQuery, filter: rawFilter, error: rawError } = await searchParams;
-  const q = (rawQuery ?? "").trim();
+  const filters = parseProductFilters({ filter: rawFilter, q: rawQuery });
+  const { filter, q } = filters;
   // 列表上的快速動作（上下架、調順序、改庫存）出錯時會把訊息帶在網址上跳回來。
   // 以前沒人讀這個值，商家按了沒反應也不知道為什麼，只能一直重按。
   const errorMsg = (rawError ?? "").trim().slice(0, 200);
-  const filter = STATUS_FILTERS.some((f) => f.key === rawFilter)
-    ? rawFilter!
-    : "all";
   const { supabase, user } = await requireUser();
 
   const { data: store } = await supabase
@@ -95,32 +82,27 @@ export default async function ProductsListPage({
       .range(from, to)
   );
   const filterCounts: Record<string, number> = {};
-  for (const f of STATUS_FILTERS) {
+  for (const f of PRODUCT_STATUS_FILTERS) {
     filterCounts[f.key] = allProducts.filter(f.match).length;
   }
 
-  const activeFilter =
-    STATUS_FILTERS.find((f) => f.key === filter) ?? STATUS_FILTERS[0];
+  const activeFilter = productStatusFilter(filter);
   const visible = allProducts.filter(
     (p) => activeFilter.match(p) && (!q || matchesProductSearch(p, q))
   );
 
   // 快速上下架按完要跳回「同一個篩選、同一個搜尋」的列表，不然商家在「停售中」
   // 分頁按了上架，會被丟回全部列表、剛剛看到一半的清單整個不見。
-  const listQsParams = new URLSearchParams();
-  if (filter !== "all") listQsParams.set("filter", filter);
-  if (q) listQsParams.set("q", q);
-  const listQs = listQsParams.toString();
+  const listQs = productFilterQuery(filters);
 
   function chipHref(key: string) {
-    const sp = new URLSearchParams();
-    if (key !== "all") sp.set("filter", key);
-    if (q) sp.set("q", q);
-    const qs = sp.toString();
-    return withQuery(`/dashboard/stores/${slug}/products`, qs);
+    return withQuery(
+      `/dashboard/stores/${slug}/products`,
+      productFilterQuery({ filter: key, q })
+    );
   }
 
-  const filterActive = q !== "" || filter !== "all";
+  const filterActive = isProductFilterActive(filters);
   const count = allProducts.length;
   const caption = filterActive
     ? `符合條件 ${visible.length} 件 · 全部 ${count} 件`
@@ -191,7 +173,7 @@ export default async function ProductsListPage({
         <div className="bg-white rounded-2xl p-4 shadow-lg shadow-emerald-700/5 mb-4 space-y-3">
           <div className="flex flex-wrap gap-2">
             <span className="sr-only">依商品狀態篩選：</span>
-            {STATUS_FILTERS.map((f) => {
+            {PRODUCT_STATUS_FILTERS.map((f) => {
               const active = filter === f.key;
               return (
                 <Link
