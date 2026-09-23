@@ -55,7 +55,9 @@ export default async function DashboardPage() {
     .from("sproutly_merchants")
     .select("*")
     .eq("owner_id", user.id)
-    .order("created_at", { ascending: false });
+    .order("created_at", { ascending: false })
+    // 同一秒建的店補 id 排定，跟店家切換選單（stores/[slug]/layout）同一套順序。
+    .order("id", { ascending: true });
 
   // 純客人擋下：沒任何店，但 sproutly_customers 有 record，跳回首頁（避免客人誤入商家後台）
   if (!stores || stores.length === 0) {

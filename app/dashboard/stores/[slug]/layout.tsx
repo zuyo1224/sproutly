@@ -27,7 +27,9 @@ export default async function StoreLayout({
       .from("sproutly_merchants")
       .select("name, slug, is_published")
       .eq("owner_id", user.id)
-      .order("created_at", { ascending: false }),
+      .order("created_at", { ascending: false })
+      // 同一秒建的店補 id 排定，切換選單跟「我的店」列表順序一致、不會每次重整對調。
+      .order("id", { ascending: true }),
   ]);
 
   if (!store) notFound();
