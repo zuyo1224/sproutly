@@ -16,13 +16,13 @@ import {
   REPEAT_ORDER_THRESHOLD,
 } from "@/lib/customer-tags";
 import { matchesCustomerSearch } from "@/lib/customer-search";
-import { compareIsoAsc, compareIsoDesc } from "@/lib/date-compare";
-import { sumOrderCents } from "@/lib/sum-order-cents";
-import { isPaidOrder } from "@/lib/order-labels";
+// 每位客人一列的彙總與排序跟 CSV 匯出共用同一份（見 lib/customer-rows 說明）。
 import {
-  groupOrdersByCustomer,
-  isAccountGroupKey,
-} from "@/lib/group-orders-by-customer";
+  buildCustomerRows,
+  parseCustomerSort,
+  sortCustomerRows,
+  type CustomerRow,
+} from "@/lib/customer-rows";
 import { fetchCustomerOrders } from "@/lib/fetch-customer-orders";
 import { buildUrl, withQuery } from "@/lib/url";
 
@@ -31,21 +31,6 @@ function customerOrdersHref(slug: string, r: CustomerRow) {
   const needle = (r.phone && r.phone !== "unknown" ? r.phone : "") || r.email || r.name;
   return buildUrl(`/dashboard/stores/${slug}/orders`, { q: needle });
 }
-
-type CustomerRow = {
-  key: string;
-  identityType: "account" | "guest";
-  customerId: string | null;
-  name: string;
-  email: string | null;
-  phone: string;
-  orderCount: number;
-  paidCount: number;
-  totalCents: number;
-  paidCents: number;
-  firstOrderAt: string;
-  lastOrderAt: string;
-};
 
 const SORT_OPTIONS = [
   { key: "recent", label: "最近下單" },
@@ -64,8 +49,7 @@ export default async function StoreCustomersPage({
   const { slug } = await params;
   const sp = await searchParams;
   const q = (sp.q ?? "").trim();
-  const sort = (SORT_OPTIONS.find((o) => o.key === sp.sort)?.key ??
-    "recent") as (typeof SORT_OPTIONS)[number]["key"];
+  const sort = parseCustomerSort(sp.sort);
 
   const { supabase, user } = await requireUser();
 
@@ -84,60 +68,15 @@ export default async function StoreCustomersPage({
   const storeCurrency = displayCurrency(orderList);
 
   // 分群邏輯：有 customer_id → 用 customer_id；否則 fallback 用 phone。
-  // 跟匯出 CSV 共用同一份分群口徑（見 lib/group-orders-by-customer 說明）。
-  const groups = groupOrdersByCustomer(orderList);
-
-  const rows: CustomerRow[] = [];
-  for (const [key, orders] of groups) {
-    const sorted = [...orders].sort((a, b) =>
-      compareIsoAsc(a.created_at, b.created_at)
-    );
-    const latest = sorted[sorted.length - 1];
-    const earliest = sorted[0];
-    const total = sumOrderCents(orders);
-    const paidOrders = orders.filter((o) => isPaidOrder(o.payment_status));
-    const paidCount = paidOrders.length;
-    const paidCents = sumOrderCents(paidOrders);
-    const identityType: CustomerRow["identityType"] = isAccountGroupKey(key)
-      ? "account"
-      : "guest";
-    rows.push({
-      key,
-      identityType,
-      customerId: identityType === "account" ? latest.customer_id : null,
-      name: latest.customer_name || "—",
-      email: latest.customer_email,
-      phone: latest.customer_phone,
-      orderCount: orders.length,
-      paidCount,
-      totalCents: total,
-      paidCents,
-      firstOrderAt: earliest.created_at,
-      lastOrderAt: latest.created_at,
-    });
-  }
+  // 跟匯出 CSV 共用同一份分群口徑（見 lib/group-orders-by-customer 說明），
+  // 每位一列的彙總與排序也共用（見 lib/customer-rows）。
+  const rows = buildCustomerRows(orderList);
 
   // 篩選
   const filtered = q ? rows.filter((r) => matchesCustomerSearch(r, q)) : rows;
 
   // 排序
-  switch (sort) {
-    case "spend":
-      filtered.sort((a, b) => b.totalCents - a.totalCents);
-      break;
-    case "orders":
-      filtered.sort((a, b) => b.orderCount - a.orderCount);
-      break;
-    case "first":
-      filtered.sort((a, b) =>
-        compareIsoAsc(a.firstOrderAt, b.firstOrderAt)
-      );
-      break;
-    default:
-      filtered.sort((a, b) =>
-        compareIsoDesc(a.lastOrderAt, b.lastOrderAt)
-      );
-  }
+  sortCustomerRows(filtered, sort);
 
   const totalCustomers = rows.length;
   const accountCount = rows.filter((r) => r.identityType === "account").length;

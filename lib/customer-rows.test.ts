@@ -1,0 +1,107 @@
+// lib/customer-rows.ts 客人名單彙總與排序的行為固定測試。
+//
+// 為什麼要有這份：客人列表頁與客人匯出 CSV 吃同一份彙總與排序，改壞的下場是兩個出口
+// 同時錯（姓名取錯筆、已付金額混進未付、排序方向反了）。這裡把「姓名取最近一筆、首末次
+// 下單、只算 paid 的已付、會員／匿名判定、四種排序、白名單退回 recent」寫死。
+import { describe, it } from "node:test";
+import assert from "node:assert/strict";
+import {
+  buildCustomerRows,
+  parseCustomerSort,
+  sortCustomerRows,
+} from "./customer-rows.ts";
+
+function order(o: Partial<Parameters<typeof buildCustomerRows>[0][number]>) {
+  return {
+    customer_id: null,
+    customer_name: "客人",
+    customer_email: null,
+    customer_phone: "0912345678",
+    total_cents: 0,
+    payment_status: "unpaid",
+    created_at: "2026-01-01T00:00:00Z",
+    ...o,
+  };
+}
+
+describe("parseCustomerSort", () => {
+  it("白名單內原樣回傳", () => {
+    for (const k of ["recent", "spend", "orders", "first"]) {
+      assert.equal(parseCustomerSort(k), k);
+    }
+  });
+  it("空、null、不認得的都退回 recent", () => {
+    assert.equal(parseCustomerSort(null), "recent");
+    assert.equal(parseCustomerSort(undefined), "recent");
+    assert.equal(parseCustomerSort(""), "recent");
+    assert.equal(parseCustomerSort("SPEND"), "recent");
+  });
+});
+
+describe("buildCustomerRows", () => {
+  it("同一位客人彙總：姓名取最近一筆、首末次、已付只算 paid", () => {
+    const rows = buildCustomerRows([
+      order({ customer_name: "新名字", total_cents: 300, payment_status: "paid", created_at: "2026-03-01T00:00:00Z" }),
+      order({ customer_name: "舊名字", total_cents: 500, created_at: "2026-01-01T00:00:00Z" }),
+      order({ customer_name: "中間", total_cents: 200, payment_status: "paid", created_at: "2026-02-01T00:00:00Z" }),
+    ]);
+    assert.equal(rows.length, 1);
+    const r = rows[0];
+    assert.equal(r.name, "新名字");
+    assert.equal(r.orderCount, 3);
+    assert.equal(r.paidCount, 2);
+    assert.equal(r.totalCents, 1000);
+    assert.equal(r.paidCents, 500);
+    assert.equal(r.firstOrderAt, "2026-01-01T00:00:00Z");
+    assert.equal(r.lastOrderAt, "2026-03-01T00:00:00Z");
+    assert.equal(r.identityType, "guest");
+    assert.equal(r.customerId, null);
+  });
+
+  it("會員帶 customerId、匿名不帶；沒姓名顯示 —", () => {
+    const rows = buildCustomerRows([
+      order({ customer_id: "u1", customer_phone: "0911111111" }),
+      order({ customer_name: "", customer_phone: "0922222222" }),
+    ]);
+    assert.deepEqual(
+      rows.map((r) => [r.key, r.identityType, r.customerId, r.name]),
+      [
+        ["account:u1", "account", "u1", "客人"],
+        ["guest:0922222222", "guest", null, "—"],
+      ]
+    );
+  });
+
+  it("沒訂單回空陣列", () => {
+    assert.deepEqual(buildCustomerRows([]), []);
+  });
+});
+
+describe("sortCustomerRows", () => {
+  const rows = () =>
+    buildCustomerRows([
+      order({ customer_phone: "0900000001", total_cents: 100, created_at: "2026-02-01T00:00:00Z" }),
+      order({ customer_phone: "0900000002", total_cents: 900, created_at: "2026-01-01T00:00:00Z" }),
+      order({ customer_phone: "0900000002", total_cents: 100, created_at: "2026-01-05T00:00:00Z" }),
+      order({ customer_phone: "0900000003", total_cents: 500, created_at: "2026-03-01T00:00:00Z" }),
+    ]);
+  const phones = (rs: { phone: string }[]) => rs.map((r) => r.phone.slice(-1));
+
+  it("recent：最近下單新到舊", () => {
+    assert.deepEqual(phones(sortCustomerRows(rows(), "recent")), ["3", "1", "2"]);
+  });
+  it("spend：累計高到低", () => {
+    assert.deepEqual(phones(sortCustomerRows(rows(), "spend")), ["2", "3", "1"]);
+  });
+  it("orders：筆數多到少，同筆數維持原順序", () => {
+    assert.deepEqual(phones(sortCustomerRows(rows(), "orders")), ["2", "1", "3"]);
+  });
+  it("first：首次下單舊到新", () => {
+    assert.deepEqual(phones(sortCustomerRows(rows(), "first")), ["2", "1", "3"]);
+  });
+  it("就地排序、回傳同一個陣列", () => {
+    const rs = rows();
+    assert.equal(sortCustomerRows(rs, "spend"), rs);
+    assert.deepEqual(phones(rs), ["2", "3", "1"]);
+  });
+});

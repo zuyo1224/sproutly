@@ -9,21 +9,17 @@ import { customerTier } from "@/lib/customer-tags";
 // CSV 欄位轉義跟訂單匯出共用同一份（見檔內說明）。
 import { csvDocument, csvDownloadHeaders, csvExportFilename, csvRow } from "@/lib/csv-escape";
 import { matchesCustomerSearch } from "@/lib/customer-search";
-import { compareIsoAsc, compareIsoDesc } from "@/lib/date-compare";
-import { sumOrderCents } from "@/lib/sum-order-cents";
-import { isPaidOrder } from "@/lib/order-labels";
+// 每位客人一列的彙總、排序白名單與排序跟客人列表頁共用同一份（見 lib/customer-rows 說明）。
 import {
-  groupOrdersByCustomer,
-  isAccountGroupKey,
-} from "@/lib/group-orders-by-customer";
+  buildCustomerRows,
+  parseCustomerSort,
+  sortCustomerRows,
+} from "@/lib/customer-rows";
 // 撈整家店未取消訂單的查詢跟客人列表頁共用同一份（分頁撈齊，不吃 1000 列上限，
 // 見 lib/fetch-customer-orders 說明）。
 import { fetchCustomerOrders } from "@/lib/fetch-customer-orders";
 
 type Params = Promise<{ slug: string }>;
-
-// 客人頁的排序選項白名單，跟列表頁一致
-const VALID_SORT = ["recent", "spend", "orders", "first"];
 
 export async function GET(request: Request, { params }: { params: Params }) {
   const { slug } = await params;
@@ -47,9 +43,7 @@ export async function GET(request: Request, { params }: { params: Params }) {
   // 按匯出，期待拿到的就是眼前那份排序好的名單 —— 跟訂單匯出同一套「匯出 = 眼前所見」。
   const sp = new URL(request.url).searchParams;
   const q = (sp.get("q") ?? "").trim();
-  const sort = VALID_SORT.includes(sp.get("sort") ?? "")
-    ? sp.get("sort")!
-    : "recent";
+  const sort = parseCustomerSort(sp.get("sort"));
   const filterActive = q !== "" || sort !== "recent";
 
   // 取消的單不算。分群本身跟客人列表頁共用同一份口徑
@@ -60,64 +54,9 @@ export async function GET(request: Request, { params }: { params: Params }) {
   // 拿任一筆訂單的 currency 當基準，非台幣的店家不再硬寫 NT$。
   const currencyLabel = currencySymbol(orderList[0]?.currency);
 
-  type CustomerRow = {
-    identityType: "account" | "guest";
-    name: string;
-    email: string | null;
-    phone: string;
-    orderCount: number;
-    paidCount: number;
-    totalCents: number;
-    paidCents: number;
-    firstOrderAt: string;
-    lastOrderAt: string;
-  };
-
-  const groups = groupOrdersByCustomer(orderList);
-
-  const rows: CustomerRow[] = [];
-  for (const [key, group] of groups) {
-    const sorted = [...group].sort((a, b) =>
-      compareIsoAsc(a.created_at, b.created_at)
-    );
-    const latest = sorted[sorted.length - 1];
-    const earliest = sorted[0];
-    const total = sumOrderCents(group);
-    const paidOrders = group.filter((o) => isPaidOrder(o.payment_status));
-    const paidCents = sumOrderCents(paidOrders);
-    rows.push({
-      identityType: isAccountGroupKey(key) ? "account" : "guest",
-      name: latest.customer_name || "—",
-      email: latest.customer_email,
-      phone: latest.customer_phone,
-      orderCount: group.length,
-      paidCount: paidOrders.length,
-      totalCents: total,
-      paidCents,
-      firstOrderAt: earliest.created_at,
-      lastOrderAt: latest.created_at,
-    });
-  }
-
+  const rows = buildCustomerRows(orderList);
   const filtered = q ? rows.filter((r) => matchesCustomerSearch(r, q)) : rows;
-
-  switch (sort) {
-    case "spend":
-      filtered.sort((a, b) => b.totalCents - a.totalCents);
-      break;
-    case "orders":
-      filtered.sort((a, b) => b.orderCount - a.orderCount);
-      break;
-    case "first":
-      filtered.sort((a, b) =>
-        compareIsoAsc(a.firstOrderAt, b.firstOrderAt)
-      );
-      break;
-    default:
-      filtered.sort((a, b) =>
-        compareIsoDesc(a.lastOrderAt, b.lastOrderAt)
-      );
-  }
+  sortCustomerRows(filtered, sort);
 
   const headers = [
     "客人姓名",
