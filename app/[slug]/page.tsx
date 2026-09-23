@@ -81,6 +81,8 @@ export default async function StoreHomePage({
     .eq("merchant_id", store.id)
     .eq("is_active", true)
     .order("created_at", { ascending: false })
+    // 一次匯入的商品 created_at 可能相同，補 id 當第二排序鍵，切在第 N 件時上榜的才固定。
+    .order("id", { ascending: true })
     .limit(theme.layout.featuredCount);
 
   // 售完的沉到精選列表最後，跟 shop 逛街頁、商品詳情「店裡其他」、收藏頁同一套——

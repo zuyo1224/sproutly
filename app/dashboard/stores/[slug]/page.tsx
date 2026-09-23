@@ -110,6 +110,9 @@ export default async function StoreInsightsPage({
       .select("*")
       .eq("merchant_id", store.id)
       .order("created_at", { ascending: false })
+      // 同一秒進來的單要有第二排序鍵，不然切在第 5 筆時上榜哪張會浮動；
+      // 跟訂單列表（lib/fetch-filtered-orders）同樣 id 倒序，最近 5 筆＝列表最上面 5 筆。
+      .order("id", { ascending: false })
       .limit(5),
     // 熱銷 top 5 的品項：join 撈整家店史上所有品項，同樣吃 1000 列上限
     //（7f9d6d0 修的匯出品項欄就是這個病），照樣分頁撈齊。
@@ -135,6 +138,11 @@ export default async function StoreInsightsPage({
       // 客人端「剩 N」同一份。以前寫死 < 5（≤4），客人端卻是 ≤3，兩邊對不上。
       .lte("stock", LOW_STOCK_THRESHOLD)
       .order("stock", { ascending: true })
+      // 好幾件同樣剩 0 時只靠 stock 排，切在第 10 筆的會每次重整換人；
+      // 同庫存再照後台商品列表的順序（sort_order → 新到舊 → id）排定。
+      .order("sort_order", { ascending: true })
+      .order("created_at", { ascending: false })
+      .order("id", { ascending: true })
       .limit(10),
   ]);
 
