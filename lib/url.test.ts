@@ -9,7 +9,7 @@
 // 跟其他 lib 測試同一套：node:test + node:assert，import 一律帶 .ts。
 import { describe, it } from "node:test";
 import assert from "node:assert/strict";
-import { buildUrl, withErrorParam } from "./url.ts";
+import { buildUrl, withErrorParam, withQuery } from "./url.ts";
 
 describe("buildUrl", () => {
   it("沒有參數就只回路徑，不留一個孤單的問號", () => {
@@ -133,3 +133,24 @@ describe("withErrorParam", () => {
 function readParam(url: string, key: string): string | null {
   return new URLSearchParams(url.split("?")[1] ?? "").get(key);
 }
+
+describe("withQuery（已組好的查詢字串接到路徑後）", () => {
+  it("空字串只回路徑，不留孤單的問號", () => {
+    assert.equal(withQuery("/dashboard/stores/p/orders", ""), "/dashboard/stores/p/orders");
+  });
+
+  it("有字串就接一個 ?，內容原樣不再編碼", () => {
+    assert.equal(
+      withQuery("/dashboard/stores/p/products", "filter=soldout&q=%E9%BE%9C"),
+      "/dashboard/stores/p/products?filter=soldout&q=%E9%BE%9C",
+    );
+  });
+
+  it("接 URLSearchParams 的結果跟 buildUrl 組出來同一條", () => {
+    const sp = new URLSearchParams({ status: "paid", q: "a b&c" });
+    assert.equal(
+      withQuery("/x", sp.toString()),
+      buildUrl("/x", { status: "paid", q: "a b&c" }),
+    );
+  });
+});

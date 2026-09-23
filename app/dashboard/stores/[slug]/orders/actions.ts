@@ -4,7 +4,7 @@ import { requireUser } from "@/lib/require-user";
 import { redirect } from "next/navigation";
 import { nextOrderStatus, isUnpaidOrder } from "@/lib/order-labels";
 import { orderStatusUpdates, orderPaymentUpdates } from "@/lib/order-timestamps";
-import { withErrorParam } from "@/lib/url";
+import { withErrorParam, withQuery } from "@/lib/url";
 
 // 訂單列表上的「往下一步推一格」。跟詳情頁那支 updateOrderStatus 是兩件事：那支是
 // 五選一的下拉（能跳著改、能取消、能同時改付款），這支只做流程上的下一格，讓商家
@@ -36,7 +36,7 @@ export async function advanceOrderStatus(
     .maybeSingle();
   if (!store) redirect("/dashboard");
 
-  const defaultListUrl = `/dashboard/stores/${slug}/orders${returnQs ? `?${returnQs}` : ""}`;
+  const defaultListUrl = withQuery(`/dashboard/stores/${slug}/orders`, returnQs);
   const listUrl = returnTo ? returnTo : defaultListUrl;
 
   const { data: current } = await supabase
@@ -104,7 +104,7 @@ export async function markOrderPaid(
     .maybeSingle();
   if (!store) redirect("/dashboard");
 
-  const listUrl = `/dashboard/stores/${slug}/orders${returnQs ? `?${returnQs}` : ""}`;
+  const listUrl = withQuery(`/dashboard/stores/${slug}/orders`, returnQs);
 
   const { data: current } = await supabase
     .from("sproutly_orders")

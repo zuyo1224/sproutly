@@ -13,6 +13,7 @@ import {
 import { SubmitButton } from "@/app/_components/submit-button";
 // 商品撈整批要分頁撈齊，不然吃 Supabase 1000 列上限，見 fetch-all-rows。
 import { fetchAllRows } from "@/lib/fetch-all-rows";
+import { withQuery } from "@/lib/url";
 // 列表縮圖改吃 displayableImageUrls 的第一張，跟店面卡片（5e6c204）同一支：DB 裡舊的
 // http:// 或半截網址店面是直接跳過不掛，主圖判不過時客人看到的主圖其實是後面第一張判得過
 // 的，商家在這裡看到的縮圖要跟客人一樣，不然對著列表找不到哪件商品「圖不對」。
@@ -116,7 +117,7 @@ export default async function ProductsListPage({
     if (key !== "all") sp.set("filter", key);
     if (q) sp.set("q", q);
     const qs = sp.toString();
-    return `/dashboard/stores/${slug}/products${qs ? `?${qs}` : ""}`;
+    return withQuery(`/dashboard/stores/${slug}/products`, qs);
   }
 
   const filterActive = q !== "" || filter !== "all";

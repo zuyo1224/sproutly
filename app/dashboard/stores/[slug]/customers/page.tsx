@@ -24,7 +24,7 @@ import {
   isAccountGroupKey,
 } from "@/lib/group-orders-by-customer";
 import { fetchCustomerOrders } from "@/lib/fetch-customer-orders";
-import { buildUrl } from "@/lib/url";
+import { buildUrl, withQuery } from "@/lib/url";
 
 // 點客人 → 帶他的電話（沒有就 email / 姓名）去訂單列表用既有的 ?q= 篩出他的所有單
 function customerOrdersHref(slug: string, r: CustomerRow) {
@@ -158,7 +158,7 @@ export default async function StoreCustomersPage({
     if (q) usp.set("q", q);
     if (sort !== "recent") usp.set("sort", sort);
     const qs = usp.toString();
-    return `/dashboard/stores/${slug}/customers/export${qs ? `?${qs}` : ""}`;
+    return withQuery(`/dashboard/stores/${slug}/customers/export`, qs);
   }
   const filterActive = q !== "" || sort !== "recent";
 

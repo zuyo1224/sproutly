@@ -11,7 +11,7 @@ import { parseStock, readProductForm } from "@/lib/product-form";
 import { isPastedRemoteImageUrl } from "@/lib/image-url";
 // 調順序要先拿到整家店「照現在順序排好」的完整清單，破千的店不能只撈第一頁。
 import { fetchAllRows } from "@/lib/fetch-all-rows";
-import { buildUrl, withErrorParam } from "@/lib/url";
+import { buildUrl, withErrorParam, withQuery } from "@/lib/url";
 import { redirect } from "next/navigation";
 
 const BUCKET = "sproutly-products";
@@ -20,7 +20,7 @@ const BUCKET = "sproutly-products";
 // 的那一頁」：returnQs 是列表頁組好的篩選＋搜尋查詢字串（filter、q），原樣接回去。
 // 空字串就是不帶篩選的全部列表。
 function productListUrl(slug: string, returnQs: string): string {
-  return `/dashboard/stores/${slug}/products${returnQs ? `?${returnQs}` : ""}`;
+  return withQuery(`/dashboard/stores/${slug}/products`, returnQs);
 }
 
 async function authorizedStore(slug: string) {

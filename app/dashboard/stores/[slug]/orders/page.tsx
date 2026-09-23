@@ -24,6 +24,7 @@ import {
   needsMemoryOrderSearch,
 } from "@/lib/order-search";
 import { fetchAllRows } from "@/lib/fetch-all-rows";
+import { withQuery } from "@/lib/url";
 import { advanceOrderStatus, markOrderPaid } from "./actions";
 import { SubmitButton } from "@/app/_components/submit-button";
 
@@ -231,7 +232,7 @@ export default async function OrdersListPage({
     if (range !== "all") params.set("range", range);
     if (pay !== "all") params.set("pay", pay);
     const qs = params.toString();
-    return `/dashboard/stores/${slug}/orders${qs ? `?${qs}` : ""}`;
+    return withQuery(`/dashboard/stores/${slug}/orders`, qs);
   }
 
   function dateRangeHref(r: string) {
@@ -241,7 +242,7 @@ export default async function OrdersListPage({
     if (r !== "all") params.set("range", r);
     if (pay !== "all") params.set("pay", pay);
     const qs = params.toString();
-    return `/dashboard/stores/${slug}/orders${qs ? `?${qs}` : ""}`;
+    return withQuery(`/dashboard/stores/${slug}/orders`, qs);
   }
 
   function payHref(p: string) {
@@ -251,7 +252,7 @@ export default async function OrdersListPage({
     if (range !== "all") params.set("range", range);
     if (p !== "all") params.set("pay", p);
     const qs = params.toString();
-    return `/dashboard/stores/${slug}/orders${qs ? `?${qs}` : ""}`;
+    return withQuery(`/dashboard/stores/${slug}/orders`, qs);
   }
 
   const filterActive =
@@ -265,7 +266,7 @@ export default async function OrdersListPage({
     if (range !== "all") params.set("range", range);
     if (pay !== "all") params.set("pay", pay);
     const qs = params.toString();
-    return `/dashboard/stores/${slug}/orders/export${qs ? `?${qs}` : ""}`;
+    return withQuery(`/dashboard/stores/${slug}/orders/export`, qs);
   }
 
   // 快速推進按完要跳回「同一批篩選、同一個搜尋」的列表，不然商家在「待確認」分頁

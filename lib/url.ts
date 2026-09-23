@@ -34,7 +34,13 @@ export function buildUrl(
     if (value === null || value === undefined) continue;
     sp.set(key, String(value));
   }
-  const qs = sp.toString();
+  return withQuery(path, sp.toString());
+}
+
+// 已經組好的查詢字串（列表頁的篩選＋搜尋、回跳用的 returnQs）接到路徑後面：
+// 空字串就只回路徑，不留一個孤單的問號。qs 不再編碼，呼叫端要給 URLSearchParams
+// 組出來的字串。後台三張列表以前在九處各手接一次同一個三元式。
+export function withQuery(path: string, qs: string): string {
   return qs ? `${path}?${qs}` : path;
 }
 
