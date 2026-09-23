@@ -25,6 +25,8 @@ import {
 } from "@/lib/order-search";
 import { fetchAllRows } from "@/lib/fetch-all-rows";
 import { withQuery } from "@/lib/url";
+// 篩選參數白名單與「有沒有篩選」跟訂單匯出共用同一份（見檔內說明）。
+import { isOrderFilterActive, parseOrderFilters } from "@/lib/order-filters";
 import { advanceOrderStatus, markOrderPaid } from "./actions";
 import { SubmitButton } from "@/app/_components/submit-button";
 
@@ -81,24 +83,8 @@ export default async function OrdersListPage({
   searchParams: SearchParams;
 }) {
   const { slug } = await params;
-  const {
-    status: statusFilter,
-    q: searchQuery,
-    range: rangeFilter,
-    pay: payFilter,
-  } = await searchParams;
-  const status =
-    statusFilter && STATUS_FILTERS.some((f) => f.key === statusFilter)
-      ? statusFilter
-      : "all";
-  const pay =
-    payFilter && PAYMENT_FILTERS.some((f) => f.key === payFilter)
-      ? payFilter
-      : "all";
-  const q = (searchQuery ?? "").trim();
-  const range = DATE_RANGES.some((r) => r.key === rangeFilter)
-    ? rangeFilter!
-    : "all";
+  const filters = parseOrderFilters(await searchParams);
+  const { status, pay, range, q } = filters;
   const rangeSince = taipeiRangeSince(range);
 
   const { supabase, user } = await requireUser();
@@ -255,8 +241,7 @@ export default async function OrdersListPage({
     return withQuery(`/dashboard/stores/${slug}/orders`, qs);
   }
 
-  const filterActive =
-    q !== "" || status !== "all" || range !== "all" || pay !== "all";
+  const filterActive = isOrderFilterActive(filters);
 
   // 匯出 CSV 帶上當下的篩選，按下去拿到的就是眼前列表這批，不是全部訂單
   function exportHref() {

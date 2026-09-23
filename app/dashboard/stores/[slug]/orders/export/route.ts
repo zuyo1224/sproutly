@@ -3,9 +3,7 @@ import { createClient } from "@/lib/supabase/server";
 import {
   paymentMethodLabel,
   PAYMENT_STATUS_LABELS,
-  PAYMENT_STATUSES,
   ORDER_STATUS_LABELS,
-  ORDER_STATUSES,
   decodeShippingFromNote,
   shortOrderId,
 } from "@/lib/order-labels";
@@ -26,15 +24,10 @@ import {
 import { centsToYuan } from "@/lib/format-price";
 import { fetchAllRows } from "@/lib/fetch-all-rows";
 import { fetchOrderItems } from "@/lib/fetch-order-items";
+// 篩選參數白名單與「有沒有篩選」跟訂單列表頁共用同一份（見檔內說明）。
+import { isOrderFilterActive, parseOrderFilters } from "@/lib/order-filters";
 
 type Params = Promise<{ slug: string }>;
-
-// 匯出篩選的狀態白名單跟訂單列表 chip、詳情下拉同一條 canonical 順序（見 order-labels）。
-// 付款白名單同理收成 PAYMENT_STATUSES，跟列表 chip 的 PAYMENT_FILTERS、詳情徽章、改狀態
-// action 的 ALLOWED_PAYMENT 同一條來源——日後增刪一個付款狀態不會「列表能篩但匯出悄悄擋掉」。
-const VALID_STATUS = ORDER_STATUSES;
-const VALID_PAY = PAYMENT_STATUSES;
-const VALID_RANGE = ["today", "week", "month"];
 
 export async function GET(
   request: Request,
@@ -61,16 +54,15 @@ export async function GET(
   // 商家篩到「本月 · 已出貨 · 未付款」按匯出，期待拿到的就是那批 —— 原本不管篩選
   // 一律匯出全部，跟畫面對不上。這裡用跟列表頁一模一樣的條件，匯出 = 眼前所見。
   const sp = new URL(request.url).searchParams;
-  const status = VALID_STATUS.includes(sp.get("status") ?? "")
-    ? sp.get("status")!
-    : "all";
-  const pay = VALID_PAY.includes(sp.get("pay") ?? "") ? sp.get("pay")! : "all";
-  const range = VALID_RANGE.includes(sp.get("range") ?? "")
-    ? sp.get("range")!
-    : "all";
-  const q = (sp.get("q") ?? "").trim();
+  const filters = parseOrderFilters({
+    status: sp.get("status"),
+    pay: sp.get("pay"),
+    range: sp.get("range"),
+    q: sp.get("q"),
+  });
+  const { status, pay, range, q } = filters;
   const since = taipeiRangeSince(range);
-  const filterActive = status !== "all" || pay !== "all" || range !== "all" || q !== "";
+  const filterActive = isOrderFilterActive(filters);
 
   // 訂單本體分頁撈齊——以前一次 select 吃 Supabase 約 1000 列上限，
   // 店累積訂單破千後，匯出的 CSV 默默少掉排在後面的舊單，商家只會以為
