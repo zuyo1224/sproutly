@@ -49,3 +49,16 @@ export function parseOrderFilters(raw: RawOrderFilters): OrderFilters {
 export function isOrderFilterActive(f: OrderFilters): boolean {
   return f.status !== "all" || f.pay !== "all" || f.range !== "all" || f.q !== "";
 }
+
+// 篩選接回網址的查詢字串（「全部」與空搜尋不帶）。列表頁的狀態／時間／付款 chip、
+// 匯出連結、快速動作跳回的列表原本各手組一份 URLSearchParams（五份），加一個篩選維度
+// 就得改五處，漏一處就是點了某個 chip 另一維篩選悄悄掉了。參數順序照原本
+// status → q → range → pay，網址逐字不變。
+export function orderFilterQuery(f: OrderFilters): string {
+  const sp = new URLSearchParams();
+  if (f.status !== "all") sp.set("status", f.status);
+  if (f.q) sp.set("q", f.q);
+  if (f.range !== "all") sp.set("range", f.range);
+  if (f.pay !== "all") sp.set("pay", f.pay);
+  return sp.toString();
+}

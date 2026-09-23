@@ -9,6 +9,7 @@ import {
   ORDER_RANGE_KEYS,
   ORDER_RANGE_LABELS,
   isOrderFilterActive,
+  orderFilterQuery,
   parseOrderFilters,
 } from "./order-filters.ts";
 import { ORDER_STATUSES, PAYMENT_STATUSES } from "./order-labels.ts";
@@ -79,5 +80,20 @@ describe("ORDER_RANGE_KEYS", () => {
       assert.ok(ORDER_RANGE_LABELS[key], `${key} 缺標籤`);
       assert.equal(parseOrderFilters({ range: key }).range, key);
     }
+  });
+});
+
+describe("orderFilterQuery", () => {
+  it("沒篩選回空字串", () => {
+    assert.equal(orderFilterQuery(parseOrderFilters({})), "");
+  });
+
+  it("只帶非 all 的維度，順序 status → q → range → pay，中文搜尋編碼", () => {
+    const f = parseOrderFilters({ status: "pending", pay: "paid", range: "week", q: " 王 " });
+    assert.equal(
+      orderFilterQuery(f),
+      `status=pending&q=${encodeURIComponent("王")}&range=week&pay=paid`,
+    );
+    assert.equal(orderFilterQuery({ ...f, status: "all", pay: "all" }), "q=%E7%8E%8B&range=week");
   });
 });

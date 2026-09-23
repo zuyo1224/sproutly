@@ -30,6 +30,7 @@ import {
   ORDER_RANGE_KEYS,
   ORDER_RANGE_LABELS,
   isOrderFilterActive,
+  orderFilterQuery,
   parseOrderFilters,
 } from "@/lib/order-filters";
 import { advanceOrderStatus, markOrderPaid } from "./actions";
@@ -216,56 +217,39 @@ export default async function OrdersListPage({
 
   // 給 chip 用的 URL builder（每個只換自己那一維，其餘篩選原樣帶著走）
   function chipHref(s: string) {
-    const params = new URLSearchParams();
-    if (s !== "all") params.set("status", s);
-    if (q) params.set("q", q);
-    if (range !== "all") params.set("range", range);
-    if (pay !== "all") params.set("pay", pay);
-    const qs = params.toString();
-    return withQuery(`/dashboard/stores/${slug}/orders`, qs);
+    return withQuery(
+      `/dashboard/stores/${slug}/orders`,
+      orderFilterQuery({ ...filters, status: s }),
+    );
   }
 
   function dateRangeHref(r: string) {
-    const params = new URLSearchParams();
-    if (status !== "all") params.set("status", status);
-    if (q) params.set("q", q);
-    if (r !== "all") params.set("range", r);
-    if (pay !== "all") params.set("pay", pay);
-    const qs = params.toString();
-    return withQuery(`/dashboard/stores/${slug}/orders`, qs);
+    return withQuery(
+      `/dashboard/stores/${slug}/orders`,
+      orderFilterQuery({ ...filters, range: r }),
+    );
   }
 
   function payHref(p: string) {
-    const params = new URLSearchParams();
-    if (status !== "all") params.set("status", status);
-    if (q) params.set("q", q);
-    if (range !== "all") params.set("range", range);
-    if (p !== "all") params.set("pay", p);
-    const qs = params.toString();
-    return withQuery(`/dashboard/stores/${slug}/orders`, qs);
+    return withQuery(
+      `/dashboard/stores/${slug}/orders`,
+      orderFilterQuery({ ...filters, pay: p }),
+    );
   }
 
   const filterActive = isOrderFilterActive(filters);
 
   // 匯出 CSV 帶上當下的篩選，按下去拿到的就是眼前列表這批，不是全部訂單
   function exportHref() {
-    const params = new URLSearchParams();
-    if (status !== "all") params.set("status", status);
-    if (q) params.set("q", q);
-    if (range !== "all") params.set("range", range);
-    if (pay !== "all") params.set("pay", pay);
-    const qs = params.toString();
-    return withQuery(`/dashboard/stores/${slug}/orders/export`, qs);
+    return withQuery(
+      `/dashboard/stores/${slug}/orders/export`,
+      orderFilterQuery(filters),
+    );
   }
 
   // 快速推進按完要跳回「同一批篩選、同一個搜尋」的列表，不然商家在「待確認」分頁
   // 按了確認，會被丟回全部列表、剛剛看到一半的那批單整個不見。
-  const listQsParams = new URLSearchParams();
-  if (status !== "all") listQsParams.set("status", status);
-  if (q) listQsParams.set("q", q);
-  if (range !== "all") listQsParams.set("range", range);
-  if (pay !== "all") listQsParams.set("pay", pay);
-  const listQs = listQsParams.toString();
+  const listQs = orderFilterQuery(filters);
 
   // 一筆單右邊那顆「往下一步」按鈕（待確認→確認、已確認→出貨、已出貨→完成）。
   // 手機卡片版與桌機表格版共用同一顆，說法與行為只有一份。已完成／已取消沒有下一步，
