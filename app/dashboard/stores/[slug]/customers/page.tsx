@@ -1,7 +1,7 @@
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import { requireUser } from "@/lib/require-user";
-import { telHref, telDigits, mailHref } from "@/lib/contact-href";
+import { telHref, telDigits, mailHref, cleanEmail } from "@/lib/contact-href";
 
 type Params = Promise<{ slug: string }>;
 type SearchParams = Promise<{ q?: string; sort?: string }>;
@@ -347,14 +347,21 @@ export default async function StoreCustomersPage({
                       </div>
                     </td>
                     <td className="px-3 py-3.5">
-                      {r.email && (
-                        <a
-                          href={mailHref(r.email)}
-                          className="block text-emerald-700 hover:underline text-xs truncate max-w-44"
-                        >
-                          {r.email}
-                        </a>
-                      )}
+                      {/* 結帳只把 email 轉半形小寫、不驗形狀（瀏覽器也放行「a@b」）；cleanEmail
+                          認得出位址才掛 mailto: 連結，否則 mailHref 會退成陽春 "mailto:"，改純文字顯示 */}
+                      {r.email &&
+                        (cleanEmail(r.email) ? (
+                          <a
+                            href={mailHref(r.email)}
+                            className="block text-emerald-700 hover:underline text-xs truncate max-w-44"
+                          >
+                            {r.email}
+                          </a>
+                        ) : (
+                          <span className="block text-emerald-900/60 text-xs truncate max-w-44">
+                            {r.email}
+                          </span>
+                        ))}
                       {/* 結帳只擋空白、不驗號碼格式，客人填「哈囉」也會過；清得出可撥號主號
                           才掛 tel: 連結，否則 telHref 會退成陽春 "tel:" 的死連結，改純文字顯示 */}
                       {telDigits(r.phone) ? (

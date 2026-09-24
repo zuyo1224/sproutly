@@ -16,7 +16,7 @@ import {
   ORDER_STATUS_OPTIONS,
   shortOrderId,
 } from "@/lib/order-labels";
-import { telHref, telDigits, mailHref } from "@/lib/contact-href";
+import { telHref, telDigits, mailHref, cleanEmail } from "@/lib/contact-href";
 import { buildUrl } from "@/lib/url";
 import { siteBaseUrl, siteHost } from "@/lib/store-schema";
 import { isUuid } from "@/lib/uuid";
@@ -384,12 +384,18 @@ export default async function OrderDetailPage({
                 <div className="flex gap-3">
                   <dt className="text-emerald-900/50 w-20">Email</dt>
                   <dd className="text-emerald-950">
-                    <a
-                      href={mailHref(order.customer_email)}
-                      className="hover:text-emerald-700 transition"
-                    >
-                      {order.customer_email}
-                    </a>
+                    {/* 結帳只把 email 轉半形小寫、不驗形狀；cleanEmail 認得出位址才掛 mailto:
+                        連結，否則 mailHref 會退成陽春 "mailto:" 的死連結，改純文字顯示 */}
+                    {cleanEmail(order.customer_email) ? (
+                      <a
+                        href={mailHref(order.customer_email)}
+                        className="hover:text-emerald-700 transition"
+                      >
+                        {order.customer_email}
+                      </a>
+                    ) : (
+                      order.customer_email
+                    )}
                   </dd>
                 </div>
               )}
