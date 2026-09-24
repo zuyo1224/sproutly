@@ -215,6 +215,7 @@ export default async function ProductsListPage({
               type="search"
               defaultValue={q}
               placeholder="搜尋商品名稱 / 描述..."
+              aria-label="搜尋商品"
               className="flex-1 rounded-full border border-emerald-100 px-4 py-2 outline-none focus:border-emerald-400 focus:ring-2 focus:ring-emerald-100 transition text-sm"
             />
             <button

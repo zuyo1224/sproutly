@@ -220,6 +220,7 @@ export function AIEditPanel({
           value={input}
           onChange={(e) => setInput(e.target.value)}
           placeholder="告訴我你要改什麼..."
+          aria-label="跟 AI 助手說想改什麼"
           disabled={loading}
           className="flex-1 rounded-full px-4 py-2 border border-emerald-100 text-sm outline-none focus:border-emerald-400 focus:ring-2 focus:ring-emerald-100 transition disabled:opacity-50"
         />

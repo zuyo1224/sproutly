@@ -137,6 +137,7 @@ export function EditorAIChat({
           value={input}
           onChange={(e) => setInput(e.target.value)}
           placeholder="告訴我想改什麼…"
+          aria-label="跟 AI 助手說想改什麼"
           disabled={loading}
           className="flex-1 rounded-full px-3 py-1.5 border border-stone-200 text-xs outline-none focus:border-emerald-400 transition disabled:opacity-50"
         />
