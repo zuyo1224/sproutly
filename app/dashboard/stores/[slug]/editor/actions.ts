@@ -25,6 +25,10 @@ import { sanitizeClearable } from "@/lib/clearable-field";
 import { isFiniteNumber } from "@/lib/is-finite-number";
 import { isPlainObject } from "@/lib/is-plain-object";
 import { displayableImageUrl } from "@/lib/image-url";
+// 文字欄位截長度照「看得到的字」數切：側欄輸入框有 maxLength 擋著，但預覽框雙擊改字
+// 沒有上限，原本 .slice(0, N) 算 UTF-16 單位，emoji 剛好落在截點會存進半個字，
+// 公開頁那格尾巴多一個問號方塊。網址、代號這種只會是英數的欄位照舊用 .slice。
+import { takeChars } from "@/lib/truncate-text";
 import { normalizeHeroImageBounds } from "@/lib/hero-image-bounds";
 import {
   LAYOUT_CHOICE_KEYS,
@@ -238,7 +242,7 @@ export async function saveEditorState(slug: string, payload: EditorPayload) {
     if (hex) merged[key] = hex;
   }
   if (payload.tagline !== undefined) {
-    merged.tagline = String(payload.tagline).slice(0, MAX_THEME_TAGLINE_LEN);
+    merged.tagline = takeChars(String(payload.tagline), MAX_THEME_TAGLINE_LEN);
   }
   // hero／logo：空值就是「移除」，存 null；有值就先用 displayableImageUrl 判一次，
   // 只收 https:// 完整網址（去前後空白、500 字上限）。編輯器這兩格只能從圖庫挑
@@ -265,10 +269,10 @@ export async function saveEditorState(slug: string, payload: EditorPayload) {
       layoutPatch.heroStyle = payload.layout.heroStyle;
     }
     if (payload.layout.heroEyebrow !== undefined) {
-      layoutPatch.heroEyebrow = String(payload.layout.heroEyebrow).slice(0, MAX_HERO_EYEBROW_LEN);
+      layoutPatch.heroEyebrow = takeChars(String(payload.layout.heroEyebrow), MAX_HERO_EYEBROW_LEN);
     }
     if (payload.layout.heroSubtitle !== undefined) {
-      layoutPatch.heroSubtitle = String(payload.layout.heroSubtitle).slice(0, MAX_HERO_SUBTITLE_LEN);
+      layoutPatch.heroSubtitle = takeChars(String(payload.layout.heroSubtitle), MAX_HERO_SUBTITLE_LEN);
     }
     if (payload.layout.heroImageSide) {
       layoutPatch.heroImageSide = isHeroImageSide(payload.layout.heroImageSide)
@@ -285,9 +289,9 @@ export async function saveEditorState(slug: string, payload: EditorPayload) {
       layoutPatch.testimonials = payload.layout.testimonials
         .filter(isPlainObject)
         .map((t) => ({
-          quote: String(t.quote ?? "").slice(0, 500).trim(),
-          author: String(t.author ?? "").slice(0, 100).trim(),
-          role: t.role ? String(t.role).slice(0, 100).trim() : null,
+          quote: takeChars(String(t.quote ?? ""), 500).trim(),
+          author: takeChars(String(t.author ?? ""), 100).trim(),
+          role: t.role ? takeChars(String(t.role), 100).trim() : null,
         }))
         .filter((t) => t.quote && t.author)
         .slice(0, 6); // 上限 6 個 testimonial
@@ -296,8 +300,8 @@ export async function saveEditorState(slug: string, payload: EditorPayload) {
       layoutPatch.faqItems = payload.layout.faqItems
         .filter(isPlainObject)
         .map((f) => ({
-          question: String(f.question ?? "").slice(0, 300).trim(),
-          answer: String(f.answer ?? "").slice(0, 2000).trim(),
+          question: takeChars(String(f.question ?? ""), 300).trim(),
+          answer: takeChars(String(f.answer ?? ""), 2000).trim(),
         }))
         .filter((f) => f.question && f.answer)
         .slice(0, 20);
@@ -306,8 +310,8 @@ export async function saveEditorState(slug: string, payload: EditorPayload) {
       layoutPatch.stats = payload.layout.stats
         .filter(isPlainObject)
         .map((s) => ({
-          value: String(s.value ?? "").slice(0, 30).trim(),
-          label: String(s.label ?? "").slice(0, 60).trim(),
+          value: takeChars(String(s.value ?? ""), 30).trim(),
+          label: takeChars(String(s.label ?? ""), 60).trim(),
         }))
         .filter((s) => s.value && s.label)
         .slice(0, 6);
@@ -316,7 +320,7 @@ export async function saveEditorState(slug: string, payload: EditorPayload) {
       layoutPatch.partners = payload.layout.partners
         .filter(isPlainObject)
         .map((p) => ({
-          name: String(p.name ?? "").slice(0, 100).trim(),
+          name: takeChars(String(p.name ?? ""), 100).trim(),
           logoUrl: String(p.logoUrl ?? "").slice(0, 500).trim(),
           // 只存得下 http(s):// 或漏 scheme 的真網域（跟頁尾社群連結同一支 socialUrl），
           // 其他字串（javascript:、純帳號、亂填）一律存 null；公開頁那顆 logo 就變成
@@ -424,7 +428,7 @@ export async function saveEditorState(slug: string, payload: EditorPayload) {
         .filter(isPlainObject)
         .map((g) => ({
           url: String(g.url ?? "").slice(0, 500).trim(),
-          caption: g.caption ? String(g.caption).slice(0, 200).trim() : null,
+          caption: g.caption ? takeChars(String(g.caption), 200).trim() : null,
         }))
         .filter((g) => g.url)
         .slice(0, 12);
@@ -436,22 +440,22 @@ export async function saveEditorState(slug: string, payload: EditorPayload) {
     const existingHomepage = (existing.homepage as Record<string, unknown>) ?? {};
     const hpPatch: Record<string, unknown> = { ...existingHomepage };
     if (payload.homepage.promise !== undefined) {
-      hpPatch.promise = String(payload.homepage.promise).slice(0, MAX_PROMISE_LEN);
+      hpPatch.promise = takeChars(String(payload.homepage.promise), MAX_PROMISE_LEN);
     }
     if (payload.homepage.promiseEyebrow !== undefined) {
-      const v = String(payload.homepage.promiseEyebrow).trim().slice(0, 60);
+      const v = takeChars(String(payload.homepage.promiseEyebrow).trim(), 60);
       hpPatch.promiseEyebrow = v || null;
     }
     if (payload.homepage.featuredTitle !== undefined) {
-      const v = String(payload.homepage.featuredTitle).trim().slice(0, 60);
+      const v = takeChars(String(payload.homepage.featuredTitle).trim(), 60);
       hpPatch.featuredTitle = v || null;
     }
     if (payload.homepage.featuredEyebrow !== undefined) {
-      const v = String(payload.homepage.featuredEyebrow).trim().slice(0, 60);
+      const v = takeChars(String(payload.homepage.featuredEyebrow).trim(), 60);
       hpPatch.featuredEyebrow = v || null;
     }
     if (payload.homepage.featuredCta !== undefined) {
-      const v = String(payload.homepage.featuredCta).trim().slice(0, 60);
+      const v = takeChars(String(payload.homepage.featuredCta).trim(), 60);
       hpPatch.featuredCta = v || null;
     }
     if (payload.homepage.collectionsIntro !== undefined) {
@@ -461,122 +465,122 @@ export async function saveEditorState(slug: string, payload: EditorPayload) {
       );
     }
     if (payload.homepage.collectionsEyebrow !== undefined) {
-      const v = String(payload.homepage.collectionsEyebrow).trim().slice(0, 60);
+      const v = takeChars(String(payload.homepage.collectionsEyebrow).trim(), 60);
       hpPatch.collectionsEyebrow = v || null;
     }
     if (payload.homepage.visitTitle !== undefined) {
-      hpPatch.visitTitle = String(payload.homepage.visitTitle).slice(0, MAX_VISIT_TITLE_LEN);
+      hpPatch.visitTitle = takeChars(String(payload.homepage.visitTitle), MAX_VISIT_TITLE_LEN);
     }
     if (payload.homepage.visitEyebrow !== undefined) {
-      const v = String(payload.homepage.visitEyebrow).trim().slice(0, 60);
+      const v = takeChars(String(payload.homepage.visitEyebrow).trim(), 60);
       hpPatch.visitEyebrow = v || null;
     }
     if (payload.homepage.journalEyebrow !== undefined) {
-      const v = String(payload.homepage.journalEyebrow).trim().slice(0, 60);
+      const v = takeChars(String(payload.homepage.journalEyebrow).trim(), 60);
       hpPatch.journalEyebrow = v || null;
     }
     if (payload.homepage.journalTitle !== undefined) {
-      const v = String(payload.homepage.journalTitle).trim().slice(0, 60);
+      const v = takeChars(String(payload.homepage.journalTitle).trim(), 60);
       hpPatch.journalTitle = v || null;
     }
     if (payload.homepage.journalSubtitle !== undefined) {
-      const v = String(payload.homepage.journalSubtitle).trim().slice(0, 160);
+      const v = takeChars(String(payload.homepage.journalSubtitle).trim(), 160);
       hpPatch.journalSubtitle = v || null;
     }
     if (payload.homepage.testimonialsEyebrow !== undefined) {
-      const v = String(payload.homepage.testimonialsEyebrow).trim().slice(0, 60);
+      const v = takeChars(String(payload.homepage.testimonialsEyebrow).trim(), 60);
       hpPatch.testimonialsEyebrow = v || null;
     }
     if (payload.homepage.testimonialsTitle !== undefined) {
-      const v = String(payload.homepage.testimonialsTitle).trim().slice(0, 60);
+      const v = takeChars(String(payload.homepage.testimonialsTitle).trim(), 60);
       hpPatch.testimonialsTitle = v || null;
     }
     if (payload.homepage.faqEyebrow !== undefined) {
-      const v = String(payload.homepage.faqEyebrow).trim().slice(0, 60);
+      const v = takeChars(String(payload.homepage.faqEyebrow).trim(), 60);
       hpPatch.faqEyebrow = v || null;
     }
     if (payload.homepage.faqTitle !== undefined) {
-      const v = String(payload.homepage.faqTitle).trim().slice(0, 60);
+      const v = takeChars(String(payload.homepage.faqTitle).trim(), 60);
       hpPatch.faqTitle = v || null;
     }
     if (payload.homepage.galleryEyebrow !== undefined) {
-      const v = String(payload.homepage.galleryEyebrow).trim().slice(0, 60);
+      const v = takeChars(String(payload.homepage.galleryEyebrow).trim(), 60);
       hpPatch.galleryEyebrow = v || null;
     }
     if (payload.homepage.galleryTitle !== undefined) {
-      const v = String(payload.homepage.galleryTitle).trim().slice(0, 60);
+      const v = takeChars(String(payload.homepage.galleryTitle).trim(), 60);
       hpPatch.galleryTitle = v || null;
     }
     if (payload.homepage.partnersEyebrow !== undefined) {
-      const v = String(payload.homepage.partnersEyebrow).trim().slice(0, 60);
+      const v = takeChars(String(payload.homepage.partnersEyebrow).trim(), 60);
       hpPatch.partnersEyebrow = v || null;
     }
     if (payload.homepage.statsEyebrow !== undefined) {
-      const v = String(payload.homepage.statsEyebrow).trim().slice(0, 60);
+      const v = takeChars(String(payload.homepage.statsEyebrow).trim(), 60);
       hpPatch.statsEyebrow = v || null;
     }
     if (payload.homepage.statsTitle !== undefined) {
-      const v = String(payload.homepage.statsTitle).trim().slice(0, 60);
+      const v = takeChars(String(payload.homepage.statsTitle).trim(), 60);
       hpPatch.statsTitle = v || null;
     }
     if (payload.homepage.heroCta !== undefined) {
-      const v = String(payload.homepage.heroCta).trim().slice(0, 60);
+      const v = takeChars(String(payload.homepage.heroCta).trim(), 60);
       hpPatch.heroCta = v || null;
     }
     if (payload.homepage.heroSecondaryCta !== undefined) {
-      const v = String(payload.homepage.heroSecondaryCta).trim().slice(0, 60);
+      const v = takeChars(String(payload.homepage.heroSecondaryCta).trim(), 60);
       hpPatch.heroSecondaryCta = v || null;
     }
     if (payload.homepage.heroMagazineByline !== undefined) {
-      const v = String(payload.homepage.heroMagazineByline).trim().slice(0, 60);
+      const v = takeChars(String(payload.homepage.heroMagazineByline).trim(), 60);
       hpPatch.heroMagazineByline = v || null;
     }
     if (payload.homepage.collectionsCardCta !== undefined) {
-      const v = String(payload.homepage.collectionsCardCta).trim().slice(0, 60);
+      const v = takeChars(String(payload.homepage.collectionsCardCta).trim(), 60);
       hpPatch.collectionsCardCta = v || null;
     }
     if (payload.homepage.aboutEyebrow !== undefined) {
-      const v = String(payload.homepage.aboutEyebrow).trim().slice(0, 60);
+      const v = takeChars(String(payload.homepage.aboutEyebrow).trim(), 60);
       hpPatch.aboutEyebrow = v || null;
     }
     if (payload.homepage.aboutTitle !== undefined) {
-      const v = String(payload.homepage.aboutTitle).trim().slice(0, 60);
+      const v = takeChars(String(payload.homepage.aboutTitle).trim(), 60);
       hpPatch.aboutTitle = v || null;
     }
     if (payload.homepage.contactEyebrow !== undefined) {
-      const v = String(payload.homepage.contactEyebrow).trim().slice(0, 60);
+      const v = takeChars(String(payload.homepage.contactEyebrow).trim(), 60);
       hpPatch.contactEyebrow = v || null;
     }
     if (payload.homepage.contactTitle !== undefined) {
-      const v = String(payload.homepage.contactTitle).trim().slice(0, 60);
+      const v = takeChars(String(payload.homepage.contactTitle).trim(), 60);
       hpPatch.contactTitle = v || null;
     }
     if (payload.homepage.shopEyebrow !== undefined) {
-      const v = String(payload.homepage.shopEyebrow).trim().slice(0, 60);
+      const v = takeChars(String(payload.homepage.shopEyebrow).trim(), 60);
       hpPatch.shopEyebrow = v || null;
     }
     if (payload.homepage.shopTitle !== undefined) {
-      const v = String(payload.homepage.shopTitle).trim().slice(0, 60);
+      const v = takeChars(String(payload.homepage.shopTitle).trim(), 60);
       hpPatch.shopTitle = v || null;
     }
     if (payload.homepage.footerWordsLabel !== undefined) {
-      const v = String(payload.homepage.footerWordsLabel).trim().slice(0, 60);
+      const v = takeChars(String(payload.homepage.footerWordsLabel).trim(), 60);
       hpPatch.footerWordsLabel = v || null;
     }
     if (payload.homepage.footerFollowLabel !== undefined) {
-      const v = String(payload.homepage.footerFollowLabel).trim().slice(0, 60);
+      const v = takeChars(String(payload.homepage.footerFollowLabel).trim(), 60);
       hpPatch.footerFollowLabel = v || null;
     }
     if (payload.homepage.footerTrackLabel !== undefined) {
-      const v = String(payload.homepage.footerTrackLabel).trim().slice(0, 60);
+      const v = takeChars(String(payload.homepage.footerTrackLabel).trim(), 60);
       hpPatch.footerTrackLabel = v || null;
     }
     if (payload.homepage.footerVisitLabel !== undefined) {
-      const v = String(payload.homepage.footerVisitLabel).trim().slice(0, 60);
+      const v = takeChars(String(payload.homepage.footerVisitLabel).trim(), 60);
       hpPatch.footerVisitLabel = v || null;
     }
     if (payload.homepage.journalCardLabel !== undefined) {
-      const v = String(payload.homepage.journalCardLabel).trim().slice(0, 60);
+      const v = takeChars(String(payload.homepage.journalCardLabel).trim(), 60);
       hpPatch.journalCardLabel = v || null;
     }
     if (payload.homepage.journalCards !== undefined) {
@@ -586,9 +590,9 @@ export async function saveEditorState(slug: string, payload: EditorPayload) {
       hpPatch.journalCards = arr
         .filter(isPlainObject)
         .map((c) => ({
-          eyebrow: String(c.eyebrow ?? "").trim().slice(0, 40),
-          title: String(c.title ?? "").trim().slice(0, 80),
-          excerpt: String(c.excerpt ?? "").trim().slice(0, 200),
+          eyebrow: takeChars(String(c.eyebrow ?? "").trim(), 40),
+          title: takeChars(String(c.title ?? "").trim(), 80),
+          excerpt: takeChars(String(c.excerpt ?? "").trim(), 200),
         }))
         .filter((c) => c.eyebrow || c.title || c.excerpt)
         .slice(0, 3);
@@ -608,8 +612,8 @@ export async function saveEditorState(slug: string, payload: EditorPayload) {
         .filter(isPlainObject)
         .map((c) => ({
           key: String(c.key ?? "").trim().slice(0, 40),
-          title: String(c.title ?? "").trim().slice(0, MAX_COLLECTION_TITLE_LEN),
-          subtitle: String(c.subtitle ?? "").trim().slice(0, MAX_COLLECTION_SUBTITLE_LEN),
+          title: takeChars(String(c.title ?? "").trim(), MAX_COLLECTION_TITLE_LEN),
+          subtitle: takeChars(String(c.subtitle ?? "").trim(), MAX_COLLECTION_SUBTITLE_LEN),
         }))
         .filter((c) => c.key && c.title)
         .filter((c) => {
