@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useTransition, useEffect, useRef } from "react";
+import { useState, useTransition, useEffect, useRef, useId } from "react";
 import Link from "next/link";
 import {
   DndContext,
@@ -7401,9 +7401,13 @@ function Field({
   label: string;
   children: React.ReactNode;
 }) {
+  // 249 處共用，裡面有單格輸入框也有多顆按鈕／滑桿，沒辦法一律 htmlFor 綁單一
+  // 輸入框；改成整格標成群組、用標籤當群組名稱，報讀軟體進到這格會先唸標籤，
+  // 不再只聽到「編輯文字」。畫面不變。
+  const labelId = useId();
   return (
-    <div>
-      <label className="block text-xs font-medium text-emerald-900 mb-1.5">
+    <div role="group" aria-labelledby={labelId}>
+      <label id={labelId} className="block text-xs font-medium text-emerald-900 mb-1.5">
         {label}
       </label>
       {children}
