@@ -22,6 +22,7 @@ import { SubmitButton } from "@/app/_components/submit-button";
 // 商品撈整批要分頁撈齊，不然吃 Supabase 1000 列上限，見 fetch-all-rows。
 import { fetchAllRows } from "@/lib/fetch-all-rows";
 import { withQuery } from "@/lib/url";
+import { takeChars } from "@/lib/truncate-text";
 // 列表縮圖改吃 displayableImageUrls 的第一張，跟店面卡片（5e6c204）同一支：DB 裡舊的
 // http:// 或半截網址店面是直接跳過不掛，主圖判不過時客人看到的主圖其實是後面第一張判得過
 // 的，商家在這裡看到的縮圖要跟客人一樣，不然對著列表找不到哪件商品「圖不對」。
@@ -56,7 +57,8 @@ export default async function ProductsListPage({
   const { filter, q } = filters;
   // 列表上的快速動作（上下架、調順序、改庫存）出錯時會把訊息帶在網址上跳回來。
   // 以前沒人讀這個值，商家按了沒反應也不知道為什麼，只能一直重按。
-  const errorMsg = (rawError ?? "").trim().slice(0, 200);
+  // 照看得到的字數截（lib/truncate-text），emoji 落在截點不會切成半個。
+  const errorMsg = takeChars((rawError ?? "").trim(), 200);
   const { supabase, user } = await requireUser();
 
   const { data: store } = await supabase

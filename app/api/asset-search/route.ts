@@ -4,12 +4,15 @@
 
 import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
+import { takeChars } from "@/lib/truncate-text";
 
 const FALLBACK_QUERIES = ["plant", "interior", "minimal", "nature", "shop"];
 
 export async function GET(request: Request) {
   const url = new URL(request.url);
-  const q = (url.searchParams.get("q") ?? "").trim().slice(0, 100);
+  // 照「看得到的字」截：.slice(0, 100) 算 UTF-16 單位，emoji 剛好落在第 100 格會切成
+  // 半個，下面 encodeURIComponent 碰到半個 emoji 會直接丟 URIError，整支 API 回 500。
+  const q = takeChars((url.searchParams.get("q") ?? "").trim(), 100);
   const page = Math.max(
     1,
     Math.min(20, parseInt(url.searchParams.get("page") ?? "1", 10) || 1)
