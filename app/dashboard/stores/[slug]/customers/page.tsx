@@ -8,6 +8,7 @@ type SearchParams = Promise<{ q?: string; sort?: string }>;
 
 // 客人名單的金額一律跟著這間店實際出單的幣別走（共用 formatPrice，不再對非 TWD 店家硬寫 NT$）。
 import { formatPrice, displayCurrency } from "@/lib/format-price";
+import { formatPercent } from "@/lib/format-percent";
 import { taipeiDateNumeric, taipeiDaysAgo } from "@/lib/format-date";
 import {
   customerTier,
@@ -183,7 +184,7 @@ export default async function StoreCustomersPage({
           </p>
           <p className="mt-2 text-xs text-emerald-900/50">
             {totalCustomers > 0
-              ? `回購率 ${Math.round((repeatCount / totalCustomers) * 100)}%`
+              ? `回購率 ${formatPercent(repeatCount, totalCustomers)}`
               : "—"}
           </p>
         </div>
