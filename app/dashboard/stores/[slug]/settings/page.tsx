@@ -235,7 +235,7 @@ export default async function StoreSettingsPage({
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-emerald-900 mb-1.5">
+            <label htmlFor="store_name" className="block text-sm font-medium text-emerald-900 mb-1.5">
               店名{" "}
               <span className="text-red-500" aria-hidden="true">
                 *
@@ -243,6 +243,7 @@ export default async function StoreSettingsPage({
               <span className="sr-only">（必填）</span>
             </label>
             <input
+              id="store_name"
               name="name"
               maxLength={MAX_STORE_NAME_LEN}
               type="text"
@@ -254,10 +255,11 @@ export default async function StoreSettingsPage({
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-emerald-900 mb-1.5">
+            <label htmlFor="store_description" className="block text-sm font-medium text-emerald-900 mb-1.5">
               店介紹
             </label>
             <textarea
+              id="store_description"
               name="description"
               maxLength={MAX_STORE_DESC_LEN}
               rows={3}
@@ -285,10 +287,11 @@ export default async function StoreSettingsPage({
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
             <div>
-              <label className="block text-sm font-medium text-emerald-900 mb-1.5">
+              <label htmlFor="contact_phone" className="block text-sm font-medium text-emerald-900 mb-1.5">
                 電話
               </label>
               <ContactHintInput
+                id="contact_phone"
                 kind="phone"
                 name="contact_phone"
                 maxLength={MAX_STORE_PHONE_LEN}
@@ -298,10 +301,11 @@ export default async function StoreSettingsPage({
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-emerald-900 mb-1.5">
+              <label htmlFor="contact_email" className="block text-sm font-medium text-emerald-900 mb-1.5">
                 Email
               </label>
               <ContactHintInput
+                id="contact_email"
                 kind="email"
                 name="contact_email"
                 maxLength={MAX_STORE_EMAIL_LEN}
@@ -313,10 +317,11 @@ export default async function StoreSettingsPage({
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-emerald-900 mb-1.5">
+            <label htmlFor="store_address" className="block text-sm font-medium text-emerald-900 mb-1.5">
               地址
             </label>
             <input
+              id="store_address"
               name="address"
               maxLength={MAX_STORE_ADDRESS_LEN}
               type="text"
@@ -344,10 +349,11 @@ export default async function StoreSettingsPage({
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-emerald-900 mb-1.5">
+            <label htmlFor="business_hours" className="block text-sm font-medium text-emerald-900 mb-1.5">
               營業時間
             </label>
             <textarea
+              id="business_hours"
               name="business_hours"
               rows={5}
               maxLength={MAX_BUSINESS_HOURS_LEN}
@@ -364,10 +370,11 @@ export default async function StoreSettingsPage({
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-emerald-900 mb-1.5">
+            <label htmlFor="faq" className="block text-sm font-medium text-emerald-900 mb-1.5">
               常見問題 FAQ
             </label>
             <textarea
+              id="faq"
               name="faq"
               rows={10}
               maxLength={MAX_FAQ_TEXT_LEN}
@@ -493,10 +500,11 @@ A: 可以，地點為台北車站。`}</pre>
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-emerald-900 mb-1.5">
+            <label htmlFor="theme_font" className="block text-sm font-medium text-emerald-900 mb-1.5">
               字體
             </label>
             <select
+              id="theme_font"
               name="theme_font"
               defaultValue={theme.font}
               className="w-full rounded-xl border border-emerald-100 px-4 py-3 outline-none focus:border-emerald-400 focus:ring-2 focus:ring-emerald-100 transition bg-white"
@@ -510,7 +518,7 @@ A: 可以，地點為台北車站。`}</pre>
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-emerald-900 mb-1.5">
+            <label htmlFor="theme_logo_file" className="block text-sm font-medium text-emerald-900 mb-1.5">
               Logo
             </label>
             {theme.logoUrl && (
@@ -532,6 +540,7 @@ A: 可以，地點為台北車站。`}</pre>
               </div>
             )}
             <input
+              id="theme_logo_file"
               name="theme_logo_file"
               type="file"
               accept={LOGO_FILE_ACCEPT}
@@ -543,7 +552,7 @@ A: 可以，地點為台北車站。`}</pre>
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-emerald-900 mb-1.5">
+            <label htmlFor="theme_hero_file" className="block text-sm font-medium text-emerald-900 mb-1.5">
               Hero 大圖（首頁頂部）
             </label>
             {theme.heroUrl && (
@@ -565,6 +574,7 @@ A: 可以，地點為台北車站。`}</pre>
               </div>
             )}
             <input
+              id="theme_hero_file"
               name="theme_hero_file"
               type="file"
               accept={PHOTO_FILE_ACCEPT}
@@ -617,10 +627,11 @@ A: 可以，地點為台北車站。`}</pre>
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-emerald-900 mb-1.5">
+            <label htmlFor="theme_tagline" className="block text-sm font-medium text-emerald-900 mb-1.5">
               底部標語（選填）
             </label>
             <input
+              id="theme_tagline"
               name="theme_tagline"
               type="text"
               maxLength={MAX_THEME_TAGLINE_LEN}
@@ -651,10 +662,11 @@ A: 可以，地點為台北車站。`}</pre>
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-emerald-900 mb-1.5">
+            <label htmlFor="hp_collections_intro" className="block text-sm font-medium text-emerald-900 mb-1.5">
               選物提案中標
             </label>
             <textarea
+              id="hp_collections_intro"
               name="hp_collections_intro"
               rows={2}
               maxLength={MAX_COLLECTIONS_INTRO_LEN}
@@ -675,7 +687,7 @@ A: 可以，地點為台北車站。`}</pre>
               選物提案 6 個（標題空白 = 不顯示這格）
             </label>
             <div className="space-y-3">
-              {HOMEPAGE_DEFAULT_COLLECTIONS.map((def) => {
+              {HOMEPAGE_DEFAULT_COLLECTIONS.map((def, i) => {
                 const userVal = theme.homepage.collectionItems.find(
                   (c) => c.key === def.key
                 );
@@ -691,6 +703,7 @@ A: 可以，地點為台北車站。`}</pre>
                     </span>
                     <input
                       name={`hp_collection_${def.key}_title`}
+                      aria-label={`選物提案第 ${i + 1} 格標題`}
                       type="text"
                       maxLength={MAX_COLLECTION_TITLE_LEN}
                       defaultValue={title}
@@ -699,6 +712,7 @@ A: 可以，地點為台北車站。`}</pre>
                     />
                     <input
                       name={`hp_collection_${def.key}_subtitle`}
+                      aria-label={`選物提案第 ${i + 1} 格副標`}
                       type="text"
                       maxLength={MAX_COLLECTION_SUBTITLE_LEN}
                       defaultValue={subtitle}
@@ -712,10 +726,11 @@ A: 可以，地點為台北車站。`}</pre>
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-emerald-900 mb-1.5">
+            <label htmlFor="hp_promise" className="block text-sm font-medium text-emerald-900 mb-1.5">
               Promise 承諾文字（一行一句）
             </label>
             <textarea
+              id="hp_promise"
               name="hp_promise"
               rows={4}
               maxLength={MAX_PROMISE_LEN}
@@ -726,10 +741,11 @@ A: 可以，地點為台北車站。`}</pre>
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-emerald-900 mb-1.5">
+            <label htmlFor="hp_visit_title" className="block text-sm font-medium text-emerald-900 mb-1.5">
               來店標題
             </label>
             <input
+              id="hp_visit_title"
               name="hp_visit_title"
               type="text"
               maxLength={MAX_VISIT_TITLE_LEN}
