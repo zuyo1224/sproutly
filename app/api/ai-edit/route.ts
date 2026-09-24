@@ -9,6 +9,7 @@ import { isPlainObject } from "@/lib/is-plain-object";
 import { HERO_STYLE_KEYS, HERO_IMAGE_SIDES, DEFAULT_SECTION_ORDER } from "@/lib/theme-keys";
 import { tsUnionLiteral } from "@/lib/ts-union-literal";
 import { siteBaseUrl } from "@/lib/store-schema";
+import { takeChars } from "@/lib/truncate-text";
 
 // 提示裡給模型看的合法值從 lib/theme-keys 那份正本生成，不再手打；多一種版型時
 // 程式認得、模型也會被告知。sectionOrder 這裡刻意只給預設 6 個（跟設定頁一致），
@@ -134,8 +135,10 @@ export async function POST(request: Request) {
 
     if (!orRes.ok) {
       const errText = await orRes.text();
+      // 照「看得到的字」截：.slice(0, 300) 算 UTF-16 單位，emoji 剛好落在截點會切成
+      // 半個，編輯器顯示的錯誤訊息尾巴多一個問號方塊；下面 raw 同理。
       return NextResponse.json(
-        { error: `OpenRouter ${orRes.status}: ${errText.slice(0, 300)}` },
+        { error: `OpenRouter ${orRes.status}: ${takeChars(errText, 300)}` },
         { status: 502 }
       );
     }
@@ -155,7 +158,7 @@ export async function POST(request: Request) {
             parsed.reason === "invalid-json"
               ? "AI 回的不是合法 JSON"
               : "AI 回的不是 theme patch",
-          raw: parsed.cleaned.slice(0, 300),
+          raw: takeChars(parsed.cleaned, 300),
         },
         { status: 502 }
       );
