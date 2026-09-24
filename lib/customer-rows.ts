@@ -103,16 +103,28 @@ export function buildCustomerRows(orders: CustomerRowSource[]): CustomerRow[] {
   return rows;
 }
 
+// 同值收尾：最近下單新到舊，再同就比分群 key（字串，每位客人唯一）。
+// 不補的話累計／筆數／時間同值的幾位，先後只看分群的插入順序（撈單順序），
+// 換一批訂單進來就可能對調，列表跟匯出也各自看當下撈到的順序。
+function tieBreak(a: CustomerRow, b: CustomerRow): number {
+  return (
+    compareIsoDesc(a.lastOrderAt, b.lastOrderAt) ||
+    (a.key < b.key ? -1 : a.key > b.key ? 1 : 0)
+  );
+}
+
 // 就地排序並回傳同一個陣列（跟原本兩處的 filtered.sort 行為一致）。
 export function sortCustomerRows(rows: CustomerRow[], sort: CustomerSort): CustomerRow[] {
   switch (sort) {
     case "spend":
-      return rows.sort((a, b) => b.totalCents - a.totalCents);
+      return rows.sort((a, b) => b.totalCents - a.totalCents || tieBreak(a, b));
     case "orders":
-      return rows.sort((a, b) => b.orderCount - a.orderCount);
+      return rows.sort((a, b) => b.orderCount - a.orderCount || tieBreak(a, b));
     case "first":
-      return rows.sort((a, b) => compareIsoAsc(a.firstOrderAt, b.firstOrderAt));
+      return rows.sort(
+        (a, b) => compareIsoAsc(a.firstOrderAt, b.firstOrderAt) || tieBreak(a, b)
+      );
     default:
-      return rows.sort((a, b) => compareIsoDesc(a.lastOrderAt, b.lastOrderAt));
+      return rows.sort(tieBreak);
   }
 }

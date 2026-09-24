@@ -85,7 +85,8 @@ export default async function StoreCustomersPage({
   const repeatCount = rows.filter((r) => isReturningCustomer(r.orderCount)).length;
   const grandTotal = rows.reduce((sum, r) => sum + r.totalCents, 0);
   const avgSpend = totalCustomers > 0 ? Math.round(grandTotal / totalCustomers) : 0;
-  const topCustomer = [...rows].sort((a, b) => b.totalCents - a.totalCents)[0];
+  // 跟「累計高到低」排序同一套（同額比最近下單再比 key），最佳客人不會同額時亂換人。
+  const topCustomer = sortCustomerRows([...rows], "spend")[0];
 
   const headerCaption = q
     ? `符合「${q}」${filtered.length} 位 · 全部 ${totalCustomers} 位`

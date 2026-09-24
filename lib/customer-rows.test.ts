@@ -96,8 +96,24 @@ describe("sortCustomerRows", () => {
   it("spend：累計高到低", () => {
     assert.deepEqual(phones(sortCustomerRows(rows(), "spend")), ["2", "3", "1"]);
   });
-  it("orders：筆數多到少，同筆數維持原順序", () => {
-    assert.deepEqual(phones(sortCustomerRows(rows(), "orders")), ["2", "1", "3"]);
+  it("orders：筆數多到少，同筆數比最近下單新到舊", () => {
+    assert.deepEqual(phones(sortCustomerRows(rows(), "orders")), ["2", "3", "1"]);
+  });
+  it("同值不看插入順序：累計相同比最近下單，再相同比 key", () => {
+    const tied = (reverse: boolean) => {
+      const os = [
+        order({ customer_phone: "0900000001", total_cents: 500, created_at: "2026-01-01T00:00:00Z" }),
+        order({ customer_phone: "0900000002", total_cents: 500, created_at: "2026-02-01T00:00:00Z" }),
+        order({ customer_phone: "0900000003", total_cents: 500, created_at: "2026-02-01T00:00:00Z" }),
+      ];
+      return buildCustomerRows(reverse ? os.reverse() : os);
+    };
+    for (const sort of ["spend", "orders", "recent"] as const) {
+      assert.deepEqual(phones(sortCustomerRows(tied(false), sort)), ["2", "3", "1"]);
+      assert.deepEqual(phones(sortCustomerRows(tied(true), sort)), ["2", "3", "1"]);
+    }
+    // first：首次下單舊到新，同時間的 2、3 比 key
+    assert.deepEqual(phones(sortCustomerRows(tied(true), "first")), ["1", "2", "3"]);
   });
   it("first：首次下單舊到新", () => {
     assert.deepEqual(phones(sortCustomerRows(rows(), "first")), ["2", "1", "3"]);
