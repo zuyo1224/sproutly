@@ -26,6 +26,7 @@ import { formatPrice, productOfferFieldsForSchema } from "@/lib/format-price";
 import { availabilityForSchema } from "@/lib/availability-schema";
 import { absoluteImageUrls, displayableImageUrls } from "@/lib/image-url";
 import { isUuid } from "@/lib/uuid";
+import { truncateText } from "@/lib/truncate-text";
 
 export async function generateMetadata({
   params,
@@ -536,10 +537,11 @@ export default async function PublicProductPage({
             className="flex flex-col justify-center flex-shrink-0"
             style={{ color: theme.text }}
           >
+            {/* 商品名超過 8 字截短補「…」。走 truncateText 照看得到的字數切：原本
+                .slice(0, 8) 算 UTF-16 單位，名稱裡的 emoji（例如「🌿」）剛好落在
+                第 8 格時會被切成一半，底部購買列多出一個問號方塊。 */}
             <span className="text-xs" style={{ color: theme.textMuted }}>
-              {product.name.length > 8
-                ? product.name.slice(0, 8) + "…"
-                : product.name}
+              {truncateText(product.name, 8)}
             </span>
             <span
               className="text-sm"
