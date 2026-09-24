@@ -16,7 +16,7 @@ import {
   ORDER_STATUS_OPTIONS,
   shortOrderId,
 } from "@/lib/order-labels";
-import { telHref, mailHref } from "@/lib/contact-href";
+import { telHref, telDigits, mailHref } from "@/lib/contact-href";
 import { buildUrl } from "@/lib/url";
 import { siteBaseUrl, siteHost } from "@/lib/store-schema";
 import { isUuid } from "@/lib/uuid";
@@ -366,12 +366,18 @@ export default async function OrderDetailPage({
               <div className="flex gap-3">
                 <dt className="text-emerald-900/50 w-20">電話</dt>
                 <dd className="text-emerald-950">
-                  <a
-                    href={telHref(order.customer_phone)}
-                    className="hover:text-emerald-700 transition"
-                  >
-                    {order.customer_phone}
-                  </a>
+                  {/* 結帳只擋空白、不驗號碼格式；清得出可撥號主號才掛 tel: 連結，
+                      否則 telHref 會退成陽春 "tel:" 的死連結，改純文字顯示 */}
+                  {telDigits(order.customer_phone) ? (
+                    <a
+                      href={telHref(order.customer_phone)}
+                      className="hover:text-emerald-700 transition"
+                    >
+                      {order.customer_phone}
+                    </a>
+                  ) : (
+                    order.customer_phone
+                  )}
                 </dd>
               </div>
               {order.customer_email && (

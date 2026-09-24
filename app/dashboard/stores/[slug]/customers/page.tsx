@@ -1,7 +1,7 @@
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import { requireUser } from "@/lib/require-user";
-import { telHref, mailHref } from "@/lib/contact-href";
+import { telHref, telDigits, mailHref } from "@/lib/contact-href";
 
 type Params = Promise<{ slug: string }>;
 type SearchParams = Promise<{ q?: string; sort?: string }>;
@@ -355,12 +355,20 @@ export default async function StoreCustomersPage({
                           {r.email}
                         </a>
                       )}
-                      <a
-                        href={telHref(r.phone)}
-                        className="block text-emerald-900/60 text-xs tabular-nums"
-                      >
-                        {r.phone}
-                      </a>
+                      {/* 結帳只擋空白、不驗號碼格式，客人填「哈囉」也會過；清得出可撥號主號
+                          才掛 tel: 連結，否則 telHref 會退成陽春 "tel:" 的死連結，改純文字顯示 */}
+                      {telDigits(r.phone) ? (
+                        <a
+                          href={telHref(r.phone)}
+                          className="block text-emerald-900/60 text-xs tabular-nums"
+                        >
+                          {r.phone}
+                        </a>
+                      ) : (
+                        <span className="block text-emerald-900/60 text-xs tabular-nums">
+                          {r.phone}
+                        </span>
+                      )}
                     </td>
                     <td className="px-3 py-3.5 text-right">
                       <p
