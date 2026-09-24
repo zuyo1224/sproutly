@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { Hanken_Grotesk, Noto_Sans_TC, Geist_Mono } from "next/font/google";
 import "./globals.css";
+import { siteBaseUrl } from "@/lib/store-schema";
 
 // Botanic Lab 字型系統：拉丁標題/介面用 Hanken Grotesk（幾何 grotesk，現代乾淨），
 // 中文內文用 Noto Sans TC，資料/價格/網址這類等寬資訊保留 Geist Mono。
@@ -22,11 +23,9 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
-const siteUrl =
-  process.env.NEXT_PUBLIC_SITE_URL ?? "https://sproutly-drab.vercel.app";
-
 export const metadata: Metadata = {
-  metadataBase: new URL(siteUrl),
+  // 走全站共用的 siteBaseUrl：預設網域只剩 lib/store-schema 一處，換網域改環境變數即可。
+  metadataBase: new URL(siteBaseUrl()),
   title: "Sproutly · 讓你的小生意發芽",
   description: "為小商家打造的線上店面。商品、訂單、付款，整齊收在你的網址。",
   openGraph: {

@@ -8,6 +8,7 @@ import { parseAiThemePatch } from "@/lib/ai-theme-patch";
 import { isPlainObject } from "@/lib/is-plain-object";
 import { HERO_STYLE_KEYS, HERO_IMAGE_SIDES, DEFAULT_SECTION_ORDER } from "@/lib/theme-keys";
 import { tsUnionLiteral } from "@/lib/ts-union-literal";
+import { siteBaseUrl } from "@/lib/store-schema";
 
 // 提示裡給模型看的合法值從 lib/theme-keys 那份正本生成，不再手打；多一種版型時
 // 程式認得、模型也會被告知。sectionOrder 這裡刻意只給預設 6 個（跟設定頁一致），
@@ -119,7 +120,8 @@ export async function POST(request: Request) {
       headers: {
         Authorization: `Bearer ${apiKey}`,
         "Content-Type": "application/json",
-        "HTTP-Referer": "https://sproutly-drab.vercel.app",
+        // 跟著全站網域走，換網域後 OpenRouter 後台的來源統計不會還掛舊網址。
+        "HTTP-Referer": siteBaseUrl(),
         "X-Title": "Sproutly AI Edit",
       },
       body: JSON.stringify({
