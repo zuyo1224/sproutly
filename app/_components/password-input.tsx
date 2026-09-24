@@ -3,6 +3,7 @@
 import { useState } from "react";
 
 export default function PasswordInput({
+  id,
   name,
   placeholder,
   required,
@@ -10,6 +11,9 @@ export default function PasswordInput({
   minLength,
   autoComplete,
 }: {
+  // 給外面的 <label htmlFor> 綁用：沒綁的話報讀軟體唸不到「密碼」這個欄位名稱，
+  // 點標籤也不會跳進輸入框。
+  id?: string;
   name: string;
   placeholder?: string;
   required?: boolean;
@@ -22,6 +26,7 @@ export default function PasswordInput({
   return (
     <div className="relative">
       <input
+        id={id}
         name={name}
         type={shown ? "text" : "password"}
         required={required}

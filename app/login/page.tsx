@@ -78,6 +78,7 @@ export default async function LoginPage({
           <form action={signIn} className="mt-8 space-y-5">
             <div>
               <label
+                htmlFor="login-email"
                 className="block text-[0.6875rem] font-medium uppercase text-emerald-700/70 mb-2"
                 style={{ letterSpacing: "0.4em" }}
               >
@@ -88,6 +89,7 @@ export default async function LoginPage({
                 <span className="sr-only">（必填）</span>
               </label>
               <input
+                id="login-email"
                 name="email"
                 type="email"
                 required
@@ -99,6 +101,7 @@ export default async function LoginPage({
             </div>
             <div>
               <label
+                htmlFor="login-password"
                 className="block text-[0.6875rem] font-medium uppercase text-emerald-700/70 mb-2"
                 style={{ letterSpacing: "0.4em" }}
               >
@@ -109,6 +112,7 @@ export default async function LoginPage({
                 <span className="sr-only">（必填）</span>
               </label>
               <PasswordInput
+                id="login-password"
                 name="password"
                 required
                 ariaRequired

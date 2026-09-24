@@ -171,6 +171,7 @@ export default async function CustomerLoginPage({
             {next && <input type="hidden" name="next" value={next} />}
             <div>
               <label
+                htmlFor="customer-login-email"
                 className="block text-[0.6875rem] uppercase font-medium mb-3"
                 style={{
                   color: theme.textMuted,
@@ -180,6 +181,7 @@ export default async function CustomerLoginPage({
                 Email
               </label>
               <input
+                id="customer-login-email"
                 name="email"
                 type="email"
                 required

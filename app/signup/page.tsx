@@ -144,12 +144,14 @@ export default async function SignupPage({
           <form action={signUp} className="mt-8 space-y-5">
             <div>
               <label
+                htmlFor="signup-name"
                 className="block text-[0.6875rem] font-medium uppercase text-emerald-700/70 mb-2"
                 style={{ letterSpacing: "0.4em" }}
               >
                 Name · 你的名字
               </label>
               <input
+                id="signup-name"
                 name="name"
                 type="text"
                 autoComplete="name"
@@ -159,6 +161,7 @@ export default async function SignupPage({
             </div>
             <div>
               <label
+                htmlFor="signup-email"
                 className="block text-[0.6875rem] font-medium uppercase text-emerald-700/70 mb-2"
                 style={{ letterSpacing: "0.4em" }}
               >
@@ -169,6 +172,7 @@ export default async function SignupPage({
                 <span className="sr-only">（必填）</span>
               </label>
               <input
+                id="signup-email"
                 name="email"
                 type="email"
                 required
@@ -180,6 +184,7 @@ export default async function SignupPage({
             </div>
             <div>
               <label
+                htmlFor="signup-password"
                 className="block text-[0.6875rem] font-medium uppercase text-emerald-700/70 mb-2"
                 style={{ letterSpacing: "0.4em" }}
               >
@@ -190,6 +195,7 @@ export default async function SignupPage({
                 <span className="sr-only">（必填）</span>
               </label>
               <PasswordInput
+                id="signup-password"
                 name="password"
                 required
                 ariaRequired
