@@ -10,7 +10,7 @@ import {
   Lora,
 } from "next/font/google";
 import { createClient } from "@/lib/supabase/server";
-import { telHref, socialUrl, mapsHref } from "@/lib/contact-href";
+import { telHref, telDigits, socialUrl, mapsHref } from "@/lib/contact-href";
 import { SOCIAL_LINKS } from "@/lib/social-links";
 import { contrastRatio, NON_TEXT_CONTRAST_MIN } from "@/lib/color-contrast";
 import { HERO_FULL_HEIGHT_VH, HERO_SPLIT_HEIGHT_VH } from "@/lib/hero-image-bounds";
@@ -230,6 +230,9 @@ export default async function PublicStoreLayout({
     theme.sections.contact && store.contact_phone
       ? store.contact_phone.trim()
       : "";
+  // 清得出可撥號的主號才掛 tel: 連結；商家填「問我」這種非號碼時 telHref 會退成
+  // 陽春 "tel:" 的死連結，頁尾改成純文字顯示——跟首頁到店區、聯絡頁同一條防呆線。
+  const footerPhoneDialable = !!telDigits(footerPhone);
   const footerHours = theme.sections.hours ? businessHoursText : "";
   const showStoreInfo = !!(footerAddress || footerPhone || footerHours);
 
@@ -3153,13 +3156,19 @@ export default async function PublicStoreLayout({
                 )}
                 {footerPhone && (
                   <p>
-                    <a
-                      href={telHref(footerPhone)}
-                      className="sproutly-link"
-                      style={{ color: fText, letterSpacing: "0.04em" }}
-                    >
-                      {footerPhone}
-                    </a>
+                    {footerPhoneDialable ? (
+                      <a
+                        href={telHref(footerPhone)}
+                        className="sproutly-link"
+                        style={{ color: fText, letterSpacing: "0.04em" }}
+                      >
+                        {footerPhone}
+                      </a>
+                    ) : (
+                      <span style={{ color: fText, letterSpacing: "0.04em" }}>
+                        {footerPhone}
+                      </span>
+                    )}
                   </p>
                 )}
                 {footerHours && (
