@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { PHOTO_FILE_ACCEPT } from "@/lib/upload-image-type";
+import { formatFileSize } from "@/lib/format-file-size";
 
 type Preview = { url: string; name: string; size: number };
 
@@ -43,11 +44,6 @@ export function ImageFilePicker({
     }));
     urlsRef.current = next.map((n) => n.url);
     setPreviews(next);
-  }
-
-  function formatSize(bytes: number) {
-    if (bytes >= 1024 * 1024) return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
-    return `${Math.max(1, Math.round(bytes / 1024))} KB`;
   }
 
   return (
@@ -102,7 +98,7 @@ export function ImageFilePicker({
                   className="text-emerald-900/40 tabular-nums"
                   style={{ fontSize: "0.625rem" }}
                 >
-                  {formatSize(p.size)}
+                  {formatFileSize(p.size)}
                 </p>
               </div>
             ))}
