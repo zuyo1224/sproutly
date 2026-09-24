@@ -4,6 +4,7 @@ import { useEffect } from "react";
 import { clampFreePos } from "@/lib/theme-scale";
 import { isPlainObject } from "@/lib/is-plain-object";
 import { sanitizeFreePos } from "@/lib/free-positions";
+import { takeChars } from "@/lib/truncate-text";
 import { resolveInlineListTextPreview, resolveInlineTextPreview } from "@/lib/inline-text-preview";
 import { HOMEPAGE_DEFAULTS, HOMEPAGE_DEFAULT_COLLECTIONS, JOURNAL_CARD_DEFAULTS } from "@/app/[slug]/_theme";
 
@@ -216,7 +217,8 @@ export function EditorClickBridge() {
       target.setAttribute("data-edit-active", "");
 
       const editTarget = target.dataset.editTarget;
-      const label = target.dataset.editLabel ?? target.textContent?.slice(0, 50) ?? "";
+      // 照看得到的字數切，emoji 落在第 50 格不會切成半個
+      const label = target.dataset.editLabel ?? takeChars(target.textContent ?? "", 50);
       if (window.parent !== window) {
         window.parent.postMessage(
           {
