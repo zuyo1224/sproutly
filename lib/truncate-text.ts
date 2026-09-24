@@ -11,3 +11,10 @@ export function truncateText(s: string, max: number): string {
   if (chars.length <= max) return s;
   return chars.slice(0, max).join("") + "…";
 }
+
+// 只留前 max 個「看得到的字」、不補「…」：給 meta description、manifest short_name
+// 這種交給瀏覽器／系統自己處理的欄位用。原本各處直接 .slice(0, N)，emoji 落在截點
+// 會切成半個，分享預覽摘要或主畫面圖示底下的店名尾巴多一個問號方塊。
+export function takeChars(s: string, max: number): string {
+  return Array.from(s).slice(0, max).join("");
+}

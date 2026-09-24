@@ -6,7 +6,7 @@
 // 商家會以為 AI 回了亂碼）。這裡把這兩條與「上限 0、空字串」的邊界寫死。
 import { describe, it } from "node:test";
 import assert from "node:assert/strict";
-import { truncateText } from "./truncate-text.ts";
+import { truncateText, takeChars } from "./truncate-text.ts";
 
 describe("truncateText", () => {
   it("不超過上限原樣回傳，不補 …", () => {
@@ -34,5 +34,18 @@ describe("truncateText", () => {
   it("上限 0 時只剩一個 …（空字串仍回空）", () => {
     assert.equal(truncateText("abc", 0), "…");
     assert.equal(truncateText("", 0), "");
+  });
+});
+
+describe("takeChars", () => {
+  it("不超過上限原樣回傳，超過只留前 max 個字、不補 …", () => {
+    assert.equal(takeChars("療癒你的角落", 12), "療癒你的角落");
+    assert.equal(takeChars("一二三四五六", 4), "一二三四");
+    assert.equal(takeChars("", 12), "");
+  });
+
+  it("emoji 算一個字，截點落在 emoji 上不會切成半個", () => {
+    assert.equal(takeChars("ab🌱cd", 3), "ab🌱");
+    assert.equal(takeChars("🌱🌿🍀", 2), "🌱🌿");
   });
 });

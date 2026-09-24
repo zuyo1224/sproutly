@@ -3,6 +3,7 @@ import { createClient } from "@/lib/supabase/server";
 import { resolveTheme } from "../_theme";
 import { displayableImageUrl, imageMimeTypeFromUrl } from "@/lib/image-url";
 import { PLATFORM_MANIFEST_ICONS } from "@/lib/platform-icons";
+import { takeChars } from "@/lib/truncate-text";
 
 type Params = Promise<{ slug: string }>;
 
@@ -38,8 +39,9 @@ export async function GET(
 
   const manifest = {
     name: store.name,
-    // short_name 在主畫面圖示下方顯示，太長會被系統截斷，控在 12 字內
-    short_name: store.name.slice(0, 12),
+    // short_name 在主畫面圖示下方顯示，太長會被系統截斷，控在 12 字內；
+    // 照看得到的字數切（takeChars），店名帶 emoji 時不會切出半個字
+    short_name: takeChars(store.name, 12),
     description:
       store.description ?? `${store.name} · 在 Sproutly 上的線上店面`,
     // 進入點與範圍都鎖在這間店底下，加到主畫面開的是店面而非平台首頁

@@ -26,7 +26,7 @@ import { formatPrice, productOfferFieldsForSchema } from "@/lib/format-price";
 import { availabilityForSchema } from "@/lib/availability-schema";
 import { absoluteImageUrls, displayableImageUrls } from "@/lib/image-url";
 import { isUuid } from "@/lib/uuid";
-import { truncateText } from "@/lib/truncate-text";
+import { truncateText, takeChars } from "@/lib/truncate-text";
 
 export async function generateMetadata({
   params,
@@ -59,8 +59,10 @@ export async function generateMetadata({
   const priceLabel = formatPrice(product.price_cents, product.currency);
   // 商家描述只打空白時 .slice 出來仍是空白（truthy），會讓 meta/OG 摘要變一段空白，
   // 而非退回「商品名 · 售價」。先 trim，全空白就當沒填、走預設摘要。
+  // 截 160 字照看得到的字數算（takeChars），emoji 剛好落在第 160 格不會切成半個。
   const description =
-    product.description?.trim().slice(0, 160) || `${product.name} · ${priceLabel}`;
+    takeChars(product.description?.trim() ?? "", 160) ||
+    `${product.name} · ${priceLabel}`;
   // OG／Twitter 預覽圖取「客人在頁面上實際看到的主圖」：走 displayableImageUrls，跟下面
   // 頁面主圖與 Product JSON-LD 同一支。原本走 absoluteImageUrls 會多放行 http://，但
   // https 店面上 http:// 那張被瀏覽器當混合內容擋掉、頁面根本不掛，分享出去的預覽圖
