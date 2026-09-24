@@ -1254,6 +1254,7 @@ export function EditorWorkspace({
             }}
             className="text-stone-500 hover:text-emerald-900 transition text-sm flex items-center gap-1"
             title="回到店面總覽"
+            aria-label="回到店面總覽"
           >
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
           </Link>
@@ -1461,6 +1462,9 @@ export function EditorWorkspace({
               : "text-stone-400 hover:bg-stone-50"
           }`}
           title={autoSaveEnabled ? "自動儲存開啟" : "自動儲存關閉"}
+          // 只有圖示沒有字，title 螢幕報讀不一定唸；開關狀態用 aria-pressed 報
+          aria-label="自動儲存"
+          aria-pressed={autoSaveEnabled}
         >
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
             <path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z" />
