@@ -252,8 +252,15 @@ export default async function StoreInsightsPage({
     existing.revenue += item.price_cents_snapshot * item.quantity;
     productMap.set(key, existing);
   });
+  // 同金額時賣出件數多的排前面（兩件 500 比一件 1000 更「熱銷」），再同就照品名，
+  // 不然名次只看品項 id 誰先出現，切在第 5 名時上榜哪件等於亂抽。
   const topProducts = Array.from(productMap.values())
-    .sort((a, b) => b.revenue - a.revenue)
+    .sort(
+      (a, b) =>
+        b.revenue - a.revenue ||
+        b.qty - a.qty ||
+        a.name.localeCompare(b.name, "zh-Hant")
+    )
     .slice(0, 5);
 
   // 店面設置進度（6 步）
