@@ -29,6 +29,13 @@ export function siteBaseUrl(): string {
   );
 }
 
+// 後台給商家看的店址（「sproutly-drab.vercel.app/plantae」這種不帶 https:// 的短寫法）。
+// 以前八處各自寫死「sproutly.app/…」，但那根本不是我們的網域，商家照抄給客人會連不到；
+// 改從 siteBaseUrl 推，換網域只要改環境變數，後台顯示跟著變。
+export function siteHost(): string {
+  return siteBaseUrl().replace(/^https?:\/\//, "");
+}
+
 // 店家在整個網站的唯一身分證（@id）。首頁、聯絡頁的 Store、首頁 WebSite 的 publisher、
 // 商品頁 offer 的 seller 全指同一個 @id，Google 才知道散在各頁的結構化資料講的是「同一間
 // 店」，而不是好幾間同名的不同店。`#store` 這個格式原本在四處各寫一遍裸字串，漏改一處

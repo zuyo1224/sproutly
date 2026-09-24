@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { requireUser } from "@/lib/require-user";
+import { siteHost } from "@/lib/store-schema";
 import { createStore } from "./actions";
 import { SubmitButton } from "@/app/_components/submit-button";
 import { ContactHintInput } from "@/app/_components/contact-hint-input";
@@ -148,7 +149,7 @@ export default async function NewStorePage({
                   className="px-4 py-3 bg-emerald-50 text-emerald-700 border-r border-emerald-100 tabular-nums"
                   style={{ fontSize: "0.8125rem", letterSpacing: "-0.005em" }}
                 >
-                  sproutly.app /
+                  {siteHost()} /
                 </span>
                 <input
                   id="store-slug"

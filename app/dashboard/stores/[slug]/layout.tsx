@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { requireUser } from "@/lib/require-user";
+import { siteHost } from "@/lib/store-schema";
 import { signOut } from "@/app/auth/actions";
 import { DashboardStoreTabs } from "@/app/_components/dashboard-store-tabs";
 
@@ -132,7 +133,7 @@ export default async function StoreLayout({
                       </div>
                     </div>
                     <p className="text-xs text-emerald-900/40 mt-0.5 font-mono truncate">
-                      sproutly.app/{s.slug}
+                      {siteHost()}/{s.slug}
                     </p>
                   </Link>
                 ))}
@@ -174,7 +175,7 @@ export default async function StoreLayout({
                 {store.name}
               </h1>
               <p className="text-xs text-emerald-900/45 mt-2 font-mono break-all tracking-tight">
-                sproutly.app/{store.slug}
+                {siteHost()}/{store.slug}
               </p>
             </div>
             <div className="flex flex-col items-end gap-2 flex-shrink-0">

@@ -18,7 +18,7 @@ import {
 } from "@/lib/order-labels";
 import { telHref, mailHref } from "@/lib/contact-href";
 import { buildUrl } from "@/lib/url";
-import { siteBaseUrl } from "@/lib/store-schema";
+import { siteBaseUrl, siteHost } from "@/lib/store-schema";
 import { isUuid } from "@/lib/uuid";
 import { fetchOrderItemsForOrder } from "@/lib/fetch-order-items";
 
@@ -206,7 +206,7 @@ export default async function OrderDetailPage({
 
       <div className="hidden print:block mb-6">
         <p className="text-sm text-zinc-600">
-          {store.name} · sproutly.app/{slug}
+          {store.name} · {siteHost()}/{slug}
         </p>
       </div>
 

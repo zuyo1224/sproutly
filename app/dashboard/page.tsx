@@ -6,6 +6,7 @@ import Link from "next/link";
 import { formatPrice } from "@/lib/format-price";
 import { isPendingOrder, isPaidOrder } from "@/lib/order-labels";
 import { taipeiStartOfMonth } from "@/lib/format-date";
+import { siteHost } from "@/lib/store-schema";
 // 跨店的訂單/商品查詢走分頁撈齊（Supabase 一次最多回約 1000 列，
 // 一次 select 全帳號在資料破千後會默默少算，見 fetch-all-rows）。
 import { fetchAllRows } from "@/lib/fetch-all-rows";
@@ -418,7 +419,7 @@ export default async function DashboardPage() {
                         letterSpacing: "-0.01em",
                       }}
                     >
-                      sproutly.app/{store.slug}
+                      {siteHost()}/{store.slug}
                     </p>
                     {store.description && (
                       <p

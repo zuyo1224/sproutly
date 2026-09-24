@@ -34,6 +34,7 @@ import { PRESET_KEYS, FONT_KEYS } from "@/lib/theme-keys";
 import { PAGE_SECTION_TOGGLES } from "@/lib/page-section-toggles";
 import { SOCIAL_LINKS } from "@/lib/social-links";
 import { jsonbText } from "@/lib/jsonb-text";
+import { siteHost } from "@/lib/store-schema";
 import { AIEditPanel } from "@/app/_components/ai-edit-panel";
 import { UnsavedChangesGuard } from "@/app/_components/unsaved-changes-guard";
 import { ContactHintInput } from "@/app/_components/contact-hint-input";
@@ -171,7 +172,7 @@ export default async function StoreSettingsPage({
                   target="_blank"
                   className="underline hover:text-emerald-900"
                 >
-                  sproutly.app/{store.slug}
+                  {siteHost()}/{store.slug}
                 </Link>{" "}
                 看到
               </>
@@ -208,7 +209,7 @@ export default async function StoreSettingsPage({
             />
             <div>
               <p className="font-medium text-emerald-950">
-                公開到 sproutly.app/{store.slug}
+                公開到 {siteHost()}/{store.slug}
               </p>
               <p className="text-sm text-emerald-900/60 mt-1">
                 打勾後客人就能直接看到你的店和商品。取消打勾會變回草稿狀態

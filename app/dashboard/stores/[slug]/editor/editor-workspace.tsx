@@ -33,6 +33,7 @@ import { socialUrl } from "@/lib/contact-href";
 import { cleanMapEmbedUrl } from "@/lib/map-embed-url";
 import { isPastedRemoteImageUrl } from "@/lib/image-url";
 import { isPlainObject } from "@/lib/is-plain-object";
+import { siteHost } from "@/lib/store-schema";
 import { EditorAIChat } from "./editor-ai-chat";
 import {
   HERO_ZOOM_MIN,
@@ -1678,7 +1679,7 @@ export function EditorWorkspace({
           {/* Canvas URL bar（簡化、wix-like） */}
           <div className="flex items-center justify-between px-4 py-2 border-b border-stone-200 bg-stone-50">
             <span className="text-[11px] font-mono text-stone-500 truncate">
-              sproutly.app/{slug}
+              {siteHost()}/{slug}
             </span>
             <button
               type="button"

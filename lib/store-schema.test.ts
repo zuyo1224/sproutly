@@ -14,6 +14,7 @@ import { describe, it } from "node:test";
 import assert from "node:assert/strict";
 import {
   siteBaseUrl,
+  siteHost,
   storeSchemaId,
   buildStoreJsonLd,
   buildBreadcrumbJsonLd,
@@ -44,6 +45,31 @@ describe("siteBaseUrl（網站基底網址：環境變數優先、去尾斜線�
     process.env.NEXT_PUBLIC_SITE_URL = "https://sproutly.com.tw/";
     try {
       assert.equal(siteBaseUrl(), "https://sproutly.com.tw");
+    } finally {
+      if (prev === undefined) delete process.env.NEXT_PUBLIC_SITE_URL;
+      else process.env.NEXT_PUBLIC_SITE_URL = prev;
+    }
+  });
+});
+
+describe("siteHost（後台顯示用店址：去掉 https://、跟 siteBaseUrl 同一個網域）", () => {
+  it("沒設環境變數時是 sproutly-drab.vercel.app", () => {
+    const prev = process.env.NEXT_PUBLIC_SITE_URL;
+    delete process.env.NEXT_PUBLIC_SITE_URL;
+    try {
+      assert.equal(siteHost(), "sproutly-drab.vercel.app");
+    } finally {
+      if (prev !== undefined) process.env.NEXT_PUBLIC_SITE_URL = prev;
+    }
+  });
+
+  it("換網域跟著換，http:// 也去掉，尾斜線不殘留", () => {
+    const prev = process.env.NEXT_PUBLIC_SITE_URL;
+    try {
+      process.env.NEXT_PUBLIC_SITE_URL = "https://sproutly.com.tw/";
+      assert.equal(siteHost(), "sproutly.com.tw");
+      process.env.NEXT_PUBLIC_SITE_URL = "http://localhost:3000";
+      assert.equal(siteHost(), "localhost:3000");
     } finally {
       if (prev === undefined) delete process.env.NEXT_PUBLIC_SITE_URL;
       else process.env.NEXT_PUBLIC_SITE_URL = prev;
