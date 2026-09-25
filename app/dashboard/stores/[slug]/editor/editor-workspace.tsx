@@ -1370,6 +1370,13 @@ export function EditorWorkspace({
                   ? `● 已存 ${new Date(savedAt).toLocaleTimeString("zh-TW", { hour: "2-digit", minute: "2-digit" })}`
                   : "—"}
           </span>
+          {/* 報讀用：只在存好時唸一次「已存 HH:MM」。上面那格每次打字都會跳「2 秒後自動存 → 儲存中 → 已存」，
+              直接掛 aria-live 會太吵；手機上那格又是隱藏的，所以另外放一格只報結果。存檔失敗走 alert，不用這裡報 */}
+          <span className="sr-only" role="status" aria-live="polite">
+            {savedAt
+              ? `已存 ${new Date(savedAt).toLocaleTimeString("zh-TW", { hour: "2-digit", minute: "2-digit" })}`
+              : ""}
+          </span>
           <button
             type="button"
             onClick={() => setShowShortcuts(true)}
