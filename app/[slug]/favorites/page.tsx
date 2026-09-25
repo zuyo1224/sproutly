@@ -469,12 +469,13 @@ export default function FavoritesPage() {
         </>
       )}
 
-      {undo && (
-        <div
-          role="status"
-          aria-live="polite"
-          className="fixed inset-x-0 bottom-6 z-50 flex justify-center px-6 pointer-events-none"
-        >
+      {/* 狀態格一直掛著、只換裡面的內容：跟內容一起才冒出來的狀態格，報讀軟體常常不唸。 */}
+      <div
+        role="status"
+        aria-live="polite"
+        className="fixed inset-x-0 bottom-6 z-50 flex justify-center px-6 pointer-events-none"
+      >
+        {undo && (
           <div
             onMouseEnter={pauseUndoTimer}
             onMouseLeave={startUndoTimer}
@@ -502,8 +503,8 @@ export default function FavoritesPage() {
               復原
             </button>
           </div>
-        </div>
-      )}
+        )}
+      </div>
     </main>
   );
 }
