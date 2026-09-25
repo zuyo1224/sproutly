@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useId, useRef } from "react";
 import { buildUrl } from "@/lib/url";
 
 type AssetPhoto = {
@@ -48,6 +48,47 @@ export function AssetPicker({
   const [page, setPage] = useState(1);
   const [hasNext, setHasNext] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
+  const dialogRef = useRef<HTMLDivElement>(null);
+  const titleId = useId();
+
+  // 打開時記下原本焦點所在；關掉後焦點掉到 body 就送回去（已被別處拿走就不搶）
+  useEffect(() => {
+    if (!open) return;
+    const prev = document.activeElement;
+    const returnTo = prev instanceof HTMLElement ? prev : null;
+    return () => {
+      requestAnimationFrame(() => {
+        const active = document.activeElement;
+        if (
+          returnTo?.isConnected &&
+          (!active || active === document.body)
+        ) {
+          returnTo.focus();
+        }
+      });
+    };
+  }, [open]);
+
+  // 彈窗裡按 Tab 只在彈窗內繞，不跑到後面的編輯器
+  function trapTab(e: React.KeyboardEvent<HTMLDivElement>) {
+    if (e.key !== "Tab" || !dialogRef.current) return;
+    const items = Array.from(
+      dialogRef.current.querySelectorAll<HTMLElement>(
+        'button:not([disabled]), input:not([disabled]), a[href], [tabindex]:not([tabindex="-1"])'
+      )
+    );
+    if (items.length === 0) return;
+    const first = items[0];
+    const last = items[items.length - 1];
+    const active = document.activeElement;
+    if (e.shiftKey && (active === first || !dialogRef.current.contains(active))) {
+      e.preventDefault();
+      last.focus();
+    } else if (!e.shiftKey && (active === last || !dialogRef.current.contains(active))) {
+      e.preventDefault();
+      first.focus();
+    }
+  }
 
   useEffect(() => {
     if (open) {
@@ -104,13 +145,20 @@ export function AssetPicker({
       onClick={onClose}
     >
       <div
+        ref={dialogRef}
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby={titleId}
         className="bg-white rounded-2xl shadow-2xl w-full max-w-5xl max-h-[90vh] flex flex-col"
         onClick={(e) => e.stopPropagation()}
+        onKeyDown={trapTab}
       >
         {/* Header */}
         <div className="flex items-center justify-between p-5 border-b border-stone-100">
           <div>
-            <h2 className="text-lg font-semibold text-emerald-950">{title}</h2>
+            <h2 id={titleId} className="text-lg font-semibold text-emerald-950">
+              {title}
+            </h2>
             <p className="text-[11px] text-stone-500 mt-0.5">
               來自 Pexels 免費圖庫 · 商用可
             </p>
