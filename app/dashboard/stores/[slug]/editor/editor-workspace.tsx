@@ -1834,12 +1834,17 @@ export function EditorWorkspace({
                 <span className="hidden sm:inline">上一段</span>
               </button>
               <div className="flex-1 text-center min-w-0">
-                <p className="text-[10px] font-medium tracking-[0.3em] uppercase text-stone-400">
+                <p aria-hidden className="text-[10px] font-medium tracking-[0.3em] uppercase text-stone-400">
                   Section {idx + 1} / {navOrder.length}
                 </p>
-                <p className="mt-0.5 text-sm font-medium text-stone-800 truncate">
+                <p aria-hidden className="mt-0.5 text-sm font-medium text-stone-800 truncate">
                   {sectionLabels[selectedSection]}
                 </p>
+                {/* 報讀用：按上一段／下一段（或 [ ]、點預覽）換段後，焦點還停在按鈕上，
+                    只換按鈕名稱報讀不一定會唸；這格換段就唸一次目前是哪段。上面兩行英文大寫與重複段名不給報讀 */}
+                <span className="sr-only" role="status" aria-live="polite">
+                  {`目前在第 ${idx + 1} 段，共 ${navOrder.length} 段：${sectionLabels[selectedSection]}`}
+                </span>
               </div>
               <button
                 type="button"
