@@ -1442,6 +1442,7 @@ export function EditorWorkspace({
             }`}
             title={label}
             aria-label={label}
+            aria-expanded={popover === tab}
           >
             {icon}
             {popover === tab && (
@@ -2638,6 +2639,7 @@ export function EditorWorkspace({
                   <button
                     type="button"
                     onClick={() => updateLayout({ heroImageSide: "left" })}
+                    aria-pressed={theme.layout.heroImageSide === "left"}
                     className={`px-3 py-2 rounded-lg text-sm border transition ${
                       theme.layout.heroImageSide === "left"
                         ? selectedOptionClass
@@ -2649,6 +2651,7 @@ export function EditorWorkspace({
                   <button
                     type="button"
                     onClick={() => updateLayout({ heroImageSide: "right" })}
+                    aria-pressed={theme.layout.heroImageSide === "right"}
                     className={`px-3 py-2 rounded-lg text-sm border transition ${
                       theme.layout.heroImageSide === "right"
                         ? selectedOptionClass
@@ -7677,8 +7680,8 @@ function HeroFontScaleSlider({
  * 「排幾欄」那格：數字幾選一。
  * 之前 6 格（選物提案／數字／相簿／好評／本月選物／慢讀）各抄一份一模一樣的
  * <div grid>＋<button>，改一格（例如選中色要換）另外 5 格不會跟著動，所以收成一支。
- * 沒走 OptionGrid 是因為那支吃字串選項而且會多輸出 aria-pressed，這裡吃數字、
- * 輸出跟原本一模一樣。欄數幾格就排幾欄（[2,3,4] 三欄、[2,3] 兩欄）。
+ * 沒走 OptionGrid 是因為那支吃字串選項，這裡吃數字。
+ * 欄數幾格就排幾欄（[2,3,4] 三欄、[2,3] 兩欄）。aria-pressed 讓報讀軟體知道目前選哪欄。
  */
 function ColumnsGrid<N extends number>({
   choices,
@@ -7696,6 +7699,7 @@ function ColumnsGrid<N extends number>({
           key={n}
           type="button"
           onClick={() => onSelect(n)}
+          aria-pressed={selected === n}
           className={`rounded-lg border py-2 text-xs transition ${
             selected === n
               ? selectedOptionClass
@@ -7734,6 +7738,7 @@ function PresetGrid<P extends { key: string; label: string; hint: string }>({
             key={p.key}
             type="button"
             onClick={() => onSelect(p)}
+            aria-pressed={isActive}
             title={p.hint}
             className={`rounded-lg border px-2 py-2 text-xs transition text-left leading-tight ${
               isActive
