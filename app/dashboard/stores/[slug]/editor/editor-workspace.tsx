@@ -3738,6 +3738,7 @@ export function EditorWorkspace({
                       onChange={(e) =>
                         updateListItem<StatItem>("stats", i, { value: e.target.value })
                       }
+                      aria-label={`第 ${i + 1} 筆數字`}
                       placeholder="2019 / 250+ / 1500"
                       className={`${listInputClass} font-medium font-mono`}
                     />
@@ -3747,6 +3748,7 @@ export function EditorWorkspace({
                       onChange={(e) =>
                         updateListItem<StatItem>("stats", i, { label: e.target.value })
                       }
+                      aria-label={`第 ${i + 1} 筆數字的標籤`}
                       placeholder="標籤（成立年份 / 植物種數 / 客人累計）"
                       className={listInputClass}
                     />
@@ -3808,6 +3810,7 @@ export function EditorWorkspace({
                       onChange={(e) =>
                         updateListItem<PartnerItem>("partners", i, { name: e.target.value })
                       }
+                      aria-label={`第 ${i + 1} 個合作夥伴名稱`}
                       placeholder="名稱（給無障礙 alt 用）"
                       className={listInputClass}
                     />
@@ -3818,6 +3821,7 @@ export function EditorWorkspace({
                         onChange={(e) =>
                           updateListItem<PartnerItem>("partners", i, { logoUrl: e.target.value })
                         }
+                        aria-label={`第 ${i + 1} 個合作夥伴 Logo 網址`}
                         placeholder="Logo URL（https://...）"
                         className="flex-1 rounded border border-stone-200 px-2 py-1.5 text-xs font-mono"
                       />
@@ -3827,6 +3831,7 @@ export function EditorWorkspace({
                           setAssetPickerMode({ kind: "partner-logo", index: i })
                         }
                         title="從圖庫挑"
+                        aria-label={`從圖庫挑第 ${i + 1} 個合作夥伴 Logo`}
                         className="px-2 rounded bg-emerald-700 text-white text-xs hover:bg-emerald-800 transition"
                       >
                         ✦
@@ -3859,6 +3864,7 @@ export function EditorWorkspace({
                           href: e.target.value || null,
                         })
                       }
+                      aria-label={`第 ${i + 1} 個合作夥伴連結`}
                       placeholder="連結（選填，貼完整網址 https://…）"
                       className="w-full rounded border border-stone-200 px-2 py-1.5 text-xs font-mono"
                     />
@@ -3931,6 +3937,7 @@ export function EditorWorkspace({
                       onChange={(e) =>
                         updateListItem<GalleryItem>("gallery", i, { url: e.target.value })
                       }
+                      aria-label={`相簿第 ${i + 1} 張圖片網址`}
                       placeholder="圖片 URL（https://...）"
                       className="w-full rounded border border-stone-200 px-2 py-1.5 text-xs font-mono"
                     />
@@ -3956,6 +3963,7 @@ export function EditorWorkspace({
                           caption: e.target.value || null,
                         })
                       }
+                      aria-label={`相簿第 ${i + 1} 張圖說`}
                       placeholder="圖說 / caption（選填）"
                       className={listInputClass}
                     />
@@ -4047,6 +4055,7 @@ export function EditorWorkspace({
                       onChange={(e) =>
                         updateFaq(i, { question: e.target.value })
                       }
+                      aria-label={`FAQ 第 ${i + 1} 題問題`}
                       placeholder="問題..."
                       className={`${listInputClass} font-medium`}
                     />
@@ -4056,6 +4065,7 @@ export function EditorWorkspace({
                         updateFaq(i, { answer: e.target.value })
                       }
                       rows={3}
+                      aria-label={`FAQ 第 ${i + 1} 題答案`}
                       placeholder="答案... 換行用 Enter"
                       className={`${listInputClass} resize-none`}
                     />
@@ -4140,6 +4150,7 @@ export function EditorWorkspace({
                         updateTestimonial(i, { quote: e.target.value })
                       }
                       rows={3}
+                      aria-label={`第 ${i + 1} 則評語內容`}
                       placeholder="顧客評語..."
                       className={`${listInputClass} resize-none`}
                     />
@@ -4149,6 +4160,7 @@ export function EditorWorkspace({
                       onChange={(e) =>
                         updateTestimonial(i, { author: e.target.value })
                       }
+                      aria-label={`第 ${i + 1} 則評語的顧客名字`}
                       placeholder="顧客名字"
                       className={listInputClass}
                     />
@@ -4160,6 +4172,7 @@ export function EditorWorkspace({
                           role: e.target.value || null,
                         })
                       }
+                      aria-label={`第 ${i + 1} 則評語的顧客頭銜`}
                       placeholder="頭銜或描述（選填）"
                       className={listInputClass}
                     />
@@ -4354,6 +4367,7 @@ export function EditorWorkspace({
                       type="text"
                       value={cards[i]?.eyebrow ?? ""}
                       onChange={(e) => patchCard(i, "eyebrow", e.target.value)}
+                      aria-label={`慢讀區第 ${i + 1} 張卡片小標`}
                       placeholder="小標（如 Care）"
                       maxLength={40}
                       className={inputClass}
@@ -4362,6 +4376,7 @@ export function EditorWorkspace({
                       type="text"
                       value={cards[i]?.title ?? ""}
                       onChange={(e) => patchCard(i, "title", e.target.value)}
+                      aria-label={`慢讀區第 ${i + 1} 張卡片標題`}
                       placeholder="標題"
                       maxLength={80}
                       className={inputClass}
@@ -4370,6 +4385,7 @@ export function EditorWorkspace({
                       value={cards[i]?.excerpt ?? ""}
                       onChange={(e) => patchCard(i, "excerpt", e.target.value)}
                       rows={2}
+                      aria-label={`慢讀區第 ${i + 1} 張卡片說明`}
                       placeholder="一兩句說明"
                       maxLength={200}
                       className={textareaClass}
