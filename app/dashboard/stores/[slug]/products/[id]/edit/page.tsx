@@ -257,8 +257,9 @@ export default async function EditProductPage({
             />
           </div>
 
-          <div>
-            <label className="block text-emerald-700/70 mb-3" style={LABEL_STYLE}>
+          {/* 整組標題沒有單一輸入框可綁，改用 role="group" 讓報讀進到這區先唸「商品照片」 */}
+          <div role="group" aria-labelledby="product-photos-group-label">
+            <label id="product-photos-group-label" className="block text-emerald-700/70 mb-3" style={LABEL_STYLE}>
               Photos · 商品照片
             </label>
 

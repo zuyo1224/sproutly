@@ -418,10 +418,10 @@ A: 可以，地點為台北車站。`}</pre>
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-emerald-900 mb-3">
+            <label id="theme-preset-group-label" className="block text-sm font-medium text-emerald-900 mb-3">
               選風格底
             </label>
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+            <div role="radiogroup" aria-labelledby="theme-preset-group-label" className="grid grid-cols-2 sm:grid-cols-4 gap-3">
               {PRESET_KEYS.map((key) => {
                 const p = PRESETS[key];
                 const meta = PRESET_LABELS[key];
@@ -586,10 +586,10 @@ A: 可以，地點為台北車站。`}</pre>
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-emerald-900 mb-3">
+            <label id="page-sections-group-label" className="block text-sm font-medium text-emerald-900 mb-3">
               顯示哪些區塊
             </label>
-            <div className="grid grid-cols-2 gap-2">
+            <div role="group" aria-labelledby="page-sections-group-label" className="grid grid-cols-2 gap-2">
               {PAGE_SECTION_TOGGLES.map((s) => (
                 <label key={s.formName} className="flex items-center gap-2 px-3 py-2 rounded-lg border border-emerald-100 hover:bg-emerald-50/40 transition cursor-pointer">
                   <input
@@ -605,10 +605,10 @@ A: 可以，地點為台北車站。`}</pre>
           </div>
 
           <div className="space-y-3">
-            <label className="block text-sm font-medium text-emerald-900">
+            <label id="social-links-group-label" className="block text-sm font-medium text-emerald-900">
               社群連結（會出現在頁尾，只有勾選「頁尾社群連結」才顯示）
             </label>
-            <div className="space-y-2">
+            <div role="group" aria-labelledby="social-links-group-label" className="space-y-2">
               {SOCIAL_LINKS.map((s) => (
                 <div key={s.key} className="flex items-start gap-2">
                   <label htmlFor={s.formName} className="text-xs text-emerald-900/60 w-20 pt-2.5">{s.label}</label>
@@ -683,10 +683,10 @@ A: 可以，地點為台北車站。`}</pre>
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-emerald-900 mb-3">
+            <label id="collections-group-label" className="block text-sm font-medium text-emerald-900 mb-3">
               選物提案 6 個（標題空白 = 不顯示這格）
             </label>
-            <div className="space-y-3">
+            <div role="group" aria-labelledby="collections-group-label" className="space-y-3">
               {HOMEPAGE_DEFAULT_COLLECTIONS.map((def, i) => {
                 const userVal = theme.homepage.collectionItems.find(
                   (c) => c.key === def.key
