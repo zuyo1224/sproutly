@@ -2562,6 +2562,7 @@ export function EditorWorkspace({
                       max={HERO_ZOOM_MAX}
                       step="0.05"
                       value={zoomValue}
+                      aria-valuetext={`${zoomValue.toFixed(2)} 倍`}
                       onChange={(e) =>
                         updateLayout({ [zoomKey]: parseFloat(e.target.value) })
                       }
@@ -4256,6 +4257,7 @@ export function EditorWorkspace({
                   max={FEATURED_COUNT_MAX}
                   step="1"
                   value={theme.layout.featuredCount}
+                  aria-valuetext={`${theme.layout.featuredCount} 個`}
                   onChange={(e) => updateLayout({ featuredCount: parseInt(e.target.value, 10) })}
                   className="w-full"
                 />
@@ -6886,6 +6888,7 @@ export function EditorWorkspace({
                 max={FONT_SCALE_MAX}
                 step="0.05"
                 value={theme.layout.fontScale}
+                aria-valuetext={`${theme.layout.fontScale.toFixed(2)} 倍`}
                 onChange={(e) => updateLayout({ fontScale: parseFloat(e.target.value) })}
                 className="w-full"
               />
@@ -7661,6 +7664,7 @@ function HeroFontScaleSlider({
         max={HERO_FONT_SCALE_MAX}
         step="0.05"
         value={value}
+        aria-valuetext={`${value.toFixed(2)} 倍`}
         onChange={(e) => onChange(parseFloat(e.target.value))}
         className="w-full"
       />
