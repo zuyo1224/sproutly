@@ -285,10 +285,17 @@ export default async function EditProductPage({
                         alt={`圖 ${idx + 1}`}
                         className="aspect-square w-full object-cover rounded-xl border border-emerald-100 group-has-[:checked]:opacity-40 group-has-[:checked]:ring-2 group-has-[:checked]:ring-red-400 transition"
                       />
+                      {/* 沒 aria-label 時報讀只唸「圖 1 核取方塊」（名稱來自圖片 alt 加角標字），
+                          聽不出勾了是要刪掉；角標資訊一併帶進來，不因覆蓋名稱而丟失。 */}
                       <input
                         type="checkbox"
                         name="remove_image_urls"
                         value={url}
+                        aria-label={`刪除圖 ${idx + 1}${
+                          !isPastedRemoteImageUrl(url) ? "（店面不會放這張）" : ""
+                        }${
+                          storefrontCoverIdx > 0 && idx === storefrontCoverIdx ? "（店面主圖）" : ""
+                        }`}
                         className="absolute top-2 right-2 w-5 h-5 rounded text-red-600 bg-white focus:ring-2 focus:ring-red-100 cursor-pointer"
                       />
                       {!isPastedRemoteImageUrl(url) && (
