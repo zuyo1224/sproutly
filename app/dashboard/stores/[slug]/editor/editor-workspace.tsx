@@ -547,6 +547,11 @@ export function EditorWorkspace({
     source: SectionKey;
     fields: EditorTheme["layout"]["sectionStyles"][string];
   } | null>(null);
+  // 貼上樣式／套到全部／全部重置按完後給報讀唸的一句話；綁 section，切到別段就不留舊字
+  const [styleActionNote, setStyleActionNote] = useState<{
+    section: SectionKey;
+    text: string;
+  } | null>(null);
   const STYLE_CLIPBOARD_KEY = "sproutly:editor:style-clipboard:v1";
   // mount 時從 localStorage 讀回 clipboard
   useEffect(() => {
@@ -4567,6 +4572,7 @@ export function EditorWorkspace({
             const nextStyles = { ...theme.layout.sectionStyles };
             delete nextStyles[selectedSection!];
             updateLayout({ sectionStyles: nextStyles });
+            setStyleActionNote({ section: selectedSection!, text: "已把這段樣式清回預設" });
           }
           // group 分兩組：section = 動段落外圍（字體、呼吸、底色、外框），card = 動卡片自己。
           // 兩組各自獨立，一段可以同時套「雜誌風 + 整齊格子」；同組換另一個風格才會互相取代。
@@ -5059,6 +5065,10 @@ export function EditorWorkspace({
                 [selectedSection!]: fields,
               },
             });
+            setStyleActionNote({
+              section: selectedSection!,
+              text: `已貼上 ${sectionLabels[styleClipboard.source]} 的 ${Object.keys(fields).length} 項樣式`,
+            });
           }
           const canPaste = styleClipboard !== null && styleClipboard.source !== selectedSection;
           const clipboardCount = styleClipboard ? Object.keys(styleClipboard.fields).length : 0;
@@ -5082,9 +5092,17 @@ export function EditorWorkspace({
               nextStyles[k] = { ...cur };
             }
             updateLayout({ sectionStyles: nextStyles });
+            setStyleActionNote({
+              section: selectedSection!,
+              text: `已把這段樣式套到其他 ${otherSections.length} 個區段`,
+            });
           }
           return (
             <PanelSection title="區段樣式">
+              {/* 貼上／套全部／重置改的是預覽畫面，報讀聽不到結果；這格只給報讀，按完唸一次 */}
+              <span className="sr-only" role="status" aria-live="polite">
+                {styleActionNote?.section === selectedSection ? styleActionNote.text : ""}
+              </span>
               {hasCustom && (
                 <div className="-mt-2 flex items-center justify-between gap-2 rounded-lg border border-stone-200 bg-stone-50 px-3 py-2">
                   <span className="text-[11px] text-stone-600 leading-relaxed">
