@@ -1346,6 +1346,7 @@ export function EditorWorkspace({
         {/* Right: save status + 預覽 + 發佈 */}
         <div className="flex items-center gap-3">
           <span
+            id="editor-save-status"
             className={`text-[11px] hidden sm:inline ${
               pending
                 ? "text-emerald-700"
@@ -1402,6 +1403,7 @@ export function EditorWorkspace({
             type="button"
             onClick={() => handleSave()}
             disabled={!dirty || pending}
+            aria-describedby="editor-save-status"
             className="rounded-full bg-emerald-700 text-white text-xs font-medium px-5 py-1.5 hover:bg-emerald-800 transition disabled:opacity-40 disabled:cursor-not-allowed"
           >
             {pending ? "儲存中…" : "儲存"}
@@ -3980,6 +3982,7 @@ export function EditorWorkspace({
                 type="button"
                 onClick={() => addListItem("gallery")}
                 disabled={theme.layout.gallery.length >= 12}
+                aria-describedby="editor-gallery-count"
                 className="rounded-lg border border-dashed border-stone-300 hover:border-emerald-400 hover:bg-emerald-50/50 py-2.5 text-xs text-emerald-800 transition disabled:opacity-40 disabled:cursor-not-allowed"
               >
                 + 貼 URL
@@ -3988,12 +3991,13 @@ export function EditorWorkspace({
                 type="button"
                 onClick={() => setAssetPickerMode({ kind: "gallery-add" })}
                 disabled={theme.layout.gallery.length >= 12}
+                aria-describedby="editor-gallery-count"
                 className="rounded-lg bg-emerald-700 text-white py-2.5 text-xs hover:bg-emerald-800 transition disabled:opacity-40 disabled:cursor-not-allowed"
               >
                 ✦ 從圖庫挑
               </button>
             </div>
-            <p className="mt-2 text-[10px] text-stone-500 text-center">
+            <p id="editor-gallery-count" className="mt-2 text-[10px] text-stone-500 text-center">
               {theme.layout.gallery.length}/12 張 · 圖庫由 Pexels 提供商用免費
             </p>
             <Field label="排幾欄">
