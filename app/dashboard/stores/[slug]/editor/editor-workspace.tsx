@@ -5167,11 +5167,15 @@ export function EditorWorkspace({
                     貼上樣式
                   </button>
                 </div>
-                {styleClipboard && (
-                  <p className={layoutNoteClass}>
-                    已複製：{sectionLabels[styleClipboard.source]} 的 {clipboardCount} 項樣式
-                  </p>
-                )}
+                {/* 按「複製這段」後報讀軟體原本沒任何回饋；外層 status 格一直在（空的不佔高度），
+                    裡面那行一出現就會被唸出來 */}
+                <div role="status" aria-live="polite">
+                  {styleClipboard && (
+                    <p className={layoutNoteClass}>
+                      已複製：{sectionLabels[styleClipboard.source]} 的 {clipboardCount} 項樣式
+                    </p>
+                  )}
+                </div>
                 <button
                   type="button"
                   onClick={applyToAll}
