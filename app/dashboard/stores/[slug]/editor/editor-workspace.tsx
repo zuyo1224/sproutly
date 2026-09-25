@@ -605,6 +605,8 @@ export function EditorWorkspace({
   const pastRef = useRef<EditorTheme[]>([]);
   const futureRef = useRef<EditorTheme[]>([]);
   const [historyTick, setHistoryTick] = useState(0); // 觸發 re-render of undo/redo buttons
+  // 復原／重做按完給報讀唸的一句話；帶剩幾步，連按時字會變，報讀才會每次都唸
+  const [historyNote, setHistoryNote] = useState("");
 
   // 連續編輯合併：同一個欄位在這段時間內的連續改動（打字、拉 slider）只算一步，
   // 這樣按復原是一次退掉整段編輯，而不是一個字、一格一格退。
@@ -675,6 +677,11 @@ export function EditorWorkspace({
     setTheme(last);
     setDirty(true);
     setHistoryTick((t) => t + 1);
+    setHistoryNote(
+      pastRef.current.length > 0
+        ? `已復原，還可以再復原 ${pastRef.current.length} 步`
+        : "已復原，沒有更早的步驟了"
+    );
     // 立即把 reverted theme 推進 iframe（顏色 / 文字 / position 即時 patch，不 reload）
     pushThemeToIframe(last);
     // 背景 silent save 到 DB，下次 reload 才會反映，但此刻 user 已看到效果
@@ -688,6 +695,11 @@ export function EditorWorkspace({
     setTheme(next);
     setDirty(true);
     setHistoryTick((t) => t + 1);
+    setHistoryNote(
+      futureRef.current.length > 0
+        ? `已重做，還可以再重做 ${futureRef.current.length} 步`
+        : "已重做，沒有更後面的步驟了"
+    );
     pushThemeToIframe(next);
     handleSave({ reloadIframe: false, themeOverride: next });
   }
@@ -1317,6 +1329,10 @@ export function EditorWorkspace({
               </svg>
               <span>重做</span>
             </button>
+            {/* 報讀用：復原／重做改的是預覽畫面，按鈕本身沒變，報讀不會出聲；按鍵盤 Cmd+Z 也走這裡 */}
+            <span className="sr-only" role="status" aria-live="polite">
+              {historyNote}
+            </span>
           </div>
 
           <div className="h-5 w-px bg-stone-200" />
