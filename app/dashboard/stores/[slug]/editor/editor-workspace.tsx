@@ -5277,6 +5277,7 @@ export function EditorWorkspace({
                     value={bg ?? "#F7F4ED"}
                     onChange={(e) => patch({ bgColor: e.target.value })}
                     className={colorPickerClass}
+                    aria-label="背景色取色器"
                   />
                   <input
                     type="text"
@@ -5284,6 +5285,7 @@ export function EditorWorkspace({
                     onChange={(e) => patch({ bgColor: e.target.value || null })}
                     placeholder="預設用全站背景"
                     className={hexInputClass}
+                    aria-label="背景色色碼"
                   />
                   {bg && (
                     <ClearButton onClick={() => patch({ bgColor: null })} />
@@ -5297,6 +5299,8 @@ export function EditorWorkspace({
                         key={sw.label}
                         type="button"
                         title={sw.label}
+                        aria-label={`背景色：${sw.label}`}
+                        aria-pressed={active}
                         onClick={() => patch({ bgColor: sw.c })}
                         className={`h-6 w-6 rounded-full border transition ${
                           active
@@ -5316,6 +5320,7 @@ export function EditorWorkspace({
                     value={textCol ?? "#1A1A1A"}
                     onChange={(e) => patch({ textColor: e.target.value })}
                     className={colorPickerClass}
+                    aria-label="文字顏色取色器"
                   />
                   <input
                     type="text"
@@ -5323,6 +5328,7 @@ export function EditorWorkspace({
                     onChange={(e) => patch({ textColor: e.target.value || null })}
                     placeholder="預設用全站文字色"
                     className={hexInputClass}
+                    aria-label="文字顏色色碼"
                   />
                   {textCol && (
                     <ClearButton onClick={() => patch({ textColor: null })} />
@@ -5336,6 +5342,8 @@ export function EditorWorkspace({
                         key={sw.label}
                         type="button"
                         title={sw.label}
+                        aria-label={`文字顏色：${sw.label}`}
+                        aria-pressed={active}
                         onClick={() => patch({ textColor: sw.c })}
                         className={`h-6 w-6 rounded-full border transition ${
                           active
@@ -6062,6 +6070,7 @@ export function EditorWorkspace({
                       }
                       placeholder="或直接填色碼，例如 #F5F5F5"
                       className={hexInputClass}
+                      aria-label="框底色色碼"
                     />
                   </div>
                   <HintRow showClear={(mediaFrameBg || mediaFrameColor)} onClear={() => patch({ mediaFrameBg: null, mediaFrameColor: null })}>
@@ -6978,12 +6987,14 @@ export function EditorWorkspace({
                   value={theme.primary}
                   onChange={(e) => update("primary", e.target.value)}
                   className="w-10 h-10 rounded border border-stone-200"
+                  aria-label="主色取色器"
                 />
                 <input
                   type="text"
                   value={theme.primary}
                   onChange={(e) => update("primary", e.target.value)}
                   className={hexInputClass}
+                  aria-label="主色色碼"
                 />
               </div>
             </Field>
@@ -6994,12 +7005,14 @@ export function EditorWorkspace({
                   value={theme.accent}
                   onChange={(e) => update("accent", e.target.value)}
                   className="w-10 h-10 rounded border border-stone-200"
+                  aria-label="Accent 色取色器"
                 />
                 <input
                   type="text"
                   value={theme.accent}
                   onChange={(e) => update("accent", e.target.value)}
                   className={hexInputClass}
+                  aria-label="Accent 色色碼"
                 />
               </div>
             </Field>
@@ -7513,6 +7526,7 @@ function LayoutColorRow({
         value={value ?? fallback}
         onChange={(e) => onChange(e.target.value)}
         className={colorPickerClass}
+        aria-label="取色器"
       />
       <input
         type="text"
@@ -7520,6 +7534,7 @@ function LayoutColorRow({
         onChange={(e) => onChange(e.target.value || null)}
         placeholder={placeholder}
         className={hexInputClass}
+        aria-label="色碼"
       />
       {value && <ClearButton onClick={() => onChange(null)} />}
     </div>
