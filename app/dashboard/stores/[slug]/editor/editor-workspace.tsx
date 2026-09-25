@@ -549,6 +549,11 @@ export function EditorWorkspace({
   const popoverTitleId = useId();
   // 鍵盤快捷鍵說明浮層（按 ? 切換、Esc 關）
   const [showShortcuts, setShowShortcuts] = useState(false);
+  // 說明浮層打開時焦點移進去，關掉後回到打開前的位置（例如頂列的 ? 鈕）
+  const shortcutsDialogRef = useRef<HTMLDivElement>(null);
+  const shortcutsCloseBtnRef = useRef<HTMLButtonElement>(null);
+  const shortcutsReturnFocusRef = useRef<HTMLElement | null>(null);
+  const shortcutsTitleId = useId();
   // 區段樣式 clipboard — localStorage 持久化，跨 reload / 跨 store / 跨 session 還能貼
   // 一開始 SSR 初值 null，mount 後從 localStorage 讀回；變動時寫回 localStorage
   const [styleClipboard, setStyleClipboard] = useState<{
@@ -916,6 +921,20 @@ export function EditorWorkspace({
       restorePopoverFocusRef.current = false;
     }
   }, [popover]);
+
+  useEffect(() => {
+    if (showShortcuts) {
+      const active = document.activeElement;
+      shortcutsReturnFocusRef.current = active instanceof HTMLElement ? active : null;
+      shortcutsDialogRef.current?.focus();
+    } else if (shortcutsReturnFocusRef.current) {
+      const el = shortcutsReturnFocusRef.current;
+      shortcutsReturnFocusRef.current = null;
+      // 浮層卸掉後焦點會掉到 body；已經被別的地方拿走就不搶
+      const active = document.activeElement;
+      if (el.isConnected && (!active || active === document.body)) el.focus();
+    }
+  }, [showShortcuts]);
 
   // Esc 關 floating popover
   useEffect(() => {
@@ -7364,12 +7383,25 @@ export function EditorWorkspace({
           onClick={() => setShowShortcuts(false)}
         >
           <div
-            className="bg-white rounded-xl shadow-2xl max-w-md w-full overflow-hidden"
+            ref={shortcutsDialogRef}
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby={shortcutsTitleId}
+            tabIndex={-1}
+            className="bg-white rounded-xl shadow-2xl max-w-md w-full overflow-hidden outline-none"
             onClick={(e) => e.stopPropagation()}
+            onKeyDown={(e) => {
+              // 浮層裡能按的只有「關閉」，Tab 不讓焦點跑到後面的編輯器
+              if (e.key === "Tab") {
+                e.preventDefault();
+                shortcutsCloseBtnRef.current?.focus();
+              }
+            }}
           >
             <div className="flex items-center justify-between px-5 py-4 border-b border-stone-100">
-              <h2 className="text-sm font-semibold text-emerald-950">鍵盤快捷鍵</h2>
+              <h2 id={shortcutsTitleId} className="text-sm font-semibold text-emerald-950">鍵盤快捷鍵</h2>
               <button
+                ref={shortcutsCloseBtnRef}
                 type="button"
                 onClick={() => setShowShortcuts(false)}
                 className="text-stone-400 hover:text-stone-700 transition"
