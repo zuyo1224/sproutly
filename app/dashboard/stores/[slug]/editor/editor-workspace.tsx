@@ -539,6 +539,14 @@ export function EditorWorkspace({
   const [fullscreen, setFullscreen] = useState(false);
   // 240 second sidebar 變 floating popover；null = 關閉
   const [popover, setPopover] = useState<SelectedTab | null>(null);
+  // 面板打開時焦點移進面板；用鍵盤關（Esc／關閉鈕）時焦點回到打開它的那顆 icon 鈕。
+  // 點預覽關掉的不搶焦點，不然會把焦點從 iframe 拉走
+  const popoverPanelRef = useRef<HTMLElement>(null);
+  const popoverNavBtnRefs = useRef<Partial<Record<SelectedTab, HTMLButtonElement | null>>>({});
+  const prevPopoverRef = useRef<SelectedTab | null>(null);
+  const restorePopoverFocusRef = useRef(false);
+  const popoverPanelId = useId();
+  const popoverTitleId = useId();
   // 鍵盤快捷鍵說明浮層（按 ? 切換、Esc 關）
   const [showShortcuts, setShowShortcuts] = useState(false);
   // 區段樣式 clipboard — localStorage 持久化，跨 reload / 跨 store / 跨 session 還能貼
@@ -898,6 +906,17 @@ export function EditorWorkspace({
     return () => window.removeEventListener("beforeunload", onBeforeUnload);
   }, [dirty]);
 
+  useEffect(() => {
+    const prev = prevPopoverRef.current;
+    prevPopoverRef.current = popover;
+    if (popover && popover !== prev) {
+      popoverPanelRef.current?.focus({ preventScroll: true });
+    } else if (!popover && prev) {
+      if (restorePopoverFocusRef.current) popoverNavBtnRefs.current[prev]?.focus();
+      restorePopoverFocusRef.current = false;
+    }
+  }, [popover]);
+
   // Esc 關 floating popover
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
@@ -906,7 +925,13 @@ export function EditorWorkspace({
       const inField = tag === "INPUT" || tag === "TEXTAREA" || tag === "SELECT";
       if (e.key === "Escape") {
         if (showShortcuts) setShowShortcuts(false);
-        else if (popover) setPopover(null);
+        else if (popover) {
+          // 焦點在面板裡（或面板內元素剛消失掉到 body）才把焦點送回 icon 鈕
+          const active = document.activeElement;
+          restorePopoverFocusRef.current =
+            !active || active === document.body || !!popoverPanelRef.current?.contains(active);
+          setPopover(null);
+        }
         return;
       }
       if (e.key === "?" && !inField) {
@@ -1500,6 +1525,9 @@ export function EditorWorkspace({
         ).map(({ tab, label, icon }) => (
           <button
             key={tab}
+            ref={(el) => {
+              popoverNavBtnRefs.current[tab] = el;
+            }}
             type="button"
             onClick={() => {
               setActiveTab(tab);
@@ -1513,6 +1541,7 @@ export function EditorWorkspace({
             title={label}
             aria-label={label}
             aria-expanded={popover === tab}
+            aria-controls={popover === tab ? popoverPanelId : undefined}
           >
             {icon}
             {popover === tab && (
@@ -1549,7 +1578,11 @@ export function EditorWorkspace({
       {/* === Floating popover sidebar（從 icon nav 滑出）=== */}
       {!fullscreen && popover && (
       <aside
-        className="absolute top-0 bottom-0 left-[80px] w-[240px] z-30 bg-white border-r border-stone-200 flex flex-col overflow-y-auto shadow-2xl shadow-stone-300/60"
+        ref={popoverPanelRef}
+        id={popoverPanelId}
+        aria-labelledby={popoverTitleId}
+        tabIndex={-1}
+        className="absolute top-0 bottom-0 left-[80px] w-[240px] z-30 bg-white border-r border-stone-200 flex flex-col overflow-y-auto shadow-2xl shadow-stone-300/60 outline-none"
         style={{ animation: "sproutly-popover-slide 0.25s cubic-bezier(0.22,1,0.36,1) both" }}
       >
         <style>{`
@@ -1560,7 +1593,7 @@ export function EditorWorkspace({
         `}</style>
         <div className="p-4 border-b border-stone-100 flex items-start justify-between gap-2">
           <div className="flex-1 min-w-0">
-          <h2 className="text-sm font-semibold text-emerald-950">
+          <h2 id={popoverTitleId} className="text-sm font-semibold text-emerald-950">
             {activeTab === "section"
               ? "版面結構"
               : activeTab === "design"
@@ -1581,7 +1614,10 @@ export function EditorWorkspace({
           </div>
           <button
             type="button"
-            onClick={() => setPopover(null)}
+            onClick={() => {
+              restorePopoverFocusRef.current = true;
+              setPopover(null);
+            }}
             className="shrink-0 -mt-1 -mr-1 w-7 h-7 rounded hover:bg-stone-100 flex items-center justify-center text-stone-500 hover:text-stone-900 transition"
             aria-label="關閉"
             title="關閉（Esc）"
