@@ -607,6 +607,8 @@ export function EditorWorkspace({
   const [historyTick, setHistoryTick] = useState(0); // 觸發 re-render of undo/redo buttons
   // 復原／重做按完給報讀唸的一句話；帶剩幾步，連按時字會變，報讀才會每次都唸
   const [historyNote, setHistoryNote] = useState("");
+  // 加／移除區段按完給報讀唸的一句話（拖曳排序另由 DndContext 的 announcements 報）
+  const [sectionListNote, setSectionListNote] = useState("");
 
   // 連續編輯合併：同一個欄位在這段時間內的連續改動（打字、拉 slider）只算一步，
   // 這樣按復原是一次退掉整段編輯，而不是一個字、一格一格退。
@@ -987,6 +989,9 @@ export function EditorWorkspace({
     }
     updateLayout({ sectionOrder: next }, false);
     setSelectedSection(blockKey);
+    setSectionListNote(
+      `已加入「${sectionLabels[blockKey]}」，排在第 ${next.indexOf(blockKey) + 1} 個`
+    );
   }
 
   function removeBlock(blockKey: SectionKey) {
@@ -995,7 +1000,42 @@ export function EditorWorkspace({
       false
     );
     if (selectedSection === blockKey) setSelectedSection("hero");
+    setSectionListNote(`已移除「${sectionLabels[blockKey]}」`);
   }
+
+  // dnd-kit 預設的拖曳報讀是英文、而且直接唸區段代號（promise、faq），改成中文區段名＋第幾個
+  function sectionPosition(id: string | number) {
+    const idx = isSectionKey(id) ? theme.layout.sectionOrder.indexOf(id) : -1;
+    return idx + 1;
+  }
+  function sectionName(id: string | number) {
+    return isSectionKey(id) ? sectionLabels[id] : String(id);
+  }
+  // 放下時清單可能已經換成新順序，位置改用拖曳過程最後報的那個數字，前後才對得上
+  const dragPosRef = useRef(0);
+  const sectionDragA11y = {
+    screenReaderInstructions: {
+      draggable:
+        "按空白鍵或 Enter 拿起這個區段，用上下方向鍵移動，再按一次空白鍵或 Enter 放下，按 Esc 取消。",
+    },
+    announcements: {
+      onDragStart: ({ active }: { active: { id: string | number } }) => {
+        dragPosRef.current = sectionPosition(active.id);
+        return `已拿起「${sectionName(active.id)}」，目前在第 ${dragPosRef.current} 個`;
+      },
+      onDragOver: ({ active, over }: { active: { id: string | number }; over: { id: string | number } | null }) => {
+        if (!over) return `「${sectionName(active.id)}」目前不在清單範圍內`;
+        dragPosRef.current = sectionPosition(over.id);
+        return `「${sectionName(active.id)}」移到第 ${dragPosRef.current} 個`;
+      },
+      onDragEnd: ({ active, over }: { active: { id: string | number }; over: { id: string | number } | null }) =>
+        over
+          ? `已放下「${sectionName(active.id)}」，排在第 ${dragPosRef.current} 個`
+          : `已放下「${sectionName(active.id)}」，順序沒變`,
+      onDragCancel: ({ active }: { active: { id: string | number } }) =>
+        `已取消，「${sectionName(active.id)}」回到第 ${sectionPosition(active.id)} 個`,
+    },
+  };
 
   function updateTestimonial(idx: number, patch: Partial<Testimonial>) {
     const next = [...theme.layout.testimonials];
@@ -1622,11 +1662,16 @@ export function EditorWorkspace({
             <p className="px-2 mb-2 text-[10px] tracking-wider uppercase text-emerald-900/45">
               首頁 Sections（拖曳排序）
             </p>
+            {/* 報讀用：加／移除區段後按鈕會消失或換位置，報讀不會出聲 */}
+            <p className="sr-only" role="status" aria-live="polite">
+              {sectionListNote}
+            </p>
             {mounted ? (
               <DndContext
                 sensors={sensors}
                 collisionDetection={closestCenter}
                 onDragEnd={handleDragEnd}
+                accessibility={sectionDragA11y}
               >
                 <SortableContext
                   items={theme.layout.sectionOrder}
@@ -7378,8 +7423,8 @@ function SortableSectionItem({
         <button
           type="button"
           className="px-2 py-2.5 text-stone-400 hover:text-stone-700 cursor-grab active:cursor-grabbing touch-none"
-          aria-label="拖曳重排"
           {...attributes}
+          aria-label={`拖曳重排「${label}」`}
           {...listeners}
         >
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
@@ -7404,7 +7449,7 @@ function SortableSectionItem({
             onClick={onRemove}
             className="px-2 text-stone-400 hover:text-red-600 transition opacity-0 group-hover:opacity-100"
             title="移除這個區段"
-            aria-label="移除"
+            aria-label={`移除「${label}」`}
           >
             ×
           </button>
