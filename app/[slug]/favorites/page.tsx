@@ -41,6 +41,9 @@ export default function FavoritesPage() {
     null
   );
   const undoTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  // 提示還沒收掉又移除一株同名的（例如同品種不同尺寸），「已移除「X」」文字沒變，
+  // 報讀不會再念。每次移除就翻轉，讓句尾多／少一個看不到的空白，內容算有更新就會重念。
+  const [undoFlip, setUndoFlip] = useState(false);
   // 按「復原」後提示連同按鈕一起收掉，焦點會掉到頁首，用鍵盤的人得從頭 Tab 回來。
   // 記下放回的是哪株，等卡片重新畫出來再把焦點送到它的移除鈕。
   const removeButtons = useRef(new Map<string, HTMLButtonElement>());
@@ -147,6 +150,7 @@ export default function FavoritesPage() {
     );
     // 記住剛移除那株與原位置，6 秒內可一鍵放回
     setUndo({ product, index });
+    setUndoFlip((f) => !f);
     startUndoTimer();
   }
 
@@ -550,7 +554,7 @@ export default function FavoritesPage() {
             }}
           >
             <span id="favorites-undo-desc" className="text-sm truncate">
-              已移除「{undo.product.name}」
+              已移除「{undo.product.name}」{undoFlip ? "\u00A0" : ""}
             </span>
             {/* Tab 到鈕上只會念「復原」，不知道復原哪一株；用 describedby 帶上旁邊那句。
                 不用 aria-label，免得狀態格報讀時商品名念兩次。 */}
