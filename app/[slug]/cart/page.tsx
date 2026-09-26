@@ -60,6 +60,8 @@ export default function CartPage() {
   // 按到上限後再按 +，數量格文字沒變，報讀不會再念「已到上限」，按了像沒反應。
   // 每擋一次就翻轉該列的旗標，讓數量格尾端多／少一個看不到的空白，內容算有更新就會重念。
   const [limitFlip, setLimitFlip] = useState<Record<string, boolean>>({});
+  // 同理，按到 1 再按 − 也翻轉，重念「已是最少」。
+  const [minFlip, setMinFlip] = useState<Record<string, boolean>>({});
 
   function handleRemove(
     e: React.MouseEvent<HTMLButtonElement>,
@@ -455,6 +457,7 @@ export default function CartPage() {
                         // 焦點會從手上掉到頁面最上面，用鍵盤的人要從頭 Tab 回來。
                         onClick={() => {
                           if (qty > 1) updateQty(slug, p.id, qty - 1);
+                          else setMinFlip((f) => ({ ...f, [p.id]: !f[p.id] }));
                         }}
                         aria-disabled={qty <= 1}
                         className="w-8 h-8 transition aria-disabled:opacity-30 aria-disabled:cursor-not-allowed"
@@ -474,6 +477,12 @@ export default function CartPage() {
                         aria-atomic="true"
                       >
                         {qty}
+                        {/* 按到 1 時一併唸出來，不然再按 − 沒反應也不知道為什麼。 */}
+                        {qty <= 1 && (
+                          <span className="sr-only">
+                            ，已是最少{minFlip[p.id] ? "\u00A0" : ""}
+                          </span>
+                        )}
                         {/* 按到上限時一併唸出來，不然再按 + 沒反應也不知道為什麼。 */}
                         {qty >= maxQty && (
                           <span className="sr-only">
