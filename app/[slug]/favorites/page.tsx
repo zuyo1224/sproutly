@@ -544,9 +544,18 @@ export default function FavoritesPage() {
         {undo && (
           <div
             onMouseEnter={pauseUndoTimer}
-            onMouseLeave={startUndoTimer}
+            // 滑鼠離開但焦點還在提示裡（鍵盤停在「復原」上），或焦點離開但滑鼠還停在上面，
+            // 都不該重新計時；否則另一方還在用，提示就被收走。
+            onMouseLeave={(e) => {
+              if (!e.currentTarget.contains(document.activeElement)) startUndoTimer();
+            }}
             onFocus={pauseUndoTimer}
-            onBlur={startUndoTimer}
+            onBlur={(e) => {
+              const box = e.currentTarget;
+              if (!box.contains(e.relatedTarget as Node | null) && !box.matches(":hover")) {
+                startUndoTimer();
+              }
+            }}
             className="pointer-events-auto flex items-center gap-4 rounded-full pl-5 pr-2 py-2 shadow-lg max-w-[calc(100vw-3rem)]"
             style={{
               background: "var(--store-text, #1a1a1a)",
