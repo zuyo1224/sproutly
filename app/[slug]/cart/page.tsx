@@ -57,6 +57,9 @@ export default function CartPage() {
     removed: string;
     target: string | null;
   } | null>(null);
+  // 按到上限後再按 +，數量格文字沒變，報讀不會再念「已到上限」，按了像沒反應。
+  // 每擋一次就翻轉該列的旗標，讓數量格尾端多／少一個看不到的空白，內容算有更新就會重念。
+  const [limitFlip, setLimitFlip] = useState<Record<string, boolean>>({});
 
   function handleRemove(
     e: React.MouseEvent<HTMLButtonElement>,
@@ -473,7 +476,9 @@ export default function CartPage() {
                         {qty}
                         {/* 按到上限時一併唸出來，不然再按 + 沒反應也不知道為什麼。 */}
                         {qty >= maxQty && (
-                          <span className="sr-only">，已到上限</span>
+                          <span className="sr-only">
+                            ，已到上限{limitFlip[p.id] ? "\u00A0" : ""}
+                          </span>
                         )}
                       </span>
                       <button
@@ -482,6 +487,8 @@ export default function CartPage() {
                         onClick={() => {
                           if (qty < maxQty)
                             updateQty(slug, p.id, Math.min(qty + 1, maxQty));
+                          else
+                            setLimitFlip((f) => ({ ...f, [p.id]: !f[p.id] }));
                         }}
                         aria-disabled={qty >= maxQty}
                         className="w-8 h-8 transition aria-disabled:opacity-30 aria-disabled:cursor-not-allowed"
