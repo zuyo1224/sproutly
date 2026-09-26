@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useSyncExternalStore } from "react";
 
 const COLORS = [
   "#5F6F52",
@@ -22,32 +22,48 @@ type Particle = {
   drift: number;
 };
 
+// 使用者有開「減少動態效果」就不撒；進頁後不會變，不用訂閱任何事件。
+function subscribeNothing() {
+  return () => {};
+}
+
+function readShouldPlay() {
+  return !window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
+}
+
+function makeParticles(count: number): Particle[] {
+  return Array.from({ length: count }, (_, i) => ({
+    id: i,
+    left: Math.random() * 100,
+    size: 6 + Math.random() * 6,
+    color: COLORS[Math.floor(Math.random() * COLORS.length)],
+    delay: Math.random() * 0.6,
+    duration: 2.6 + Math.random() * 1.6,
+    rotate: Math.random() * 360,
+    drift: (Math.random() - 0.5) * 60,
+  }));
+}
+
 export function Confetti({ count = 60 }: { count?: number }) {
-  const [particles, setParticles] = useState<Particle[]>([]);
+  // 以前在 useEffect 裡產生粒子再 setState，等於掛載後多重畫一次（eslint
+  // set-state-in-effect 擋的就是這個）。改成：粒子在第一次畫時就備好，
+  // 要不要撒用 useSyncExternalStore 現讀；伺服器端與剛接手畫面那一下回 false，
+  // 什麼都不畫，隨機數不會跟伺服器那份對不上。
+  const [particles] = useState(() => makeParticles(count));
+  const shouldPlay = useSyncExternalStore(
+    subscribeNothing,
+    readShouldPlay,
+    () => false,
+  );
+  const [done, setDone] = useState(false);
 
   useEffect(() => {
-    if (
-      window.matchMedia &&
-      window.matchMedia("(prefers-reduced-motion: reduce)").matches
-    ) {
-      return;
-    }
-    const items: Particle[] = Array.from({ length: count }, (_, i) => ({
-      id: i,
-      left: Math.random() * 100,
-      size: 6 + Math.random() * 6,
-      color: COLORS[Math.floor(Math.random() * COLORS.length)],
-      delay: Math.random() * 0.6,
-      duration: 2.6 + Math.random() * 1.6,
-      rotate: Math.random() * 360,
-      drift: (Math.random() - 0.5) * 60,
-    }));
-    setParticles(items);
-    const t = setTimeout(() => setParticles([]), 5000);
+    if (!shouldPlay) return;
+    const t = setTimeout(() => setDone(true), 5000);
     return () => clearTimeout(t);
-  }, [count]);
+  }, [shouldPlay]);
 
-  if (particles.length === 0) return null;
+  if (!shouldPlay || done) return null;
 
   return (
     <div className="fixed inset-0 pointer-events-none z-[60] overflow-hidden">
