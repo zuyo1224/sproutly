@@ -43,6 +43,10 @@ export function AddToCartButton({
   // 客人加完不知道車在哪、也沒去向（nav 徽章在頁頂很小，視線正盯著底部按鈕），
   // 等於加了卻不知下一步。車裡只要有東西就在按鈕下持續給一條「去購物車」連結。
   const [count, setCount] = useState(0);
+  // 每按一次就翻一下，讓報讀格尾端多／少一個不換行空白。同一句（連按兩次都是
+  // 「購物車已有全部 N 件庫存」，或 1.5 秒內連加兩次都是「已加入購物車」）
+  // 文字沒變，報讀軟體不會再念，按了等於沒反應；尾端空白一變內容就算更新。
+  const [announceFlip, setAnnounceFlip] = useState(false);
 
   // 「✓ 已加入」閃 1.5 秒、notice 顯示 4 秒，各自一條計時器。比照 CopyButton
   // 的 timerRef 做法：設新的前先清舊的，連點兩次「加入」第一次的計時器才不會
@@ -99,6 +103,7 @@ export function AddToCartButton({
   }
 
   function handleClick() {
+    setAnnounceFlip((f) => !f);
     const wanted = resolveQty();
     // 庫存不限就照常加。有上限時看車裡已有多少，只補到上限為止。
     if (stock != null) {
@@ -140,6 +145,7 @@ export function AddToCartButton({
           給看得到畫面的人，免得兩邊重複播。 */}
       <span className="sr-only" role="status" aria-live="polite">
         {notice ?? (added ? "已加入購物車" : "")}
+        {announceFlip ? "\u00A0" : ""}
       </span>
       {notice && (
         <p
