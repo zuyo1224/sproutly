@@ -496,14 +496,16 @@ export default async function PublicStoreLayout({
           transition: box-shadow 0.7s cubic-bezier(0.22, 1, 0.36, 1),
                       transform 0.7s cubic-bezier(0.22, 1, 0.36, 1);
         }
-        .sproutly-card:hover .sproutly-card-image {
+        .sproutly-card:hover .sproutly-card-image,
+        .sproutly-card-shell:hover .sproutly-card .sproutly-card-image {
           box-shadow: var(--sproutly-elev-4);
           transform: translateY(-6px);
         }
         .sproutly-card .sproutly-card-image img {
           transition: transform 2.4s cubic-bezier(0.22, 1, 0.36, 1);
         }
-        .sproutly-card:hover .sproutly-card-image img {
+        .sproutly-card:hover .sproutly-card-image img,
+        .sproutly-card-shell:hover .sproutly-card .sproutly-card-image img {
           transform: scale(1.05);
         }
         /* image inner 漸層暗化 + hover 推進 */
@@ -529,14 +531,16 @@ export default async function PublicStoreLayout({
           pointer-events: none;
           z-index: 2;
         }
-        .sproutly-card:hover .sproutly-card-image::after {
+        .sproutly-card:hover .sproutly-card-image::after,
+        .sproutly-card-shell:hover .sproutly-card .sproutly-card-image::after {
           background: rgba(0, 0, 0, 0.06);
         }
         .sproutly-card .sproutly-card-title {
           transition: letter-spacing 0.6s cubic-bezier(0.22, 1, 0.36, 1),
                       transform 0.6s cubic-bezier(0.22, 1, 0.36, 1);
         }
-        .sproutly-card:hover .sproutly-card-title {
+        .sproutly-card:hover .sproutly-card-title,
+        .sproutly-card-shell:hover .sproutly-card .sproutly-card-title {
           letter-spacing: 0.06em;
         }
         /* 這兩個數字（靜止 0.7、滑過 1）改由變數帶，好讓下面「卡片副文字深淺」那組換掉它們；
@@ -546,7 +550,8 @@ export default async function PublicStoreLayout({
           transform: translateY(0);
           transition: opacity 0.6s, transform 0.6s;
         }
-        .sproutly-card:hover .sproutly-card-meta {
+        .sproutly-card:hover .sproutly-card-meta,
+        .sproutly-card-shell:hover .sproutly-card .sproutly-card-meta {
           opacity: var(--card-meta-opacity-hover, 1);
         }
         .sproutly-card .sproutly-card-action {
@@ -560,6 +565,19 @@ export default async function PublicStoreLayout({
         .sproutly-card:focus-within .sproutly-card-action {
           opacity: 1;
           transform: translateY(0);
+        }
+
+        /* 卡片外包 .sproutly-card-shell、圖上的小按鈕（.sproutly-card-float）跟連結當兄弟時
+           （收藏頁的移除鈕，按鈕不能放在連結裡）：滑到按鈕上卡片照樣浮起，按鈕跟著圖一起抬 6px。
+           轉場照列按鈕原本的底色、字色、按下縮放（150ms），只多一條 translate 跟圖同速。 */
+        .sproutly-card-shell .sproutly-card-float {
+          transition: translate 0.7s cubic-bezier(0.22, 1, 0.36, 1),
+                      scale 150ms cubic-bezier(0.4, 0, 0.2, 1),
+                      background-color 150ms cubic-bezier(0.4, 0, 0.2, 1),
+                      color 150ms cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .sproutly-card-shell:hover .sproutly-card-float {
+          translate: 0 -6px;
         }
 
         /* Button system - 3 variants 對應 Wix / Squarespace 級的 button 質感 */
@@ -709,6 +727,7 @@ export default async function PublicStoreLayout({
           .sproutly-card .sproutly-card-image::after,
           .sproutly-card .sproutly-card-title,
           .sproutly-card .sproutly-card-action,
+          .sproutly-card-shell .sproutly-card-float,
           .sproutly-zoomable,
           .sproutly-scroll-progress,
           .sproutly-hero-parallax,

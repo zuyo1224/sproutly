@@ -355,8 +355,11 @@ export default function FavoritesPage() {
             const soldOut = isSoldOut(p.stock);
             const imgs = displayableImageUrls(p.image_urls);
             return (
+            // 移除鈕原本包在 <Link> 裡（按鈕放在連結內，報讀會把兩者混成一個、Tab 行為也不穩），
+            // 改成外包一層、移除鈕跟連結當兄弟，疊回圖的右上角。滑到移除鈕上卡片照樣浮起、
+            // 鈕跟著圖一起抬，靠 layout 裡 .sproutly-card-shell 那組規則，畫面不變。
+            <div key={p.id} className="sproutly-card-shell relative">
             <Link
-              key={p.id}
               href={`/${slug}/products/${p.id}`}
               className="sproutly-card group"
               aria-label={`${p.name}，${formatPrice(p.price_cents, p.currency)}${stockAriaSuffix(p.stock)}`}
@@ -376,35 +379,6 @@ export default function FavoritesPage() {
                     售完
                   </span>
                 )}
-                <button
-                  type="button"
-                  ref={(el) => {
-                    if (el) removeButtons.current.set(p.id, el);
-                    else removeButtons.current.delete(p.id);
-                  }}
-                  onClick={(e) => {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    removeFavorite(p, i);
-                  }}
-                  aria-label={`從收藏移除 ${p.name}`}
-                  title="從收藏移除"
-                  className="absolute top-3 right-3 z-10 inline-flex h-9 w-9 items-center justify-center rounded-full bg-white/85 text-stone-700 shadow-sm backdrop-blur transition hover:bg-white hover:text-stone-900 active:scale-90"
-                >
-                  <svg
-                    width="16"
-                    height="16"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  >
-                    <path d="M18 6 6 18" />
-                    <path d="m6 6 12 12" />
-                  </svg>
-                </button>
                 {imgs[0] ? (
                   <>
                     {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -475,6 +449,32 @@ export default function FavoritesPage() {
                 </p>
               ) : null}
             </Link>
+              <button
+                type="button"
+                ref={(el) => {
+                  if (el) removeButtons.current.set(p.id, el);
+                  else removeButtons.current.delete(p.id);
+                }}
+                onClick={() => removeFavorite(p, i)}
+                aria-label={`從收藏移除 ${p.name}`}
+                title="從收藏移除"
+                className="sproutly-card-float absolute top-3 right-3 z-10 inline-flex h-9 w-9 items-center justify-center rounded-full bg-white/85 text-stone-700 shadow-sm backdrop-blur transition hover:bg-white hover:text-stone-900 active:scale-90"
+              >
+                <svg
+                  width="16"
+                  height="16"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  <path d="M18 6 6 18" />
+                  <path d="m6 6 12 12" />
+                </svg>
+              </button>
+            </div>
             );
           })}
         </div>
