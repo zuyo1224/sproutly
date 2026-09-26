@@ -46,9 +46,14 @@ export default function CartPage() {
     name: string;
   } | null>(null);
   const undoTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  // 按「復原」後提示連同按鈕一起收掉，焦點會掉到頁首，用鍵盤的人得從頭 Tab 回來。
+  // 記下要放回哪一列，等那列重新出現（復原後要重抓商品，會晚一點）再把焦點送到它的移除鈕。
+  const removeButtons = useRef(new Map<string, HTMLButtonElement>());
+  const focusAfterUndo = useRef<string | null>(null);
 
   function handleRemove(p: Product, qty: number) {
     removeFromCart(slug, p.id);
+    focusAfterUndo.current = null;
     // 記住剛移除那筆（含數量），復原時原封不動加回去。
     setUndo({ id: p.id, qty, name: p.name });
     startUndoTimer();
@@ -65,12 +70,28 @@ export default function CartPage() {
     if (undoTimer.current) clearTimeout(undoTimer.current);
   }
 
-  function handleUndo() {
+  function handleUndo(e: React.MouseEvent<HTMLButtonElement>) {
     if (!undo) return;
+    // 只有焦點本來就在復原鈕上（鍵盤按、或瀏覽器點擊會給焦點）才接手，不去搶別處的焦點。
+    if (document.activeElement === e.currentTarget) {
+      focusAfterUndo.current = undo.id;
+    }
     addToCart(slug, undo.id, undo.qty);
     if (undoTimer.current) clearTimeout(undoTimer.current);
     setUndo(null);
   }
+
+  // 每次畫完檢查：復原的那列回來了，且焦點還沒被別處拿走（掉在 body），就送到它的移除鈕。
+  useEffect(() => {
+    const id = focusAfterUndo.current;
+    if (!id) return;
+    const btn = removeButtons.current.get(id);
+    if (!btn) return;
+    focusAfterUndo.current = null;
+    if (!document.activeElement || document.activeElement === document.body) {
+      btn.focus();
+    }
+  });
 
   // 元件卸載時清掉還沒燒完的計時器，避免對已卸載元件 setState。
   useEffect(() => {
@@ -430,6 +451,10 @@ export default function CartPage() {
                     </div>
                     <button
                       type="button"
+                      ref={(el) => {
+                        if (el) removeButtons.current.set(p.id, el);
+                        else removeButtons.current.delete(p.id);
+                      }}
                       onClick={() => handleRemove(p, qty)}
                       aria-label={`從購物車移除 ${p.name}`}
                       title="從購物車移除"

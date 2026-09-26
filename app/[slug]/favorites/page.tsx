@@ -41,6 +41,10 @@ export default function FavoritesPage() {
     null
   );
   const undoTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  // 按「復原」後提示連同按鈕一起收掉，焦點會掉到頁首，用鍵盤的人得從頭 Tab 回來。
+  // 記下放回的是哪株，等卡片重新畫出來再把焦點送到它的移除鈕。
+  const removeButtons = useRef(new Map<string, HTMLButtonElement>());
+  const focusAfterUndo = useRef<string | null>(null);
 
   // 這一次要抓的是哪一輪（店＋重試次數）。失敗紀錄綁在這串上。
   const loadKey = `${slug}|${reloadKey}`;
@@ -115,6 +119,7 @@ export default function FavoritesPage() {
   }, [slug]);
 
   function removeFavorite(product: Product, index: number) {
+    focusAfterUndo.current = null;
     // setFavoriteIds 會通知 nav 收藏數與其他分頁；本頁的 sync effect 也會接到並移除卡片
     setFavoriteIds(
       slug,
@@ -136,8 +141,12 @@ export default function FavoritesPage() {
     if (undoTimer.current) clearTimeout(undoTimer.current);
   }
 
-  function handleUndo() {
+  function handleUndo(e: React.MouseEvent<HTMLButtonElement>) {
     if (!undo) return;
+    // 只有焦點本來就在復原鈕上（鍵盤按、或瀏覽器點擊會給焦點）才接手，不去搶別處的焦點。
+    if (document.activeElement === e.currentTarget) {
+      focusAfterUndo.current = undo.product.id;
+    }
     // 把 id 放回原本在清單裡的位置（setFavoriteIds 同時通知 nav 收藏數回升），再復原卡片
     const ids = getFavoriteIds(slug).filter((x) => x !== undo.product.id);
     ids.splice(undo.index, 0, undo.product.id);
@@ -152,6 +161,18 @@ export default function FavoritesPage() {
     if (undoTimer.current) clearTimeout(undoTimer.current);
     setUndo(null);
   }
+
+  // 每次畫完檢查：放回的卡片出現了，且焦點還沒被別處拿走（掉在 body），就送到它的移除鈕。
+  useEffect(() => {
+    const id = focusAfterUndo.current;
+    if (!id) return;
+    const btn = removeButtons.current.get(id);
+    if (!btn) return;
+    focusAfterUndo.current = null;
+    if (!document.activeElement || document.activeElement === document.body) {
+      btn.focus();
+    }
+  });
 
   useEffect(() => {
     return () => {
@@ -357,6 +378,10 @@ export default function FavoritesPage() {
                 )}
                 <button
                   type="button"
+                  ref={(el) => {
+                    if (el) removeButtons.current.set(p.id, el);
+                    else removeButtons.current.delete(p.id);
+                  }}
                   onClick={(e) => {
                     e.preventDefault();
                     e.stopPropagation();
