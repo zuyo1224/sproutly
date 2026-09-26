@@ -448,9 +448,13 @@ export default function CartPage() {
                     >
                       <button
                         type="button"
-                        onClick={() => updateQty(slug, p.id, qty - 1)}
-                        disabled={qty <= 1}
-                        className="w-8 h-8 transition disabled:opacity-30 disabled:cursor-not-allowed"
+                        // 用 aria-disabled 不用 disabled：按到 1 時按鈕若真的停用，
+                        // 焦點會從手上掉到頁面最上面，用鍵盤的人要從頭 Tab 回來。
+                        onClick={() => {
+                          if (qty > 1) updateQty(slug, p.id, qty - 1);
+                        }}
+                        aria-disabled={qty <= 1}
+                        className="w-8 h-8 transition aria-disabled:opacity-30 aria-disabled:cursor-not-allowed"
                         style={{
                           color:
                             "var(--store-text-muted, rgba(0,0,0,0.6))",
@@ -467,14 +471,20 @@ export default function CartPage() {
                         aria-atomic="true"
                       >
                         {qty}
+                        {/* 按到上限時一併唸出來，不然再按 + 沒反應也不知道為什麼。 */}
+                        {qty >= maxQty && (
+                          <span className="sr-only">，已到上限</span>
+                        )}
                       </span>
                       <button
                         type="button"
-                        onClick={() =>
-                          updateQty(slug, p.id, Math.min(qty + 1, maxQty))
-                        }
-                        disabled={qty >= maxQty}
-                        className="w-8 h-8 transition disabled:opacity-30 disabled:cursor-not-allowed"
+                        // 同上，按到上限焦點留在原地。
+                        onClick={() => {
+                          if (qty < maxQty)
+                            updateQty(slug, p.id, Math.min(qty + 1, maxQty));
+                        }}
+                        aria-disabled={qty >= maxQty}
+                        className="w-8 h-8 transition aria-disabled:opacity-30 aria-disabled:cursor-not-allowed"
                         style={{
                           color:
                             "var(--store-text-muted, rgba(0,0,0,0.6))",
