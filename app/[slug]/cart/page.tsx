@@ -21,6 +21,13 @@ import { isSoldOut, maxSelectableQty } from "@/lib/product-stock";
 import { fetchProductsByIds } from "@/lib/fetch-products-by-ids";
 import { displayableImageUrls } from "@/lib/image-url";
 
+function withoutKey(obj: Record<string, boolean>, key: string) {
+  if (!(key in obj)) return obj;
+  const next = { ...obj };
+  delete next[key];
+  return next;
+}
+
 export default function CartPage() {
   const params = useParams();
   const slug = params.slug as string;
@@ -77,6 +84,9 @@ export default function CartPage() {
         : null;
     removeFromCart(slug, p.id);
     focusAfterUndo.current = null;
+    // 那列不在了，重念用的旗標一起清掉，不留舊 key。
+    setLimitFlip((f) => withoutKey(f, p.id));
+    setMinFlip((f) => withoutKey(f, p.id));
     // 記住剛移除那筆（含數量），復原時原封不動加回去。
     setUndo({ id: p.id, qty, name: p.name });
     startUndoTimer();
