@@ -1,15 +1,28 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useSyncExternalStore } from "react";
+
+// 網址上的 ?edit=1 進頁後不會變，不用訂閱任何事件。
+function subscribeNothing() {
+  return () => {};
+}
+
+function readIsEditing() {
+  return new URLSearchParams(window.location.search).get("edit") === "1";
+}
 
 export function BackToTop() {
   const [visible, setVisible] = useState(false);
-  const [isEditing, setIsEditing] = useState(false);
+  // 以前「先當不是編輯模式、再用 useEffect 補讀網址」等於載入多重畫一次（eslint
+  // set-state-in-effect 擋的就是這個）；改用 useSyncExternalStore 畫的時候現讀。
+  // 伺服器端與剛接手畫面那一下回 false，跟以前的起始值一樣，SSR 對得上。
+  const isEditing = useSyncExternalStore(
+    subscribeNothing,
+    readIsEditing,
+    () => false,
+  );
 
   useEffect(() => {
-    const params = new URLSearchParams(window.location.search);
-    setIsEditing(params.get("edit") === "1");
-
     const onScroll = () => {
       setVisible(window.scrollY > 600);
     };
