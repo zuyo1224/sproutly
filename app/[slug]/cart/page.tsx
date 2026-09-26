@@ -671,6 +671,15 @@ export default function CartPage() {
               if (!e.currentTarget.contains(document.activeElement)) startUndoTimer();
             }}
             onFocus={pauseUndoTimer}
+            // 焦點在提示裡按 Esc 直接收掉；提示一消失焦點會掉到頁首，改送到頁面標題。
+            onKeyDown={(e) => {
+              if (e.key !== "Escape") return;
+              e.preventDefault();
+              // 先搬焦點再停錶：搬焦點會觸發下面 onBlur 重新計時，順序反了會留一個多餘的錶。
+              headingRef.current?.focus();
+              if (undoTimer.current) clearTimeout(undoTimer.current);
+              setUndo(null);
+            }}
             onBlur={(e) => {
               const box = e.currentTarget;
               if (!box.contains(e.relatedTarget as Node | null) && !box.matches(":hover")) {
