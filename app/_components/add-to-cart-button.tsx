@@ -133,17 +133,16 @@ export function AddToCartButton({
       >
         {added ? "✓ 已加入" : children ?? "加入購物車"}
       </button>
-      {/* 按鈕文字閃「✓ 已加入」只給看得到畫面的人。庫存被夾的情形下面
-          notice（role=status）會念，但一般成功（庫存不限）這條沒人念。
-          補一條 sr-only 即時區，只在成功且沒有 notice 時念，免得跟 notice
-          兩邊重複播。 */}
+      {/* 報讀只靠這一格常駐的即時區：一般成功念「已加入購物車」，庫存被攔時
+          改念 notice。下面看得到的 notice 原本自己也是 role=status，但它是跟
+          文字一起才掛上頁面的，報讀常整句不念（「購物車已有全部庫存」這種按了
+          沒加進去的情形最需要被念到）。所以念的工作統一交給這格，notice 只負責
+          給看得到畫面的人，免得兩邊重複播。 */}
       <span className="sr-only" role="status" aria-live="polite">
-        {added && !notice ? "已加入購物車" : ""}
+        {notice ?? (added ? "已加入購物車" : "")}
       </span>
       {notice && (
         <p
-          role="status"
-          aria-live="polite"
           className="text-center text-[0.75rem]"
           style={{
             color: "var(--store-text-muted, rgba(0,0,0,0.6))",
