@@ -69,6 +69,9 @@ export default function CartPage() {
   const [limitFlip, setLimitFlip] = useState<Record<string, boolean>>({});
   // 同理，按到 1 再按 − 也翻轉，重念「已是最少」。
   const [minFlip, setMinFlip] = useState<Record<string, boolean>>({});
+  // 提示還沒收掉又移除一件同名的（同品種不同尺寸），「已移除「X」」文字沒變，報讀不會再念。
+  // 每次移除就翻轉，讓句尾多／少一個看不到的空白，內容算有更新就會重念。
+  const [undoFlip, setUndoFlip] = useState(false);
 
   function handleRemove(
     e: React.MouseEvent<HTMLButtonElement>,
@@ -89,6 +92,7 @@ export default function CartPage() {
     setMinFlip((f) => withoutKey(f, p.id));
     // 記住剛移除那筆（含數量），復原時原封不動加回去。
     setUndo({ id: p.id, qty, name: p.name });
+    setUndoFlip((f) => !f);
     startUndoTimer();
   }
 
@@ -671,7 +675,7 @@ export default function CartPage() {
             }}
           >
             <span id="cart-undo-desc" className="text-sm truncate">
-              已移除「{undo.name}」
+              已移除「{undo.name}」{undoFlip ? "\u00A0" : ""}
             </span>
             {/* Tab 到鈕上只會念「復原」，不知道復原哪一件；用 describedby 帶上旁邊那句。
                 不用 aria-label，免得狀態格報讀時商品名念兩次。 */}
