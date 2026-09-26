@@ -670,12 +670,15 @@ export default function CartPage() {
               color: "var(--store-bg, #fff)",
             }}
           >
-            <span className="text-sm truncate">
+            <span id="cart-undo-desc" className="text-sm truncate">
               已移除「{undo.name}」
             </span>
+            {/* Tab 到鈕上只會念「復原」，不知道復原哪一件；用 describedby 帶上旁邊那句。
+                不用 aria-label，免得狀態格報讀時商品名念兩次。 */}
             <button
               type="button"
               onClick={handleUndo}
+              aria-describedby="cart-undo-desc"
               className="flex-shrink-0 rounded-full px-4 py-1.5 text-[0.6875rem] uppercase font-medium transition hover:opacity-80"
               style={{
                 letterSpacing: "0.2em",
