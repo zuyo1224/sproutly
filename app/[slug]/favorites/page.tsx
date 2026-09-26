@@ -45,6 +45,13 @@ export default function FavoritesPage() {
   // 記下放回的是哪株，等卡片重新畫出來再把焦點送到它的移除鈕。
   const removeButtons = useRef(new Map<string, HTMLButtonElement>());
   const focusAfterUndo = useRef<string | null>(null);
+  // 按「移除」後那張卡連同移除鈕一起消失，焦點同樣掉到頁首。記下被移除的是哪張、
+  // 焦點該去哪（下一張的移除鈕，沒有就上一張，全部清空就回標題），等卡片真的不見再送。
+  const headingRef = useRef<HTMLHeadingElement>(null);
+  const focusAfterRemove = useRef<{
+    removed: string;
+    target: string | null;
+  } | null>(null);
 
   // 這一次要抓的是哪一輪（店＋重試次數）。失敗紀錄綁在這串上。
   const loadKey = `${slug}|${reloadKey}`;
@@ -118,7 +125,20 @@ export default function FavoritesPage() {
     };
   }, [slug]);
 
-  function removeFavorite(product: Product, index: number) {
+  function removeFavorite(
+    e: React.MouseEvent<HTMLButtonElement>,
+    product: Product,
+    index: number
+  ) {
+    const ids = (products ?? []).map((p) => p.id);
+    // 跟復原一樣，只有焦點本來就在這顆移除鈕上才接手。
+    focusAfterRemove.current =
+      document.activeElement === e.currentTarget
+        ? {
+            removed: product.id,
+            target: ids[index + 1] ?? ids[index - 1] ?? null,
+          }
+        : null;
     focusAfterUndo.current = null;
     // setFavoriteIds 會通知 nav 收藏數與其他分頁；本頁的 sync effect 也會接到並移除卡片
     setFavoriteIds(
@@ -147,6 +167,7 @@ export default function FavoritesPage() {
     if (document.activeElement === e.currentTarget) {
       focusAfterUndo.current = undo.product.id;
     }
+    focusAfterRemove.current = null;
     // 把 id 放回原本在清單裡的位置（setFavoriteIds 同時通知 nav 收藏數回升），再復原卡片
     const ids = getFavoriteIds(slug).filter((x) => x !== undo.product.id);
     ids.splice(undo.index, 0, undo.product.id);
@@ -174,6 +195,20 @@ export default function FavoritesPage() {
     }
   });
 
+  // 移除的那張從畫面上拿掉後（焦點隨之掉到 body），把焦點送到鄰卡的移除鈕或標題。
+  useEffect(() => {
+    const pending = focusAfterRemove.current;
+    if (!pending || removeButtons.current.has(pending.removed)) return;
+    focusAfterRemove.current = null;
+    if (document.activeElement && document.activeElement !== document.body) {
+      return;
+    }
+    const btn = pending.target
+      ? removeButtons.current.get(pending.target)
+      : null;
+    (btn ?? headingRef.current)?.focus();
+  });
+
   useEffect(() => {
     return () => {
       if (undoTimer.current) clearTimeout(undoTimer.current);
@@ -199,7 +234,9 @@ export default function FavoritesPage() {
           Wishlist
         </p>
         <h1
-          className="mt-4 text-3xl sm:text-4xl font-medium"
+          ref={headingRef}
+          tabIndex={-1}
+          className="mt-4 text-3xl sm:text-4xl font-medium outline-none"
           style={{
             fontFamily: "var(--store-font)",
             letterSpacing: "-0.01em",
@@ -455,7 +492,7 @@ export default function FavoritesPage() {
                   if (el) removeButtons.current.set(p.id, el);
                   else removeButtons.current.delete(p.id);
                 }}
-                onClick={() => removeFavorite(p, i)}
+                onClick={(e) => removeFavorite(e, p, i)}
                 aria-label={`從收藏移除 ${p.name}`}
                 title="從收藏移除"
                 className="sproutly-card-float absolute top-3 right-3 z-10 inline-flex h-9 w-9 items-center justify-center rounded-full bg-white/85 text-stone-700 shadow-sm backdrop-blur transition hover:bg-white hover:text-stone-900 active:scale-90"

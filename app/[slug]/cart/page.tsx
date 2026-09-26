@@ -50,8 +50,26 @@ export default function CartPage() {
   // 記下要放回哪一列，等那列重新出現（復原後要重抓商品，會晚一點）再把焦點送到它的移除鈕。
   const removeButtons = useRef(new Map<string, HTMLButtonElement>());
   const focusAfterUndo = useRef<string | null>(null);
+  // 按「移除」後那列連同移除鈕一起消失，焦點同樣掉到頁首。記下被移除的是哪列、
+  // 焦點該去哪（下一列的移除鈕，沒有就上一列，整車清空就回標題），等那列真的不見再送。
+  const headingRef = useRef<HTMLHeadingElement>(null);
+  const focusAfterRemove = useRef<{
+    removed: string;
+    target: string | null;
+  } | null>(null);
 
-  function handleRemove(p: Product, qty: number) {
+  function handleRemove(
+    e: React.MouseEvent<HTMLButtonElement>,
+    p: Product,
+    qty: number
+  ) {
+    const ids = itemRows.map((r) => r.product.id);
+    const at = ids.indexOf(p.id);
+    // 跟復原一樣，只有焦點本來就在這顆移除鈕上才接手。
+    focusAfterRemove.current =
+      document.activeElement === e.currentTarget
+        ? { removed: p.id, target: ids[at + 1] ?? ids[at - 1] ?? null }
+        : null;
     removeFromCart(slug, p.id);
     focusAfterUndo.current = null;
     // 記住剛移除那筆（含數量），復原時原封不動加回去。
@@ -76,6 +94,7 @@ export default function CartPage() {
     if (document.activeElement === e.currentTarget) {
       focusAfterUndo.current = undo.id;
     }
+    focusAfterRemove.current = null;
     addToCart(slug, undo.id, undo.qty);
     if (undoTimer.current) clearTimeout(undoTimer.current);
     setUndo(null);
@@ -91,6 +110,20 @@ export default function CartPage() {
     if (!document.activeElement || document.activeElement === document.body) {
       btn.focus();
     }
+  });
+
+  // 移除的那列從畫面上拿掉後（焦點隨之掉到 body），把焦點送到鄰列的移除鈕或標題。
+  useEffect(() => {
+    const pending = focusAfterRemove.current;
+    if (!pending || removeButtons.current.has(pending.removed)) return;
+    focusAfterRemove.current = null;
+    if (document.activeElement && document.activeElement !== document.body) {
+      return;
+    }
+    const btn = pending.target
+      ? removeButtons.current.get(pending.target)
+      : null;
+    (btn ?? headingRef.current)?.focus();
   });
 
   // 元件卸載時清掉還沒燒完的計時器，避免對已卸載元件 setState。
@@ -190,7 +223,9 @@ export default function CartPage() {
           Cart
         </p>
         <h1
-          className="mt-4 text-3xl sm:text-4xl font-medium"
+          ref={headingRef}
+          tabIndex={-1}
+          className="mt-4 text-3xl sm:text-4xl font-medium outline-none"
           style={{
             fontFamily: "var(--store-font)",
             letterSpacing: "-0.01em",
@@ -455,7 +490,7 @@ export default function CartPage() {
                         if (el) removeButtons.current.set(p.id, el);
                         else removeButtons.current.delete(p.id);
                       }}
-                      onClick={() => handleRemove(p, qty)}
+                      onClick={(e) => handleRemove(e, p, qty)}
                       aria-label={`從購物車移除 ${p.name}`}
                       title="從購物車移除"
                       className="text-[0.6875rem] uppercase transition hover:opacity-100"
