@@ -269,7 +269,7 @@ export function AssetPicker({
                       onSelect(p.large);
                       onClose();
                     }}
-                    className="group relative aspect-square rounded-lg overflow-hidden bg-stone-200 hover:ring-4 hover:ring-emerald-200 transition"
+                    className="group relative aspect-square rounded-lg overflow-hidden bg-stone-200 hover:ring-4 hover:ring-emerald-200 outline-none focus-visible:ring-4 focus-visible:ring-emerald-600 transition"
                     title={`${p.alt} — by ${p.photographer}`}
                     // Pexels 有些圖沒有描述（alt 空字串），按鈕名稱改掛在按鈕上，沒描述就念第幾張
                     aria-label={`選用${p.alt ? `「${p.alt}」` : `第 ${i + 1} 張圖`}，攝影 ${p.photographer}`}
