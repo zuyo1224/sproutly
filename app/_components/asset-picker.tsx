@@ -206,7 +206,7 @@ export function AssetPicker({
               defaultValue={query}
               placeholder="搜尋圖片：plant, interior, ceramic, garden..."
               aria-label="搜尋圖片"
-              className="flex-1 rounded-full px-4 py-2 border border-stone-200 bg-stone-50 text-sm outline-none focus:border-emerald-400 focus:bg-white transition"
+              className="flex-1 rounded-full px-4 py-2 border border-stone-200 bg-stone-50 text-sm outline-none focus:border-emerald-600 focus:bg-white transition"
             />
             <button
               type="submit"
