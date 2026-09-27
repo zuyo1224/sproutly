@@ -777,7 +777,7 @@ export default async function StoreInsightsPage({
                       )}
                       className="flex-shrink-0"
                     >
-                      {/* 跟訂單列表那顆快速按鈕同一個 SubmitButton：送出中 disabled，
+                      {/* 跟訂單列表那顆快速按鈕同一個 SubmitButton：送出中 aria-disabled，
                           連點兩下不會送出兩次，文字也一起換成「處理中...」。 */}
                       <SubmitButton
                         pendingText="處理中..."
