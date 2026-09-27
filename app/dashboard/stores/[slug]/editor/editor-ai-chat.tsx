@@ -107,7 +107,11 @@ export function EditorAIChat({
                 : "mr-6 rounded-2xl rounded-tl-sm bg-stone-100 text-emerald-950 px-3 py-2"
             }
           >
-            <p className="whitespace-pre-wrap leading-relaxed text-xs">{m.text}</p>
+            <p className="whitespace-pre-wrap leading-relaxed text-xs">
+              {/* 泡泡只靠顏色和左右位置分誰講的，報讀要念出講話的人 */}
+              <span className="sr-only">{m.role === "user" ? "你：" : "AI 助手："}</span>
+              {m.text}
+            </p>
             {m.patch && (
               <button
                 type="button"

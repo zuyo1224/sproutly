@@ -188,7 +188,11 @@ export function AIEditPanel({
                 : "mr-6 rounded-2xl rounded-tl-sm bg-emerald-50 text-emerald-950 px-3.5 py-2.5"
             }`}
           >
-            <p className="whitespace-pre-wrap leading-relaxed text-[13px]">{m.text}</p>
+            <p className="whitespace-pre-wrap leading-relaxed text-[13px]">
+              {/* 泡泡只靠顏色和左右位置分誰講的，報讀要念出講話的人 */}
+              <span className="sr-only">{m.role === "user" ? "你：" : "AI 助手："}</span>
+              {m.text}
+            </p>
             {m.patch && (
               <button
                 type="button"
