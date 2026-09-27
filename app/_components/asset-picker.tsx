@@ -47,6 +47,9 @@ export function AssetPicker({
   const [error, setError] = useState<string | null>(null);
   const [page, setPage] = useState(1);
   const [hasNext, setHasNext] = useState(false);
+  // 只給報讀念的載入結果（畫面上看得到圖就知道，報讀使用者聽不到格子換了）
+  // 「多載入」只記這次幾張，總數在畫面重畫時用 photos.length 算
+  const [status, setStatus] = useState<string | { more: number }>("");
   const inputRef = useRef<HTMLInputElement>(null);
   const dialogRef = useRef<HTMLDivElement>(null);
   const titleId = useId();
@@ -108,25 +111,39 @@ export function AssetPicker({
   async function load(q: string, p: number) {
     setLoading(true);
     setError(null);
+    setStatus("");
     try {
       const r = await fetch(
         buildUrl("/api/asset-search", { q, page: p })
       );
       const data = await r.json();
       if (!r.ok) {
-        setError(data.error ?? `${r.status} 錯誤`);
+        const msg = data.error ?? `${r.status} 錯誤`;
+        setError(msg);
         setPhotos([]);
+        setStatus(`無法載入圖庫：${msg}`);
         return;
       }
+      const added: number = data.photos?.length ?? 0;
       if (p === 1) {
         setPhotos(data.photos ?? []);
+        setStatus(
+          added > 0
+            ? `找到 ${added} 張圖`
+            : q
+              ? `搜不到「${q}」`
+              : "沒有圖片"
+        );
       } else {
         setPhotos((prev) => [...prev, ...(data.photos ?? [])]);
+        setStatus({ more: added });
       }
       setHasNext(Boolean(data.next));
       setPage(p);
     } catch (e) {
-      setError(e instanceof Error ? e.message : "未知錯誤");
+      const msg = e instanceof Error ? e.message : "未知錯誤";
+      setError(msg);
+      setStatus(`無法載入圖庫：${msg}`);
     } finally {
       setLoading(false);
     }
@@ -221,8 +238,17 @@ export function AssetPicker({
           </div>
         </div>
 
+        <p role="status" className="sr-only">
+          {typeof status === "string"
+            ? status
+            : `多載入 ${status.more} 張，共 ${photos.length} 張`}
+        </p>
+
         {/* Photo grid */}
-        <div className="flex-1 overflow-y-auto p-5 bg-stone-50/50">
+        <div
+          className="flex-1 overflow-y-auto p-5 bg-stone-50/50"
+          aria-busy={loading}
+        >
           {error ? (
             <div className="rounded-xl bg-red-50 border border-red-100 p-5 text-sm text-red-700">
               <p className="font-medium mb-1">無法載入圖庫</p>
