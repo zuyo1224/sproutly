@@ -282,8 +282,9 @@ export function AssetPicker({
                       decoding="async"
                       className="w-full h-full object-cover group-hover:scale-105 transition duration-300"
                     />
-                    <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition" />
-                    <div className="absolute bottom-0 inset-x-0 p-2 bg-gradient-to-t from-black/70 to-transparent opacity-0 group-hover:opacity-100 transition">
+                    {/* 鍵盤聚焦時也壓暗、露出攝影師名，比照滑鼠移上去 */}
+                    <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 group-focus-visible:bg-black/20 transition" />
+                    <div className="absolute bottom-0 inset-x-0 p-2 bg-gradient-to-t from-black/70 to-transparent opacity-0 group-hover:opacity-100 group-focus-visible:opacity-100 transition">
                       <p className="text-[10px] text-white/80 truncate">
                         © {p.photographer}
                       </p>
