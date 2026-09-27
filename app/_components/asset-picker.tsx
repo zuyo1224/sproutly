@@ -268,9 +268,12 @@ export function AssetPicker({
                 <div className="text-center mt-6">
                   <button
                     type="button"
-                    onClick={() => load(query, page + 1)}
-                    disabled={loading}
-                    className="px-5 py-2 rounded-full border border-stone-200 hover:bg-white text-sm text-stone-700 transition disabled:opacity-40"
+                    onClick={() => {
+                      if (!loading) load(query, page + 1);
+                    }}
+                    // 不用 disabled：載入中停用會讓焦點掉出圖庫視窗，改 aria-disabled 焦點留在原鈕
+                    aria-disabled={loading}
+                    className="px-5 py-2 rounded-full border border-stone-200 hover:bg-white text-sm text-stone-700 transition aria-disabled:opacity-40"
                   >
                     {loading ? "載入中…" : "載入更多"}
                   </button>
