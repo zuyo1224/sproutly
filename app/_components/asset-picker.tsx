@@ -15,16 +15,21 @@ type AssetPhoto = {
   height: number;
 };
 
+// 標籤顯示中文給商家看，實際仍用英文關鍵字搜：Pexels 英文圖庫最齊，結果跟原本一樣。
 const PRESET_QUERIES = [
-  "plant",
-  "interior",
-  "minimal",
-  "nature",
-  "ceramic",
-  "garden",
-  "studio",
-  "still life",
+  { label: "植物", q: "plant" },
+  { label: "室內", q: "interior" },
+  { label: "簡約", q: "minimal" },
+  { label: "自然", q: "nature" },
+  { label: "陶器", q: "ceramic" },
+  { label: "花園", q: "garden" },
+  { label: "工作室", q: "studio" },
+  { label: "靜物", q: "still life" },
 ];
+
+function presetLabel(q: string) {
+  return PRESET_QUERIES.find((p) => p.q === q)?.label ?? q;
+}
 
 /**
  * Asset Picker modal — 對標 Wix Asset Library
@@ -218,12 +223,12 @@ export function AssetPicker({
 
           {/* 常用關鍵字標籤 */}
           <div className="flex flex-wrap gap-1.5 mt-3">
-            {PRESET_QUERIES.map((q) => (
+            {PRESET_QUERIES.map(({ label, q }) => (
               <button
                 key={q}
                 type="button"
                 onClick={() => {
-                  if (inputRef.current) inputRef.current.value = q;
+                  if (inputRef.current) inputRef.current.value = label;
                   search(q);
                 }}
                 className={`text-[11px] px-2.5 py-1 rounded-full transition ${
@@ -232,7 +237,7 @@ export function AssetPicker({
                     : "bg-stone-100 text-stone-700 hover:bg-stone-200"
                 }`}
               >
-                {q}
+                {label}
               </button>
             ))}
           </div>
@@ -256,7 +261,7 @@ export function AssetPicker({
             </div>
           ) : photos.length === 0 && !loading ? (
             <p className="text-center text-stone-500 py-12">
-              {query ? `搜不到「${query}」` : "輸入關鍵字（中英文都可以），或點上面任一個標籤"}
+              {query ? `搜不到「${presetLabel(query)}」` : "輸入關鍵字（中英文都可以），或點上面任一個標籤"}
             </p>
           ) : (
             <>
