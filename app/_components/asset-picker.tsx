@@ -261,7 +261,7 @@ export function AssetPicker({
           ) : (
             <>
               <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
-                {photos.map((p) => (
+                {photos.map((p, i) => (
                   <button
                     key={p.id}
                     type="button"
@@ -271,11 +271,13 @@ export function AssetPicker({
                     }}
                     className="group relative aspect-square rounded-lg overflow-hidden bg-stone-200 hover:ring-4 hover:ring-emerald-200 transition"
                     title={`${p.alt} — by ${p.photographer}`}
+                    // Pexels 有些圖沒有描述（alt 空字串），按鈕名稱改掛在按鈕上，沒描述就念第幾張
+                    aria-label={`選用${p.alt ? `「${p.alt}」` : `第 ${i + 1} 張圖`}，攝影 ${p.photographer}`}
                   >
                     {/* eslint-disable-next-line @next/next/no-img-element */}
                     <img
                       src={p.thumb}
-                      alt={p.alt}
+                      alt=""
                       loading="lazy"
                       decoding="async"
                       className="w-full h-full object-cover group-hover:scale-105 transition duration-300"
