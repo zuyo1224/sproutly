@@ -31,6 +31,12 @@ function presetLabel(q: string) {
   return PRESET_QUERIES.find((p) => p.q === q)?.label ?? q;
 }
 
+// 搜尋框裡剛好是標籤中文名（點完標籤再按「搜」、或自己打「植物」）就照標籤的英文關鍵字搜，結果跟點標籤一樣
+function presetQuery(v: string) {
+  const t = v.trim();
+  return PRESET_QUERIES.find((p) => p.label === t)?.q ?? v;
+}
+
 /**
  * Asset Picker modal — 對標 Wix Asset Library
  * 從 Pexels free API 拉圖，user 點圖選用 → onSelect 回傳 URL
@@ -136,7 +142,7 @@ export function AssetPicker({
           added > 0
             ? `找到 ${added} 張圖`
             : q
-              ? `搜不到「${q}」`
+              ? `搜不到「${presetLabel(q)}」`
               : "沒有圖片"
         );
       } else {
@@ -201,7 +207,7 @@ export function AssetPicker({
             onSubmit={(e) => {
               e.preventDefault();
               const v = inputRef.current?.value ?? "";
-              search(v);
+              search(presetQuery(v));
             }}
             className="flex gap-2"
           >
