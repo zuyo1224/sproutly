@@ -37,7 +37,9 @@ export function ReorderButton({
     <button
       type="button"
       onClick={reorder}
-      disabled={busy}
+      // 用 aria-disabled 不用 disabled：真的停用的話焦點會在跳轉前的空檔掉到頁面最上面，
+      // 重複點擊由 reorder() 開頭的 busy 擋掉；.sproutly-btn 的淡化樣式兩種都認
+      aria-disabled={busy}
       className={className}
     >
       {busy ? "加入中…" : "再買一次"}
