@@ -7555,14 +7555,15 @@ function PanelSection({
  * 所以收成常數；textarea 多一個 resize-none 不讓使用者拉大小。
  * 色碼那種 `flex-1 … font-mono` 的窄框（hexInputClass）、清單裡 `px-2 py-1.5` 的小框（listInputClass）不是同一包，各自另收。
  */
-const inputClass = "w-full rounded-lg border border-stone-200 px-3 py-2 text-sm";
+// 聚焦樣式比照後台其他 41 個輸入框：深綠框線（對白底約 3.8:1）＋淺綠外圈，不靠各瀏覽器顏色不一的預設外框。
+const inputClass = "w-full rounded-lg border border-stone-200 px-3 py-2 text-sm outline-none focus:border-emerald-600 focus:ring-2 focus:ring-emerald-100";
 const textareaClass = `${inputClass} resize-none`;
 // 顏色那格是「取色器＋色碼窄框」一組，19 處色碼框、17 顆取色器各抄一份一模一樣的 class，
 // 改一格（例如取色器要放大、色碼框要換等寬字）其他處不會跟著動，所以收成常數。
 // 色碼框跟 inputClass 差在 flex-1（跟取色器並排分寬）與 font-mono（色碼等寬好對），不是同一包；
 // 主題色那兩顆 `w-10 h-10` 取色器是另一款，留在原地。
 const colorPickerClass = "h-8 w-12 rounded border border-stone-200";
-const hexInputClass = "flex-1 rounded-lg border border-stone-200 px-3 py-2 text-sm font-mono";
+const hexInputClass = "flex-1 rounded-lg border border-stone-200 px-3 py-2 text-sm font-mono outline-none focus:border-emerald-600 focus:ring-2 focus:ring-emerald-100";
 // 每格控制底下那段 10px 灰字說明，78 處各抄一份一模一樣的 class，
 // 改一格（例如字級要放到 11px 或換灰階）其他 77 處不會跟著動，所以收成常數。
 // HintRow 那條是 11px 且帶「清除」按鈕、`flex justify-between text-[10px]` 是
@@ -7581,7 +7582,7 @@ const layoutNoteClass = "mt-1.5 text-[11px] text-stone-500 leading-snug";
 // 改一格（例如圓角或內距要換）其他 8 處不會跟著動，所以收成常數。
 // 跟 inputClass 差在 rounded（不是 rounded-lg）與 px-2 py-1.5（塞在卡片裡要小一號），不是同一包；
 // 有的多帶 font-medium／font-mono／resize-none，在呼叫端用樣板字串接在後面。
-const listInputClass = "w-full rounded border border-stone-200 px-2 py-1.5 text-sm";
+const listInputClass = "w-full rounded border border-stone-200 px-2 py-1.5 text-sm outline-none focus:border-emerald-600 focus:ring-2 focus:ring-emerald-100";
 // 側欄裡「能按／不能按」兩態的小按鈕（上一段／下一段、複製這段／貼上樣式／套到全部區段）
 // 5 處各抄一份一模一樣的兩串 class 三元切換，改一格（例如停用色要換、hover 要改）其他 4 處不會跟著動，
 // 所以收成兩個常數；預設挑選格「沒被選中」那邊長得跟「能按」一模一樣也一起吃。
