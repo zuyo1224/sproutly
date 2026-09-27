@@ -156,7 +156,7 @@ export function EditorAIChat({
           aria-label="跟 AI 助手說想改什麼"
           readOnly={loading}
           aria-disabled={loading}
-          className="flex-1 rounded-full px-3 py-1.5 border border-stone-200 text-xs outline-none focus:border-emerald-400 transition read-only:opacity-50"
+          className="flex-1 rounded-full px-3 py-1.5 border border-stone-200 text-xs outline-none focus:border-emerald-600 transition read-only:opacity-50"
         />
         <button
           type="submit"

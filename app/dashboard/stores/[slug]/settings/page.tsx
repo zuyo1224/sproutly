@@ -619,7 +619,7 @@ A: 可以，地點為台北車站。`}</pre>
                     maxLength={MAX_SOCIAL_URL_LEN}
                     defaultValue={theme.social[s.key] ?? ""}
                     placeholder={s.placeholder}
-                    className="w-full rounded-lg border border-emerald-100 px-3 py-2 outline-none focus:border-emerald-400 transition text-sm"
+                    className="w-full rounded-lg border border-emerald-100 px-3 py-2 outline-none focus:border-emerald-600 transition text-sm"
                   />
                 </div>
               ))}
@@ -708,7 +708,7 @@ A: 可以，地點為台北車站。`}</pre>
                       maxLength={MAX_COLLECTION_TITLE_LEN}
                       defaultValue={title}
                       placeholder={def.title}
-                      className="rounded-lg border border-emerald-100 px-3 py-2 outline-none focus:border-emerald-400 transition text-sm"
+                      className="rounded-lg border border-emerald-100 px-3 py-2 outline-none focus:border-emerald-600 transition text-sm"
                     />
                     <input
                       name={`hp_collection_${def.key}_subtitle`}
@@ -717,7 +717,7 @@ A: 可以，地點為台北車站。`}</pre>
                       maxLength={MAX_COLLECTION_SUBTITLE_LEN}
                       defaultValue={subtitle}
                       placeholder={def.subtitle}
-                      className="rounded-lg border border-emerald-100 px-3 py-2 outline-none focus:border-emerald-400 transition text-sm"
+                      className="rounded-lg border border-emerald-100 px-3 py-2 outline-none focus:border-emerald-600 transition text-sm"
                     />
                   </div>
                 );

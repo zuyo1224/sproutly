@@ -501,7 +501,7 @@ export default async function OrderDetailPage({
                   id="order-status"
                   name="status"
                   defaultValue={order.status}
-                  className="w-full rounded-xl border border-emerald-100 px-3 py-2.5 outline-none focus:border-emerald-400 transition bg-white text-sm"
+                  className="w-full rounded-xl border border-emerald-100 px-3 py-2.5 outline-none focus:border-emerald-600 transition bg-white text-sm"
                 >
                   {ORDER_STATUS_OPTIONS.map((s) => (
                     <option key={s.value} value={s.value}>
@@ -527,7 +527,7 @@ export default async function OrderDetailPage({
                   id="order-payment-status"
                   name="payment_status"
                   defaultValue={order.payment_status}
-                  className="w-full rounded-xl border border-emerald-100 px-3 py-2.5 outline-none focus:border-emerald-400 transition bg-white text-sm"
+                  className="w-full rounded-xl border border-emerald-100 px-3 py-2.5 outline-none focus:border-emerald-600 transition bg-white text-sm"
                 >
                   {PAYMENT_STATUS_OPTIONS.map((p) => (
                     <option key={p.value} value={p.value}>

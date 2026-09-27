@@ -233,7 +233,7 @@ export default async function StoreCustomersPage({
           name="sort"
           defaultValue={sort}
           aria-label="排序方式"
-          className="rounded-full px-4 py-2.5 text-sm border border-emerald-100 bg-white outline-none focus:border-emerald-400 transition"
+          className="rounded-full px-4 py-2.5 text-sm border border-emerald-100 bg-white outline-none focus:border-emerald-600 transition"
         >
           {SORT_OPTIONS.map((o) => (
             <option key={o.key} value={o.key}>
