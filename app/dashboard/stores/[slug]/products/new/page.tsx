@@ -125,7 +125,7 @@ export default async function NewProductPage({
               aria-required="true"
               maxLength={MAX_PRODUCT_NAME_LEN}
               placeholder="例如：龜背芋 6 吋盆"
-              className="w-full rounded-xl border border-emerald-100 px-4 py-3 text-emerald-950 placeholder:text-emerald-900/30 outline-none focus:border-emerald-400 focus:ring-2 focus:ring-emerald-100 transition"
+              className="w-full rounded-xl border border-emerald-100 px-4 py-3 text-emerald-950 placeholder:text-emerald-900/30 outline-none focus:border-emerald-600 focus:ring-2 focus:ring-emerald-100 transition"
             />
           </div>
 
@@ -153,7 +153,7 @@ export default async function NewProductPage({
                 required
                 aria-required="true"
                 placeholder="850"
-                className="w-full rounded-xl border border-emerald-100 px-4 py-3 text-emerald-950 placeholder:text-emerald-900/30 outline-none focus:border-emerald-400 focus:ring-2 focus:ring-emerald-100 transition tabular-nums"
+                className="w-full rounded-xl border border-emerald-100 px-4 py-3 text-emerald-950 placeholder:text-emerald-900/30 outline-none focus:border-emerald-600 focus:ring-2 focus:ring-emerald-100 transition tabular-nums"
               />
             </div>
             <div>
@@ -173,7 +173,7 @@ export default async function NewProductPage({
                 max={MAX_STOCK}
                 step="1"
                 placeholder="留空 = 不追蹤庫存"
-                className="w-full rounded-xl border border-emerald-100 px-4 py-3 text-emerald-950 placeholder:text-emerald-900/30 outline-none focus:border-emerald-400 focus:ring-2 focus:ring-emerald-100 transition tabular-nums"
+                className="w-full rounded-xl border border-emerald-100 px-4 py-3 text-emerald-950 placeholder:text-emerald-900/30 outline-none focus:border-emerald-600 focus:ring-2 focus:ring-emerald-100 transition tabular-nums"
               />
             </div>
           </div>
@@ -188,7 +188,7 @@ export default async function NewProductPage({
               rows={4}
               maxLength={MAX_PRODUCT_DESC_LEN}
               placeholder="尺寸、照顧方式、特色說明..."
-              className="w-full rounded-xl border border-emerald-100 px-4 py-3 text-emerald-950 placeholder:text-emerald-900/30 outline-none focus:border-emerald-400 focus:ring-2 focus:ring-emerald-100 transition resize-none"
+              className="w-full rounded-xl border border-emerald-100 px-4 py-3 text-emerald-950 placeholder:text-emerald-900/30 outline-none focus:border-emerald-600 focus:ring-2 focus:ring-emerald-100 transition resize-none"
               style={{ lineHeight: 1.7 }}
             />
           </div>
@@ -223,7 +223,7 @@ export default async function NewProductPage({
                   name="image_url"
                   placeholder="https://..."
                   maxLength={MAX_IMAGE_URL_LEN}
-                  className="w-full rounded-xl border border-emerald-100 px-4 py-3 text-emerald-950 placeholder:text-emerald-900/30 outline-none focus:border-emerald-400 focus:ring-2 focus:ring-emerald-100 transition text-sm"
+                  className="w-full rounded-xl border border-emerald-100 px-4 py-3 text-emerald-950 placeholder:text-emerald-900/30 outline-none focus:border-emerald-600 focus:ring-2 focus:ring-emerald-100 transition text-sm"
                 />
               </div>
             </details>

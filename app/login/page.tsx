@@ -96,7 +96,7 @@ export default async function LoginPage({
                 aria-required="true"
                 autoComplete="email"
                 placeholder="you@example.com"
-                className="w-full rounded-xl border border-emerald-100 px-4 py-3 text-emerald-950 placeholder:text-emerald-900/30 outline-none focus:border-emerald-400 focus:ring-2 focus:ring-emerald-100 transition"
+                className="w-full rounded-xl border border-emerald-100 px-4 py-3 text-emerald-950 placeholder:text-emerald-900/30 outline-none focus:border-emerald-600 focus:ring-2 focus:ring-emerald-100 transition"
               />
             </div>
             <div>

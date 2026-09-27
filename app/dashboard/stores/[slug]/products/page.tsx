@@ -216,7 +216,7 @@ export default async function ProductsListPage({
               defaultValue={q}
               placeholder="搜尋商品名稱 / 描述..."
               aria-label="搜尋商品"
-              className="flex-1 rounded-full border border-emerald-100 px-4 py-2 outline-none focus:border-emerald-400 focus:ring-2 focus:ring-emerald-100 transition text-sm"
+              className="flex-1 rounded-full border border-emerald-100 px-4 py-2 outline-none focus:border-emerald-600 focus:ring-2 focus:ring-emerald-100 transition text-sm"
             />
             <button
               type="submit"
@@ -374,7 +374,7 @@ export default async function ProductsListPage({
                         max={MAX_STOCK}
                         step={1}
                         defaultValue={p.stock}
-                        className="w-14 rounded-full border border-emerald-100 px-2 py-1 text-xs text-right tabular-nums outline-none focus:border-emerald-400 focus:ring-2 focus:ring-emerald-100 transition"
+                        className="w-14 rounded-full border border-emerald-100 px-2 py-1 text-xs text-right tabular-nums outline-none focus:border-emerald-600 focus:ring-2 focus:ring-emerald-100 transition"
                       />
                       <SubmitButton
                         pendingText="…"

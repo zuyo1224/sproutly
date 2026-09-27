@@ -227,7 +227,7 @@ export default async function StoreCustomersPage({
           defaultValue={q}
           aria-label="搜尋顧客（姓名、email 或電話）"
           placeholder="搜尋姓名、email 或電話..."
-          className="flex-1 rounded-full px-5 py-2.5 text-sm border border-emerald-100 bg-white outline-none focus:border-emerald-400 focus:ring-2 focus:ring-emerald-100 transition"
+          className="flex-1 rounded-full px-5 py-2.5 text-sm border border-emerald-100 bg-white outline-none focus:border-emerald-600 focus:ring-2 focus:ring-emerald-100 transition"
         />
         <select
           name="sort"

@@ -123,7 +123,7 @@ export default async function NewStorePage({
                 required
                 aria-required="true"
                 placeholder="例如：Plantae Market"
-                className="w-full rounded-xl border border-emerald-100 px-4 py-3 text-emerald-950 placeholder:text-emerald-900/30 outline-none focus:border-emerald-400 focus:ring-2 focus:ring-emerald-100 transition"
+                className="w-full rounded-xl border border-emerald-100 px-4 py-3 text-emerald-950 placeholder:text-emerald-900/30 outline-none focus:border-emerald-600 focus:ring-2 focus:ring-emerald-100 transition"
               />
             </div>
 
@@ -144,7 +144,7 @@ export default async function NewStorePage({
                 </span>
                 <span className="sr-only">（必填）</span>
               </label>
-              <div className="flex items-center rounded-xl border border-emerald-100 overflow-hidden focus-within:border-emerald-400 focus-within:ring-2 focus-within:ring-emerald-100 transition">
+              <div className="flex items-center rounded-xl border border-emerald-100 overflow-hidden focus-within:border-emerald-600 focus-within:ring-2 focus-within:ring-emerald-100 transition">
                 <span
                   className="px-4 py-3 bg-emerald-50 text-emerald-700 border-r border-emerald-100 tabular-nums"
                   style={{ fontSize: "0.8125rem", letterSpacing: "-0.005em" }}
@@ -193,7 +193,7 @@ export default async function NewStorePage({
                 maxLength={MAX_STORE_DESC_LEN}
                 rows={3}
                 placeholder="一兩句話介紹你的店，例如：來自台北的小型植物選物店，專注稀有觀葉與多肉。"
-                className="w-full rounded-xl border border-emerald-100 px-4 py-3 text-emerald-950 placeholder:text-emerald-900/30 outline-none focus:border-emerald-400 focus:ring-2 focus:ring-emerald-100 transition resize-none"
+                className="w-full rounded-xl border border-emerald-100 px-4 py-3 text-emerald-950 placeholder:text-emerald-900/30 outline-none focus:border-emerald-600 focus:ring-2 focus:ring-emerald-100 transition resize-none"
                 style={{ lineHeight: 1.7 }}
               />
             </div>
@@ -222,7 +222,7 @@ export default async function NewStorePage({
                   maxLength={MAX_STORE_PHONE_LEN}
                   defaultValue=""
                   placeholder="0912-345-678"
-                  className="w-full rounded-xl border border-emerald-100 px-4 py-3 text-emerald-950 placeholder:text-emerald-900/30 outline-none focus:border-emerald-400 focus:ring-2 focus:ring-emerald-100 transition"
+                  className="w-full rounded-xl border border-emerald-100 px-4 py-3 text-emerald-950 placeholder:text-emerald-900/30 outline-none focus:border-emerald-600 focus:ring-2 focus:ring-emerald-100 transition"
                 />
               </div>
               <div>
@@ -245,7 +245,7 @@ export default async function NewStorePage({
                   maxLength={MAX_STORE_EMAIL_LEN}
                   defaultValue=""
                   placeholder="hi@example.com"
-                  className="w-full rounded-xl border border-emerald-100 px-4 py-3 text-emerald-950 placeholder:text-emerald-900/30 outline-none focus:border-emerald-400 focus:ring-2 focus:ring-emerald-100 transition"
+                  className="w-full rounded-xl border border-emerald-100 px-4 py-3 text-emerald-950 placeholder:text-emerald-900/30 outline-none focus:border-emerald-600 focus:ring-2 focus:ring-emerald-100 transition"
                 />
               </div>
             </div>
@@ -269,7 +269,7 @@ export default async function NewStorePage({
                 maxLength={MAX_STORE_ADDRESS_LEN}
                 type="text"
                 placeholder="台北市大安區 ... "
-                className="w-full rounded-xl border border-emerald-100 px-4 py-3 text-emerald-950 placeholder:text-emerald-900/30 outline-none focus:border-emerald-400 focus:ring-2 focus:ring-emerald-100 transition"
+                className="w-full rounded-xl border border-emerald-100 px-4 py-3 text-emerald-950 placeholder:text-emerald-900/30 outline-none focus:border-emerald-600 focus:ring-2 focus:ring-emerald-100 transition"
               />
             </div>
 

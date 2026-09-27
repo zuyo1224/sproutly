@@ -250,7 +250,7 @@ export default async function StoreSettingsPage({
               required
               aria-required="true"
               defaultValue={store.name}
-              className="w-full rounded-xl border border-emerald-100 px-4 py-3 outline-none focus:border-emerald-400 focus:ring-2 focus:ring-emerald-100 transition"
+              className="w-full rounded-xl border border-emerald-100 px-4 py-3 outline-none focus:border-emerald-600 focus:ring-2 focus:ring-emerald-100 transition"
             />
           </div>
 
@@ -264,7 +264,7 @@ export default async function StoreSettingsPage({
               maxLength={MAX_STORE_DESC_LEN}
               rows={3}
               defaultValue={store.description ?? ""}
-              className="w-full rounded-xl border border-emerald-100 px-4 py-3 outline-none focus:border-emerald-400 focus:ring-2 focus:ring-emerald-100 transition resize-none"
+              className="w-full rounded-xl border border-emerald-100 px-4 py-3 outline-none focus:border-emerald-600 focus:ring-2 focus:ring-emerald-100 transition resize-none"
             />
           </div>
         </section>
@@ -297,7 +297,7 @@ export default async function StoreSettingsPage({
                 maxLength={MAX_STORE_PHONE_LEN}
                 defaultValue={store.contact_phone ?? ""}
                 placeholder="0912-345-678"
-                className="w-full rounded-xl border border-emerald-100 px-4 py-3 outline-none focus:border-emerald-400 focus:ring-2 focus:ring-emerald-100 transition"
+                className="w-full rounded-xl border border-emerald-100 px-4 py-3 outline-none focus:border-emerald-600 focus:ring-2 focus:ring-emerald-100 transition"
               />
             </div>
             <div>
@@ -311,7 +311,7 @@ export default async function StoreSettingsPage({
                 maxLength={MAX_STORE_EMAIL_LEN}
                 defaultValue={store.contact_email ?? ""}
                 placeholder="hi@example.com"
-                className="w-full rounded-xl border border-emerald-100 px-4 py-3 outline-none focus:border-emerald-400 focus:ring-2 focus:ring-emerald-100 transition"
+                className="w-full rounded-xl border border-emerald-100 px-4 py-3 outline-none focus:border-emerald-600 focus:ring-2 focus:ring-emerald-100 transition"
               />
             </div>
           </div>
@@ -327,7 +327,7 @@ export default async function StoreSettingsPage({
               type="text"
               defaultValue={store.address ?? ""}
               placeholder="台北市 ..."
-              className="w-full rounded-xl border border-emerald-100 px-4 py-3 outline-none focus:border-emerald-400 focus:ring-2 focus:ring-emerald-100 transition"
+              className="w-full rounded-xl border border-emerald-100 px-4 py-3 outline-none focus:border-emerald-600 focus:ring-2 focus:ring-emerald-100 transition"
             />
           </div>
         </section>
@@ -359,7 +359,7 @@ export default async function StoreSettingsPage({
               maxLength={MAX_BUSINESS_HOURS_LEN}
               defaultValue={businessHoursText}
               placeholder={"週一 - 週五 10:00-19:00\n週六 11:00-20:00\n週日 公休"}
-              className="w-full rounded-xl border border-emerald-100 px-4 py-3 outline-none focus:border-emerald-400 focus:ring-2 focus:ring-emerald-100 transition resize-none font-mono text-sm"
+              className="w-full rounded-xl border border-emerald-100 px-4 py-3 outline-none focus:border-emerald-600 focus:ring-2 focus:ring-emerald-100 transition resize-none font-mono text-sm"
             />
             <div className="mt-2 rounded-lg bg-emerald-50/60 border border-emerald-100 p-3 text-xs text-emerald-900/70 space-y-1">
               <p className="font-medium text-emerald-900">怎麼填？</p>
@@ -382,7 +382,7 @@ export default async function StoreSettingsPage({
               placeholder={
                 "Q: 有出貨到外島嗎？\nA: 有，但外島地區運費另計。\n\nQ: 可以面交嗎？\nA: 可以，地點為台北車站。"
               }
-              className="w-full rounded-xl border border-emerald-100 px-4 py-3 outline-none focus:border-emerald-400 focus:ring-2 focus:ring-emerald-100 transition resize-none text-sm"
+              className="w-full rounded-xl border border-emerald-100 px-4 py-3 outline-none focus:border-emerald-600 focus:ring-2 focus:ring-emerald-100 transition resize-none text-sm"
             />
             <div className="mt-2 rounded-lg bg-emerald-50/60 border border-emerald-100 p-3 text-xs text-emerald-900/70 space-y-1">
               <p className="font-medium text-emerald-900">怎麼填？</p>
@@ -507,7 +507,7 @@ A: 可以，地點為台北車站。`}</pre>
               id="theme_font"
               name="theme_font"
               defaultValue={theme.font}
-              className="w-full rounded-xl border border-emerald-100 px-4 py-3 outline-none focus:border-emerald-400 focus:ring-2 focus:ring-emerald-100 transition bg-white"
+              className="w-full rounded-xl border border-emerald-100 px-4 py-3 outline-none focus:border-emerald-600 focus:ring-2 focus:ring-emerald-100 transition bg-white"
             >
               {FONT_KEYS.map((key) => (
                 <option key={key} value={key}>
@@ -637,7 +637,7 @@ A: 可以，地點為台北車站。`}</pre>
               maxLength={MAX_THEME_TAGLINE_LEN}
               defaultValue={theme.tagline ?? ""}
               placeholder="例如：手作好物，從生活開始"
-              className="w-full rounded-xl border border-emerald-100 px-4 py-3 outline-none focus:border-emerald-400 focus:ring-2 focus:ring-emerald-100 transition"
+              className="w-full rounded-xl border border-emerald-100 px-4 py-3 outline-none focus:border-emerald-600 focus:ring-2 focus:ring-emerald-100 transition"
             />
           </div>
         </section>
@@ -675,7 +675,7 @@ A: 可以，地點為台北車站。`}</pre>
                 HOMEPAGE_DEFAULTS.collectionsIntro
               }
               placeholder={HOMEPAGE_DEFAULTS.collectionsIntro}
-              className="w-full rounded-xl border border-emerald-100 px-4 py-3 outline-none focus:border-emerald-400 focus:ring-2 focus:ring-emerald-100 transition resize-none"
+              className="w-full rounded-xl border border-emerald-100 px-4 py-3 outline-none focus:border-emerald-600 focus:ring-2 focus:ring-emerald-100 transition resize-none"
             />
             <p className="mt-1 text-xs text-emerald-900/50">
               用逗號 / 句號自動分行
@@ -736,7 +736,7 @@ A: 可以，地點為台北車站。`}</pre>
               maxLength={MAX_PROMISE_LEN}
               defaultValue={theme.homepage.promise ?? HOMEPAGE_DEFAULTS.promise}
               placeholder={HOMEPAGE_DEFAULTS.promise}
-              className="w-full rounded-xl border border-emerald-100 px-4 py-3 outline-none focus:border-emerald-400 focus:ring-2 focus:ring-emerald-100 transition resize-none"
+              className="w-full rounded-xl border border-emerald-100 px-4 py-3 outline-none focus:border-emerald-600 focus:ring-2 focus:ring-emerald-100 transition resize-none"
             />
           </div>
 
@@ -753,7 +753,7 @@ A: 可以，地點為台北車站。`}</pre>
                 theme.homepage.visitTitle ?? HOMEPAGE_DEFAULTS.visitTitle
               }
               placeholder={HOMEPAGE_DEFAULTS.visitTitle}
-              className="w-full rounded-xl border border-emerald-100 px-4 py-3 outline-none focus:border-emerald-400 focus:ring-2 focus:ring-emerald-100 transition"
+              className="w-full rounded-xl border border-emerald-100 px-4 py-3 outline-none focus:border-emerald-600 focus:ring-2 focus:ring-emerald-100 transition"
             />
           </div>
 
@@ -806,7 +806,7 @@ A: 可以，地點為台北車站。`}</pre>
               id="layout_hero_style"
               name="layout_hero_style"
               defaultValue={theme.layout.heroStyle}
-              className="w-full rounded-xl border border-emerald-100 bg-white px-4 py-3 text-sm outline-none focus:border-emerald-400 focus:ring-2 focus:ring-emerald-100"
+              className="w-full rounded-xl border border-emerald-100 bg-white px-4 py-3 text-sm outline-none focus:border-emerald-600 focus:ring-2 focus:ring-emerald-100"
             >
               {HERO_STYLES.map((h) => (
                 <option key={h.key} value={h.key}>
@@ -834,7 +834,7 @@ A: 可以，地點為台北車站。`}</pre>
                 maxLength={MAX_HERO_EYEBROW_LEN}
                 defaultValue={theme.layout.heroEyebrow ?? ""}
                 placeholder="Est. 2019 / Issue 03 / Spring Collection..."
-                className="w-full rounded-xl border border-emerald-100 bg-white px-4 py-3 text-sm outline-none focus:border-emerald-400 focus:ring-2 focus:ring-emerald-100"
+                className="w-full rounded-xl border border-emerald-100 bg-white px-4 py-3 text-sm outline-none focus:border-emerald-600 focus:ring-2 focus:ring-emerald-100"
               />
               <p className="text-xs text-emerald-900/55 mt-2">
                 Magazine / Split / Minimal 樣式會顯示，全大寫小字
@@ -851,7 +851,7 @@ A: 可以，地點為台北車站。`}</pre>
                 id="layout_hero_image_side"
                 name="layout_hero_image_side"
                 defaultValue={theme.layout.heroImageSide}
-                className="w-full rounded-xl border border-emerald-100 bg-white px-4 py-3 text-sm outline-none focus:border-emerald-400 focus:ring-2 focus:ring-emerald-100"
+                className="w-full rounded-xl border border-emerald-100 bg-white px-4 py-3 text-sm outline-none focus:border-emerald-600 focus:ring-2 focus:ring-emerald-100"
               >
                 <option value="left">圖在左、文字在右</option>
                 <option value="right">文字在左、圖在右</option>
@@ -876,7 +876,7 @@ A: 可以，地點為台北車站。`}</pre>
               rows={2}
               maxLength={MAX_HERO_SUBTITLE_LEN}
               placeholder="一段詩意的副標，給 Split / Magazine / Minimal 用..."
-              className="w-full rounded-xl border border-emerald-100 bg-white px-4 py-3 text-sm outline-none focus:border-emerald-400 focus:ring-2 focus:ring-emerald-100 resize-none"
+              className="w-full rounded-xl border border-emerald-100 bg-white px-4 py-3 text-sm outline-none focus:border-emerald-600 focus:ring-2 focus:ring-emerald-100 resize-none"
             />
           </div>
 
@@ -892,7 +892,7 @@ A: 可以，地點為台北車站。`}</pre>
               name="layout_section_order"
               type="text"
               defaultValue={theme.layout.sectionOrder.join(",")}
-              className="w-full rounded-xl border border-emerald-100 bg-white px-4 py-3 text-sm font-mono outline-none focus:border-emerald-400 focus:ring-2 focus:ring-emerald-100"
+              className="w-full rounded-xl border border-emerald-100 bg-white px-4 py-3 text-sm font-mono outline-none focus:border-emerald-600 focus:ring-2 focus:ring-emerald-100"
             />
             <p className="text-xs text-emerald-900/55 mt-2">
               逗號分隔（不要空白）。可用 key：

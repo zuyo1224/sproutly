@@ -188,7 +188,7 @@ export default async function EditProductPage({
               aria-required="true"
               maxLength={MAX_PRODUCT_NAME_LEN}
               defaultValue={product.name}
-              className="w-full rounded-xl border border-emerald-100 px-4 py-3 text-emerald-950 placeholder:text-emerald-900/30 outline-none focus:border-emerald-400 focus:ring-2 focus:ring-emerald-100 transition"
+              className="w-full rounded-xl border border-emerald-100 px-4 py-3 text-emerald-950 placeholder:text-emerald-900/30 outline-none focus:border-emerald-600 focus:ring-2 focus:ring-emerald-100 transition"
             />
           </div>
 
@@ -216,7 +216,7 @@ export default async function EditProductPage({
                 required
                 aria-required="true"
                 defaultValue={price}
-                className="w-full rounded-xl border border-emerald-100 px-4 py-3 text-emerald-950 placeholder:text-emerald-900/30 outline-none focus:border-emerald-400 focus:ring-2 focus:ring-emerald-100 transition tabular-nums"
+                className="w-full rounded-xl border border-emerald-100 px-4 py-3 text-emerald-950 placeholder:text-emerald-900/30 outline-none focus:border-emerald-600 focus:ring-2 focus:ring-emerald-100 transition tabular-nums"
               />
             </div>
             <div>
@@ -237,7 +237,7 @@ export default async function EditProductPage({
                 step="1"
                 defaultValue={product.stock ?? ""}
                 placeholder="留空 = 不追蹤庫存"
-                className="w-full rounded-xl border border-emerald-100 px-4 py-3 text-emerald-950 placeholder:text-emerald-900/30 outline-none focus:border-emerald-400 focus:ring-2 focus:ring-emerald-100 transition tabular-nums"
+                className="w-full rounded-xl border border-emerald-100 px-4 py-3 text-emerald-950 placeholder:text-emerald-900/30 outline-none focus:border-emerald-600 focus:ring-2 focus:ring-emerald-100 transition tabular-nums"
               />
             </div>
           </div>
@@ -252,7 +252,7 @@ export default async function EditProductPage({
               rows={4}
               maxLength={MAX_PRODUCT_DESC_LEN}
               defaultValue={product.description ?? ""}
-              className="w-full rounded-xl border border-emerald-100 px-4 py-3 text-emerald-950 placeholder:text-emerald-900/30 outline-none focus:border-emerald-400 focus:ring-2 focus:ring-emerald-100 transition resize-none"
+              className="w-full rounded-xl border border-emerald-100 px-4 py-3 text-emerald-950 placeholder:text-emerald-900/30 outline-none focus:border-emerald-600 focus:ring-2 focus:ring-emerald-100 transition resize-none"
               style={{ lineHeight: 1.7 }}
             />
           </div>

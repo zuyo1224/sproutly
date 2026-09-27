@@ -236,7 +236,7 @@ export function AIEditPanel({
           aria-label="跟 AI 助手說想改什麼"
           readOnly={loading}
           aria-disabled={loading}
-          className="flex-1 rounded-full px-4 py-2 border border-emerald-100 text-sm outline-none focus:border-emerald-400 focus:ring-2 focus:ring-emerald-100 transition read-only:opacity-50"
+          className="flex-1 rounded-full px-4 py-2 border border-emerald-100 text-sm outline-none focus:border-emerald-600 focus:ring-2 focus:ring-emerald-100 transition read-only:opacity-50"
         />
         <button
           type="submit"

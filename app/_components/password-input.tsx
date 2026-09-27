@@ -34,7 +34,7 @@ export default function PasswordInput({
         minLength={minLength}
         placeholder={placeholder}
         autoComplete={autoComplete}
-        className="w-full rounded-xl border border-emerald-100 px-4 py-3 pr-12 text-emerald-950 placeholder:text-emerald-900/30 outline-none focus:border-emerald-400 focus:ring-2 focus:ring-emerald-100 transition"
+        className="w-full rounded-xl border border-emerald-100 px-4 py-3 pr-12 text-emerald-950 placeholder:text-emerald-900/30 outline-none focus:border-emerald-600 focus:ring-2 focus:ring-emerald-100 transition"
       />
       <button
         type="button"
