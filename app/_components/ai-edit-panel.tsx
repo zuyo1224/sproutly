@@ -38,6 +38,7 @@ export function AIEditPanel({
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
 
   async function send(prompt: string) {
     if (!prompt.trim() || loading) return;
@@ -161,7 +162,11 @@ export function AIEditPanel({
               <button
                 key={s}
                 type="button"
-                onClick={() => send(s)}
+                onClick={() => {
+                  // 點下去建議清單就消失，焦點改送到輸入框，免得掉到頁首
+                  inputRef.current?.focus();
+                  send(s);
+                }}
                 disabled={loading}
                 className="block w-full text-left px-3 py-2 rounded-xl border border-emerald-100 text-emerald-900 hover:bg-emerald-50/60 transition text-[13px] leading-snug disabled:opacity-50"
               >
@@ -216,6 +221,7 @@ export function AIEditPanel({
         className="p-3 border-t border-emerald-50 flex gap-2"
       >
         <input
+          ref={inputRef}
           type="text"
           value={input}
           onChange={(e) => setInput(e.target.value)}
