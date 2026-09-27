@@ -3810,7 +3810,7 @@ export function EditorWorkspace({
                   });
                 }}
                 placeholder="https://www.google.com/maps/embed?pb=..."
-                className="w-full rounded-lg border border-stone-200 px-3 py-2 text-xs font-mono"
+                className="w-full rounded-lg border border-stone-200 px-3 py-2 text-xs font-mono outline-none focus:border-emerald-600 focus:ring-2 focus:ring-emerald-100"
               />
               {theme.layout.mapEmbedUrl && !cleanMapEmbedUrl(theme.layout.mapEmbedUrl) && (
                 <p className="mt-2 text-[11px] text-amber-800 bg-amber-50 border border-amber-200 rounded-lg px-3 py-2 leading-relaxed">
@@ -3962,7 +3962,7 @@ export function EditorWorkspace({
                         }
                         aria-label={`第 ${i + 1} 個合作夥伴 Logo 網址`}
                         placeholder="Logo URL（https://...）"
-                        className="flex-1 rounded border border-stone-200 px-2 py-1.5 text-xs font-mono"
+                        className="flex-1 rounded border border-stone-200 px-2 py-1.5 text-xs font-mono outline-none focus:border-emerald-600 focus:ring-2 focus:ring-emerald-100"
                       />
                       <button
                         type="button"
@@ -4005,7 +4005,7 @@ export function EditorWorkspace({
                       }
                       aria-label={`第 ${i + 1} 個合作夥伴連結`}
                       placeholder="連結（選填，貼完整網址 https://…）"
-                      className="w-full rounded border border-stone-200 px-2 py-1.5 text-xs font-mono"
+                      className="w-full rounded border border-stone-200 px-2 py-1.5 text-xs font-mono outline-none focus:border-emerald-600 focus:ring-2 focus:ring-emerald-100"
                     />
                     {p.href && p.href.trim() && !socialUrl(p.href) && (
                       <p className="text-[10px] text-amber-800 bg-amber-50 border border-amber-200 rounded-lg px-2 py-1.5">
@@ -4078,7 +4078,7 @@ export function EditorWorkspace({
                       }
                       aria-label={`相簿第 ${i + 1} 張圖片網址`}
                       placeholder="圖片 URL（https://...）"
-                      className="w-full rounded border border-stone-200 px-2 py-1.5 text-xs font-mono"
+                      className="w-full rounded border border-stone-200 px-2 py-1.5 text-xs font-mono outline-none focus:border-emerald-600 focus:ring-2 focus:ring-emerald-100"
                     />
                     {/* 公開頁這張走 next/image，只吃 https:// 開頭的完整網址。判不過的字串
                         （http://、漏 https://、不是網址）店面那張會開天窗，以前還會讓整個
