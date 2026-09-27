@@ -46,8 +46,11 @@ export async function GET(request: Request) {
     return NextResponse.json({ error: "你不是商家", photos: [] }, { status: 403 });
   }
 
+  // Pexels 預設照英文比對，商家打「盆栽」「陶器」幾乎搜不到。關鍵字有中文字時
+  // 帶 locale=zh-TW 讓它照中文找；純英文關鍵字（上方那排標籤）維持原本的結果。
+  const locale = /[㐀-鿿]/.test(q) ? "&locale=zh-TW" : "";
   const endpoint = q
-    ? `https://api.pexels.com/v1/search?query=${encodeURIComponent(q)}&page=${page}&per_page=${perPage}&orientation=landscape`
+    ? `https://api.pexels.com/v1/search?query=${encodeURIComponent(q)}&page=${page}&per_page=${perPage}&orientation=landscape${locale}`
     : `https://api.pexels.com/v1/curated?page=${page}&per_page=${perPage}`;
 
   try {

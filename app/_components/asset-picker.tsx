@@ -204,7 +204,7 @@ export function AssetPicker({
               ref={inputRef}
               type="search"
               defaultValue={query}
-              placeholder="搜尋圖片：plant, interior, ceramic, garden..."
+              placeholder="搜尋圖片：盆栽、陶器、室內、plant…"
               aria-label="搜尋圖片"
               className="flex-1 rounded-full px-4 py-2 border border-stone-200 bg-stone-50 text-sm outline-none focus:border-emerald-600 focus:bg-white transition"
             />
@@ -216,7 +216,7 @@ export function AssetPicker({
             </button>
           </form>
 
-          {/* Quick query chips */}
+          {/* 常用關鍵字標籤 */}
           <div className="flex flex-wrap gap-1.5 mt-3">
             {PRESET_QUERIES.map((q) => (
               <button
@@ -256,7 +256,7 @@ export function AssetPicker({
             </div>
           ) : photos.length === 0 && !loading ? (
             <p className="text-center text-stone-500 py-12">
-              {query ? `搜不到「${query}」` : "輸入關鍵字或點上方 quick query"}
+              {query ? `搜不到「${query}」` : "輸入關鍵字（中英文都可以），或點上面任一個標籤"}
             </p>
           ) : (
             <>
