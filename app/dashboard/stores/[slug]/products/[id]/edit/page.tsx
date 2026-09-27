@@ -297,7 +297,7 @@ export default async function EditProductPage({
                         }${
                           storefrontCoverIdx > 0 && idx === storefrontCoverIdx ? "（店面主圖）" : ""
                         }`}
-                        className="absolute top-2 right-2 w-5 h-5 rounded text-red-600 bg-white focus:ring-2 focus:ring-red-100 cursor-pointer"
+                        className="absolute top-2 right-2 w-5 h-5 rounded text-red-600 bg-white focus-visible:ring-2 focus-visible:ring-red-600 focus-visible:ring-offset-1 cursor-pointer"
                       />
                       {!isPastedRemoteImageUrl(url) && (
                         <span
