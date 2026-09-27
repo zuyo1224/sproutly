@@ -149,8 +149,11 @@ export function AIEditPanel({
         </div>
       </header>
 
+      {/* role="log"：AI 回覆、「已套用」、錯誤訊息新增時報讀會念出來 */}
       <div
         ref={scrollRef}
+        role="log"
+        aria-label="AI 助手對話"
         className="flex-1 overflow-y-auto p-5 space-y-3 text-sm"
       >
         {messages.length === 0 && (
