@@ -47,26 +47,28 @@ export default function HeroAdaptiveBanner({
       SSR 第一張就是正確比例。呼叫端要先確認它是這張 url 的（pickHeroImageBounds）。 */
   initialBounds?: HeroImageBounds | null;
 }) {
-  const [bounds, setBounds] = useState<HeroImageBounds | null>(
-    initialBounds ?? null
-  );
+  // 客人這邊偵測出來的邊界。帶著 url 存，換了圖、舊的還沒被蓋掉之前也不會拿來用。
+  const [detected, setDetected] = useState<HeroImageBounds | null>(null);
+  // 存好的邊界是這張圖的就直接用（算了也是同一個結果），不然用偵測結果；
+  // 換圖的當下兩個都對不上 url，自然退回 2:1，不用在 effect 裡先清一次。
+  const bounds =
+    initialBounds && initialBounds.url === url
+      ? initialBounds
+      : detected && detected.url === url
+        ? detected
+        : null;
+  const hasSavedBounds = !!initialBounds && initialBounds.url === url;
 
   useEffect(() => {
-    if (!url) return;
-    // 存好的邊界就是這張圖的，不用再算一次（算了也是同一個結果）。
-    if (initialBounds && initialBounds.url === url) {
-      setBounds(initialBounds);
-      return;
-    }
+    if (!url || hasSavedBounds) return;
     let cancelled = false;
-    setBounds(null);
     detectHeroImageBounds(url).then((b) => {
-      if (!cancelled && b) setBounds(b);
+      if (!cancelled && b) setDetected(b);
     });
     return () => {
       cancelled = true;
     };
-  }, [url, initialBounds]);
+  }, [url, hasSavedBounds]);
 
   // SSR fallback：2:1（沒存邊界的店客人看到的初始）。client 偵測完會 swap 成精確值。
   let aspectRatio: string = "2 / 1";
