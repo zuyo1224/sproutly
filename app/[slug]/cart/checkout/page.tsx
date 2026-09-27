@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import { getCart, clearCart } from "@/lib/cart";
@@ -48,6 +48,9 @@ export default function CartCheckoutPage() {
   const [failedKey, setFailedKey] = useState<string | null>(null);
   const [reloadKey, setReloadKey] = useState(0);
   const [submitting, setSubmitting] = useState(false);
+  // 送出鈕改用 aria-disabled（焦點留在鈕上，不會掉回頁首），按鈕本身不再擋點擊／Enter，
+  // 重複送出改由這個 ref 擋：ref 同步生效，不必等 submitting 重畫，整單不會送兩張。
+  const submittingRef = useRef(false);
   const [error, setError] = useState<string | null>(null);
   const [shippingMethod, setShippingMethod] = useState("");
   const [storeName, setStoreName] = useState("");
@@ -233,6 +236,7 @@ export default function CartCheckoutPage() {
 
   async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
+    if (submittingRef.current) return;
     // 有商品售完就不送出，請客人回購物車調整（按鈕此時也已換成回購物車連結，
     // 這裡是雙保險，例如鍵盤直接 submit 表單）。只被夾住的照送，量已夾到庫存內。
     if (hasSoldOut) {
@@ -240,6 +244,7 @@ export default function CartCheckoutPage() {
       window.scrollTo({ top: 0, behavior: "smooth" });
       return;
     }
+    submittingRef.current = true;
     setSubmitting(true);
     setError(null);
     const form = e.currentTarget;
@@ -273,12 +278,14 @@ export default function CartCheckoutPage() {
         typeof data?.error === "string" && data.error ? data.error : null;
       if (serverError) {
         setError(serverError);
+        submittingRef.current = false;
         setSubmitting(false);
         window.scrollTo({ top: 0, behavior: "smooth" });
         return;
       }
       if (!res.ok || typeof data?.orderId !== "string") {
         setError(SUBMIT_UNCERTAIN_MESSAGE);
+        submittingRef.current = false;
         setSubmitting(false);
         window.scrollTo({ top: 0, behavior: "smooth" });
         return;
@@ -292,6 +299,7 @@ export default function CartCheckoutPage() {
       // fetch 自己丟錯（斷線、逾時）也走同一句：原本是把 err.message 直接顯示，
       // 客人看到的是「Failed to fetch」這種英文。
       setError(SUBMIT_UNCERTAIN_MESSAGE);
+      submittingRef.current = false;
       setSubmitting(false);
       window.scrollTo({ top: 0, behavior: "smooth" });
     }
@@ -770,7 +778,6 @@ export default function CartCheckoutPage() {
             ) : (
               <button
                 type="submit"
-                disabled={submitting}
                 className="sproutly-btn sproutly-btn-primary sproutly-btn-lg w-full"
                 aria-disabled={submitting}
               >
