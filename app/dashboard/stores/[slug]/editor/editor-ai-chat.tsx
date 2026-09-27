@@ -138,13 +138,14 @@ export function EditorAIChat({
           onChange={(e) => setInput(e.target.value)}
           placeholder="告訴我想改什麼…"
           aria-label="跟 AI 助手說想改什麼"
-          disabled={loading}
-          className="flex-1 rounded-full px-3 py-1.5 border border-stone-200 text-xs outline-none focus:border-emerald-400 transition disabled:opacity-50"
+          readOnly={loading}
+          aria-disabled={loading}
+          className="flex-1 rounded-full px-3 py-1.5 border border-stone-200 text-xs outline-none focus:border-emerald-400 transition read-only:opacity-50"
         />
         <button
           type="submit"
-          disabled={loading || !input.trim()}
-          className="rounded-full px-3 py-1.5 bg-emerald-700 text-white text-xs hover:bg-emerald-800 transition disabled:opacity-40"
+          aria-disabled={loading || !input.trim()}
+          className="rounded-full px-3 py-1.5 bg-emerald-700 text-white text-xs hover:bg-emerald-800 transition aria-disabled:opacity-40"
         >
           發
         </button>
