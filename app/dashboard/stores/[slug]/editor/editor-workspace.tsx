@@ -1916,7 +1916,7 @@ export function EditorWorkspace({
           );
         })()}
         {activeTab === "section" && selectedSection === "hero" && (
-          <PanelSection title="Hero 區段">
+          <PanelSection title="首屏（Hero）區段">
             <Field label="樣式">
               <select
                 value={theme.layout.heroStyle}
@@ -2340,7 +2340,7 @@ export function EditorWorkspace({
                 className={inputClass}
               />
               <p className={hintClass}>
-                Hero 區段大按鈕的文字，預設「{HOMEPAGE_DEFAULTS.heroCta}」
+                首屏大按鈕的文字，預設「{HOMEPAGE_DEFAULTS.heroCta}」
               </p>
             </Field>
             <Field label="次要按鈕文字">
@@ -2355,7 +2355,7 @@ export function EditorWorkspace({
                 className={inputClass}
               />
               <p className={hintClass}>
-                Split 版型 Hero 區段的次要按鈕（連到關於頁），預設「{HOMEPAGE_DEFAULTS.heroSecondaryCta}」
+                左右分割版型首屏的次要按鈕（連到關於頁），預設「{HOMEPAGE_DEFAULTS.heroSecondaryCta}」
               </p>
             </Field>
             <Field label={`按鈕文字大小（${theme.layout.heroCtaFontScale.toFixed(2)}x）`}>
@@ -3736,7 +3736,7 @@ export function EditorWorkspace({
         )}
 
         {activeTab === "section" && selectedSection === "promise" && (
-          <PanelSection title="Promise 區段">
+          <PanelSection title="品牌承諾區段">
             <Field label="Eyebrow（小標）">
               <input
                 type="text"
@@ -3749,10 +3749,10 @@ export function EditorWorkspace({
                 className={inputClass}
               />
               <p className={noteClass}>
-                Promise 卡片上方那行小字，預設「{HOMEPAGE_DEFAULTS.promiseEyebrow}」。
+                承諾卡片上方那行小字，預設「{HOMEPAGE_DEFAULTS.promiseEyebrow}」。
               </p>
             </Field>
-            <Field label="Promise 文字">
+            <Field label="承諾文字">
               <textarea
                 value={theme.homepage.promise}
                 onChange={(e) => updateHomepage({ promise: e.target.value })}
@@ -3762,13 +3762,13 @@ export function EditorWorkspace({
               />
             </Field>
             <p className="text-xs text-stone-500 leading-relaxed">
-              會以 quote card 形式顯示，自動加大引號。
+              會以引言卡片形式顯示，自動加大引號。
             </p>
           </PanelSection>
         )}
 
         {activeTab === "section" && selectedSection === "visit" && (
-          <PanelSection title="Visit 區段">
+          <PanelSection title="來訪資訊區段">
             <Field label="Eyebrow（小標）">
               <input
                 type="text"
@@ -3781,7 +3781,7 @@ export function EditorWorkspace({
                 className={inputClass}
               />
               <p className={noteClass}>
-                Visit 區段標題上方那行小字，預設「{HOMEPAGE_DEFAULTS.visitEyebrow}」。
+                來訪資訊標題上方那行小字，預設「{HOMEPAGE_DEFAULTS.visitEyebrow}」。
               </p>
             </Field>
             <Field label="標題">

@@ -2287,7 +2287,7 @@ export default async function StoreHomePage({
               <section
                 className={`${heroHeightClass} ${heroFillClass}`.trim()}
                 data-edit-target="hero"
-                data-edit-label="Hero 區段"
+                data-edit-label="首屏（Hero）"
                 // 「Hero 高度」的手機那一份（heroHeightMobile）。上面 class 的三檔手機桌機
                 // 同一個值、手機插不進自己的高度，跟雜誌版型那格同一招：值掛在 attribute、
                 // min-height（含 auto 的清回 0）與撐高時要的 flex / grow 規則都在 layout.tsx
@@ -2736,7 +2736,7 @@ export default async function StoreHomePage({
                 {...(splitDividerWidth ? { "data-hero-split-divider": "" } : {})}
                 {...(splitDividerWidth && imageOnRight ? { "data-hero-split-image-side": "right" } : {})}
                 data-edit-target="hero"
-                data-edit-label="Hero 區段"
+                data-edit-label="首屏（Hero）"
               >
                 <div
                   data-hero-split-media
@@ -2931,7 +2931,7 @@ export default async function StoreHomePage({
                   ? { "data-hero-magazine-gap-mobile": theme.layout.heroMagazineGapMobile }
                   : {})}
                 data-edit-target="hero"
-                data-edit-label="Hero 區段"
+                data-edit-label="首屏（Hero）"
               >
                 {/* 上方 metadata 條。小標三格套在外層這條 metadata 上、不是只套小標那個
                     span：這一行左右兩端（小標與店名）在雜誌版型裡是成對的，只動一邊會變成
@@ -3137,7 +3137,7 @@ export default async function StoreHomePage({
                 ...minimalPaddingStyle,
               }}
               data-edit-target="hero"
-              data-edit-label="Hero 區段"
+              data-edit-label="首屏（Hero）"
               // 上下留白的手機那一格（heroMinimalPaddingMobile）。上面那格是 inline
               // style、手機桌機一起蓋，手機插不進去；改成掛 attribute、規則寫在
               // layout.tsx 的 639px media query 裡帶 !important 蓋掉 inline。
@@ -3926,7 +3926,7 @@ export default async function StoreHomePage({
             className={`relative py-40 sm:py-56 ${animClass} ${promisePos ? "min-h-screen" : ""}`}
             style={mergeSectionStyle(promiseStyle)}
             data-edit-target="promise"
-            data-edit-label="Promise 區段"
+            data-edit-label="品牌承諾"
             data-anim={promiseStyle.entranceVal}
             data-heading-scale={promiseStyle.headingScaleVal}
             data-heading-weight={promiseStyle.headingWeightVal}
