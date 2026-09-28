@@ -2158,6 +2158,10 @@ export function EditorWorkspace({
                 placeholder="Est. 2019 / Issue 03..."
                 className={inputClass}
               />
+              <p className={hintClass}>
+                主標上方那行小字，例如「Est. 2019」或「春季選物」。留空就不顯示；
+                只有雜誌封面版型留空時會先放「Issue」
+              </p>
             </Field>
             <Field label={`小標字體大小（${theme.layout.heroEyebrowFontScale.toFixed(2)}x）`}>
               <HeroFontScaleSlider
