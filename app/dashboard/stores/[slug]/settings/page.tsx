@@ -29,6 +29,8 @@ import {
   HOMEPAGE_DEFAULTS,
   HOMEPAGE_DEFAULT_COLLECTIONS,
   HERO_STYLES,
+  SECTION_LABELS,
+  DEFAULT_SECTION_ORDER,
 } from "@/app/[slug]/_theme";
 import { PRESET_KEYS, FONT_KEYS } from "@/lib/theme-keys";
 import { PAGE_SECTION_TOGGLES } from "@/lib/page-section-toggles";
@@ -885,7 +887,7 @@ A: 可以，地點為台北車站。`}</pre>
               htmlFor="layout_section_order"
               className="block text-sm font-medium text-emerald-900 mb-2"
             >
-              首頁 Section 順序
+              首頁區塊順序
             </label>
             <input
               id="layout_section_order"
@@ -895,14 +897,14 @@ A: 可以，地點為台北車站。`}</pre>
               className="w-full rounded-xl border border-emerald-100 bg-white px-4 py-3 text-sm font-mono outline-none focus:border-emerald-600 focus:ring-2 focus:ring-emerald-100"
             />
             <p className="text-xs text-emerald-900/55 mt-2">
-              逗號分隔（不要空白）。可用 key：
-              <code className="px-1 mx-0.5 bg-emerald-50 rounded">hero</code>
-              <code className="px-1 mx-0.5 bg-emerald-50 rounded">collections</code>
-              <code className="px-1 mx-0.5 bg-emerald-50 rounded">featured</code>
-              <code className="px-1 mx-0.5 bg-emerald-50 rounded">journal</code>
-              <code className="px-1 mx-0.5 bg-emerald-50 rounded">promise</code>
-              <code className="px-1 mx-0.5 bg-emerald-50 rounded">visit</code>
-              。沒列到的 section 自動 append 在尾巴。
+              用英文代號照想要的順序排，中間用逗號隔開。代號對應的區塊：
+              {DEFAULT_SECTION_ORDER.map((key) => (
+                <span key={key} className="inline-block mx-0.5">
+                  <code className="px-1 bg-emerald-50 rounded">{key}</code>
+                  {SECTION_LABELS[key]}
+                </span>
+              ))}
+              。沒寫到的區塊會自動排在最後面。
             </p>
           </div>
         </section>
