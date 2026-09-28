@@ -2280,7 +2280,7 @@ export function EditorWorkspace({
                     onSelect={(v) => updateLayout({ heroSubtitleAlign: v })}
                   />
                   <p className={hintClass}>
-                    預設跟版型走（Split 靠左 / Magazine · Minimal 置中 / 滿版圖跟主標）
+                    預設跟版型走（左右分割靠左／雜誌封面、極簡文字置中／全屏沉浸跟主標）
                   </p>
                 </Field>
                 <Field label="副標粗細">
@@ -2444,7 +2444,7 @@ export function EditorWorkspace({
                 className={inputClass}
               />
               <p className={hintClass}>
-                Magazine 版型 Hero 底部那行小字，預設「Curated by 店名」
+                雜誌封面版型首屏底部那行小字，預設「Curated by 店名」
               </p>
             </Field>
             <Field label={`署名文字大小（${theme.layout.heroBylineFontScale.toFixed(2)}x）`}>
