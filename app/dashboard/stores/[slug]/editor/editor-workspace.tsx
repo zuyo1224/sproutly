@@ -1935,7 +1935,7 @@ export function EditorWorkspace({
               </select>
             </Field>
             {/* Hero 圖片 */}
-            <Field label="Hero 圖片">
+            <Field label="首屏圖片">
               {theme.heroUrl ? (
                 <div className="space-y-2">
                   {(() => {
@@ -2146,7 +2146,7 @@ export function EditorWorkspace({
                   className="w-full aspect-video rounded-lg border border-dashed border-stone-300 hover:border-emerald-400 hover:bg-emerald-50/30 transition flex flex-col items-center justify-center text-stone-500"
                 >
                   <span className="text-2xl mb-1">✦</span>
-                  <span className="text-xs">從圖庫挑張 Hero 圖</span>
+                  <span className="text-xs">從圖庫挑張首屏圖</span>
                 </button>
               )}
             </Field>
@@ -2578,7 +2578,7 @@ export function EditorWorkspace({
                 onSelect={(v) => updateLayout({ heroTaglineAlign: v })}
               />
               <p className={hintClass}>
-                對齊只有「整版圖片」版型會套用；其他版型的主標位置是版型設計的一部分，先跟著版型走
+                對齊只有「全屏沉浸」版型會套用；其他版型的主標位置是版型設計的一部分，先跟著版型走
               </p>
             </Field>
             <Field label="主標粗細">
@@ -2617,7 +2617,7 @@ export function EditorWorkspace({
                 排起來上下容易貼太近，選舒展分開。收緊則是把換行的主標收成一整塊
               </p>
             </Field>
-            <Field label="Hero 高度">
+            <Field label="首屏高度">
               <OptionGrid
                 cols={4}
                 options={[
@@ -2630,13 +2630,13 @@ export function EditorWorkspace({
                 onSelect={(v) => updateLayout({ heroHeight: v })}
               />
               <p className={hintClass}>
-                高度只有「整版圖片」版型會套用；其他版型的高度是版型設計的一部分，先跟著版型走。
+                高度只有「全屏沉浸」版型會套用；其他版型的高度是版型設計的一部分，先跟著版型走。
                 三檔都是「至少多高」：照片加文字段比這矮時，多出來的高度會給文字段、色塊一路鋪到底，
                 不會在文字段下面露出一條別的顏色；比這高時整段照內容長、不裁字
               </p>
             </Field>
             {theme.layout.heroStyle === "full-image" && (
-              <Field label="手機上的 Hero 高度">
+              <Field label="手機上的首屏高度">
                 <OptionGrid
                   options={[
                     { v: "same", label: "跟桌機一樣" },
@@ -2669,7 +2669,7 @@ export function EditorWorkspace({
                   onSelect={(v) => updateLayout({ heroFullTextAlignY: v })}
                 />
                 <p className={hintClass}>
-                  上面「Hero 高度」選了矮 / 高 / 全屏之後，照片加字比那個矮的店，多出來的
+                  上面「首屏高度」選了矮 / 高 / 全屏之後，照片加字比那個矮的店，多出來的
                   高度全給了文字段那塊色塊，可是字還是貼著色塊上緣排：只有店名一行加一句話
                   的店選全屏，上面一排字、底下一大片空色塊，看起來像字掉了一半。置中把字擺到
                   色塊正中間；靠下把字貼到色塊底邊、照片跟字之間留空，比較像海報。字比色塊高
@@ -3045,7 +3045,7 @@ export function EditorWorkspace({
                 />
                 <p className={hintClass}>
                   上面幾格動的都是這一段裡面怎麼分，這一段本身多高是寫死的整屏（上面那格
-                  「Hero 高度」只有整版圖片版型會套用）。右半只放店名一行加一句話的店，
+                  「首屏高度」只有「全屏沉浸」版型會套用）。右半只放店名一行加一句話的店，
                   那半欄會空一大片，客人得再滑一整個螢幕才碰得到下一段——選跟著內容，整段
                   收成文字那欄的高度（字的上下會自動留一小截空，不會貼著段的邊），但照片
                   那欄至少留半個螢幕高，字再少照片也不會被壓成一條（圖文比例選了跟照片的
@@ -3628,7 +3628,7 @@ export function EditorWorkspace({
                   這個版型的照片會自己算高度：系統看那張圖四周留了多少白邊，把版位調成
                   剛好框住主體，所以不管上傳哪種圖都不會把主體切掉。代價是照片有多高完全
                   由那張圖的形狀決定——手機直拍那種長圖算出來會比一個螢幕還高，客人一進站
-                  只看到照片中間一塊，得先滑過整張圖才碰得到店名跟按鈕。上面「Hero 高度」
+                  只看到照片中間一塊，得先滑過整張圖才碰得到店名跟按鈕。上面「首屏高度」
                   那格說的是這一段至少多高，只撐得開、壓不下來。這格是「最高不超過」：
                   圖本來就矮的店選了也不會變，只有太高的才被收回來，收的方式是照原本
                   對齊主體的位置裁上下，主體不會偏掉。七成螢幕 / 一個螢幕這兩個字眼跟
