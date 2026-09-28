@@ -4430,7 +4430,7 @@ export function EditorWorkspace({
                 className={inputClass}
               />
               <p className={noteClass}>
-                Journal 區段上方那行小字，預設「{HOMEPAGE_DEFAULTS.journalEyebrow}」。
+                慢讀區段上方那行小字，預設「{HOMEPAGE_DEFAULTS.journalEyebrow}」。
               </p>
             </Field>
             <Field label="標題">
@@ -4445,7 +4445,7 @@ export function EditorWorkspace({
                 className={inputClass}
               />
               <p className={noteClass}>
-                Journal 區段大字，預設「{HOMEPAGE_DEFAULTS.journalTitle}」。
+                慢讀區段大字，預設「{HOMEPAGE_DEFAULTS.journalTitle}」。
               </p>
             </Field>
             <Field label="副題">

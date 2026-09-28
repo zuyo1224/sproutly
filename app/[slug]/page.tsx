@@ -3680,7 +3680,7 @@ export default async function StoreHomePage({
             className={sectionShellClass(journalFree)}
             style={mergeSectionStyle(journalStyle)}
             data-edit-target="journal"
-            data-edit-label="Journal 區段"
+            data-edit-label="慢讀（Journal）"
             data-anim={journalStyle.entranceVal}
             data-heading-scale={journalStyle.headingScaleVal}
             data-heading-weight={journalStyle.headingWeightVal}
