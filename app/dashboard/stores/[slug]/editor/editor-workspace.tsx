@@ -2187,11 +2187,11 @@ export function EditorWorkspace({
               <LayoutColorRow
                 value={theme.layout.heroEyebrowColor}
                 fallback={theme.accent}
-                placeholder="預設用主色"
+                placeholder="預設用強調色"
                 onChange={(v) => updateLayout({ heroEyebrowColor: v })}
               />
               <p className={hintClass}>
-                原本用店的主色，那是整頁最搶眼的顏色押在最小的一行字上，壓在照片上容易糊；
+                原本用店的強調色，那是整頁最搶眼的顏色押在最小的一行字上，壓在照片上容易糊；
                 雜誌版型原本用淡文字色，設了以後兩種版型一起走這個色
               </p>
             </Field>
@@ -3136,7 +3136,7 @@ export function EditorWorkspace({
                   照片跟文字那半相接的地方原本什麼都沒有，兩邊底色只差一階的店看起來像
                   照片下面糊了一塊。開一條線把兩塊分清楚：桌機畫在兩欄中間、手機畫在照片
                   跟文字之間，照片靠哪一邊、手機誰在上面都會自己跟著換邊。淡是全站分隔線
-                  的顏色，深跟字同色（深底淺字的店會自動變淺線），主色跟按鈕同色
+                  的顏色，深跟字同色（深底淺字的店會自動變淺線），強調色跟按鈕同色
                 </p>
               </Field>
             )}
@@ -3174,7 +3174,7 @@ export function EditorWorkspace({
                 <p className={hintClass}>
                   那兩條線的顏色。原本用的是全站畫卡片邊界的那階淡色，底色深一點的店根本
                   看不見，等於整個版型的骨架不見了、只剩中間一團字。選同文字就跟字一樣深
-                  （深底淺字的店會自動變成淺線，不用自己挑色），選主色可以把它當開章的
+                  （深底淺字的店會自動變成淺線，不用自己挑色），選強調色可以把它當開章的
                   裝飾線，選更淡是想留骨架但不想它出聲
                 </p>
               </Field>
@@ -3497,15 +3497,15 @@ export function EditorWorkspace({
             {theme.layout.heroStyle === "minimal" &&
               theme.layout.heroMinimalRule !== "none" && (
               <Field label="短橫線顏色">
-                {/* 沒挑的時候公開頁畫的是全站主色壓半透明，所以取色器拿主色當初始值 */}
+                {/* 沒挑的時候公開頁畫的是全站強調色壓半透明，所以取色器拿強調色當初始值 */}
                 <LayoutColorRow
                   value={theme.layout.heroMinimalRuleColor}
                   fallback={theme.accent}
-                  placeholder="預設是全站主色的淡版"
+                  placeholder="預設是全站強調色的淡版"
                   onChange={(v) => updateLayout({ heroMinimalRuleColor: v })}
                 />
                 <p className={hintClass}>
-                  它原本畫的是全站主色的淡版，在淺底的店看起來只是一條灰痕。挑了顏色就
+                  它原本畫的是全站強調色的淡版，在淺底的店看起來只是一條灰痕。挑了顏色就
                   照挑的畫、不再壓淡，所以挑深一點的可以讓它真的看得見，挑跟底色相近的
                   可以讓它幾乎消失、但字跟按鈕之間的距離還留著
                 </p>
@@ -5631,7 +5631,7 @@ export function EditorWorkspace({
                   onSelect={(v) => patch({ eyebrowWeight: v })}
                 />
                 <HintRow showClear={eyebrowWeight} onClear={() => patch({ eyebrowWeight: null })}>
-                  那行小標的字本身多重。小標的字最小、又撐開字距，在淺色底上細到看不清楚時選「中黑」或「粗」；選物與精選那兩段的小標本來就比較重、又是用主色印的，想讓它退回配角選「常規」（「內文粗細」也會動到這行，但會把整段的描述、答案一起變粗）
+                  那行小標的字本身多重。小標的字最小、又撐開字距，在淺色底上細到看不清楚時選「中黑」或「粗」；選物與精選那兩段的小標本來就比較重、又是用強調色印的，想讓它退回配角選「常規」（「內文粗細」也會動到這行，但會把整段的描述、答案一起變粗）
                 </HintRow>
               </Field>
               <Field label="小標行距">
@@ -5657,7 +5657,7 @@ export function EditorWorkspace({
                   onSelect={(v) => patch({ eyebrowTone: v })}
                 />
                 <HintRow showClear={eyebrowTone} onClear={() => patch({ eyebrowTone: null })}>
-                  那行小標是什麼顏色。大部分段落的小標是用全站主色印的，主色深的時候跟底下的大標搶、亮的時候在淺底上糊掉，想讓它退回一般文字選「內文色」或「淡」；合作那段的小標本來就是淡的，想跟別段一致選「主色」（「文字顏色」換的是整段的色，小標帶著自己的顏色反而不會跟著動）
+                  那行小標是什麼顏色。大部分段落的小標是用全站強調色印的，強調色深的時候跟底下的大標搶、亮的時候在淺底上糊掉，想讓它退回一般文字選「內文色」或「淡」；合作那段的小標本來就是淡的，想跟別段一致選「強調色」（「文字顏色」換的是整段的色，小標帶著自己的顏色反而不會跟著動）
                 </HintRow>
               </Field>
               <Field label="小標大小寫">
@@ -5714,12 +5714,12 @@ export function EditorWorkspace({
                     onSelect={(v) => patch({ dividerTone: v })}
                   />
                   <HintRow showClear={dividerTone} onClear={() => patch({ dividerTone: null })}>
-                    調粗了還是看不清就調深：同文字跟這段的字一樣深，主色拿來當裝飾線
+                    調粗了還是看不清就調深：同文字跟這段的字一樣深，強調色拿來當裝飾線
                   </HintRow>
                 </Field>
               )}
               {/* 線型跟粗細、深淺同一個道理：沒畫線就沒東西可調。那三格調完線還是只有
-                  一種樣子——實線；拿線當裝飾的（深淺那格的主色就是為這個開的）要的是
+                  一種樣子——實線；拿線當裝飾的（深淺那格的強調色就是為這個開的）要的是
                   虛線點線那種軟一點的線。 */}
               {divider !== "none" && (
                 <Field label="分隔線線型">
@@ -5807,7 +5807,7 @@ export function EditorWorkspace({
                   onSelect={(v) => patch({ headingTone: v })}
                 />
                 <HintRow showClear={headingTone} onClear={() => patch({ headingTone: null })}>
-                  只動標題：主色跟小標同色、柔和跟次要文字同深淺
+                  只動標題：強調色跟小標同色、柔和跟次要文字同深淺
                 </HintRow>
               </Field>
               <Field label="標題底線">
@@ -5839,7 +5839,7 @@ export function EditorWorkspace({
                 </Field>
               )}
               {/* 深淺跟粗細同一個道理：沒畫線就沒東西可調。分隔線那組三格都補齊了，
-                  這條畫在標題正下方、最像雜誌開章那個手勢的線反而沒有主色可選；
+                  這條畫在標題正下方、最像雜誌開章那個手勢的線反而沒有強調色可選；
                   深底淺字的段落淡色線更是直接看不見。 */}
               {headingRule && (
                 <Field label="底線深淺">
@@ -5849,7 +5849,7 @@ export function EditorWorkspace({
                     onSelect={(v) => patch({ headingRuleTone: v })}
                   />
                   <HintRow showClear={headingRuleTone} onClear={() => patch({ headingRuleTone: null })}>
-                    深底的段落看不到線就調深：同文字跟這段的字一樣深，主色是標題底下壓色線那種用法
+                    深底的段落看不到線就調深：同文字跟這段的字一樣深，強調色是標題底下壓色線那種用法
                   </HintRow>
                 </Field>
               )}
@@ -6010,7 +6010,7 @@ export function EditorWorkspace({
                     onSelect={(v) => patch({ outlineTone: v })}
                   />
                   <HintRow showClear={outlineTone} onClear={() => patch({ outlineTone: null })}>
-                    選了粗邊還是看不出框就調深：同文字跟這段的字一樣深，主色描邊像優惠卡
+                    選了粗邊還是看不出框就調深：同文字跟這段的字一樣深，強調色描邊像優惠卡
                   </HintRow>
                 </Field>
               )}
@@ -6024,7 +6024,7 @@ export function EditorWorkspace({
                     onSelect={(v) => patch({ outlineStyle: v })}
                   />
                   <HintRow showClear={outlineStyle} onClear={() => patch({ outlineStyle: null })}>
-                    實線正式，虛線配主色像優惠券的沿線剪下，點線是手帳貼紙那圈
+                    實線正式，虛線配強調色像優惠券的沿線剪下，點線是手帳貼紙那圈
                   </HintRow>
                 </Field>
               )}
@@ -6057,7 +6057,7 @@ export function EditorWorkspace({
                 </Field>
               )}
               {/* 深淺跟粗細同一個處理：沒畫色條就沒東西可調。四檔不是三檔——色條的
-                  顏色有兩種寫死值（沒設文字色＝主色、設了＝文字色六成淡），跟小標用色
+                  顏色有兩種寫死值（沒設文字色＝強調色、設了＝文字色六成淡），跟小標用色
                   一樣要讓兩種能互相切換。 */}
               {accentBar && (
                 <Field label="色條深淺">
@@ -6073,7 +6073,7 @@ export function EditorWorkspace({
                     onSelect={(v) => patch({ accentBarTone: v })}
                   />
                   <HintRow showClear={accentBarTone} onClear={() => patch({ accentBarTone: null })}>
-                    粗色條太搶就淡，退成裝飾；同文字跟這段的字一樣深，主色是品牌色實色
+                    粗色條太搶就淡，退成裝飾；同文字跟這段的字一樣深，強調色是品牌色實色
                   </HintRow>
                 </Field>
               )}
@@ -6621,7 +6621,7 @@ export function EditorWorkspace({
                     onSelect={(v) => patch({ cardTitleTone: v })}
                   />
                   <HintRow showClear={cardTitleTone} onClear={() => patch({ cardTitleTone: null })}>
-                    卡片上那行品名是什麼顏色。三段的品名本來都跟內文同深，整張卡上沒有一個顏色的落點，品名跟底下的描述、價錢只差在字大一點；換成主色能讓客人掃過一列卡片時先看到商品名，柔和則是讓品名退半階、把重量留給照片。上面幾格動的是字多大、多粗、隔多遠，都不換顏色。只動品名，描述、價錢與那幾行小字不跟著變
+                    卡片上那行品名是什麼顏色。三段的品名本來都跟內文同深，整張卡上沒有一個顏色的落點，品名跟底下的描述、價錢只差在字大一點；換成強調色能讓客人掃過一列卡片時先看到商品名，柔和則是讓品名退半階、把重量留給照片。上面幾格動的是字多大、多粗、隔多遠，都不換顏色。只動品名，描述、價錢與那幾行小字不跟著變
                   </HintRow>
                 </Field>
               )}
@@ -6685,7 +6685,7 @@ export function EditorWorkspace({
                     onSelect={(v) => patch({ cardDescTone: v })}
                   />
                   <HintRow showClear={cardDescTone} onClear={() => patch({ cardDescTone: null })}>
-                    前面三格動的是那段描述多大、行距多開、多粗，這格動的是它什麼顏色。描述現在固定比品名淡一階（選物那段外面還多淡一層），放大、加粗都追不上那個淺灰——慢讀那種摘要才是客人要讀完的段落，選「跟品名同深」就不再退在後面；想讓副標帶點品牌感選「主色」
+                    前面三格動的是那段描述多大、行距多開、多粗，這格動的是它什麼顏色。描述現在固定比品名淡一階（選物那段外面還多淡一層），放大、加粗都追不上那個淺灰——慢讀那種摘要才是客人要讀完的段落，選「跟品名同深」就不再退在後面；想讓副標帶點品牌感選「強調色」
                   </HintRow>
                 </Field>
               )}
@@ -6752,7 +6752,7 @@ export function EditorWorkspace({
                     onSelect={(v) => patch({ cardMicroTone: v })}
                   />
                   <HintRow showClear={cardMicroTone} onClear={() => patch({ cardMicroTone: null })}>
-                    前面三格動的是那幾行小字多大、字距多開、多粗，這格動的是它們什麼顏色。那幾行現在各是各的顏色：「看更多」跟慢讀的分類用主色、慢讀底下的標籤是淡灰、精選那行「剩 N」是橘色的警示色（跟店的配色沒關係）。主色深就跟品名撞在一起、主色亮在淺底上看不見、橘色那行又比價錢還搶——想讓整張卡的小字統一，四個都會一起換
+                    前面三格動的是那幾行小字多大、字距多開、多粗，這格動的是它們什麼顏色。那幾行現在各是各的顏色：「看更多」跟慢讀的分類用強調色、慢讀底下的標籤是淡灰、精選那行「剩 N」是橘色的警示色（跟店的配色沒關係）。強調色深就跟品名撞在一起、強調色亮在淺底上看不見、橘色那行又比價錢還搶——想讓整張卡的小字統一，四個都會一起換
                   </HintRow>
                 </Field>
               )}
@@ -6816,7 +6816,7 @@ export function EditorWorkspace({
                     onSelect={(v) => patch({ cardPriceTone: v })}
                   />
                   <HintRow showClear={cardPriceTone} onClear={() => patch({ cardPriceTone: null })}>
-                    前面兩格動的是價錢多大、多粗，這格動的是它什麼顏色。那行本來比品名淡一階，是整張卡上最淡的一行，可是一株賣多少常常正是客人在首頁在找的東西——換成主色或跟品名同深，掃過一列卡片時才看得到。「卡片副文字深淺」動的是那層透明度，跟這格是兩回事，可以疊著用。只有精選商品那段的卡片有價錢
+                    前面兩格動的是價錢多大、多粗，這格動的是它什麼顏色。那行本來比品名淡一階，是整張卡上最淡的一行，可是一株賣多少常常正是客人在首頁在找的東西——換成強調色或跟品名同深，掃過一列卡片時才看得到。「卡片副文字深淺」動的是那層透明度，跟這格是兩回事，可以疊著用。只有精選商品那段的卡片有價錢
                   </HintRow>
                 </Field>
               )}
@@ -6912,7 +6912,7 @@ export function EditorWorkspace({
                     onSelect={(v) => patch({ textureColor: v })}
                   />
                   <HintRow showClear={textureColor} onClear={() => patch({ textureColor: null })}>
-                    跟文字色是安靜的襯底；全站主色讓紋帶品牌色，配加深、更疏就是品牌色圓點主視覺
+                    跟文字色是安靜的襯底；全站強調色讓紋帶品牌色，配加深、更疏就是品牌色圓點主視覺
                   </HintRow>
                 </Field>
               )}

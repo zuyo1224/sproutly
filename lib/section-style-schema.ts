@@ -1383,7 +1383,7 @@ export const SECTION_WEIGHT_OPTIONS = [
 
 /**
  * 同一批「中檔（或第一顆）寫『跟預設』」再補三張，都是線條與底色那類的欄位：
- * - SECTION_LINE_TONE_OPTIONS（跟預設／同文字／主色）：分隔線深淺、標題底線深淺、卡片外框深淺三格
+ * - SECTION_LINE_TONE_OPTIONS（跟預設／同文字／強調色）：分隔線深淺、標題底線深淺、卡片外框深淺三格
  * - SECTION_LINE_WEIGHT_OPTIONS（細／跟預設／粗）：標題底線粗細、卡片色條粗細兩格
  * - SECTION_BG_STRENGTH_OPTIONS（更淡／跟預設／加深）：底紋濃淡、底色明暗濃淡兩格
  * 以前七格各手寫一份逐字相同的陣列。三張表 v 的順序都照 SECTION_STYLE_ENUMS 對應欄位。
@@ -1395,7 +1395,7 @@ export const SECTION_WEIGHT_OPTIONS = [
 export const SECTION_LINE_TONE_OPTIONS = [
   { v: "normal", label: "跟預設" },
   { v: "strong", label: "同文字" },
-  { v: "accent", label: "主色" },
+  { v: "accent", label: "強調色" },
 ] as const satisfies ReadonlyArray<{ v: (typeof SECTION_STYLE_ENUMS)["dividerTone"][number]; label: string }>;
 
 export const SECTION_LINE_WEIGHT_OPTIONS = [
@@ -1424,7 +1424,7 @@ export const SECTION_BG_STRENGTH_OPTIONS = [
 /**
  * 中檔（或第一顆）寫「預設」、不是「跟預設」的那批也有兩組逐字相同：
  * - SECTION_TEXT_SCALE_OPTIONS（小／預設／大）：區段「內文大小」（bodyScale）、「標題大小」（headingScale）兩格
- * - SECTION_TEXT_TONE_OPTIONS（預設／主色／柔和）：「標題用色」（headingTone）、「卡片品名用色」（cardTitleTone）兩格
+ * - SECTION_TEXT_TONE_OPTIONS（預設／強調色／柔和）：「標題用色」（headingTone）、「卡片品名用色」（cardTitleTone）兩格
  * 以前四格各手寫一份一模一樣的陣列。字面跟上面 SECTION_SCALE_OPTIONS 的「小／跟預設／大」
  * 只差一個「跟」字，但那是兩種意思：「跟預設」是「這格不設、跟全站走」（key 不存在），
  * 「預設」是真的套一個字級（headingScale 沒有中性值，選 default 也會存下來），所以是兩張表、
@@ -1443,7 +1443,7 @@ export const SECTION_TEXT_SCALE_OPTIONS = [
 
 export const SECTION_TEXT_TONE_OPTIONS = [
   { v: "default", label: "預設" },
-  { v: "accent", label: "主色" },
+  { v: "accent", label: "強調色" },
   { v: "muted", label: "柔和" },
 ] as const satisfies ReadonlyArray<{ v: (typeof SECTION_STYLE_ENUMS)["headingTone"][number]; label: string }>;
 
