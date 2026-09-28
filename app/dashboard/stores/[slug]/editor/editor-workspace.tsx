@@ -2150,7 +2150,7 @@ export function EditorWorkspace({
                 </button>
               )}
             </Field>
-            <Field label="Eyebrow（小標）">
+            <Field label="小標">
               <input
                 type="text"
                 value={theme.layout.heroEyebrow ?? ""}
@@ -3680,7 +3680,7 @@ export function EditorWorkspace({
 
         {activeTab === "section" && selectedSection === "collections" && (
           <PanelSection title="選物提案區段">
-            <Field label="Eyebrow（小標）">
+            <Field label="小標">
               <input
                 type="text"
                 value={theme.homepage.collectionsEyebrow}
@@ -3737,7 +3737,7 @@ export function EditorWorkspace({
 
         {activeTab === "section" && selectedSection === "promise" && (
           <PanelSection title="品牌承諾區段">
-            <Field label="Eyebrow（小標）">
+            <Field label="小標">
               <input
                 type="text"
                 value={theme.homepage.promiseEyebrow}
@@ -3769,7 +3769,7 @@ export function EditorWorkspace({
 
         {activeTab === "section" && selectedSection === "visit" && (
           <PanelSection title="來訪資訊區段">
-            <Field label="Eyebrow（小標）">
+            <Field label="小標">
               <input
                 type="text"
                 value={theme.homepage.visitEyebrow}
@@ -3831,7 +3831,7 @@ export function EditorWorkspace({
 
         {activeTab === "section" && selectedSection === "stats" && (
           <PanelSection title="數字 / 成就">
-            <Field label="Eyebrow（小標）">
+            <Field label="小標">
               <input
                 type="text"
                 value={theme.homepage.statsEyebrow}
@@ -3916,7 +3916,7 @@ export function EditorWorkspace({
 
         {activeTab === "section" && selectedSection === "partners" && (
           <PanelSection title="合作夥伴 / 媒體 logos">
-            <Field label="Eyebrow（小標）">
+            <Field label="小標">
               <input
                 type="text"
                 value={theme.homepage.partnersEyebrow}
@@ -4028,7 +4028,7 @@ export function EditorWorkspace({
 
         {activeTab === "section" && selectedSection === "gallery" && (
           <PanelSection title="圖片相簿">
-            <Field label="Eyebrow（小標）">
+            <Field label="小標">
               <input
                 type="text"
                 value={theme.homepage.galleryEyebrow}
@@ -4148,7 +4148,7 @@ export function EditorWorkspace({
 
         {activeTab === "section" && selectedSection === "faq" && (
           <PanelSection title="常見問題（FAQ）區段">
-            <Field label="Eyebrow（小標）">
+            <Field label="小標">
               <input
                 type="text"
                 value={theme.homepage.faqEyebrow}
@@ -4243,7 +4243,7 @@ export function EditorWorkspace({
 
         {activeTab === "section" && selectedSection === "testimonials" && (
           <PanelSection title="顧客評語區段">
-            <Field label="Eyebrow（小標）">
+            <Field label="小標">
               <input
                 type="text"
                 value={theme.homepage.testimonialsEyebrow}
@@ -4343,7 +4343,7 @@ export function EditorWorkspace({
         {activeTab === "section" &&
           selectedSection === "featured" && (
             <PanelSection title={sectionLabels.featured}>
-              <Field label="Eyebrow（小標）">
+              <Field label="小標">
                 <input
                   type="text"
                   value={theme.homepage.featuredEyebrow}
@@ -4418,7 +4418,7 @@ export function EditorWorkspace({
 
         {activeTab === "section" && selectedSection === "journal" && (
           <PanelSection title={sectionLabels.journal}>
-            <Field label="Eyebrow（小標）">
+            <Field label="小標">
               <input
                 type="text"
                 value={theme.homepage.journalEyebrow}
