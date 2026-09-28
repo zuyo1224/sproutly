@@ -839,7 +839,7 @@ A: 可以，地點為台北車站。`}</pre>
                 className="w-full rounded-xl border border-emerald-100 bg-white px-4 py-3 text-sm outline-none focus:border-emerald-600 focus:ring-2 focus:ring-emerald-100"
               />
               <p className="text-xs text-emerald-900/55 mt-2">
-                「雜誌封面」「左右分割」「極簡文字」版型會顯示，英文字母預設轉全大寫小字
+                主標上方那行小字，四種版型都會顯示，英文字母預設轉全大寫。留空就不顯示；只有「雜誌封面」留空時會先放「Issue」
               </p>
             </div>
             <div>
