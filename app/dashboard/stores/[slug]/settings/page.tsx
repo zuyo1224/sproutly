@@ -793,7 +793,7 @@ A: 可以，地點為台北車站。`}</pre>
             </p>
             <span className="block mt-3 h-px w-10 bg-emerald-600/60" />
             <p className="text-xs text-emerald-900/50 mt-3" style={{ lineHeight: 1.7 }}>
-              4 種首屏 layout 變體 + 拖曳調整首頁 section 順序
+              選首屏版型（4 種），再排首頁各區塊的先後順序
             </p>
           </div>
 
