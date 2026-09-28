@@ -614,8 +614,7 @@ export default async function OrderDetailPage({
                   className="text-emerald-700/60 uppercase w-16 shrink-0"
                   style={{ letterSpacing: "0.25em", fontWeight: 500 }}
                 >
-                  <span aria-hidden="true">Placed</span>
-                  <span className="sr-only">下單時間</span>
+                  下單<span className="sr-only">時間</span>
                 </dt>
                 <dd className="text-emerald-950 tabular-nums">
                   {taipeiStampFull(order.created_at)}
@@ -627,8 +626,7 @@ export default async function OrderDetailPage({
                     className="text-emerald-700/60 uppercase w-16 shrink-0"
                     style={{ letterSpacing: "0.25em", fontWeight: 500 }}
                   >
-                    <span aria-hidden="true">Paid</span>
-                    <span className="sr-only">付款時間</span>
+                    付款<span className="sr-only">時間</span>
                   </dt>
                   <dd className="text-emerald-950 tabular-nums">
                     {taipeiStampFull(order.paid_at)}
@@ -641,8 +639,7 @@ export default async function OrderDetailPage({
                     className="text-emerald-700/60 uppercase w-16 shrink-0"
                     style={{ letterSpacing: "0.25em", fontWeight: 500 }}
                   >
-                    <span aria-hidden="true">Shipped</span>
-                    <span className="sr-only">出貨時間</span>
+                    出貨<span className="sr-only">時間</span>
                   </dt>
                   <dd className="text-emerald-950 tabular-nums">
                     {taipeiStampFull(order.shipped_at)}
