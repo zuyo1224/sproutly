@@ -2721,7 +2721,7 @@ export function EditorWorkspace({
               );
             })()}
             {theme.layout.heroStyle === "full-image" && (
-              <Field label="Free Positioning（Phase 5）">
+              <Field label="拖曳擺放位置">
                 {(() => {
                   // 主標 / 副標 / 按鈕 / 小標各自一個 key，哪個拖過就列哪個的重設
                   const dragables = [
@@ -3680,7 +3680,7 @@ export function EditorWorkspace({
 
         {activeTab === "section" && selectedSection === "collections" && (
           <PanelSection title="選物提案區段">
-            <Field label="Eyebrow">
+            <Field label="Eyebrow（小標）">
               <input
                 type="text"
                 value={theme.homepage.collectionsEyebrow}
@@ -3692,11 +3692,11 @@ export function EditorWorkspace({
                 className={inputClass}
               />
               <p className={noteClass}>
-                Intro 文案上方那行小字，例如「Collections」或「選物提案」。
+                介紹文字上方那行小字，例如「Collections」或「選物提案」。
                 留空 = 不顯示。
               </p>
             </Field>
-            <Field label="Intro 文案">
+            <Field label="介紹文字">
               <textarea
                 value={theme.homepage.collectionsIntro}
                 onChange={(e) =>
@@ -4343,7 +4343,7 @@ export function EditorWorkspace({
         {activeTab === "section" &&
           selectedSection === "featured" && (
             <PanelSection title={sectionLabels.featured}>
-              <Field label="Eyebrow">
+              <Field label="Eyebrow（小標）">
                 <input
                   type="text"
                   value={theme.homepage.featuredEyebrow}
