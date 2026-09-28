@@ -4666,7 +4666,7 @@ export function EditorWorkspace({
             { c: "#F7F4ED", label: "奶油" },
             { c: "#FAFAF9", label: "淺灰" },
             { c: theme.primary, label: "主色" },
-            { c: theme.accent, label: "Accent" },
+            { c: theme.accent, label: "強調色" },
             { c: "#1A1A1A", label: "近黑" },
           ];
           const textSwatches = [
@@ -4674,7 +4674,7 @@ export function EditorWorkspace({
             { c: "#FFFFFF", label: "白" },
             { c: "#6B6B6B", label: "灰" },
             { c: theme.primary, label: "主色" },
-            { c: theme.accent, label: "Accent" },
+            { c: theme.accent, label: "強調色" },
           ];
           // 這支以前是「每欄一段 if、每欄自己手打一次合法值」的長鏈，加一個控制就要在型別與
           // 判斷各補一段。實際規則全欄一致（給 null 或選到等同預設的那個值就清掉整欄），
@@ -7158,21 +7158,21 @@ export function EditorWorkspace({
                 />
               </div>
             </Field>
-            <Field label="Accent 色">
+            <Field label="強調色 Accent">
               <div className="flex gap-2">
                 <input
                   type="color"
                   value={theme.accent}
                   onChange={(e) => update("accent", e.target.value)}
                   className="w-10 h-10 rounded border border-stone-200"
-                  aria-label="Accent 色取色器"
+                  aria-label="強調色取色器"
                 />
                 <input
                   type="text"
                   value={theme.accent}
                   onChange={(e) => update("accent", e.target.value)}
                   className={hexInputClass}
-                  aria-label="Accent 色色碼"
+                  aria-label="強調色色碼"
                 />
               </div>
             </Field>

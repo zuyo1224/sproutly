@@ -52,7 +52,7 @@ describe("summarizeThemePatch", () => {
       summarizeThemePatch(FULL_PATCH, FULL_PATCH_LABELS, 60),
       [
         "主色 → #2C2C2C",
-        "Accent → #1F5F3F",
+        "強調色 → #1F5F3F",
         "Tagline → 慢一點，也沒關係",
         "Hero 樣式 → split",
         "Hero Eyebrow → 植物選物",

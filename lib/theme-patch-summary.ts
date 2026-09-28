@@ -48,7 +48,7 @@ export type ThemePatchLabels = {
 // 設定頁 AI 助手 panel：版面寬，標籤寫全
 export const FULL_PATCH_LABELS: ThemePatchLabels = {
   primary: "主色",
-  accent: "Accent",
+  accent: "強調色",
   tagline: "Tagline",
   heroStyle: "Hero 樣式",
   heroEyebrow: "Hero Eyebrow",
@@ -64,7 +64,7 @@ export const FULL_PATCH_LABELS: ThemePatchLabels = {
 // 編輯器 popover：版面窄，標籤縮短
 export const COMPACT_PATCH_LABELS: ThemePatchLabels = {
   primary: "主色",
-  accent: "Accent",
+  accent: "強調色",
   tagline: "Tagline",
   heroStyle: "Hero",
   heroEyebrow: "Eyebrow",
