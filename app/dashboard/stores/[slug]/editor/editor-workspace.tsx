@@ -2366,7 +2366,7 @@ export function EditorWorkspace({
               <p className={hintClass}>
                 四種版型的按鈕（含次要按鈕）一起套。按鈕是 hero 上唯一可以按的東西，
                 但原本的字級固定不動——主標拉大之後，按鈕會被主標壓成最不起眼的一行；
-                雜誌版型那條更小（跟下面 byline 同一個字級），手機上不容易看出來可以按。
+                雜誌版型那條更小（跟下面署名那行同一個字級），手機上不容易看出來可以按。
                 放大時按鈕的內距會跟著長，形狀不會被字撐爆
               </p>
             </Field>
@@ -2432,7 +2432,7 @@ export function EditorWorkspace({
                 描邊那種換的是框線跟字
               </p>
             </Field>
-            <Field label="雜誌版型下方 byline">
+            <Field label="雜誌版型底部署名">
               <input
                 type="text"
                 value={theme.homepage.heroMagazineByline}
@@ -2447,18 +2447,18 @@ export function EditorWorkspace({
                 Magazine 版型 Hero 底部那行小字，預設「Curated by 店名」
               </p>
             </Field>
-            <Field label={`byline 文字大小（${theme.layout.heroBylineFontScale.toFixed(2)}x）`}>
+            <Field label={`署名文字大小（${theme.layout.heroBylineFontScale.toFixed(2)}x）`}>
               <HeroFontScaleSlider
                 value={theme.layout.heroBylineFontScale}
                 onChange={(v) => updateLayout({ heroBylineFontScale: v })}
               />
               <p className={hintClass}>
-                只動上面那行 byline，右邊的按鈕不跟（按鈕有自己的那格）。原本固定 10px，
-                那個大小是照英文大寫字母挑的，byline 打中文的話在 10px 幾乎糊成一團，
+                只動上面那行署名，右邊的按鈕不跟（按鈕有自己的那格）。原本固定 10px，
+                那個大小是照英文大寫字母挑的，署名打中文的話在 10px 幾乎糊成一團，
                 而全網站字級那格也動不到它
               </p>
             </Field>
-            <Field label="byline 顏色">
+            <Field label="署名顏色">
               {/* 取色器需要一個具體的 hex 當初始值（EditorTheme 沒帶 textMuted）；
                   沒設的時候公開頁走的還是各 preset 自己的淡文字色 */}
               <LayoutColorRow
@@ -2472,33 +2472,33 @@ export function EditorWorkspace({
                 客人讀得清楚都從這裡調，右邊的按鈕不跟
               </p>
             </Field>
-            <Field label="byline 字距">
+            <Field label="署名字距">
               <OptionGrid
                 options={TRACKING_OPTIONS}
                 selected={theme.layout.heroBylineTracking}
                 onSelect={(v) => updateLayout({ heroBylineTracking: v })}
               />
               <p className={hintClass}>
-                那行 byline 每個字之間的空隙，原本空 0.32em、是全站最寬的一格。那個寬度
-                跟 10px 一樣是照英文全大寫挑的，byline 打中文（「由 XX 選件」）七八個字會
+                那行署名每個字之間的空隙，原本空 0.32em、是全站最寬的一格。那個寬度
+                跟 10px 一樣是照英文全大寫挑的，署名打中文（「由 XX 選件」）七八個字會
                 散成七八個不相干的字，而上面那格把字放大以後空隙也跟著等比例變大、散得更開。
                 選收緊會靠回來，右邊的按鈕不跟
               </p>
             </Field>
-            <Field label="byline 大小寫">
+            <Field label="署名大小寫">
               <OptionGrid
                 options={TEXT_CASE_OPTIONS}
                 selected={theme.layout.heroBylineCase}
                 onSelect={(v) => updateLayout({ heroBylineCase: v })}
               />
               <p className={hintClass}>
-                byline 打中文的話這格沒有作用（中文沒有大小寫）。打英文才看得出來：那行字
+                署名打中文的話這格沒有作用（中文沒有大小寫）。打英文才看得出來：那行字
                 一律被轉成全大寫，「Photography by Wang」變 PHOTOGRAPHY BY WANG，打 IG
                 帳號也會被改掉。選照原樣就照你打的顯示（改上面輸入框的字沒有用，大寫是
                 顯示的時候才轉的），右邊的按鈕不跟
               </p>
             </Field>
-            <Field label="byline 粗細">
+            <Field label="署名粗細">
               <OptionGrid
                 options={[
                   { v: "normal", label: "原樣" },
@@ -2515,14 +2515,14 @@ export function EditorWorkspace({
                 那幾個字會結成一塊像印章。右邊的按鈕不跟
               </p>
             </Field>
-            <Field label="byline 行距">
+            <Field label="署名行距">
               <OptionGrid
                 options={LEADING_OPTIONS}
                 selected={theme.layout.heroBylineLeading}
                 onSelect={(v) => updateLayout({ heroBylineLeading: v })}
               />
               <p className={hintClass}>
-                那行字換行的時候，上下兩行隔多遠。byline 比上面的小標更容易換兩行——它是
+                那行字換行的時候，上下兩行隔多遠。署名比上面的小標更容易換兩行——它是
                 你自己打的一句話，那一行左邊還要跟右邊的按鈕分掉寬度，手機上兩行是常態。
                 它原本用的是內文段落的行距，套在一行落款上偏鬆。收緊會讓那兩行結成一塊
                 像印章，舒展則像頁尾的註記。右邊的按鈕不跟

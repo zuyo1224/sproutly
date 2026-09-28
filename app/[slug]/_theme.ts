@@ -54,7 +54,7 @@ export const HERO_STYLES: { key: HeroStyle; label: string; description: string }
   { key: "full-image", label: "全屏沉浸", description: "整屏背景圖 + 文字 overlay，最有沉浸感" },
   { key: "split", label: "左右分割", description: "左圖右文（或右圖左文），編輯雜誌風" },
   { key: "minimal", label: "極簡文字", description: "純文字大字 hero，無圖，最少干擾" },
-  { key: "magazine", label: "雜誌封面", description: "上 metadata + 中央大字 + 下 byline" },
+  { key: "magazine", label: "雜誌封面", description: "上方一行資訊 + 中央大字 + 下方署名" },
 ];
 
 // Section 排序（商家可調順序，部分 section 也可隱藏）；SectionKey 與
