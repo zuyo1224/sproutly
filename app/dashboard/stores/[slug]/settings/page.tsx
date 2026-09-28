@@ -553,7 +553,7 @@ A: 可以，地點為台北車站。`}</pre>
 
           <div>
             <label htmlFor="theme_hero_file" className="block text-sm font-medium text-emerald-900 mb-1.5">
-              Hero 大圖（首頁頂部）
+              首屏大圖（首頁頂部）
             </label>
             {theme.heroUrl && (
               <div className="mb-3 flex items-center gap-3">
@@ -569,7 +569,7 @@ A: 可以，地點為台北車站。`}</pre>
                     name="theme_remove_hero"
                     className="w-4 h-4 rounded text-red-600"
                   />
-                  移除 Hero
+                  移除首屏圖
                 </label>
               </div>
             )}
@@ -800,7 +800,7 @@ A: 可以，地點為台北車站。`}</pre>
               htmlFor="layout_hero_style"
               className="block text-sm font-medium text-emerald-900 mb-2"
             >
-              Hero 樣式
+              首屏版型
             </label>
             <select
               id="layout_hero_style"
@@ -825,7 +825,7 @@ A: 可以，地點為台北車站。`}</pre>
                 htmlFor="layout_hero_eyebrow"
                 className="block text-sm font-medium text-emerald-900 mb-2"
               >
-                Hero Eyebrow（小標）
+                首屏小標
               </label>
               <input
                 id="layout_hero_eyebrow"
@@ -837,7 +837,7 @@ A: 可以，地點為台北車站。`}</pre>
                 className="w-full rounded-xl border border-emerald-100 bg-white px-4 py-3 text-sm outline-none focus:border-emerald-600 focus:ring-2 focus:ring-emerald-100"
               />
               <p className="text-xs text-emerald-900/55 mt-2">
-                Magazine / Split / Minimal 樣式會顯示，全大寫小字
+                「雜誌封面」「左右分割」「極簡文字」版型會顯示，英文字母預設轉全大寫小字
               </p>
             </div>
             <div>
@@ -845,7 +845,7 @@ A: 可以，地點為台北車站。`}</pre>
                 htmlFor="layout_hero_image_side"
                 className="block text-sm font-medium text-emerald-900 mb-2"
               >
-                Split 圖片位置
+                左右分割的圖片位置
               </label>
               <select
                 id="layout_hero_image_side"
@@ -857,7 +857,7 @@ A: 可以，地點為台北車站。`}</pre>
                 <option value="right">文字在左、圖在右</option>
               </select>
               <p className="text-xs text-emerald-900/55 mt-2">
-                只在 Hero 樣式選「左右分割」時生效
+                只在首屏版型選「左右分割」時生效
               </p>
             </div>
           </div>
@@ -867,7 +867,7 @@ A: 可以，地點為台北車站。`}</pre>
               htmlFor="layout_hero_subtitle"
               className="block text-sm font-medium text-emerald-900 mb-2"
             >
-              Hero 副標 / 引文（選填）
+              首屏副標 / 引文（選填）
             </label>
             <textarea
               id="layout_hero_subtitle"
@@ -875,7 +875,7 @@ A: 可以，地點為台北車站。`}</pre>
               defaultValue={theme.layout.heroSubtitle ?? ""}
               rows={2}
               maxLength={MAX_HERO_SUBTITLE_LEN}
-              placeholder="一段詩意的副標，給 Split / Magazine / Minimal 用..."
+              placeholder="一段詩意的副標，給左右分割／雜誌封面／極簡文字版型用..."
               className="w-full rounded-xl border border-emerald-100 bg-white px-4 py-3 text-sm outline-none focus:border-emerald-600 focus:ring-2 focus:ring-emerald-100 resize-none"
             />
           </div>
