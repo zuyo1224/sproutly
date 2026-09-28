@@ -3114,7 +3114,7 @@ export function EditorWorkspace({
                     {([
                       { v: "normal", label: "淡" },
                       { v: "strong", label: "深" },
-                      { v: "accent", label: "主色" },
+                      { v: "accent", label: "強調色" },
                     ] as const).map((opt) => (
                       <button
                         key={opt.v}
@@ -3166,7 +3166,7 @@ export function EditorWorkspace({
                     { v: "normal", label: "跟預設" },
                     { v: "faint", label: "更淡" },
                     { v: "strong", label: "同文字" },
-                    { v: "accent", label: "主色" },
+                    { v: "accent", label: "強調色" },
                   ] as const}
                   selected={theme.layout.heroMagazineRuleTone}
                   onSelect={(v) => updateLayout({ heroMagazineRuleTone: v })}
@@ -5649,7 +5649,7 @@ export function EditorWorkspace({
                   cols={4}
                   options={[
                     { v: "normal", label: "跟預設" },
-                    { v: "accent", label: "主色" },
+                    { v: "accent", label: "強調色" },
                     { v: "text", label: "內文色" },
                     { v: "muted", label: "淡" },
                   ] as const}
@@ -6067,7 +6067,7 @@ export function EditorWorkspace({
                       { v: "normal", label: "跟預設" },
                       { v: "soft", label: "淡" },
                       { v: "strong", label: "同文字" },
-                      { v: "accent", label: "主色" },
+                      { v: "accent", label: "強調色" },
                     ] as const}
                     selected={accentBarTone ?? "normal"}
                     onSelect={(v) => patch({ accentBarTone: v })}
@@ -6678,7 +6678,7 @@ export function EditorWorkspace({
                   <OptionGrid
                     options={[
                       { v: "default", label: "跟預設" },
-                      { v: "accent", label: "主色" },
+                      { v: "accent", label: "強調色" },
                       { v: "text", label: "跟品名同深" },
                     ] as const}
                     selected={cardDescTone ?? "default"}
@@ -6744,7 +6744,7 @@ export function EditorWorkspace({
                     cols={4}
                     options={[
                       { v: "normal", label: "跟預設" },
-                      { v: "accent", label: "主色" },
+                      { v: "accent", label: "強調色" },
                       { v: "text", label: "跟品名同深" },
                       { v: "muted", label: "淡" },
                     ] as const}
@@ -6809,7 +6809,7 @@ export function EditorWorkspace({
                   <OptionGrid
                     options={[
                       { v: "default", label: "預設" },
-                      { v: "accent", label: "主色" },
+                      { v: "accent", label: "強調色" },
                       { v: "text", label: "跟品名同深" },
                     ] as const}
                     selected={cardPriceTone ?? "default"}
@@ -6906,7 +6906,7 @@ export function EditorWorkspace({
                     cols={2}
                     options={[
                       { v: "text", label: "跟文字色" },
-                      { v: "accent", label: "全站主色" },
+                      { v: "accent", label: "全站強調色" },
                     ] as const}
                     selected={textureColor ?? "text"}
                     onSelect={(v) => patch({ textureColor: v })}
