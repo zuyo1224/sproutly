@@ -32,7 +32,12 @@ import {
   SECTION_LABELS,
   DEFAULT_SECTION_ORDER,
 } from "@/app/[slug]/_theme";
-import { PRESET_KEYS, FONT_KEYS } from "@/lib/theme-keys";
+import {
+  PRESET_KEYS,
+  FONT_KEYS,
+  sanitizeSectionOrder,
+  withRequiredSections,
+} from "@/lib/theme-keys";
 import { PAGE_SECTION_TOGGLES } from "@/lib/page-section-toggles";
 import { SOCIAL_LINKS } from "@/lib/social-links";
 import { jsonbText } from "@/lib/jsonb-text";
@@ -40,6 +45,7 @@ import { siteHost } from "@/lib/store-schema";
 import { AIEditPanel } from "@/app/_components/ai-edit-panel";
 import { UnsavedChangesGuard } from "@/app/_components/unsaved-changes-guard";
 import { ContactHintInput } from "@/app/_components/contact-hint-input";
+import { SectionOrderInput } from "@/app/_components/section-order-input";
 import {
   LOGO_FILE_ACCEPT,
   PHOTO_FILE_ACCEPT,
@@ -883,28 +889,21 @@ A: 可以，地點為台北車站。`}</pre>
           </div>
 
           <div>
-            <label
-              htmlFor="layout_section_order"
-              className="block text-sm font-medium text-emerald-900 mb-2"
-            >
+            <p className="block text-sm font-medium text-emerald-900 mb-2">
               首頁區塊順序
-            </label>
-            <input
-              id="layout_section_order"
+            </p>
+            <SectionOrderInput
               name="layout_section_order"
-              type="text"
-              defaultValue={theme.layout.sectionOrder.join(",")}
-              className="w-full rounded-xl border border-emerald-100 bg-white px-4 py-3 text-sm font-mono outline-none focus:border-emerald-600 focus:ring-2 focus:ring-emerald-100"
+              defaultOrder={withRequiredSections(
+                sanitizeSectionOrder(
+                  theme.layout.sectionOrder,
+                  DEFAULT_SECTION_ORDER,
+                ),
+              )}
+              labels={SECTION_LABELS}
             />
             <p className="text-xs text-emerald-900/55 mt-2">
-              用英文代號照想要的順序排，中間用逗號隔開。代號對應的區塊：
-              {DEFAULT_SECTION_ORDER.map((key) => (
-                <span key={key} className="inline-block mx-0.5">
-                  <code className="px-1 bg-emerald-50 rounded">{key}</code>
-                  {SECTION_LABELS[key]}
-                </span>
-              ))}
-              。沒寫到的區塊會自動排在最後面。
+              用「上移」「下移」排出首頁由上到下的順序，按儲存才會生效。
             </p>
           </div>
         </section>
