@@ -815,7 +815,7 @@ A: 可以，地點為台北車站。`}</pre>
               ))}
             </select>
             <p className="text-xs text-emerald-900/55 mt-2">
-              full-image / magazine 需要 Hero 圖；minimal 不需要；split 也建議放圖。
+              「全屏沉浸」「雜誌封面」要有首屏圖；「極簡文字」不用；「左右分割」也建議放圖。
             </p>
           </div>
 

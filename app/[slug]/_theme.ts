@@ -51,9 +51,9 @@ export type { PresetKey, FontKey };
 export type { HeroImageSide, HeroStyle, SectionKey };
 export { DEFAULT_SECTION_ORDER };
 export const HERO_STYLES: { key: HeroStyle; label: string; description: string }[] = [
-  { key: "full-image", label: "全屏沉浸", description: "整屏背景圖 + 文字 overlay，最有沉浸感" },
+  { key: "full-image", label: "全屏沉浸", description: "整屏背景圖 + 文字疊在圖上，最有沉浸感" },
   { key: "split", label: "左右分割", description: "左圖右文（或右圖左文），編輯雜誌風" },
-  { key: "minimal", label: "極簡文字", description: "純文字大字 hero，無圖，最少干擾" },
+  { key: "minimal", label: "極簡文字", description: "只有大字、不放圖，最少干擾" },
   { key: "magazine", label: "雜誌封面", description: "上方一行資訊 + 中央大字 + 下方署名" },
 ];
 
