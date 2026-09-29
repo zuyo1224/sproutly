@@ -22,7 +22,18 @@ export async function signUp(formData: FormData) {
 
   // 用 service_role 直接建 user 並標記 email 已驗證（跳過確認信流程）
   // ⚠️ 未來正式上線時應改回正常 signUp flow + 啟用 Confirm email 防止假帳號
-  const admin = createAdminClient();
+  // 伺服器金鑰沒設時 createAdminClient 會直接丟「supabaseKey is required.」，
+  // 沒接住會整頁跳到「這頁暫時打不開」，商家不知道是註冊沒成功。
+  // 接住後留在註冊頁講中文，原文只寫伺服器紀錄（redirect 本身會丟，所以放在 try 外）。
+  let admin: ReturnType<typeof createAdminClient> | null = null;
+  try {
+    admin = createAdminClient();
+  } catch (e) {
+    console.error("signUp createAdminClient failed:", e);
+  }
+  if (!admin) {
+    redirect(withErrorParam("/signup", "註冊服務暫時出了點狀況，請稍後再試"));
+  }
   const { error: createError } = await admin.auth.admin.createUser({
     email,
     password,
