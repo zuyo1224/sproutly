@@ -60,13 +60,13 @@ export const HERO_STYLES: { key: HeroStyle; label: string; description: string }
 // Section 排序（商家可調順序，部分 section 也可隱藏）；SectionKey 與
 // DEFAULT_SECTION_ORDER 見上面 re-export（正本 lib/theme-keys）。
 export const SECTION_LABELS: Record<SectionKey, string> = {
-  hero: "首屏（Hero）",
+  hero: "首屏",
   collections: "選物提案",
   featured: "本月選物",
-  journal: "慢讀（Journal）",
+  journal: "慢讀",
   promise: "品牌承諾",
   testimonials: "顧客評語",
-  faq: "常見問題（FAQ）",
+  faq: "常見問題",
   stats: "數字 / 成就",
   partners: "合作夥伴 / 媒體",
   gallery: "圖片相簿",

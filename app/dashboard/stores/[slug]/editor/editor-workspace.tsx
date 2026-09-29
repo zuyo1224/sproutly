@@ -1916,7 +1916,7 @@ export function EditorWorkspace({
           );
         })()}
         {activeTab === "section" && selectedSection === "hero" && (
-          <PanelSection title="首屏（Hero）區段">
+          <PanelSection title="首屏區段">
             <Field label="樣式">
               <select
                 value={theme.layout.heroStyle}
@@ -3919,7 +3919,7 @@ export function EditorWorkspace({
         )}
 
         {activeTab === "section" && selectedSection === "partners" && (
-          <PanelSection title="合作夥伴 / 媒體 logos">
+          <PanelSection title="合作夥伴 / 媒體標誌">
             <Field label="小標">
               <input
                 type="text"
@@ -4151,7 +4151,7 @@ export function EditorWorkspace({
         )}
 
         {activeTab === "section" && selectedSection === "faq" && (
-          <PanelSection title="常見問題（FAQ）區段">
+          <PanelSection title="常見問題區段">
             <Field label="小標">
               <input
                 type="text"
@@ -7019,7 +7019,7 @@ export function EditorWorkspace({
                   onSelect={(v) => patch({ opacity: v })}
                 />
                 <HintRow showClear={opacity} onClear={() => patch({ opacity: null })}>
-                  讓次要 section（合作 / 數字 / FAQ）變淡，襯托 hero 跳出
+                  讓次要區塊（合作夥伴、數字、常見問題）變淡，襯托首屏跳出
                 </HintRow>
               </Field>
               <Field label="濾鏡">
@@ -7310,7 +7310,7 @@ export function EditorWorkspace({
         )}
 
         {activeTab === "content" && (
-          <PanelSection title="頁尾（Footer）">
+          <PanelSection title="頁尾">
             <p className="text-[11px] text-stone-500 leading-relaxed -mt-2">
               頁尾 tagline、店面資訊、社群連結上方的小標，與訂單追蹤連結文字。空白會用預設值。
             </p>
