@@ -285,8 +285,8 @@ const ADDABLE_BLOCKS: { key: SectionKey; label: string; description: string }[] 
   { key: "testimonials", label: "顧客評語", description: "3 個 quote card" },
   { key: "faq", label: "常見問題", description: "Accordion 展開式問答" },
   { key: "stats", label: "數字 / 成就", description: "4 個大數字 + 標籤" },
-  { key: "partners", label: "合作夥伴", description: "logo 灰階展示" },
-  { key: "gallery", label: "圖片相簿", description: "3 欄圖片網格 + caption" },
+  { key: "partners", label: "合作夥伴", description: "標誌灰階展示" },
+  { key: "gallery", label: "圖片相簿", description: "3 欄圖片網格＋圖說" },
 ];
 
 type EditorTheme = {
@@ -1625,7 +1625,7 @@ export function EditorWorkspace({
             {activeTab === "section"
               ? "拖曳排序 / 點選編輯"
               : activeTab === "design"
-                ? "色彩 / Logo"
+                ? "色彩 / 標誌"
                 : activeTab === "ai"
                   ? "用自然語言改設計"
                   : "Tagline / 子頁開關"}
@@ -2088,7 +2088,7 @@ export function EditorWorkspace({
                       type="button"
                       onClick={() => update("heroUrl", null)}
                       className="rounded-lg border border-stone-200 text-stone-600 text-xs px-3 hover:bg-stone-50 transition"
-                      title="移除 hero 圖（minimal 樣式不需要）"
+                      title="移除首屏圖（極簡樣式不需要）"
                     >
                       移除
                     </button>
@@ -2240,7 +2240,7 @@ export function EditorWorkspace({
                 不像同一句話。收緊會讓它們結成一塊
               </p>
             </Field>
-            <Field label="Tagline（主標）">
+            <Field label="主標">
               <textarea
                 value={theme.tagline}
                 onChange={(e) => update("tagline", e.target.value)}
@@ -2297,7 +2297,7 @@ export function EditorWorkspace({
                     })}
                   />
                   <p className={hintClass}>
-                    四種版型都會套用。副標壓在 hero 照片上時，淡文字色配常規字重讀起來很吃力，
+                    四種版型都會套用。副標壓在首屏照片上時，淡文字色配常規字重讀起來很吃力，
                     加一點重量比把顏色調深不傷版面
                   </p>
                 </Field>
@@ -2368,7 +2368,7 @@ export function EditorWorkspace({
                 onChange={(v) => updateLayout({ heroCtaFontScale: v })}
               />
               <p className={hintClass}>
-                四種版型的按鈕（含次要按鈕）一起套。按鈕是 hero 上唯一可以按的東西，
+                四種版型的按鈕（含次要按鈕）一起套。按鈕是首屏上唯一可以按的東西，
                 但原本的字級固定不動——主標拉大之後，按鈕會被主標壓成最不起眼的一行；
                 雜誌版型那條更小（跟下面署名那行同一個字級），手機上不容易看出來可以按。
                 放大時按鈕的內距會跟著長，形狀不會被字撐爆
@@ -2417,7 +2417,7 @@ export function EditorWorkspace({
               <p className={hintClass}>
                 按鈕文字有多重。原本兩種：實心／描邊那種按鈕是中等，帶底線的連結型是
                 跟內文一樣細——連結型的字放大之後容易看起來像一行普通的字，加粗會更像
-                可以按的；反過來整個 hero 走輕盈路線時，也可以把按鈕退細一點
+                可以按的；反過來整個首屏走輕盈路線時，也可以把按鈕退細一點
               </p>
             </Field>
             <Field label="按鈕顏色">
@@ -3937,7 +3937,7 @@ export function EditorWorkspace({
             </Field>
             {theme.layout.partners.length === 0 ? (
               <p className="text-sm text-stone-600">
-                還沒加 partner，先加一個 logo。Logo URL 用任何公開 HTTPS 圖片。
+                還沒加合作夥伴，先加一個標誌。標誌圖片網址用任何 https 開頭的公開圖片。
               </p>
             ) : (
               <div className="space-y-3">
@@ -3964,8 +3964,8 @@ export function EditorWorkspace({
                         onChange={(e) =>
                           updateListItem<PartnerItem>("partners", i, { logoUrl: e.target.value })
                         }
-                        aria-label={`第 ${i + 1} 個合作夥伴 Logo 網址`}
-                        placeholder="Logo URL（https://...）"
+                        aria-label={`第 ${i + 1} 個合作夥伴標誌網址`}
+                        placeholder="標誌圖片網址（https://...）"
                         className="flex-1 rounded border border-stone-200 px-2 py-1.5 text-xs font-mono outline-none focus:border-emerald-600 focus:ring-2 focus:ring-emerald-100"
                       />
                       <button
@@ -3974,7 +3974,7 @@ export function EditorWorkspace({
                           setAssetPickerMode({ kind: "partner-logo", index: i })
                         }
                         title="從圖庫挑"
-                        aria-label={`從圖庫挑第 ${i + 1} 個合作夥伴 Logo`}
+                        aria-label={`從圖庫挑第 ${i + 1} 個合作夥伴標誌`}
                         className="px-2 rounded bg-emerald-700 text-white text-xs hover:bg-emerald-800 transition"
                       >
                         ✦
@@ -4013,7 +4013,7 @@ export function EditorWorkspace({
                     />
                     {p.href && p.href.trim() && !socialUrl(p.href) && (
                       <p className="text-[10px] text-amber-800 bg-amber-50 border border-amber-200 rounded-lg px-2 py-1.5">
-                        這串存檔後不會變成連結，logo 會照常顯示但點不了。請貼完整網址，例如
+                        這串存檔後不會變成連結，標誌會照常顯示但點不了。請貼完整網址，例如
                         https://www.example.com/shop。
                       </p>
                     )}
@@ -4025,7 +4025,7 @@ export function EditorWorkspace({
               onClick={() => addListItem("partners")}
               count={theme.layout.partners.length}
               max={12}
-              label="+ 加一個 logo"
+              label="+ 加一個標誌"
             />
           </PanelSection>
         )}
@@ -4081,7 +4081,7 @@ export function EditorWorkspace({
                         updateListItem<GalleryItem>("gallery", i, { url: e.target.value })
                       }
                       aria-label={`相簿第 ${i + 1} 張圖片網址`}
-                      placeholder="圖片 URL（https://...）"
+                      placeholder="圖片網址（https://...）"
                       className="w-full rounded border border-stone-200 px-2 py-1.5 text-xs font-mono outline-none focus:border-emerald-600 focus:ring-2 focus:ring-emerald-100"
                     />
                     {/* 公開頁這張走 next/image，只吃 https:// 開頭的完整網址。判不過的字串
@@ -4107,7 +4107,7 @@ export function EditorWorkspace({
                         })
                       }
                       aria-label={`相簿第 ${i + 1} 張圖說`}
-                      placeholder="圖說 / caption（選填）"
+                      placeholder="圖說（選填）"
                       className={listInputClass}
                     />
                   </ListItemCard>
@@ -4122,7 +4122,7 @@ export function EditorWorkspace({
                 aria-describedby="editor-gallery-count"
                 className="rounded-lg border border-dashed border-stone-300 hover:border-emerald-400 hover:bg-emerald-50/50 py-2.5 text-xs text-emerald-800 transition disabled:opacity-40 disabled:cursor-not-allowed"
               >
-                + 貼 URL
+                + 貼網址
               </button>
               <button
                 type="button"
@@ -4200,7 +4200,7 @@ export function EditorWorkspace({
                       onChange={(e) =>
                         updateFaq(i, { question: e.target.value })
                       }
-                      aria-label={`FAQ 第 ${i + 1} 題問題`}
+                      aria-label={`常見問題第 ${i + 1} 題問題`}
                       placeholder="問題..."
                       className={`${listInputClass} font-medium`}
                     />
@@ -4210,7 +4210,7 @@ export function EditorWorkspace({
                         updateFaq(i, { answer: e.target.value })
                       }
                       rows={3}
-                      aria-label={`FAQ 第 ${i + 1} 題答案`}
+                      aria-label={`常見問題第 ${i + 1} 題答案`}
                       placeholder="答案... 換行用 Enter"
                       className={`${listInputClass} resize-none`}
                     />
@@ -4222,7 +4222,7 @@ export function EditorWorkspace({
               onClick={addFaq}
               count={theme.layout.faqItems.length}
               max={20}
-              label="+ 加一筆 FAQ"
+              label="+ 加一筆問答"
             />
             <Field label="一進來先攤開">
               <OptionGrid
@@ -4859,7 +4859,7 @@ export function EditorWorkspace({
               key: "recede",
               group: "section",
               label: "低調襯底",
-              hint: "淡化 + 緊湊 + 小標（連同上面那行小標、內文一起縮，行距也收）+ 卡片靠攏 + 滑過不動（次要區段退到後面，襯托 hero / 選物。適合 partners / stats / faq）",
+              hint: "淡化 + 緊湊 + 小標（連同上面那行小標、內文一起縮，行距也收）+ 卡片靠攏 + 滑過不動（次要區段退到後面，襯托首屏 / 選物。適合合作夥伴、數字、常見問題）",
               fields: {
                 opacity: "muted",
                 paddingScale: "compact",
@@ -6106,7 +6106,7 @@ export function EditorWorkspace({
                   onSelect={(v) => patch({ shadow: v })}
                 />
                 <HintRow showClear={shadow} onClear={() => patch({ shadow: null })}>
-                  有設背景色的 section 加陰影像卡片浮起來
+                  有設背景色的區塊加陰影，像卡片浮起來
                 </HintRow>
               </Field>
               <Field label="圓角">
@@ -6247,7 +6247,7 @@ export function EditorWorkspace({
                   擺出來會是按了畫面不動的死按鈕（其他段的卡片照片歸上面那四格管）。 */}
               {selectedSection === "partners" && (
                 <>
-              <Field label="合作 logo 大小">
+              <Field label="合作標誌大小">
                 <OptionGrid
                   options={SECTION_SCALE_OPTIONS}
                   selected={partnerLogoScale ?? "default"}
@@ -6257,7 +6257,7 @@ export function EditorWorkspace({
                   那排 logo 本身多高（手機 / 平板 / 桌機一起跟著調）。預設值是照橫式字標挑的，方形的商圈標章、上圖下字的兩層式 logo 在裡面只剩一小塊是字，選大才認得出來；只放兩三個 logo 想排得安靜一點就選小。上面那幾格照片的設定管的是卡片裡的照片，動不到這排
                 </HintRow>
               </Field>
-              <Field label="合作 logo 濃淡">
+              <Field label="合作標誌濃淡">
                 <OptionGrid
                   options={[
                     { v: "faint", label: "更淡" },
@@ -7106,7 +7106,7 @@ export function EditorWorkspace({
                 地址、營業時間、社群、版權那幾行的深淺跟中間那幾條短線都會自己從它算出來
               </p>
             </Field>
-            <Field label="Logo（顯示在 nav）">
+            <Field label="標誌（顯示在頁首導覽列）">
               {theme.logoUrl ? (
                 <div className="space-y-2">
                   <div className="relative h-16 rounded-lg overflow-hidden bg-stone-100 border border-stone-200 flex items-center justify-center p-2">
@@ -7123,7 +7123,7 @@ export function EditorWorkspace({
                       onClick={() => setAssetPickerMode({ kind: "logo" })}
                       className="flex-1 rounded-lg bg-emerald-700 text-white text-xs py-2 hover:bg-emerald-800 transition"
                     >
-                      ✦ 換 Logo
+                      ✦ 換標誌
                     </button>
                     <button
                       type="button"
@@ -7140,11 +7140,11 @@ export function EditorWorkspace({
                   onClick={() => setAssetPickerMode({ kind: "logo" })}
                   className="w-full h-16 rounded-lg border border-dashed border-stone-300 hover:border-emerald-400 hover:bg-emerald-50/30 transition text-xs text-stone-500"
                 >
-                  ✦ 從圖庫挑 Logo
+                  ✦ 從圖庫挑標誌
                 </button>
               )}
             </Field>
-            <Field label="主色 Primary">
+            <Field label="主色">
               <div className="flex gap-2">
                 <input
                   type="color"
@@ -7162,7 +7162,7 @@ export function EditorWorkspace({
                 />
               </div>
             </Field>
-            <Field label="強調色 Accent">
+            <Field label="強調色">
               <div className="flex gap-2">
                 <input
                   type="color"
@@ -7185,7 +7185,7 @@ export function EditorWorkspace({
 
         {activeTab === "content" && (
           <PanelSection title="文案 / 子頁開關">
-            <Field label="主 tagline">
+            <Field label="主標">
               <textarea
                 value={theme.tagline}
                 onChange={(e) => update("tagline", e.target.value)}
@@ -7232,9 +7232,9 @@ export function EditorWorkspace({
         {activeTab === "content" && (
           <PanelSection title="子頁標題">
             <p className="text-[11px] text-stone-500 leading-relaxed -mt-2">
-              關於頁 / 聯絡頁 / 商品頁的 eyebrow + 大字標題。空白會用預設值。
+              關於頁 / 聯絡頁 / 商品頁的小標＋大字標題。空白會用預設值。
             </p>
-            <Field label="關於頁 eyebrow">
+            <Field label="關於頁小標">
               <input
                 type="text"
                 value={theme.homepage.aboutEyebrow}
@@ -7258,7 +7258,7 @@ export function EditorWorkspace({
                 className={inputClass}
               />
             </Field>
-            <Field label="聯絡頁 eyebrow">
+            <Field label="聯絡頁小標">
               <input
                 type="text"
                 value={theme.homepage.contactEyebrow}
@@ -7282,7 +7282,7 @@ export function EditorWorkspace({
                 className={inputClass}
               />
             </Field>
-            <Field label="商品頁 eyebrow">
+            <Field label="商品頁小標">
               <input
                 type="text"
                 value={theme.homepage.shopEyebrow}
@@ -7312,9 +7312,9 @@ export function EditorWorkspace({
         {activeTab === "content" && (
           <PanelSection title="頁尾">
             <p className="text-[11px] text-stone-500 leading-relaxed -mt-2">
-              頁尾 tagline、店面資訊、社群連結上方的小標，與訂單追蹤連結文字。空白會用預設值。
+              頁尾標語、店面資訊、社群連結上方的小標，與訂單追蹤連結文字。空白會用預設值。
             </p>
-            <Field label="tagline 上方小標">
+            <Field label="標語上方小標">
               <input
                 type="text"
                 value={theme.homepage.footerWordsLabel}
@@ -7375,7 +7375,7 @@ export function EditorWorkspace({
         onSelect={handleAssetSelected}
         title={
           assetPickerMode?.kind === "partner-logo"
-            ? "從圖庫挑 Logo（建議搜 brand / logo）"
+            ? "從圖庫挑標誌（建議搜 brand / logo）"
             : "從圖庫挑圖"
         }
       />
@@ -7424,8 +7424,8 @@ export function EditorWorkspace({
                   { keys: ["?"], desc: "開／關這個說明" },
                   { keys: ["Esc"], desc: "關掉浮層、編輯面板" },
                   { keys: ["雙擊", "標題"], desc: "直接改文字（不用回左邊欄）" },
-                  { keys: ["拖動", "已選元素"], desc: "自由定位（Hero 主標等元素）" },
-                  { keys: ["點 iframe", "section"], desc: "跳到對應的編輯面板" },
+                  { keys: ["拖動", "已選元素"], desc: "自由定位（首屏主標等元素）" },
+                  { keys: ["點預覽", "區塊"], desc: "跳到對應的編輯面板" },
                 ] as { keys: string[]; desc: string }[]
               ).map((row, i) => (
                 <div key={i} className="flex items-center justify-between gap-4">
@@ -7775,7 +7775,7 @@ function ListItemCard({
  * 清單區塊底下那顆虛線的「+ 加一筆」按鈕（數字／logo／FAQ／評語 4 處）。
  * 之前 4 處各抄一份一模一樣的 <button>＋「(目前/上限)」小標，改一格
  * （例如虛線色或 hover 色要換）另外 3 處不會跟著動，所以收成一支。
- * 滿了（count >= max）就 disabled，跟原本一樣；相簿那顆「+ 貼 URL」是 text-xs、
+ * 滿了（count >= max）就 disabled，跟原本一樣；相簿那顆「+ 貼網址」是 text-xs、
  * 沒 w-full mt-3 也沒計數，不是同一款留在原地。
  */
 function AddListButton({
