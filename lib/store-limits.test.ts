@@ -215,10 +215,10 @@ describe("storeThemeTextLimitError", () => {
     const msg = (patch: Partial<typeof okTheme>) =>
       storeThemeTextLimitError({ ...okTheme, ...patch });
     assert.equal(msg({ tagline: rep(501) }), "底部標語最多 500 個字");
-    assert.equal(msg({ heroEyebrow: rep(201) }), "Hero 小標最多 200 個字");
-    assert.equal(msg({ heroSubtitle: rep(1001) }), "Hero 副標最多 1,000 個字");
+    assert.equal(msg({ heroEyebrow: rep(201) }), "首屏小標最多 200 個字");
+    assert.equal(msg({ heroSubtitle: rep(1001) }), "首屏副標最多 1,000 個字");
     assert.equal(msg({ collectionsIntro: rep(501) }), "選物提案中標最多 500 個字");
-    assert.equal(msg({ promise: rep(2001) }), "Promise 承諾文字最多 2,000 個字");
+    assert.equal(msg({ promise: rep(2001) }), "承諾文字最多 2,000 個字");
     assert.equal(msg({ visitTitle: rep(101) }), "來店標題最多 100 個字");
     assert.equal(msg({ businessHours: rep(2001) }), "營業時間最多 2,000 個字");
     assert.equal(msg({ faq: rep(5001) }), "常見問題最多 5,000 個字");

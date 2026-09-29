@@ -379,7 +379,7 @@ export default async function StoreSettingsPage({
 
           <div>
             <label htmlFor="faq" className="block text-sm font-medium text-emerald-900 mb-1.5">
-              常見問題 FAQ
+              常見問題
             </label>
             <textarea
               id="faq"
@@ -519,14 +519,14 @@ A: 可以，地點為台北車站。`}</pre>
 
           <div>
             <label htmlFor="theme_logo_file" className="block text-sm font-medium text-emerald-900 mb-1.5">
-              Logo
+              標誌
             </label>
             {theme.logoUrl && (
               <div className="mb-3 flex items-center gap-3">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
                   src={theme.logoUrl}
-                  alt="Logo"
+                  alt="目前的店家標誌"
                   className="h-14 w-14 rounded-lg object-contain bg-emerald-50 border border-emerald-100"
                 />
                 <label className="text-sm text-emerald-900/70 flex items-center gap-2">
@@ -535,7 +535,7 @@ A: 可以，地點為台北車站。`}</pre>
                     name="theme_remove_logo"
                     className="w-4 h-4 rounded text-red-600"
                   />
-                  移除 Logo
+                  移除標誌
                 </label>
               </div>
             )}
@@ -547,7 +547,7 @@ A: 可以，地點為台北車站。`}</pre>
               className="block w-full text-sm text-emerald-900/80 file:mr-4 file:py-2.5 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-medium file:bg-emerald-50 file:text-emerald-800 hover:file:bg-emerald-100 file:transition"
             />
             <p className="mt-1.5 text-xs text-emerald-900/50">
-              建議方型或 SVG。沒上傳時店面 header 會顯示店名文字
+              建議方形圖，或 SVG 向量圖。沒上傳時店面頁首會顯示店名文字
             </p>
           </div>
 
@@ -560,7 +560,7 @@ A: 可以，地點為台北車站。`}</pre>
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
                   src={theme.heroUrl}
-                  alt="Hero"
+                  alt="目前的首屏大圖"
                   className="h-20 w-32 rounded-lg object-cover bg-emerald-50 border border-emerald-100"
                 />
                 <label className="text-sm text-emerald-900/70 flex items-center gap-2">
@@ -581,7 +581,7 @@ A: 可以，地點為台北車站。`}</pre>
               className="block w-full text-sm text-emerald-900/80 file:mr-4 file:py-2.5 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-medium file:bg-emerald-50 file:text-emerald-800 hover:file:bg-emerald-100 file:transition"
             />
             <p className="mt-1.5 text-xs text-emerald-900/50">
-              建議 1920×1080 以上，會自動 cover 縮放
+              建議 1920×1080 以上，會自動縮放填滿版面
             </p>
           </div>
 
@@ -657,7 +657,7 @@ A: 可以，地點為台北車站。`}</pre>
             </p>
             <span className="block mt-3 h-px w-10 bg-emerald-600/60" />
             <p className="text-xs text-emerald-900/50 mt-3" style={{ lineHeight: 1.7 }}>
-              選物提案標題、Promise 承諾、來店標題、動畫開關。留空就用預設文字
+              選物提案標題、承諾文字、來店標題、動畫開關。留空就用預設文字
             </p>
           </div>
 
@@ -727,7 +727,7 @@ A: 可以，地點為台北車站。`}</pre>
 
           <div>
             <label htmlFor="hp_promise" className="block text-sm font-medium text-emerald-900 mb-1.5">
-              Promise 承諾文字（一行一句）
+              承諾文字（一行一句）
             </label>
             <textarea
               id="hp_promise"
@@ -769,7 +769,7 @@ A: 可以，地點為台北車站。`}</pre>
                 啟用首頁滾動動畫
               </p>
               <p className="text-sm text-emerald-900/60 mt-1">
-                打開後每個 section 進入視窗時會有克制版的 fade in（1 秒淡入 + 上滑 24px）。關閉就完全靜止
+                打開後每個區塊捲到畫面裡時會輕輕浮現（1 秒淡入，同時往上移一點點）。關閉就完全靜止
               </p>
             </div>
           </label>

@@ -103,10 +103,10 @@ export function storeThemeTextLimitError(f: StoreThemeTextFields): string | null
     return `底部標語最多 ${MAX_THEME_TAGLINE_LEN} 個字`;
   }
   if (over(f.heroEyebrow, MAX_HERO_EYEBROW_LEN)) {
-    return `Hero 小標最多 ${MAX_HERO_EYEBROW_LEN} 個字`;
+    return `首屏小標最多 ${MAX_HERO_EYEBROW_LEN} 個字`;
   }
   if (over(f.heroSubtitle, MAX_HERO_SUBTITLE_LEN)) {
-    return `Hero 副標最多 ${MAX_HERO_SUBTITLE_LEN.toLocaleString("zh-TW")} 個字`;
+    return `首屏副標最多 ${MAX_HERO_SUBTITLE_LEN.toLocaleString("zh-TW")} 個字`;
   }
   if (over(f.collectionsIntro, MAX_COLLECTIONS_INTRO_LEN)) {
     return `選物提案中標最多 ${MAX_COLLECTIONS_INTRO_LEN} 個字`;
@@ -120,7 +120,7 @@ export function storeThemeTextLimitError(f: StoreThemeTextFields): string | null
     }
   }
   if (over(f.promise, MAX_PROMISE_LEN)) {
-    return `Promise 承諾文字最多 ${MAX_PROMISE_LEN.toLocaleString("zh-TW")} 個字`;
+    return `承諾文字最多 ${MAX_PROMISE_LEN.toLocaleString("zh-TW")} 個字`;
   }
   if (over(f.visitTitle, MAX_VISIT_TITLE_LEN)) {
     return `來店標題最多 ${MAX_VISIT_TITLE_LEN} 個字`;
