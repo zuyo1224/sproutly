@@ -30,7 +30,6 @@ import {
   HOMEPAGE_DEFAULT_COLLECTIONS,
   HERO_STYLES,
   SECTION_LABELS,
-  DEFAULT_SECTION_ORDER,
 } from "@/app/[slug]/_theme";
 import {
   PRESET_KEYS,
@@ -895,10 +894,7 @@ A: 可以，地點為台北車站。`}</pre>
             <SectionOrderInput
               name="layout_section_order"
               defaultOrder={withRequiredSections(
-                sanitizeSectionOrder(
-                  theme.layout.sectionOrder,
-                  DEFAULT_SECTION_ORDER,
-                ),
+                sanitizeSectionOrder(theme.layout.sectionOrder),
               )}
               labels={SECTION_LABELS}
             />

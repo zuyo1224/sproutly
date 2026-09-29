@@ -10,7 +10,6 @@ import { readSocialLinks } from "@/lib/social-links";
 import { redirect } from "next/navigation";
 import { buildUrl, withErrorParam } from "@/lib/url";
 import {
-  DEFAULT_SECTION_ORDER,
   isFontKey,
   isHeroImageSide,
   isHeroStyle,
@@ -151,14 +150,14 @@ export async function updateStore(slug: string, formData: FormData) {
   const heroImageSideRaw = String(formData.get("layout_hero_image_side") ?? "left");
   const heroImageSide = isHeroImageSide(heroImageSideRaw) ? heroImageSideRaw : "left";
 
-  // 設定頁的排序 UI 只列基本 6 個 section（沒有編輯器那五個可加的區塊），所以這裡
-  // 也只認這 6 個；編輯器存檔那邊認的是完整 11 個（lib/theme-keys 的 SECTION_KEYS）。
+  // 設定頁的排序 UI 會把商家在編輯器加的區塊（顧客評語、常見問題等）一起列出來排，
+  // 所以這裡跟編輯器存檔一樣認完整 11 個。以前只認基本 6 個，商家在編輯器加了區塊、
+  // 回設定頁按儲存，那些區塊就從首頁消失。加／移除區塊仍只在編輯器做。
   const sectionOrder = withRequiredSections(
     sanitizeSectionOrder(
       String(formData.get("layout_section_order") ?? "")
         .split(",")
         .map((s) => s.trim()),
-      DEFAULT_SECTION_ORDER,
     ),
   );
 

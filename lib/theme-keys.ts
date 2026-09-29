@@ -176,7 +176,7 @@ export const DEFAULT_SECTION_ORDER: SectionKey[] = [
 ];
 
 // 把商家存的 section 順序整理乾淨：不是陣列當空的、只留 allowed 裡有的 key、重複的
-// 留第一次出現的位置。allowed 預設是完整 11 個；設定頁排序 UI 只列基本 6 個，就傳
+// 留第一次出現的位置。allowed 預設是完整 11 個；只想留基本 6 個時傳
 // DEFAULT_SECTION_ORDER 進來。
 export function sanitizeSectionOrder(
   raw: unknown,
