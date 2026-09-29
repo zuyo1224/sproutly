@@ -6,6 +6,7 @@ import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { redirect } from "next/navigation";
 import { withErrorParam } from "@/lib/url";
+import { authErrorMessage } from "@/lib/auth-error-message";
 
 export async function signUp(formData: FormData) {
   const email = normalizeEmail(formString(formData, "email"));
@@ -35,7 +36,7 @@ export async function signUp(formData: FormData) {
   if (createError && /already.*registered|already.*exists/i.test(createError.message)) {
     const { data: list, error: listError } = await admin.auth.admin.listUsers();
     if (listError) {
-      redirect(withErrorParam("/signup", listError.message));
+      redirect(withErrorParam("/signup", authErrorMessage(listError)));
     }
     const existing = list?.users?.find((u) => u.email === email);
     if (existing) {
@@ -50,13 +51,13 @@ export async function signUp(formData: FormData) {
         }
       );
       if (updateError) {
-        redirect(withErrorParam("/signup", updateError.message));
+        redirect(withErrorParam("/signup", authErrorMessage(updateError)));
       }
     } else {
       redirect(withErrorParam("/signup", "帳號狀態異常，請換 email 或聯絡管理員"));
     }
   } else if (createError) {
-    redirect(withErrorParam("/signup", createError.message));
+    redirect(withErrorParam("/signup", authErrorMessage(createError)));
   }
 
   // 建好之後自動登入
@@ -67,7 +68,7 @@ export async function signUp(formData: FormData) {
   });
 
   if (signInError) {
-    redirect(withErrorParam("/login", signInError.message));
+    redirect(withErrorParam("/login", authErrorMessage(signInError)));
   }
 
   redirect("/dashboard");
@@ -85,7 +86,7 @@ export async function signIn(formData: FormData) {
   const { error } = await supabase.auth.signInWithPassword({ email, password });
 
   if (error) {
-    redirect(withErrorParam("/login", error.message));
+    redirect(withErrorParam("/login", authErrorMessage(error)));
   }
 
   redirect("/dashboard");

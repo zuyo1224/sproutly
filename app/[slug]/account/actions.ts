@@ -6,6 +6,7 @@ import { createClient } from "@/lib/supabase/server";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { buildUrl, withErrorParam } from "@/lib/url";
+import { authErrorMessage } from "@/lib/auth-error-message";
 
 export async function sendCustomerMagicLink(formData: FormData) {
   const email = normalizeEmail(formString(formData, "email"));
@@ -37,7 +38,7 @@ export async function sendCustomerMagicLink(formData: FormData) {
   });
 
   if (error) {
-    redirect(withErrorParam(`/${slug}/account/login`, error.message));
+    redirect(withErrorParam(`/${slug}/account/login`, authErrorMessage(error)));
   }
 
   redirect(buildUrl(`/${slug}/account/login`, { sent: 1, email }));
