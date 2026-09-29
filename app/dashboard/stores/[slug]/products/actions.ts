@@ -12,6 +12,7 @@ import { isPastedRemoteImageUrl } from "@/lib/image-url";
 // 調順序要先拿到整家店「照現在順序排好」的完整清單，破千的店不能只撈第一頁。
 import { fetchAllRows } from "@/lib/fetch-all-rows";
 import { buildUrl, withErrorParam, withQuery } from "@/lib/url";
+import { dbErrorMessage } from "@/lib/db-error-message";
 import { redirect } from "next/navigation";
 
 const BUCKET = "sproutly-products";
@@ -128,7 +129,7 @@ export async function createProduct(slug: string, formData: FormData) {
   });
 
   if (error) {
-    redirect(withErrorParam(baseRedirect, error.message));
+    redirect(withErrorParam(baseRedirect, dbErrorMessage(error)));
   }
 
   redirect(`/dashboard/stores/${slug}/products`);
@@ -191,7 +192,7 @@ export async function updateProduct(
     .eq("id", productId);
 
   if (error) {
-    redirect(withErrorParam(baseRedirect, error.message));
+    redirect(withErrorParam(baseRedirect, dbErrorMessage(error)));
   }
 
   redirect(`/dashboard/stores/${slug}/products`);
@@ -310,7 +311,7 @@ export async function setProductStock(
     .eq("merchant_id", store.id);
 
   if (error) {
-    redirect(errorUrl(error.message));
+    redirect(errorUrl(dbErrorMessage(error)));
   }
 
   redirect(listUrl);
@@ -346,7 +347,7 @@ export async function toggleProductActive(
   // 全部列表，商家在「只看下架」或搜到某件時按上架失敗，紅字是顯了，人卻被丟回
   // 第一頁全部商品，得重新篩一次才找得到剛剛那件再試。
   if (error) {
-    redirect(withErrorParam(listUrl, error.message));
+    redirect(withErrorParam(listUrl, dbErrorMessage(error)));
   }
 
   redirect(listUrl);
@@ -365,7 +366,7 @@ export async function deleteProduct(slug: string, productId: string) {
     redirect(
       withErrorParam(
         `/dashboard/stores/${slug}/products`,
-        error.message,
+        dbErrorMessage(error),
       ),
     );
   }
@@ -432,7 +433,7 @@ export async function moveProductOrder(
     const failed = results.find((res) => res.error);
     // 同上下架：出錯也跳回原本的篩選＋搜尋，不把商家丟回全部列表。
     if (failed?.error) {
-      redirect(withErrorParam(listUrl, failed.error.message));
+      redirect(withErrorParam(listUrl, dbErrorMessage(failed.error)));
     }
   }
 

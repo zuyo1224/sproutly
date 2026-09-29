@@ -8,6 +8,7 @@ import { adjustStock } from "@/lib/stock-restore";
 import { fetchOrderItemsForOrder } from "@/lib/fetch-order-items";
 import { orderStatusUpdates, orderPaymentUpdates } from "@/lib/order-timestamps";
 import { withErrorParam } from "@/lib/url";
+import { dbErrorMessage } from "@/lib/db-error-message";
 
 // 收狀態更新時的合法值跟訂單列表 chip、詳情下拉、匯出白名單同一條 canonical 順序。
 const ALLOWED_STATUS = new Set(ORDER_STATUSES);
@@ -71,7 +72,7 @@ export async function updateOrderStatus(
     redirect(
       withErrorParam(
         `/dashboard/stores/${slug}/orders/${orderId}`,
-        error.message,
+        dbErrorMessage(error),
       ),
     );
   }

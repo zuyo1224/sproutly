@@ -9,6 +9,7 @@ import { readPageSectionToggles } from "@/lib/page-section-toggles";
 import { readSocialLinks } from "@/lib/social-links";
 import { redirect } from "next/navigation";
 import { buildUrl, withErrorParam } from "@/lib/url";
+import { dbErrorMessage } from "@/lib/db-error-message";
 import {
   isFontKey,
   isHeroImageSide,
@@ -88,7 +89,7 @@ export async function updateStore(slug: string, formData: FormData) {
     try {
       logoUrl = await uploadImage(logoFile, "sproutly-products", `logos/${store.id}`);
     } catch (e) {
-      const msg = e instanceof Error ? e.message : "Logo 上傳失敗";
+      const msg = e instanceof Error ? e.message : "標誌上傳失敗，請稍後再試";
       redirect(withErrorParam(baseRedirect, msg));
     }
   }
@@ -97,7 +98,7 @@ export async function updateStore(slug: string, formData: FormData) {
     try {
       heroUrl = await uploadImage(heroFile, "sproutly-products", `heroes/${store.id}`);
     } catch (e) {
-      const msg = e instanceof Error ? e.message : "Hero 圖上傳失敗";
+      const msg = e instanceof Error ? e.message : "首屏大圖上傳失敗，請稍後再試";
       redirect(withErrorParam(baseRedirect, msg));
     }
   }
@@ -226,7 +227,7 @@ export async function updateStore(slug: string, formData: FormData) {
     .eq("id", store.id);
 
   if (error) {
-    redirect(withErrorParam(baseRedirect, error.message));
+    redirect(withErrorParam(baseRedirect, dbErrorMessage(error)));
   }
 
   redirect(buildUrl(baseRedirect, { saved: 1 }));

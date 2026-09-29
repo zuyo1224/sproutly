@@ -5,6 +5,7 @@ import { storeTextLimitError } from "@/lib/store-limits";
 import { requireUser } from "@/lib/require-user";
 import { redirect } from "next/navigation";
 import { withErrorParam } from "@/lib/url";
+import { dbErrorMessage } from "@/lib/db-error-message";
 
 // app/ 底下的頂層靜態路由段（含 Next 自動掛在根路徑的 metadata 圖），
 // 靜態段優先於 [slug]，slug 撞名整間店面會被平台頁蓋掉、永遠打不開
@@ -82,7 +83,7 @@ export async function createStore(formData: FormData) {
   });
 
   if (error) {
-    redirect(withErrorParam("/dashboard/new-store", error.message));
+    redirect(withErrorParam("/dashboard/new-store", dbErrorMessage(error, { "23505": `網址「${slug}」已被使用，換一個試試` })));
   }
 
   redirect("/dashboard");

@@ -21,7 +21,11 @@ export async function uploadImage(
     contentType,
     upsert: false,
   });
-  if (error) throw new Error("上傳失敗：" + error.message);
+  // storage 回的 error.message 是英文，不往畫面丟；原文留在伺服器紀錄裡查問題用。
+  if (error) {
+    console.error("uploadImage failed:", error.message);
+    throw new Error("圖片上傳失敗，請稍後再試");
+  }
   const {
     data: { publicUrl },
   } = admin.storage.from(bucket).getPublicUrl(path);

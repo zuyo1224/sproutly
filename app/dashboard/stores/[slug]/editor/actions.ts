@@ -11,6 +11,7 @@ import {
   MAX_VISIT_TITLE_LEN,
 } from "@/lib/store-limits";
 import { requireUser } from "@/lib/require-user";
+import { dbErrorMessage } from "@/lib/db-error-message";
 import { socialUrl } from "@/lib/contact-href";
 import { cleanMapEmbedUrl } from "@/lib/map-embed-url";
 import {
@@ -217,7 +218,7 @@ type EditorPayload = {
 
 
 export async function saveEditorState(slug: string, payload: EditorPayload) {
-  if (!slug) return { error: "missing slug" };
+  if (!slug) return { error: "找不到這家店，請重新整理再試" };
 
   const { supabase, user } = await requireUser();
 
@@ -641,6 +642,6 @@ export async function saveEditorState(slug: string, payload: EditorPayload) {
     .update({ theme: merged })
     .eq("id", store.id);
 
-  if (error) return { error: error.message };
+  if (error) return { error: dbErrorMessage(error) };
   return { ok: true };
 }
