@@ -1,6 +1,7 @@
 import { createClient } from "@/lib/supabase/server";
 import { NextResponse } from "next/server";
 import { withErrorParam } from "@/lib/url";
+import { authErrorMessage } from "@/lib/auth-error-message";
 
 export async function GET(request: Request) {
   const { searchParams, origin } = new URL(request.url);
@@ -17,12 +18,16 @@ export async function GET(request: Request) {
   const { error } = await supabase.auth.exchangeCodeForSession(code);
 
   if (error) {
+    // 英文原文（「invalid request: both auth code and code verifier should be
+    // non-empty」這種）只留伺服器紀錄，網址上帶中文說明。
+    console.error("[auth/callback] exchangeCodeForSession failed:", error.message);
+    const message = authErrorMessage(error);
     if (kind === "customer" && slug) {
       return NextResponse.redirect(
-        withErrorParam(`${origin}/${slug}/account/login`, error.message),
+        withErrorParam(`${origin}/${slug}/account/login`, message),
       );
     }
-    return NextResponse.redirect(withErrorParam(`${origin}/login`, error.message));
+    return NextResponse.redirect(withErrorParam(`${origin}/login`, message));
   }
 
   // 客人流程：upsert sproutly_customers，然後跳回客人指定的 next

@@ -21,10 +21,13 @@ export async function GET(request: Request) {
 
   const apiKey = process.env.PEXELS_API_KEY;
   if (!apiKey) {
+    // 商家看到的是「還沒開通」，設定提示留在伺服器紀錄給站方看。
+    console.error(
+      "[asset-search] PEXELS_API_KEY 沒設。去 https://pexels.com/api/ 申請 free key，加進 Vercel env vars"
+    );
     return NextResponse.json(
       {
-        error:
-          "PEXELS_API_KEY 沒設。去 https://pexels.com/api/ 申請 free key，加進 Vercel env vars",
+        error: "圖庫搜尋還沒開通，請聯絡 Sproutly",
         photos: [],
         next: false,
       },
@@ -59,8 +62,15 @@ export async function GET(request: Request) {
       next: { revalidate: 60 * 60 }, // cache 1 hour
     });
     if (!r.ok) {
+      console.error(`[asset-search] Pexels API ${r.status}`);
       return NextResponse.json(
-        { error: `Pexels API ${r.status}`, photos: [] },
+        {
+          error:
+            r.status === 429
+              ? "圖庫搜尋次數太多了，請過一會兒再試"
+              : "圖庫暫時連不上，請稍後再試",
+          photos: [],
+        },
         { status: 502 }
       );
     }
@@ -92,9 +102,9 @@ export async function GET(request: Request) {
       suggestions: q ? null : FALLBACK_QUERIES,
     });
   } catch (e) {
-    const msg = e instanceof Error ? e.message : "unknown";
+    console.error("[asset-search] fetch failed:", e);
     return NextResponse.json(
-      { error: `fetch error: ${msg}`, photos: [] },
+      { error: "連線不太穩，請稍後再試", photos: [] },
       { status: 500 }
     );
   }

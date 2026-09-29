@@ -49,3 +49,18 @@ describe("對不上就給通用中文，不回英文原文", () => {
     assert.equal(authErrorMessage(null), AUTH_ERROR_FALLBACK);
   });
 });
+
+describe("確認信連結換了瀏覽器打開", () => {
+  it("有 code", () => {
+    assert.equal(
+      authErrorMessage({ code: "flow_state_not_found", message: "invalid flow state, no valid flow state found" }),
+      "請用當初申請的同一個瀏覽器打開信裡的連結，或重新寄一次",
+    );
+  });
+  it("舊版沒 code，只有英文訊息", () => {
+    assert.equal(
+      authErrorMessage({ message: "invalid request: both auth code and code verifier should be non-empty" }),
+      "請用當初申請的同一個瀏覽器打開信裡的連結，或重新寄一次",
+    );
+  });
+});

@@ -19,6 +19,11 @@ const BY_CODE: Record<string, string> = {
   over_request_rate_limit: "嘗試太多次了，請過幾分鐘再試",
   over_sms_send_rate_limit: "嘗試太多次了，請過幾分鐘再試",
   otp_expired: "登入連結已經過期，請重新寄一次",
+  // 確認信／登入連結要在「當初申請的那個瀏覽器」打開；換手機或換 App 內建瀏覽器打開，
+  // 瀏覽器裡沒有那把驗證用的鑰匙，Supabase 會回這幾個代號。
+  flow_state_not_found: "請用當初申請的同一個瀏覽器打開信裡的連結，或重新寄一次",
+  bad_code_verifier: "請用當初申請的同一個瀏覽器打開信裡的連結，或重新寄一次",
+  flow_state_expired: "登入連結已經過期，請重新寄一次",
   signup_disabled: "目前暫停開放註冊",
   user_banned: "這個帳號已被停用，請聯絡管理員",
 };
@@ -30,6 +35,7 @@ const BY_MESSAGE: Array<[RegExp, string]> = [
   [/rate limit|too many requests|security purposes/i, BY_CODE.over_request_rate_limit],
   [/password should be|weak password/i, BY_CODE.weak_password],
   [/invalid.*email|email.*invalid/i, BY_CODE.email_address_invalid],
+  [/code verifier|flow state/i, BY_CODE.flow_state_not_found],
   [/expired/i, BY_CODE.otp_expired],
   [/fetch failed|network|timed? ?out/i, "連線不太穩，請稍後再試"],
 ];

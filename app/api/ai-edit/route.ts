@@ -64,8 +64,10 @@ const SYSTEM_PROMPT = `你是 Sproutly 商家建站平台的 AI 助手，幫商�
 export async function POST(request: Request) {
   const apiKey = process.env.OPENROUTER_API_KEY;
   if (!apiKey) {
+    // 商家看到的是「還沒開通」，設定提示留在伺服器紀錄給站方看。
+    console.error("[ai-edit] OPENROUTER_API_KEY 沒設，去 Vercel env vars 加上");
     return NextResponse.json(
-      { error: "OPENROUTER_API_KEY 沒設。去 Vercel env vars 加上" },
+      { error: "AI 助手還沒開通，請聯絡 Sproutly" },
       { status: 500 }
     );
   }
@@ -74,7 +76,7 @@ export async function POST(request: Request) {
   try {
     body = await request.json();
   } catch {
-    return NextResponse.json({ error: "bad JSON" }, { status: 400 });
+    return NextResponse.json({ error: "送出的內容讀不懂，請重新整理再試" }, { status: 400 });
   }
 
   const userPrompt = String(body.prompt ?? "").trim();
@@ -82,7 +84,7 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "請寫指令" }, { status: 400 });
   }
   if (userPrompt.length > 2000) {
-    return NextResponse.json({ error: "指令太長（max 2000 字）" }, { status: 400 });
+    return NextResponse.json({ error: "指令太長了，最多 2000 字" }, { status: 400 });
   }
 
   // 驗證 user 是商家 owner（不讓陌生人用 API 燒 token）
@@ -137,8 +139,15 @@ export async function POST(request: Request) {
       const errText = await orRes.text();
       // 照「看得到的字」截：.slice(0, 300) 算 UTF-16 單位，emoji 剛好落在截點會切成
       // 半個，編輯器顯示的錯誤訊息尾巴多一個問號方塊；下面 raw 同理。
+      // 原文（英文、可能帶額度或金鑰狀態）只留伺服器紀錄，商家看中文。
+      console.error(`[ai-edit] OpenRouter ${orRes.status}: ${takeChars(errText, 300)}`);
       return NextResponse.json(
-        { error: `OpenRouter ${orRes.status}: ${takeChars(errText, 300)}` },
+        {
+          error:
+            orRes.status === 429
+              ? "AI 助手現在太忙，請過一分鐘再試"
+              : "AI 助手暫時連不上，請稍後再試",
+        },
         { status: 502 }
       );
     }
@@ -156,8 +165,8 @@ export async function POST(request: Request) {
         {
           error:
             parsed.reason === "invalid-json"
-              ? "AI 回的不是合法 JSON"
-              : "AI 回的不是 theme patch",
+              ? "AI 這次回得不完整，換個說法再試一次"
+              : "AI 沒聽懂要改哪裡，換個說法再試一次",
           raw: takeChars(parsed.cleaned, 300),
         },
         { status: 502 }
@@ -169,7 +178,10 @@ export async function POST(request: Request) {
       usage: orData.usage ?? null,
     });
   } catch (e) {
-    const msg = e instanceof Error ? e.message : "unknown";
-    return NextResponse.json({ error: `fetch error: ${msg}` }, { status: 500 });
+    console.error("[ai-edit] fetch failed:", e);
+    return NextResponse.json(
+      { error: "連線不太穩，請稍後再試" },
+      { status: 500 }
+    );
   }
 }
