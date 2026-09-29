@@ -129,7 +129,7 @@ export function AssetPicker({
       );
       const data = await r.json();
       if (!r.ok) {
-        const msg = data.error ?? `${r.status} 錯誤`;
+        const msg = data.error ?? "圖庫暫時連不上，請稍後再試";
         setError(msg);
         setPhotos([]);
         setStatus(`無法載入圖庫：${msg}`);
@@ -152,7 +152,9 @@ export function AssetPicker({
       setHasNext(Boolean(data.next));
       setPage(p);
     } catch (e) {
-      const msg = e instanceof Error ? e.message : "未知錯誤";
+      // 斷線或伺服器回的不是 JSON 時，e.message 是「Failed to fetch」這種英文，不往畫面丟。
+      console.error("[asset-search] request failed:", e);
+      const msg = "連線不太穩，請稍後再試";
       setError(msg);
       setStatus(`無法載入圖庫：${msg}`);
     } finally {

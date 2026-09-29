@@ -56,7 +56,7 @@ export function AIEditPanel({
       });
       const data = await res.json();
       if (!res.ok) {
-        setError(data.error ?? `${res.status} 錯誤`);
+        setError(data.error ?? "AI 助手暫時連不上，請稍後再試");
         setLoading(false);
         return;
       }
@@ -67,7 +67,10 @@ export function AIEditPanel({
       };
       setMessages((m) => [...m, aiMsg]);
     } catch (e) {
-      setError(e instanceof Error ? e.message : "未知錯誤");
+      // 斷線或伺服器回的不是 JSON 時，e.message 是「Failed to fetch」「Unexpected token」這種英文，
+      // 不往畫面丟；原文留在瀏覽器 console。
+      console.error("[ai-edit] request failed:", e);
+      setError("連線不太穩，請稍後再試");
     } finally {
       setLoading(false);
       requestAnimationFrame(() => {
