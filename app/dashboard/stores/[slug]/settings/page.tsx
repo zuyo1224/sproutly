@@ -45,6 +45,7 @@ import { AIEditPanel } from "@/app/_components/ai-edit-panel";
 import { UnsavedChangesGuard } from "@/app/_components/unsaved-changes-guard";
 import { ContactHintInput } from "@/app/_components/contact-hint-input";
 import { SectionOrderInput } from "@/app/_components/section-order-input";
+import { ColorInput } from "@/app/_components/color-input";
 import {
   LOGO_FILE_ACCEPT,
   PHOTO_FILE_ACCEPT,
@@ -475,16 +476,12 @@ A: 可以，地點為台北車站。`}</pre>
                 主色（按鈕、連結）
               </label>
               <div className="flex items-center gap-3">
-                <input
+                <ColorInput
                   id="theme_primary"
                   name="theme_primary"
-                  type="color"
                   defaultValue={theme.primary}
                   className="w-14 h-12 rounded-lg border border-emerald-100 cursor-pointer"
                 />
-                <span className="text-sm text-emerald-900/60 font-mono">
-                  {theme.primary}
-                </span>
               </div>
             </div>
             <div>
@@ -492,16 +489,12 @@ A: 可以，地點為台北車站。`}</pre>
                 強調色（標語、價格）
               </label>
               <div className="flex items-center gap-3">
-                <input
+                <ColorInput
                   id="theme_accent"
                   name="theme_accent"
-                  type="color"
                   defaultValue={theme.accent}
                   className="w-14 h-12 rounded-lg border border-emerald-100 cursor-pointer"
                 />
-                <span className="text-sm text-emerald-900/60 font-mono">
-                  {theme.accent}
-                </span>
               </div>
             </div>
           </div>
