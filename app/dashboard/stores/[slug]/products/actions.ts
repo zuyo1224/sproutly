@@ -241,7 +241,7 @@ export async function duplicateProduct(slug: string, productId: string) {
     redirect(
       withErrorParam(
         `/dashboard/stores/${slug}/products/${productId}/edit`,
-        error?.message ?? "複製失敗，再試一次",
+        error ? dbErrorMessage(error) : "複製失敗，再試一次",
       ),
     );
   }

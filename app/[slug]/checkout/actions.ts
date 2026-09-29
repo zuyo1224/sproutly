@@ -13,6 +13,8 @@ import { insufficientStockError, stockConflictError } from "@/lib/product-stock"
 import { buildOrderRow, buildOrderItemRow } from "@/lib/order-rows";
 import { buildUrl, withErrorParam } from "@/lib/url";
 
+const ORDER_FAILED_MESSAGE = "訂單沒有送出成功，請稍後再試一次";
+
 export async function placeOrder(slug: string, formData: FormData) {
   const productId = formString(formData, "product_id");
   const qtyRaw = String(formData.get("quantity") ?? "1").trim();
@@ -139,9 +141,9 @@ export async function placeOrder(slug: string, formData: FormData) {
       // 加回剛扣的數量，不能整欄寫回舊值（會蓋掉這空檔別人下單扣走的份，原因見 restoreStock）
       await restoreStock(admin, productId, quantity);
     }
-    redirect(
-      withErrorParam(baseRedirect, "訂單建立失敗：" + (orderError?.message ?? ""))
-    );
+    // 資料庫回的 error.message 是英文，客人看不懂；原文只留伺服器紀錄。
+    console.error("[checkout] 訂單建立失敗", orderError);
+    redirect(withErrorParam(baseRedirect, ORDER_FAILED_MESSAGE));
   }
 
   const { error: itemError } = await admin
@@ -153,7 +155,8 @@ export async function placeOrder(slug: string, formData: FormData) {
     if (stockDecremented) {
       await restoreStock(admin, productId, quantity);
     }
-    redirect(withErrorParam(baseRedirect, "訂單明細建立失敗：" + itemError.message));
+    console.error("[checkout] 訂單明細建立失敗", itemError);
+    redirect(withErrorParam(baseRedirect, ORDER_FAILED_MESSAGE));
   }
 
   redirect(`/${slug}/checkout/success/${order.id}`);
