@@ -399,11 +399,11 @@ export default async function DashboardPage() {
                         style={{
                           fontSize: "0.6875rem",
                           fontWeight: 500,
-                          letterSpacing: "0.3em",
+                          letterSpacing: "0.2em",
                         }}
                       >
                         <span aria-hidden="true">
-                          {store.is_published ? "Live" : "Draft"}
+                          {store.is_published ? "已發布" : "草稿"}
                         </span>
                         <span className="sr-only">
                           {store.is_published
