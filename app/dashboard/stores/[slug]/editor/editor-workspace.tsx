@@ -4405,7 +4405,7 @@ export function EditorWorkspace({
                   onChange={(e) => updateLayout({ featuredCount: parseInt(e.target.value, 10) })}
                   className="w-full"
                 />
-                <SliderTicks labels={["3", "12"]} />
+                <SliderTicks labels={[String(FEATURED_COUNT_MIN), String(FEATURED_COUNT_MAX)]} />
               </Field>
               <Field label="排幾欄">
                 <ColumnsGrid
