@@ -7053,7 +7053,10 @@ export function EditorWorkspace({
                 onChange={(e) => updateLayout({ fontScale: parseFloat(e.target.value) })}
                 className="w-full"
               />
-              <SliderTicks labels={["小", "標準", "大"]} />
+              <SliderTicks
+                labels={["小", "標準", "大"]}
+                midAt={(1 - FONT_SCALE_MIN) / (FONT_SCALE_MAX - FONT_SCALE_MIN)}
+              />
             </Field>
             <Field label="區段上下空白">
               <OptionGrid
@@ -7814,7 +7817,24 @@ function AddListButton({
 // slider 兩端（或三格）的刻度標籤，4 處（hero 放大、本月選物數量、全站字體、主標字體）
 // 各抄一份一模一樣的 <div flex justify-between>＋<span>，改一格（例如字級或灰階要換）
 // 其他 3 處不會跟著動，所以收成元件；每處刻度文字不同由 labels 帶進來。
-function SliderTicks({ labels }: { labels: string[] }) {
+// midAt（0–1）：中間那格擺在拉桿上實際對應的位置。字體拉桿的「標準」是 1.0 倍，
+// 但範圍不對稱（主標 0.6–1.8、全站 0.8–1.3），擺正中間會指到 1.2／1.05，
+// 商家把把手拉到「標準」字底下其實已經放大了。沒帶 midAt 照舊平均排開。
+function SliderTicks({ labels, midAt }: { labels: string[]; midAt?: number }) {
+  if (midAt !== undefined && labels.length === 3) {
+    return (
+      <div className="relative flex justify-between text-[10px] text-stone-500">
+        <span>{labels[0]}</span>
+        <span
+          className="absolute -translate-x-1/2 whitespace-nowrap"
+          style={{ left: `${midAt * 100}%` }}
+        >
+          {labels[1]}
+        </span>
+        <span>{labels[2]}</span>
+      </div>
+    );
+  }
   return (
     <div className="flex justify-between text-[10px] text-stone-500">
       {labels.map((l, i) => (
@@ -7843,7 +7863,10 @@ function HeroFontScaleSlider({
         onChange={(e) => onChange(parseFloat(e.target.value))}
         className="w-full"
       />
-      <SliderTicks labels={["小", "標準 1.0x", "大"]} />
+      <SliderTicks
+        labels={["小", "標準 1.0x", "大"]}
+        midAt={(1 - HERO_FONT_SCALE_MIN) / (HERO_FONT_SCALE_MAX - HERO_FONT_SCALE_MIN)}
+      />
     </>
   );
 }
