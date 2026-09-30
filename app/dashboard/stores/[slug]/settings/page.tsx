@@ -181,6 +181,7 @@ export default async function StoreSettingsPage({
                   className="underline hover:text-emerald-900"
                 >
                   {siteHost()}/{store.slug}
+                  <span className="sr-only">（另開新分頁）</span>
                 </Link>{" "}
                 看到
               </>

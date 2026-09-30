@@ -1509,7 +1509,8 @@ export function EditorWorkspace({
             rel="noopener noreferrer"
             className="rounded-full px-4 py-1.5 text-xs font-medium text-emerald-900/80 hover:text-emerald-900 hover:bg-stone-100 transition"
           >
-            預覽 ↗
+            預覽 <span aria-hidden="true">↗</span>
+            <span className="sr-only">（另開新分頁）</span>
           </a>
           <button
             type="button"

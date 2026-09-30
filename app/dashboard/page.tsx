@@ -532,7 +532,8 @@ export default async function DashboardPage() {
                           target="_blank"
                           className="flex-1 text-center text-sm rounded-full border border-emerald-200 text-emerald-700 px-4 py-2 hover:bg-emerald-50 transition font-medium"
                         >
-                          看店面 ↗
+                          看店面 <span aria-hidden="true">↗</span>
+                          <span className="sr-only">（另開新分頁）</span>
                         </Link>
                       ) : (
                         <span

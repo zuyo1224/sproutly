@@ -194,7 +194,8 @@ export default async function StoreLayout({
                   target="_blank"
                   className="text-xs text-emerald-700 hover:text-emerald-900 transition"
                 >
-                  看公開店面 ↗
+                  看公開店面 <span aria-hidden="true">↗</span>
+                  <span className="sr-only">（另開新分頁）</span>
                 </Link>
               )}
             </div>
