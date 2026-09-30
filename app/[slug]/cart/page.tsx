@@ -535,13 +535,13 @@ export default function CartPage() {
                       title="從購物車移除"
                       className="text-[0.6875rem] uppercase transition hover:opacity-100"
                       style={{
-                        letterSpacing: "0.3em",
+                        letterSpacing: "0.2em",
                         opacity: 0.55,
                         color:
                           "var(--store-text-muted, rgba(0,0,0,0.6))",
                       }}
                     >
-                      Remove
+                      移除
                     </button>
                   </div>
                   {atStockLimit && (
