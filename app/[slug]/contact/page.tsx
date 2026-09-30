@@ -256,10 +256,11 @@ export default async function ContactPage({ params }: { params: Params }) {
                     style={{ color: theme.accent, letterSpacing: "0.3em" }}
                   >
                     {block.kind === "address"
-                      ? "開啟地圖導航 →"
+                      ? "開啟地圖導航"
                       : block.kind === "phone"
-                        ? "點一下直接撥號 →"
-                        : "點一下寫信給我們 →"}
+                        ? "點一下直接撥號"
+                        : "點一下寫信給我們"}{" "}
+                    <span aria-hidden="true">→</span>
                   </p>
                 )}
               </>
