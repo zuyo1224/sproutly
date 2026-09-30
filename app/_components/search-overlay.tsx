@@ -393,7 +393,7 @@ export function SearchOverlay({ slug }: { slug: string }) {
                       color: "var(--store-accent, currentColor)",
                     }}
                   >
-                    看全部商品 →
+                    看全部商品 <span aria-hidden="true">→</span>
                   </Link>
                 </div>
               )}
@@ -439,7 +439,7 @@ export function SearchOverlay({ slug }: { slug: string }) {
                       color: "var(--store-accent, currentColor)",
                     }}
                   >
-                    看全部商品 →
+                    看全部商品 <span aria-hidden="true">→</span>
                   </Link>
                 </div>
               )}

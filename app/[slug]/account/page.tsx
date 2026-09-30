@@ -116,7 +116,9 @@ export default async function CustomerAccountHome({
             letterSpacing: "0.3em",
           }}
         >
-          {orders === 0 ? "去店裡逛逛 →" : "繼續逛 shop →"}
+          {orders === 0 ? "去店裡逛逛" : "繼續逛 shop"}
+          {/* 外層是 inline-flex，一般空白會被吃掉，用不斷行空白保住原本字與箭頭的間距 */}
+          <span aria-hidden="true">{"\u00a0"}→</span>
         </Link>
       </header>
 
@@ -164,7 +166,7 @@ export default async function CustomerAccountHome({
               letterSpacing: "0.3em",
             }}
           >
-            看訂單 →
+            看訂單 <span aria-hidden="true">→</span>
           </p>
         </Link>
 
@@ -211,7 +213,7 @@ export default async function CustomerAccountHome({
               letterSpacing: "0.3em",
             }}
           >
-            看收藏 →
+            看收藏 <span aria-hidden="true">→</span>
           </p>
         </Link>
       </div>

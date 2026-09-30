@@ -168,7 +168,7 @@ export function AddToCartButton({
             letterSpacing: "0.04em",
           }}
         >
-          去購物車（{count} 件）→
+          去購物車（{count} 件）<span aria-hidden="true">→</span>
         </Link>
       )}
     </>

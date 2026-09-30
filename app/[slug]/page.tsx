@@ -3053,7 +3053,7 @@ export default async function StoreHomePage({
                       <span data-edit-text data-edit-field="heroCta">
                         {heroCta}
                       </span>{" "}
-                      →
+                      <span aria-hidden="true">→</span>
                     </Link>
                   </div>
                 </div>
@@ -5158,7 +5158,7 @@ export default async function StoreHomePage({
                       className="block mt-3 text-[10px] tracking-[0.3em] uppercase"
                       style={{ color: accentColor }}
                     >
-                      開啟地圖導航 →
+                      開啟地圖導航 <span aria-hidden="true">→</span>
                     </span>
                     <span className="sr-only">（另開新分頁）</span>
                   </a>
