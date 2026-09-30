@@ -324,9 +324,9 @@ export default async function StoreCustomersPage({
                         {r.identityType === "account" && (
                           <span
                             className="text-[10px] px-1.5 py-0.5 rounded-full bg-emerald-100 text-emerald-800 uppercase"
-                            style={{ letterSpacing: "0.3em" }}
+                            style={{ letterSpacing: "0.2em" }}
                           >
-                            Member
+                            會員
                           </span>
                         )}
                         {tier === "vip" && (
@@ -340,9 +340,9 @@ export default async function StoreCustomersPage({
                         {tier === "returning" && (
                           <span
                             className="text-[10px] px-1.5 py-0.5 rounded-full bg-blue-100 text-blue-800 uppercase"
-                            style={{ letterSpacing: "0.3em" }}
+                            style={{ letterSpacing: "0.2em" }}
                           >
-                            Repeat
+                            回購
                           </span>
                         )}
                       </div>
@@ -460,9 +460,9 @@ export default async function StoreCustomersPage({
                         {r.identityType === "account" && (
                           <span
                             className="text-[10px] px-1.5 py-0.5 rounded-full bg-emerald-100 text-emerald-800 uppercase"
-                            style={{ letterSpacing: "0.3em" }}
+                            style={{ letterSpacing: "0.2em" }}
                           >
-                            Member
+                            會員
                           </span>
                         )}
                         {tier === "vip" && (
@@ -476,9 +476,9 @@ export default async function StoreCustomersPage({
                         {tier === "returning" && (
                           <span
                             className="text-[10px] px-1.5 py-0.5 rounded-full bg-blue-100 text-blue-800 uppercase"
-                            style={{ letterSpacing: "0.3em" }}
+                            style={{ letterSpacing: "0.2em" }}
                           >
-                            Repeat
+                            回購
                           </span>
                         )}
                       </div>
