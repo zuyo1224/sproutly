@@ -7571,8 +7571,8 @@ const textareaClass = `${inputClass} resize-none`;
 // 主題色那兩顆 `w-10 h-10` 取色器是另一款，留在原地。
 const colorPickerClass = "h-8 w-12 rounded border border-stone-200";
 const hexInputClass = "flex-1 rounded-lg border border-stone-200 px-3 py-2 text-sm font-mono outline-none focus:border-emerald-600 focus:ring-2 focus:ring-emerald-100";
-// 每格控制底下那段 10px 灰字說明，78 處各抄一份一模一樣的 class，
-// 改一格（例如字級要放到 11px 或換灰階）其他 77 處不會跟著動，所以收成常數。
+// 每格控制底下那段 10px 灰字說明，79 處各抄一份一模一樣的 class，
+// 改一格（例如字級要放到 11px 或換灰階）其他 78 處不會跟著動，所以收成常數。
 // HintRow 那條是 11px 且帶「清除」按鈕、`flex justify-between text-[10px]` 是
 // slider 兩端的刻度標籤（已另收成 SliderTicks），都不是同一包。
 const hintClass = "text-[10px] text-stone-500 mt-1";
