@@ -281,6 +281,9 @@ export default async function ContactPage({ params }: { params: Params }) {
                   style={blockStyle}
                 >
                   {content}
+                  {block.external && (
+                    <span className="sr-only">（另開新分頁）</span>
+                  )}
                 </a>
               );
             }

@@ -3170,6 +3170,7 @@ export default async function PublicStoreLayout({
                       style={{ color: fText, letterSpacing: "0.02em" }}
                     >
                       {footerAddress}
+                      <span className="sr-only">（另開新分頁）</span>
                     </a>
                   </p>
                 )}
@@ -3237,6 +3238,7 @@ export default async function PublicStoreLayout({
                     }}
                   >
                     {s.text}
+                    <span className="sr-only">（另開新分頁）</span>
                   </a>
                 ))}
               </div>

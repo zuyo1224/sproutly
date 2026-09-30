@@ -4842,6 +4842,7 @@ export default async function StoreHomePage({
                         className="sproutly-card-box inline-block"
                       >
                         {inner}
+                        <span className="sr-only">（另開新分頁）</span>
                       </a>
                     ) : (
                       // 另外掛 sproutly-card-static：這塊點不下去，滑鼠移過去不該浮起來。見 layout.tsx。
@@ -5159,6 +5160,7 @@ export default async function StoreHomePage({
                     >
                       開啟地圖導航 →
                     </span>
+                    <span className="sr-only">（另開新分頁）</span>
                   </a>
                 )}
                 {businessHoursText && (
