@@ -7661,6 +7661,8 @@ function HintRow({
  * 顏色格旁邊那顆 inline 的「清除」小按鈕（有自訂色才出現）。
  * 之前 16 處各抄一份一模一樣的 <button type="button" className="text-xs …">清除</button>，
  * 改一格（例如字級或 hover 色要換）其他 15 處不會跟著動，所以收成一支。
+ * 後來版面那 14 列顏色收進 LayoutColorRow，現在程式裡只剩 3 個呼叫點
+ * （區段設定的「背景色」「文字顏色」，加 LayoutColorRow 裡 1 處），畫面上仍是 16 顆。
  * 跟 HintRow 裡那顆不同款：這顆自帶 text-xs（12px），HintRow 那顆吃父層 11px，
  * 所以沒合併；「改回跟桌機一樣」那顆文字不同也留在原地。
  * 「有值才顯示」的判斷 `{X && (…)}` 留在呼叫端，跟原本一樣。
