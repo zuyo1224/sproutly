@@ -524,7 +524,7 @@ export default async function DashboardPage() {
                         href={`/dashboard/stores/${store.slug}`}
                         className="flex-1 text-center text-sm rounded-full bg-emerald-700 text-white px-4 py-2 hover:bg-emerald-800 transition font-medium"
                       >
-                        管理 →
+                        管理 <span aria-hidden="true">→</span>
                       </Link>
                       {store.is_published ? (
                         <Link

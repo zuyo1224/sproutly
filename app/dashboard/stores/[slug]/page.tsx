@@ -397,7 +397,7 @@ export default async function StoreInsightsPage({
             href={settingsHref}
             className="mt-3 inline-block text-sm font-medium text-amber-900 hover:text-amber-700 transition"
           >
-            去發布 →
+            去發布 <span aria-hidden="true">→</span>
           </Link>
         </section>
       )}
@@ -481,7 +481,7 @@ export default async function StoreInsightsPage({
               {formatPrice(outstandingCents, storeCurrency)}
             </p>
             <p className="text-[11px] text-amber-700/70 group-hover:text-amber-800 transition">
-              看未付款訂單 →
+              看未付款訂單 <span aria-hidden="true">→</span>
             </p>
           </div>
         </Link>
@@ -694,7 +694,7 @@ export default async function StoreInsightsPage({
                   </p>
                 </div>
                 <span className="text-xs text-emerald-700 opacity-0 group-hover:opacity-100 transition flex-shrink-0">
-                  補貨 →
+                  補貨 <span aria-hidden="true">→</span>
                 </span>
               </Link>
               );
@@ -718,7 +718,7 @@ export default async function StoreInsightsPage({
             href={`/dashboard/stores/${slug}/orders`}
             className="text-xs text-emerald-700 hover:text-emerald-900 transition"
           >
-            看全部 →
+            看全部 <span aria-hidden="true">→</span>
           </Link>
         </div>
         {recentOrders && recentOrders.length > 0 ? (
@@ -843,7 +843,7 @@ export default async function StoreInsightsPage({
                   href={`/dashboard/stores/${slug}/settings`}
                   className="text-emerald-700 hover:text-emerald-900 not-italic ml-1"
                 >
-                  去填寫 →
+                  去填寫 <span aria-hidden="true">→</span>
                 </Link>
               </p>
             )}

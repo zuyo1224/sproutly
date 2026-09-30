@@ -605,7 +605,7 @@ export default async function OrdersListPage({
                           href={`/dashboard/stores/${slug}/orders/${o.id}`}
                           className="text-emerald-700 hover:text-emerald-900 text-sm font-medium whitespace-nowrap"
                         >
-                          詳情 →
+                          詳情 <span aria-hidden="true">→</span>
                         </Link>
                       </div>
                     </td>

@@ -127,7 +127,9 @@ export function EditorAIChat({
                 }}
                 className="mt-2 inline-flex px-3 py-1 rounded-full bg-emerald-900 text-white text-[11px] hover:bg-black transition"
               >
-                套用 →
+                套用
+                {/* 外層是 inline-flex，一般空白會被吃掉，用不斷行空白保住原本字與箭頭的間距 */}
+                <span aria-hidden="true">{"\u00a0"}→</span>
               </button>
             )}
           </div>

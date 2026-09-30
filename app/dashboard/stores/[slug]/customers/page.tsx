@@ -431,7 +431,7 @@ export default async function StoreCustomersPage({
                         href={customerOrdersHref(slug, r)}
                         className="text-emerald-700 hover:text-emerald-900 text-sm font-medium"
                       >
-                        看訂單 →
+                        看訂單 <span aria-hidden="true">→</span>
                       </Link>
                     </td>
                   </tr>
@@ -515,7 +515,7 @@ export default async function StoreCustomersPage({
                     · 認識 {taipeiDaysAgo(r.firstOrderAt)} 天
                   </p>
                   <p className="text-[11px] text-emerald-700 mt-2 font-medium">
-                    看訂單 →
+                    看訂單 <span aria-hidden="true">→</span>
                   </p>
                   </Link>
                 </li>
@@ -555,7 +555,7 @@ export default async function StoreCustomersPage({
             letterSpacing: "0.3em",
           }}
         >
-          → All Orders · 看所有訂單
+          <span aria-hidden="true">→</span> All Orders · 看所有訂單
         </Link>
       </div>
     </div>
