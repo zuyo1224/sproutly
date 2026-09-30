@@ -618,7 +618,8 @@ export default function CartCheckoutPage() {
                       className="sproutly-link"
                       style={{ color: "var(--store-accent, currentColor)" }}
                     >
-                      {cvs} ↗
+                      {cvs} <span aria-hidden="true">↗</span>
+                      <span className="sr-only">（另開新分頁）</span>
                     </a>
                   ))}
                 </div>
