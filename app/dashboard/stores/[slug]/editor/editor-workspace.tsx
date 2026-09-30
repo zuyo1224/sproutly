@@ -7564,7 +7564,8 @@ function PanelSection({
 // 聚焦樣式比照後台其他 41 個輸入框：深綠框線（對白底約 3.8:1）＋淺綠外圈，不靠各瀏覽器顏色不一的預設外框。
 const inputClass = "w-full rounded-lg border border-stone-200 px-3 py-2 text-sm outline-none focus:border-emerald-600 focus:ring-2 focus:ring-emerald-100";
 const textareaClass = `${inputClass} resize-none`;
-// 顏色那格是「取色器＋色碼窄框」一組，19 處色碼框、17 顆取色器各抄一份一模一樣的 class，
+// 顏色那格是「取色器＋色碼窄框」一組，6 處色碼框、4 顆取色器（各含 LayoutColorRow 裡那 1 處，
+// 版面設定那 14 列都走它）共用同一份 class，
 // 改一格（例如取色器要放大、色碼框要換等寬字）其他處不會跟著動，所以收成常數。
 // 色碼框跟 inputClass 差在 flex-1（跟取色器並排分寬）與 font-mono（色碼等寬好對），不是同一包；
 // 主題色那兩顆 `w-10 h-10` 取色器是另一款，留在原地。
