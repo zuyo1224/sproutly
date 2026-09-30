@@ -268,7 +268,7 @@ export default async function TrackPage({
             className="text-[0.6875rem] uppercase font-medium"
             style={{ color: theme.accent, letterSpacing: "0.4em" }}
           >
-            Not Found
+            Not Found · 查無訂單
           </p>
           <div
             className="mt-5 h-px w-10"
@@ -863,7 +863,7 @@ export default async function TrackPage({
           className="sproutly-link text-[0.6875rem] uppercase font-medium transition"
           style={{ color: theme.textMuted, letterSpacing: "0.3em" }}
         >
-          ← Back · {store.name}
+          ← Back · 回到 {store.name}
         </Link>
       </div>
     </main>
