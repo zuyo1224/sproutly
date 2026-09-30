@@ -18,7 +18,7 @@ export default function DashboardError({
     <div className="min-h-screen bg-gradient-to-br from-emerald-50 via-white to-lime-50 flex items-center justify-center px-8 py-12">
       <div className="max-w-xl text-center">
         <div className="mb-8 text-[0.7rem] uppercase tracking-[0.4em] text-emerald-700/60">
-          Dashboard Error
+          Dashboard · 後台出了點狀況
         </div>
         <h1 className="text-3xl md:text-5xl font-medium text-emerald-950 leading-[1.15] tracking-tight">
           後台暫時
@@ -48,7 +48,7 @@ export default function DashboardError({
         </div>
         {error.digest && (
           <p className="mt-10 text-[0.7rem] uppercase tracking-[0.32em] text-emerald-900/35 font-mono">
-            ref · {error.digest}
+            錯誤編號 · {error.digest}
           </p>
         )}
       </div>

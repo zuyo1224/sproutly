@@ -29,7 +29,7 @@ export default function StoreError({
             letterSpacing: "0.4em",
           }}
         >
-          Something went wrong
+          Something went wrong · 出了點狀況
         </p>
         <span
           className="block h-px w-12 mx-auto"
@@ -107,7 +107,7 @@ export default function StoreError({
             letterSpacing: "0.32em",
           }}
         >
-          ref · {error.digest}
+          錯誤編號 · {error.digest}
         </p>
       )}
     </main>
