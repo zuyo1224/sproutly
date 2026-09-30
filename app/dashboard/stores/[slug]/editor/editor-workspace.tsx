@@ -2694,7 +2694,7 @@ export function EditorWorkspace({
               const viewportLabel =
                 viewport === "mobile" ? "手機" : viewport === "tablet" ? "平板" : "桌機";
               return (
-                <Field label={`圖片縮放（${viewportLabel}）`}>
+                <Field label={`圖片縮放（${viewportLabel} · ${zoomValue.toFixed(2)}x）`}>
                   <div className="space-y-1.5">
                     <input
                       type="range"
@@ -2711,7 +2711,6 @@ export function EditorWorkspace({
                     <SliderTicks
                       labels={[
                         `${HERO_ZOOM_MIN.toFixed(1)}x（原始）`,
-                        `${zoomValue.toFixed(2)}x`,
                         `${HERO_ZOOM_MAX.toFixed(1)}x`,
                       ]}
                     />
