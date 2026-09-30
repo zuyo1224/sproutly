@@ -7806,13 +7806,6 @@ function AddListButton({
   );
 }
 
-/**
- * Hero 那頁的字體大小拉桿（小標／副標／按鈕／byline／主標／主標手機 6 格）。
- * 之前 6 格各抄一份一模一樣的 <input type="range">＋「小／標準 1.0x／大」刻度列，
- * 改一格（例如 step 或刻度字要換）另外 5 格不會跟著動，所以收成一支。
- * min／max 固定吃 HERO_FONT_SCALE_MIN／MAX、step 0.05，輸出跟原本一模一樣；
- * 全站字體那格的刻度是「標準」沒有 1.0x、本月選物那格是「3／12」，不是同一款留在原地。
- */
 // slider 兩端（或三格）的刻度標籤，4 處（hero 放大、本月選物數量、全站字體、主標字體）
 // 各抄一份一模一樣的 <div flex justify-between>＋<span>，改一格（例如字級或灰階要換）
 // 其他 3 處不會跟著動，所以收成元件；每處刻度文字不同由 labels 帶進來。
@@ -7843,6 +7836,13 @@ function SliderTicks({ labels, midAt }: { labels: string[]; midAt?: number }) {
   );
 }
 
+/**
+ * Hero 那頁的字體大小拉桿（小標／副標／按鈕／byline／主標／主標手機 6 格）。
+ * 之前 6 格各抄一份一模一樣的 <input type="range">＋「小／標準 1.0x／大」刻度列，
+ * 改一格（例如 step 或刻度字要換）另外 5 格不會跟著動，所以收成一支。
+ * min／max 固定吃 HERO_FONT_SCALE_MIN／MAX、step 0.05，輸出跟原本一模一樣；
+ * 全站字體那格的刻度是「標準」沒有 1.0x、本月選物那格是「3／12」，不是同一款留在原地。
+ */
 function HeroFontScaleSlider({
   value,
   onChange,
