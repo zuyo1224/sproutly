@@ -105,7 +105,7 @@ export function ShippingFields({ ringColor }: { ringColor: string }) {
                 key={cvs}
                 href={CVS_LOOKUP_URLS[cvs]}
                 target="_blank"
-                rel="noopener"
+                rel="noopener noreferrer"
                 className="sproutly-link"
                 style={{ color: "var(--store-accent, currentColor)" }}
               >

@@ -3165,7 +3165,7 @@ export default async function PublicStoreLayout({
                     <a
                       href={footerMapsHref}
                       target="_blank"
-                      rel="noopener"
+                      rel="noopener noreferrer"
                       className="sproutly-link"
                       style={{ color: fText, letterSpacing: "0.02em" }}
                     >
@@ -3228,7 +3228,7 @@ export default async function PublicStoreLayout({
                     key={s.key}
                     href={s.href}
                     target="_blank"
-                    rel="noopener"
+                    rel="noopener noreferrer"
                     className="sproutly-link uppercase"
                     style={{
                       color: fMuted,
