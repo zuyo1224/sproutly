@@ -98,17 +98,25 @@ export default function StoreError({
       </div>
 
       {error.digest && (
-        <p
-          className="mt-10 font-mono uppercase"
-          style={{
-            color: "var(--store-text-muted)",
-            opacity: 0.4,
-            fontSize: "0.7rem",
-            letterSpacing: "0.32em",
-          }}
-        >
-          錯誤編號 · {error.digest}
-        </p>
+        <>
+          <p
+            className="mt-10 font-mono uppercase"
+            style={{
+              color: "var(--store-text-muted)",
+              opacity: 0.4,
+              fontSize: "0.7rem",
+              letterSpacing: "0.32em",
+            }}
+          >
+            錯誤編號 · {error.digest}
+          </p>
+          <p
+            className="mt-2 text-xs"
+            style={{ color: "var(--store-text-muted)", opacity: 0.6 }}
+          >
+            回報問題時附上這串編號，比較好查
+          </p>
+        </>
       )}
     </main>
   );

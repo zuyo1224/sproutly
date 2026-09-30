@@ -47,9 +47,14 @@ export default function DashboardError({
           </Link>
         </div>
         {error.digest && (
-          <p className="mt-10 text-[0.7rem] uppercase tracking-[0.32em] text-emerald-900/35 font-mono">
-            錯誤編號 · {error.digest}
-          </p>
+          <>
+            <p className="mt-10 text-[0.7rem] uppercase tracking-[0.32em] text-emerald-900/35 font-mono">
+              錯誤編號 · {error.digest}
+            </p>
+            <p className="mt-2 text-xs text-emerald-900/45">
+              回報問題時附上這串編號，比較好查
+            </p>
+          </>
         )}
       </div>
     </div>
