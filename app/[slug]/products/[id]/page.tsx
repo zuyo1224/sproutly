@@ -410,10 +410,10 @@ export default async function PublicProductPage({
                   }}
                 >
                   {!inStock
-                    ? "Sold Out"
+                    ? "Sold Out · 已售完"
                     : product.stock <= LOW_STOCK_THRESHOLD
-                      ? `Low Stock · 剩 ${product.stock}`
-                      : `In Stock · ${product.stock}`}
+                      ? `Low Stock · 剩 ${product.stock} 件`
+                      : `In Stock · 現貨 ${product.stock} 件`}
                 </p>
               </div>
             )}
