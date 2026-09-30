@@ -29,7 +29,7 @@ export default function NotFound() {
       <main className="flex-1 flex items-center justify-center px-8 py-12">
         <div className="max-w-2xl text-center">
           <div className="mb-8 text-[0.7rem] uppercase tracking-[0.4em] text-emerald-700/60">
-            404 · Page Not Found
+            404 · 找不到頁面
           </div>
           <h1 className="text-5xl md:text-7xl font-medium text-emerald-950 leading-[1.05] tracking-tight">
             這條路

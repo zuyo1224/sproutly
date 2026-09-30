@@ -10,7 +10,7 @@ export default function DashboardNotFound() {
     <div className="min-h-screen bg-gradient-to-br from-emerald-50 via-white to-lime-50 flex items-center justify-center px-8 py-12">
       <div className="max-w-xl text-center">
         <div className="mb-8 text-[0.7rem] uppercase tracking-[0.4em] text-emerald-700/60">
-          404 · Not Found
+          404 · 找不到頁面
         </div>
         <h1 className="text-3xl md:text-5xl font-medium text-emerald-950 leading-[1.15] tracking-tight">
           找不到

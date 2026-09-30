@@ -18,7 +18,7 @@ export default function StoreNotFound() {
             letterSpacing: "0.4em",
           }}
         >
-          404 · Not Found
+          404 · 找不到頁面
         </p>
         <span
           className="block h-px w-12 mx-auto"
