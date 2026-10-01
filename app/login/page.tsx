@@ -139,7 +139,7 @@ export default async function LoginPage({
               href="/signup"
               className="text-emerald-800 hover:text-emerald-950 text-sm font-medium tracking-tight"
             >
-              建立一間自己的店 →
+              建立一間自己的店 <span aria-hidden="true">→</span>
             </Link>
           </div>
         </div>

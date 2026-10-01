@@ -124,7 +124,7 @@ export default function Home() {
             className="rounded-full bg-emerald-700 px-8 py-4 text-white font-medium hover:bg-emerald-800 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-700 active:scale-[0.98] transition tracking-tight"
             style={{ boxShadow: "var(--sproutly-elev-2)" }}
           >
-            免費開一間店 →
+            免費開一間店 <span aria-hidden="true">→</span>
           </Link>
           <Link
             href="/login"

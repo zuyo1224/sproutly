@@ -75,7 +75,7 @@ export default async function SignupPage({
                 href="/login"
                 className="text-emerald-800 hover:text-emerald-950 text-sm font-medium tracking-tight"
               >
-                前往登入 →
+                前往登入 <span aria-hidden="true">→</span>
               </Link>
             </div>
           </div>
@@ -223,7 +223,7 @@ export default async function SignupPage({
               href="/login"
               className="text-emerald-800 hover:text-emerald-950 text-sm font-medium tracking-tight"
             >
-              登入 →
+              登入 <span aria-hidden="true">→</span>
             </Link>
           </div>
         </div>
