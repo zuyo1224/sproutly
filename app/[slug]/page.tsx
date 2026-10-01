@@ -3231,6 +3231,10 @@ export default async function StoreHomePage({
           const collStyle = sectionStyleFor("collections");
           const collectionsCardCta =
             theme.homepage.collectionsCardCta ?? HOMEPAGE_DEFAULTS.collectionsCardCta;
+          // 報讀用的版本去掉頭尾箭頭，不然「看這個 →」會被唸成「看這個 右箭頭」。
+          // 畫面上那格要留整串字給雙擊改字讀寫，所以整格 aria-hidden，另放一份 sr-only。
+          const collectionsCardCtaSpoken = collectionsCardCta
+            .replace(/^[\s→➔➜›»]+|[\s→➔➜›»]+$/gu, "");
           return (
           <section
             className={sectionShellClass(introFree)}
@@ -3401,11 +3405,15 @@ export default async function StoreHomePage({
                     <span
                       data-edit-text
                       data-edit-field="collectionsCardCta"
+                      aria-hidden="true"
                       className="sproutly-card-action sproutly-card-micro inline-block text-[10px] tracking-[0.3em] uppercase"
                       style={{ color: cardMicroColor }}
                     >
                       {collectionsCardCta}
                     </span>
+                    {collectionsCardCtaSpoken && (
+                      <span className="sr-only">{collectionsCardCtaSpoken}</span>
+                    )}
                   </Link>
                 ))}
               </div>
