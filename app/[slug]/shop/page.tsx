@@ -72,8 +72,8 @@ export async function generateMetadata({
 
 const SORT_OPTIONS: { value: string; label: string }[] = [
   { value: "newest", label: "最新上架" },
-  { value: "price-asc", label: "價格 低 → 高" },
-  { value: "price-desc", label: "價格 高 → 低" },
+  { value: "price-asc", label: "價格由低到高" },
+  { value: "price-desc", label: "價格由高到低" },
   { value: "name", label: "名稱 A-Z" },
 ];
 

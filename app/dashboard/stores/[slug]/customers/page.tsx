@@ -37,8 +37,8 @@ function customerOrdersHref(slug: string, r: CustomerRow) {
 
 const SORT_OPTIONS = [
   { key: "recent", label: "最近下單" },
-  { key: "spend", label: "總消費高 → 低" },
-  { key: "orders", label: "訂單筆數多 → 少" },
+  { key: "spend", label: "總消費由高到低" },
+  { key: "orders", label: "訂單筆數由多到少" },
   { key: "first", label: "最早成為客人" },
 ] as const;
 
