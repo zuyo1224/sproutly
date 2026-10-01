@@ -298,7 +298,7 @@ export default async function TrackPage({
             className="sproutly-link mt-10 inline-block text-[0.75rem] uppercase font-medium"
             style={{ color: theme.accent, letterSpacing: "0.3em" }}
           >
-            聯絡店家 →
+            聯絡店家 <span aria-hidden="true">→</span>
           </Link>
         </div>
       )}

@@ -329,7 +329,7 @@ export default function CartPage() {
             style={{ letterSpacing: "0.3em" }}
             data-default-line="true"
           >
-            重新整理 →
+            重新整理 <span aria-hidden="true">→</span>
           </button>
         </div>
       ) : products === null ? (
@@ -389,7 +389,7 @@ export default function CartPage() {
             style={{ letterSpacing: "0.3em" }}
             data-default-line="true"
           >
-            去逛逛 →
+            去逛逛 <span aria-hidden="true">→</span>
           </Link>
         </StoreEmptyState>
         {/* 空車不是死路：把這台裝置剛看過的幾株帶回來，客人想起「剛剛那株」

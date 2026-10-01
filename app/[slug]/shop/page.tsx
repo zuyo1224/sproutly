@@ -534,7 +534,7 @@ export default async function ShopPage({
                   style={{ letterSpacing: "0.3em" }}
                   data-default-line="true"
                 >
-                  保留搜尋、含缺貨一起看 →
+                  保留搜尋、含缺貨一起看 <span aria-hidden="true">→</span>
                 </Link>
               )}
               <Link
@@ -543,7 +543,7 @@ export default async function ShopPage({
                 style={{ letterSpacing: "0.3em" }}
                 data-default-line="true"
               >
-                看全部商品 →
+                看全部商品 <span aria-hidden="true">→</span>
               </Link>
             </div>
           )}

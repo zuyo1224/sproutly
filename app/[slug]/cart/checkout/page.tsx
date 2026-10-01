@@ -144,7 +144,7 @@ export default function CartCheckoutPage() {
             className="sproutly-link mt-10 inline-block text-[0.75rem] uppercase font-medium"
             style={{ letterSpacing: "0.3em" }}
           >
-            重新整理 →
+            重新整理 <span aria-hidden="true">→</span>
           </button>
         </div>
       </main>
@@ -407,7 +407,7 @@ export default function CartCheckoutPage() {
             className="sproutly-link inline-block mt-3 text-sm"
             style={{ color: "var(--store-accent, currentColor)" }}
           >
-            回購物車調整 →
+            回購物車調整 <span aria-hidden="true">→</span>
           </Link>
         </div>
       )}

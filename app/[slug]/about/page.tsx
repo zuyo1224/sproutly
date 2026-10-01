@@ -321,7 +321,7 @@ export default async function AboutPage({ params }: { params: Params }) {
             letterSpacing: "0.3em",
           }}
         >
-          看看店裡的商品 →
+          看看店裡的商品 <span aria-hidden="true">→</span>
         </Link>
       </div>
     </main>

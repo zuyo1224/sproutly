@@ -172,7 +172,7 @@ export default async function CheckoutPage({
             className="sproutly-link inline-block mt-3 text-sm"
             style={{ color: theme.accent }}
           >
-            看其他商品 →
+            看其他商品 <span aria-hidden="true">→</span>
           </Link>
         </div>
       )}

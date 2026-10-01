@@ -610,7 +610,7 @@ export default async function PublicProductPage({
               className="sproutly-link text-[0.6875rem] uppercase font-medium"
               style={{ letterSpacing: "0.3em" }}
             >
-              看所有的植物 →
+              看所有的植物 <span aria-hidden="true">→</span>
             </Link>
           </div>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
