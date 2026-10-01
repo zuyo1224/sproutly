@@ -529,7 +529,7 @@ export default function FavoritesPage() {
             style={{ letterSpacing: "0.3em" }}
             data-default-line="true"
           >
-            ← 繼續逛 shop
+            <span aria-hidden="true">←</span> 繼續逛 shop
           </Link>
         </div>
         </>

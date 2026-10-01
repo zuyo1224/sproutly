@@ -163,7 +163,7 @@ export default async function CustomerOrdersPage({
           style={{ color: theme.text }}
           data-default-line="true"
         >
-          ← Back · 會員中心
+          <span aria-hidden="true">←</span> Back · 會員中心
         </Link>
       </header>
 

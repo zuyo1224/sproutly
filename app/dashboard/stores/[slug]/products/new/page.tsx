@@ -60,7 +60,7 @@ export default async function NewProductPage({
         className="inline-flex items-center gap-2 text-emerald-800 hover:text-emerald-950 transition mb-6"
         style={BACK_LINK_STYLE}
       >
-        ← Back · 商品列表
+        <span><span aria-hidden="true">←</span> Back · 商品列表</span>
       </Link>
 
       <div

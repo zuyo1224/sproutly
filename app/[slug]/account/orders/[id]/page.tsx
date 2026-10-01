@@ -129,7 +129,7 @@ export default async function CustomerOrderDetailPage({
             style={{ color: theme.text }}
             data-default-line="true"
           >
-            ← 訂單歷史
+            <span aria-hidden="true">←</span> 訂單歷史
           </Link>
           {/* 列印 / 存 PDF 收據：要報帳或想留紙本底的客人用得到。結帳成功頁只看得到一次，
               過去的單要留底就靠這裡。列印時靠 layout 的 @media print 把導覽/頁尾收乾淨，

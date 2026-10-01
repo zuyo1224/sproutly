@@ -149,7 +149,7 @@ export default async function StoreLayout({
                 href="/dashboard"
                 className="block px-4 py-2 text-sm text-emerald-900/60 hover:bg-emerald-50/60 transition"
               >
-                ← 回主後台
+                <span aria-hidden="true">←</span> 回主後台
               </Link>
             </div>
           </details>

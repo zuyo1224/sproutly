@@ -150,7 +150,7 @@ export default async function OrderDetailPage({
             letterSpacing: "0.3em",
           }}
         >
-          ← Back · 訂單列表
+          <span aria-hidden="true">←</span> Back · 訂單列表
         </Link>
       </div>
 
