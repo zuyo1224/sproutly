@@ -236,7 +236,9 @@ export default async function ContactPage({ params }: { params: Params }) {
                   className="text-[0.6875rem] uppercase font-medium"
                   style={{ color: theme.accent, letterSpacing: "0.4em" }}
                 >
-                  {block.latin} · {block.label}
+                  {/* 英文前綴與分隔點只是裝飾，報讀只唸中文標籤（Email 那格原本會唸成「Email · Email」） */}
+                  <span aria-hidden="true">{block.latin} · </span>
+                  {block.label}
                 </p>
                 <div
                   className="mt-3 text-lg whitespace-pre-line"
