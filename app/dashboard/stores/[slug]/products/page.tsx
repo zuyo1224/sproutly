@@ -131,7 +131,7 @@ export default async function ProductsListPage({
               letterSpacing: "0.4em",
             }}
           >
-            Products · 商品
+            <span aria-hidden="true">Products · </span>商品
           </p>
           <h2
             className="mt-3 text-3xl sm:text-4xl text-emerald-950 font-medium tracking-tight"

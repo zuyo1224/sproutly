@@ -277,7 +277,7 @@ export default async function OrdersListPage({
               letterSpacing: "0.4em",
             }}
           >
-            Orders · 訂單
+            <span aria-hidden="true">Orders · </span>訂單
           </p>
           <h2
             className="mt-3 text-3xl sm:text-4xl text-emerald-950 font-medium tracking-tight"

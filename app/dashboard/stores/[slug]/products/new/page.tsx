@@ -72,7 +72,7 @@ export default async function NewProductPage({
       >
         <div>
           <p className="text-emerald-700/70" style={LABEL_STYLE}>
-            New Product · 新商品
+            <span aria-hidden="true">New Product · </span>新商品
           </p>
           <span className="block mt-4 h-px w-12 bg-emerald-600/60" />
           <h1
@@ -96,7 +96,7 @@ export default async function NewProductPage({
             style={{ boxShadow: "0 1px 2px rgba(127,29,29,0.04)" }}
           >
             <p className="text-red-700" style={LABEL_STYLE}>
-              Notice · 提醒
+              <span aria-hidden="true">Notice · </span>提醒
             </p>
             <p
               className="mt-2 text-sm text-red-800"

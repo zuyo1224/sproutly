@@ -113,7 +113,7 @@ export default async function EditProductPage({
       >
         <div>
           <p className="text-emerald-700/70" style={LABEL_STYLE}>
-            Edit Product · 編輯商品
+            <span aria-hidden="true">Edit Product · </span>編輯商品
           </p>
           <span className="block mt-4 h-px w-12 bg-emerald-600/60" />
           <h1
@@ -140,7 +140,7 @@ export default async function EditProductPage({
             style={{ boxShadow: "0 1px 2px rgba(6,78,59,0.04)" }}
           >
             <p className="text-emerald-700" style={LABEL_STYLE}>
-              Copied · 已複製
+              <span aria-hidden="true">Copied · </span>已複製
             </p>
             <p
               className="mt-2 text-sm text-emerald-900"
@@ -159,7 +159,7 @@ export default async function EditProductPage({
             style={{ boxShadow: "0 1px 2px rgba(127,29,29,0.04)" }}
           >
             <p className="text-red-700" style={LABEL_STYLE}>
-              Notice · 提醒
+              <span aria-hidden="true">Notice · </span>提醒
             </p>
             <p
               className="mt-2 text-sm text-red-800"
@@ -421,7 +421,7 @@ export default async function EditProductPage({
         >
           <div>
             <p className="text-emerald-700/70" style={LABEL_STYLE}>
-              Duplicate · 複製
+              <span aria-hidden="true">Duplicate · </span>複製
             </p>
             <p
               className="mt-2 text-sm text-emerald-900/65"
@@ -448,14 +448,14 @@ export default async function EditProductPage({
               className="cursor-pointer inline-block text-red-600 hover:text-red-700 transition"
               style={BACK_LINK_STYLE}
             >
-              Danger · 刪除這個商品
+              <span aria-hidden="true">Danger · </span>刪除這個商品
             </summary>
             <div
               className="mt-4 rounded-2xl bg-red-50/80 p-5 border border-red-200/70"
               style={{ boxShadow: "0 1px 2px rgba(127,29,29,0.04)" }}
             >
               <p className="text-red-700" style={LABEL_STYLE}>
-                Confirm · 確認
+                <span aria-hidden="true">Confirm · </span>確認
               </p>
               <p
                 className="mt-2 text-sm text-red-800"
