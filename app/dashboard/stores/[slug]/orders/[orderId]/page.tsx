@@ -224,7 +224,7 @@ export default async function OrderDetailPage({
               letterSpacing: "0.4em",
             }}
           >
-            Notice · 提醒
+            <span aria-hidden="true">Notice · </span>提醒
           </p>
           <p className="mt-2 text-sm text-red-700">{error}</p>
         </div>
@@ -244,7 +244,7 @@ export default async function OrderDetailPage({
               letterSpacing: "0.4em",
             }}
           >
-            Saved · 已儲存
+            <span aria-hidden="true">Saved · </span>已儲存
           </p>
           <p className="mt-2 text-sm text-emerald-800">訂單狀態已更新</p>
         </div>
@@ -264,7 +264,7 @@ export default async function OrderDetailPage({
                 letterSpacing: "0.4em",
               }}
             >
-              Items · 商品
+              <span aria-hidden="true">Items · </span>商品
             </p>
             <span
               aria-hidden
@@ -317,7 +317,7 @@ export default async function OrderDetailPage({
                   letterSpacing: "0.4em",
                 }}
               >
-                Total · 合計
+                <span aria-hidden="true">Total · </span>合計
               </p>
               <span
                 className="text-3xl sm:text-4xl text-emerald-700 tabular-nums"
@@ -344,7 +344,7 @@ export default async function OrderDetailPage({
                   letterSpacing: "0.4em",
                 }}
               >
-                Recipient · 顧客資訊
+                <span aria-hidden="true">Recipient · </span>顧客資訊
               </p>
               <CopyButton
                 text={recipientText}
@@ -430,7 +430,7 @@ export default async function OrderDetailPage({
                   letterSpacing: "0.4em",
                 }}
               >
-                Logistics · 配送與付款
+                <span aria-hidden="true">Logistics · </span>配送與付款
               </p>
               <span
                 aria-hidden
@@ -477,7 +477,7 @@ export default async function OrderDetailPage({
                     letterSpacing: "0.4em",
                   }}
                 >
-                  Manage · 狀態管理
+                  <span aria-hidden="true">Manage · </span>狀態管理
                 </p>
                 <span
                   aria-hidden
@@ -561,7 +561,7 @@ export default async function OrderDetailPage({
                     letterSpacing: "0.4em",
                   }}
                 >
-                  Message · 給客人的訊息
+                  <span aria-hidden="true">Message · </span>給客人的訊息
                 </p>
                 <CopyButton
                   text={customerNote}
@@ -601,7 +601,7 @@ export default async function OrderDetailPage({
                   letterSpacing: "0.4em",
                 }}
               >
-                Timeline · 時間軸
+                <span aria-hidden="true">Timeline · </span>時間軸
               </p>
               <span
                 aria-hidden
