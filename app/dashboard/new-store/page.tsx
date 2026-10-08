@@ -109,7 +109,7 @@ export default async function NewStorePage({
                   letterSpacing: "0.4em",
                 }}
               >
-                Name · 店名{" "}
+                <span aria-hidden="true">Name · </span>店名{" "}
                 <span className="text-red-500" aria-hidden="true">
                   *
                 </span>
@@ -138,7 +138,7 @@ export default async function NewStorePage({
                   letterSpacing: "0.4em",
                 }}
               >
-                Slug · 店面網址{" "}
+                <span aria-hidden="true">Slug · </span>店面網址{" "}
                 <span className="text-red-500" aria-hidden="true">
                   *
                 </span>
@@ -185,7 +185,7 @@ export default async function NewStorePage({
                   letterSpacing: "0.4em",
                 }}
               >
-                About · 店介紹（選填）
+                <span aria-hidden="true">About · </span>店介紹（選填）
               </label>
               <textarea
                 id="store-description"
@@ -210,7 +210,7 @@ export default async function NewStorePage({
                     letterSpacing: "0.4em",
                   }}
                 >
-                  Phone · 聯絡電話
+                  <span aria-hidden="true">Phone · </span>聯絡電話
                 </label>
                 {/* 跟店面設定頁同一支：輸入時就用公開頁的 telDigits / cleanEmail 判一次，
                     判不過立刻提示「存了但客人點不了」；不用 type="tel" / type="email"
@@ -236,7 +236,7 @@ export default async function NewStorePage({
                     letterSpacing: "0.4em",
                   }}
                 >
-                  Email · 聯絡信箱
+                  <span aria-hidden="true">Email · </span>聯絡信箱
                 </label>
                 <ContactHintInput
                   kind="email"
@@ -261,7 +261,7 @@ export default async function NewStorePage({
                   letterSpacing: "0.4em",
                 }}
               >
-                Address · 地址（選填）
+                <span aria-hidden="true">Address · </span>地址（選填）
               </label>
               <input
                 id="store-address"

@@ -211,7 +211,7 @@ export default async function TrackPage({
             className="block text-[0.6875rem] uppercase mb-2.5 font-medium"
             style={{ color: theme.textMuted, letterSpacing: "0.3em" }}
           >
-            Order ID · 訂單編號
+            <span aria-hidden="true">Order ID · </span>訂單編號
           </label>
           <input
             id="track-id"
@@ -232,7 +232,7 @@ export default async function TrackPage({
             className="block text-[0.6875rem] uppercase mb-2.5 font-medium"
             style={{ color: theme.textMuted, letterSpacing: "0.3em" }}
           >
-            Phone · 聯絡電話
+            <span aria-hidden="true">Phone · </span>聯絡電話
           </label>
           <input
             id="track-phone"

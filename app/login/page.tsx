@@ -105,7 +105,7 @@ export default async function LoginPage({
                 className="block text-[0.6875rem] font-medium uppercase text-emerald-700/70 mb-2"
                 style={{ letterSpacing: "0.4em" }}
               >
-                Password · 密碼{" "}
+                <span aria-hidden="true">Password · </span>密碼{" "}
                 <span className="text-red-500" aria-hidden="true">
                   *
                 </span>

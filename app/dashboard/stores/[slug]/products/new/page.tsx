@@ -111,7 +111,7 @@ export default async function NewProductPage({
           <UnsavedChangesGuard />
           <div>
             <label htmlFor="name" className="block text-emerald-700/70 mb-2" style={LABEL_STYLE}>
-              Name · 商品名稱{" "}
+              <span aria-hidden="true">Name · </span>商品名稱{" "}
               <span className="text-red-500" aria-hidden="true">
                 *
               </span>
@@ -136,7 +136,7 @@ export default async function NewProductPage({
                 className="block text-emerald-700/70 mb-2"
                 style={LABEL_STYLE}
               >
-                Price · 價格 NT${" "}
+                <span aria-hidden="true">Price · </span>價格 NT${" "}
                 <span className="text-red-500" aria-hidden="true">
                   *
                 </span>
@@ -162,7 +162,7 @@ export default async function NewProductPage({
                 className="block text-emerald-700/70 mb-2"
                 style={LABEL_STYLE}
               >
-                Stock · 庫存（選填）
+                <span aria-hidden="true">Stock · </span>庫存（選填）
               </label>
               <input
                 id="stock"
@@ -180,7 +180,7 @@ export default async function NewProductPage({
 
           <div>
             <label htmlFor="description" className="block text-emerald-700/70 mb-2" style={LABEL_STYLE}>
-              About · 商品描述（選填）
+              <span aria-hidden="true">About · </span>商品描述（選填）
             </label>
             <textarea
               id="description"
@@ -195,7 +195,7 @@ export default async function NewProductPage({
 
           <div>
             <label htmlFor="image_files" className="block text-emerald-700/70 mb-2" style={LABEL_STYLE}>
-              Photos · 商品照片（選填，可選多張）
+              <span aria-hidden="true">Photos · </span>商品照片（選填，可選多張）
             </label>
             <ImageFilePicker
               id="image_files"

@@ -495,7 +495,7 @@ export default async function OrderDetailPage({
                     letterSpacing: "0.3em",
                   }}
                 >
-                  Status · 訂單狀態
+                  <span aria-hidden="true">Status · </span>訂單狀態
                 </label>
                 <select
                   id="order-status"
@@ -521,7 +521,7 @@ export default async function OrderDetailPage({
                     letterSpacing: "0.3em",
                   }}
                 >
-                  Payment · 付款狀態
+                  <span aria-hidden="true">Payment · </span>付款狀態
                 </label>
                 <select
                   id="order-payment-status"

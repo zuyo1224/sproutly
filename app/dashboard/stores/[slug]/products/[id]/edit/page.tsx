@@ -174,7 +174,7 @@ export default async function EditProductPage({
           <UnsavedChangesGuard />
           <div>
             <label htmlFor="name" className="block text-emerald-700/70 mb-2" style={LABEL_STYLE}>
-              Name · 商品名稱{" "}
+              <span aria-hidden="true">Name · </span>商品名稱{" "}
               <span className="text-red-500" aria-hidden="true">
                 *
               </span>
@@ -199,7 +199,7 @@ export default async function EditProductPage({
                 className="block text-emerald-700/70 mb-2"
                 style={LABEL_STYLE}
               >
-                Price · 價格 {currencyLabel}{" "}
+                <span aria-hidden="true">Price · </span>價格 {currencyLabel}{" "}
                 <span className="text-red-500" aria-hidden="true">
                   *
                 </span>
@@ -225,7 +225,7 @@ export default async function EditProductPage({
                 className="block text-emerald-700/70 mb-2"
                 style={LABEL_STYLE}
               >
-                Stock · 庫存（選填）
+                <span aria-hidden="true">Stock · </span>庫存（選填）
               </label>
               <input
                 id="stock"
@@ -244,7 +244,7 @@ export default async function EditProductPage({
 
           <div>
             <label htmlFor="description" className="block text-emerald-700/70 mb-2" style={LABEL_STYLE}>
-              About · 商品描述（選填）
+              <span aria-hidden="true">About · </span>商品描述（選填）
             </label>
             <textarea
               id="description"
@@ -260,7 +260,7 @@ export default async function EditProductPage({
           {/* 整組標題沒有單一輸入框可綁，改用 role="group" 讓報讀進到這區先唸「商品照片」 */}
           <div role="group" aria-labelledby="product-photos-group-label">
             <label id="product-photos-group-label" className="block text-emerald-700/70 mb-3" style={LABEL_STYLE}>
-              Photos · 商品照片
+              <span aria-hidden="true">Photos · </span>商品照片
             </label>
 
             {product.image_urls && product.image_urls.length > 0 && (
