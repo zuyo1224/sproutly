@@ -340,7 +340,7 @@ export function SearchOverlay({ slug }: { slug: string }) {
                       color: "var(--store-text-muted, rgba(0,0,0,0.55))",
                     }}
                   >
-                    Searching · 搜尋中
+                    <span aria-hidden="true">Searching · </span>搜尋中
                   </p>
                   <div
                     className="mx-auto mt-3 h-px w-10"
@@ -363,7 +363,7 @@ export function SearchOverlay({ slug }: { slug: string }) {
                       color: "var(--store-text-muted, rgba(0,0,0,0.55))",
                     }}
                   >
-                    Offline · 暫時連不上
+                    <span aria-hidden="true">Offline · </span>暫時連不上
                   </p>
                   <div
                     className="mx-auto mt-3 h-px w-10"
@@ -407,7 +407,7 @@ export function SearchOverlay({ slug }: { slug: string }) {
                       color: "var(--store-text-muted, rgba(0,0,0,0.55))",
                     }}
                   >
-                    No Match · 沒有結果
+                    <span aria-hidden="true">No Match · </span>沒有結果
                   </p>
                   <div
                     className="mx-auto mt-3 h-px w-10"
@@ -453,7 +453,7 @@ export function SearchOverlay({ slug }: { slug: string }) {
                       color: "var(--store-text-muted, rgba(0,0,0,0.55))",
                     }}
                   >
-                    Search · 商品名或關鍵字
+                    <span aria-hidden="true">Search · </span>商品名或關鍵字
                   </p>
                   <div
                     className="mx-auto mt-3 h-px w-10"
@@ -561,7 +561,7 @@ export function SearchOverlay({ slug }: { slug: string }) {
                           letterSpacing: "0.25em",
                         }}
                       >
-                        Low Stock · 剩 {p.stock}
+                        <span aria-hidden="true">Low Stock · </span>剩 {p.stock}
                       </p>
                     )}
                   </div>
