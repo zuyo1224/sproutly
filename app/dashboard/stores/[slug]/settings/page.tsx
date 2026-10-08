@@ -107,7 +107,7 @@ export default async function StoreSettingsPage({
             letterSpacing: "0.4em",
           }}
         >
-          Settings · 店面設定
+          <span aria-hidden="true">Settings · </span>店面設定
         </p>
         <span className="block mt-3 h-px w-12 bg-emerald-600/60" />
         <h2
@@ -139,7 +139,7 @@ export default async function StoreSettingsPage({
               letterSpacing: "0.4em",
             }}
           >
-            Notice · 提醒
+            <span aria-hidden="true">Notice · </span>提醒
           </p>
           <p className="mt-2 text-sm text-red-800" style={{ lineHeight: 1.7 }}>
             {error}
@@ -165,7 +165,7 @@ export default async function StoreSettingsPage({
               letterSpacing: "0.4em",
             }}
           >
-            Saved · 已儲存
+            <span aria-hidden="true">Saved · </span>已儲存
           </p>
           <p
             className="mt-2 text-emerald-900/75"
@@ -205,7 +205,7 @@ export default async function StoreSettingsPage({
                 letterSpacing: "0.4em",
               }}
             >
-              Status · 發布狀態
+              <span aria-hidden="true">Status · </span>發布狀態
             </p>
             <span className="block mt-3 h-px w-10 bg-emerald-600/60" />
           </div>
@@ -238,7 +238,7 @@ export default async function StoreSettingsPage({
                 letterSpacing: "0.4em",
               }}
             >
-              About · 基本資訊
+              <span aria-hidden="true">About · </span>基本資訊
             </p>
             <span className="block mt-3 h-px w-10 bg-emerald-600/60" />
           </div>
@@ -289,7 +289,7 @@ export default async function StoreSettingsPage({
                 letterSpacing: "0.4em",
               }}
             >
-              Contact · 聯絡資訊
+              <span aria-hidden="true">Contact · </span>聯絡資訊
             </p>
             <span className="block mt-3 h-px w-10 bg-emerald-600/60" />
           </div>
@@ -352,7 +352,7 @@ export default async function StoreSettingsPage({
                 letterSpacing: "0.4em",
               }}
             >
-              Hours · 營業資訊
+              <span aria-hidden="true">Hours · </span>營業資訊
             </p>
             <span className="block mt-3 h-px w-10 bg-emerald-600/60" />
           </div>
@@ -418,7 +418,7 @@ A: 可以，地點為台北車站。`}</pre>
                 letterSpacing: "0.4em",
               }}
             >
-              Style · 視覺風格
+              <span aria-hidden="true">Style · </span>視覺風格
             </p>
             <span className="block mt-3 h-px w-10 bg-emerald-600/60" />
             <p className="text-xs text-emerald-900/50 mt-3" style={{ lineHeight: 1.7 }}>
@@ -654,7 +654,7 @@ A: 可以，地點為台北車站。`}</pre>
                 letterSpacing: "0.4em",
               }}
             >
-              Homepage · 首頁文案
+              <span aria-hidden="true">Homepage · </span>首頁文案
             </p>
             <span className="block mt-3 h-px w-10 bg-emerald-600/60" />
             <p className="text-xs text-emerald-900/50 mt-3" style={{ lineHeight: 1.7 }}>
@@ -788,7 +788,7 @@ A: 可以，地點為台北車站。`}</pre>
                 letterSpacing: "0.4em",
               }}
             >
-              Layout · 版面設計
+              <span aria-hidden="true">Layout · </span>版面設計
             </p>
             <span className="block mt-3 h-px w-10 bg-emerald-600/60" />
             <p className="text-xs text-emerald-900/50 mt-3" style={{ lineHeight: 1.7 }}>

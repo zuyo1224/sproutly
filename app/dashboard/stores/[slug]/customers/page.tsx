@@ -116,7 +116,7 @@ export default async function StoreCustomersPage({
               letterSpacing: "0.4em",
             }}
           >
-            Customers · 客人
+            <span aria-hidden="true">Customers · </span>客人
           </p>
           <h2
             className="mt-3 text-3xl sm:text-4xl text-emerald-950 font-medium tracking-tight"
@@ -160,7 +160,7 @@ export default async function StoreCustomersPage({
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-8">
         <div className="rounded-2xl bg-white border border-emerald-50 p-5 shadow-lg shadow-emerald-700/5">
           <p className="text-[10px] tracking-[0.28em] uppercase text-emerald-700/70 mb-3">
-            Total · 客人總數
+            <span aria-hidden="true">Total · </span>客人總數
           </p>
           <p
             className="text-3xl sm:text-4xl text-emerald-950 font-medium tabular-nums"
@@ -174,7 +174,7 @@ export default async function StoreCustomersPage({
         </div>
         <div className="rounded-2xl bg-white border border-emerald-50 p-5 shadow-lg shadow-emerald-700/5">
           <p className="text-[10px] tracking-[0.28em] uppercase text-emerald-700/70 mb-3">
-            Repeat · 回購客人
+            <span aria-hidden="true">Repeat · </span>回購客人
           </p>
           <p
             className="text-3xl sm:text-4xl text-emerald-950 font-medium tabular-nums"
@@ -190,7 +190,7 @@ export default async function StoreCustomersPage({
         </div>
         <div className="rounded-2xl bg-white border border-emerald-50 p-5 shadow-lg shadow-emerald-700/5">
           <p className="text-[10px] tracking-[0.28em] uppercase text-emerald-700/70 mb-3">
-            Avg Spend · 平均消費
+            <span aria-hidden="true">Avg Spend · </span>平均消費
           </p>
           <p
             className="text-3xl sm:text-4xl text-emerald-950 font-medium tabular-nums"
@@ -202,7 +202,7 @@ export default async function StoreCustomersPage({
         </div>
         <div className="rounded-2xl bg-gradient-to-br from-emerald-700 to-emerald-800 p-5 text-white">
           <p className="text-[10px] tracking-[0.28em] uppercase text-emerald-100/70 mb-3">
-            Top · 最高消費
+            <span aria-hidden="true">Top · </span>最高消費
           </p>
           <p className="text-lg font-medium truncate" style={{ letterSpacing: "-0.01em" }}>
             {topCustomer?.name ?? "—"}
@@ -534,7 +534,7 @@ export default async function StoreCustomersPage({
             letterSpacing: "0.4em",
           }}
         >
-          Note · 分群說明
+          <span aria-hidden="true">Note · </span>分群說明
         </p>
         <p
           className="text-emerald-900/65"
