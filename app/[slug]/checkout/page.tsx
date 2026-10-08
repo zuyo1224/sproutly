@@ -162,7 +162,7 @@ export default async function CheckoutPage({
             className="text-[0.6875rem] uppercase font-medium mb-2"
             style={{ letterSpacing: "0.4em", opacity: 0.8 }}
           >
-            Sold Out · 已售完
+            <span aria-hidden="true">Sold Out · </span>已售完
           </p>
           <p className="text-sm" style={{ lineHeight: 1.6 }}>
             這株目前沒有庫存了，沒辦法下單。可以回去看看店裡其他的。

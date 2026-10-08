@@ -326,7 +326,7 @@ export default async function ShopPage({
             className="text-[0.6875rem] uppercase font-medium whitespace-nowrap"
             style={{ letterSpacing: "0.3em" }}
           >
-            In Stock · 只看有貨
+            <span aria-hidden="true">In Stock · </span>只看有貨
           </span>
         </label>
         <select

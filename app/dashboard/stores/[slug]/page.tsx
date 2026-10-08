@@ -492,7 +492,7 @@ export default async function StoreInsightsPage({
         <section className="lg:col-span-2 bg-white rounded-2xl p-6 shadow-lg shadow-emerald-700/5">
           <div className="flex items-center justify-between mb-6">
             <div>
-              <p className="text-[10px] tracking-[0.28em] uppercase text-emerald-700/70">
+              <p className="text-[10px] tracking-[0.28em] uppercase text-emerald-700/70" aria-hidden="true">
                 Trend · 14d
               </p>
               <h3 className="mt-1.5 text-lg font-medium text-emerald-950 tracking-tight">
