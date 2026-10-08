@@ -103,7 +103,7 @@ export default function CartCheckoutPage() {
               letterSpacing: "0.4em",
             }}
           >
-            Offline · 讀取失敗
+            <span aria-hidden="true">Offline · </span>讀取失敗
           </p>
           <div
             className="mt-5 h-px w-10"

@@ -237,7 +237,7 @@ export function RecentlyViewed({
                 className="mt-1 text-[0.625rem] uppercase font-medium"
                 style={{ color: "#92400E", letterSpacing: "0.25em" }}
               >
-                Low Stock · 剩 {stock}
+                <span aria-hidden="true">Low Stock · </span>剩 {stock}
               </p>
             )}
           </Link>

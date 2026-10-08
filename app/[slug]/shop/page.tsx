@@ -461,7 +461,7 @@ export default async function ShopPage({
                     letterSpacing: "0.3em",
                   }}
                 >
-                  Low Stock · 剩 {p.stock}
+                  <span aria-hidden="true">Low Stock · </span>剩 {p.stock}
                 </p>
               ) : null}
             </Link>

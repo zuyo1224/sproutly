@@ -285,7 +285,7 @@ export default function FavoritesPage() {
               letterSpacing: "0.4em",
             }}
           >
-            Offline · 讀取失敗
+            <span aria-hidden="true">Offline · </span>讀取失敗
           </p>
           <div
             className="mt-5 h-px w-10"
@@ -486,7 +486,7 @@ export default function FavoritesPage() {
                     letterSpacing: "0.3em",
                   }}
                 >
-                  Low Stock · 剩 {p.stock}
+                  <span aria-hidden="true">Low Stock · </span>剩 {p.stock}
                 </p>
               ) : null}
             </Link>
