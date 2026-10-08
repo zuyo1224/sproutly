@@ -40,7 +40,7 @@ export default async function LoginPage({
               className="text-[0.6875rem] font-medium uppercase text-emerald-700/70"
               style={{ letterSpacing: "0.4em" }}
             >
-              Sign In · 登入
+              <span aria-hidden="true">Sign In · </span>登入
             </p>
             <span className="block mt-4 mx-auto h-px w-12 bg-emerald-600/60" />
             <h1
@@ -67,7 +67,7 @@ export default async function LoginPage({
                 className="text-[0.6875rem] font-medium uppercase text-red-700"
                 style={{ letterSpacing: "0.4em" }}
               >
-                Notice · 提醒
+                <span aria-hidden="true">Notice · </span>提醒
               </p>
               <p className="mt-2 text-sm text-red-800" style={{ lineHeight: 1.7 }}>
                 {error}
@@ -133,7 +133,7 @@ export default async function LoginPage({
               className="text-[0.6875rem] font-medium uppercase text-emerald-700/70 mb-3"
               style={{ letterSpacing: "0.3em" }}
             >
-              New Here · 第一次來
+              <span aria-hidden="true">New Here · </span>第一次來
             </p>
             <Link
               href="/signup"

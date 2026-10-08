@@ -42,7 +42,7 @@ export default async function SignupPage({
               className="text-[0.6875rem] font-medium uppercase text-emerald-700/70"
               style={{ letterSpacing: "0.4em" }}
             >
-              Sent · 已寄出
+              <span aria-hidden="true">Sent · </span>已寄出
             </p>
             <span className="block mt-4 mx-auto h-px w-10 bg-emerald-600/60" />
             <h1
@@ -106,7 +106,7 @@ export default async function SignupPage({
               className="text-[0.6875rem] font-medium uppercase text-emerald-700/70"
               style={{ letterSpacing: "0.4em" }}
             >
-              Get Started · 開始
+              <span aria-hidden="true">Get Started · </span>開始
             </p>
             <span className="block mt-4 mx-auto h-px w-12 bg-emerald-600/60" />
             <h1
@@ -133,7 +133,7 @@ export default async function SignupPage({
                 className="text-[0.6875rem] font-medium uppercase text-red-700"
                 style={{ letterSpacing: "0.4em" }}
               >
-                Notice · 提醒
+                <span aria-hidden="true">Notice · </span>提醒
               </p>
               <p className="mt-2 text-sm text-red-800" style={{ lineHeight: 1.7 }}>
                 {error}
@@ -217,7 +217,7 @@ export default async function SignupPage({
               className="text-[0.6875rem] font-medium uppercase text-emerald-700/70 mb-3"
               style={{ letterSpacing: "0.3em" }}
             >
-              Already a Maker · 已經有帳號了
+              <span aria-hidden="true">Already a Maker · </span>已經有帳號了
             </p>
             <Link
               href="/login"

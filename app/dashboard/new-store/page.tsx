@@ -57,7 +57,7 @@ export default async function NewStorePage({
                 letterSpacing: "0.4em",
               }}
             >
-              New Store · 開店
+              <span aria-hidden="true">New Store · </span>開店
             </p>
             <span className="block mt-4 h-px w-12 bg-emerald-600/60" />
             <h1
@@ -89,7 +89,7 @@ export default async function NewStorePage({
                   letterSpacing: "0.4em",
                 }}
               >
-                Notice · 提醒
+                <span aria-hidden="true">Notice · </span>提醒
               </p>
               <p className="mt-2 text-sm text-red-800" style={{ lineHeight: 1.7 }}>
                 {error}
