@@ -261,7 +261,8 @@ export default async function StoreCustomersPage({
               letterSpacing: "0.4em",
             }}
           >
-            {q ? "No Match · 沒有符合" : "Empty · 還沒有客人"}
+            <span aria-hidden="true">{q ? "No Match · " : "Empty · "}</span>
+            {q ? "沒有符合" : "還沒有客人"}
           </p>
           <span aria-hidden className="mt-4 block h-px w-10 bg-emerald-600/60 mx-auto" />
           <h3

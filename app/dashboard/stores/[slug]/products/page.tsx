@@ -464,7 +464,8 @@ export default async function ProductsListPage({
               letterSpacing: "0.4em",
             }}
           >
-            {filterActive ? "No Match · 沒有符合" : "Empty · 還沒開張"}
+            <span aria-hidden="true">{filterActive ? "No Match · " : "Empty · "}</span>
+            {filterActive ? "沒有符合" : "還沒開張"}
           </p>
           <span
             aria-hidden

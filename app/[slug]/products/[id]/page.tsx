@@ -409,11 +409,18 @@ export default async function PublicProductPage({
                     letterSpacing: "0.3em",
                   }}
                 >
+                  <span aria-hidden="true">
+                    {!inStock
+                      ? "Sold Out · "
+                      : product.stock <= LOW_STOCK_THRESHOLD
+                        ? "Low Stock · "
+                        : "In Stock · "}
+                  </span>
                   {!inStock
-                    ? "Sold Out · 已售完"
+                    ? "已售完"
                     : product.stock <= LOW_STOCK_THRESHOLD
-                      ? `Low Stock · 剩 ${product.stock} 件`
-                      : `In Stock · 現貨 ${product.stock} 件`}
+                      ? `剩 ${product.stock} 件`
+                      : `現貨 ${product.stock} 件`}
                 </p>
               </div>
             )}

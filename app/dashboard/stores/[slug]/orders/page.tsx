@@ -626,7 +626,8 @@ export default async function OrdersListPage({
               letterSpacing: "0.4em",
             }}
           >
-            {filterActive ? "No Match · 沒有符合" : "Empty · 還沒接單"}
+            <span aria-hidden="true">{filterActive ? "No Match · " : "Empty · "}</span>
+            {filterActive ? "沒有符合" : "還沒接單"}
           </p>
           <span
             aria-hidden
