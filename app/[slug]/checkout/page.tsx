@@ -85,7 +85,7 @@ export default async function CheckoutPage({
           textTransform: "uppercase",
         }}
       >
-        <span aria-hidden="true">←</span> Back · 回到商品
+        <span aria-hidden="true">← Back · </span>回到商品
       </Link>
 
       <header className="mb-16 sm:mb-20">

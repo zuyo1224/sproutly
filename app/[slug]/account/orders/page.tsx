@@ -163,7 +163,7 @@ export default async function CustomerOrdersPage({
           style={{ color: theme.text }}
           data-default-line="true"
         >
-          <span aria-hidden="true">←</span> Back · 會員中心
+          <span aria-hidden="true">← Back · </span>會員中心
         </Link>
       </header>
 
@@ -233,7 +233,7 @@ export default async function CustomerOrdersPage({
                           letterSpacing: "0.4em",
                         }}
                       >
-                        Order · #{shortId}
+                        <span aria-hidden="true">Order · </span><span className="sr-only">訂單 </span>#{shortId}
                       </p>
                       <p
                         className="mt-3 text-sm"

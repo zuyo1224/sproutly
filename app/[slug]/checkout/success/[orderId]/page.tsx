@@ -108,7 +108,10 @@ export default async function OrderSuccessPage({
             letterSpacing: "0.4em",
           }}
         >
-          {isCancelled ? "Cancelled" : "Order Received"} · #{shortId}
+          <span aria-hidden="true">
+            {isCancelled ? "Cancelled" : "Order Received"} ·{" "}
+          </span>
+          <span className="sr-only">訂單編號 </span>#{shortId}
         </p>
         <div
           className="h-px w-12 mx-auto mb-7"

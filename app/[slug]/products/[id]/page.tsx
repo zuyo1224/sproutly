@@ -290,7 +290,7 @@ export default async function PublicProductPage({
               letterSpacing: "0.4em",
             }}
           >
-            Product · {store.name}
+            <span aria-hidden="true">Product · </span>{store.name}
           </p>
           <div className="mt-5 flex items-start justify-between gap-4">
             <h1

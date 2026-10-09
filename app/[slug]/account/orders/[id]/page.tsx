@@ -98,7 +98,7 @@ export default async function CustomerOrderDetailPage({
           className="text-[0.6875rem] tracking-[0.4em] uppercase mb-5"
           style={{ color: theme.accent }}
         >
-          Order · <CopyOrderId shortId={shortId} />
+          <span aria-hidden="true">Order · </span><span className="sr-only">訂單 </span><CopyOrderId shortId={shortId} />
         </p>
         <h1
           className="text-3xl sm:text-4xl lg:text-[2.5rem]"

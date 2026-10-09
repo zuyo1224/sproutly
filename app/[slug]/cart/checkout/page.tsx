@@ -317,7 +317,7 @@ export default function CartCheckoutPage() {
           textTransform: "uppercase",
         }}
       >
-        <span aria-hidden="true">←</span> Back · 回購物車
+        <span aria-hidden="true">← Back · </span>回購物車
       </Link>
 
       <header className="mb-16 sm:mb-20">

@@ -90,7 +90,7 @@ export default function Home() {
           className="anim-rise font-mono text-[0.7rem] font-medium uppercase text-emerald-700"
           style={{ letterSpacing: "0.32em", animationDelay: "0.15s" }}
         >
-          Early Access · 為台灣小商家而生
+          <span aria-hidden="true">Early Access · </span>為台灣小商家而生
         </p>
 
         <h1

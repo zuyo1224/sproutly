@@ -150,7 +150,7 @@ export default async function OrderDetailPage({
             letterSpacing: "0.3em",
           }}
         >
-          <span aria-hidden="true">←</span> Back · 訂單列表
+          <span aria-hidden="true">← Back · </span>訂單列表
         </Link>
       </div>
 
@@ -164,7 +164,7 @@ export default async function OrderDetailPage({
               letterSpacing: "0.4em",
             }}
           >
-            Order · <CopyOrderId shortId={shortId} />
+            <span aria-hidden="true">Order · </span><span className="sr-only">訂單 </span><CopyOrderId shortId={shortId} />
           </p>
           <h2
             className="mt-3 text-3xl sm:text-4xl text-emerald-950 font-medium tracking-tight"

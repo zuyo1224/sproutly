@@ -863,7 +863,7 @@ export default async function TrackPage({
           className="sproutly-link text-[0.6875rem] uppercase font-medium transition"
           style={{ color: theme.textMuted, letterSpacing: "0.3em" }}
         >
-          <span aria-hidden="true">←</span> Back · 回到 {store.name}
+          <span aria-hidden="true">← Back · </span>回到 {store.name}
         </Link>
       </div>
     </main>

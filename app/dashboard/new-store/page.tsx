@@ -35,7 +35,7 @@ export default async function NewStorePage({
             letterSpacing: "0.3em",
           }}
         >
-          <span><span aria-hidden="true">←</span> Back · 回後台</span>
+          <span><span aria-hidden="true">← Back · </span>回後台</span>
         </Link>
       </header>
 
