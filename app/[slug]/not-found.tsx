@@ -84,7 +84,7 @@ export default function StoreNotFound() {
               letterSpacing: "0.4em",
             }}
           >
-            Need Help · 找不到想要的？
+            <span aria-hidden="true">Need Help · </span>找不到想要的？
           </p>
           <p
             style={{

@@ -331,7 +331,7 @@ export default async function PublicProductPage({
                   letterSpacing: "0.4em",
                 }}
               >
-                About · 關於這株
+                <span aria-hidden="true">About · </span>關於這株
               </p>
               <div
                 className="mt-5 whitespace-pre-line text-[0.9375rem]"
@@ -361,7 +361,7 @@ export default async function PublicProductPage({
                   letterSpacing: "0.4em",
                 }}
               >
-                Price · 售價
+                <span aria-hidden="true">Price · </span>售價
               </p>
               <p
                 className="mt-3 text-3xl sm:text-4xl tabular-nums"
@@ -444,7 +444,7 @@ export default async function PublicProductPage({
                     letterSpacing: "0.4em",
                   }}
                 >
-                  Qty · 數量
+                  <span aria-hidden="true">Qty · </span>數量
                 </label>
                 <select
                   id="qty"

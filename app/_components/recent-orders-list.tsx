@@ -55,7 +55,7 @@ export function RecentOrdersList({ slug }: { slug: string }) {
           letterSpacing: "0.4em",
         }}
       >
-        Recent · 這台裝置的訂單
+        <span aria-hidden="true">Recent · </span>這台裝置的訂單
       </p>
       <p
         className="mt-3 text-[0.8125rem]"

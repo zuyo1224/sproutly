@@ -29,7 +29,7 @@ export default function StoreError({
             letterSpacing: "0.4em",
           }}
         >
-          Something went wrong · 出了點狀況
+          <span aria-hidden="true">Something went wrong · </span>出了點狀況
         </p>
         <span
           className="block h-px w-12 mx-auto"

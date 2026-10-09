@@ -161,7 +161,7 @@ export default async function CustomerOrderDetailPage({
           className="text-[0.6875rem] tracking-[0.4em] uppercase mb-7"
           style={{ color: theme.accent }}
         >
-          Progress · 訂單進度
+          <span aria-hidden="true">Progress · </span>訂單進度
         </p>
         {isCancelled ? (
           <p

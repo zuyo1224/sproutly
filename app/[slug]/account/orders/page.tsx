@@ -121,7 +121,7 @@ export default async function CustomerOrdersPage({
             letterSpacing: "0.4em",
           }}
         >
-          Orders · 訂單歷史
+          <span aria-hidden="true">Orders · </span>訂單歷史
         </p>
         <h1
           className="mt-4 text-3xl sm:text-4xl font-medium"
