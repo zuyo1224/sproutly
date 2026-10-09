@@ -192,7 +192,7 @@ export default async function OrderSuccessPage({
               letterSpacing: "0.4em",
             }}
           >
-            Items · 商品
+            <span aria-hidden="true">Items · </span>商品
           </p>
           <div
             className="h-px flex-1"
@@ -244,7 +244,7 @@ export default async function OrderSuccessPage({
               letterSpacing: "0.4em",
             }}
           >
-            Total · 合計
+            <span aria-hidden="true">Total · </span>合計
           </span>
           <span
             className="tabular-nums"
@@ -279,7 +279,7 @@ export default async function OrderSuccessPage({
               letterSpacing: "0.4em",
             }}
           >
-            Recipient · 收件資訊
+            <span aria-hidden="true">Recipient · </span>收件資訊
           </p>
           <div
             className="h-px flex-1"
@@ -371,7 +371,7 @@ export default async function OrderSuccessPage({
                 letterSpacing: "0.4em",
               }}
             >
-              Logistics · 配送與付款
+              <span aria-hidden="true">Logistics · </span>配送與付款
             </p>
             <div
               className="h-px flex-1"
@@ -512,7 +512,7 @@ export default async function OrderSuccessPage({
               letterSpacing: "0.4em",
             }}
           >
-            Need Help · 有問題
+            <span aria-hidden="true">Need Help · </span>有問題
           </p>
           <p
             className="mb-5"

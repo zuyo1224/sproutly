@@ -395,7 +395,7 @@ export default function CartCheckoutPage() {
             className="text-[0.6875rem] uppercase font-medium mb-2"
             style={{ letterSpacing: "0.4em", opacity: 0.8 }}
           >
-            Notice · 庫存提醒
+            <span aria-hidden="true">Notice · </span>庫存提醒
           </p>
           <p className="text-sm" style={{ lineHeight: 1.6 }}>
             {hasSoldOut
@@ -429,7 +429,7 @@ export default function CartCheckoutPage() {
                   letterSpacing: "0.4em",
                 }}
               >
-                Recipient · 收件資訊
+                <span aria-hidden="true">Recipient · </span>收件資訊
               </p>
               <div
                 className="mt-3 h-px w-10"
@@ -517,7 +517,7 @@ export default function CartCheckoutPage() {
                   letterSpacing: "0.4em",
                 }}
               >
-                Shipping · 配送方式 <span>*</span>
+                <span aria-hidden="true">Shipping · </span>配送方式 <span>*</span>
               </p>
               <div
                 className="mt-3 h-px w-10"
@@ -686,7 +686,7 @@ export default function CartCheckoutPage() {
                   letterSpacing: "0.4em",
                 }}
               >
-                Payment · 付款方式 <span>*</span>
+                <span aria-hidden="true">Payment · </span>付款方式 <span>*</span>
               </p>
               <div
                 className="mt-3 h-px w-10"
@@ -806,7 +806,7 @@ export default function CartCheckoutPage() {
                   letterSpacing: "0.4em",
                 }}
               >
-                Summary · 訂單摘要
+                <span aria-hidden="true">Summary · </span>訂單摘要
               </p>
               <div
                 className="mt-3 h-px w-10"
