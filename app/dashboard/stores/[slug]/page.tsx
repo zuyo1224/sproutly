@@ -333,8 +333,8 @@ export default async function StoreInsightsPage({
 
           <div className="h-2 bg-emerald-50 rounded-full overflow-hidden mb-5">
             <div
-              className="h-full bg-gradient-to-r from-emerald-500 to-emerald-700 transition-all duration-700"
-              style={{ width: `${progressPct}%` }}
+              className="h-full w-full origin-left bg-gradient-to-r from-emerald-500 to-emerald-700 transition-transform duration-700 motion-reduce:transition-none"
+              style={{ transform: `scaleX(${progressPct / 100})` }}
             />
           </div>
 
