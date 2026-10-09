@@ -172,7 +172,7 @@ export default async function TrackPage({
           className="text-[0.6875rem] uppercase font-medium"
           style={{ color: theme.accent, letterSpacing: "0.4em" }}
         >
-          Order Tracking · 訂單追蹤
+          <span aria-hidden="true">Order Tracking · </span>訂單追蹤
         </p>
         <h1
           className="mt-4 text-3xl sm:text-4xl font-medium"
@@ -268,7 +268,7 @@ export default async function TrackPage({
             className="text-[0.6875rem] uppercase font-medium"
             style={{ color: theme.accent, letterSpacing: "0.4em" }}
           >
-            Not Found · 查無訂單
+            <span aria-hidden="true">Not Found · </span>查無訂單
           </p>
           <div
             className="mt-5 h-px w-10"
@@ -373,7 +373,7 @@ export default async function TrackPage({
                   className="text-[0.6875rem] uppercase font-medium"
                   style={{ color: theme.textMuted, letterSpacing: "0.4em" }}
                 >
-                  Cancelled · 已取消
+                  <span aria-hidden="true">Cancelled · </span>已取消
                 </p>
                 <div
                   className="my-4 h-px w-10 mx-auto"
@@ -407,7 +407,7 @@ export default async function TrackPage({
                   className="text-[0.6875rem] uppercase mb-6 font-medium"
                   style={{ color: theme.accent, letterSpacing: "0.4em" }}
                 >
-                  Status · 進度
+                  <span aria-hidden="true">Status · </span>進度
                 </p>
                 {/* 進度做成有序清單給報讀器：原本圈圈裡的數字、圈跟圈之間的連接線
                     都是純視覺，報讀器只念得到「1 待店家確認 2 已確認…」這串數字＋
@@ -544,7 +544,7 @@ export default async function TrackPage({
                 className="text-[0.6875rem] uppercase font-medium"
                 style={{ color: theme.accent, letterSpacing: "0.4em" }}
               >
-                Order ID · 訂單編號
+                <span aria-hidden="true">Order ID · </span>訂單編號
               </p>
               <span className="text-[0.9375rem]">
                 <CopyOrderId shortId={shortOrderId(order.id)} />
@@ -558,7 +558,7 @@ export default async function TrackPage({
                 className="text-[0.6875rem] uppercase mb-4 font-medium"
                 style={{ color: theme.accent, letterSpacing: "0.4em" }}
               >
-                Items · 商品
+                <span aria-hidden="true">Items · </span>商品
               </p>
               <div className="space-y-2">
                 {items.map((it, i) => (
@@ -595,7 +595,7 @@ export default async function TrackPage({
                 className="text-[0.6875rem] uppercase font-medium"
                 style={{ color: theme.textMuted, letterSpacing: "0.4em" }}
               >
-                Total · 合計
+                <span aria-hidden="true">Total · </span>合計
               </span>
               <span
                 className="text-3xl sm:text-4xl font-medium"
@@ -623,7 +623,7 @@ export default async function TrackPage({
                     className="text-[0.6875rem] uppercase mb-4 font-medium"
                     style={{ color: theme.accent, letterSpacing: "0.4em" }}
                   >
-                    Recipient · 收件資訊
+                    <span aria-hidden="true">Recipient · </span>收件資訊
                   </p>
                   <dl className="text-[0.9375rem] space-y-2">
                     <div className="flex gap-3">
@@ -714,7 +714,7 @@ export default async function TrackPage({
                       className="text-[0.6875rem] uppercase mb-4 font-medium"
                       style={{ color: theme.accent, letterSpacing: "0.4em" }}
                     >
-                      Logistics · 物流付款
+                      <span aria-hidden="true">Logistics · </span>物流付款
                     </p>
                     <dl className="text-[0.9375rem] space-y-2">
                       {decoded.shippingLabel && (
