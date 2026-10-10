@@ -530,6 +530,7 @@ export default async function DashboardPage() {
                         <Link
                           href={`/${store.slug}`}
                           target="_blank"
+                          rel="noopener noreferrer"
                           className="flex-1 text-center text-sm rounded-full border border-emerald-200 text-emerald-700 px-4 py-2 hover:bg-emerald-50 transition font-medium"
                         >
                           看店面 <span aria-hidden="true">↗</span>

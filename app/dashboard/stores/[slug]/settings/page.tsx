@@ -178,6 +178,7 @@ export default async function StoreSettingsPage({
                 <Link
                   href={`/${store.slug}`}
                   target="_blank"
+                  rel="noopener noreferrer"
                   className="underline hover:text-emerald-900"
                 >
                   {siteHost()}/{store.slug}

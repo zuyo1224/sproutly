@@ -192,6 +192,7 @@ export default async function StoreLayout({
                 <Link
                   href={`/${slug}`}
                   target="_blank"
+                  rel="noopener noreferrer"
                   className="text-xs text-emerald-700 hover:text-emerald-900 transition"
                 >
                   看公開店面 <span aria-hidden="true">↗</span>
