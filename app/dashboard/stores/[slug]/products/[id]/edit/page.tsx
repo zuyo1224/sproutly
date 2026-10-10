@@ -283,7 +283,7 @@ export default async function EditProductPage({
                       {/* eslint-disable-next-line @next/next/no-img-element */}
                       <img
                         src={url}
-                        alt={`圖 ${idx + 1}`}
+                        alt=""
                         className="aspect-square w-full object-cover rounded-xl border border-emerald-100 group-has-[:checked]:opacity-40 group-has-[:checked]:ring-2 group-has-[:checked]:ring-red-400 transition"
                       />
                       {/* 沒 aria-label 時報讀只唸「圖 1 核取方塊」（名稱來自圖片 alt 加角標字），

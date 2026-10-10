@@ -72,7 +72,7 @@ export function ImageFilePicker({
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
                   src={p.url}
-                  alt={p.name}
+                  alt=""
                   className="aspect-square w-full object-cover rounded-xl border border-emerald-100"
                 />
                 {showCoverBadge && idx === 0 && (

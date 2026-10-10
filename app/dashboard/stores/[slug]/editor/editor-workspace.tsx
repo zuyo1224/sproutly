@@ -2021,7 +2021,7 @@ export function EditorWorkspace({
                               {/* eslint-disable-next-line @next/next/no-img-element */}
                               <img
                                 src={theme.heroUrl}
-                                alt="Hero"
+                                alt="目前的首屏大圖"
                                 className="w-full h-full object-cover"
                                 style={objectPosition ? { objectPosition } : undefined}
                               />
@@ -2045,7 +2045,7 @@ export function EditorWorkspace({
                           {/* eslint-disable-next-line @next/next/no-img-element */}
                           <img
                             src={theme.heroUrl}
-                            alt="Hero"
+                            alt="目前的首屏大圖"
                             className="w-full h-full object-cover"
                             style={objectPosition ? { objectPosition } : undefined}
                           />
@@ -7116,7 +7116,7 @@ export function EditorWorkspace({
                     {/* eslint-disable-next-line @next/next/no-img-element */}
                     <img
                       src={theme.logoUrl}
-                      alt="Logo"
+                      alt="目前的店家標誌"
                       className="max-h-full max-w-full object-contain"
                     />
                   </div>
