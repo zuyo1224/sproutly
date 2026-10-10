@@ -710,15 +710,6 @@ export default async function PublicStoreLayout({
           background-size: 0.75rem;
         }
 
-        /* 圖片 hover 浮起 (商品詳情主圖) */
-        .sproutly-zoomable {
-          cursor: zoom-in;
-          transition: transform 0.6s cubic-bezier(0.22, 1, 0.36, 1);
-        }
-        .sproutly-zoomable:hover {
-          transform: translateY(-2px);
-        }
-
         @media (prefers-reduced-motion: reduce) {
           html { scroll-behavior: auto; }
           .sproutly-link::after,
@@ -728,7 +719,6 @@ export default async function PublicStoreLayout({
           .sproutly-card .sproutly-card-title,
           .sproutly-card .sproutly-card-action,
           .sproutly-card-shell .sproutly-card-float,
-          .sproutly-zoomable,
           .sproutly-scroll-progress,
           .sproutly-hero-parallax,
           .sproutly-stagger > * {
