@@ -417,8 +417,11 @@ export default function CartPage() {
                     "1px solid var(--store-border, rgba(0,0,0,0.08))",
                 }}
               >
+                {/* 縮圖連結跟旁邊商品名連結同一頁，移出 tab 順序與無障礙樹，鍵盤只停一次 */}
                 <Link
                   href={`/${slug}/products/${p.id}`}
+                  tabIndex={-1}
+                  aria-hidden="true"
                   className="w-24 h-24 sm:w-32 sm:h-32 flex-shrink-0 overflow-hidden rounded-xl"
                   style={{
                     background: "var(--store-surface, rgba(0,0,0,0.04))",
@@ -428,7 +431,7 @@ export default function CartPage() {
                     // eslint-disable-next-line @next/next/no-img-element
                     <img
                       src={thumb}
-                      alt={p.name}
+                      alt=""
                       loading="lazy"
                       className="w-full h-full object-cover"
                     />
