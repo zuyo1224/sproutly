@@ -270,7 +270,7 @@ export default async function ProductsListPage({
                   /* eslint-disable-next-line @next/next/no-img-element */
                   <img
                     src={thumb}
-                    alt={p.name}
+                    alt=""
                     className="w-full h-full object-cover"
                     loading="lazy"
                   />
