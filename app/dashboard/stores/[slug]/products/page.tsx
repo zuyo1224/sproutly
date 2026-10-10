@@ -272,6 +272,7 @@ export default async function ProductsListPage({
                     src={thumb}
                     alt={p.name}
                     className="w-full h-full object-cover"
+                    loading="lazy"
                   />
                 ) : (
                   <span
