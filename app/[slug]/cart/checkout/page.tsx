@@ -831,13 +831,14 @@ export default function CartCheckoutPage() {
                       // eslint-disable-next-line @next/next/no-img-element
                       <img
                         src={r.thumb}
-                        alt={r.product.name}
+                        alt=""
                         loading="lazy"
                         className="w-full h-full object-cover"
                       />
                     ) : (
                       <div className="w-full h-full flex items-center justify-center">
                         <span
+                          aria-hidden="true"
                           className="text-[10px] tracking-wider"
                           style={{
                             color:

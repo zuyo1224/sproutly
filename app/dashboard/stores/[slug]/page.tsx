@@ -670,11 +670,11 @@ export default async function StoreInsightsPage({
                     // eslint-disable-next-line @next/next/no-img-element
                     <img
                       src={thumb}
-                      alt={p.name}
+                      alt=""
                       className="w-full h-full object-cover"
                     />
                   ) : (
-                    <span className="text-[10px] text-emerald-900/40 tracking-wider">
+                    <span aria-hidden="true" className="text-[10px] text-emerald-900/40 tracking-wider">
                       —
                     </span>
                   )}

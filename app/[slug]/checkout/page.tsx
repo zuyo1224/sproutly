@@ -465,7 +465,7 @@ export default async function CheckoutPage({
                   // eslint-disable-next-line @next/next/no-img-element
                   <img
                     src={thumb}
-                    alt={product.name}
+                    alt=""
                     loading="lazy"
                     className="w-full h-full object-cover"
                   />
@@ -474,6 +474,7 @@ export default async function CheckoutPage({
                     className="w-full h-full flex items-center justify-center"
                   >
                     <span
+                      aria-hidden="true"
                       className="text-[10px] tracking-wider"
                       style={{ color: theme.textMuted, opacity: 0.4 }}
                     >
