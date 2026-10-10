@@ -526,7 +526,7 @@ export function SearchOverlay({ slug }: { slug: string }) {
                       // eslint-disable-next-line @next/next/no-img-element
                       <img
                         src={imgs[0]}
-                        alt={p.name}
+                        alt=""
                         loading="lazy"
                         className={`w-full h-full object-cover ${
                           soldOut ? "opacity-55 grayscale" : ""

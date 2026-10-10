@@ -186,7 +186,7 @@ export function RecentlyViewed({
                 // eslint-disable-next-line @next/next/no-img-element
                 <img
                   src={p.image}
-                  alt={p.name}
+                  alt=""
                   loading="lazy"
                   className={`w-full h-full object-cover group-hover:scale-105 transition duration-700 ${
                     soldOut ? "opacity-55 grayscale" : ""

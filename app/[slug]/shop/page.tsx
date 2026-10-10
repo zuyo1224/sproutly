@@ -397,7 +397,7 @@ export default async function ShopPage({
                     {/* eslint-disable-next-line @next/next/no-img-element */}
                     <img
                       src={imgs[0]}
-                      alt={p.name}
+                      alt=""
                       className={`w-full h-full object-cover transition ${
                         soldOut ? "opacity-55 grayscale" : ""
                       }`}

@@ -425,7 +425,7 @@ export default function FavoritesPage() {
                     {/* eslint-disable-next-line @next/next/no-img-element */}
                     <img
                       src={imgs[0]}
-                      alt={p.name}
+                      alt=""
                       loading="lazy"
                       className={`w-full h-full object-cover transition ${
                         soldOut ? "opacity-55 grayscale" : ""
