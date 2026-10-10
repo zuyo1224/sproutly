@@ -64,6 +64,7 @@ export default function StoreError({
 
       <div className="mt-12 flex flex-col sm:flex-row gap-3 justify-center">
         <button
+          type="button"
           onClick={reset}
           className="sproutly-btn sproutly-btn-primary sproutly-btn-lg"
         >

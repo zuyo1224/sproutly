@@ -44,6 +44,7 @@ export default function RootError({
           </p>
           <div className="mt-12 flex flex-col sm:flex-row gap-4 justify-center">
             <button
+              type="button"
               onClick={reset}
               className="rounded-full bg-emerald-700 px-8 py-4 text-white font-medium hover:bg-emerald-800 transition shadow-lg shadow-emerald-700/20"
             >
