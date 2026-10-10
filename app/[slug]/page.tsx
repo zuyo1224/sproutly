@@ -3367,7 +3367,7 @@ export default async function StoreHomePage({
                       <Image
                         src={c.image}
                         unoptimized={!isOptimizableImageSrc(c.image)}
-                        alt={c.title}
+                        alt=""
                         fill
                         sizes="(min-width: 640px) 600px, 50vw"
                         quality={80}

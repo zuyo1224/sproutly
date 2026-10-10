@@ -2996,7 +2996,7 @@ export default async function PublicStoreLayout({
               // eslint-disable-next-line @next/next/no-img-element
               <img
                 src={theme.logoUrl}
-                alt={store.name}
+                alt=""
                 className="h-9 w-9 rounded-md object-contain"
               />
             ) : null}
