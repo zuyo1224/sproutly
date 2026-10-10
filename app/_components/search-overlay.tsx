@@ -241,8 +241,10 @@ export function SearchOverlay({ slug }: { slug: string }) {
               boxShadow: "var(--sproutly-elev-4)",
             }}
           >
+            {/* input 本身 outline-none，焦點提示改畫在這一列：底部加一條店家主色的
+                inset 線，鍵盤從結果列 Tab／Shift+Tab 回到輸入框時看得出焦點在哪。 */}
             <div
-              className="flex items-center gap-3 px-5 py-4"
+              className="flex items-center gap-3 px-5 py-4 focus-within:shadow-[inset_0_-2px_0_0_var(--store-accent,currentColor)]"
               style={{
                 borderBottom: "1px solid var(--store-border, rgba(0,0,0,0.08))",
               }}
