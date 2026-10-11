@@ -122,7 +122,7 @@ export function ImageCarousel({ images, alt, surfaceBg }: Props) {
 
   return (
     <>
-      {/* 方向鍵翻照片時，畫面默默換圖（內嵌只有視覺計數器、燈箱連計數器都沒有），
+      {/* 方向鍵翻照片時，畫面默默換圖（內嵌與燈箱都只有視覺計數器），
           報讀器使用者聽不出翻到第幾張——補一條 sr-only live 區域，idx 一變就念位置。
           燈箱是 aria-modal，報讀器會忽略 dialog 外的內容，所以燈箱開著時改放進 dialog 裡；
           單張時不會有翻頁故不念 */}
@@ -260,6 +260,13 @@ export function ImageCarousel({ images, alt, surfaceBg }: Props) {
                   <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
                 </svg>
               </button>
+              {/* 跟內嵌輪播一樣給看得到的位置；朗讀交給上面的 positionStatus，這裡 aria-hidden 免得念兩次 */}
+              <div
+                aria-hidden="true"
+                className="absolute top-4 left-4 sm:top-6 sm:left-6 text-white/80 text-sm tracking-widest tabular-nums"
+              >
+                {idx + 1} / {total}
+              </div>
             </>
           )}
           <button
