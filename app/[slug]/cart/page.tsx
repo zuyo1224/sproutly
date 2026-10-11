@@ -468,6 +468,8 @@ export default function CartPage() {
                       role="group"
                       aria-label={`${p.name}，調整數量`}
                     >
+                      {/* 外框 overflow-hidden 又跟按鈕一樣高，預設焦點框畫在按鈕外面會被整圈裁掉，
+                          Tab 到 +/− 看不出在哪；按鈕改成往內縮的圓形框，顏色跟著店家文字色。 */}
                       <button
                         type="button"
                         // 用 aria-disabled 不用 disabled：按到 1 時按鈕若真的停用，
@@ -477,7 +479,7 @@ export default function CartPage() {
                           else setMinFlip((f) => ({ ...f, [p.id]: !f[p.id] }));
                         }}
                         aria-disabled={qty <= 1}
-                        className="w-8 h-8 transition aria-disabled:opacity-30 aria-disabled:cursor-not-allowed"
+                        className="w-8 h-8 rounded-full transition outline-none focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-current aria-disabled:opacity-30 aria-disabled:cursor-not-allowed"
                         style={{
                           color:
                             "var(--store-text-muted, rgba(0,0,0,0.6))",
@@ -517,7 +519,7 @@ export default function CartPage() {
                             setLimitFlip((f) => ({ ...f, [p.id]: !f[p.id] }));
                         }}
                         aria-disabled={qty >= maxQty}
-                        className="w-8 h-8 transition aria-disabled:opacity-30 aria-disabled:cursor-not-allowed"
+                        className="w-8 h-8 rounded-full transition outline-none focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-current aria-disabled:opacity-30 aria-disabled:cursor-not-allowed"
                         style={{
                           color:
                             "var(--store-text-muted, rgba(0,0,0,0.6))",
