@@ -443,7 +443,7 @@ export default async function StoreCustomersPage({
           </table>
 
           {/* Mobile card list */}
-          <ul className="sm:hidden divide-y divide-emerald-50">
+          <ul aria-label="客人列表" className="sm:hidden divide-y divide-emerald-50">
             {filtered.map((r) => {
               const recencyDays = taipeiDaysAgo(r.lastOrderAt);
               const tier = customerTier(r.totalCents, r.orderCount);

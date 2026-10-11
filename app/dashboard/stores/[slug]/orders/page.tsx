@@ -454,8 +454,9 @@ export default async function OrdersListPage({
       {orders && orders.length > 0 ? (
         <>
         {/* 手機卡片版：訂單列表在手機上常用（店家在外面隨手看單），
-            7 欄的表格擠在窄螢幕會糊成一團，所以小螢幕改一筆一張卡。 */}
-        <div className="sm:hidden space-y-3">
+            7 欄的表格擠在窄螢幕會糊成一團，所以小螢幕改一筆一張卡。
+            用 ul/li，螢幕閱讀器才會念出「訂單列表，共 N 項」。 */}
+        <ul aria-label="訂單列表" className="sm:hidden space-y-3">
           {orders.map((o) => {
             const s = ORDER_STATUS_BADGES[o.status] ?? ORDER_STATUS_BADGES.pending;
             const p = PAYMENT_LABEL[o.payment_status] ?? PAYMENT_LABEL.unpaid;
@@ -464,7 +465,7 @@ export default async function OrdersListPage({
               // 卡片從整張 <Link> 改成 div + 蓋滿的 overlay link：快速推進的表單按鈕
               // 不能包在 <a> 裡（HTML 不允許、點按鈕也會順便跳頁），改成連結 absolute
               // 蓋滿整張、按鈕自己 z-10 疊在上面，點卡片任一處照樣進詳情頁。
-              <div
+              <li
                 key={o.id}
                 className={`relative bg-white rounded-2xl p-4 shadow-lg shadow-emerald-700/5 border-l-[3px] ${
                   needsAction ? "border-amber-400" : "border-transparent"
@@ -519,10 +520,10 @@ export default async function OrdersListPage({
                     {advanceButton(o)}
                   </span>
                 </div>
-              </div>
+              </li>
             );
           })}
-        </div>
+        </ul>
 
         <div className="hidden sm:block bg-white rounded-2xl shadow-lg shadow-emerald-700/5 overflow-hidden">
           <table className="w-full text-sm">
