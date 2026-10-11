@@ -243,7 +243,8 @@ export default async function ProductsListPage({
       )}
 
       {visible.length > 0 ? (
-        <div className="space-y-3">
+        <ul aria-label="商品列表" className="space-y-3">
+          {/* 外層 ul、每列 li：螢幕閱讀器才知道是幾件商品的清單 */}
           {/* row 從整張 <Link> 改成 div + 蓋滿的 overlay link：快速上下架的表單
               按鈕不能包在 <a> 裡（HTML 不允許、點按鈕也會觸發跳頁），改成連結
               absolute 蓋滿整列、按鈕自己 z-10 疊在上面，點卡片任一處照樣進編輯頁 */}
@@ -255,7 +256,7 @@ export default async function ProductsListPage({
             const brokenCount = brokenImageCount(p.image_urls);
             const brokenTitle = `有 ${brokenCount} 張圖店面不會放，點進去看`;
             return (
-            <div
+            <li
               key={p.id}
               className="relative bg-white rounded-2xl p-5 shadow-lg shadow-emerald-700/5 hover:shadow-xl hover:shadow-emerald-700/10 hover:-translate-y-0.5 transition flex items-center gap-4"
             >
@@ -451,10 +452,10 @@ export default async function ProductsListPage({
                   )}
                 </div>
               )}
-            </div>
+            </li>
             );
           })}
-        </div>
+        </ul>
       ) : (
         <div className="bg-white rounded-3xl p-12 sm:p-16 text-center shadow-xl shadow-emerald-700/5">
           <p
