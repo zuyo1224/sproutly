@@ -189,7 +189,9 @@ export function ImageCarousel({ images, alt, surfaceBg }: Props) {
                 <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
               </svg>
             </button>
-            <div className="absolute bottom-4 left-0 right-0 flex justify-center gap-2">
+            {/* 點點本身只有 6px 高，手機手指點不準；按鈕外框用透明 padding 撐到 24px 高，
+                左右各 4px 合起來剛好是原本 gap-2 的間距，看起來不變 */}
+            <div className="absolute bottom-[7px] left-0 right-0 flex justify-center">
               {images.map((_, i) => (
                 <button
                   key={i}
@@ -197,14 +199,19 @@ export function ImageCarousel({ images, alt, surfaceBg }: Props) {
                   onClick={() => setIdx(i)}
                   aria-label={`第 ${i + 1} 張，共 ${total} 張`}
                   aria-current={i === idx ? "true" : undefined}
-                  className="transition"
-                  style={{
-                    width: i === idx ? 24 : 6,
-                    height: 6,
-                    borderRadius: 3,
-                    background: i === idx ? "#fff" : "rgba(255,255,255,0.5)",
-                  }}
-                />
+                  className="px-1 py-[9px]"
+                >
+                  <span
+                    aria-hidden="true"
+                    className="block transition"
+                    style={{
+                      width: i === idx ? 24 : 6,
+                      height: 6,
+                      borderRadius: 3,
+                      background: i === idx ? "#fff" : "rgba(255,255,255,0.5)",
+                    }}
+                  />
+                </button>
               ))}
             </div>
             <div className="absolute top-4 right-4 bg-white/80 backdrop-blur text-stone-900 text-xs px-2 py-1 rounded-full">
