@@ -154,7 +154,9 @@ export function ImageCarousel({ images, alt, surfaceBg }: Props) {
             tabIndex={i === idx ? 0 : -1}
             aria-label={`放大檢視：${alt} ${i + 1}`}
             aria-hidden={i === idx ? undefined : true}
-            className="absolute inset-0 w-full h-full object-cover cursor-zoom-in"
+            // 外框 overflow-hidden，瀏覽器預設焦點框畫在圖片外面會整圈被裁掉，Tab 到主圖完全看不出來；
+            // 改成往內縮 4px 的深色框，圓角跟外框一致，滑鼠點不會出現
+            className="absolute inset-0 w-full h-full object-cover cursor-zoom-in rounded-3xl outline-none focus-visible:outline-2 focus-visible:-outline-offset-4 focus-visible:outline-stone-900"
             style={{
               opacity: i === idx ? 1 : 0,
               transition: "opacity 0.8s cubic-bezier(0.22, 1, 0.36, 1)",
