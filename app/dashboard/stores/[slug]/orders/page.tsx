@@ -526,6 +526,7 @@ export default async function OrdersListPage({
 
         <div className="hidden sm:block bg-white rounded-2xl shadow-lg shadow-emerald-700/5 overflow-hidden">
           <table className="w-full text-sm">
+            <caption className="sr-only">訂單列表</caption>
             <thead className="bg-emerald-50/50 text-xs uppercase tracking-wider text-emerald-900/60">
               <tr>
                 <th className="text-left px-5 py-3">訂單</th>

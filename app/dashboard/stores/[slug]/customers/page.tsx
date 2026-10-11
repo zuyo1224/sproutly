@@ -296,6 +296,7 @@ export default async function StoreCustomersPage({
         <div className="rounded-2xl bg-white border border-emerald-50 overflow-hidden shadow-lg shadow-emerald-700/5">
           {/* Desktop table */}
           <table className="hidden sm:table w-full text-sm">
+            <caption className="sr-only">客人列表</caption>
             <thead className="bg-emerald-50/50 text-emerald-700/70">
               <tr style={{ fontSize: "0.6875rem", letterSpacing: "0.3em" }} className="uppercase">
                 <th className="text-left px-5 py-3.5 font-medium">客人</th>
