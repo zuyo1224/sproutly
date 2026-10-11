@@ -274,8 +274,10 @@ export default async function AboutPage({ params }: { params: Params }) {
                   boxShadow: "var(--sproutly-elev-2)",
                 }}
               >
+                {/* 外框 overflow-hidden 又跟 summary 同寬，預設焦點框畫在外面會被整圈裁掉；
+                    改成往內縮的框，鍵盤 Tab 到才看得出是哪一題。 */}
                 <summary
-                  className="px-6 sm:px-7 py-5 cursor-pointer flex items-center justify-between gap-6 hover:opacity-80 transition list-none text-[0.9375rem]"
+                  className="px-6 sm:px-7 py-5 cursor-pointer flex items-center justify-between gap-6 hover:opacity-80 transition list-none text-[0.9375rem] rounded-2xl outline-none focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-current"
                   style={{
                     color: theme.text,
                     letterSpacing: "-0.005em",
