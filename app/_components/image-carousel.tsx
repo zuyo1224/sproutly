@@ -199,11 +199,12 @@ export function ImageCarousel({ images, alt, surfaceBg }: Props) {
                   onClick={() => setIdx(i)}
                   aria-label={`第 ${i + 1} 張，共 ${total} 張`}
                   aria-current={i === idx ? "true" : undefined}
-                  className="px-1 py-[9px]"
+                  className="group px-1 py-[9px] outline-none"
                 >
+                  {/* 焦點框畫在點點本身，不畫在透明的大按鈕上，鍵盤 Tab 到才看得出是哪一顆 */}
                   <span
                     aria-hidden="true"
-                    className="block transition"
+                    className="block transition group-focus-visible:outline-2 group-focus-visible:outline-offset-2 group-focus-visible:outline-white"
                     style={{
                       width: i === idx ? 24 : 6,
                       height: 6,
