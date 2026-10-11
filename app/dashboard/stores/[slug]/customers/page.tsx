@@ -304,7 +304,7 @@ export default async function StoreCustomersPage({
                 <th className="text-right px-3 py-3.5 font-medium">總消費</th>
                 <th className="text-left px-3 py-3.5 font-medium">最近下單</th>
                 <th className="text-left px-5 py-3.5 font-medium">成為客人</th>
-                <th className="text-right px-5 py-3.5 font-medium"></th>
+                <th className="text-right px-5 py-3.5 font-medium"><span className="sr-only">操作</span></th>
               </tr>
             </thead>
             <tbody>

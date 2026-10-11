@@ -535,7 +535,7 @@ export default async function OrdersListPage({
                 <th className="text-left px-5 py-3">狀態</th>
                 <th className="text-left px-5 py-3">付款</th>
                 <th className="text-left px-5 py-3">時間</th>
-                <th className="text-right px-5 py-3"></th>
+                <th className="text-right px-5 py-3"><span className="sr-only">操作</span></th>
               </tr>
             </thead>
             <tbody>
