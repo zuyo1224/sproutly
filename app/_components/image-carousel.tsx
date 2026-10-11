@@ -223,7 +223,7 @@ export function ImageCarousel({ images, alt, surfaceBg }: Props) {
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
             src={images[idx]}
-            alt={alt}
+            alt={`${alt} ${idx + 1}`}
             className="max-w-full max-h-full object-contain"
             onClick={(e) => e.stopPropagation()}
           />
