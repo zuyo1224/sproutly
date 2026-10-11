@@ -113,16 +113,20 @@ export function ImageCarousel({ images, alt, surfaceBg }: Props) {
     touchStartX.current = null;
   }
 
+  const positionStatus =
+    total > 1 ? (
+      <span className="sr-only" role="status" aria-live="polite">
+        {`第 ${idx + 1} 張，共 ${total} 張`}
+      </span>
+    ) : null;
+
   return (
     <>
       {/* 方向鍵翻照片時，畫面默默換圖（內嵌只有視覺計數器、燈箱連計數器都沒有），
           報讀器使用者聽不出翻到第幾張——補一條 sr-only live 區域，idx 一變就念位置。
-          內嵌與燈箱共用同一個 idx，兩種狀態都覆蓋；單張時不會有翻頁故不念 */}
-      {total > 1 && (
-        <span className="sr-only" role="status" aria-live="polite">
-          {`第 ${idx + 1} 張，共 ${total} 張`}
-        </span>
-      )}
+          燈箱是 aria-modal，報讀器會忽略 dialog 外的內容，所以燈箱開著時改放進 dialog 裡；
+          單張時不會有翻頁故不念 */}
+      {!lightboxOpen && positionStatus}
       <div
         className="relative aspect-square rounded-3xl overflow-hidden shadow-sm select-none"
         style={{ background: surfaceBg }}
@@ -220,6 +224,7 @@ export function ImageCarousel({ images, alt, surfaceBg }: Props) {
           style={{ animation: "sproutly-lb-fade 0.4s ease-out both" }}
           onClick={() => setLightboxOpen(false)}
         >
+          {positionStatus}
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
             src={images[idx]}
