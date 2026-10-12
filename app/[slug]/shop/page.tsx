@@ -366,13 +366,18 @@ export default async function ShopPage({
       </form>
 
       {products.length > 0 ? (
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-x-6 sm:gap-x-10 gap-y-16">
+        // ul/li 讓螢幕閱讀器念出「商品，N 項」，跟後台商品列表同一套；
+        // preflight 已清掉清單圓點，畫面不變。
+        <ul
+          aria-label="商品"
+          className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-x-6 sm:gap-x-10 gap-y-16"
+        >
           {products.map((p) => {
             const soldOut = isSoldOut(p.stock);
             const imgs = displayableImageUrls(p.image_urls);
             return (
+            <li key={p.id}>
             <Link
-              key={p.id}
               href={`/${slug}/products/${p.id}`}
               className="sproutly-card group"
               aria-label={`${p.name}，${formatPrice(p.price_cents, p.currency)}${stockAriaSuffix(p.stock)}`}
@@ -465,9 +470,10 @@ export default async function ShopPage({
                 </p>
               ) : null}
             </Link>
+            </li>
             );
           })}
-        </div>
+        </ul>
       ) : (
         <>
         <div className="py-16 max-w-md">
