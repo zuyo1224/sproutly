@@ -3352,14 +3352,16 @@ export default async function StoreHomePage({
                 </>
               )}
 
-              <div className={`sproutly-card-grid sproutly-stagger grid grid-cols-2 gap-x-6 sm:gap-x-12 gap-y-20 sm:gap-y-24 ${
+              {/* 分類卡是一組並列的連結，用 ul/li 讓螢幕閱讀器念出「列表，幾項」；
+                  stagger 入場改落在 li 上，卡片樣式都掛在 .sproutly-card 本身，排版不變。 */}
+              <ul aria-label="商品分類" className={`sproutly-card-grid sproutly-stagger grid grid-cols-2 gap-x-6 sm:gap-x-12 gap-y-20 sm:gap-y-24 ${
                 theme.layout.collectionsColumns === 2 ? "sm:grid-cols-2"
                 : theme.layout.collectionsColumns === 4 ? "sm:grid-cols-4"
                 : "sm:grid-cols-3"
               }`}>
                 {visibleCollections.map((c) => (
+                  <li key={c.key}>
                   <Link
-                    key={c.key}
                     href={`/${slug}/shop`}
                     className="sproutly-card"
                   >
@@ -3415,8 +3417,9 @@ export default async function StoreHomePage({
                       <span className="sr-only">{collectionsCardCtaSpoken}</span>
                     )}
                   </Link>
+                  </li>
                 ))}
-              </div>
+              </ul>
             </div>
           </section>
           );
@@ -3535,7 +3538,8 @@ export default async function StoreHomePage({
                   </h2>
                 </>
               )}
-              <div className={`sproutly-card-grid sproutly-stagger grid grid-cols-2 gap-x-6 sm:gap-x-10 gap-y-16 ${
+              {/* 跟分類格同一套：ul/li 給列表語意，key 移到 li。 */}
+              <ul aria-label="精選商品" className={`sproutly-card-grid sproutly-stagger grid grid-cols-2 gap-x-6 sm:gap-x-10 gap-y-16 ${
                 theme.layout.featuredColumns === 2 ? "md:grid-cols-2"
                 : theme.layout.featuredColumns === 4 ? "md:grid-cols-4"
                 : "md:grid-cols-3"
@@ -3544,8 +3548,8 @@ export default async function StoreHomePage({
                   const soldOut = isSoldOut(p.stock);
                   const imgs = displayableImageUrls(p.image_urls);
                   return (
+                  <li key={p.id}>
                   <Link
-                    key={p.id}
                     href={`/${slug}/products/${p.id}`}
                     className="sproutly-card group"
                     aria-label={`${p.name}，${formatPrice(p.price_cents, p.currency)}${stockAriaSuffix(p.stock)}`}
@@ -3650,9 +3654,10 @@ export default async function StoreHomePage({
                       </p>
                     ) : null}
                   </Link>
+                  </li>
                   );
                 })}
-              </div>
+              </ul>
               <div className="mt-24 text-center">
                 <Link
                   href={`/${slug}/shop`}
