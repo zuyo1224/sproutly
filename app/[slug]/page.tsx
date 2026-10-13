@@ -4674,7 +4674,8 @@ export default async function StoreHomePage({
                     />
                   </div>
                 )}
-                <div className={`sproutly-card-grid grid grid-cols-2 gap-y-12 gap-x-8 ${
+                {/* 一組並列的數字，用 ul/li 讓螢幕閱讀器知道是幾項的清單 */}
+                <ul aria-label="數字" className={`sproutly-card-grid grid grid-cols-2 gap-y-12 gap-x-8 ${
                   theme.layout.statsColumns === 2 ? "md:grid-cols-2"
                   : theme.layout.statsColumns === 3 ? "md:grid-cols-3"
                   : "md:grid-cols-4"
@@ -4686,7 +4687,9 @@ export default async function StoreHomePage({
                     // 字距撐開之類），這裡不要那些，見 layout.tsx 的說明。
                     // 這個 class 本身不畫任何東西，商家沒設外觀時整組規則不存在。
                     // 另外掛 sproutly-card-static：這塊點不下去，滑鼠移過去不該浮起來。見 layout.tsx。
-                    <div key={i} className="sproutly-card-box sproutly-card-static space-y-3">
+                    // 多一層 li 後方塊不再是格線子層、不會撐滿列高，補 h-full 讓套了底色的格子同列等高
+                    <li key={i}>
+                    <div className="sproutly-card-box sproutly-card-static h-full space-y-3">
                       <p
                         data-edit-text
                         data-edit-field="statValue"
@@ -4728,8 +4731,9 @@ export default async function StoreHomePage({
                         {s.label}
                       </p>
                     </div>
+                    </li>
                   ))}
-                </div>
+                </ul>
               </div>
             </section>
             );
