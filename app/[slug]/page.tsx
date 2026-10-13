@@ -3822,7 +3822,8 @@ export default async function StoreHomePage({
               </div>
             )}
 
-            <div className={`sproutly-card-grid sproutly-stagger grid grid-cols-1 gap-x-8 sm:gap-x-10 gap-y-16 ${
+            {/* 跟分類格、精選商品同一套：ul/li 給列表語意，key 移到 li。 */}
+            <ul aria-label="文章" className={`sproutly-card-grid sproutly-stagger grid grid-cols-1 gap-x-8 sm:gap-x-10 gap-y-16 ${
               theme.layout.journalColumns === 2 ? "sm:grid-cols-2" : "sm:grid-cols-3"
             }`}>
               {(theme.homepage.journalCards.length > 0
@@ -3831,7 +3832,8 @@ export default async function StoreHomePage({
               ).map((entry, i) => {
                 const fallbackImage = visibleCollections[i]?.image;
                 return (
-                  <article key={i} className="sproutly-card">
+                  <li key={i}>
+                  <article className="sproutly-card">
                     {/* 這段的圖框原本就有一個 inline 底（沒照片時當佔位色用）。inline 會贏過
                         layout.tsx 那條「框底色」規則，商家設了那格時這裡讓路、沒設照舊。 */}
                     <div
@@ -3906,9 +3908,10 @@ export default async function StoreHomePage({
                       {journalCardLabel}
                     </p>
                   </article>
+                  </li>
                 );
               })}
-            </div>
+            </ul>
           </div>
           </section>
           );
