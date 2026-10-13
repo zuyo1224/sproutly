@@ -4229,7 +4229,10 @@ export default async function StoreHomePage({
                   </div>
                 )}
 
-                <div className={`sproutly-card-grid grid grid-cols-1 gap-6 md:gap-8 ${
+                {/* 一則則評價是並列的一組，用 ul/li 讓螢幕閱讀器念出「共幾則」。
+                    卡片有底色和框，多一層 li 後 figure 不再是格線子層、不會自動撐滿列高，
+                    所以 figure 補 h-full，同一列的卡片才會一樣高。 */}
+                <ul aria-label="顧客評價" className={`sproutly-card-grid grid grid-cols-1 gap-6 md:gap-8 ${
                   theme.layout.testimonialsColumns === 2 ? "md:grid-cols-2"
                   : theme.layout.testimonialsColumns === 4 ? "md:grid-cols-4"
                   : "md:grid-cols-3"
@@ -4246,9 +4249,9 @@ export default async function StoreHomePage({
                     // attribute 擋著的商品卡動作（滑過時品名字距撐開、副文字變濃），這裡
                     // 的品名是留言的人、描述是那段話，滑過去開始抖不是商家要的東西。
                     // 另外掛 sproutly-card-static：這塊點不下去，滑鼠移過去不該浮起來。見 layout.tsx。
+                    <li key={i}>
                     <figure
-                      key={i}
-                      className="sproutly-card-box sproutly-card-static sproutly-quote-card relative"
+                      className="sproutly-card-box sproutly-card-static sproutly-quote-card relative h-full"
                     >
                       <span
                         aria-hidden="true"
@@ -4310,8 +4313,9 @@ export default async function StoreHomePage({
                         )}
                       </figcaption>
                     </figure>
+                    </li>
                   ))}
-                </div>
+                </ul>
               </div>
             </section>
             );
