@@ -5014,15 +5014,18 @@ export default async function StoreHomePage({
                 </div>
                 )}
 
-                <div className={`sproutly-card-grid sproutly-stagger grid grid-cols-2 gap-3 sm:gap-5 ${
+                {/* 照片牆是一組並列照片，跟文章、評價段同一套改 ul/li 給列表語意，key 移到 li；
+                    stagger 入場改落在 li 上。figure 補 h-full：多一層 li 後它不再是格線子層，
+                    套了卡片底色時圖說長短不一會讓同一列高低不齊。 */}
+                <ul aria-label="照片" className={`sproutly-card-grid sproutly-stagger grid grid-cols-2 gap-3 sm:gap-5 ${
                   theme.layout.galleryColumns === 2 ? "md:grid-cols-2"
                   : theme.layout.galleryColumns === 4 ? "md:grid-cols-4"
                   : "md:grid-cols-3"
                 }`}>
                   {visibleGallery.slice(0, 12).map((g) => (
+                    <li key={g.index}>
                     <figure
-                      key={g.index}
-                      className="sproutly-card"
+                      className="sproutly-card h-full"
                     >
                       <div className="sproutly-card-image aspect-square relative">
                         <Image
@@ -5051,8 +5054,9 @@ export default async function StoreHomePage({
                         </figcaption>
                       )}
                     </figure>
+                    </li>
                   ))}
-                </div>
+                </ul>
               </div>
             </section>
             );
