@@ -4827,7 +4827,13 @@ export default async function StoreHomePage({
                   {partnersEyebrow}
                 </p>
                 )}
-                <div className={`sproutly-card-grid flex flex-wrap items-center ${partnersJustify} gap-8 sm:gap-12 md:gap-16`}>
+                {/* 一排並列的合作夥伴，用 ul/li 讓螢幕閱讀器念得出「清單，幾項」。li 掛 flex，
+                    裡面那塊 card-box 照樣被當成 flex 項目排（跟以前直接當 ul 子層一樣），
+                    不會因為 inline-block 多出行高底下那條縫；這段沒有 stagger，不受影響。 */}
+                <ul
+                  aria-label="合作夥伴"
+                  className={`sproutly-card-grid flex flex-wrap items-center ${partnersJustify} gap-8 sm:gap-12 md:gap-16`}
+                >
                   {visiblePartners.slice(0, 12).map((p, i) => {
                     const inner = (
                       // eslint-disable-next-line @next/next/no-img-element
@@ -4857,9 +4863,10 @@ export default async function StoreHomePage({
                     // 已經先清過一次，這裡再過一次是保護 DB 裡更早存進去、沒清過的舊資料
                     // ——這欄是商家自己填的字串，直接塞進 href 就有機會變成 javascript: 連結。
                     const partnerHref = socialUrl(p.href);
-                    return partnerHref ? (
+                    return (
+                      <li key={i} className="flex">
+                      {partnerHref ? (
                       <a
-                        key={i}
                         href={partnerHref}
                         target="_blank"
                         rel="noopener noreferrer"
@@ -4870,12 +4877,14 @@ export default async function StoreHomePage({
                       </a>
                     ) : (
                       // 另外掛 sproutly-card-static：這塊點不下去，滑鼠移過去不該浮起來。見 layout.tsx。
-                      <div key={i} className="sproutly-card-box sproutly-card-static inline-block">
+                      <div className="sproutly-card-box sproutly-card-static inline-block">
                         {inner}
                       </div>
+                      )}
+                      </li>
                     );
                   })}
-                </div>
+                </ul>
               </div>
             </section>
             );
