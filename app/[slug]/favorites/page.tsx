@@ -391,7 +391,9 @@ export default function FavoritesPage() {
         </>
       ) : (
         <>
-        <div className="grid grid-cols-2 md:grid-cols-3 gap-x-6 sm:gap-x-10 gap-y-16">
+        {/* 收藏的幾株是一組並列項目，用 ul/li 讓報讀念出「收藏的商品，N 項」；
+            .sproutly-card-shell 規則都是 class 選擇器，換成 li 畫面不變。 */}
+        <ul aria-label="收藏的商品" className="grid grid-cols-2 md:grid-cols-3 gap-x-6 sm:gap-x-10 gap-y-16">
           {products.map((p, i) => {
             const soldOut = isSoldOut(p.stock);
             const imgs = displayableImageUrls(p.image_urls);
@@ -399,7 +401,7 @@ export default function FavoritesPage() {
             // 移除鈕原本包在 <Link> 裡（按鈕放在連結內，報讀會把兩者混成一個、Tab 行為也不穩），
             // 改成外包一層、移除鈕跟連結當兄弟，疊回圖的右上角。滑到移除鈕上卡片照樣浮起、
             // 鈕跟著圖一起抬，靠 layout 裡 .sproutly-card-shell 那組規則，畫面不變。
-            <div key={p.id} className="sproutly-card-shell relative">
+            <li key={p.id} className="sproutly-card-shell relative">
             <Link
               href={`/${slug}/products/${p.id}`}
               className="sproutly-card group"
@@ -515,10 +517,10 @@ export default function FavoritesPage() {
                   <path d="m6 6 12 12" />
                 </svg>
               </button>
-            </div>
+            </li>
             );
           })}
-        </div>
+        </ul>
         {/* 看完收藏的這幾株、想再挑更多時，這頁本來到底就斷了，只能捲回最上面的導覽找商品。
             沿用購物車有貨時、關於／聯絡頁、以及這頁空狀態同一套低調「繼續逛」連結，補一條
             往全部商品的去路——收藏有東西的這個分支，是 storefront 唯一還沒接上「每頁都有下一步」的地方。 */}
