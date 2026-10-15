@@ -504,22 +504,23 @@ export default async function CheckoutPage({
               style={{ borderColor: "var(--store-border, rgba(0,0,0,0.12))" }}
             />
 
-            <div className="space-y-2.5 text-sm">
+            {/* 小計／運費是「名稱—數值」配對，用 dl 讓螢幕閱讀器念成一組（跟成功頁同一套） */}
+            <dl className="space-y-2.5 text-sm">
               <div
                 className="flex justify-between tabular-nums"
                 style={{ color: theme.textMuted }}
               >
-                <span>小計</span>
-                <span>{soldOut ? "—" : formatPrice(total, product.currency)}</span>
+                <dt>小計</dt>
+                <dd>{soldOut ? "—" : formatPrice(total, product.currency)}</dd>
               </div>
               <div
                 className="flex justify-between"
                 style={{ color: theme.textMuted }}
               >
-                <span>運費</span>
-                <span className="text-xs opacity-60">由店家確認</span>
+                <dt>運費</dt>
+                <dd className="text-xs opacity-60">由店家確認</dd>
               </div>
-            </div>
+            </dl>
 
             <hr
               className="my-6"
