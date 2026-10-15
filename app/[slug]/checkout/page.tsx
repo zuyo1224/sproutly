@@ -527,17 +527,19 @@ export default async function CheckoutPage({
               style={{ borderColor: "var(--store-border, rgba(0,0,0,0.12))" }}
             />
 
-            <div className="flex justify-between items-end">
-              <span
+            {/* 合計也是「名稱—數值」配對；畫面照舊顯示英文 Total，螢幕閱讀器改念「合計」 */}
+            <dl className="flex justify-between items-end">
+              <dt
                 className="text-[0.6875rem] uppercase font-medium"
                 style={{
                   color: "var(--store-accent, currentColor)",
                   letterSpacing: "0.4em",
                 }}
               >
-                Total
-              </span>
-              <span
+                <span aria-hidden="true">Total</span>
+                <span className="sr-only">合計</span>
+              </dt>
+              <dd
                 className="text-3xl sm:text-4xl font-medium tabular-nums"
                 style={{
                   color: theme.accent,
@@ -546,8 +548,8 @@ export default async function CheckoutPage({
                 }}
               >
                 {soldOut ? "—" : formatPrice(total, product.currency)}
-              </span>
-            </div>
+              </dd>
+            </dl>
           </div>
         </aside>
       </div>
