@@ -620,7 +620,12 @@ export default async function PublicProductPage({
               看所有的植物 <span aria-hidden="true">→</span>
             </Link>
           </div>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+          {/* 一組並列商品，用 ul/li 讓螢幕閱讀器念出「列表，N 項」。Link 本來就是
+              block，多包一層 li 排版不變。 */}
+          <ul
+            aria-label="這些也在店裡"
+            className="grid grid-cols-2 md:grid-cols-4 gap-6"
+          >
             {relatedProducts.map((p) => {
               // 客人逛到某株植物、往下看「這些也在店裡」，常會點進去才發現沒貨。
               // 跟收藏頁、首頁精選、shop 逛街頁同一套語言：售完角標 + 圖片灰階壓暗、
@@ -628,8 +633,8 @@ export default async function PublicProductPage({
               const soldOut = isSoldOut(p.stock);
               const imgs = displayableImageUrls(p.image_urls);
               return (
+              <li key={p.id}>
               <Link
-                key={p.id}
                 href={`/${slug}/products/${p.id}`}
                 className="group block"
                 aria-label={`${p.name}，${formatPrice(p.price_cents, p.currency)}${stockAriaSuffix(p.stock)}`}
@@ -731,9 +736,10 @@ export default async function PublicProductPage({
                   </p>
                 ) : null}
               </Link>
+              </li>
               );
             })}
-          </div>
+          </ul>
         </section>
       )}
 
