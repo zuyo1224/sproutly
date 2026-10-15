@@ -906,22 +906,23 @@ export default function CartCheckoutPage() {
               }}
             />
 
-            <div className="space-y-2.5 text-sm">
+            {/* 小計／運費是「名稱—數值」配對，用 dl 讓螢幕閱讀器成組念（跟單件結帳頁同一套） */}
+            <dl className="space-y-2.5 text-sm">
               <div
                 className="flex justify-between tabular-nums"
                 style={{ color: "var(--store-text-muted, rgba(0,0,0,0.6))" }}
               >
-                <span>小計</span>
-                <span>{formatPrice(total, summaryCurrency)}</span>
+                <dt>小計</dt>
+                <dd>{formatPrice(total, summaryCurrency)}</dd>
               </div>
               <div
                 className="flex justify-between"
                 style={{ color: "var(--store-text-muted, rgba(0,0,0,0.6))" }}
               >
-                <span>運費</span>
-                <span className="text-xs opacity-60">由店家確認</span>
+                <dt>運費</dt>
+                <dd className="text-xs opacity-60">由店家確認</dd>
               </div>
-            </div>
+            </dl>
 
             <hr
               className="my-6"
@@ -930,17 +931,19 @@ export default function CartCheckoutPage() {
               }}
             />
 
-            <div className="flex justify-between items-end">
-              <span
+            {/* 合計同樣用 dl；畫面照舊顯示英文 Total，螢幕閱讀器改念「合計」 */}
+            <dl className="flex justify-between items-end">
+              <dt
                 className="text-[0.6875rem] uppercase font-medium"
                 style={{
                   color: "var(--store-accent, currentColor)",
                   letterSpacing: "0.4em",
                 }}
               >
-                Total
-              </span>
-              <span
+                <span aria-hidden="true">Total</span>
+                <span className="sr-only">合計</span>
+              </dt>
+              <dd
                 className="text-3xl sm:text-4xl font-medium tabular-nums"
                 style={{
                   color: "var(--store-accent, currentColor)",
@@ -949,8 +952,8 @@ export default function CartCheckoutPage() {
                 }}
               >
                 {formatPrice(total, summaryCurrency)}
-              </span>
-            </div>
+              </dd>
+            </dl>
           </div>
         </aside>
       </div>
