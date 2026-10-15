@@ -399,7 +399,9 @@ export default function CartPage() {
         </>
       ) : (
         <>
-          <div className="space-y-8">
+          {/* 購物車品項是並列的一筆筆，用 ul/li 讓讀螢幕的人先聽到「列表，N 項」，
+              知道車裡有幾樣；Tailwind 已清掉項目符號，space-y-8 換在 ul 上排版不變。 */}
+          <ul className="space-y-8" aria-label="購物車品項">
             {itemRows.map(({ product: p, qty }) => {
               // 庫存上限：null 視為不限（沿用 QTY_MAX 軟上限），否則卡在庫存量。
               // 跟結帳 API 同一條紅線，只是搬到購物車先擋，讓客人不用排到
@@ -409,7 +411,7 @@ export default function CartPage() {
               // 縮圖先濾掉店面注定顯示不出的舊值（http://、半截網址、空白），跟逛街頁同一條線。
               const thumb = displayableImageUrls(p.image_urls)[0];
               return (
-              <div
+              <li
                 key={p.id}
                 className="flex gap-5 pb-8"
                 style={{
@@ -576,10 +578,10 @@ export default function CartPage() {
                     {formatPrice(p.price_cents * qty, p.currency)}
                   </p>
                 </div>
-              </div>
+              </li>
               );
             })}
-          </div>
+          </ul>
 
           <div className="mt-14 flex items-end justify-between gap-6 flex-wrap">
             <div>
