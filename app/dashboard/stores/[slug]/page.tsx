@@ -824,7 +824,10 @@ export default async function StoreInsightsPage({
           )}
           {store.contact_email && (
             <div className="flex gap-3">
-              <dt className="text-emerald-900/50 w-16">Email</dt>
+              <dt className="text-emerald-900/50 w-16">
+                {/* 旁邊電話、地址都是中文，只有這格念英文；比照店面收件資料 Email 補中文 */}
+                <span aria-hidden="true">Email</span><span className="sr-only">電子郵件</span>
+              </dt>
               <dd className="text-emerald-900/90">{store.contact_email}</dd>
             </div>
           )}

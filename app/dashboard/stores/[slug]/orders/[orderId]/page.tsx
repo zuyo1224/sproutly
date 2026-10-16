@@ -382,7 +382,10 @@ export default async function OrderDetailPage({
               </div>
               {order.customer_email && (
                 <div className="flex gap-3">
-                  <dt className="text-emerald-900/50 w-20">Email</dt>
+                  <dt className="text-emerald-900/50 w-20">
+                    {/* 旁邊姓名、電話都是中文，只有這格念英文；比照店面收件資料 Email 補中文 */}
+                    <span aria-hidden="true">Email</span><span className="sr-only">電子郵件</span>
+                  </dt>
                   <dd className="text-emerald-950">
                     {/* 結帳只把 email 轉半形小寫、不驗形狀；cleanEmail 認得出位址才掛 mailto:
                         連結，否則 mailHref 會退成陽春 "mailto:" 的死連結，改純文字顯示 */}

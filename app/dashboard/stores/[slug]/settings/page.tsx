@@ -312,7 +312,8 @@ export default async function StoreSettingsPage({
             </div>
             <div>
               <label htmlFor="contact_email" className="block text-sm font-medium text-emerald-900 mb-1.5">
-                Email
+                {/* 這是輸入框的欄位名，念英文 Email 對中文語音不順；比照會員登入頁補中文 */}
+                <span aria-hidden="true">Email</span><span className="sr-only">聯絡信箱</span>
               </label>
               <ContactHintInput
                 id="contact_email"
