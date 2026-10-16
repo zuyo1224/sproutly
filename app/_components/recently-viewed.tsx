@@ -127,7 +127,8 @@ export function RecentlyViewed({
           className="text-[0.6875rem] uppercase font-medium"
           style={{ color: c.accent, letterSpacing: "0.4em" }}
         >
-          Recently Viewed
+          {/* 英文小標中文語音念起來怪：英文 aria-hidden；下面 h2 已是「你最近看過」，不另補中文免得連念兩次 */}
+          <span aria-hidden="true">Recently Viewed</span>
         </p>
         <h2
           className="mt-4 text-2xl sm:text-3xl"

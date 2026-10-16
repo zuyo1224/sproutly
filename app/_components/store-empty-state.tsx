@@ -37,7 +37,8 @@ export function StoreEmptyState({
         className="text-[0.6875rem] uppercase font-medium"
         style={{ color: accentColor, letterSpacing: "0.4em" }}
       >
-        Empty
+        {/* 英文小標中文語音念起來怪：英文 aria-hidden；下面標題已寫出空狀態，不另補中文免得連念兩次 */}
+        <span aria-hidden="true">Empty</span>
       </p>
       <div
         className="mt-5 h-px w-10"
