@@ -392,7 +392,8 @@ export default async function CustomerOrderDetailPage({
                 className="w-20 flex-shrink-0"
                 style={{ color: theme.textMuted }}
               >
-                Email
+                {/* 旁邊姓名、電話都是中文，只有這格念英文；比照登入頁 Email 欄位補中文 */}
+                <span aria-hidden="true">Email</span><span className="sr-only">電子郵件</span>
               </dt>
               <dd className="min-w-0 truncate">{order.customer_email}</dd>
             </div>
