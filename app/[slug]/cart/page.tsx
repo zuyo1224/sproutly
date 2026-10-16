@@ -239,7 +239,8 @@ export default function CartPage() {
             letterSpacing: "0.4em",
           }}
         >
-          Cart
+          {/* 英文小標中文語音念起來怪，跟單件結帳頁同一套：英文 aria-hidden；下面 h1 已是「購物車」，不另補中文免得連念兩次 */}
+          <span aria-hidden="true">Cart</span>
         </p>
         <h1
           ref={headingRef}

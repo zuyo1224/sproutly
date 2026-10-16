@@ -328,7 +328,8 @@ export default function CartCheckoutPage() {
             letterSpacing: "0.4em",
           }}
         >
-          Checkout
+          {/* 英文小標中文語音念起來怪，跟單件結帳頁同一套：英文 aria-hidden；下面 h1 已是「結帳」，不另補中文免得連念兩次 */}
+          <span aria-hidden="true">Checkout</span>
         </p>
         <h1
           className="mt-4 text-3xl sm:text-4xl font-medium"
@@ -372,7 +373,7 @@ export default function CartCheckoutPage() {
             className="text-[0.6875rem] uppercase font-medium mb-2"
             style={{ letterSpacing: "0.4em", opacity: 0.8 }}
           >
-            Notice
+            <span aria-hidden="true">Notice</span><span className="sr-only">提醒</span>
           </p>
           <p className="text-sm" style={{ lineHeight: 1.6 }}>
             {error}
