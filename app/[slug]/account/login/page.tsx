@@ -47,7 +47,8 @@ export default async function CustomerLoginPage({
             letterSpacing: "0.4em",
           }}
         >
-          Account
+          {/* 英文小標中文語音念起來怪，跟會員中心同一套：英文 aria-hidden；下面 h1 已是「會員登入」，不另補中文免得連念兩次 */}
+          <span aria-hidden="true">Account</span>
         </p>
         <h1
           className="mt-4 text-3xl sm:text-4xl font-medium"
@@ -98,7 +99,7 @@ export default async function CustomerLoginPage({
               letterSpacing: "0.4em",
             }}
           >
-            Sent
+            <span aria-hidden="true">Sent</span><span className="sr-only">已寄出</span>
           </p>
           <div
             className="mt-4 mx-auto h-px w-10"
@@ -155,7 +156,7 @@ export default async function CustomerLoginPage({
                   letterSpacing: "0.4em",
                 }}
               >
-                Notice
+                <span aria-hidden="true">Notice</span><span className="sr-only">提醒</span>
               </p>
               <p
                 className="mt-3 text-sm"
@@ -178,7 +179,8 @@ export default async function CustomerLoginPage({
                   letterSpacing: "0.4em",
                 }}
               >
-                Email
+                {/* label 內文就是輸入框的名稱，sr-only 中文會變成螢幕閱讀器念的欄位名 */}
+                <span aria-hidden="true">Email</span><span className="sr-only">電子郵件</span>
               </label>
               <input
                 id="customer-login-email"
