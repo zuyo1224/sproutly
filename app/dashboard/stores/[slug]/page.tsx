@@ -312,7 +312,8 @@ export default async function StoreInsightsPage({
           <div className="flex items-start justify-between mb-5 gap-4">
             <div>
               <p className="text-[10px] tracking-[0.28em] uppercase text-emerald-700/70">
-                Onboarding
+                {/* 英文小標中文語音念起來怪：英文 aria-hidden；下面 h3 已是「店面設置進度」，不另補中文免得連念兩次 */}
+                <span aria-hidden="true">Onboarding</span>
               </p>
               <h3 className="mt-1.5 text-lg font-medium text-emerald-950 tracking-tight">
                 店面設置進度
@@ -469,7 +470,8 @@ export default async function StoreInsightsPage({
         >
           <div className="min-w-0">
             <p className="text-[10px] tracking-[0.28em] uppercase text-amber-700/80">
-              Outstanding
+              {/* 英文小標中文語音念起來怪：英文 aria-hidden；下一行已念「有 N 筆訂單還沒收到錢」，不另補中文免得連念兩次 */}
+              <span aria-hidden="true">Outstanding</span>
             </p>
             <p className="mt-1 text-sm text-amber-900/90">
               有 <span className="font-semibold">{outstandingCount}</span>{" "}
@@ -591,7 +593,8 @@ export default async function StoreInsightsPage({
         {/* 熱銷商品 top 5 */}
         <section className="bg-white rounded-2xl p-6 shadow-lg shadow-emerald-700/5">
           <p className="text-[10px] tracking-[0.28em] uppercase text-emerald-700/70">
-            Top Sellers
+            {/* 英文小標中文語音念起來怪：英文 aria-hidden；下面 h3 已是「熱銷商品」，不另補中文免得連念兩次 */}
+            <span aria-hidden="true">Top Sellers</span>
           </p>
           <h3 className="mt-1.5 text-lg font-medium text-emerald-950 tracking-tight">
             熱銷商品
@@ -644,7 +647,8 @@ export default async function StoreInsightsPage({
           <div className="flex items-center justify-between mb-5">
             <div>
               <p className="text-[10px] tracking-[0.28em] uppercase text-amber-700/80">
-                Low Stock
+                {/* 英文小標中文語音念起來怪：英文 aria-hidden；下面 h3 已是「庫存不足」，不另補中文免得連念兩次 */}
+                <span aria-hidden="true">Low Stock</span>
               </p>
               <h3 className="mt-1.5 text-lg font-medium text-emerald-950 tracking-tight">
                 庫存不足
@@ -708,7 +712,8 @@ export default async function StoreInsightsPage({
         <div className="flex items-end justify-between mb-5">
           <div>
             <p className="text-[10px] tracking-[0.28em] uppercase text-emerald-700/70">
-              Recent
+              {/* 英文小標中文語音念起來怪：英文 aria-hidden；下面 h3 已是「近期訂單」，不另補中文免得連念兩次 */}
+              <span aria-hidden="true">Recent</span>
             </p>
             <h3 className="mt-1.5 text-lg font-medium text-emerald-950 tracking-tight">
               近期訂單
@@ -805,7 +810,8 @@ export default async function StoreInsightsPage({
         <div className="flex items-end justify-between mb-4">
           <div>
             <p className="text-[10px] tracking-[0.28em] uppercase text-emerald-700/70">
-              Info
+              {/* 英文小標中文語音念起來怪：英文 aria-hidden；下面 h3 已是「基本資訊」，不另補中文免得連念兩次 */}
+              <span aria-hidden="true">Info</span>
             </p>
             <h3 className="mt-1.5 text-base font-medium text-emerald-900 tracking-tight">
               基本資訊
