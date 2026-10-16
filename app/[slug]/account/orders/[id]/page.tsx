@@ -297,7 +297,8 @@ export default async function CustomerOrderDetailPage({
           className="text-[0.6875rem] tracking-[0.4em] uppercase mb-5"
           style={{ color: theme.accent }}
         >
-          Items
+          {/* 英文小標中文語音念起來怪，改念中文，畫面不變 */}
+          <span aria-hidden="true">Items</span><span className="sr-only">訂購品項</span>
         </p>
         <ul
           className="space-y-3 text-sm leading-[1.85]"
@@ -367,7 +368,7 @@ export default async function CustomerOrderDetailPage({
           className="text-[0.6875rem] tracking-[0.4em] uppercase mb-5"
           style={{ color: theme.accent }}
         >
-          Recipient
+          <span aria-hidden="true">Recipient</span><span className="sr-only">收件人</span>
         </p>
         <dl
           className="text-sm leading-[1.9] space-y-2"
@@ -442,7 +443,7 @@ export default async function CustomerOrderDetailPage({
             className="text-[0.6875rem] tracking-[0.4em] uppercase mb-5"
             style={{ color: theme.accent }}
           >
-            Logistics
+            <span aria-hidden="true">Logistics</span><span className="sr-only">配送與付款</span>
           </p>
           <dl
             className="text-sm leading-[1.9] space-y-2"
