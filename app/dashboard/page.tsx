@@ -198,7 +198,9 @@ export default async function DashboardPage() {
               letterSpacing: "0.4em",
             }}
           >
-            Dashboard
+            {/* 英文小標中文語音念起來怪：英文 aria-hidden；下面 h1 只念「Hi 名字」，補 sr-only「商家後台」說明這是哪一頁 */}
+            <span aria-hidden="true">Dashboard</span>
+            <span className="sr-only">商家後台</span>
           </p>
           <h1
             className="mt-4 text-4xl md:text-5xl font-medium text-emerald-950 tracking-tight"
@@ -341,7 +343,8 @@ export default async function DashboardPage() {
                   letterSpacing: "0.4em",
                 }}
               >
-                Storefronts
+                {/* 英文小標中文語音念起來怪：英文 aria-hidden；下面 h2 已是「我的店」，不另補中文免得連念兩次 */}
+                <span aria-hidden="true">Storefronts</span>
               </p>
               <h2
                 className="mt-4 text-2xl md:text-3xl font-medium text-emerald-950 tracking-tight"
@@ -566,7 +569,8 @@ export default async function DashboardPage() {
                   letterSpacing: "0.4em",
                 }}
               >
-                Welcome
+                {/* 英文小標中文語音念起來怪：英文 aria-hidden；下面 h3 已是「還沒有店面」，不另補中文免得連念兩次 */}
+                <span aria-hidden="true">Welcome</span>
               </p>
               <span aria-hidden className="block mt-4 mx-auto h-px w-12 bg-emerald-600/60" />
               <h3
