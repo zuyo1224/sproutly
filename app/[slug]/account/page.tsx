@@ -77,7 +77,8 @@ export default async function CustomerAccountHome({
             letterSpacing: "0.4em",
           }}
         >
-          Account
+          {/* 英文小標中文語音念起來怪，跟訂單詳情頁同一套：英文 aria-hidden、另補中文給螢幕閱讀器 */}
+          <span aria-hidden="true">Account</span><span className="sr-only">會員中心</span>
         </p>
         <h1
           className="mt-4 text-3xl sm:text-4xl font-medium"
@@ -139,7 +140,7 @@ export default async function CustomerAccountHome({
               letterSpacing: "0.4em",
             }}
           >
-            Orders
+            <span aria-hidden="true">Orders</span><span className="sr-only">訂單數</span>
           </p>
           <p
             className="mt-5 text-3xl sm:text-4xl tabular-nums"
@@ -186,7 +187,8 @@ export default async function CustomerAccountHome({
               letterSpacing: "0.4em",
             }}
           >
-            Wishlist
+            {/* 下面大字已經是「收藏」，這裡不再補中文，免得連念兩次 */}
+            <span aria-hidden="true">Wishlist</span>
           </p>
           <p
             className="mt-5 text-3xl sm:text-4xl"
@@ -234,7 +236,7 @@ export default async function CustomerAccountHome({
               letterSpacing: "0.4em",
             }}
           >
-            Session
+            <span aria-hidden="true">Session</span><span className="sr-only">登入帳號</span>
           </p>
           <p
             className="mt-3 text-sm truncate"
