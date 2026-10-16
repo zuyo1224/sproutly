@@ -169,7 +169,9 @@ export default async function StoreLayout({
           <div className="flex items-start justify-between gap-4">
             <div className="min-w-0">
               <p className="text-[11px] tracking-[0.32em] uppercase text-emerald-700/70">
-                Storefront
+                {/* 英文小標中文語音念起來怪：英文 aria-hidden；下面 h1 只念店名，補 sr-only「店面」說明這是哪家店的後台 */}
+                <span aria-hidden="true">Storefront</span>
+                <span className="sr-only">店面</span>
               </p>
               <h1 className="mt-2 text-3xl md:text-4xl font-medium text-emerald-950 tracking-tight leading-[1.15]">
                 {store.name}
