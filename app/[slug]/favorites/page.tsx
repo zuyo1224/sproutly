@@ -235,7 +235,8 @@ export default function FavoritesPage() {
             letterSpacing: "0.4em",
           }}
         >
-          Wishlist
+          {/* 英文小標中文語音念起來怪，跟結帳頁同一套：英文 aria-hidden；下面 h1 已是「我的收藏」，不另補中文免得連念兩次 */}
+          <span aria-hidden="true">Wishlist</span>
         </p>
         <h1
           ref={headingRef}

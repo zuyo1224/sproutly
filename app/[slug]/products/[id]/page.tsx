@@ -590,7 +590,8 @@ export default async function PublicProductPage({
                   letterSpacing: "0.4em",
                 }}
               >
-                Also in Store
+                {/* 英文小標中文語音念起來怪：英文 aria-hidden；下面 h2 已是「這些也在店裡」，不另補中文免得連念兩次 */}
+                <span aria-hidden="true">Also in Store</span>
               </p>
               <h2
                 className="mt-4 text-2xl sm:text-3xl"
