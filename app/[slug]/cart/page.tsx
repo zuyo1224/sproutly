@@ -584,24 +584,28 @@ export default function CartPage() {
           </ul>
 
           <div className="mt-14 flex items-end justify-between gap-6 flex-wrap">
-            <div>
-              <p
+            {/* 合計用 dl（比照結帳頁）；畫面照舊顯示英文 Total，螢幕閱讀器改念「合計」。
+                裝飾短線收進 dt 裡，dl 底下只能放 dt/dd */}
+            <dl>
+              <dt
                 className="text-[0.6875rem] uppercase font-medium"
                 style={{
                   color: "var(--store-accent, currentColor)",
                   letterSpacing: "0.4em",
                 }}
               >
-                Total
-              </p>
-              <div
-                className="mt-3 h-px w-10"
-                style={{
-                  background: "var(--store-accent, currentColor)",
-                  opacity: 0.4,
-                }}
-              />
-              <p
+                <span aria-hidden="true">Total</span>
+                <span className="sr-only">合計</span>
+                <span
+                  aria-hidden="true"
+                  className="block mt-3 h-px w-10"
+                  style={{
+                    background: "var(--store-accent, currentColor)",
+                    opacity: 0.4,
+                  }}
+                />
+              </dt>
+              <dd
                 className="mt-4 text-3xl sm:text-4xl tabular-nums"
                 style={{
                   fontFamily: "var(--store-font)",
@@ -611,8 +615,8 @@ export default function CartPage() {
                 }}
               >
                 {formatPrice(total, totalCurrency)}
-              </p>
-            </div>
+              </dd>
+            </dl>
             <div className="flex flex-col items-end gap-3">
               {checkoutBlocked && (
                 <p
