@@ -316,7 +316,9 @@ export function SearchOverlay({ slug }: { slug: string }) {
                   color: "var(--store-text-muted, rgba(0,0,0,0.55))",
                   opacity: 0.75,
                 }}
-                aria-label="關閉搜尋"
+                // 名稱要含畫面上的「Esc」，語音控制說「按 Esc」才點得到；aria-keyshortcuts 告訴報讀器鍵盤按 Esc 也能關
+                aria-label="關閉搜尋（Esc）"
+                aria-keyshortcuts="Escape"
               >
                 Esc
               </button>
