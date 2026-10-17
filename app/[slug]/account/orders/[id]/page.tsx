@@ -526,7 +526,9 @@ export default async function CustomerOrderDetailPage({
           className="text-[0.6875rem] tracking-[0.4em] uppercase mb-5"
           style={{ color: theme.accent }}
         >
-          Timeline
+          {/* 英文小標中文語音念起來怪：英文 aria-hidden，補 sr-only「訂單進度」 */}
+          <span aria-hidden="true">Timeline</span>
+          <span className="sr-only">訂單進度</span>
         </p>
         <ul className="text-sm leading-[1.9] space-y-2.5" style={{ color: theme.text }}>
           <li className="flex gap-4">

@@ -84,7 +84,9 @@ export function ImageFilePicker({
                       textTransform: "uppercase",
                     }}
                   >
-                    Cover
+                    {/* 英文標籤中文語音念起來怪：英文 aria-hidden，補 sr-only「封面」 */}
+                    <span aria-hidden="true">Cover</span>
+                    <span className="sr-only">封面</span>
                   </span>
                 )}
                 <p
