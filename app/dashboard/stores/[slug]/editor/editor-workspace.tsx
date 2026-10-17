@@ -724,7 +724,23 @@ export function EditorWorkspace({
     function onMessage(e: MessageEvent) {
       if (typeof e.data !== "object" || !e.data) return;
       const msg = e.data as { type?: string; target?: string; field?: string; value?: string; index?: number };
-      if (msg.type === "sproutly-edit-click" && typeof msg.target === "string") {
+      if (msg.type === "sproutly-edit-key") {
+        // 點過預覽畫面後鍵盤焦點在 iframe 裡，⌘Z／Esc／?／[ ] 到不了這層；
+        // bridge 轉送過來，這裡重發一次 keydown 讓上面那幾支快捷鍵照原邏輯處理
+        if (e.source !== iframeRef.current?.contentWindow) return;
+        const k = e.data as { key?: unknown; metaKey?: unknown; ctrlKey?: unknown; shiftKey?: unknown; altKey?: unknown };
+        if (typeof k.key !== "string") return;
+        window.dispatchEvent(
+          new KeyboardEvent("keydown", {
+            key: k.key,
+            metaKey: k.metaKey === true,
+            ctrlKey: k.ctrlKey === true,
+            shiftKey: k.shiftKey === true,
+            altKey: k.altKey === true,
+            cancelable: true,
+          })
+        );
+      } else if (msg.type === "sproutly-edit-click" && typeof msg.target === "string") {
         if (isSectionKey(msg.target)) {
           setSelectedSection(msg.target);
           setActiveTab("section");

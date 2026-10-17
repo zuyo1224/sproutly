@@ -448,6 +448,35 @@ export function EditorClickBridge() {
       }
     }
 
+    // 點過預覽畫面後鍵盤焦點留在 iframe，編輯器的 ⌘Z 復原／⇧⌘Z ⌘Y 重做／Esc／?／[ ]
+    // 收不到；把這幾個鍵轉送給 parent，由編輯器那邊照原本的快捷鍵邏輯處理。
+    // 正在改字（contenteditable）或打字欄位裡不轉，留給原生復原和輸入。
+    function onKeyDown(e: KeyboardEvent) {
+      // 頁面裡已經處理掉的鍵（例如改字時按 Esc 取消）不再轉
+      if (window.parent === window || e.defaultPrevented) return;
+      const t = e.target as HTMLElement | null;
+      if (t?.closest?.('[contenteditable="true"], input, textarea, select')) return;
+      const mod = e.metaKey || e.ctrlKey;
+      const plain = !mod && !e.altKey;
+      const key = e.key.toLowerCase();
+      const isHistory = mod && (key === "z" || key === "y");
+      const isPlain = plain && (e.key === "?" || e.key === "[" || e.key === "]");
+      if (!isHistory && !isPlain && e.key !== "Escape") return;
+      // Esc 不擋，店面自己的浮層（搜尋等）照樣能關
+      if (e.key !== "Escape") e.preventDefault();
+      window.parent.postMessage(
+        {
+          type: "sproutly-edit-key",
+          key: e.key,
+          metaKey: e.metaKey,
+          ctrlKey: e.ctrlKey,
+          shiftKey: e.shiftKey,
+          altKey: e.altKey,
+        },
+        "*"
+      );
+    }
+
     function onParentMessage(ev: MessageEvent) {
       if (typeof ev.data !== "object" || !ev.data) return;
       const msg = ev.data as { type?: string; theme?: unknown };
@@ -463,6 +492,7 @@ export function EditorClickBridge() {
     document.addEventListener("mousemove", onMouseMove);
     document.addEventListener("mouseup", onMouseUp);
     window.addEventListener("message", onParentMessage);
+    document.addEventListener("keydown", onKeyDown);
 
     return () => {
       document.removeEventListener("click", onClick, true);
@@ -472,6 +502,7 @@ export function EditorClickBridge() {
       document.removeEventListener("mousemove", onMouseMove);
       document.removeEventListener("mouseup", onMouseUp);
       window.removeEventListener("message", onParentMessage);
+      document.removeEventListener("keydown", onKeyDown);
       style.remove();
     };
   }, []);
