@@ -960,7 +960,9 @@ export function EditorWorkspace({
       }
       // [ / ] 跳上一段 / 下一段（對齊 right panel 既有 button）
       // 只有 activeTab === "section" 時才生效，避免在 design / pages 等 tab 誤觸
-      if ((e.key === "[" || e.key === "]") && !inField && activeTab === "section") {
+      // 按住 ⌘／Ctrl／Alt 時不攔：Mac 的 ⌘[ ⌘] 是瀏覽器上一頁／下一頁
+      const plainKey = !e.metaKey && !e.ctrlKey && !e.altKey;
+      if ((e.key === "[" || e.key === "]") && plainKey && !inField && activeTab === "section") {
         e.preventDefault();
         const navOrder: SectionKey[] = [
           "hero",
