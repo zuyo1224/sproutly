@@ -1890,6 +1890,8 @@ export function EditorWorkspace({
                 className={`flex items-center gap-1 rounded-lg border px-2.5 py-1.5 text-[11px] font-medium transition ${prev ? enabledActionClass : disabledActionClass}`}
                 title={prev ? `上一段：${sectionLabels[prev]}（按 [）` : "已經是第一段"}
                 aria-label={prev ? `上一段：${sectionLabels[prev]}` : "已經是第一段"}
+                // 捷徑原本只寫在 title；按鈕只在區段分頁出現，跟 [ ] 生效範圍一致，按不動時不報捷徑
+                aria-keyshortcuts={prev ? "[" : undefined}
               >
                 <span aria-hidden>←</span>
                 <span className="hidden sm:inline">上一段</span>
@@ -1914,6 +1916,7 @@ export function EditorWorkspace({
                 className={`flex items-center gap-1 rounded-lg border px-2.5 py-1.5 text-[11px] font-medium transition ${next ? enabledActionClass : disabledActionClass}`}
                 title={next ? `下一段：${sectionLabels[next]}（按 ]）` : "已經是最後一段"}
                 aria-label={next ? `下一段：${sectionLabels[next]}` : "已經是最後一段"}
+                aria-keyshortcuts={next ? "]" : undefined}
               >
                 <span className="hidden sm:inline">下一段</span>
                 <span aria-hidden>→</span>
