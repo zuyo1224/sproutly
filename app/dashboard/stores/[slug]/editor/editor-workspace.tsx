@@ -650,8 +650,14 @@ export function EditorWorkspace({
     setHistoryTick((t) => t + 1);
   }
 
+  // 值跟現在一樣（點了已選的選項、清空本來就空的欄位）就不記復原點，
+  // 不然多一筆一樣的快照、還清掉重做，按 ⌘Z 像沒反應
+  function samePatch<T extends object>(cur: T, patch: Partial<T>) {
+    return (Object.keys(patch) as (keyof T)[]).every((k) => Object.is(cur[k], patch[k]));
+  }
   function update<K extends keyof EditorTheme>(key: K, value: EditorTheme[K]) {
     setTheme((t) => {
+      if (Object.is(t[key], value)) return t;
       pushHistory(t, String(key));
       return { ...t, [key]: value };
     });
@@ -666,6 +672,7 @@ export function EditorWorkspace({
     coalesce?: string | false
   ) {
     setTheme((t) => {
+      if (samePatch(t.layout, patch)) return t;
       pushHistory(
         t,
         coalesce === false
@@ -678,6 +685,7 @@ export function EditorWorkspace({
   }
   function updateHomepage(patch: Partial<EditorTheme["homepage"]>) {
     setTheme((t) => {
+      if (samePatch(t.homepage, patch)) return t;
       pushHistory(t, "homepage:" + Object.keys(patch).sort().join(","));
       return { ...t, homepage: { ...t.homepage, ...patch } };
     });
