@@ -408,7 +408,6 @@ type EditorTheme = {
     testimonialsColumns: LayoutColumns<"testimonialsColumns">;
     statsColumns: LayoutColumns<"statsColumns">;
     galleryColumns: LayoutColumns<"galleryColumns">;
-    galleryAspect: LayoutChoice<"galleryAspect">;
     journalColumns: LayoutColumns<"journalColumns">;
     faqDefaultOpen: LayoutChoice<"faqDefaultOpen">;
     // 欄位表跟公開頁共用同一份 SectionStyle，加控制不必兩邊各抄一次
@@ -1350,7 +1349,6 @@ export function EditorWorkspace({
           testimonialsColumns: t.layout.testimonialsColumns,
           statsColumns: t.layout.statsColumns,
           galleryColumns: t.layout.galleryColumns,
-          galleryAspect: t.layout.galleryAspect,
           journalColumns: t.layout.journalColumns,
           faqDefaultOpen: t.layout.faqDefaultOpen,
           sectionStyles: t.layout.sectionStyles,
@@ -4184,21 +4182,6 @@ export function EditorWorkspace({
               />
               <p className={noteClass}>
                 桌機排幾欄。手機一律 2 欄不受影響。
-              </p>
-            </Field>
-            <Field label="照片比例">
-              <OptionGrid
-                options={[
-                  { v: "square", label: "方形" },
-                  { v: "portrait", label: "直式" },
-                  { v: "landscape", label: "橫式" },
-                ] as const}
-                selected={theme.layout.galleryAspect}
-                onSelect={(v) => updateLayout({ galleryAspect: v })}
-              />
-              <p className={noteClass}>
-                每張照片裁成一樣的框。手機直拍的盆栽、人像選直式，店面、空間照選橫式，
-                超出框的部分會從中間裁掉。
               </p>
             </Field>
           </PanelSection>

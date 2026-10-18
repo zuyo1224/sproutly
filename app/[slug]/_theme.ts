@@ -1009,7 +1009,6 @@ export interface StoreTheme {
     testimonialsColumns: 2 | 3 | 4;    // 好評卡排成幾欄（預設 3）
     statsColumns: 2 | 3 | 4;           // 數字排成幾欄（預設 4）
     galleryColumns: 2 | 3 | 4;         // 相簿排成幾欄（預設 3）
-    galleryAspect: "square" | "portrait" | "landscape"; // 相簿照片比例（預設方形）
     journalColumns: 2 | 3;             // 慢讀卡排成幾欄（預設 3；固定三張卡，4 欄永遠填不滿所以不開）
     // 常見問題這段，客人一進來看到的是攤開的還是收起來的。
     // 為什麼要：這一段是商家開店的第一個理由——「客人問同樣的問題問到瘋」，價目、地址、
@@ -1393,7 +1392,6 @@ function resolveLayout(raw: unknown): StoreTheme["layout"] {
     testimonialsColumns: pickLayoutColumns("testimonialsColumns", l.testimonialsColumns),
     statsColumns: pickLayoutColumns("statsColumns", l.statsColumns),
     galleryColumns: pickLayoutColumns("galleryColumns", l.galleryColumns),
-    galleryAspect: pickLayoutChoice("galleryAspect", l.galleryAspect),
     journalColumns: pickLayoutColumns("journalColumns", l.journalColumns),
     faqDefaultOpen: pickLayoutChoice("faqDefaultOpen", l.faqDefaultOpen),
     // 欄位表與合法值都在 lib/section-style-schema，跟編輯器存檔那層走同一支——
