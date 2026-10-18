@@ -1068,6 +1068,8 @@ export function EditorWorkspace({
   }
 
   function removeBlock(blockKey: SectionKey) {
+    // 比照 addBlock：不在清單裡就不動，免得 filter 出同內容新陣列多記一步復原、還跳「已移除」
+    if (!theme.layout.sectionOrder.includes(blockKey)) return;
     updateLayout(
       { sectionOrder: theme.layout.sectionOrder.filter((k) => k !== blockKey) },
       false
