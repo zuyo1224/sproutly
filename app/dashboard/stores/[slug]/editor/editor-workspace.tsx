@@ -769,6 +769,9 @@ export function EditorWorkspace({
         const element = (msg as { element: string }).element;
         // unified freePositions Record（任何 element 都走這條路徑）
         setTheme((t) => {
+          // 已經貼邊再往外拖會被夾回同一點，座標沒變就不記復原點
+          const cur = t.layout.freePositions[element];
+          if (cur && cur.x === pos.x && cur.y === pos.y) return t;
           pushHistory(t);
           return {
             ...t,
@@ -7246,11 +7249,13 @@ export function EditorWorkspace({
                     type="checkbox"
                     checked={theme.sections[s.key]}
                     onChange={(e) => {
+                      const checked = e.target.checked;
                       setTheme((t) => {
+                        if (t.sections[s.key] === checked) return t;
                         pushHistory(t);
                         return {
                           ...t,
-                          sections: { ...t.sections, [s.key]: e.target.checked },
+                          sections: { ...t.sections, [s.key]: checked },
                         };
                       });
                       setDirty(true);
