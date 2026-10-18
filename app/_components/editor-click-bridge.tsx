@@ -125,7 +125,7 @@ export function EditorClickBridge() {
     `;
     document.head.appendChild(style);
 
-    function commitTextEdit(el: HTMLElement) {
+    function commitTextEdit(el: HTMLElement, originalText: string) {
       const field = el.dataset.editField;
       if (!field) return;
       // innerText 不是 textContent：FAQ 答案這種多段落欄位（answer 依換行拆成
@@ -133,6 +133,9 @@ export function EditorClickBridge() {
       // innerText 依排版還原換行，存回去再 split 得回原本的段落。
       const value = (el.innerText ?? "").trim();
       el.removeAttribute("contenteditable");
+      // 雙擊後沒改字就按 Enter／點別處：不送，免得編輯器多記一筆看不出差別的
+      // 復原步驟（按 ⌘Z 像沒反應）、還把「重做」清掉
+      if (value === originalText) return;
       // 清單卡片的欄位（好評第 2 張的引言、FAQ 第 3 條的問題⋯）多帶一個
       // data-edit-index 說是第幾筆，editor 端才知道要改進哪張卡
       const indexRaw = el.dataset.editIndex;
@@ -162,6 +165,7 @@ export function EditorClickBridge() {
       // 直到下次重繪才消失，看起來像「取消了卻沒取消」。
       // 存 innerHTML 不是 textContent：多段落欄位（FAQ 答案）取消時才能連段落結構一起還原。
       const originalHtml = textEl.innerHTML;
+      const originalText = (textEl.innerText ?? "").trim();
       textEl.setAttribute("contenteditable", "true");
       textEl.focus();
       // 選取全部文字方便重打
@@ -172,7 +176,7 @@ export function EditorClickBridge() {
       sel?.addRange(range);
 
       const onBlur = () => {
-        commitTextEdit(textEl);
+        commitTextEdit(textEl, originalText);
         textEl.removeEventListener("blur", onBlur);
         textEl.removeEventListener("keydown", onKey);
       };
