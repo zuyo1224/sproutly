@@ -1200,16 +1200,10 @@ export function EditorWorkspace({
         gallery: [...theme.layout.gallery, { url, caption: null }],
       });
     } else if (assetPickerMode.kind === "gallery-replace") {
-      const next = [...theme.layout.gallery];
-      next[assetPickerMode.index] = { ...next[assetPickerMode.index], url };
-      updateLayout({ gallery: next });
+      // 走 updateListItem：挑回同一張圖就不多記一筆復原步驟
+      updateListItem("gallery", assetPickerMode.index, { url });
     } else if (assetPickerMode.kind === "partner-logo") {
-      const next = [...theme.layout.partners];
-      next[assetPickerMode.index] = {
-        ...next[assetPickerMode.index],
-        logoUrl: url,
-      };
-      updateLayout({ partners: next });
+      updateListItem("partners", assetPickerMode.index, { logoUrl: url });
     } else if (assetPickerMode.kind === "hero") {
       update("heroUrl", url);
     } else if (assetPickerMode.kind === "logo") {
