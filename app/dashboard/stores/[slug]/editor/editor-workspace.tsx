@@ -1107,7 +1107,9 @@ export function EditorWorkspace({
     },
   };
 
+  // list 類每次都建新陣列，updateLayout 用參考比對會當成有改，所以先比對這一筆本身
   function updateTestimonial(idx: number, patch: Partial<Testimonial>) {
+    if (theme.layout.testimonials[idx] && samePatch(theme.layout.testimonials[idx], patch)) return;
     const next = [...theme.layout.testimonials];
     next[idx] = { ...next[idx], ...patch };
     updateLayout(
@@ -1135,6 +1137,7 @@ export function EditorWorkspace({
   }
 
   function updateFaq(idx: number, patch: Partial<FaqItem>) {
+    if (theme.layout.faqItems[idx] && samePatch(theme.layout.faqItems[idx], patch)) return;
     const next = [...theme.layout.faqItems];
     next[idx] = { ...next[idx], ...patch };
     updateLayout(
@@ -1159,6 +1162,7 @@ export function EditorWorkspace({
   // Stats / Partners / Gallery 通用 list helpers
   function updateListItem<T>(field: "stats" | "partners" | "gallery", idx: number, patch: Partial<T>) {
     const list = theme.layout[field] as T[];
+    if (list[idx] && samePatch(list[idx] as T & object, patch as Partial<T & object>)) return;
     const next = [...list];
     next[idx] = { ...next[idx], ...patch };
     updateLayout(
