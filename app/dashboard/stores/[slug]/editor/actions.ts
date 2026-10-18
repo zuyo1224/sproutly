@@ -162,6 +162,7 @@ type EditorPayload = {
     testimonialsColumns?: number;
     statsColumns?: number;
     galleryColumns?: number;
+    galleryAspect?: string;
     journalColumns?: number;
     faqDefaultOpen?: string;
     // 直接用共用型別，不再手抄一份欄位表（值合不合法交給 sanitizeSectionStyles 擋）

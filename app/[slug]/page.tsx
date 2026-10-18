@@ -5036,7 +5036,11 @@ export default async function StoreHomePage({
                     <figure
                       className="sproutly-card h-full"
                     >
-                      <div className="sproutly-card-image aspect-square relative">
+                      <div className={`sproutly-card-image relative ${
+                        theme.layout.galleryAspect === "portrait" ? "aspect-[4/5]"
+                        : theme.layout.galleryAspect === "landscape" ? "aspect-[4/3]"
+                        : "aspect-square"
+                      }`}>
                         <Image
                           src={g.url}
                           unoptimized={!isOptimizableImageSrc(g.url)}

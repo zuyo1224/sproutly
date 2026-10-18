@@ -94,6 +94,7 @@ export const LAYOUT_CHOICES = {
   sectionPaddingScale: { values: ["compact", "default", "spacious"], fallback: "default" },
   buttonRadius: { values: ["pill", "soft", "square"], fallback: "pill" },
   faqDefaultOpen: { values: ["none", "first", "all"], fallback: "none" },
+  galleryAspect: { values: ["square", "portrait", "landscape"], fallback: "square" },
 } as const satisfies Record<string, { values: readonly string[]; fallback: string }>;
 
 export type LayoutChoiceKey = keyof typeof LAYOUT_CHOICES;
