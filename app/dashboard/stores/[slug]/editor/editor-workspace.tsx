@@ -4030,11 +4030,12 @@ export function EditorWorkspace({
                         得到，找不到哪裡壞。所以輸入時就用相簿／商品那格同一支
                         isPastedRemoteImageUrl 判一次（只認 https:// 完整網址），判不過當場講。
                         公開頁（53d235e）現在對判不過的 logo 是直接跳過不掛、不是掛一塊破圖，
-                        所以文案講「不會放」，跟店面實際行為同一口徑。
+                        而且 visiblePartners 是整筆濾掉（「+ 加一筆」的店面筆數也扣），所以文案跟
+                        半填提示同一句「這筆店面先不會出現」，跟店面實際行為同一口徑。
                         從圖庫挑的是 Supabase Storage 的 https 公開網址，判得過不會誤標。 */}
                     {p.logoUrl.trim() && !isPastedRemoteImageUrl(p.logoUrl) && (
                       <p className="text-[11px] leading-snug text-amber-700">
-                        這格要貼 https:// 開頭的完整圖片網址，現在這串店面不會放這顆 logo
+                        這格要貼 https:// 開頭的完整圖片網址，現在這串不算，這筆店面先不會出現
                       </p>
                     )}
                     {/* 存檔端（actions.ts）只收得下 http(s):// 或漏 scheme 的真網域，其餘存 null，
