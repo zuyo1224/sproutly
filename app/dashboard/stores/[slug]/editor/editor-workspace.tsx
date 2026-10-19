@@ -7795,6 +7795,7 @@ function SectionGroupLabel({ label }: { label: string }) {
  */
 // 公開頁讀回時（_theme.ts resolveLayout）兩格都要有字才放，只填一格那則整個不出現，
 // 編輯器卻照樣列著、商家找不到原因（合作夥伴的名稱還寫著「給無障礙 alt 用」像選填）。
+// 存檔端（actions.ts、送出前的 filter）也同樣濾掉，重新整理後這筆連字一起不見，提示要講明。
 // 填了一半才提示；整張空白是剛按「+ 加一筆」，不吵。
 function missingFields(fields: [string, string][]): string | null {
   const empty = fields.filter(([, v]) => !v.trim()).map(([name]) => name);
@@ -7829,7 +7830,7 @@ function ListItemCard({
       {children}
       {missing && (
         <p className="text-[11px] leading-snug text-amber-700">
-          還沒填{missing}，這筆店面先不會出現
+          還沒填{missing}，這筆不會存、店面也不會出現；重新整理前請補齊
         </p>
       )}
     </div>
