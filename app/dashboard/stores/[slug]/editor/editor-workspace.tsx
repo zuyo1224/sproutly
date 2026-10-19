@@ -4032,10 +4032,13 @@ export function EditorWorkspace({
                         公開頁（53d235e）現在對判不過的 logo 是直接跳過不掛、不是掛一塊破圖，
                         而且 visiblePartners 是整筆濾掉（「+ 加一筆」的店面筆數也扣），所以文案跟
                         半填提示同一句「這筆店面先不會出現」，跟店面實際行為同一口徑。
-                        從圖庫挑的是 Supabase Storage 的 https 公開網址，判得過不會誤標。 */}
+                        從圖庫挑的是 Supabase Storage 的 https 公開網址，判得過不會誤標。
+                        名稱也空著時卡片底下已經有一行「還沒填名稱，這筆店面先不會出現」，
+                        這行就只講網址哪裡不對，不再重複後半句，免得兩行琥珀字講同一件事。 */}
                     {p.logoUrl.trim() && !isPastedRemoteImageUrl(p.logoUrl) && (
                       <p className="text-[11px] leading-snug text-amber-700">
-                        這格要貼 https:// 開頭的完整圖片網址，現在這串不算，這筆店面先不會出現
+                        這格要貼 https:// 開頭的完整圖片網址，現在這串不算
+                        {p.name.trim() ? "，這筆店面先不會出現" : ""}
                       </p>
                     )}
                     {/* 存檔端（actions.ts）只收得下 http(s):// 或漏 scheme 的真網域，其餘存 null，
