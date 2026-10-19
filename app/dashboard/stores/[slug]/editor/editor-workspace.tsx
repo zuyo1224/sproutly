@@ -53,8 +53,11 @@ import { HOMEPAGE_DEFAULTS, HOMEPAGE_DEFAULT_COLLECTIONS, JOURNAL_CARD_DEFAULTS,
 import {
   INLINE_HOMEPAGE_CARD_TEXT_FIELDS,
   INLINE_LAYOUT_LIST_TEXT_FIELDS,
+  faqItemValid,
   lookupInlineField,
   resolveListIndex,
+  statValid,
+  testimonialValid,
   type InlineHomepageCardList,
   type InlineLayoutListTextSpec,
 } from "@/lib/inline-list-text-fields";
@@ -3940,6 +3943,7 @@ export function EditorWorkspace({
             <AddListButton
               onClick={() => addListItem("stats")}
               count={theme.layout.stats.length}
+              shown={theme.layout.stats.filter(statValid).length}
               max={6}
               label="+ 加一筆數字"
             />
@@ -4063,6 +4067,11 @@ export function EditorWorkspace({
             <AddListButton
               onClick={() => addListItem("partners")}
               count={theme.layout.partners.length}
+              shown={
+                theme.layout.partners.filter(
+                  (p) => p.name.trim() !== "" && isPastedRemoteImageUrl(p.logoUrl),
+                ).length
+              }
               max={12}
               label="+ 加一個標誌"
             />
@@ -4261,6 +4270,7 @@ export function EditorWorkspace({
             <AddListButton
               onClick={addFaq}
               count={theme.layout.faqItems.length}
+              shown={theme.layout.faqItems.filter(faqItemValid).length}
               max={20}
               label="+ 加一筆問答"
             />
@@ -4369,6 +4379,7 @@ export function EditorWorkspace({
             <AddListButton
               onClick={addTestimonial}
               count={theme.layout.testimonials.length}
+              shown={theme.layout.testimonials.filter(testimonialValid).length}
               max={6}
               label="+ 加一筆評語"
             />
@@ -7843,15 +7854,19 @@ function ListItemCard({
  * （例如虛線色或 hover 色要換）另外 3 處不會跟著動，所以收成一支。
  * 滿了（count >= max）就 disabled，跟原本一樣；相簿那顆「+ 貼網址」是 text-xs、
  * 沒 w-full mt-3 也沒計數，不是同一款留在原地。
+ * shown：店面實際會畫幾筆（跟 page.tsx 同一套條件濾）。半填的存著但不上店面、
+ * 也照樣佔上限，只看「(4/6)」商家以為店面有 4 筆；少於 count 才補「· 店面 N 筆」。
  */
 function AddListButton({
   onClick,
   count,
+  shown,
   max,
   label,
 }: {
   onClick: () => void;
   count: number;
+  shown?: number;
   max: number;
   label: string;
 }) {
@@ -7864,7 +7879,7 @@ function AddListButton({
     >
       {label}{" "}
       <span className="text-stone-400 text-xs">
-        ({count}/{max})
+        ({count}/{max}{shown !== undefined && shown < count ? ` · 店面 ${shown} 筆` : ""})
       </span>
     </button>
   );
