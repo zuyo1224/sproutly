@@ -5,6 +5,7 @@ import Image from "next/image";
 import { displayableImageUrls, isOptimizableImageSrc, isPastedRemoteImageUrl } from "@/lib/image-url";
 import { createClient } from "@/lib/supabase/server";
 import { jsonLdHtml } from "@/lib/json-ld";
+import { faqItemValid, statValid, testimonialValid } from "@/lib/inline-list-text-fields";
 import { resolveTheme, HOMEPAGE_DEFAULTS, HOMEPAGE_DEFAULT_COLLECTIONS, JOURNAL_CARD_DEFAULTS } from "./_theme";
 import { buildStoreJsonLd, buildFaqJsonLd, siteBaseUrl, storeSchemaId } from "@/lib/store-schema";
 import { telHref, mailHref, telDigits, cleanEmail, mapsHref, socialUrl } from "@/lib/contact-href";
@@ -1688,9 +1689,11 @@ export default async function StoreHomePage({
   // 商家可能留了只填問沒填答、或整列全空白的 FAQ。那種空列在頁面上會變成
   // 點開後沒半句內容的「＋」空格，餵給 Google 也是一筆空的問答。問與答都
   // 去掉前後空白後仍有字才算一列有效，頁面與結構化資料兩邊都只認這些。
-  const validFaqItems = theme.layout.faqItems.filter(
-    (item) => item.question.trim() !== "" && item.answer.trim() !== "",
-  );
+  const validFaqItems = theme.layout.faqItems.filter(faqItemValid);
+  // 評語、數字同理：存檔會留著商家只填一半的那筆（編輯器重新整理後字還在），店面只畫兩格都有字的。
+  // 雙擊改字的 data-edit-index 用濾後序號，編輯器靠同一支 isValid 數回原始第幾筆。
+  const validTestimonials = theme.layout.testimonials.filter(testimonialValid);
+  const validStats = theme.layout.stats.filter(statValid);
 
   // FAQPage 結構化資料 — 跟頁面上 FAQ 區段同條件才放（區段有開且真的有問答），
   // 讓 Google 搜尋結果能直接展開常見問題，省客人點進來才看到答案的一步。
@@ -1733,8 +1736,9 @@ export default async function StoreHomePage({
   // 相簿要保留原本的索引：圖說雙擊改字靠 data-edit-index 對回 layout.gallery 第幾筆，
   // 濾掉一張之後若用 map 的新序號，改字會改到別張。跟選物提案卡 c.index 同一招。
   // 全部濾光就當這段沒有內容，走原本 length > 0 的守門不多一個狀態，跟後台標記口徑一致。
-  const visiblePartners = theme.layout.partners.filter((p) =>
-    isPastedRemoteImageUrl(p.logoUrl),
+  // 合作夥伴也一樣：只填名稱或只填網址的那筆存著等商家補，店面不畫。
+  const visiblePartners = theme.layout.partners.filter(
+    (p) => p.name.trim() !== "" && isPastedRemoteImageUrl(p.logoUrl),
   );
   const visibleGallery = theme.layout.gallery
     .map((g, index) => ({ ...g, index }))
@@ -4076,7 +4080,7 @@ export default async function StoreHomePage({
 
         {/* === Testimonials（optional block，商家從 editor 加） === */}
         {theme.layout.sectionOrder.includes("testimonials") &&
-          theme.layout.testimonials.length > 0 &&
+          validTestimonials.length > 0 &&
           (() => {
             const testimonialsPos = freePosOf(FREE_POS_KEYS.testimonialsTitle);
             const testimonialsFree = testimonialsPos !== null;
@@ -4237,7 +4241,7 @@ export default async function StoreHomePage({
                   : theme.layout.testimonialsColumns === 4 ? "md:grid-cols-4"
                   : "md:grid-cols-3"
                 }`}>
-                  {theme.layout.testimonials.slice(0, 6).map((t, i) => (
+                  {validTestimonials.slice(0, 6).map((t, i) => (
                     // 這一格是「卡片外觀」那組七格要套的方塊（底 / 框 / 內距 / 圓角 /
                     // 陰影 / 框線三格 / 底色深淺）。這段本來就長得像卡片，但那張卡的底、
                     // 框、陰影、內距、圓角是寫死在 inline style 上的（inline 壓得過任何
@@ -4537,7 +4541,7 @@ export default async function StoreHomePage({
 
         {/* === Stats（optional block：4 個大數字 + label） === */}
         {theme.layout.sectionOrder.includes("stats") &&
-          theme.layout.stats.length > 0 && (() => {
+          validStats.length > 0 && (() => {
             const statsPos = freePosOf(FREE_POS_KEYS.statsIntro);
             const statsStyle = sectionStyleFor("stats");
             const statsEyebrow =
@@ -4680,7 +4684,7 @@ export default async function StoreHomePage({
                   : theme.layout.statsColumns === 3 ? "md:grid-cols-3"
                   : "md:grid-cols-4"
                 }`}>
-                  {theme.layout.stats.slice(0, 6).map((s, i) => (
+                  {validStats.slice(0, 6).map((s, i) => (
                     // 這一格是「卡片外觀」那組七格要套的方塊（底 / 框 / 內距 / 圓角 /
                     // 陰影 / 框線 / 底色深淺）。掛的是 card-box 不是 .sproutly-card——
                     // 那個 class 還帶著一批沒有 attribute 擋著的商品卡動作（滑過時品名

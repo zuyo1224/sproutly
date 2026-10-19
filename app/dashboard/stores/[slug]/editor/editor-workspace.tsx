@@ -1233,20 +1233,20 @@ export function EditorWorkspace({
           heroImageSide: t.layout.heroImageSide,
           sectionOrder: t.layout.sectionOrder,
           testimonials: t.layout.testimonials
-            .filter((x) => x.quote.trim() && x.author.trim())
+            .filter((x) => x.quote.trim() || x.author.trim())
             .map((x) => ({
               quote: x.quote,
               author: x.author,
               role: x.role ?? undefined,
             })),
           faqItems: t.layout.faqItems
-            .filter((f) => f.question.trim() && f.answer.trim())
+            .filter((f) => f.question.trim() || f.answer.trim())
             .map((f) => ({ question: f.question, answer: f.answer })),
           stats: t.layout.stats
-            .filter((s) => s.value.trim() && s.label.trim())
+            .filter((s) => s.value.trim() || s.label.trim())
             .map((s) => ({ value: s.value, label: s.label })),
           partners: t.layout.partners
-            .filter((p) => p.name.trim() && p.logoUrl.trim())
+            .filter((p) => p.name.trim() || p.logoUrl.trim())
             .map((p) => ({ name: p.name, logoUrl: p.logoUrl, href: p.href })),
           gallery: t.layout.gallery
             .filter((g) => g.url.trim())
@@ -7793,9 +7793,9 @@ function SectionGroupLabel({ label }: { label: string }) {
  * 紅字深淺）另外 4 處不會跟著動，所以收成一支。label 由呼叫端組好
  * （有的前面帶「FAQ 」「評語 」），輸出跟原本一樣。
  */
-// 公開頁讀回時（_theme.ts resolveLayout）兩格都要有字才放，只填一格那則整個不出現，
+// 公開頁（page.tsx）兩格都要有字才畫，只填一格那則整個不出現，
 // 編輯器卻照樣列著、商家找不到原因（合作夥伴的名稱還寫著「給無障礙 alt 用」像選填）。
-// 存檔端（actions.ts、送出前的 filter）也同樣濾掉，重新整理後這筆連字一起不見，提示要講明。
+// 存檔會留著半填的那筆（只丟整筆全空的），所以提示只講店面還不會出現。
 // 填了一半才提示；整張空白是剛按「+ 加一筆」，不吵。
 function missingFields(fields: [string, string][]): string | null {
   const empty = fields.filter(([, v]) => !v.trim()).map(([name]) => name);
@@ -7830,7 +7830,7 @@ function ListItemCard({
       {children}
       {missing && (
         <p className="text-[11px] leading-snug text-amber-700">
-          還沒填{missing}，這筆不會存、店面也不會出現；重新整理前請補齊
+          還沒填{missing}，這筆店面先不會出現
         </p>
       )}
     </div>

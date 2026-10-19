@@ -11,6 +11,8 @@ import {
   INLINE_LAYOUT_LIST_TEXT_FIELDS,
   faqItemValid,
   lookupInlineField,
+  statValid,
+  testimonialValid,
   resolveHomepageCardBase,
   resolveListIndex,
 } from "./inline-list-text-fields.ts";
@@ -69,9 +71,9 @@ describe("resolveListIndex", () => {
 
 describe("lookupInlineField", () => {
   it("表裡有的名稱回對應設定", () => {
-    assert.deepEqual(lookupInlineField(INLINE_LAYOUT_LIST_TEXT_FIELDS, "statLabel"), {
-      list: "stats",
-      key: "label",
+    assert.deepEqual(lookupInlineField(INLINE_LAYOUT_LIST_TEXT_FIELDS, "galleryCaption"), {
+      list: "gallery",
+      key: "caption",
     });
     assert.deepEqual(lookupInlineField(INLINE_HOMEPAGE_CARD_TEXT_FIELDS, "collectionCardTitle"), {
       list: "collectionItems",
@@ -85,10 +87,23 @@ describe("lookupInlineField", () => {
     assert.equal(lookupInlineField(INLINE_LAYOUT_LIST_TEXT_FIELDS, "__proto__"), undefined);
   });
 
-  it("FAQ 兩格帶 isValid，其他清單不帶", () => {
+  it("FAQ／評語／數字帶各自的 isValid，相簿不帶", () => {
+    const expected: Record<string, unknown> = {
+      faqItems: faqItemValid,
+      testimonials: testimonialValid,
+      stats: statValid,
+      gallery: undefined,
+    };
     for (const [field, spec] of Object.entries(INLINE_LAYOUT_LIST_TEXT_FIELDS)) {
-      assert.equal(spec.isValid === faqItemValid, spec.list === "faqItems", field);
+      assert.equal(spec.isValid, expected[spec.list], field);
     }
+  });
+
+  it("只填一半的評語／數字不算畫面上的一張", () => {
+    const t = [{ quote: "好", author: "" }, { quote: "讚", author: "A" }];
+    assert.equal(resolveListIndex(t, 0, testimonialValid), 1);
+    const s = [{ value: "", label: "株" }, { value: "120", label: "株" }];
+    assert.equal(resolveListIndex(s, 0, statValid), 1);
   });
 });
 

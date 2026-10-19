@@ -1215,6 +1215,8 @@ function resolveLayout(raw: unknown): StoreTheme["layout"] {
   const heroImageSide: HeroImageSide = isHeroImageSide(l.heroImageSide) ? l.heroImageSide : "left";
   // 濾合法 key、去重，基本 6 個沒列到的補在後面（testimonials 等可加區塊不補）
   const order = withRequiredSections(sanitizeSectionOrder(l.sectionOrder));
+  // testimonials／faqItems／stats／partners 只濾整筆全空的；只填一半的照樣留著，
+  // 編輯器重新整理後商家打一半的字才不會不見。半填的不上店面，page.tsx 畫之前再濾。
   // testimonials array sanitize
   const testimonialsRaw = Array.isArray(l.testimonials) ? l.testimonials : [];
   const testimonials: Testimonial[] = testimonialsRaw
@@ -1225,7 +1227,7 @@ function resolveLayout(raw: unknown): StoreTheme["layout"] {
       const role = typeof obj.role === "string" && obj.role.trim() ? obj.role.trim() : null;
       return { quote, author, role };
     })
-    .filter((t) => t.quote && t.author);
+    .filter((t) => t.quote || t.author);
 
   // faqItems array sanitize
   const faqRaw = Array.isArray(l.faqItems) ? l.faqItems : [];
@@ -1236,7 +1238,7 @@ function resolveLayout(raw: unknown): StoreTheme["layout"] {
       const answer = typeof obj.answer === "string" ? obj.answer.trim() : "";
       return { question, answer };
     })
-    .filter((f) => f.question && f.answer);
+    .filter((f) => f.question || f.answer);
 
   // stats sanitize
   const statsRaw = Array.isArray(l.stats) ? l.stats : [];
@@ -1247,7 +1249,7 @@ function resolveLayout(raw: unknown): StoreTheme["layout"] {
       const label = typeof obj.label === "string" ? obj.label.trim() : "";
       return { value, label };
     })
-    .filter((s) => s.value && s.label);
+    .filter((s) => s.value || s.label);
 
   // partners sanitize
   const partnersRaw = Array.isArray(l.partners) ? l.partners : [];
@@ -1259,7 +1261,7 @@ function resolveLayout(raw: unknown): StoreTheme["layout"] {
       const href = typeof obj.href === "string" && obj.href.trim() ? obj.href.trim() : null;
       return { name, logoUrl, href };
     })
-    .filter((p) => p.name && p.logoUrl);
+    .filter((p) => p.name || p.logoUrl);
 
   // gallery sanitize
   const galleryRaw = Array.isArray(l.gallery) ? l.gallery : [];

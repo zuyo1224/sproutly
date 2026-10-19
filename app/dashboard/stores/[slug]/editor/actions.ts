@@ -286,6 +286,7 @@ export async function saveEditorState(slug: string, payload: EditorPayload) {
         sanitizeSectionOrder(payload.layout.sectionOrder),
       );
     }
+    // 下面四張清單只丟整筆全空的；只填一半的照存（重新整理後字還在），公開頁畫之前才濾
     if (payload.layout.testimonials !== undefined && Array.isArray(payload.layout.testimonials)) {
       layoutPatch.testimonials = payload.layout.testimonials
         .filter(isPlainObject)
@@ -294,7 +295,7 @@ export async function saveEditorState(slug: string, payload: EditorPayload) {
           author: takeChars(String(t.author ?? ""), 100).trim(),
           role: t.role ? takeChars(String(t.role), 100).trim() : null,
         }))
-        .filter((t) => t.quote && t.author)
+        .filter((t) => t.quote || t.author)
         .slice(0, 6); // 上限 6 個 testimonial
     }
     if (payload.layout.faqItems !== undefined && Array.isArray(payload.layout.faqItems)) {
@@ -304,7 +305,7 @@ export async function saveEditorState(slug: string, payload: EditorPayload) {
           question: takeChars(String(f.question ?? ""), 300).trim(),
           answer: takeChars(String(f.answer ?? ""), 2000).trim(),
         }))
-        .filter((f) => f.question && f.answer)
+        .filter((f) => f.question || f.answer)
         .slice(0, 20);
     }
     if (payload.layout.stats !== undefined && Array.isArray(payload.layout.stats)) {
@@ -314,7 +315,7 @@ export async function saveEditorState(slug: string, payload: EditorPayload) {
           value: takeChars(String(s.value ?? ""), 30).trim(),
           label: takeChars(String(s.label ?? ""), 60).trim(),
         }))
-        .filter((s) => s.value && s.label)
+        .filter((s) => s.value || s.label)
         .slice(0, 6);
     }
     if (payload.layout.partners !== undefined && Array.isArray(payload.layout.partners)) {
@@ -328,7 +329,7 @@ export async function saveEditorState(slug: string, payload: EditorPayload) {
           // 點不下去的靜態卡，不會掛一個壞掉或危險的連結。
           href: p.href ? socialUrl(String(p.href).slice(0, 500)) : null,
         }))
-        .filter((p) => p.name && p.logoUrl)
+        .filter((p) => p.name || p.logoUrl)
         .slice(0, 12);
     }
     // 只接受 google.com/maps/embed 開頭的嵌入網址，防商家貼任意 iframe src。

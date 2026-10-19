@@ -6,8 +6,8 @@
 // 字就留在原地。兩邊查同一張，之後多一種卡片欄位補一列就好。
 //
 // 畫面上的 data-edit-index 不一定等於原始清單的第幾筆，各清單規則不同（跟公開頁 render 對齊）：
-// - testimonials／stats：畫面第 i 張就是原始第 i 筆（只是 slice 上限）
-// - faqItems：公開頁先濾掉空問或空答才畫，畫面第 i 條要用 isValid 數回原始第幾筆
+// - testimonials／stats／faqItems：存檔會留著只填一半的那筆（商家重新整理後字還在），
+//   公開頁先濾掉半填的才畫，畫面第 i 條要用 isValid 數回原始第幾筆
 // - gallery／collectionItems：公開頁濾掉沒圖的卡，但 data-edit-index 寫的已經是濾前的原始位置
 // - journalCards／collectionItems：沒存過內容時公開頁畫預設整組，index 對的是預設那組
 export type InlineLayoutListTextSpec = {
@@ -16,18 +16,26 @@ export type InlineLayoutListTextSpec = {
   isValid?: (item: Record<string, unknown>) => boolean;
 };
 
-// 跟公開頁 validFaqItems 同條件：問與答去掉前後空白後都還有字才算一列
-export const faqItemValid = (item: Record<string, unknown>) =>
-  String(item.question ?? "").trim() !== "" && String(item.answer ?? "").trim() !== "";
+// 參數收 object：公開頁拿 FaqItem 這類 interface 直接丟進 filter 也吃得下
+const filled = (item: object, key: string) =>
+  String((item as Record<string, unknown>)[key] ?? "").trim() !== "";
+
+// 公開頁 validFaqItems 用的就是這支：問與答去掉前後空白後都還有字才算一列
+export const faqItemValid = (item: object) => filled(item, "question") && filled(item, "answer");
+
+// 公開頁評語、數字也用這兩支：評語要有內容＋名字、數字要有數字＋標籤才畫
+export const testimonialValid = (item: object) => filled(item, "quote") && filled(item, "author");
+
+export const statValid = (item: object) => filled(item, "value") && filled(item, "label");
 
 export const INLINE_LAYOUT_LIST_TEXT_FIELDS: Readonly<Record<string, InlineLayoutListTextSpec>> = {
-  testimonialQuote: { list: "testimonials", key: "quote" },
-  testimonialAuthor: { list: "testimonials", key: "author" },
-  testimonialRole: { list: "testimonials", key: "role" },
+  testimonialQuote: { list: "testimonials", key: "quote", isValid: testimonialValid },
+  testimonialAuthor: { list: "testimonials", key: "author", isValid: testimonialValid },
+  testimonialRole: { list: "testimonials", key: "role", isValid: testimonialValid },
   faqQuestion: { list: "faqItems", key: "question", isValid: faqItemValid },
   faqAnswer: { list: "faqItems", key: "answer", isValid: faqItemValid },
-  statValue: { list: "stats", key: "value" },
-  statLabel: { list: "stats", key: "label" },
+  statValue: { list: "stats", key: "value", isValid: statValid },
+  statLabel: { list: "stats", key: "label", isValid: statValid },
   galleryCaption: { list: "gallery", key: "caption" },
 };
 
