@@ -3911,6 +3911,7 @@ export function EditorWorkspace({
                     key={i}
                     label={`#${i + 1}`}
                     onRemove={() => removeListItem("stats", i)}
+                    missing={missingFields([["數字", s.value], ["標籤", s.label]])}
                   >
                     <input
                       type="text"
@@ -3983,6 +3984,7 @@ export function EditorWorkspace({
                     key={i}
                     label={`#${i + 1}`}
                     onRemove={() => removeListItem("partners", i)}
+                    missing={missingFields([["名稱", p.name], ["標誌圖片網址", p.logoUrl]])}
                   >
                     <input
                       type="text"
@@ -4230,6 +4232,7 @@ export function EditorWorkspace({
                     key={i}
                     label={`FAQ #${i + 1}`}
                     onRemove={() => removeFaq(i)}
+                    missing={missingFields([["問題", f.question], ["答案", f.answer]])}
                   >
                     <input
                       type="text"
@@ -4325,6 +4328,7 @@ export function EditorWorkspace({
                     key={i}
                     label={`評語 #${i + 1}`}
                     onRemove={() => removeTestimonial(i)}
+                    missing={missingFields([["評語內容", t.quote], ["顧客名字", t.author]])}
                   >
                     <textarea
                       value={t.quote}
@@ -7789,13 +7793,23 @@ function SectionGroupLabel({ label }: { label: string }) {
  * 紅字深淺）另外 4 處不會跟著動，所以收成一支。label 由呼叫端組好
  * （有的前面帶「FAQ 」「評語 」），輸出跟原本一樣。
  */
+// 公開頁讀回時（_theme.ts resolveLayout）兩格都要有字才放，只填一格那則整個不出現，
+// 編輯器卻照樣列著、商家找不到原因（合作夥伴的名稱還寫著「給無障礙 alt 用」像選填）。
+// 填了一半才提示；整張空白是剛按「+ 加一筆」，不吵。
+function missingFields(fields: [string, string][]): string | null {
+  const empty = fields.filter(([, v]) => !v.trim()).map(([name]) => name);
+  return empty.length > 0 && empty.length < fields.length ? empty.join("、") : null;
+}
+
 function ListItemCard({
   label,
   onRemove,
+  missing,
   children,
 }: {
   label: string;
   onRemove: () => void;
+  missing?: string | null;
   children: React.ReactNode;
 }) {
   return (
@@ -7813,6 +7827,11 @@ function ListItemCard({
         </button>
       </div>
       {children}
+      {missing && (
+        <p className="text-[11px] leading-snug text-amber-700">
+          還沒填{missing}，這筆店面先不會出現
+        </p>
+      )}
     </div>
   );
 }
