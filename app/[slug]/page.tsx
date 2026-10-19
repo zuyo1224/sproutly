@@ -4257,12 +4257,17 @@ export default async function StoreHomePage({
                     <figure
                       className="sproutly-card-box sproutly-card-static sproutly-quote-card relative h-full"
                     >
+                      {/* 大引號跟著留言實際的對齊走（內文對齊有設看它，沒設看標題對齊）：
+                          靠右的留言每行起點在右邊，引號還釘在左上角會跟字分家、看起來像
+                          前一張卡漏過來的。置中照舊放左上，既有店家（預設置中）畫面不動。 */}
                       <span
                         aria-hidden="true"
                         className="absolute select-none pointer-events-none"
                         style={{
                           top: "0.5rem",
-                          left: "1rem",
+                          ...((testimonialsStyle.bodyAlignVal ?? testimonialsStyle.align) === "right"
+                            ? { right: "1rem" }
+                            : { left: "1rem" }),
                           fontFamily: "var(--store-font)",
                           fontSize: "3rem",
                           lineHeight: 1,
