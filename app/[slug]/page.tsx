@@ -3662,7 +3662,13 @@ export default async function StoreHomePage({
                   );
                 })}
               </ul>
-              <div className="mt-24 text-center">
+              {/* 「看全部」原本寫死 text-center：商家把這段對齊設靠左／靠右時，標題跟著換邊、
+                  這行還留在正中。它是 <a> 不吃 data-body-align 的段落規則，所以這裡直接算，
+                  跟內文窄欄同一套（內文對齊優先，沒設就跟標題對齊；預設置中，既有店家不動）。 */}
+              <div
+                className="mt-24"
+                style={{ textAlign: featuredStyle.bodyAlignVal ?? featuredStyle.align }}
+              >
                 <Link
                   href={`/${slug}/shop`}
                   className="sproutly-link text-sm tracking-wider"
