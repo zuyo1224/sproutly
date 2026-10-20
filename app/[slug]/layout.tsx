@@ -996,6 +996,13 @@ export default async function PublicStoreLayout({
         section[data-edit-target][data-body-scale="large"] :is(p, blockquote, dd, figcaption) {
           zoom: 1.12;
         }
+        /* 開場小標也是 <p>，上面兩條會把它當內文一起縮放：商家只想放大內文，小標跟著變大，
+           小標的「小標大小」那格卻還停在「預設」，看到的跟按的對不起來。十段（含引言卡）都有
+           自己的小標大小控制，這裡一律退回原尺寸，讓小標只聽那一格。特異度跟下面
+           data-eyebrow-scale 那兩條一樣，那兩條寫在後面，商家兩格都設時照樣聽小標那格。 */
+        section[data-edit-target][data-body-scale] .sproutly-section-eyebrow {
+          zoom: 1;
+        }
 
         /* 區段內文粗細：editor 各 section panel「內文粗細」三按鈕（常規 / 中黑 / 粗）。
            粗細這一格前面補過段落大標、卡片品名、卡片描述、卡片價錢，段落自己的內文是最後
