@@ -941,6 +941,13 @@ export default async function PublicStoreLayout({
         section[data-edit-target][data-body-align="right"] :is(p, li, blockquote, figcaption, dd) {
           text-align: right;
         }
+        /* 開場小標是 <p>，上面三條會把它當內文一起搬走：設「標題置中、內文靠左」時小標跑到
+           左邊、主標跟底下那條線還在正中，開場那一組拆成兩邊。小標屬標題那組，退回繼承容器
+           （標題對齊）的值，跟主標同進退。引言卡那段例外：卡片寫死置中、沒有主標，小標跟
+           引言本來就該一起跟內文對齊走（見 page.tsx 那段的短線註解）。 */
+        section[data-edit-target][data-body-align]:not([data-edit-target="promise"]) .sproutly-section-eyebrow {
+          text-align: inherit;
+        }
 
         /* 區段內文一行字數：editor 各 section panel「一行字數」三按鈕（不限制 / 約 34 字 / 約 24 字）。
            滿版區段的長段落，一行會拉到整個螢幕寬——眼睛掃到行尾再回來時找不到下一行的行首，
