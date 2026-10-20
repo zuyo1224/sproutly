@@ -5115,10 +5115,16 @@ export default async function StoreHomePage({
               : visitStyle.align === "left"
               ? ""
               : "mx-auto";
+          // 地址、營業時間、電話 email 是這段的內文，但都不是 p／li，吃不到
+          // data-body-align 的段落規則：商家把內文對齊設靠左／靠右時，小標換邊、
+          // 這三塊還跟著標題對齊留在原處。內文對齊有設才蓋，沒設不輸出任何值
+          // （自由定位那層寫死置中也照舊），既有店家畫面不動。
+          const visitBodyAlign = visitStyle.bodyAlignVal;
+          const visitContactAlign = visitBodyAlign ?? visitStyle.align;
           const visitContactJustify =
-            visitStyle.align === "left"
+            visitContactAlign === "left"
               ? "justify-start"
-              : visitStyle.align === "right"
+              : visitContactAlign === "right"
               ? "justify-end"
               : "justify-center";
           return (
@@ -5213,6 +5219,8 @@ export default async function StoreHomePage({
                 {storeAddress && storeMapsHref && (
                   // 地址做成可點連結，手機點下去直接開地圖 App 帶導航，客人不用自己複製貼上。
                   // 跟聯絡頁的地址一致（contact/page.tsx），別讓兩頁一個能點一個不能點。
+                  // 外面包一層只為了接內文對齊（連結是 inline-block，位置看上一層的 text-align）。
+                  <div style={visitBodyAlign ? { textAlign: visitBodyAlign } : undefined}>
                   <a
                     href={storeMapsHref}
                     target="_blank"
@@ -5233,11 +5241,15 @@ export default async function StoreHomePage({
                     </span>
                     <span className="sr-only">（另開新分頁）</span>
                   </a>
+                  </div>
                 )}
                 {businessHoursText && (
                   <div
                     className="mt-4 text-sm whitespace-pre-line leading-loose"
-                    style={{ color: "var(--store-text-muted)" }}
+                    style={{
+                      color: "var(--store-text-muted)",
+                      ...(visitBodyAlign ? { textAlign: visitBodyAlign } : {}),
+                    }}
                   >
                     {businessHoursText}
                   </div>
