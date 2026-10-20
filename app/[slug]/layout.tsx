@@ -1053,6 +1053,21 @@ export default async function PublicStoreLayout({
           letter-spacing: ${SECTION_BODY_TRACKING_EM.wide}em;
           --body-track: ${SECTION_BODY_TRACKING_EM.wide}em;
         }
+        /* 開場小標也是 <p>，上面「內文粗細」「內文字距」四條會把它當內文一起改：小標那行
+           自帶的 tracking-[0.4em] 是 Tailwind class（在 @layer utilities），這份沒分層的規則
+           蓋得掉它，商家只是把內文撐開一點，小標的字距卻從 0.4em 掉到 0.06em、整行縮成一團；
+           內文按粗，八段沒寫死粗細的小標也跟著變粗。小標兩格都有自己的控制（小標字距、
+           小標粗細），「小標」那幾格還停在「預設」，看到的跟按的對不起來——跟上面內文大小
+           那條同一個處境。
+           用 revert-layer：退回 Tailwind 那層的值（字距 0.4em、粗細照原本繼承），不用在這裡
+           再抄一份數字。特異度跟 data-eyebrow-tracking / data-eyebrow-weight 那幾條一樣，
+           那幾條寫在後面，商家兩格都設時照樣聽小標那格。 */
+        section[data-edit-target][data-body-weight] .sproutly-section-eyebrow {
+          font-weight: revert-layer;
+        }
+        section[data-edit-target][data-body-tracking] .sproutly-section-eyebrow {
+          letter-spacing: revert-layer;
+        }
 
         /* 區段內容垂直位置：editor 各 section panel「內容垂直位置」三按鈕（靠上 / 置中 / 靠下）。
            只有這一段比內容高的時候才看得出差別，也就是設了「最小高度」（高 80vh / 滿屏 100vh）
