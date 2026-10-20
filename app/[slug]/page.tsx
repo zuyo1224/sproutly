@@ -4549,6 +4549,9 @@ export default async function StoreHomePage({
           validStats.length > 0 && (() => {
             const statsPos = freePosOf(FREE_POS_KEYS.statsIntro);
             const statsStyle = sectionStyleFor("stats");
+            const statsRuleMargins = alignToAutoMargins(
+              statsStyle.bodyAlignVal ?? statsStyle.align
+            );
             const statsEyebrow =
               theme.homepage.statsEyebrow ?? HOMEPAGE_DEFAULTS.statsEyebrow;
             const statsTitle =
@@ -4719,13 +4722,17 @@ export default async function StoreHomePage({
                       >
                         {s.value}
                       </p>
+                      {/* 數字跟標籤是段落，對齊聽內文對齊（沒設看標題對齊）；中間這條短線是
+                          block，text-align 管不到，原本寫死 mx-auto，靠左／靠右時字換邊、線
+                          還留在格子中間。外距照同一套對齊算，置中算出來還是兩邊 auto。 */}
                       <div
-                        className="mx-auto"
                         style={{
                           width: "20px",
                           height: "1px",
                           background: accentColor,
                           opacity: 0.6,
+                          marginLeft: statsRuleMargins.ml,
+                          marginRight: statsRuleMargins.mr,
                         }}
                       />
                       <p
