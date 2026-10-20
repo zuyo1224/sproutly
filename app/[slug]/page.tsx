@@ -4507,7 +4507,11 @@ export default async function StoreHomePage({
                             data-edit-text
                             data-edit-field="faqQuestion"
                             data-edit-index={i}
-                            className="sproutly-card-title text-base sm:text-lg pr-4"
+                            // 題目這格在 flex 裡縮成字寬，text-align 動不到它：內文對齊
+                            // 設置中／靠右時答案跟著換邊，題目還被推在最左邊，兩個分家。
+                            // 有設內文對齊才撐滿那一行（對齊值從 li 那條規則繼承下來）；
+                            // 沒設不加，既有店家一個字都不會動。
+                            className={`sproutly-card-title text-base sm:text-lg pr-4${faqStyle.bodyAlignVal ? " flex-1" : ""}`}
                             style={{
                               fontFamily: "var(--store-font)",
                               // 顏色、粗細、字距三個都寫在 inline（inline 壓得過任何 CSS
