@@ -3821,10 +3821,20 @@ export default async function StoreHomePage({
                 >
                   {journalTitle}
                 </h2>
+                {/* 副標收成 max-w-xl 的窄框，原本沒給左右外距：框一律貼在左邊，對齊預設置中時
+                    字在 576px 的框裡置中、框本身靠左，桌機上整句偏左一大截跟標題對不齊。
+                    外距跟分類段那行 intro 同一套，看內文對齊、沒設就跟標題對齊；用 class 不用
+                    inline，「一行字數」那條規則（沒分層，贏 Tailwind 工具類）設了照樣蓋得過。 */}
                 <p
                   data-edit-text
                   data-edit-field="journalSubtitle"
-                  className="sproutly-section-sub mt-6 text-sm sm:text-base max-w-xl leading-[1.9]"
+                  className={`sproutly-section-sub mt-6 text-sm sm:text-base max-w-xl ${
+                    (journalStyle.bodyAlignVal ?? journalStyle.align) === "center"
+                      ? "mx-auto"
+                      : (journalStyle.bodyAlignVal ?? journalStyle.align) === "right"
+                        ? "ml-auto"
+                        : ""
+                  } leading-[1.9]`}
                   style={{ color: "var(--store-text-muted)" }}
                 >
                   {journalSubtitle}
