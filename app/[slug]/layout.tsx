@@ -944,9 +944,15 @@ export default async function PublicStoreLayout({
         /* 開場小標是 <p>，上面三條會把它當內文一起搬走：設「標題置中、內文靠左」時小標跑到
            左邊、主標跟底下那條線還在正中，開場那一組拆成兩邊。小標屬標題那組，退回繼承容器
            （標題對齊）的值，跟主標同進退。引言卡那段例外：卡片寫死置中、沒有主標，小標跟
-           引言本來就該一起跟內文對齊走（見 page.tsx 那段的短線註解）。 */
+           引言本來就該一起跟內文對齊走（見 page.tsx 那段的短線註解）。
+           「一行字數」那條同樣把小標當段落收成窄框，框的外距跟著內文對齊站邊：標題置中、
+           內文靠左時，小標的字在框裡置中、框卻貼左，整行還是偏到左半邊。小標本來就短、
+           不需要收窄，連寬度與左右外距一起退回原樣（page.tsx 的小標都沒帶 mx / max-w）。 */
         section[data-edit-target][data-body-align]:not([data-edit-target="promise"]) .sproutly-section-eyebrow {
           text-align: inherit;
+          max-width: none;
+          margin-left: 0;
+          margin-right: 0;
         }
 
         /* 區段內文一行字數：editor 各 section panel「一行字數」三按鈕（不限制 / 約 34 字 / 約 24 字）。
