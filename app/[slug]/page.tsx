@@ -3925,6 +3925,12 @@ export default async function StoreHomePage({
         {promiseLines.length > 0 && (() => {
           const promisePos = freePosOf(FREE_POS_KEYS.promiseCard);
           const promiseStyle = sectionStyleFor("promise");
+          // 底部那條短線是 block，text-align 管不到，原本寫死 mx-auto：內文對齊設靠左／
+          // 靠右時眉標跟引言換邊、線還留在卡片正中。這張卡的 figure 寫死 text-center，
+          // 標題對齊只搬卡片位置不動字，所以只看內文對齊；沒設就置中，既有店家不動。
+          const promiseRuleMargins = alignToAutoMargins(
+            promiseStyle.bodyAlignVal ?? "center"
+          );
           const promiseCardWrap =
             promiseStyle.align === "right"
               ? "ml-auto"
@@ -4064,8 +4070,10 @@ export default async function StoreHomePage({
 
                 {/* 底部裝飾線 */}
                 <div
-                  className="mx-auto mt-10 relative z-10"
+                  className="mt-10 relative z-10"
                   style={{
+                    marginLeft: promiseRuleMargins.ml,
+                    marginRight: promiseRuleMargins.mr,
                     width: "48px",
                     height: "1px",
                     background: theme.accent,
