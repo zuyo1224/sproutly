@@ -264,11 +264,17 @@ export default async function PublicProductPage({
               surfaceBg={theme.surface}
             />
           ) : (
+            // 有圖時報讀念的是圖的 alt（商品名）；沒圖時原本只剩英文「No Image」，
+            // 中文語音會一個字母一個字母拼。整塊當成一張圖報「商品名＋還沒有照片」，
+            // 畫面上的英文字只是裝飾、藏起來不念。
             <div
+              role="img"
+              aria-label={`${product.name}（還沒有商品照片）`}
               className="aspect-square rounded-3xl flex items-center justify-center"
               style={{ background: theme.bg }}
             >
               <span
+                aria-hidden="true"
                 className="text-[0.6875rem] uppercase font-medium"
                 style={{
                   color: theme.textMuted,
