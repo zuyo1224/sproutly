@@ -3439,6 +3439,22 @@ export default async function StoreHomePage({
           const featuredPos = freePosOf(FREE_POS_KEYS.featuredTitle);
           const featuredFree = featuredPos !== null;
           const featuredStyle = sectionStyleFor("featured");
+          // 「No Image」字色：佔位讓路之後底是圖框底色，字還寫死 theme.textMuted 的話，
+          // 淺色版型配「深」框（或深色版型配「白」框）字會跟底糊成一片。框底色有設時算
+          // 一次對比，夠就照舊；不夠就換成跟框底反差的暖黑／白。沒設照舊，既有店家不動。
+          const featuredFrameBg =
+            featuredStyle.mediaFrameBgVal === "white"
+              ? "#ffffff"
+              : featuredStyle.mediaFrameBgVal === "dark"
+                ? "#1c1917"
+                : featuredStyle.mediaFrameColorVal;
+          const placeholderText =
+            featuredFrameBg &&
+            (contrastRatio(theme.textMuted, featuredFrameBg) ?? NON_TEXT_CONTRAST_MIN) < NON_TEXT_CONTRAST_MIN
+              ? (relativeLuminance(featuredFrameBg) ?? 1) > 0.18
+                ? "#1c1917"
+                : "#ffffff"
+              : theme.textMuted;
           return (
           <section
             className={sectionShellClass(featuredFree)}
@@ -3620,7 +3636,7 @@ export default async function StoreHomePage({
                           <span
                             className="text-[0.6875rem] uppercase"
                             style={{
-                              color: theme.textMuted,
+                              color: placeholderText,
                               opacity: 0.4,
                               letterSpacing: "0.4em",
                             }}
