@@ -171,11 +171,13 @@ export function RecentlyViewed({
                 boxShadow: "var(--sproutly-elev-2)",
               }}
             >
+              {/* 這裡的卡跟 shop／收藏／首頁／相關商品一樣大（2／4 欄），售完標記
+                  用同一枚左上角圓角標；底部整條黑帶是搜尋面板 56px 小縮圖用的寫法。 */}
               {soldOut && (
                 <span
-                  className="absolute inset-x-0 bottom-0 z-10 text-center py-1 text-[0.5625rem] uppercase font-medium"
+                  className="absolute left-3 top-3 z-10 px-2.5 py-1 rounded-full text-[0.625rem] uppercase font-medium backdrop-blur-sm"
                   style={{
-                    background: "rgba(0,0,0,0.6)",
+                    background: "rgba(0,0,0,0.55)",
                     color: "#fff",
                     letterSpacing: "0.2em",
                   }}
