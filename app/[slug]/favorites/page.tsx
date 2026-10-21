@@ -456,9 +456,15 @@ export default function FavoritesPage() {
                         "var(--store-surface, rgba(0,0,0,0.04))",
                     }}
                   >
+                    {/* 跟 shop 頁同一格：原本沒給字色、繼承卡片的正文色，再乘 0.4，
+                        兩頁同一個「沒圖」狀態深淺不一。改讀次要字色、0.5，兩頁一致。 */}
                     <span
                       className="text-[0.6875rem] uppercase"
-                      style={{ opacity: 0.4, letterSpacing: "0.4em" }}
+                      style={{
+                        color: "var(--store-text-muted, rgba(0,0,0,0.6))",
+                        opacity: 0.5,
+                        letterSpacing: "0.4em",
+                      }}
                     >
                       No Image
                     </span>
