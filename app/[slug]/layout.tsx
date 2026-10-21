@@ -1033,7 +1033,8 @@ export default async function PublicStoreLayout({
            只用 400 / 500 / 700 這三個有載進來的字重，不給 300：沒載的字重瀏覽器會拿常規去
            假變細，中文筆畫糊成一團——跟大標與卡片那三格同一個理由。
            除了直接寫 font-weight 也一併寫 --body-weight：自己在 inline style 上寫死粗細的那
-           幾行（重點那段的引言）壓得過這條規則，改讀變數才跟得上，沒設就 fallback 回原值。
+           幾行（重點那段的引言、顧客回饋卡的引言）壓得過這條規則，改讀變數才跟得上，沒設就
+           fallback 回原值。
            沒設（或選「常規」）就沒 attribute、整條規則不存在，既有店家一個字都不會變。 */
         section[data-edit-target][data-body-weight="medium"] :is(p, li, blockquote, figcaption, dd) {
           font-weight: 500;
@@ -1053,12 +1054,14 @@ export default async function PublicStoreLayout({
            選擇器跟內文粗細、行高、內文對齊那三組同一份（段落 / 條列 / 引言 / 圖說），四格
            管的是同一批字。落在段落上是繼承值，元素自己 inline 寫死字距的那幾行（大標、
            小標）本來就蓋得掉這條，剛好是這格不想動的。
-           卡片描述沒有自己的字距那格，會跟著這條走（卡片那邊只做過品名與全大寫小字）。
+           卡片描述在「卡片描述字距」那格沒設時跟著這條走；那格設了聽那格（帶 class 的規則
+           特異度比這條高），跟內文粗細對卡片描述粗細同一個安排。
            收緊 -0.02em / 撐開 0.06em，兩頭都比小標那種 0.4em 保守——內文要的是一整段讀得順
           （數字統一放在 lib/section-style-schema 的 SECTION_BODY_TRACKING_EM，卡片描述、
            hero 副標那兩格與編輯器預覽同一張表）。
            除了直接寫 letter-spacing 也一併寫 --body-track：inline 寫死字距的那幾行裡，重點
-           那段的引言是「該跟著這條走卻跟不到」的例外（大標、小標則是刻意不跟），它改讀變數。
+           那段的引言、顧客回饋卡的引言是「該跟著這條走卻跟不到」的例外（大標、小標則是刻意
+           不跟），它們改讀變數。
            沒設（或選「預設」）就沒 attribute、整條規則不存在，既有店家一個字都不會變。 */
         section[data-edit-target][data-body-tracking="tight"] :is(p, li, blockquote, figcaption, dd) {
           letter-spacing: ${SECTION_BODY_TRACKING_EM.tight}em;
