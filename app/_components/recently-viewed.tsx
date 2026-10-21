@@ -185,13 +185,14 @@ export function RecentlyViewed({
                   售完
                 </span>
               )}
+              {/* 用 Tab 鍵移到卡片上也放大，跟商品頁「這些也在店裡」同一個反應。 */}
               {p.image ? (
                 // eslint-disable-next-line @next/next/no-img-element
                 <img
                   src={p.image}
                   alt=""
                   loading="lazy"
-                  className={`w-full h-full object-cover group-hover:scale-105 transition duration-700 ${
+                  className={`w-full h-full object-cover group-hover:scale-105 group-focus-visible:scale-105 transition duration-700 ${
                     soldOut ? "opacity-55 grayscale" : ""
                   }`}
                 />
@@ -214,7 +215,7 @@ export function RecentlyViewed({
               )}
             </div>
             <h3
-              className="mt-4 line-clamp-1 group-hover:opacity-70 transition"
+              className="mt-4 line-clamp-1 group-hover:opacity-70 group-focus-visible:opacity-70 transition"
               style={{
                 color: c.text,
                 fontFamily: "var(--store-font)",
