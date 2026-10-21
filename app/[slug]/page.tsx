@@ -1336,6 +1336,8 @@ export default async function StoreHomePage({
   // 約定：直接坐在區段底色上的文字，inline color 要寫 var(--store-text)/var(--store-text-muted)
   // 而不是 theme.text/theme.textMuted —— 寫死 theme 值會把這裡的覆寫蓋掉，商家設了文字色沒反應。
   // 例外是有自己底色的容器（promise 卡 / 客人好評卡 / No Image 佔位）：底色不跟區段換，字也維持 theme 值。
+  // 但這個例外只在「容器真的有自己底色」時成立：兩張卡設了「卡片外觀」底會收掉、改坐在區段底上，
+  // 主色改走 cardAccent；No Image 佔位在圖框底色有設時也讓路，字色改看框底對比（見本月選物那段）。
   // 標題字級走 data-heading-scale attribute（見上面 headingScaleVal），不從這裡輸出 inline style
   // muted 文字色（副題 / eyebrow）= 自訂文字色加 ~70% 透明。原本只會「字串接 B3」，
   // 那只在文字色剛好是 6 碼 hex 才成立；商家在文字色框打 rgb() / 顏色名 / 3 碼 #abc 時，
