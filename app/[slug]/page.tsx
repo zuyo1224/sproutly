@@ -3610,9 +3610,12 @@ export default async function StoreHomePage({
                           )}
                         </>
                       ) : (
+                        // 沒圖時這塊佔位鋪滿整個圖框，它的 inline 底會蓋掉 layout.tsx 那條
+                        // 「框底色」規則，商家設了那格、偏偏沒圖的商品看不到。跟慢讀那段同一招：
+                        // 設了就讓路（底透出框的顏色），沒設照舊。
                         <div
                           className="w-full h-full flex items-center justify-center"
-                          style={{ background: theme.bg }}
+                          style={featuredStyle.mediaFrameBgVal ? undefined : { background: theme.bg }}
                         >
                           <span
                             className="text-[0.6875rem] uppercase"
