@@ -672,13 +672,15 @@ export default async function PublicProductPage({
                         src={imgs[0]}
                         alt=""
                         loading="lazy"
-                        className={`w-full h-full object-cover group-hover:scale-105 transition duration-700 ${
+                        className={`w-full h-full object-cover group-hover:scale-105 group-focus-visible:scale-105 transition duration-700 ${
                           soldOut ? "opacity-55 grayscale" : ""
                         }`}
                       />
                       {/* 跟 shop 逛街頁同一套：有第二張圖就在滑過時淡入，客人不用
                           點進去就能多看一個角度。縮放跟到第一張（同一組 group-hover
-                          scale），交叉淡出時兩張才對得齊。售完的不做。 */}
+                          scale），交叉淡出時兩張才對得齊。售完的不做。
+                          shop／收藏／首頁用 Tab 鍵移到卡片上也會淡入，這裡原本只認滑鼠，
+                          補上 group-focus-visible（兩張一起放大，才不會錯位）。 */}
                       {!soldOut && imgs[1] && (
                         // eslint-disable-next-line @next/next/no-img-element
                         <img
@@ -686,7 +688,7 @@ export default async function PublicProductPage({
                           alt=""
                           aria-hidden="true"
                           loading="lazy"
-                          className="absolute inset-0 w-full h-full object-cover opacity-0 group-hover:opacity-100 group-hover:scale-105 transition duration-700 motion-reduce:transition-none"
+                          className="absolute inset-0 w-full h-full object-cover opacity-0 group-hover:opacity-100 group-hover:scale-105 group-focus-visible:opacity-100 group-focus-visible:scale-105 transition duration-700 motion-reduce:transition-none"
                         />
                       )}
                     </>
