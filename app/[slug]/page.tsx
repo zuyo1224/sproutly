@@ -267,8 +267,13 @@ export default async function StoreHomePage({
   // 區段裡用全站主色畫的東西（小標 eyebrow、標題底下那截短線、常見問題的＋、數字底下
   // 的短線）一律走這個值，不再直接寫 theme.accent。--store-accent 只有在該段的自訂底色
   // 把主色吃掉時才由 mergeSectionStyle 設（見那裡），沒設就退回全站主色、畫面完全不變。
-  // 有自己底色的容器（提案卡、好評卡）不在此列，它們的底色不跟區段換，主色照舊。
+  // 有自己底色的容器（提案卡、好評卡）不在此列，它們的底色不跟區段換，主色照舊——
+  // 但那只在商家沒設「卡片外觀」時成立：一設外觀，layout.tsx 就把那兩張卡原本的實色底
+  // 收成透明（或 currentColor 疊一層淡色），坐的變成該段自訂底色，卡上的大引號、短線
+  // 也得走同一道防呆，不然主色會淡進底色裡。cardAccent 照這個條件挑。
   const accentColor = `var(--store-accent, ${theme.accent})`;
+  const cardAccent = (cardSurface: string | undefined) =>
+    cardSurface ? accentColor : theme.accent;
 
   // 段落大標底下那截 32px 短線（顧客回饋／常見問題／數字／相簿各有拖過版位／沒定位兩支、
   // 來訪一支）共九條的 style 以前各抄一份一模一樣的四個屬性（寬 32px、高 1px、主色、透明度），
@@ -4028,7 +4033,7 @@ export default async function StoreHomePage({
                     fontFamily: "var(--store-font)",
                     fontSize: "5rem",
                     lineHeight: 1,
-                    color: theme.accent,
+                    color: cardAccent(promiseStyle.cardSurfaceVal),
                     opacity: 0.18,
                     fontWeight: 400,
                   }}
@@ -4044,7 +4049,7 @@ export default async function StoreHomePage({
                     fontFamily: "var(--store-font)",
                     fontSize: "5rem",
                     lineHeight: 1,
-                    color: theme.accent,
+                    color: cardAccent(promiseStyle.cardSurfaceVal),
                     opacity: 0.18,
                     fontWeight: 400,
                   }}
@@ -4092,7 +4097,7 @@ export default async function StoreHomePage({
                     marginRight: promiseRuleMargins.mr,
                     width: "48px",
                     height: "1px",
-                    background: theme.accent,
+                    background: cardAccent(promiseStyle.cardSurfaceVal),
                     opacity: 0.4,
                   }}
                 />
@@ -4295,7 +4300,7 @@ export default async function StoreHomePage({
                           fontFamily: "var(--store-font)",
                           fontSize: "3rem",
                           lineHeight: 1,
-                          color: theme.accent,
+                          color: cardAccent(testimonialsStyle.cardSurfaceVal),
                           opacity: 0.2,
                         }}
                       >
