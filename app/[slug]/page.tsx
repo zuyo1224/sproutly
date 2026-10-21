@@ -3899,11 +3899,17 @@ export default async function StoreHomePage({
                           style={{ opacity: 0.55 }}
                         />
                       ) : (
+                        // 沒圖時這塊漸層鋪滿整個圖框，外層讓路了它還是蓋在上面，商家設了
+                        // 「框底色」、偏偏沒圖的文章看不到。設了一樣讓路，沒設照舊漸層。
                         <div
                           className="w-full h-full flex items-center justify-center"
-                          style={{
-                            background: `linear-gradient(135deg, ${theme.surface} 0%, ${theme.bg} 100%)`,
-                          }}
+                          style={
+                            journalStyle.mediaFrameBgVal
+                              ? undefined
+                              : {
+                                  background: `linear-gradient(135deg, ${theme.surface} 0%, ${theme.bg} 100%)`,
+                                }
+                          }
                         />
                       )}
                     </div>
