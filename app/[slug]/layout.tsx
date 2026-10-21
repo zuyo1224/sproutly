@@ -1003,6 +1003,14 @@ export default async function PublicStoreLayout({
         section[data-edit-target][data-body-scale] .sproutly-section-eyebrow {
           zoom: 1;
         }
+        /* 顧客回饋卡底下那個 figcaption 不是一行字，是包著署名與職稱兩個 <p> 的外框：上面
+           兩條同時打中外框與裡面的 <p>，zoom 一層乘一層，按「大」那兩行實際放大 1.12 × 1.12
+           ≈ 1.25 倍、按「小」縮成 0.81 倍，比同一張卡上的引言多縮放一輪，跟其他段的字也對
+           不上。外框退回 1，讓裡面的 <p> 各縮放一次就好；相簿的圖說是直接放字的 figcaption，
+           裡面沒有 <p>，照樣跟著縮放。特異度比上面兩條多一個元素，蓋得過它們。 */
+        section[data-edit-target][data-body-scale] figcaption:has(p) {
+          zoom: 1;
+        }
 
         /* 區段內文粗細：editor 各 section panel「內文粗細」三按鈕（常規 / 中黑 / 粗）。
            粗細這一格前面補過段落大標、卡片品名、卡片描述、卡片價錢，段落自己的內文是最後
