@@ -4309,10 +4309,15 @@ export default async function StoreHomePage({
                         style={{
                           color: "var(--card-desc-color, var(--store-text))",
                           fontFamily: "var(--store-font)",
-                          fontWeight: "var(--card-desc-weight, 400)",
+                          // 卡片那格沒設時再看 --body-weight / --body-track：「內文粗細」「內文
+                          // 字距」那兩條規則打得到這個 blockquote，但 inline 壓過它們，以前只讀
+                          // 卡片變數，這段的引言是全站唯一跟不上內文那兩格的卡片描述（慢讀摘要、
+                          // 常見問題答案都跟得上）。兩格都設照樣聽卡片那格，都沒設讀回原值
+                          fontWeight: "var(--card-desc-weight, var(--body-weight, 400))",
                           // 字距寫在 inline、優先度壓過帶 class 的規則，所以繞 --card-desc-track
                           // （layout.tsx 依 attribute 給值），沒設就讀回原本的 --store-track
-                          letterSpacing: "var(--card-desc-track, var(--store-track, 0.005em))",
+                          letterSpacing:
+                            "var(--card-desc-track, var(--body-track, var(--store-track, 0.005em)))",
                           wordBreak: "keep-all",
                         }}
                       >
