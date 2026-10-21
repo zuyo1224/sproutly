@@ -3058,7 +3058,7 @@ export default async function PublicStoreLayout({
               />
             ) : null}
             <span
-              className="font-medium text-lg tracking-tight truncate group-hover:opacity-70 transition"
+              className="font-medium text-lg tracking-tight truncate group-hover:opacity-70 group-focus-visible:opacity-70 transition"
               style={{ color: theme.text }}
             >
               {store.name}
