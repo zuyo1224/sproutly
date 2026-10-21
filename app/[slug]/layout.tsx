@@ -1011,6 +1011,13 @@ export default async function PublicStoreLayout({
         section[data-edit-target][data-body-scale] figcaption:has(p) {
           zoom: 1;
         }
+        /* 卡片小字（精選的「剩 N」、慢讀的分類與標籤、好評的職稱、數字底下的標籤）也是
+           <p>，上面兩條一樣把它當內文縮放，而它有自己的「卡片小字字級」那格——跟小標同一個
+           處境。特異度跟 data-card-micro-scale 那兩條一樣，那兩條寫在後面，兩格都設時照樣
+           聽卡片小字那格。 */
+        section[data-edit-target][data-body-scale] .sproutly-card-micro {
+          zoom: 1;
+        }
 
         /* 區段內文粗細：editor 各 section panel「內文粗細」三按鈕（常規 / 中黑 / 粗）。
            粗細這一格前面補過段落大標、卡片品名、卡片描述、卡片價錢，段落自己的內文是最後
@@ -1074,6 +1081,20 @@ export default async function PublicStoreLayout({
           font-weight: revert-layer;
         }
         section[data-edit-target][data-body-tracking] .sproutly-section-eyebrow {
+          letter-spacing: revert-layer;
+        }
+        /* 卡片小字同理：那幾行自帶 tracking-[0.3em] / font-medium 這類 class，內文撐開或
+           按粗時被一起蓋掉，它自己的「卡片小字字距／粗細」兩格卻還停在預設。特異度跟
+           data-card-micro-tracking / data-card-micro-weight 那幾條一樣、寫在它們前面。
+           好評的職稱沒帶字距、粗細 class，revert-layer 之後改從外面的 figcaption 繼承，而
+           figcaption 也被內文那幾條打中——外框一起退回，職稱才真的不跟內文走；外框裡的署名
+           是 <p>，照樣直接吃內文那幾條。 */
+        section[data-edit-target][data-body-weight] .sproutly-card-micro,
+        section[data-edit-target][data-body-weight] figcaption:has(> .sproutly-card-micro) {
+          font-weight: revert-layer;
+        }
+        section[data-edit-target][data-body-tracking] .sproutly-card-micro,
+        section[data-edit-target][data-body-tracking] figcaption:has(> .sproutly-card-micro) {
           letter-spacing: revert-layer;
         }
 
