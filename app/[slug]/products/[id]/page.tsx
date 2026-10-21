@@ -711,7 +711,7 @@ export default async function PublicProductPage({
                   )}
                 </div>
                 <h3
-                  className="mt-4 line-clamp-1 group-hover:opacity-70 transition"
+                  className="mt-4 line-clamp-1 group-hover:opacity-70 group-focus-visible:opacity-70 transition"
                   style={{
                     color: theme.text,
                     fontFamily: "var(--store-font)",
