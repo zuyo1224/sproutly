@@ -1396,7 +1396,8 @@ export default async function PublicStoreLayout({
         section[data-edit-target][data-partner-logo-opacity="solid"] .sproutly-partner-logo {
           opacity: 1;
         }
-        section[data-edit-target][data-partner-logo-opacity="faint"] .sproutly-partner-logo:hover {
+        section[data-edit-target][data-partner-logo-opacity="faint"] .sproutly-partner-logo:hover,
+        section[data-edit-target][data-partner-logo-opacity="faint"] a:focus-visible .sproutly-partner-logo {
           opacity: 1;
         }
 

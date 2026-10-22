@@ -4926,7 +4926,7 @@ export default async function StoreHomePage({
                         // 高度與透明度那兩組 class 留著當沒設時的樣子（既有店家一張都不會
                         // 變），另外掛一個 class 讓「合作 logo 大小 / 濃淡」那兩格的規則抓得
                         // 到——那兩條規則的選擇器比 class 精確，商家設了才蓋過去。
-                        className="sproutly-partner-logo h-8 sm:h-10 md:h-12 w-auto opacity-50 hover:opacity-100 transition duration-500"
+                        className="sproutly-partner-logo h-8 sm:h-10 md:h-12 w-auto opacity-50 hover:opacity-100 group-focus-visible:opacity-100 transition duration-500"
                         // 合作 logo 本來就一律轉黑白（設計上要它們安靜地排一列，不跟主
                         // 畫面搶色）。這個 inline 值蓋得過 layout.tsx 那條 img 規則，所以
                         // 商家把這段設成「復古」時只有它不跟著變；改讀同一個變數，沒設
@@ -4951,7 +4951,7 @@ export default async function StoreHomePage({
                         href={partnerHref}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="sproutly-card-box inline-block"
+                        className="group sproutly-card-box inline-block"
                       >
                         {inner}
                         <span className="sr-only">（另開新分頁）</span>
