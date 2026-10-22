@@ -541,10 +541,9 @@ export default function CartPage() {
                       onClick={(e) => handleRemove(e, p, qty)}
                       aria-label={`從購物車移除 ${p.name}`}
                       title="從購物車移除"
-                      className="text-[0.6875rem] uppercase transition hover:opacity-100"
+                      className="text-[0.6875rem] uppercase transition opacity-55 hover:opacity-100 focus-visible:opacity-100"
                       style={{
                         letterSpacing: "0.2em",
-                        opacity: 0.55,
                         color:
                           "var(--store-text-muted, rgba(0,0,0,0.6))",
                       }}

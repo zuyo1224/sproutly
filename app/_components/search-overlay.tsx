@@ -309,12 +309,11 @@ export function SearchOverlay({ slug }: { slug: string }) {
               <button
                 type="button"
                 onClick={closeSearch}
-                className="font-medium uppercase transition hover:opacity-100"
+                className="font-medium uppercase transition opacity-75 hover:opacity-100 focus-visible:opacity-100"
                 style={{
                   fontSize: "0.6875rem",
                   letterSpacing: "0.3em",
                   color: "var(--store-text-muted, rgba(0,0,0,0.55))",
-                  opacity: 0.75,
                 }}
                 // 名稱要含畫面上的「Esc」，語音控制說「按 Esc」才點得到；aria-keyshortcuts 告訴報讀器鍵盤按 Esc 也能關
                 aria-label="關閉搜尋（Esc）"
