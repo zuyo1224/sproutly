@@ -41,7 +41,7 @@ export default function PasswordInput({
         onClick={() => setShown((s) => !s)}
         aria-label={shown ? "隱藏密碼" : "顯示密碼"}
         aria-pressed={shown}
-        className="absolute inset-y-0 right-0 flex items-center px-3.5 text-emerald-700/55 hover:text-emerald-800 transition"
+        className="absolute inset-y-0 right-0 flex items-center px-3.5 text-emerald-700/55 hover:text-emerald-800 focus-visible:text-emerald-800 transition"
       >
         {shown ? (
           <svg

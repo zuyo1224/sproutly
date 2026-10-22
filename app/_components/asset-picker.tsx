@@ -196,7 +196,7 @@ export function AssetPicker({
           <button
             type="button"
             onClick={onClose}
-            className="w-9 h-9 rounded-full hover:bg-stone-100 text-stone-600 text-lg flex items-center justify-center transition"
+            className="w-9 h-9 rounded-full hover:bg-stone-100 focus-visible:bg-stone-100 text-stone-600 text-lg flex items-center justify-center transition"
             aria-label="關閉"
           >
             ×
@@ -223,7 +223,7 @@ export function AssetPicker({
             />
             <button
               type="submit"
-              className="rounded-full px-5 py-2 bg-emerald-700 text-white text-sm hover:bg-emerald-800 transition"
+              className="rounded-full px-5 py-2 bg-emerald-700 text-white text-sm hover:bg-emerald-800 focus-visible:bg-emerald-800 transition"
             >
               搜
             </button>
@@ -242,7 +242,7 @@ export function AssetPicker({
                 className={`text-[11px] px-2.5 py-1 rounded-full transition ${
                   query === q
                     ? "bg-emerald-700 text-white"
-                    : "bg-stone-100 text-stone-700 hover:bg-stone-200"
+                    : "bg-stone-100 text-stone-700 hover:bg-stone-200 focus-visible:bg-stone-200"
                 }`}
               >
                 {label}
@@ -293,7 +293,7 @@ export function AssetPicker({
                       alt=""
                       loading="lazy"
                       decoding="async"
-                      className="w-full h-full object-cover group-hover:scale-105 transition duration-300"
+                      className="w-full h-full object-cover group-hover:scale-105 group-focus-visible:scale-105 transition duration-300"
                     />
                     {/* 鍵盤聚焦時也壓暗、露出攝影師名，比照滑鼠移上去 */}
                     <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 group-focus-visible:bg-black/20 transition" />
@@ -315,7 +315,7 @@ export function AssetPicker({
                     }}
                     // 不用 disabled：載入中停用會讓焦點掉出圖庫視窗，改 aria-disabled 焦點留在原鈕
                     aria-disabled={loading}
-                    className="px-5 py-2 rounded-full border border-stone-200 hover:bg-white text-sm text-stone-700 transition aria-disabled:opacity-40"
+                    className="px-5 py-2 rounded-full border border-stone-200 hover:bg-white focus-visible:bg-white text-sm text-stone-700 transition aria-disabled:opacity-40"
                   >
                     {loading ? "載入中…" : "載入更多"}
                   </button>

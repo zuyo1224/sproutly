@@ -174,7 +174,7 @@ export function AIEditPanel({
                   send(s);
                 }}
                 disabled={loading}
-                className="block w-full text-left px-3 py-2 rounded-xl border border-emerald-100 text-emerald-900 hover:bg-emerald-50/60 transition text-[13px] leading-snug disabled:opacity-50"
+                className="block w-full text-left px-3 py-2 rounded-xl border border-emerald-100 text-emerald-900 hover:bg-emerald-50/60 focus-visible:bg-emerald-50/60 transition text-[13px] leading-snug disabled:opacity-50"
               >
                 {s}
               </button>
@@ -200,7 +200,7 @@ export function AIEditPanel({
               <button
                 type="button"
                 onClick={() => applyPatch(m.patch!)}
-                className="mt-2 inline-flex items-center px-3 py-1 rounded-full bg-emerald-900 text-white text-xs font-medium hover:bg-black transition"
+                className="mt-2 inline-flex items-center px-3 py-1 rounded-full bg-emerald-900 text-white text-xs font-medium hover:bg-black focus-visible:bg-black transition"
               >
                 套用 →
               </button>
@@ -244,7 +244,7 @@ export function AIEditPanel({
         <button
           type="submit"
           aria-disabled={loading || !input.trim()}
-          className="rounded-full px-4 py-2 bg-emerald-700 text-white text-sm font-medium hover:bg-emerald-800 transition aria-disabled:opacity-40"
+          className="rounded-full px-4 py-2 bg-emerald-700 text-white text-sm font-medium hover:bg-emerald-800 focus-visible:bg-emerald-800 transition aria-disabled:opacity-40"
         >
           發
         </button>

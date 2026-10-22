@@ -38,7 +38,7 @@ export function DashboardStoreTabs({ tabs }: { tabs: Tab[] }) {
             className={`px-4 py-3 text-xs tracking-[0.18em] uppercase rounded-t-lg transition flex items-center gap-2 whitespace-nowrap ${
               active
                 ? "text-emerald-900 font-semibold border-b-2 border-emerald-700 -mb-px"
-                : "text-emerald-900/60 hover:text-emerald-900 hover:bg-emerald-50"
+                : "text-emerald-900/60 hover:text-emerald-900 hover:bg-emerald-50 focus-visible:text-emerald-900 focus-visible:bg-emerald-50"
             }`}
           >
             <span>{tab.label}</span>
