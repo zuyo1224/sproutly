@@ -589,7 +589,7 @@ export default function FavoritesPage() {
               type="button"
               onClick={handleUndo}
               aria-describedby="favorites-undo-desc"
-              className="flex-shrink-0 rounded-full px-4 py-1.5 text-[0.6875rem] uppercase font-medium transition hover:opacity-80"
+              className="flex-shrink-0 rounded-full px-4 py-1.5 text-[0.6875rem] uppercase font-medium transition hover:opacity-80 focus-visible:opacity-80"
               style={{
                 letterSpacing: "0.2em",
                 background: "var(--store-accent, currentColor)",

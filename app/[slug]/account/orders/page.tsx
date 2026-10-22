@@ -217,7 +217,7 @@ export default async function CustomerOrdersPage({
               <li key={order.id}>
                 <Link
                   href={`/${slug}/account/orders/${order.id}`}
-                  className="block rounded-2xl p-7 sm:p-8 transition hover:opacity-95"
+                  className="block rounded-2xl p-7 sm:p-8 transition hover:opacity-95 focus-visible:opacity-95"
                   style={{
                     background: theme.surface,
                     border: `1px solid ${theme.border}`,

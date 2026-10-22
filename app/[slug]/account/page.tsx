@@ -126,7 +126,7 @@ export default async function CustomerAccountHome({
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-5 sm:gap-6 mb-14">
         <Link
           href={`/${slug}/account/orders`}
-          className="block rounded-2xl p-7 sm:p-8 transition hover:opacity-95"
+          className="block rounded-2xl p-7 sm:p-8 transition hover:opacity-95 focus-visible:opacity-95"
           style={{
             background: theme.surface,
             border: `1px solid ${theme.border}`,
@@ -173,7 +173,7 @@ export default async function CustomerAccountHome({
 
         <Link
           href={`/${slug}/favorites`}
-          className="block rounded-2xl p-7 sm:p-8 transition hover:opacity-95"
+          className="block rounded-2xl p-7 sm:p-8 transition hover:opacity-95 focus-visible:opacity-95"
           style={{
             background: theme.surface,
             border: `1px solid ${theme.border}`,

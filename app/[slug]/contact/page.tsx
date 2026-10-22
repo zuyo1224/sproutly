@@ -280,7 +280,7 @@ export default async function ContactPage({ params }: { params: Params }) {
                   {...(block.external
                     ? { target: "_blank", rel: "noopener noreferrer" }
                     : {})}
-                  className="block rounded-2xl p-7 sm:p-8 transition hover:opacity-90"
+                  className="block rounded-2xl p-7 sm:p-8 transition hover:opacity-90 focus-visible:opacity-90"
                   style={blockStyle}
                 >
                   {content}

@@ -4547,7 +4547,7 @@ export default async function StoreHomePage({
                         }
                       >
                         <summary
-                          className="sproutly-faq-q flex items-center justify-between cursor-pointer py-6 list-none transition hover:opacity-80"
+                          className="sproutly-faq-q flex items-center justify-between cursor-pointer py-6 list-none transition hover:opacity-80 focus-visible:opacity-80"
                           style={{ color: "var(--store-text)" }}
                         >
                           <span
@@ -5272,7 +5272,7 @@ export default async function StoreHomePage({
                     href={storeMapsHref}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="group inline-block hover:opacity-80 transition"
+                    className="group inline-block hover:opacity-80 focus-visible:opacity-80 transition"
                   >
                     <span
                       className="text-base leading-loose border-b border-current pb-0.5"
