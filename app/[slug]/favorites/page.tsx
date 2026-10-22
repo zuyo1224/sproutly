@@ -508,7 +508,7 @@ export default function FavoritesPage() {
                 onClick={(e) => removeFavorite(e, p, i)}
                 aria-label={`從收藏移除 ${p.name}`}
                 title="從收藏移除"
-                className="sproutly-card-float absolute top-3 right-3 z-10 inline-flex h-9 w-9 items-center justify-center rounded-full bg-white/85 text-stone-700 shadow-sm backdrop-blur transition hover:bg-white hover:text-stone-900 active:scale-90"
+                className="sproutly-card-float absolute top-3 right-3 z-10 inline-flex h-9 w-9 items-center justify-center rounded-full bg-white/85 text-stone-700 shadow-sm backdrop-blur transition hover:bg-white hover:text-stone-900 focus-visible:bg-white focus-visible:text-stone-900 active:scale-90"
               >
                 <svg
                   width="16"

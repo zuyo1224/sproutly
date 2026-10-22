@@ -317,7 +317,7 @@ export default async function PublicProductPage({
               slug={slug}
               productId={product.id}
               size="lg"
-              className="flex-shrink-0 mt-1 hover:scale-110"
+              className="flex-shrink-0 mt-1 hover:scale-110 focus-visible:scale-110"
             />
           </div>
           <div
