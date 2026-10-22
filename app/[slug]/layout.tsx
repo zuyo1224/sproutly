@@ -3080,7 +3080,7 @@ export default async function PublicStoreLayout({
             </div>
             <Link
               href={accountHref}
-              className="ml-2 px-2 py-2 transition hover:opacity-70"
+              className="ml-2 px-2 py-2 transition hover:opacity-70 focus-visible:opacity-70"
               style={{ color: theme.textMuted }}
               aria-label={isLoggedIn ? "會員中心" : "登入"}
               title={isLoggedIn ? "會員中心" : "登入"}

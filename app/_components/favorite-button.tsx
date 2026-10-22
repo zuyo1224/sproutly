@@ -106,7 +106,7 @@ export function FavoritesCounter({
     <a
       href={href}
       aria-label={`查看收藏，目前 ${count} 件`}
-      className={`inline-flex items-center gap-1.5 text-sm transition hover:opacity-70 ${className ?? ""}`}
+      className={`inline-flex items-center gap-1.5 text-sm transition hover:opacity-70 focus-visible:opacity-70 ${className ?? ""}`}
     >
       <svg
         width="14"

@@ -28,7 +28,7 @@ export function CartIcon({ slug }: { slug: string }) {
   return (
     <Link
       href={`/${slug}/cart`}
-      className="relative inline-flex items-center gap-1.5 px-2 py-2 text-sm transition hover:opacity-70"
+      className="relative inline-flex items-center gap-1.5 px-2 py-2 text-sm transition hover:opacity-70 focus-visible:opacity-70"
       aria-label={`購物車（${count} 件）`}
     >
       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6">

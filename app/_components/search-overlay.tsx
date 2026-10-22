@@ -200,7 +200,7 @@ export function SearchOverlay({ slug }: { slug: string }) {
         type="button"
         onClick={() => setOpen(true)}
         aria-label="搜尋"
-        className="inline-flex items-center gap-2 transition hover:opacity-70"
+        className="inline-flex items-center gap-2 transition hover:opacity-70 focus-visible:opacity-70"
         style={{ color: "inherit" }}
       >
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6">

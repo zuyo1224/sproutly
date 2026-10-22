@@ -78,7 +78,7 @@ export function StoreMobileNav({
         ref={buttonRef}
         type="button"
         onClick={() => setOpen((v) => !v)}
-        className="inline-flex items-center justify-center px-2 py-2 transition hover:opacity-70"
+        className="inline-flex items-center justify-center px-2 py-2 transition hover:opacity-70 focus-visible:opacity-70"
         style={{ color: colorMuted }}
         aria-label={open ? "關閉選單" : "開啟選單"}
         aria-expanded={open}
