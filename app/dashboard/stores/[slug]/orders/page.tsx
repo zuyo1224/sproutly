@@ -219,8 +219,8 @@ export default async function OrdersListPage({
           pendingText="處理中..."
           className={
             isPendingOrder(o.status)
-              ? "rounded-full bg-emerald-700 px-3 py-1 text-xs font-medium text-white hover:bg-emerald-800"
-              : "rounded-full border border-emerald-100 px-3 py-1 text-xs text-emerald-900/70 hover:bg-emerald-50"
+              ? "rounded-full bg-emerald-700 px-3 py-1 text-xs font-medium text-white hover:bg-emerald-800 focus-visible:bg-emerald-800"
+              : "rounded-full border border-emerald-100 px-3 py-1 text-xs text-emerald-900/70 hover:bg-emerald-50 focus-visible:bg-emerald-50"
           }
         >
           {verb}
@@ -247,7 +247,7 @@ export default async function OrdersListPage({
       >
         <SubmitButton
           pendingText="處理中..."
-          className="rounded-full border border-amber-200 px-3 py-1 text-xs text-amber-800 hover:bg-amber-50"
+          className="rounded-full border border-amber-200 px-3 py-1 text-xs text-amber-800 hover:bg-amber-50 focus-visible:bg-amber-50"
         >
           收款
           <span className="sr-only">
@@ -299,7 +299,7 @@ export default async function OrdersListPage({
         {statusCounts.all > 0 && (
           <a
             href={exportHref()}
-            className="rounded-full bg-white border-2 border-emerald-200 px-4 py-2 text-sm font-medium text-emerald-900 hover:bg-emerald-50 transition"
+            className="rounded-full bg-white border-2 border-emerald-200 px-4 py-2 text-sm font-medium text-emerald-900 hover:bg-emerald-50 focus-visible:bg-emerald-50 transition"
           >
             <span aria-hidden="true">⬇ </span>
             {filterActive ? "匯出這批" : "匯出 CSV"}
@@ -322,7 +322,7 @@ export default async function OrdersListPage({
                 className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm transition ${
                   active
                     ? "bg-emerald-700 text-white shadow-md shadow-emerald-700/20"
-                    : "bg-emerald-50 text-emerald-900/80 hover:bg-emerald-100"
+                    : "bg-emerald-50 text-emerald-900/80 hover:bg-emerald-100 focus-visible:bg-emerald-100"
                 }`}
               >
                 {f.label}
@@ -351,7 +351,7 @@ export default async function OrdersListPage({
                 className={`text-sm px-3 py-1 rounded-full transition ${
                   active
                     ? "bg-emerald-100 text-emerald-900 font-medium"
-                    : "text-emerald-900/60 hover:bg-emerald-50"
+                    : "text-emerald-900/60 hover:bg-emerald-50 focus-visible:bg-emerald-50"
                 }`}
               >
                 {r.label}
@@ -373,7 +373,7 @@ export default async function OrdersListPage({
                 className={`inline-flex items-center gap-1.5 text-sm px-3 py-1 rounded-full transition ${
                   active
                     ? "bg-emerald-100 text-emerald-900 font-medium"
-                    : "text-emerald-900/60 hover:bg-emerald-50"
+                    : "text-emerald-900/60 hover:bg-emerald-50 focus-visible:bg-emerald-50"
                 }`}
               >
                 {f.label}
@@ -408,14 +408,14 @@ export default async function OrdersListPage({
           />
           <button
             type="submit"
-            className="rounded-full bg-emerald-700 text-white px-5 py-2 text-sm font-medium hover:bg-emerald-800 transition"
+            className="rounded-full bg-emerald-700 text-white px-5 py-2 text-sm font-medium hover:bg-emerald-800 focus-visible:bg-emerald-800 transition"
           >
             搜尋
           </button>
           {filterActive && (
             <Link
               href={`/dashboard/stores/${slug}/orders`}
-              className="rounded-full border border-emerald-100 px-4 py-2 text-sm text-emerald-900/70 hover:bg-emerald-50 transition"
+              className="rounded-full border border-emerald-100 px-4 py-2 text-sm text-emerald-900/70 hover:bg-emerald-50 focus-visible:bg-emerald-50 transition"
             >
               清除
             </Link>
@@ -605,7 +605,7 @@ export default async function OrdersListPage({
                         {advanceButton(o)}
                         <Link
                           href={`/dashboard/stores/${slug}/orders/${o.id}`}
-                          className="text-emerald-700 hover:text-emerald-900 text-sm font-medium whitespace-nowrap"
+                          className="text-emerald-700 hover:text-emerald-900 focus-visible:text-emerald-900 text-sm font-medium whitespace-nowrap"
                         >
                           詳情 <span aria-hidden="true">→</span>
                         </Link>

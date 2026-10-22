@@ -143,7 +143,7 @@ export default async function OrderDetailPage({
       <div className="no-print">
         <Link
           href={`/dashboard/stores/${slug}/orders`}
-          className="inline-block mb-6 text-emerald-700/70 hover:text-emerald-900 transition uppercase"
+          className="inline-block mb-6 text-emerald-700/70 hover:text-emerald-900 focus-visible:text-emerald-900 transition uppercase"
           style={{
             fontSize: "0.6875rem",
             fontWeight: 500,
@@ -198,7 +198,7 @@ export default async function OrderDetailPage({
           </p>
         </div>
         <div className="no-print">
-          <PrintButton className="rounded-full bg-white border-2 border-emerald-200 px-4 py-2 text-sm font-medium text-emerald-900 hover:bg-emerald-50 transition">
+          <PrintButton className="rounded-full bg-white border-2 border-emerald-200 px-4 py-2 text-sm font-medium text-emerald-900 hover:bg-emerald-50 focus-visible:bg-emerald-50 transition">
             列印訂單
           </PrintButton>
         </div>
@@ -349,7 +349,7 @@ export default async function OrderDetailPage({
               <CopyButton
                 text={recipientText}
                 copiedLabel="已複製，直接貼上即可"
-                className="no-print shrink-0 rounded-full border border-emerald-200 bg-white px-3 py-1 text-xs text-emerald-800 hover:bg-emerald-50 transition"
+                className="no-print shrink-0 rounded-full border border-emerald-200 bg-white px-3 py-1 text-xs text-emerald-800 hover:bg-emerald-50 focus-visible:bg-emerald-50 transition"
               >
                 複製收件資訊
               </CopyButton>
@@ -371,7 +371,7 @@ export default async function OrderDetailPage({
                   {telDigits(order.customer_phone) ? (
                     <a
                       href={telHref(order.customer_phone)}
-                      className="hover:text-emerald-700 transition"
+                      className="hover:text-emerald-700 focus-visible:text-emerald-700 transition"
                     >
                       {order.customer_phone}
                     </a>
@@ -392,7 +392,7 @@ export default async function OrderDetailPage({
                     {cleanEmail(order.customer_email) ? (
                       <a
                         href={mailHref(order.customer_email)}
-                        className="hover:text-emerald-700 transition"
+                        className="hover:text-emerald-700 focus-visible:text-emerald-700 transition"
                       >
                         {order.customer_email}
                       </a>
@@ -542,7 +542,7 @@ export default async function OrderDetailPage({
 
               <SubmitButton
                 pendingText="儲存中..."
-                className="w-full rounded-full bg-emerald-700 px-6 py-2.5 text-white text-sm font-medium hover:bg-emerald-800 shadow-lg shadow-emerald-700/20"
+                className="w-full rounded-full bg-emerald-700 px-6 py-2.5 text-white text-sm font-medium hover:bg-emerald-800 focus-visible:bg-emerald-800 shadow-lg shadow-emerald-700/20"
               >
                 更新狀態
               </SubmitButton>
@@ -569,7 +569,7 @@ export default async function OrderDetailPage({
                 <CopyButton
                   text={customerNote}
                   copiedLabel="已複製，貼到 LINE 即可"
-                  className="shrink-0 rounded-full bg-emerald-700 px-3 py-1 text-xs font-medium text-white hover:bg-emerald-800 transition"
+                  className="shrink-0 rounded-full bg-emerald-700 px-3 py-1 text-xs font-medium text-white hover:bg-emerald-800 focus-visible:bg-emerald-800 transition"
                 >
                   複製訊息
                 </CopyButton>
