@@ -162,7 +162,7 @@ export function AddToCartButton({
       {count > 0 && (
         <Link
           href={`/${slug}/cart`}
-          className="block text-center text-[0.8125rem] transition hover:opacity-70"
+          className="block text-center text-[0.8125rem] transition hover:opacity-70 focus-visible:opacity-70"
           style={{
             color: "var(--store-accent, currentColor)",
             letterSpacing: "0.04em",

@@ -5314,7 +5314,7 @@ export default async function StoreHomePage({
                       storePhone ? (
                         <a
                           href={telHref(store.contact_phone)}
-                          className="border-b border-current pb-0.5 hover:opacity-70 transition"
+                          className="border-b border-current pb-0.5 hover:opacity-70 focus-visible:opacity-70 transition"
                         >
                           {store.contact_phone}
                         </a>
@@ -5326,7 +5326,7 @@ export default async function StoreHomePage({
                       storeEmail ? (
                         <a
                           href={mailHref(store.contact_email)}
-                          className="border-b border-current pb-0.5 hover:opacity-70 transition"
+                          className="border-b border-current pb-0.5 hover:opacity-70 focus-visible:opacity-70 transition"
                         >
                           {store.contact_email}
                         </a>

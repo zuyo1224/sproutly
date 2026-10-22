@@ -79,7 +79,7 @@ export function RecentOrdersList({ slug }: { slug: string }) {
           >
             <Link
               href={buildUrl(`/${slug}/track`, { id: o.shortId, phone: o.phone })}
-              className="flex items-baseline justify-between gap-4 py-3.5 transition hover:opacity-70"
+              className="flex items-baseline justify-between gap-4 py-3.5 transition hover:opacity-70 focus-visible:opacity-70"
             >
               <span className="min-w-0">
                 <span

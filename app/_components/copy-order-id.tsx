@@ -34,7 +34,7 @@ export function CopyOrderId({ shortId }: { shortId: string }) {
         type="button"
         onClick={copy}
         aria-label={copied ? "已複製訂單編號" : `複製訂單編號 ${shortId}`}
-        className="font-mono inline-flex items-center gap-1.5 align-baseline transition-opacity hover:opacity-70"
+        className="font-mono inline-flex items-center gap-1.5 align-baseline transition-opacity hover:opacity-70 focus-visible:opacity-70"
         style={{
           color: "var(--store-text, currentColor)",
           letterSpacing: "0.05em",
