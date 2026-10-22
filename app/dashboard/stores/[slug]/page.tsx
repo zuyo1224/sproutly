@@ -360,7 +360,7 @@ export default async function StoreInsightsPage({
                 ) : (
                   <Link
                     href={s.href}
-                    className="flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-emerald-50/60 transition group"
+                    className="flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-emerald-50/60 focus-visible:bg-emerald-50/60 transition group"
                   >
                     <span
                       aria-hidden="true"
@@ -374,7 +374,7 @@ export default async function StoreInsightsPage({
                     </span>
                     <span
                       aria-hidden="true"
-                      className="text-xs text-emerald-700 opacity-0 group-hover:opacity-100 transition"
+                      className="text-xs text-emerald-700 opacity-0 group-hover:opacity-100 group-focus-visible:opacity-100 transition"
                     >
                       去做 →
                     </span>
@@ -466,7 +466,7 @@ export default async function StoreInsightsPage({
       {outstandingCount > 0 && (
         <Link
           href={`/dashboard/stores/${slug}/orders?pay=unpaid`}
-          className="flex items-center justify-between gap-4 bg-amber-50 rounded-2xl px-6 py-4 border border-amber-200 hover:bg-amber-100/60 transition group"
+          className="flex items-center justify-between gap-4 bg-amber-50 rounded-2xl px-6 py-4 border border-amber-200 hover:bg-amber-100/60 focus-visible:bg-amber-100/60 transition group"
         >
           <div className="min-w-0">
             <p className="text-[10px] tracking-[0.28em] uppercase text-amber-700/80">
@@ -482,7 +482,7 @@ export default async function StoreInsightsPage({
             <p className="text-lg font-medium text-amber-800 tracking-tight">
               {formatPrice(outstandingCents, storeCurrency)}
             </p>
-            <p className="text-[11px] text-amber-700/70 group-hover:text-amber-800 transition">
+            <p className="text-[11px] text-amber-700/70 group-hover:text-amber-800 group-focus-visible:text-amber-800 transition">
               看未付款訂單 <span aria-hidden="true">→</span>
             </p>
           </div>
@@ -667,7 +667,7 @@ export default async function StoreInsightsPage({
               <Link
                 key={p.id}
                 href={`/dashboard/stores/${slug}/products/${p.id}/edit`}
-                className="flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-amber-50/60 transition group"
+                className="flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-amber-50/60 focus-visible:bg-amber-50/60 transition group"
               >
                 <div className="w-10 h-10 rounded-lg bg-emerald-50 flex-shrink-0 overflow-hidden flex items-center justify-center">
                   {thumb ? (
@@ -697,7 +697,7 @@ export default async function StoreInsightsPage({
                     {isSoldOut(p.stock) ? "已售完" : `剩 ${p.stock} 件`}
                   </p>
                 </div>
-                <span className="text-xs text-emerald-700 opacity-0 group-hover:opacity-100 transition flex-shrink-0">
+                <span className="text-xs text-emerald-700 opacity-0 group-hover:opacity-100 group-focus-visible:opacity-100 transition flex-shrink-0">
                   補貨 <span aria-hidden="true">→</span>
                 </span>
               </Link>
