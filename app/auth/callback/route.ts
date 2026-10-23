@@ -1,12 +1,12 @@
 import { createClient } from "@/lib/supabase/server";
 import { NextResponse } from "next/server";
-import { withErrorParam } from "@/lib/url";
+import { safeNextPath, withErrorParam } from "@/lib/url";
 import { authErrorMessage } from "@/lib/auth-error-message";
 
 export async function GET(request: Request) {
   const { searchParams, origin } = new URL(request.url);
   const code = searchParams.get("code");
-  const next = searchParams.get("next") ?? "/dashboard";
+  const next = searchParams.get("next");
   const kind = searchParams.get("kind"); // "customer" → 客人 magic link
   const slug = searchParams.get("slug");
 
@@ -47,14 +47,12 @@ export async function GET(request: Request) {
           { onConflict: "id" }
         );
     }
-    const safeNext = next.startsWith("/") ? next : `/${slug ?? ""}/account`;
+    const safeNext = safeNextPath(next, `/${slug ?? ""}/account`);
     return NextResponse.redirect(`${origin}${safeNext}`);
   }
 
-  // 商家流程：跳 dashboard 或 next。next 是網址列上的參數、跟客人流程同一個
-  // 不可信來源，原本只有客人分支守門、這裡原樣接在 origin 後面——next=.evil.com
-  // 會黏成 https://本站.evil.com 這種掛在攻擊者網域下的網址，登入成功的商家被
-  // 原封不動送去外站。套客人分支同一道「必須以 / 開頭」守門，不合格退回 dashboard。
-  const safeNext = next.startsWith("/") ? next : "/dashboard";
+  // 商家流程：跳 dashboard 或 next。next 跟客人流程同一個不可信來源，守門規則
+  // 見 lib/url.ts 的 safeNextPath，不合格退回 dashboard。
+  const safeNext = safeNextPath(next, "/dashboard");
   return NextResponse.redirect(`${origin}${safeNext}`);
 }

@@ -9,7 +9,7 @@
 // 跟其他 lib 測試同一套：node:test + node:assert，import 一律帶 .ts。
 import { describe, it } from "node:test";
 import assert from "node:assert/strict";
-import { buildUrl, withErrorParam, withQuery } from "./url.ts";
+import { buildUrl, safeNextPath, withErrorParam, withQuery } from "./url.ts";
 
 describe("buildUrl", () => {
   it("沒有參數就只回路徑，不留一個孤單的問號", () => {
@@ -152,5 +152,39 @@ describe("withQuery（已組好的查詢字串接到路徑後）", () => {
       withQuery("/x", sp.toString()),
       buildUrl("/x", { status: "paid", q: "a b&c" }),
     );
+  });
+});
+
+describe("safeNextPath", () => {
+  it("站內路徑照原樣放行，查詢字串與錨點都留著", () => {
+    assert.equal(safeNextPath("/dashboard", "/x"), "/dashboard");
+    assert.equal(safeNextPath("/plantae/account", "/x"), "/plantae/account");
+    assert.equal(safeNextPath("/plantae/checkout?product_id=1&qty=2#top", "/x"), "/plantae/checkout?product_id=1&qty=2#top");
+  });
+
+  it("沒帶或空字串退回 fallback", () => {
+    assert.equal(safeNextPath(null, "/plantae/account"), "/plantae/account");
+    assert.equal(safeNextPath(undefined, "/dashboard"), "/dashboard");
+    assert.equal(safeNextPath("", "/dashboard"), "/dashboard");
+  });
+
+  it("不是 / 開頭的一律退回：外站網址、黏到網域後面的 .evil.com、相對路徑", () => {
+    for (const bad of ["https://evil.com", "http://evil.com/dashboard", ".evil.com", "@evil.com", "evil.com", "dashboard", "javascript:alert(1)", " /dashboard"]) {
+      assert.equal(safeNextPath(bad, "/dashboard"), "/dashboard", bad);
+    }
+  });
+
+  it("// 與 /\\ 開頭退回：瀏覽器會當成省略 https: 的外站網址", () => {
+    for (const bad of ["//evil.com", "//evil.com/dashboard", "/\\evil.com", "/\\/evil.com"]) {
+      assert.equal(safeNextPath(bad, "/dashboard"), "/dashboard", bad);
+    }
+  });
+
+  it("放行的值接在 origin 後面，網域一定還是本站", () => {
+    const origin = "https://sproutly.com.tw";
+    for (const next of ["/dashboard", "/plantae/account", "//evil.com", ".evil.com", "/\\evil.com", "https://evil.com"]) {
+      const url = new URL(`${origin}${safeNextPath(next, "/dashboard")}`);
+      assert.equal(url.host, "sproutly.com.tw", next);
+    }
   });
 });

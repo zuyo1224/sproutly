@@ -57,3 +57,17 @@ function splitQuery(url: string): [string, string?] {
   if (i === -1) return [url];
   return [url.slice(0, i), url.slice(i + 1)];
 }
+
+// 登入完要跳去哪（網址列上的 next 參數）只收「自家站內的路徑」，其他一律退回 fallback。
+// next 是任何人都能改的網址參數，信它就等於讓別人決定登入成功的人被送去哪。
+//
+// 必須以 `/` 開頭：auth/callback 會把它接在 origin 後面，`.evil.com` 這種會黏成
+// `https://本站.evil.com`、掛到別人網域下。另外擋 `//` 與 `/\` 開頭：接在 origin 後面
+// 時無害（只是本站一條怪路徑），但哪天有人直接 redirect(next)，瀏覽器會把它當成
+// 「省略 https: 的外站網址」（`//evil.com` → https://evil.com，反斜線瀏覽器也當斜線），
+// 先擋掉免得留一條看不見的坑。正常的站內路徑沒有這樣開頭的。
+export function safeNextPath(next: string | null | undefined, fallback: string): string {
+  if (!next || !next.startsWith("/")) return fallback;
+  if (next.startsWith("//") || next.startsWith("/\\")) return fallback;
+  return next;
+}
