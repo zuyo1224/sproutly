@@ -98,7 +98,7 @@ export default async function EditProductPage({
     <div>
       <Link
         href={`/dashboard/stores/${slug}/products`}
-        className="inline-flex items-center gap-2 text-emerald-800 hover:text-emerald-950 transition mb-6"
+        className="inline-flex items-center gap-2 text-emerald-800 hover:text-emerald-950 focus-visible:text-emerald-950 transition mb-6"
         style={BACK_LINK_STYLE}
       >
         <span><span aria-hidden="true">← Back · </span>商品列表</span>
@@ -399,13 +399,13 @@ export default async function EditProductPage({
           <div className="pt-4 flex gap-3">
             <SubmitButton
               pendingText="儲存中..."
-              className="flex-1 rounded-full bg-emerald-700 px-8 py-3.5 text-white font-medium hover:bg-emerald-800 shadow-lg shadow-emerald-700/20 tracking-tight"
+              className="flex-1 rounded-full bg-emerald-700 px-8 py-3.5 text-white font-medium hover:bg-emerald-800 focus-visible:bg-emerald-800 shadow-lg shadow-emerald-700/20 tracking-tight"
             >
               儲存變更
             </SubmitButton>
             <Link
               href={`/dashboard/stores/${slug}/products`}
-              className="rounded-full border border-emerald-200 bg-white px-6 py-3.5 text-emerald-800 font-medium hover:bg-emerald-50 transition tracking-tight"
+              className="rounded-full border border-emerald-200 bg-white px-6 py-3.5 text-emerald-800 font-medium hover:bg-emerald-50 focus-visible:bg-emerald-50 transition tracking-tight"
             >
               取消
             </Link>
@@ -436,7 +436,7 @@ export default async function EditProductPage({
           </div>
           <SubmitButton
             pendingText="複製中..."
-            className="rounded-full border border-emerald-200 bg-white px-6 py-2.5 text-emerald-800 text-sm font-medium hover:bg-emerald-50 transition tracking-tight"
+            className="rounded-full border border-emerald-200 bg-white px-6 py-2.5 text-emerald-800 text-sm font-medium hover:bg-emerald-50 focus-visible:bg-emerald-50 transition tracking-tight"
           >
             複製這件商品
           </SubmitButton>
@@ -447,7 +447,7 @@ export default async function EditProductPage({
         <form action={deleteBound}>
           <details>
             <summary
-              className="cursor-pointer inline-block text-red-600 hover:text-red-700 transition"
+              className="cursor-pointer inline-block text-red-600 hover:text-red-700 focus-visible:text-red-700 transition"
               style={BACK_LINK_STYLE}
             >
               <span aria-hidden="true">Danger · </span>刪除這個商品
@@ -467,7 +467,7 @@ export default async function EditProductPage({
               </p>
               <SubmitButton
                 pendingText="刪除中..."
-                className="mt-4 rounded-full bg-red-600 px-6 py-2.5 text-white text-sm font-medium hover:bg-red-700 tracking-tight"
+                className="mt-4 rounded-full bg-red-600 px-6 py-2.5 text-white text-sm font-medium hover:bg-red-700 focus-visible:bg-red-700 tracking-tight"
               >
                 確定刪除
               </SubmitButton>

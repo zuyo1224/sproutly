@@ -135,7 +135,7 @@ export default async function StoreCustomersPage({
         {totalCustomers > 0 && (
           <a
             href={exportHref()}
-            className="inline-flex items-center gap-2 rounded-full border border-emerald-200 px-4 py-2.5 text-sm font-medium text-emerald-800 hover:bg-emerald-50 transition whitespace-nowrap"
+            className="inline-flex items-center gap-2 rounded-full border border-emerald-200 px-4 py-2.5 text-sm font-medium text-emerald-800 hover:bg-emerald-50 focus-visible:bg-emerald-50 transition whitespace-nowrap"
           >
             <svg
               className="w-4 h-4"
@@ -243,7 +243,7 @@ export default async function StoreCustomersPage({
         </select>
         <button
           type="submit"
-          className="rounded-full px-6 py-2.5 text-sm font-medium bg-emerald-700 text-white hover:bg-emerald-800 transition"
+          className="rounded-full px-6 py-2.5 text-sm font-medium bg-emerald-700 text-white hover:bg-emerald-800 focus-visible:bg-emerald-800 transition"
         >
           套用
         </button>
@@ -356,7 +356,7 @@ export default async function StoreCustomersPage({
                         (cleanEmail(r.email) ? (
                           <a
                             href={mailHref(r.email)}
-                            className="block text-emerald-700 hover:underline text-xs truncate max-w-44"
+                            className="block text-emerald-700 hover:underline focus-visible:underline text-xs truncate max-w-44"
                           >
                             {r.email}
                           </a>
@@ -431,7 +431,7 @@ export default async function StoreCustomersPage({
                     <td className="px-5 py-3.5 text-right whitespace-nowrap">
                       <Link
                         href={customerOrdersHref(slug, r)}
-                        className="text-emerald-700 hover:text-emerald-900 text-sm font-medium"
+                        className="text-emerald-700 hover:text-emerald-900 focus-visible:text-emerald-900 text-sm font-medium"
                       >
                         看訂單 <span aria-hidden="true">→</span>
                       </Link>
@@ -451,7 +451,7 @@ export default async function StoreCustomersPage({
                 <li key={r.key}>
                   <Link
                     href={customerOrdersHref(slug, r)}
-                    className="block p-4 hover:bg-emerald-50/40 transition"
+                    className="block p-4 hover:bg-emerald-50/40 focus-visible:bg-emerald-50/40 transition"
                   >
                   <div className="flex items-start justify-between gap-3 mb-2">
                     <div className="min-w-0">
@@ -550,7 +550,7 @@ export default async function StoreCustomersPage({
         </p>
         <Link
           href={`/dashboard/stores/${slug}/orders`}
-          className="mt-4 inline-block text-emerald-700 hover:underline uppercase"
+          className="mt-4 inline-block text-emerald-700 hover:underline focus-visible:underline uppercase"
           style={{
             fontSize: "0.6875rem",
             fontWeight: 500,

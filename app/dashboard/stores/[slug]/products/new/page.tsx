@@ -57,7 +57,7 @@ export default async function NewProductPage({
     <div>
       <Link
         href={`/dashboard/stores/${slug}/products`}
-        className="inline-flex items-center gap-2 text-emerald-800 hover:text-emerald-950 transition mb-6"
+        className="inline-flex items-center gap-2 text-emerald-800 hover:text-emerald-950 focus-visible:text-emerald-950 transition mb-6"
         style={BACK_LINK_STYLE}
       >
         <span><span aria-hidden="true">← Back · </span>商品列表</span>
@@ -210,7 +210,7 @@ export default async function NewProductPage({
             </p>
             <details className="mt-4">
               <summary
-                className="cursor-pointer text-emerald-900/55 hover:text-emerald-900/80 transition"
+                className="cursor-pointer text-emerald-900/55 hover:text-emerald-900/80 focus-visible:text-emerald-900/80 transition"
                 style={{ fontSize: "0.8125rem" }}
               >
                 或貼網路圖片 URL（進階，沒上傳檔案時生效）
@@ -249,13 +249,13 @@ export default async function NewProductPage({
           <div className="pt-4 flex gap-3">
             <SubmitButton
               pendingText="上傳中，請稍候..."
-              className="flex-1 rounded-full bg-emerald-700 px-8 py-3.5 text-white font-medium hover:bg-emerald-800 shadow-lg shadow-emerald-700/20 tracking-tight"
+              className="flex-1 rounded-full bg-emerald-700 px-8 py-3.5 text-white font-medium hover:bg-emerald-800 focus-visible:bg-emerald-800 shadow-lg shadow-emerald-700/20 tracking-tight"
             >
               新增商品
             </SubmitButton>
             <Link
               href={`/dashboard/stores/${slug}/products`}
-              className="rounded-full border border-emerald-200 bg-white px-6 py-3.5 text-emerald-800 font-medium hover:bg-emerald-50 transition tracking-tight"
+              className="rounded-full border border-emerald-200 bg-white px-6 py-3.5 text-emerald-800 font-medium hover:bg-emerald-50 focus-visible:bg-emerald-50 transition tracking-tight"
             >
               取消
             </Link>
