@@ -179,7 +179,7 @@ export default async function StoreSettingsPage({
                   href={`/${store.slug}`}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="underline hover:text-emerald-900"
+                  className="underline hover:text-emerald-900 focus-visible:text-emerald-900"
                 >
                   {siteHost()}/{store.slug}
                   <span className="sr-only">（另開新分頁）</span>
@@ -903,13 +903,13 @@ A: 可以，地點為台北車站。`}</pre>
         <div className="pt-2 flex gap-3">
           <SubmitButton
             pendingText="儲存中..."
-            className="flex-1 rounded-full bg-emerald-700 px-8 py-3.5 text-white font-medium hover:bg-emerald-800 shadow-lg shadow-emerald-700/20 tracking-tight"
+            className="flex-1 rounded-full bg-emerald-700 px-8 py-3.5 text-white font-medium hover:bg-emerald-800 focus-visible:bg-emerald-800 shadow-lg shadow-emerald-700/20 tracking-tight"
           >
             儲存設定
           </SubmitButton>
           <Link
             href={`/dashboard/stores/${slug}`}
-            className="rounded-full border border-emerald-200 bg-white px-6 py-3.5 text-emerald-800 font-medium hover:bg-emerald-50 transition tracking-tight"
+            className="rounded-full border border-emerald-200 bg-white px-6 py-3.5 text-emerald-800 font-medium hover:bg-emerald-50 focus-visible:bg-emerald-50 transition tracking-tight"
           >
             取消
           </Link>

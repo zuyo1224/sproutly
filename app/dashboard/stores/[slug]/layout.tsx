@@ -70,7 +70,7 @@ export default async function StoreLayout({
           </Link>
           <span className="text-emerald-900/30">/</span>
           <details className="group relative">
-            <summary className="cursor-pointer list-none flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-emerald-50 hover:bg-emerald-100 transition">
+            <summary className="cursor-pointer list-none flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-emerald-50 hover:bg-emerald-100 focus-visible:bg-emerald-100 transition">
               <span className="text-sm font-medium text-emerald-900 truncate max-w-32 sm:max-w-none">
                 {store.name}
               </span>
@@ -98,7 +98,7 @@ export default async function StoreLayout({
                     key={s.slug}
                     href={`/dashboard/stores/${s.slug}`}
                     aria-current={s.slug === slug ? "true" : undefined}
-                    className={`block px-4 py-2.5 hover:bg-emerald-50/60 transition ${
+                    className={`block px-4 py-2.5 hover:bg-emerald-50/60 focus-visible:bg-emerald-50/60 transition ${
                       s.slug === slug ? "bg-emerald-50/40" : ""
                     }`}
                   >
@@ -141,13 +141,13 @@ export default async function StoreLayout({
               <hr className="my-2 border-emerald-50" />
               <Link
                 href="/dashboard/new-store"
-                className="block px-4 py-2 text-sm text-emerald-700 hover:bg-emerald-50/60 transition font-medium"
+                className="block px-4 py-2 text-sm text-emerald-700 hover:bg-emerald-50/60 focus-visible:bg-emerald-50/60 transition font-medium"
               >
                 ＋ 開新店
               </Link>
               <Link
                 href="/dashboard"
-                className="block px-4 py-2 text-sm text-emerald-900/60 hover:bg-emerald-50/60 transition"
+                className="block px-4 py-2 text-sm text-emerald-900/60 hover:bg-emerald-50/60 focus-visible:bg-emerald-50/60 transition"
               >
                 <span aria-hidden="true">←</span> 回主後台
               </Link>
@@ -157,7 +157,7 @@ export default async function StoreLayout({
         <form action={signOut}>
           <button
             type="submit"
-            className="text-sm text-emerald-900/70 hover:text-emerald-900 transition"
+            className="text-sm text-emerald-900/70 hover:text-emerald-900 focus-visible:text-emerald-900 transition"
           >
             登出
           </button>
@@ -195,7 +195,7 @@ export default async function StoreLayout({
                   href={`/${slug}`}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-xs text-emerald-700 hover:text-emerald-900 transition"
+                  className="text-xs text-emerald-700 hover:text-emerald-900 focus-visible:text-emerald-900 transition"
                 >
                   看公開店面 <span aria-hidden="true">↗</span>
                   <span className="sr-only">（另開新分頁）</span>

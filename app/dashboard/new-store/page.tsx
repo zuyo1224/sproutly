@@ -27,7 +27,7 @@ export default async function NewStorePage({
       <header className="max-w-3xl mx-auto w-full px-6 sm:px-10 pt-10 sm:pt-14">
         <Link
           href="/dashboard"
-          className="inline-flex items-center gap-2 text-emerald-800 hover:text-emerald-950 transition"
+          className="inline-flex items-center gap-2 text-emerald-800 hover:text-emerald-950 focus-visible:text-emerald-950 transition"
           style={{
             fontSize: "0.6875rem",
             fontWeight: 500,
@@ -276,13 +276,13 @@ export default async function NewStorePage({
             <div className="pt-4 flex gap-3">
               <SubmitButton
                 pendingText="建立中，請稍候..."
-                className="flex-1 rounded-full bg-emerald-700 px-8 py-3.5 text-white font-medium hover:bg-emerald-800 shadow-lg shadow-emerald-700/20 tracking-tight"
+                className="flex-1 rounded-full bg-emerald-700 px-8 py-3.5 text-white font-medium hover:bg-emerald-800 focus-visible:bg-emerald-800 shadow-lg shadow-emerald-700/20 tracking-tight"
               >
                 建立店面
               </SubmitButton>
               <Link
                 href="/dashboard"
-                className="rounded-full border border-emerald-200 bg-white px-6 py-3.5 text-emerald-800 font-medium hover:bg-emerald-50 transition tracking-tight"
+                className="rounded-full border border-emerald-200 bg-white px-6 py-3.5 text-emerald-800 font-medium hover:bg-emerald-50 focus-visible:bg-emerald-50 transition tracking-tight"
               >
                 取消
               </Link>
