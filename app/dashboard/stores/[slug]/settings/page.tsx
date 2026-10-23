@@ -445,7 +445,7 @@ A: 可以，地點為台北車站。`}</pre>
                       defaultChecked={theme.preset === key}
                       className="peer sr-only"
                     />
-                    <div className="rounded-xl border-2 border-emerald-100 peer-checked:border-emerald-600 peer-checked:bg-emerald-50/40 p-3 transition hover:border-emerald-300">
+                    <div className="rounded-xl border-2 border-emerald-100 peer-checked:border-emerald-600 peer-checked:bg-emerald-50/40 p-3 transition hover:border-emerald-300 peer-focus-visible:ring-2 peer-focus-visible:ring-emerald-500 peer-focus-visible:ring-offset-2">
                       <div className="flex gap-1 mb-2">
                         <div
                           className="flex-1 h-10 rounded-md"
@@ -594,7 +594,7 @@ A: 可以，地點為台北車站。`}</pre>
             </label>
             <div role="group" aria-labelledby="page-sections-group-label" className="grid grid-cols-2 gap-2">
               {PAGE_SECTION_TOGGLES.map((s) => (
-                <label key={s.formName} className="flex items-center gap-2 px-3 py-2 rounded-lg border border-emerald-100 hover:bg-emerald-50/40 transition cursor-pointer">
+                <label key={s.formName} className="flex items-center gap-2 px-3 py-2 rounded-lg border border-emerald-100 hover:bg-emerald-50/40 has-[:focus-visible]:bg-emerald-50/40 transition cursor-pointer">
                   <input
                     type="checkbox"
                     name={s.formName}

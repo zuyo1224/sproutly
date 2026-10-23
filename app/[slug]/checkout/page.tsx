@@ -346,7 +346,7 @@ export default async function CheckoutPage({
               {PAYMENT_OPTIONS.map((opt) => (
                 <label
                   key={opt.value}
-                  className={`block rounded-xl transition ${opt.disabled ? "cursor-not-allowed opacity-50" : "cursor-pointer has-[:checked]:ring-2"}`}
+                  className={`block rounded-xl transition ${opt.disabled ? "cursor-not-allowed opacity-50" : "cursor-pointer has-[:checked]:ring-2 has-[:focus-visible]:ring-2"}`}
                   style={{ ["--tw-ring-color" as string]: theme.primary }}
                 >
                   <input

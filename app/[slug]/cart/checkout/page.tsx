@@ -538,7 +538,7 @@ export default function CartCheckoutPage() {
               {SHIPPING_OPTIONS.map((o) => (
                 <label
                   key={o.value}
-                  className="cursor-pointer block has-[:checked]:ring-2 rounded-xl transition"
+                  className="cursor-pointer block has-[:checked]:ring-2 has-[:focus-visible]:ring-2 rounded-xl transition"
                   style={{
                     ["--tw-ring-color" as string]:
                       "var(--store-accent, currentColor)",
@@ -710,7 +710,7 @@ export default function CartCheckoutPage() {
                   className={`block rounded-xl transition ${
                     o.disabled
                       ? "cursor-not-allowed opacity-50"
-                      : "cursor-pointer has-[:checked]:ring-2"
+                      : "cursor-pointer has-[:checked]:ring-2 has-[:focus-visible]:ring-2"
                   }`}
                   style={{
                     ["--tw-ring-color" as string]:

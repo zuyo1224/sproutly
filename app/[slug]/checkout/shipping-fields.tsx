@@ -35,7 +35,7 @@ export function ShippingFields({ ringColor }: { ringColor: string }) {
         {SHIPPING_OPTIONS.map((opt) => (
           <label
             key={opt.value}
-            className="cursor-pointer block has-[:checked]:ring-2 rounded-xl transition"
+            className="cursor-pointer block has-[:checked]:ring-2 has-[:focus-visible]:ring-2 rounded-xl transition"
             style={{ ["--tw-ring-color" as string]: ringColor }}
           >
             <input
