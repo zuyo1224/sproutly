@@ -1731,11 +1731,11 @@ export default async function PublicStoreLayout({
           border-radius: 26px;
         }
         section[data-edit-target][data-card-surface] :is(.sproutly-card,.sproutly-card-box) .sproutly-card-image,
-        section[data-edit-target][data-card-surface] :is(.sproutly-card,.sproutly-card-box):hover .sproutly-card-image {
+        section[data-edit-target][data-card-surface] :is(.sproutly-card,.sproutly-card-box):is(:hover, :focus-visible, :has(:focus-visible)) .sproutly-card-image {
           box-shadow: none;
         }
         section[data-edit-target][data-card-surface]:not([data-card-hover="none"])
-          :is(.sproutly-card,.sproutly-card-box):hover .sproutly-card-image {
+          :is(.sproutly-card,.sproutly-card-box):is(:hover, :focus-visible, :has(:focus-visible)) .sproutly-card-image {
           transform: none;
         }
         /* 下面兩條的 :not(.sproutly-card-static) 是給「點不下去的那幾塊」開的例外。
@@ -1750,12 +1750,12 @@ export default async function PublicStoreLayout({
            「滑過卡片」那三顆按鈕商家還是照按，只是對點不下去的方塊按了不會有事；
            沒設卡片外觀就沒 attribute、整組規則不存在，既有店家逐像素不變。 */
         section[data-edit-target][data-card-surface]:not([data-card-hover="none"])
-          :is(.sproutly-card,.sproutly-card-box):not(.sproutly-card-static):hover {
+          :is(.sproutly-card,.sproutly-card-box):not(.sproutly-card-static):is(:hover, :focus-visible, :has(:focus-visible)) {
           transform: translateY(-6px);
           box-shadow: var(--sproutly-elev-3);
         }
         section[data-edit-target][data-card-surface][data-card-hover="calm"]
-          :is(.sproutly-card,.sproutly-card-box):not(.sproutly-card-static):hover {
+          :is(.sproutly-card,.sproutly-card-box):not(.sproutly-card-static):is(:hover, :focus-visible, :has(:focus-visible)) {
           transform: translateY(-2px);
           box-shadow: none;
         }
@@ -1779,11 +1779,11 @@ export default async function PublicStoreLayout({
           box-shadow: var(--sproutly-elev-3);
         }
         section[data-edit-target][data-card-surface][data-card-hover="calm"][data-card-shadow="soft"]
-          :is(.sproutly-card,.sproutly-card-box):not(.sproutly-card-static):hover {
+          :is(.sproutly-card,.sproutly-card-box):not(.sproutly-card-static):is(:hover, :focus-visible, :has(:focus-visible)) {
           box-shadow: var(--sproutly-elev-2);
         }
         section[data-edit-target][data-card-surface][data-card-hover="calm"][data-card-shadow="strong"]
-          :is(.sproutly-card,.sproutly-card-box):not(.sproutly-card-static):hover {
+          :is(.sproutly-card,.sproutly-card-box):not(.sproutly-card-static):is(:hover, :focus-visible, :has(:focus-visible)) {
           box-shadow: var(--sproutly-elev-3);
         }
 
