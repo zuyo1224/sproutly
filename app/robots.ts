@@ -9,11 +9,20 @@ export default function robots(): MetadataRoute.Robots {
       {
         userAgent: "*",
         allow: "/",
+        // 平台頁三條要錨住：robots.txt 規則是「前綴比對」，寫 "/login" 會連店家網址
+        // /login-garden、/signup-bakery、/dashboard-coffee 整間店一起擋掉（slug 只保留
+        // login 本身，login-garden 是合法店名）。拆成「剛好這個網址（$）／底下子頁（/）／
+        // 帶查詢字串（?，例如 /login?error=…）」三種，店家網址就不會被誤擋。
         disallow: [
-          "/dashboard",
+          "/dashboard$",
           "/dashboard/",
-          "/login",
-          "/signup",
+          "/dashboard?",
+          "/login$",
+          "/login/",
+          "/login?",
+          "/signup$",
+          "/signup/",
+          "/signup?",
           "/auth/",
           "/api/",
           "/*/account",
