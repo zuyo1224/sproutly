@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { requireUser } from "@/lib/require-user";
 import { siteHost } from "@/lib/store-schema";
+import { STORE_SLUG_MAX_LENGTH, STORE_SLUG_MIN_LENGTH } from "@/lib/store-slug";
 import { createStore } from "./actions";
 import { SubmitButton } from "@/app/_components/submit-button";
 import { ContactHintInput } from "@/app/_components/contact-hint-input";
@@ -159,8 +160,8 @@ export default async function NewStorePage({
                   aria-required="true"
                   aria-describedby="store-slug-help"
                   pattern="[a-z0-9\-]+"
-                  minLength={3}
-                  maxLength={32}
+                  minLength={STORE_SLUG_MIN_LENGTH}
+                  maxLength={STORE_SLUG_MAX_LENGTH}
                   placeholder="plantaemarket"
                   className="flex-1 px-4 py-3 text-emerald-950 placeholder:text-emerald-900/30 outline-none"
                 />

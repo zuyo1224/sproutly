@@ -6,26 +6,13 @@ import { requireUser } from "@/lib/require-user";
 import { redirect } from "next/navigation";
 import { withErrorParam } from "@/lib/url";
 import { dbErrorMessage } from "@/lib/db-error-message";
-
-// app/ 底下的頂層靜態路由段（含 Next 自動掛在根路徑的 metadata 圖），
-// 靜態段優先於 [slug]，slug 撞名整間店面會被平台頁蓋掉、永遠打不開
-const RESERVED_SLUGS = new Set([
-  "api",
-  "auth",
-  "dashboard",
-  "login",
-  "signup",
-  "opengraph-image",
-  "twitter-image",
-]);
+import { normalizeStoreSlug, storeSlugError } from "@/lib/store-slug";
 
 export async function createStore(formData: FormData) {
   const { supabase, user } = await requireUser();
 
   const name = formString(formData, "name");
-  const slug = String(formData.get("slug") ?? "")
-    .trim()
-    .toLowerCase();
+  const slug = normalizeStoreSlug(formData.get("slug"));
   const description =
     formStringOrNull(formData, "description");
   const contact_phone =
@@ -48,17 +35,9 @@ export async function createStore(formData: FormData) {
   if (tooLong) {
     redirect(withErrorParam("/dashboard/new-store", tooLong));
   }
-  if (!slug) {
-    redirect(withErrorParam("/dashboard/new-store", "請填店面網址"));
-  }
-  if (!/^[a-z0-9-]+$/.test(slug)) {
-    redirect(withErrorParam("/dashboard/new-store", "店面網址只能小寫英文、數字、連字號（-）"));
-  }
-  if (slug.length < 3 || slug.length > 32) {
-    redirect(withErrorParam("/dashboard/new-store", "店面網址 3 到 32 個字"));
-  }
-  if (RESERVED_SLUGS.has(slug)) {
-    redirect(withErrorParam("/dashboard/new-store", `網址「${slug}」是系統保留字，換一個試試`));
+  const slugError = storeSlugError(slug);
+  if (slugError) {
+    redirect(withErrorParam("/dashboard/new-store", slugError));
   }
 
   // 檢查 slug 是否被別人佔用
