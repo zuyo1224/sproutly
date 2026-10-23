@@ -419,7 +419,8 @@ export default async function CheckoutPage({
               background: ${theme.primary};
               color: ${theme.surface};
             }
-            form button[type="submit"]:hover:not(:disabled) {
+            form button[type="submit"]:hover:not(:disabled),
+            form button[type="submit"]:focus-visible:not(:disabled) {
               opacity: 0.9;
             }
           `}</style>

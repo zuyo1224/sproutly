@@ -480,7 +480,8 @@ export default async function PublicStoreLayout({
           right: 0;
           opacity: 0.45;
         }
-        .sproutly-link[data-default-line="true"]:hover::after {
+        .sproutly-link[data-default-line="true"]:hover::after,
+        .sproutly-link[data-default-line="true"]:focus-visible::after {
           opacity: 1;
         }
 
@@ -621,7 +622,8 @@ export default async function PublicStoreLayout({
           color: var(--store-bg, #ffffff);
           box-shadow: var(--sproutly-elev-1);
         }
-        .sproutly-btn-primary:hover {
+        .sproutly-btn-primary:hover,
+        .sproutly-btn-primary:focus-visible {
           box-shadow: var(--sproutly-elev-3);
           transform: translateY(-2px);
           opacity: 0.92;
@@ -635,7 +637,8 @@ export default async function PublicStoreLayout({
           color: var(--store-text, #1a1a1a);
           border-color: var(--store-border, rgba(0,0,0,0.12));
         }
-        .sproutly-btn-secondary:hover {
+        .sproutly-btn-secondary:hover,
+        .sproutly-btn-secondary:focus-visible {
           background: var(--store-surface, rgba(0,0,0,0.03));
           border-color: var(--store-text, rgba(0,0,0,0.4));
           transform: translateY(-1px);
@@ -646,7 +649,8 @@ export default async function PublicStoreLayout({
           padding: 0.625rem 1rem;
           letter-spacing: 0.14em;
         }
-        .sproutly-btn-ghost:hover {
+        .sproutly-btn-ghost:hover,
+        .sproutly-btn-ghost:focus-visible {
           color: var(--store-text, #1a1a1a);
           background: var(--store-surface, rgba(0,0,0,0.04));
         }
@@ -658,7 +662,8 @@ export default async function PublicStoreLayout({
         }
         @media (prefers-reduced-motion: reduce) {
           .sproutly-btn { transition: none !important; }
-          .sproutly-btn:hover { transform: none !important; }
+          .sproutly-btn:hover,
+          .sproutly-btn:focus-visible { transform: none !important; }
         }
 
         /* Form input system - 跟 button 對齊質感 */
