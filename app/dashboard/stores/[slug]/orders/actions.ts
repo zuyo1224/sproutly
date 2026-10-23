@@ -38,7 +38,16 @@ export async function advanceOrderStatus(
   if (!store) redirect("/dashboard");
 
   const defaultListUrl = withQuery(`/dashboard/stores/${slug}/orders`, returnQs);
-  const listUrl = returnTo ? returnTo : defaultListUrl;
+  // returnTo 跟其他 bind 參數一樣能被人直接改掉送來，不能原樣丟給 redirect：填
+  // "//evil.com" 瀏覽器會當成外站網址。只收這間店後台底下的路徑（目前唯一的呼叫端
+  // 是店面首頁 /dashboard/stores/{slug}），帶 .. 或反斜線能爬出去的也不收，其他一律
+  // 當沒帶、退回訂單列表。slug 上面已經查過是這個人的店，接進路徑是安全的。
+  const storeBase = `/dashboard/stores/${slug}`;
+  const returnToOk =
+    (returnTo === storeBase || returnTo.startsWith(`${storeBase}/`) || returnTo.startsWith(`${storeBase}?`)) &&
+    !returnTo.includes("..") &&
+    !returnTo.includes("\\");
+  const listUrl = returnToOk ? returnTo : defaultListUrl;
 
   const { data: current } = await supabase
     .from("sproutly_orders")
