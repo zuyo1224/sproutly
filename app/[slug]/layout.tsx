@@ -497,16 +497,16 @@ export default async function PublicStoreLayout({
           transition: box-shadow 0.7s cubic-bezier(0.22, 1, 0.36, 1),
                       transform 0.7s cubic-bezier(0.22, 1, 0.36, 1);
         }
-        .sproutly-card:hover .sproutly-card-image,
-        .sproutly-card-shell:hover .sproutly-card .sproutly-card-image {
+        .sproutly-card:is(:hover, :focus-visible) .sproutly-card-image,
+        .sproutly-card-shell:is(:hover, :has(:focus-visible)) .sproutly-card .sproutly-card-image {
           box-shadow: var(--sproutly-elev-4);
           transform: translateY(-6px);
         }
         .sproutly-card .sproutly-card-image img {
           transition: transform 2.4s cubic-bezier(0.22, 1, 0.36, 1);
         }
-        .sproutly-card:hover .sproutly-card-image img,
-        .sproutly-card-shell:hover .sproutly-card .sproutly-card-image img {
+        .sproutly-card:is(:hover, :focus-visible) .sproutly-card-image img,
+        .sproutly-card-shell:is(:hover, :has(:focus-visible)) .sproutly-card .sproutly-card-image img {
           transform: scale(1.05);
         }
         /* image inner 漸層暗化 + hover 推進 */
@@ -532,16 +532,16 @@ export default async function PublicStoreLayout({
           pointer-events: none;
           z-index: 2;
         }
-        .sproutly-card:hover .sproutly-card-image::after,
-        .sproutly-card-shell:hover .sproutly-card .sproutly-card-image::after {
+        .sproutly-card:is(:hover, :focus-visible) .sproutly-card-image::after,
+        .sproutly-card-shell:is(:hover, :has(:focus-visible)) .sproutly-card .sproutly-card-image::after {
           background: rgba(0, 0, 0, 0.06);
         }
         .sproutly-card .sproutly-card-title {
           transition: letter-spacing 0.6s cubic-bezier(0.22, 1, 0.36, 1),
                       transform 0.6s cubic-bezier(0.22, 1, 0.36, 1);
         }
-        .sproutly-card:hover .sproutly-card-title,
-        .sproutly-card-shell:hover .sproutly-card .sproutly-card-title {
+        .sproutly-card:is(:hover, :focus-visible) .sproutly-card-title,
+        .sproutly-card-shell:is(:hover, :has(:focus-visible)) .sproutly-card .sproutly-card-title {
           letter-spacing: 0.06em;
         }
         /* 這兩個數字（靜止 0.7、滑過 1）改由變數帶，好讓下面「卡片副文字深淺」那組換掉它們；
@@ -551,8 +551,8 @@ export default async function PublicStoreLayout({
           transform: translateY(0);
           transition: opacity 0.6s, transform 0.6s;
         }
-        .sproutly-card:hover .sproutly-card-meta,
-        .sproutly-card-shell:hover .sproutly-card .sproutly-card-meta {
+        .sproutly-card:is(:hover, :focus-visible) .sproutly-card-meta,
+        .sproutly-card-shell:is(:hover, :has(:focus-visible)) .sproutly-card .sproutly-card-meta {
           opacity: var(--card-meta-opacity-hover, 1);
         }
         .sproutly-card .sproutly-card-action {
@@ -562,7 +562,7 @@ export default async function PublicStoreLayout({
                       transform 0.55s cubic-bezier(0.22, 1, 0.36, 1) 0.05s;
           margin-top: 12px;
         }
-        .sproutly-card:hover .sproutly-card-action,
+        .sproutly-card:is(:hover, :focus-visible) .sproutly-card-action,
         .sproutly-card:focus-within .sproutly-card-action {
           opacity: 1;
           transform: translateY(0);
@@ -577,7 +577,7 @@ export default async function PublicStoreLayout({
                       background-color 150ms cubic-bezier(0.4, 0, 0.2, 1),
                       color 150ms cubic-bezier(0.4, 0, 0.2, 1);
         }
-        .sproutly-card-shell:hover .sproutly-card-float {
+        .sproutly-card-shell:is(:hover, :has(:focus-visible)) .sproutly-card-float {
           translate: 0 -6px;
         }
 
@@ -1324,7 +1324,7 @@ export default async function PublicStoreLayout({
           object-fit: contain;
         }
         section[data-edit-target][data-media-fit="contain"]
-          .sproutly-card:hover .sproutly-card-image img {
+          .sproutly-card:is(:hover, :focus-visible) .sproutly-card-image img {
           transform: none;
         }
 
@@ -1438,23 +1438,23 @@ export default async function PublicStoreLayout({
            兩檔都把卡片下面那顆原本要滑過才浮現的按鈕改成一直看得見——關掉滑過的動作之後
            它永遠不會出現，等於把「看更多」這個入口一起關掉了，那不是商家按這一格的意思。
            沒設（或選「預設」）就沒 attribute、整條規則不存在，卡片維持原本那組動作。 */
-        section[data-edit-target][data-card-hover="calm"] .sproutly-card:hover .sproutly-card-image {
+        section[data-edit-target][data-card-hover="calm"] .sproutly-card:is(:hover, :focus-visible) .sproutly-card-image {
           transform: translateY(-2px);
         }
-        section[data-edit-target][data-card-hover="none"] .sproutly-card:hover .sproutly-card-image {
+        section[data-edit-target][data-card-hover="none"] .sproutly-card:is(:hover, :focus-visible) .sproutly-card-image {
           transform: none;
           box-shadow: var(--sproutly-elev-2);
         }
         section[data-edit-target]:is([data-card-hover="calm"], [data-card-hover="none"])
-          .sproutly-card:hover .sproutly-card-image img {
+          .sproutly-card:is(:hover, :focus-visible) .sproutly-card-image img {
           transform: none;
         }
         section[data-edit-target]:is([data-card-hover="calm"], [data-card-hover="none"])
-          .sproutly-card:hover .sproutly-card-image::after {
+          .sproutly-card:is(:hover, :focus-visible) .sproutly-card-image::after {
           background: rgba(0, 0, 0, 0);
         }
         section[data-edit-target]:is([data-card-hover="calm"], [data-card-hover="none"])
-          .sproutly-card:hover .sproutly-card-title {
+          .sproutly-card:is(:hover, :focus-visible) .sproutly-card-title {
           letter-spacing: inherit;
         }
         section[data-edit-target]:is([data-card-hover="calm"], [data-card-hover="none"])
