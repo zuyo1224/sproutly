@@ -9,6 +9,7 @@ import assert from "node:assert/strict";
 import { readdirSync } from "node:fs";
 import {
   RESERVED_STORE_SLUGS,
+  isStoreSlugShaped,
   normalizeStoreSlug,
   storeSlugError,
 } from "./store-slug.ts";
@@ -59,6 +60,20 @@ describe("storeSlugError", () => {
   it("只擋完全相同，開頭撞名的店照樣能開", () => {
     for (const ok of ["login-garden", "apiary", "icon-studio", "dashboard-coffee"]) {
       assert.equal(storeSlugError(ok), null, ok);
+    }
+  });
+});
+
+describe("isStoreSlugShaped（auth/callback 拿網址參數的 slug 接路徑前用）", () => {
+  it("小寫英數與連字號放行，不管長度與保留字（舊店連結不被誤擋）", () => {
+    assert.equal(isStoreSlugShaped("plantaemarket"), true);
+    assert.equal(isStoreSlugShaped("a"), true);
+    assert.equal(isStoreSlugShaped("login"), true);
+  });
+
+  it("null／空字串／會改路徑結構的字元都擋", () => {
+    for (const bad of [null, undefined, "", "..", "../dashboard", "a/b", "shop?x=1", "shop#top", "Shop", " shop", "%2e%2e"]) {
+      assert.equal(isStoreSlugShaped(bad), false, String(bad));
     }
   });
 });

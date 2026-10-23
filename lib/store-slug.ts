@@ -39,3 +39,12 @@ export function storeSlugError(slug: string): string | null {
   }
   return null;
 }
+
+/**
+ * 網址參數帶來的 slug 能不能直接接進站內路徑。只看字元（小寫英數與連字號），
+ * 不看長度與保留字：這裡要擋的是 `../`、`?`、`#`、`/` 這類會改掉路徑結構的東西，
+ * 不是重新審一次開店規則，免得規則改過之後舊店的連結被誤擋。
+ */
+export function isStoreSlugShaped(raw: string | null | undefined): raw is string {
+  return typeof raw === "string" && /^[a-z0-9-]+$/.test(raw);
+}

@@ -2,13 +2,17 @@ import { createClient } from "@/lib/supabase/server";
 import { NextResponse } from "next/server";
 import { safeNextPath, withErrorParam } from "@/lib/url";
 import { authErrorMessage } from "@/lib/auth-error-message";
+import { isStoreSlugShaped } from "@/lib/store-slug";
 
 export async function GET(request: Request) {
   const { searchParams, origin } = new URL(request.url);
   const code = searchParams.get("code");
   const next = searchParams.get("next");
   const kind = searchParams.get("kind"); // "customer" → 客人 magic link
-  const slug = searchParams.get("slug");
+  // slug 跟 next 一樣是任何人都能改的網址參數，下面會直接接進路徑，
+  // 長得不像店面網址（帶 ../、?、#、/ 或乾脆沒帶）就當沒有。
+  const rawSlug = searchParams.get("slug");
+  const slug = isStoreSlugShaped(rawSlug) ? rawSlug : null;
 
   if (!code) {
     return NextResponse.redirect(withErrorParam(`${origin}/login`, "確認連結無效或已過期"));
@@ -47,7 +51,8 @@ export async function GET(request: Request) {
           { onConflict: "id" }
         );
     }
-    const safeNext = safeNextPath(next, `/${slug ?? ""}/account`);
+    // 沒有可用的 slug 時退回首頁；原本會組出 `//account` 這種壞路徑。
+    const safeNext = safeNextPath(next, slug ? `/${slug}/account` : "/");
     return NextResponse.redirect(`${origin}${safeNext}`);
   }
 
