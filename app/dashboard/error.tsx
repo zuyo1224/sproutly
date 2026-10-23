@@ -36,13 +36,13 @@ export default function DashboardError({
           <button
             type="button"
             onClick={reset}
-            className="rounded-full bg-emerald-700 px-8 py-4 text-white font-medium hover:bg-emerald-800 transition shadow-lg shadow-emerald-700/20"
+            className="rounded-full bg-emerald-700 px-8 py-4 text-white font-medium hover:bg-emerald-800 focus-visible:bg-emerald-800 transition shadow-lg shadow-emerald-700/20"
           >
             再試一次
           </button>
           <Link
             href="/dashboard"
-            className="rounded-full border-2 border-emerald-200 bg-white px-8 py-4 text-emerald-900 font-medium hover:bg-emerald-50 transition"
+            className="rounded-full border-2 border-emerald-200 bg-white px-8 py-4 text-emerald-900 font-medium hover:bg-emerald-50 focus-visible:bg-emerald-50 transition"
           >
             回主後台
           </Link>

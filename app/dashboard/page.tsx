@@ -181,7 +181,7 @@ export default async function DashboardPage() {
         <form action={signOut}>
           <button
             type="submit"
-            className="text-sm text-emerald-900/70 hover:text-emerald-900 transition"
+            className="text-sm text-emerald-900/70 hover:text-emerald-900 focus-visible:text-emerald-900 transition"
           >
             登出
           </button>
@@ -365,7 +365,7 @@ export default async function DashboardPage() {
             {stores && stores.length > 0 && (
               <Link
                 href="/dashboard/new-store"
-                className="rounded-full bg-emerald-700 px-5 py-2.5 text-white text-sm font-medium hover:bg-emerald-800 transition flex-shrink-0"
+                className="rounded-full bg-emerald-700 px-5 py-2.5 text-white text-sm font-medium hover:bg-emerald-800 focus-visible:bg-emerald-800 transition flex-shrink-0"
                 style={{ boxShadow: "var(--sproutly-elev-2)" }}
               >
                 ＋ 開新店
@@ -525,7 +525,7 @@ export default async function DashboardPage() {
                     <div className="flex gap-2 pt-4 border-t border-emerald-50">
                       <Link
                         href={`/dashboard/stores/${store.slug}`}
-                        className="flex-1 text-center text-sm rounded-full bg-emerald-700 text-white px-4 py-2 hover:bg-emerald-800 transition font-medium"
+                        className="flex-1 text-center text-sm rounded-full bg-emerald-700 text-white px-4 py-2 hover:bg-emerald-800 focus-visible:bg-emerald-800 transition font-medium"
                       >
                         管理 <span aria-hidden="true">→</span>
                       </Link>
@@ -534,7 +534,7 @@ export default async function DashboardPage() {
                           href={`/${store.slug}`}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="flex-1 text-center text-sm rounded-full border border-emerald-200 text-emerald-700 px-4 py-2 hover:bg-emerald-50 transition font-medium"
+                          className="flex-1 text-center text-sm rounded-full border border-emerald-200 text-emerald-700 px-4 py-2 hover:bg-emerald-50 focus-visible:bg-emerald-50 transition font-medium"
                         >
                           看店面 <span aria-hidden="true">↗</span>
                           <span className="sr-only">（另開新分頁）</span>
@@ -587,7 +587,7 @@ export default async function DashboardPage() {
               </p>
               <Link
                 href="/dashboard/new-store"
-                className="mt-10 inline-block rounded-full bg-emerald-700 px-8 py-3.5 text-white font-medium hover:bg-emerald-800 transition"
+                className="mt-10 inline-block rounded-full bg-emerald-700 px-8 py-3.5 text-white font-medium hover:bg-emerald-800 focus-visible:bg-emerald-800 transition"
                 style={{ boxShadow: "var(--sproutly-elev-2)" }}
               >
                 ＋ 開第一間店
