@@ -12,10 +12,15 @@ import { decrementStock, restoreStock } from "@/lib/stock-restore";
 import { insufficientStockError, stockConflictError } from "@/lib/product-stock";
 import { buildOrderRow, buildOrderItemRow } from "@/lib/order-rows";
 import { buildUrl, withErrorParam } from "@/lib/url";
+import { isStoreSlugShaped } from "@/lib/store-slug";
 
 const ORDER_FAILED_MESSAGE = "訂單沒有送出成功，請稍後再試一次";
 
 export async function placeOrder(slug: string, formData: FormData) {
+  // slug 雖然是頁面 bind 進來的，但 server action 的參數照樣能被人直接改掉送來。
+  // 不像店家網址就不接進任何路徑：填 "/evil.com" 時下面的 redirect(`/${slug}`)
+  // 會變成 "//evil.com" 讓瀏覽器跳外站，帶 ../ ? # 則會把人送到站內別頁。
+  if (!isStoreSlugShaped(slug)) redirect("/");
   const productId = formString(formData, "product_id");
   const qtyRaw = String(formData.get("quantity") ?? "1").trim();
   const customerName = formString(formData, "customer_name");
