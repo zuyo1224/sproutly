@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { isUnderPath } from "@/lib/url";
 
 /**
  * 手機版店面導覽 — 把「首頁 / 商品 / 關於 / 聯絡」這幾條文字連結收進漢堡選單。
@@ -125,7 +126,7 @@ export function StoreMobileNav({
             const active =
               item.href === homeHref
                 ? pathname === item.href
-                : pathname.startsWith(item.href);
+                : isUnderPath(pathname, item.href);
             return (
               <Link
                 key={item.href}

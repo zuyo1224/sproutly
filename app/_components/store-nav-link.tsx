@@ -2,13 +2,15 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { isUnderPath } from "@/lib/url";
 
 /**
  * 店面 nav 連結 — 從 pathname 判斷 active state，加 aria-current="page" + 視覺強調
  *
  * 比對策略：
  * - 首頁 `/${slug}` 只在 pathname 完全等於 slug 路徑時 active（避免一進 /shop 也亮）
- * - 其他子頁 startsWith 比對（/shop、/shop/abc 都算 shop active）
+ * - 其他子頁用 isUnderPath 比對（/shop、/shop/abc 都算 shop active；/shopping 不算，
+ *   單純 startsWith 會連它一起亮）
  */
 export function StoreNavLink({
   href,
@@ -24,7 +26,7 @@ export function StoreNavLink({
   colorActive: string;
 }) {
   const pathname = usePathname();
-  const active = isHome ? pathname === href : pathname.startsWith(href);
+  const active = isHome ? pathname === href : isUnderPath(pathname, href);
 
   return (
     <Link

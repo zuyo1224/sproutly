@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { isUnderPath } from "@/lib/url";
 
 type Tab = {
   label: string;
@@ -10,7 +11,7 @@ type Tab = {
   // 報讀器要念的 badge 語意（如「筆待處理」）。沒給就只念數字。
   badgeLabel?: string;
   // 總覽分頁的 href 是店面根路徑，會是其他所有子頁的前綴，
-  // 所以只能完全相等才算 active；其餘子頁用 startsWith。
+  // 所以只能完全相等才算 active；其餘子頁用 isUnderPath（本身或其下的路徑）。
   exact: boolean;
 };
 
@@ -29,7 +30,7 @@ export function DashboardStoreTabs({ tabs }: { tabs: Tab[] }) {
       {tabs.map((tab) => {
         const active = tab.exact
           ? pathname === tab.href
-          : pathname.startsWith(tab.href);
+          : isUnderPath(pathname, tab.href);
         return (
           <Link
             key={tab.href}

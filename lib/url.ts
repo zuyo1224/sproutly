@@ -77,6 +77,7 @@ export function safeNextPath(next: string | null | undefined, fallback: string):
 // 人直接改掉送來，原樣丟給 redirect 會被拿去跳外站。只比前綴不夠：`base/../../x`
 // 會被瀏覽器正規化成 base 外面的路徑、反斜線瀏覽器當斜線，所以帶 `..` 或 `\` 一律
 // 不收；`base-x`（別間店的 slug 剛好以這間開頭）也不算在底下。
+// 店面與後台導覽列判斷「現在在哪一頁」也用這支：`/shop` 亮的時候 `/shopping` 不該跟著亮。
 export function isUnderPath(path: string, base: string): boolean {
   if (path.includes("..") || path.includes("\\")) return false;
   return path === base || path.startsWith(`${base}/`) || path.startsWith(`${base}?`);
