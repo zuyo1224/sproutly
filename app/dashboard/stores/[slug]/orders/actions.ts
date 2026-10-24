@@ -4,7 +4,7 @@ import { requireUser } from "@/lib/require-user";
 import { redirect } from "next/navigation";
 import { nextOrderStatus, isUnpaidOrder } from "@/lib/order-labels";
 import { orderStatusUpdates, orderPaymentUpdates } from "@/lib/order-timestamps";
-import { withErrorParam, withQuery } from "@/lib/url";
+import { isUnderPath, withErrorParam, withQuery } from "@/lib/url";
 import { dbErrorMessage } from "@/lib/db-error-message";
 
 // 訂單列表上的「往下一步推一格」。跟詳情頁那支 updateOrderStatus 是兩件事：那支是
@@ -42,12 +42,7 @@ export async function advanceOrderStatus(
   // "//evil.com" 瀏覽器會當成外站網址。只收這間店後台底下的路徑（目前唯一的呼叫端
   // 是店面首頁 /dashboard/stores/{slug}），帶 .. 或反斜線能爬出去的也不收，其他一律
   // 當沒帶、退回訂單列表。slug 上面已經查過是這個人的店，接進路徑是安全的。
-  const storeBase = `/dashboard/stores/${slug}`;
-  const returnToOk =
-    (returnTo === storeBase || returnTo.startsWith(`${storeBase}/`) || returnTo.startsWith(`${storeBase}?`)) &&
-    !returnTo.includes("..") &&
-    !returnTo.includes("\\");
-  const listUrl = returnToOk ? returnTo : defaultListUrl;
+  const listUrl = isUnderPath(returnTo, `/dashboard/stores/${slug}`) ? returnTo : defaultListUrl;
 
   const { data: current } = await supabase
     .from("sproutly_orders")

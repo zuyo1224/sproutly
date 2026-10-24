@@ -9,7 +9,7 @@
 // 跟其他 lib 測試同一套：node:test + node:assert，import 一律帶 .ts。
 import { describe, it } from "node:test";
 import assert from "node:assert/strict";
-import { buildUrl, safeNextPath, withErrorParam, withQuery } from "./url.ts";
+import { buildUrl, isUnderPath, safeNextPath, withErrorParam, withQuery } from "./url.ts";
 
 describe("buildUrl", () => {
   it("沒有參數就只回路徑，不留一個孤單的問號", () => {
@@ -185,6 +185,33 @@ describe("safeNextPath", () => {
     for (const next of ["/dashboard", "/plantae/account", "//evil.com", ".evil.com", "/\\evil.com", "https://evil.com"]) {
       const url = new URL(`${origin}${safeNextPath(next, "/dashboard")}`);
       assert.equal(url.host, "sproutly.com.tw", next);
+    }
+  });
+});
+
+describe("isUnderPath", () => {
+  const base = "/dashboard/stores/plantae";
+
+  it("base 本身、base/…、base?… 放行", () => {
+    for (const ok of [base, `${base}/orders`, `${base}/orders/abc-123`, `${base}?tab=recent`]) {
+      assert.equal(isUnderPath(ok, base), true, ok);
+    }
+  });
+
+  it("外站網址、// 開頭、空字串、別的路徑一律不收", () => {
+    for (const bad of ["", "//evil.com", "https://evil.com", "/dashboard", "/dashboard/stores/other", "dashboard/stores/plantae"]) {
+      assert.equal(isUnderPath(bad, base), false, bad);
+    }
+  });
+
+  it("別間店的 slug 剛好以這間開頭不算在底下", () => {
+    assert.equal(isUnderPath("/dashboard/stores/plantae-2", base), false);
+    assert.equal(isUnderPath("/dashboard/stores/plantae-2/orders", base), false);
+  });
+
+  it("帶 .. 或反斜線能爬出 base 的不收", () => {
+    for (const bad of [`${base}/../other`, `${base}/../../../evil`, `${base}/..`, `${base}\\..\\other`, `${base}/\\evil.com`]) {
+      assert.equal(isUnderPath(bad, base), false, bad);
     }
   });
 });

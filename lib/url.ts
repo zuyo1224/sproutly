@@ -71,3 +71,13 @@ export function safeNextPath(next: string | null | undefined, fallback: string):
   if (next.startsWith("//") || next.startsWith("/\\")) return fallback;
   return next;
 }
+
+// 跳轉目標是不是 base 本身或 base 底下的站內路徑：本身、`base/…`、`base?…` 才算。
+// 用在 server action 的 bind 參數（例如訂單快速推進的 returnTo）：bind 參數照樣能被
+// 人直接改掉送來，原樣丟給 redirect 會被拿去跳外站。只比前綴不夠：`base/../../x`
+// 會被瀏覽器正規化成 base 外面的路徑、反斜線瀏覽器當斜線，所以帶 `..` 或 `\` 一律
+// 不收；`base-x`（別間店的 slug 剛好以這間開頭）也不算在底下。
+export function isUnderPath(path: string, base: string): boolean {
+  if (path.includes("..") || path.includes("\\")) return false;
+  return path === base || path.startsWith(`${base}/`) || path.startsWith(`${base}?`);
+}
