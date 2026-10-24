@@ -484,6 +484,7 @@ export function EditorClickBridge() {
     function onParentMessage(ev: MessageEvent) {
       // 只聽外層編輯器的；別的視窗送來的 theme 不套
       if (ev.source !== window.parent || window.parent === window) return;
+      if (ev.origin !== window.location.origin) return;
       if (typeof ev.data !== "object" || !ev.data) return;
       const msg = ev.data as { type?: string; theme?: unknown };
       if (msg.type === "sproutly-theme-apply" && msg.theme) {

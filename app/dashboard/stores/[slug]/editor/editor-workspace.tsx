@@ -736,8 +736,10 @@ export function EditorWorkspace({
     function onMessage(e: MessageEvent) {
       // 只收自己那個預覽 iframe 送來的。改字／改座標會直接寫進 theme 並自動存檔，
       // 不擋的話，任何拿得到這個分頁的視窗（例如用 window.open 打開編輯器的外站頁）
-      // 都能送 sproutly-edit-text-update 改掉店家首頁文案
+      // 都能送 sproutly-edit-text-update 改掉店家首頁文案。
+      // 預覽 iframe 被導到別站時 contentWindow 還是同一個，所以網域也要對
       if (e.source !== iframeRef.current?.contentWindow) return;
+      if (e.origin !== window.location.origin) return;
       if (typeof e.data !== "object" || !e.data) return;
       const msg = e.data as { type?: string; target?: string; field?: string; value?: string; index?: number };
       if (msg.type === "sproutly-edit-key") {
