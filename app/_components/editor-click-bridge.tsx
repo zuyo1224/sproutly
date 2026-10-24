@@ -32,7 +32,7 @@ export function EditorClickBridge() {
 
     // 通知 parent editor 已 ready
     if (window.parent !== window) {
-      window.parent.postMessage({ type: "sproutly-edit-ready" }, "*");
+      window.parent.postMessage({ type: "sproutly-edit-ready" }, window.location.origin);
     }
 
     // 注入 edit mode CSS（hover outline + cursor pointer）
@@ -151,7 +151,7 @@ export function EditorClickBridge() {
             value,
             ...(index !== undefined ? { index } : {}),
           },
-          "*"
+          window.location.origin
         );
       }
     }
@@ -230,7 +230,7 @@ export function EditorClickBridge() {
             target: editTarget,
             label,
           },
-          "*"
+          window.location.origin
         );
       }
     }
@@ -298,7 +298,7 @@ export function EditorClickBridge() {
         el.setAttribute("data-dragging", "true");
         // 通知 editor 開始 drag（避免 popover 跳出）
         if (window.parent !== window) {
-          window.parent.postMessage({ type: "sproutly-edit-drag-start" }, "*");
+          window.parent.postMessage({ type: "sproutly-edit-drag-start" }, window.location.origin);
         }
       }
 
@@ -346,7 +346,7 @@ export function EditorClickBridge() {
             x: xClamped,
             y: yClamped,
           },
-          "*"
+          window.location.origin
         );
       }
     }
@@ -477,7 +477,7 @@ export function EditorClickBridge() {
           shiftKey: e.shiftKey,
           altKey: e.altKey,
         },
-        "*"
+        window.location.origin
       );
     }
 

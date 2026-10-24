@@ -527,12 +527,13 @@ export function EditorWorkspace({
 
   // 把 theme 推進 iframe，iframe 端的 EditorClickBridge 接到後即時 patch DOM／CSS
   // 用於 undo/redo 等不需要 reload 的情境
+  // 預覽跟編輯器同網域，指定 origin：iframe 若被導到別站就收不到 theme
   function pushThemeToIframe(themeToPush: EditorTheme) {
     const w = iframeRef.current?.contentWindow;
     if (!w) return;
     w.postMessage(
       { type: "sproutly-theme-apply", theme: themeToPush },
-      "*"
+      window.location.origin
     );
   }
   const [viewport, setViewport] = useState<"desktop" | "tablet" | "mobile">("desktop");
