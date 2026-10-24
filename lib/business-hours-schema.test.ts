@@ -409,3 +409,43 @@ describe("parseBusinessHoursToSpec：輸出形狀", () => {
     assert.deepEqual(out[0].dayOfWeek, out[1].dayOfWeek);
   });
 });
+
+describe("parseBusinessHoursToSpec：一行一筆", () => {
+  it("設定頁範例那種分行寫法逐行判、合併，公休行略過", () => {
+    assert.deepEqual(
+      parseBusinessHoursToSpec("週一 - 週五 10:00-19:00\n週六 11:00-20:00\n週日 公休"),
+      [spec(WEEKDAYS, "10:00", "19:00"), spec(["Saturday"], "11:00", "20:00")]
+    );
+  });
+
+  it("單行有午休拆段也照樣接得住", () => {
+    assert.deepEqual(
+      parseBusinessHoursToSpec("週一至週五 11:00-14:00、17:00-21:00\n週六 10:00-18:00"),
+      [
+        spec(WEEKDAYS, "11:00", "14:00"),
+        spec(WEEKDAYS, "17:00", "21:00"),
+        spec(["Saturday"], "10:00", "18:00"),
+      ]
+    );
+  });
+
+  it("同一天出現在兩行、或撞到另一行的公休日 → null", () => {
+    assert.equal(parseBusinessHoursToSpec("每日 10:00-18:00\n週六 10:00-20:00"), null);
+    assert.equal(
+      parseBusinessHoursToSpec("週一-週五 10:00-19:00\n週六日 11:00-20:00\n週三公休"),
+      null
+    );
+  });
+
+  it("有時間的行判不出、或提到星期卻沒寫時間 → null", () => {
+    assert.equal(parseBusinessHoursToSpec("週一-週五 10:00-19:00\n10:00-12:00 看情況"), null);
+    assert.equal(parseBusinessHoursToSpec("週一-週五 10:00-19:00\n週六 11:00-20:00\n週日 看心情"), null);
+  });
+
+  it("跟星期無關的備註行略過", () => {
+    assert.deepEqual(
+      parseBusinessHoursToSpec("週一-週五 10:00-19:00\n週六 11:00-17:00\n歡迎先私訊預約"),
+      [spec(WEEKDAYS, "10:00", "19:00"), spec(["Saturday"], "11:00", "17:00")]
+    );
+  });
+});

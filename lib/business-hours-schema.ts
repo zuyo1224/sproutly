@@ -473,6 +473,50 @@ export function parseBusinessHoursToSpec(
   raw: string | null | undefined
 ): OpeningHoursSpec[] | null {
   if (!raw || typeof raw !== "string") return null;
+  return parseBlock(raw) ?? parseByLine(raw);
+}
+
+// 整段判不出時，改成一行一行判。設定頁說明寫「一行一筆」，placeholder 也是
+// 「週一 - 週五 10:00-19:00／週六 11:00-20:00／週日 公休」這種不同天不同時間分行寫——
+// 但 parseBlock 把整格當一段看，兩段時間中間夾星期字就判成「不同日不同時、難可靠對應」
+// 回 null，照著範例填的商家反而一筆營業時間都餵不到 Google。分行時每行各自的星期跟時間
+// 本來就對得起來，所以逐行判、合併。仍維持寧可不放的口徑，下列任一種就整段回 null：
+//   - 有時間的行判不出來（不知道那段時間屬於哪幾天，放了也是殘缺的）
+//   - 同一天出現在兩行（「每日 10-18」配「週六 10-20」這種，不知道哪行才算數）
+//   - 判出的營業日撞到整格裡明講的公休日（公休寫在另一行，單行判讀看不到）
+//   - 沒有時間但提到星期、又不是公休的行（「週末 看心情」），那幾天幾點開不知道
+// 沒有時間的公休行或跟星期無關的行（「週日 公休」「歡迎預約」）略過不算。
+const DAY_WORD =
+  /(?:週|周|星期|禮拜|拜)[一二三四五六日天七末]|平日|每日|每天|假日|\b(?:mon|tue|wed|thu|fri|sat|sun)|\bweek(?:day|end)/i;
+
+function parseByLine(raw: string): OpeningHoursSpec[] | null {
+  const lines = raw.split(/\r?\n/).filter((l) => l.trim() !== "");
+  if (lines.length < 2) return null;
+  const closed = findClosedDays(normalize(raw));
+  const specs: OpeningHoursSpec[] = [];
+  const seen = new Set<string>();
+  for (const line of lines) {
+    const text = normalize(line);
+    if (findTimeRanges(text).length === 0 && !is24Hours(text)) {
+      // 沒時間但提到星期、又不是公休（「週末 看心情」）：那幾天有開只是不知道幾點，
+      // 略過會讓 Google 以為那幾天沒開，整段不放。
+      if (DAY_WORD.test(text) && findClosedDays(text).size === 0) return null;
+      continue;
+    }
+    const lineSpecs = parseBlock(line);
+    if (!lineSpecs) return null;
+    // 同一行拆段（午休）的每筆 dayOfWeek 相同，取第一筆查重即可。
+    for (const day of lineSpecs[0].dayOfWeek) {
+      if (seen.has(day) || closed.has(DAY_NAMES.indexOf(day as (typeof DAY_NAMES)[number])))
+        return null;
+      seen.add(day);
+    }
+    specs.push(...lineSpecs);
+  }
+  return specs.length > 0 ? specs : null;
+}
+
+function parseBlock(raw: string): OpeningHoursSpec[] | null {
   const text = normalize(raw);
 
   const ranges = findTimeRanges(text);
