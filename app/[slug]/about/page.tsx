@@ -6,6 +6,7 @@ import { jsonLdHtml } from "@/lib/json-ld";
 import { displayableImageUrl } from "@/lib/image-url";
 import { siteBaseUrl, buildBreadcrumbJsonLd, buildFaqJsonLd } from "@/lib/store-schema";
 import { jsonbText } from "@/lib/jsonb-text";
+import { parseFaqText } from "@/lib/faq-text";
 import { resolveTheme, HOMEPAGE_DEFAULTS } from "../_theme";
 import { StoreEmptyState } from "@/app/_components/store-empty-state";
 
@@ -79,42 +80,10 @@ export default async function AboutPage({ params }: { params: Params }) {
 
   const faqText = jsonbText(store.faq);
 
-  const faqItems: { question: string; answer: string }[] = [];
-  if (faqText && theme.sections.faq) {
-    const lines = faqText.split(/\r?\n/);
-    let currentQ: string | null = null;
-    let currentA: string[] = [];
-    for (const raw of lines) {
-      const line = raw.trim();
-      if (line.startsWith("Q:") || line.startsWith("Q：")) {
-        if (currentQ) {
-          faqItems.push({
-            question: currentQ,
-            answer: currentA.join("\n").trim(),
-          });
-        }
-        currentQ = line.replace(/^Q[:：]\s*/, "");
-        currentA = [];
-      } else if (line.startsWith("A:") || line.startsWith("A：")) {
-        currentA.push(line.replace(/^A[:：]\s*/, ""));
-      } else if (currentQ) {
-        currentA.push(line);
-      }
-    }
-    if (currentQ) {
-      faqItems.push({
-        question: currentQ,
-        answer: currentA.join("\n").trim(),
-      });
-    }
-  }
-
-  // 只留問題與答案都真的有字的項目 —— 商家可能只打了問題沒接答案（最後一條 Q 後面沒 A），
-  // 或誤留一行空白的「Q:」。空問 / 空答畫面上是空殼，餵給 FAQPage 更會讓整段常見問題 rich
-  // result 失效（Google 要求每題都要有答案文字）。畫面渲染與結構化資料共用同一份乾淨清單。
-  const cleanFaqItems = faqItems.filter(
-    (item) => item.question.trim() && item.answer.trim(),
-  );
+  // 解析規則（Q:／A: 前綴、全形與小寫也認、濾掉空問空答）見 lib/faq-text。
+  // 畫面渲染與結構化資料共用同一份乾淨清單。
+  const cleanFaqItems =
+    faqText && theme.sections.faq ? parseFaqText(faqText) : [];
 
   const hasDescription = Boolean(store.description);
   const aboutCaption = hasDescription
