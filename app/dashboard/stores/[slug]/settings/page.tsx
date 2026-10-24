@@ -3,6 +3,7 @@ import Link from "next/link";
 import { requireUser } from "@/lib/require-user";
 import { updateStore } from "./actions";
 import { SubmitButton } from "@/app/_components/submit-button";
+import { FaqTextInput } from "@/app/_components/faq-text-input";
 import {
   MAX_STORE_ADDRESS_LEN,
   MAX_STORE_DESC_LEN,
@@ -384,10 +385,9 @@ export default async function StoreSettingsPage({
             <label htmlFor="faq" className="block text-sm font-medium text-emerald-900 mb-1.5">
               常見問題
             </label>
-            <textarea
+            <FaqTextInput
               id="faq"
               name="faq"
-              rows={10}
               maxLength={MAX_FAQ_TEXT_LEN}
               defaultValue={faqText}
               placeholder={
@@ -399,6 +399,7 @@ export default async function StoreSettingsPage({
               <p className="font-medium text-emerald-900">怎麼填？</p>
               <p>· 問題用 <span className="font-mono">Q:</span> 開頭，答案用 <span className="font-mono">A:</span> 開頭</p>
               <p>· 一組 Q+A 之間空一行</p>
+              <p>· 中文輸入法打出的全形 <span className="font-mono">Ｑ：</span>、小寫 <span className="font-mono">q:</span> 也可以</p>
               <p>· 範例：</p>
               <pre className="font-mono whitespace-pre-wrap text-emerald-900/60 pl-3 border-l-2 border-emerald-200">{`Q: 有出貨到外島嗎？
 A: 有，運費另計。

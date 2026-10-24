@@ -1,7 +1,7 @@
 // lib/faq-text.ts 的行為固定測試：全形、小寫的 Q／A 也要認得，空問空答要濾掉。
 import { describe, it } from "node:test";
 import assert from "node:assert/strict";
-import { parseFaqText } from "./faq-text.ts";
+import { countFaqQuestionLines, parseFaqText } from "./faq-text.ts";
 
 describe("parseFaqText", () => {
   it("半形 Q:／A: 照舊解析，多行答案保留換行", () => {
@@ -29,5 +29,11 @@ describe("parseFaqText", () => {
     assert.deepEqual(parseFaqText("Q: 材質？\nA: Quality first"), [
       { question: "材質？", answer: "Quality first" },
     ]);
+  });
+});
+
+describe("countFaqQuestionLines", () => {
+  it("數得到全形小寫的 Q 行，沒答案或空問的也算進去", () => {
+    assert.equal(countFaqQuestionLines("Ｑ：外島？\nA: 有\nq: 只有問題\nQ:\n隨便一行"), 3);
   });
 });

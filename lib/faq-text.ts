@@ -34,3 +34,9 @@ export function parseFaqText(text: string): FaqItem[] {
   // result 失效（Google 要求每題都要有答案文字）。
   return items.filter((item) => item.question.trim() && item.answer.trim());
 }
+
+// 數「看起來想當問題」的行（Q: 開頭，含全形小寫）。設定頁拿來跟 parseFaqText 的結果比：
+// 行數比解析出來的題數多，代表有題目沒接答案或問題是空的，存檔後那幾題不會出現。
+export function countFaqQuestionLines(text: string): number {
+  return text.split(/\r?\n/).filter((raw) => Q_PREFIX.test(raw.trim())).length;
+}
