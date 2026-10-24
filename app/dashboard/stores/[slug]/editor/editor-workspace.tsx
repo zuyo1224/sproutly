@@ -733,12 +733,15 @@ export function EditorWorkspace({
   // 接 iframe edit click + inline text edit postMessage
   useEffect(() => {
     function onMessage(e: MessageEvent) {
+      // 只收自己那個預覽 iframe 送來的。改字／改座標會直接寫進 theme 並自動存檔，
+      // 不擋的話，任何拿得到這個分頁的視窗（例如用 window.open 打開編輯器的外站頁）
+      // 都能送 sproutly-edit-text-update 改掉店家首頁文案
+      if (e.source !== iframeRef.current?.contentWindow) return;
       if (typeof e.data !== "object" || !e.data) return;
       const msg = e.data as { type?: string; target?: string; field?: string; value?: string; index?: number };
       if (msg.type === "sproutly-edit-key") {
         // 點過預覽畫面後鍵盤焦點在 iframe 裡，⌘Z／Esc／?／[ ] 到不了這層；
         // bridge 轉送過來，這裡重發一次 keydown 讓上面那幾支快捷鍵照原邏輯處理
-        if (e.source !== iframeRef.current?.contentWindow) return;
         const k = e.data as { key?: unknown; metaKey?: unknown; ctrlKey?: unknown; shiftKey?: unknown; altKey?: unknown };
         if (typeof k.key !== "string") return;
         window.dispatchEvent(
