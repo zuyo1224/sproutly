@@ -7,6 +7,7 @@ import { createClient } from "@/lib/supabase/server";
 import { takeChars } from "@/lib/truncate-text";
 
 const FALLBACK_QUERIES = ["plant", "interior", "minimal", "nature", "shop"];
+const MAX_PAGE = 20;
 
 export async function GET(request: Request) {
   const url = new URL(request.url);
@@ -15,7 +16,7 @@ export async function GET(request: Request) {
   const q = takeChars((url.searchParams.get("q") ?? "").trim(), 100);
   const page = Math.max(
     1,
-    Math.min(20, parseInt(url.searchParams.get("page") ?? "1", 10) || 1)
+    Math.min(MAX_PAGE, parseInt(url.searchParams.get("page") ?? "1", 10) || 1)
   );
   const perPage = 18;
 
@@ -97,7 +98,9 @@ export async function GET(request: Request) {
     }));
     return NextResponse.json({
       photos,
-      next: photos.length === perPage,
+      // 頁數被夾在 MAX_PAGE：到最後一頁還回 next，「載入更多」會再要一次同一頁，
+      // 同一批圖重複疊上去（React key 也撞）。
+      next: photos.length === perPage && page < MAX_PAGE,
       page,
       suggestions: q ? null : FALLBACK_QUERIES,
     });
