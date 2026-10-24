@@ -565,3 +565,25 @@ function parseBlock(raw: string): OpeningHoursSpec[] | null {
     closes: s.closes,
   }));
 }
+
+// 把解析結果翻回中文給商家看（設定頁營業時間框下的即時提示用）：「週一至週五 10:00-19:00」。
+// 連續三天以上寫成「至」，兩天或跳著的用頓號，讓商家一眼對得出「Google 讀到的」跟自己打的一不一樣。
+const CN_DAY_LABEL = ["週一", "週二", "週三", "週四", "週五", "週六", "週日"];
+
+export function describeOpeningHoursSpec(spec: OpeningHoursSpec): string {
+  const idx = spec.dayOfWeek
+    .map((d) => DAY_NAMES.indexOf(d as (typeof DAY_NAMES)[number]))
+    .filter((i) => i >= 0)
+    .sort((a, b) => a - b);
+  const parts: string[] = [];
+  let start = 0;
+  for (let i = 1; i <= idx.length; i++) {
+    if (i < idx.length && idx[i] === idx[i - 1] + 1) continue;
+    const run = idx.slice(start, i);
+    if (run.length >= 3) parts.push(`${CN_DAY_LABEL[run[0]]}至${CN_DAY_LABEL[run[run.length - 1]]}`);
+    else parts.push(...run.map((d) => CN_DAY_LABEL[d]));
+    start = i;
+  }
+  const days = idx.length === 7 ? "每天" : parts.join("、");
+  return `${days} ${spec.opens}-${spec.closes}`;
+}

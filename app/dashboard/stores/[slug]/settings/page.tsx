@@ -4,6 +4,7 @@ import { requireUser } from "@/lib/require-user";
 import { updateStore } from "./actions";
 import { SubmitButton } from "@/app/_components/submit-button";
 import { FaqTextInput } from "@/app/_components/faq-text-input";
+import { BusinessHoursInput } from "@/app/_components/business-hours-input";
 import {
   MAX_STORE_ADDRESS_LEN,
   MAX_STORE_DESC_LEN,
@@ -364,10 +365,9 @@ export default async function StoreSettingsPage({
             <label htmlFor="business_hours" className="block text-sm font-medium text-emerald-900 mb-1.5">
               營業時間
             </label>
-            <textarea
+            <BusinessHoursInput
               id="business_hours"
               name="business_hours"
-              rows={5}
               maxLength={MAX_BUSINESS_HOURS_LEN}
               defaultValue={businessHoursText}
               placeholder={"週一 - 週五 10:00-19:00\n週六 11:00-20:00\n週日 公休"}

@@ -12,7 +12,11 @@
 // 同 image-url.test.ts 那套：Node 內建 node:test + node:assert，不裝框架，import 寫 .ts。
 import { describe, it } from "node:test";
 import assert from "node:assert/strict";
-import { parseBusinessHoursToSpec, type OpeningHoursSpec } from "./business-hours-schema.ts";
+import {
+  describeOpeningHoursSpec,
+  parseBusinessHoursToSpec,
+  type OpeningHoursSpec,
+} from "./business-hours-schema.ts";
 
 const WEEKDAYS = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"];
 const ALL = [...WEEKDAYS, "Saturday", "Sunday"];
@@ -447,5 +451,28 @@ describe("parseBusinessHoursToSpec：一行一筆", () => {
       parseBusinessHoursToSpec("週一-週五 10:00-19:00\n週六 11:00-17:00\n歡迎先私訊預約"),
       [spec(WEEKDAYS, "10:00", "19:00"), spec(["Saturday"], "11:00", "17:00")]
     );
+  });
+});
+
+describe("describeOpeningHoursSpec", () => {
+  it("連續三天以上寫成「至」、全週寫「每天」、其餘用頓號", () => {
+    assert.equal(describeOpeningHoursSpec(spec(WEEKDAYS, "10:00", "19:00")), "週一至週五 10:00-19:00");
+    assert.equal(
+      describeOpeningHoursSpec(spec([...WEEKDAYS, "Saturday", "Sunday"], "00:00", "23:59")),
+      "每天 00:00-23:59"
+    );
+    assert.equal(
+      describeOpeningHoursSpec(spec(["Saturday", "Sunday"], "11:00", "20:00")),
+      "週六、週日 11:00-20:00"
+    );
+    assert.equal(
+      describeOpeningHoursSpec(spec(["Monday", "Wednesday", "Thursday", "Friday"], "09:00", "17:00")),
+      "週一、週三至週五 09:00-17:00"
+    );
+  });
+
+  it("設定頁 placeholder 的寫法翻回來跟原文對得起來", () => {
+    const specs = parseBusinessHoursToSpec("週一 - 週五 10:00-19:00\n週六 11:00-20:00\n週日 公休");
+    assert.deepEqual(specs?.map(describeOpeningHoursSpec), ["週一至週五 10:00-19:00", "週六 11:00-20:00"]);
   });
 });
