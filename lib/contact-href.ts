@@ -113,7 +113,13 @@ export function cleanEmail(email: string | null | undefined): string {
 export function socialUrl(raw: string | null | undefined): string | null {
   if (!raw) return null;
   const u = raw.trim();
-  if (/^https?:\/\//i.test(u)) return u;
+  // 絕對網址也要 scheme 後面真的有主機、整串不含空白。只剩「https://」（填到一半先存）
+  // 會掛出點了開空白頁的連結；「https://instagram.com/foo 我們的IG」這種網址後面接說明字，
+  // 空白之後整段被塞進 href，開到的是不存在的帳號。漏 scheme 的那條本來就擋含空白的，
+  // 兩條標準對齊。
+  if (/^https?:\/\//i.test(u)) {
+    return /^https?:\/\/[^\s/?#]+\S*$/i.test(u) ? u : null;
+  }
 
   // 漏了 scheme 但形狀是真網域（host 後可帶 /path，不含空白，TLD 是字母）→ 補回 https://
   if (/^[a-z0-9-]+(\.[a-z0-9-]+)*\.[a-z]{2,}(\/\S*)?$/i.test(u)) {

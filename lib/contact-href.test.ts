@@ -181,6 +181,14 @@ describe("socialUrl（頁尾社群連結與 sameAs：只在確定指到對方社
     assert.equal(socialUrl("ftp://x.com/foo"), null);
     assert.equal(socialUrl("x.c"), null);
   });
+
+  it("http(s):// 開頭但後面沒主機、或含空白（網址後面接說明字）回 null", () => {
+    assert.equal(socialUrl("https://"), null);
+    assert.equal(socialUrl("  http://  "), null);
+    assert.equal(socialUrl("https:///foo"), null);
+    assert.equal(socialUrl("https://instagram.com/foo 我們的IG"), null);
+    assert.equal(socialUrl("https://instagram.com/foo?igsh=abc"), "https://instagram.com/foo?igsh=abc");
+  });
 });
 
 describe("mapsHref（地圖搜尋連結：只負責 href，地址先 trim）", () => {
