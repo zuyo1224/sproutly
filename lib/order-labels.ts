@@ -249,6 +249,17 @@ export const SHIPPING_LABELS: Record<string, string> = Object.fromEntries(
   SHIPPING_OPTIONS.map((o) => [o.value, o.label])
 );
 
+// 「這個配送方式是名單上的哪一種」：是就回中文，不是（含 null／空字串）回 null。
+// SHIPPING_LABELS 是一般物件，直接 SHIPPING_LABELS[method] 查會連 Object.prototype 上的
+// 內建屬性一起查到：shipping_method 送「toString」「constructor」這種字，查回來是一支
+// 函式、判成 truthy，結帳驗證就當它是合法配送方式放行，訂單備註寫成
+// 「[配送方式] function toString() { [native code] }」，商家後台、匯出 CSV、客人查訂單頁
+// 全看得到。結帳畫面只給名單上的選項，但兩條結帳路徑都能被人直接打。只認自己的 key。
+export function shippingMethodLabel(method: string | null | undefined): string | null {
+  if (!method || !Object.hasOwn(SHIPPING_LABELS, method)) return null;
+  return SHIPPING_LABELS[method];
+}
+
 // 「這個配送方式要不要填取貨門市」單一來源：直接從 SHIPPING_OPTIONS 的 needsStore 旗標衍生。
 // 結帳頁 client 早就用 SHIPPING_OPTIONS.find(...).needsStore 判斷要不要顯示門市欄，但兩個結帳
 // 後端（單品 checkout/actions、購物車 cart/checkout/submit）的「超商取貨必須填門市」防呆卻各自
@@ -292,8 +303,9 @@ export function encodeShippingIntoNote(
   userNote: string | null
 ): string | null {
   const parts: string[] = [];
-  if (shippingMethod && SHIPPING_LABELS[shippingMethod]) {
-    parts.push(`[配送方式] ${SHIPPING_LABELS[shippingMethod]}`);
+  const shippingLabel = shippingMethodLabel(shippingMethod);
+  if (shippingLabel) {
+    parts.push(`[配送方式] ${shippingLabel}`);
     // 門市只寫進超商取貨的單。結帳畫面切到宅配／自取時門市欄會卸載、不進表單，但那是
     // 前端的事；server action 與購物車送單 route 都能被人直接打，帶著門市名稱送一張
     // 宅配單進來，以前照寫「[取貨門市] …」，商家後台訂單頁、匯出 CSV、客人查訂單頁

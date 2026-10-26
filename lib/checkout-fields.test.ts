@@ -128,6 +128,12 @@ describe("配送方式", () => {
   it("名單外的值當沒選", () => {
     assert.equal(checkoutFieldsError(fields({ shippingMethod: "drone" })), SHIPPING);
   });
+
+  it("物件內建屬性名（toString、constructor…）也當沒選", () => {
+    for (const m of ["toString", "constructor", "__proto__", "hasOwnProperty", "valueOf"]) {
+      assert.equal(checkoutFieldsError(fields({ shippingMethod: m })), SHIPPING, m);
+    }
+  });
 });
 
 describe("門市與地址", () => {

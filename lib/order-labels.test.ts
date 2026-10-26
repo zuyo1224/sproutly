@@ -27,6 +27,7 @@ import {
   customerMessage,
   decodeShippingFromNote,
   encodeShippingIntoNote,
+  shippingMethodLabel,
   isOrderActive,
   isPaidOrder,
   isPendingOrder,
@@ -339,6 +340,14 @@ describe("encodeShippingIntoNote／decodeShippingFromNote", () => {
   it("只有配送方式沒備註：只有標記，沒尾巴空行", () => {
     assert.equal(encodeShippingIntoNote("pickup", null, null), "[配送方式] 店面自取");
     assert.equal(encodeShippingIntoNote("pickup", null, "   "), "[配送方式] 店面自取");
+  });
+
+  it("配送方式是物件內建屬性名（toString 等）：不寫配送標記、不寫門市", () => {
+    assert.equal(encodeShippingIntoNote("toString", "信義門市", "備註"), "備註");
+    assert.equal(encodeShippingIntoNote("constructor", null, null), null);
+    assert.equal(shippingMethodLabel("toString"), null);
+    assert.equal(shippingMethodLabel("cvs_711"), "7-11 取貨");
+    assert.equal(shippingMethodLabel(""), null);
   });
 
   it("只有備註沒配送方式：原樣（去頭尾空白）", () => {

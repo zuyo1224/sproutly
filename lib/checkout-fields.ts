@@ -13,7 +13,7 @@
 //
 // 這支刻意只做「純看欄位就知道對不對」的檢查：不碰資料庫、不看登入狀態、不管商品
 // 在不在、庫存夠不夠——那些各條路徑不一樣，留在各自的檔案裡。
-import { isSelectablePaymentMethod, SHIPPING_LABELS, shippingDetailError } from "./order-labels.ts";
+import { isSelectablePaymentMethod, shippingDetailError, shippingMethodLabel } from "./order-labels.ts";
 import { phoneDigits } from "./phone-match.ts";
 
 export type CheckoutFields = {
@@ -49,9 +49,8 @@ export function checkoutFieldsError(fields: CheckoutFields): string | null {
   // 合法性看 isSelectablePaymentMethod（名單上且未停用），不吃顯示用的 PAYMENT_LABELS——
   // 那份含停用中的信用卡，拿來當白名單會把「即將推出」的金流放行（緣由見 order-labels）。
   if (!isSelectablePaymentMethod(fields.paymentMethod)) return PAYMENT_REQUIRED_ERROR;
-  if (!fields.shippingMethod || !SHIPPING_LABELS[fields.shippingMethod]) {
-    return SHIPPING_REQUIRED_ERROR;
-  }
+  // 只認名單上的 key（shippingMethodLabel 不會把 toString 這類內建屬性當成配送方式）
+  if (!shippingMethodLabel(fields.shippingMethod)) return SHIPPING_REQUIRED_ERROR;
   // 超商取貨必須填門市、宅配必須填地址（這兩條的規則與句子收在 shippingDetailError）
   return shippingDetailError(
     fields.shippingMethod,
