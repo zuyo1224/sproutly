@@ -159,7 +159,9 @@ export default async function NewStorePage({
                   required
                   aria-required="true"
                   aria-describedby="store-slug-help"
-                  pattern="[a-z0-9\-]+"
+                  autoCapitalize="none"
+                  autoCorrect="off"
+                  spellCheck={false}
                   minLength={STORE_SLUG_MIN_LENGTH}
                   maxLength={STORE_SLUG_MAX_LENGTH}
                   placeholder="plantaemarket"

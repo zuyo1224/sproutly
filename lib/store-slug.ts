@@ -18,10 +18,19 @@ export const RESERVED_STORE_SLUGS: ReadonlySet<string> = new Set([
 export const STORE_SLUG_MIN_LENGTH = 3;
 export const STORE_SLUG_MAX_LENGTH = 32;
 
-/** 表單原始值 → 去頭尾空白、轉小寫 */
+/**
+ * 表單原始值 → 全形英數轉半形、去頭尾空白、中段空白換成連字號、轉小寫。
+ *
+ * 中文輸入法很容易打出全形（ｐｌａｎｔ－ｓｈｏｐ），手機鍵盤又會自動把第一個字母
+ * 變大寫；以前這兩種都會被擋下來要商家重打。全形轉半形跟 lib/email-normalize 同一套；
+ * 「taihe studio」這種中間有空白的，商家要的幾乎都是 taihe-studio，直接換成連字號。
+ * 整理完仍不合規則的（中文、底線、點…）交給 storeSlugError 擋。
+ */
 export function normalizeStoreSlug(raw: unknown): string {
   return String(raw ?? "")
+    .replace(/[！-～]/g, (c) => String.fromCharCode(c.charCodeAt(0) - 0xfee0))
     .trim()
+    .replace(/\s+/g, "-")
     .toLowerCase();
 }
 

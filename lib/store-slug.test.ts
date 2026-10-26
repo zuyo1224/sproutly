@@ -19,6 +19,14 @@ describe("normalizeStoreSlug", () => {
     assert.equal(normalizeStoreSlug("  My-Shop \n"), "my-shop");
   });
 
+  it("全形英數與全形連字號轉半形、中段空白換成連字號", () => {
+    assert.equal(normalizeStoreSlug("ＰｌａｎｔＳｈｏｐ－２"), "plantshop-2");
+    assert.equal(normalizeStoreSlug("taihe studio"), "taihe-studio");
+    assert.equal(normalizeStoreSlug("taihe\u3000 studio"), "taihe-studio");
+    // 整理後仍不合規則的照樣交給 storeSlugError 擋
+    assert.notEqual(storeSlugError(normalizeStoreSlug("盆栽 店")), null);
+  });
+
   it("null／undefined 當空字串", () => {
     assert.equal(normalizeStoreSlug(null), "");
     assert.equal(normalizeStoreSlug(undefined), "");
