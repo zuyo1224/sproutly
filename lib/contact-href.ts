@@ -31,8 +31,16 @@ function splitPhone(phone: string): { main: string; ext: string } {
   const extRaw = extMatch ? normalized.slice(extMatch.index! + extMatch[0].length) : "";
 
   // 原文開頭是國碼（+ 或全形＋）就在乾淨主號補回開頭的 +
-  const hasPlus = /^[\s　]*[+＋]/.test(mainRaw);
-  const digits = mainRaw.replace(/\D/g, "");
+  let hasPlus = /^[\s　]*[+＋]/.test(mainRaw);
+  let digits = mainRaw.replace(/\D/g, "");
+  // 「00886…」是從國外撥回台灣的國際冠碼寫法，跟 +886 同一支，收成 + 開頭。
+  if (!hasPlus && digits.startsWith("00886")) {
+    hasPlus = true;
+    digits = digits.slice(2);
+  }
+  // 「+886 (0)2-1234-5678」「+886-0912…」國碼後面又留著本地開頭 0，原樣串起來是
+  // +88602…／+8860912…，國碼後面多一個 0 很多撥號器撥不通。國碼後面不會接 0，去掉它。
+  if (hasPlus && digits.startsWith("8860")) digits = "886" + digits.slice(4);
 
   return {
     main: digits ? `${hasPlus ? "+" : ""}${digits}` : "",

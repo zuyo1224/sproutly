@@ -18,7 +18,16 @@ export function phoneDigits(phone: string | null | undefined): string {
     String.fromCharCode(c.charCodeAt(0) - 0xfee0)
   );
   let digits = half.replace(/\D/g, "");
-  if (digits.startsWith("886")) digits = "0" + digits.slice(3);
+  // 從國外撥回台灣的寫法「00886…」：開頭的 00 是國際冠碼，去掉後跟 +886 同一種。
+  // 台灣本地號碼不會 00 開頭（00 本身就是國際冠碼），不會誤傷正常號碼。
+  if (digits.startsWith("00886")) digits = digits.slice(2);
+  if (digits.startsWith("886")) {
+    digits = digits.slice(3);
+    // 「+886 (0)912-345-678」「+886-0912…」這種國碼後面又留著本地開頭 0 的寫法很常見，
+    // 以前一律再補一個 0，變成「00912…」跟客人另一次打的「0912…」對不上，查訂單頁
+    // 拿正確的編號＋電話也查無訂單。國碼後面不會接 0，有就是那個本地 0，別重補。
+    if (!digits.startsWith("0")) digits = "0" + digits;
+  }
   return digits;
 }
 

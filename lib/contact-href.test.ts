@@ -40,6 +40,12 @@ describe("telHref（撥號連結：只留可撥字元，分機用 ;ext= 另掛�
     assert.equal(telHref("02+1234"), "tel:021234");
   });
 
+  it("+886 後面又留著本地 0 就去掉那個 0；00886 國際冠碼收成 + 開頭", () => {
+    assert.equal(telHref("+886 (0)2-1234-5678"), "tel:+886212345678");
+    assert.equal(telHref("+886-0912-345-678 #5"), "tel:+886912345678;ext=5");
+    assert.equal(telDigits("00886 912 345 678"), "+886912345678");
+  });
+
   it("分機標記（# ＃ 分機 轉 ext ext.）後面的數字用 ;ext= 掛，不黏進主號", () => {
     assert.equal(telHref("02-1234-5678 #123"), "tel:0212345678;ext=123");
     assert.equal(telHref("02-1234-5678＃123"), "tel:0212345678;ext=123");

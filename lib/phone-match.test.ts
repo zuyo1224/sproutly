@@ -32,6 +32,14 @@ describe("phoneDigits", () => {
     assert.equal(phoneDigits("886912345678"), "0912345678");
   });
 
+  it("+886 後面又留著本地 0、或 00886 國際冠碼寫法：一樣還原成 0 開頭", () => {
+    assert.equal(phoneDigits("+886 (0)912-345-678"), "0912345678");
+    assert.equal(phoneDigits("+886-0912345678"), "0912345678");
+    assert.equal(phoneDigits("00886912345678"), "0912345678");
+    assert.equal(phoneDigits("00886 (0)2 2345 6789"), "0223456789");
+    assert.equal(samePhone("+886 (0)912-345-678", "0912-345-678"), true);
+  });
+
   it("886 只在最前面才當國碼，號碼中段的 886 不動", () => {
     assert.equal(phoneDigits("0988612345"), "0988612345");
   });
