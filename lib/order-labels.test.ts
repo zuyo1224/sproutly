@@ -352,10 +352,15 @@ describe("encodeShippingIntoNote／decodeShippingFromNote", () => {
     assert.equal(encodeShippingIntoNote("drone", "某門市", "備註"), "備註");
   });
 
-  it("encode 不看方式要不要門市：有傳門市就寫（結帳畫面在非超商時已拿掉門市欄，後端不會收到）", () => {
+  it("不需要門市的配送方式（宅配、自取）就算帶了門市也不寫：後端不信前端有沒有拿掉那格", () => {
     assert.equal(
       encodeShippingIntoNote("home_delivery", "硬塞的門市", "備註"),
-      "[配送方式] 宅配到府\n[取貨門市] 硬塞的門市\n\n備註"
+      "[配送方式] 宅配到府\n\n備註"
+    );
+    assert.equal(encodeShippingIntoNote("pickup", "硬塞的門市", null), "[配送方式] 店面自取");
+    assert.equal(
+      decodeShippingFromNote(encodeShippingIntoNote("home_delivery", "硬塞的門市", null)).storeName,
+      null
     );
   });
 

@@ -294,7 +294,11 @@ export function encodeShippingIntoNote(
   const parts: string[] = [];
   if (shippingMethod && SHIPPING_LABELS[shippingMethod]) {
     parts.push(`[配送方式] ${SHIPPING_LABELS[shippingMethod]}`);
-    if (storeName) {
+    // 門市只寫進超商取貨的單。結帳畫面切到宅配／自取時門市欄會卸載、不進表單，但那是
+    // 前端的事；server action 與購物車送單 route 都能被人直接打，帶著門市名稱送一張
+    // 宅配單進來，以前照寫「[取貨門市] …」，商家後台訂單頁、匯出 CSV、客人查訂單頁
+    // 都會在宅配單上多一行取貨門市，商家看了不知道該寄到府上還是寄門市。
+    if (storeName && shippingNeedsStore(shippingMethod)) {
       parts.push(`[取貨門市] ${storeName}`);
     }
   }
