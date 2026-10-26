@@ -24,6 +24,11 @@ export const STORE_SLUG_MAX_LENGTH = 32;
  * 中文輸入法很容易打出全形（ｐｌａｎｔ－ｓｈｏｐ），手機鍵盤又會自動把第一個字母
  * 變大寫；以前這兩種都會被擋下來要商家重打。全形轉半形跟 lib/email-normalize 同一套；
  * 「taihe studio」這種中間有空白的，商家要的幾乎都是 taihe-studio，直接換成連字號。
+ *
+ * 連在一起的連字號併成一個、頭尾的連字號拿掉：「taihe - studio」以前會變成
+ * taihe---studio、「-plant-shop-」原樣收下，網址照樣能開，但那串就是店面以後
+ * 每天要給客人的網址，商家要的明明是 taihe-studio，開完店才發現已經改不回來。
+ *
  * 整理完仍不合規則的（中文、底線、點…）交給 storeSlugError 擋。
  */
 export function normalizeStoreSlug(raw: unknown): string {
@@ -31,6 +36,8 @@ export function normalizeStoreSlug(raw: unknown): string {
     .replace(/[！-～]/g, (c) => String.fromCharCode(c.charCodeAt(0) - 0xfee0))
     .trim()
     .replace(/\s+/g, "-")
+    .replace(/-{2,}/g, "-")
+    .replace(/^-+|-+$/g, "")
     .toLowerCase();
 }
 

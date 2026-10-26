@@ -27,6 +27,15 @@ describe("normalizeStoreSlug", () => {
     assert.notEqual(storeSlugError(normalizeStoreSlug("盆栽 店")), null);
   });
 
+  it("連續連字號併成一個、頭尾連字號拿掉", () => {
+    assert.equal(normalizeStoreSlug("taihe - studio"), "taihe-studio");
+    assert.equal(normalizeStoreSlug("taihe--studio"), "taihe-studio");
+    assert.equal(normalizeStoreSlug("-plant-shop-"), "plant-shop");
+    assert.equal(normalizeStoreSlug(" － ｔａｉｈｅ － "), "taihe");
+    // 只剩連字號的整理完是空字串，交給 storeSlugError 回「請填店面網址」
+    assert.equal(normalizeStoreSlug("---"), "");
+  });
+
   it("null／undefined 當空字串", () => {
     assert.equal(normalizeStoreSlug(null), "");
     assert.equal(normalizeStoreSlug(undefined), "");
