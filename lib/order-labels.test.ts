@@ -490,8 +490,9 @@ describe("customerMessage", () => {
     ]);
   });
 
-  it("名字空白用「你好」開頭；trim 掉前後空白", () => {
-    assert.ok(customerMessage({ ...base, customerName: "   " }).startsWith("你好 你好，"));
+  it("名字空白只說一次「你好」、不會變成「你好 你好」；trim 掉前後空白", () => {
+    assert.ok(customerMessage({ ...base, customerName: "   " }).startsWith("你好，我是「"));
+    assert.ok(!customerMessage({ ...base, customerName: "" }).includes("你好 你好"));
     assert.ok(customerMessage({ ...base, customerName: " 阿花 " }).startsWith("阿花 你好，"));
   });
 

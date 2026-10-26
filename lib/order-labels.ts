@@ -375,29 +375,32 @@ export function customerMessage(input: {
     trackUrl,
   } = input;
 
-  const name = customerName?.trim() || "你好";
+  // 沒名字時只說一次「你好」：以前退路是把名字當「你好」，接上後面的「 你好，」
+  // 變成「你好 你好，我是…」，商家照貼給客人就是連打兩次招呼。
+  const trimmedName = customerName?.trim();
+  const hello = trimmedName ? `${trimmedName} 你好` : "你好";
   const lines: string[] = [];
 
   // 開場依狀態給對的話（沿用各查訂單頁的說法，只是改成第二人稱、加上店名招呼）
   switch (status) {
     case "pending":
       lines.push(
-        `${name} 你好，我是「${storeName}」，收到你的訂單了（編號 #${shortId}），我們確認後會再通知你，謝謝你的訂購！`
+        `${hello}，我是「${storeName}」，收到你的訂單了（編號 #${shortId}），我們確認後會再通知你，謝謝你的訂購！`
       );
       break;
     case "confirmed":
       lines.push(
-        `${name} 你好，我是「${storeName}」，你的訂單 #${shortId} 已經確認，正在幫你備貨，謝謝你的等待！`
+        `${hello}，我是「${storeName}」，你的訂單 #${shortId} 已經確認，正在幫你備貨，謝謝你的等待！`
       );
       break;
     case "shipped":
       lines.push(
-        `${name} 你好，我是「${storeName}」，你的訂單 #${shortId} ${shippedMessage(shippingLabel, pickupStore)}。`
+        `${hello}，我是「${storeName}」，你的訂單 #${shortId} ${shippedMessage(shippingLabel, pickupStore)}。`
       );
       break;
     case "completed":
       lines.push(
-        `${name} 你好，我是「${storeName}」，你的訂單 #${shortId} 已經完成，謝謝你的支持，有需要再來找我們！`
+        `${hello}，我是「${storeName}」，你的訂單 #${shortId} 已經完成，謝謝你的支持，有需要再來找我們！`
       );
       break;
     case "cancelled":
@@ -407,13 +410,13 @@ export function customerMessage(input: {
       // 客人第一個想問的還是錢。已退款的取消單在開場句就講明錢退了，口徑同
       // 未取消退款單那句「款項已退還給你」。
       lines.push(
-        `${name} 你好，我是「${storeName}」，你的訂單 #${shortId} 已取消，${
+        `${hello}，我是「${storeName}」，你的訂單 #${shortId} 已取消，${
           paymentStatus === "refunded" ? "款項已退還給你，" : ""
         }若有疑問歡迎直接回覆我們。`
       );
       break;
     default:
-      lines.push(`${name} 你好，我是「${storeName}」，關於你的訂單 #${shortId}：`);
+      lines.push(`${hello}，我是「${storeName}」，關於你的訂單 #${shortId}：`);
   }
 
   // 已取消就不再列品項與付款提醒，免得讓客人以為還要處理
