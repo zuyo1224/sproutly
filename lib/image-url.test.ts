@@ -230,6 +230,18 @@ describe("imageMimeTypeFromUrl（webmanifest icons[].type：從副檔名推，�
     assert.strictEqual(imageMimeTypeFromUrl("https://x.supabase.co/v1.2/object/logo"), null);
   });
 
+  it("副檔名剛好是物件內建屬性名（.constructor、.__proto__、.toString）回 null，不會拿回函式或原型物件", () => {
+    for (const v of [
+      "https://a.example/logo.constructor",
+      "https://a.example/logo.CONSTRUCTOR",
+      "https://a.example/logo.__proto__",
+      "https://a.example/logo.toString",
+      "https://a.example/logo.valueof",
+    ]) {
+      assert.strictEqual(imageMimeTypeFromUrl(v), null, `input=${v}`);
+    }
+  });
+
   it("沒副檔名、只有點、點在結尾、不認得的副檔名、非網址、空白、null、undefined 都回 null（不是 undefined）", () => {
     for (const v of [
       "https://a.example/logo",

@@ -188,5 +188,9 @@ export function imageMimeTypeFromUrl(src: string | null | undefined): string | n
   const dot = lastSegment.lastIndexOf(".");
   if (dot <= 0 || dot === lastSegment.length - 1) return null;
   const ext = lastSegment.slice(dot + 1).toLowerCase();
-  return IMAGE_MIME_BY_EXT[ext] ?? null;
+  // IMAGE_MIME_BY_EXT 是一般物件，直接查會連 Object.prototype 上的內建屬性一起查到：
+  // logo 網址結尾是 .constructor 會拿回 Object 函式、.__proto__ 拿回整個原型物件，
+  // 不是 null 就被當成 MIME，<link rel="icon"> 的 type 與 manifest 的 icons[].type 都壞掉。
+  // 只認自己的 key（同 shippingMethodLabel）。
+  return Object.hasOwn(IMAGE_MIME_BY_EXT, ext) ? IMAGE_MIME_BY_EXT[ext] : null;
 }
