@@ -86,11 +86,19 @@ describe("電話", () => {
     assert.equal(checkoutFieldsError(fields({ customerPhone: null })), PHONE);
   });
 
-  // 目前只檢查有沒有填，不驗格式：市話、分機、境外號碼寫法太多，擋錯的代價（客人下不了單）
-  // 比收到一個怪號碼大。要改成驗格式的話，兩條路徑會一起改到。
-  it("不驗格式，隨便填什麼都收", () => {
-    assert.equal(checkoutFieldsError(fields({ customerPhone: "哈囉" })), null);
+  // 不驗格式：市話、分機、境外號碼寫法太多，擋錯的代價（客人下不了單）比收到一個怪號碼大。
+  // 要改成驗格式的話，兩條路徑會一起改到。
+  it("不驗格式，有數字的寫法都收（含全形）", () => {
     assert.equal(checkoutFieldsError(fields({ customerPhone: "02-1234 #56" })), null);
+    assert.equal(checkoutFieldsError(fields({ customerPhone: "+886 (0)912-345-678" })), null);
+    assert.equal(checkoutFieldsError(fields({ customerPhone: "０９１２３４５６７８" })), null);
+  });
+
+  // 一個數字都沒有的，查訂單頁比對電話永遠對不上（lib/phone-match），店家也打不出去。
+  it("連一個數字都沒有就擋", () => {
+    const NO_DIGITS = "電話裡沒有號碼，請填一支聯絡得到你的電話";
+    assert.equal(checkoutFieldsError(fields({ customerPhone: "哈囉" })), NO_DIGITS);
+    assert.equal(checkoutFieldsError(fields({ customerPhone: "-" })), NO_DIGITS);
   });
 });
 

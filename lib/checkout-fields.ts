@@ -14,6 +14,7 @@
 // 這支刻意只做「純看欄位就知道對不對」的檢查：不碰資料庫、不看登入狀態、不管商品
 // 在不在、庫存夠不夠——那些各條路徑不一樣，留在各自的檔案裡。
 import { isSelectablePaymentMethod, SHIPPING_LABELS, shippingDetailError } from "./order-labels.ts";
+import { phoneDigits } from "./phone-match.ts";
 
 export type CheckoutFields = {
   customerName: string | null | undefined;
@@ -28,6 +29,7 @@ export type CheckoutFields = {
 // 字對齊。原本單品那條寫「請填聯絡電話」，指的是同一格，改成跟購物車一致。
 export const NAME_REQUIRED_ERROR = "請填收件人姓名";
 export const PHONE_REQUIRED_ERROR = "請填電話";
+export const PHONE_NO_DIGITS_ERROR = "電話裡沒有號碼，請填一支聯絡得到你的電話";
 export const PAYMENT_REQUIRED_ERROR = "請選擇付款方式";
 export const SHIPPING_REQUIRED_ERROR = "請選擇配送方式";
 
@@ -40,6 +42,10 @@ export const SHIPPING_REQUIRED_ERROR = "請選擇配送方式";
 export function checkoutFieldsError(fields: CheckoutFields): string | null {
   if (!fields.customerName) return NAME_REQUIRED_ERROR;
   if (!fields.customerPhone) return PHONE_REQUIRED_ERROR;
+  // 不驗格式（市話、分機、境外號碼寫法太多），只擋「連一個數字都沒有」：查訂單頁用
+  // lib/phone-match 比對電話，清完沒數字的一律算對不上，這種單客人事後永遠查不到，
+  // 店家也打不出去。全形數字照算（phoneDigits 會先轉半形）。
+  if (!phoneDigits(fields.customerPhone)) return PHONE_NO_DIGITS_ERROR;
   // 合法性看 isSelectablePaymentMethod（名單上且未停用），不吃顯示用的 PAYMENT_LABELS——
   // 那份含停用中的信用卡，拿來當白名單會把「即將推出」的金流放行（緣由見 order-labels）。
   if (!isSelectablePaymentMethod(fields.paymentMethod)) return PAYMENT_REQUIRED_ERROR;
