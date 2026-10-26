@@ -203,7 +203,9 @@ function normalize(raw: string): string {
     .replace(/[０-９]/g, (c) => String.fromCharCode(c.charCodeAt(0) - 0xfee0))
     .replace(/：/g, ":")
     .replace(/(?<!\d)(\d{1,2})[.．](\d{2})(?!\d)/g, "$1:$2")
-    .replace(/[–—～〜~至到]/g, "-");
+    // 全形「－」（中文輸入法全形模式打的連字號）、數學減號「−」、小連字號「‐‑‒﹣」
+    // 跟 – — 一樣當連接號；以前漏了，「11:00－19:00」整段抓不到時間回 null。
+    .replace(/[–—～〜~至到－−‐‑‒﹣]/g, "-");
   return convertCnClockTimes(convertAmPm(pre))
     .replace(/\s+/g, " ")
     .trim();

@@ -72,6 +72,13 @@ describe("parseBusinessHoursToSpec：基本格式與正規化", () => {
     assert.deepEqual(parseBusinessHoursToSpec("星期一至星期五 10:00〜18:00"), expected);
   });
 
+  it("全形連字號「－」、減號「−」、小連字號「‐／﹣」也當連接號", () => {
+    const expected = [spec(WEEKDAYS, "10:00", "18:00")];
+    assert.deepEqual(parseBusinessHoursToSpec("週一－週五 １０：００－１８：００"), expected);
+    assert.deepEqual(parseBusinessHoursToSpec("週一至週五 10:00−18:00"), expected);
+    assert.deepEqual(parseBusinessHoursToSpec("週一‐週五 10:00﹣18:00"), expected);
+  });
+
   it("個位數小時補零（9:00 → 09:00）", () => {
     assert.deepEqual(parseBusinessHoursToSpec("每日 9:00-5:30"), [spec(ALL, "09:00", "05:30")]);
   });
