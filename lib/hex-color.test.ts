@@ -34,15 +34,32 @@ describe("normalizeHexColor", () => {
     assert.equal(normalizeHexColor("#1f6f 3f"), null);
   });
 
-  it("三碼、八碼、七碼、五碼都不收", () => {
-    assert.equal(normalizeHexColor("#abc"), null);
+  it("八碼、七碼、五碼、四碼都不收", () => {
+    assert.equal(normalizeHexColor("#abcd"), null);
     assert.equal(normalizeHexColor("#1f6f3f80"), null);
     assert.equal(normalizeHexColor("#1f6f3f0"), null);
     assert.equal(normalizeHexColor("#1f6f3"), null);
   });
 
-  it("沒帶 # 不收，就算六碼也一樣", () => {
-    assert.equal(normalizeHexColor("1f6f3f"), null);
+  it("沒帶 # 的六碼補上 #（設計軟體常只給 F5F5F5）", () => {
+    assert.equal(normalizeHexColor("1f6f3f"), "#1f6f3f");
+    assert.equal(normalizeHexColor(" F5F5F5 "), "#F5F5F5");
+  });
+
+  it("三碼簡寫展開成六碼，大小寫照原樣，帶不帶 # 都收", () => {
+    assert.equal(normalizeHexColor("#abc"), "#aabbcc");
+    assert.equal(normalizeHexColor("#FFF"), "#FFFFFF");
+    assert.equal(normalizeHexColor("f80"), "#ff8800");
+  });
+
+  it("中文輸入法打出的全形色碼轉半形", () => {
+    assert.equal(normalizeHexColor("＃ＦＦ８８００"), "#FF8800");
+    assert.equal(normalizeHexColor("ｆ５ｆ５ｆ５"), "#f5f5f5");
+  });
+
+  it("兩個 # 或 # 夾在中間不收", () => {
+    assert.equal(normalizeHexColor("##1f6f3f"), null);
+    assert.equal(normalizeHexColor("1f6#f3f"), null);
   });
 
   it("非十六進位字元不收", () => {

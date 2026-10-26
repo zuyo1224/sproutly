@@ -72,6 +72,7 @@ import { isInlineHomepageTextField } from "@/lib/inline-homepage-text-fields";
 // 內文／標題大小兩格、標題／卡片品名用色兩格，再收四格。
 import { applySectionStylePatch, SECTION_BG_STRENGTH_OPTIONS, SECTION_BODY_TRACKING_EM, SECTION_BORDER_RADIUS_PX, SECTION_GAP_OPTIONS, SECTION_HEADING_SCALE, SECTION_LEADING_OPTIONS, SECTION_LINE_STYLE_OPTIONS, SECTION_LINE_TONE_OPTIONS, SECTION_LINE_WEIGHT_OPTIONS, SECTION_MIN_HEIGHT_VH, SECTION_SCALE_OPTIONS, SECTION_TEXT_SCALE_OPTIONS, SECTION_TEXT_TONE_OPTIONS, SECTION_TRACKING_OPTIONS, SECTION_WEIGHT_OPTIONS, type SectionStylePatch } from "@/lib/section-style-schema";
 import { contrastRatio, relativeLuminance } from "@/lib/color-contrast";
+import { normalizeHexColor } from "@/lib/hex-color";
 // 版面「只認清單內的值」的 44 格＋排成幾欄 6 格，型別直接從 lib/theme-layout-choices 那張表導出，
 // 跟存檔端（actions.ts）與讀回端（_theme.ts resolveLayout）吃同一份；表多一個值，這裡不用再抄一次
 import { HERO_GAP_OPTIONS, HERO_PAD_X_OPTIONS, HERO_PAD_Y_OPTIONS, HERO_SPLIT_PAD_OPTIONS, type LayoutChoice, type LayoutColumns } from "@/lib/theme-layout-choices";
@@ -5499,7 +5500,7 @@ export function EditorWorkspace({
                 <div className="flex items-center gap-2">
                   <input
                     type="color"
-                    value={bg ?? "#F7F4ED"}
+                    value={normalizeHexColor(bg) ?? "#F7F4ED"}
                     onChange={(e) => patch({ bgColor: e.target.value })}
                     className={colorPickerClass}
                     aria-label="背景色取色器"
@@ -5542,7 +5543,7 @@ export function EditorWorkspace({
                 <div className="flex items-center gap-2">
                   <input
                     type="color"
-                    value={textCol ?? "#1A1A1A"}
+                    value={normalizeHexColor(textCol) ?? "#1A1A1A"}
                     onChange={(e) => patch({ textColor: e.target.value })}
                     className={colorPickerClass}
                     aria-label="文字顏色取色器"
@@ -6282,7 +6283,7 @@ export function EditorWorkspace({
                   <div className="mt-2 flex items-center gap-2">
                     <input
                       type="color"
-                      value={mediaFrameColor ?? "#FFFFFF"}
+                      value={normalizeHexColor(mediaFrameColor) ?? "#FFFFFF"}
                       onChange={(e) => patch({ mediaFrameColor: e.target.value, mediaFrameBg: null })}
                       className={colorPickerClass}
                       aria-label="框底色自訂色"
@@ -7213,7 +7214,7 @@ export function EditorWorkspace({
               <div className="flex gap-2">
                 <input
                   type="color"
-                  value={theme.primary}
+                  value={normalizeHexColor(theme.primary) ?? "#000000"}
                   onChange={(e) => update("primary", e.target.value)}
                   className="w-10 h-10 rounded border border-stone-200"
                   aria-label="主色取色器"
@@ -7231,7 +7232,7 @@ export function EditorWorkspace({
               <div className="flex gap-2">
                 <input
                   type="color"
-                  value={theme.accent}
+                  value={normalizeHexColor(theme.accent) ?? "#000000"}
                   onChange={(e) => update("accent", e.target.value)}
                   className="w-10 h-10 rounded border border-stone-200"
                   aria-label="強調色取色器"
@@ -7772,7 +7773,7 @@ function LayoutColorRow({
     <div className="flex items-center gap-2">
       <input
         type="color"
-        value={value ?? fallback}
+        value={normalizeHexColor(value) ?? fallback}
         onChange={(e) => onChange(e.target.value)}
         className={colorPickerClass}
         aria-label="取色器"

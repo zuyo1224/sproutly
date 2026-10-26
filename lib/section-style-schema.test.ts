@@ -210,7 +210,7 @@ describe("sanitizeSectionStyle", () => {
 
   it("顏色欄位：不合法的字串當沒設定丟掉，不會變成 null", () => {
     assert.equal(sanitizeSectionStyle({ bgColor: "red" }), null);
-    assert.equal(sanitizeSectionStyle({ textColor: "#abc" }), null);
+    assert.equal(sanitizeSectionStyle({ textColor: "#abcd" }), null);
     const out = sanitizeSectionStyle({ bgColor: "rgb(0,0,0)", mediaFrameColor: "#123456" });
     assert.deepEqual(out, { mediaFrameColor: "#123456" });
   });

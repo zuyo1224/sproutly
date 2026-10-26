@@ -56,9 +56,9 @@ describe("relativeLuminance（WCAG 相對亮度，0 黑～1 白）", () => {
   });
 
   it("認不得的色碼一律回 null，不猜一個數字", () => {
-    assert.equal(relativeLuminance("#abc"), null); // 三碼還不支援
+    assert.equal(relativeLuminance("#abcd"), null); // 四碼不是色碼
     assert.equal(relativeLuminance("#ffffff80"), null); // 八碼含透明度還不支援
-    assert.equal(relativeLuminance("ffffff"), null); // 沒帶 #
+    assert.equal(relativeLuminance("fffff"), null); // 五碼
     assert.equal(relativeLuminance("#gggggg"), null);
     assert.equal(relativeLuminance(""), null);
     assert.equal(relativeLuminance(null), null);
@@ -89,8 +89,8 @@ describe("contrastRatio（對比值 1～21）", () => {
   });
 
   it("任一邊色碼認不得就回 null，不拿另一邊硬算", () => {
-    assert.equal(contrastRatio("#abc", "#ffffff"), null);
-    assert.equal(contrastRatio("#ffffff", "#abc"), null);
+    assert.equal(contrastRatio("#abcd", "#ffffff"), null);
+    assert.equal(contrastRatio("#ffffff", "#abcd"), null);
     assert.equal(contrastRatio(null, "#ffffff"), null);
     assert.equal(contrastRatio("#ffffff", undefined), null);
     assert.equal(contrastRatio("", ""), null);
