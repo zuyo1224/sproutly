@@ -20,9 +20,14 @@
 // telephone）共用這份清理，兩邊不會各清一套導致顯示／撥號／給 Google 的號碼對不上。
 function splitPhone(phone: string): { main: string; ext: string } {
   // 全形數字 ０-９（U+FF10–U+FF19）轉成半形 0-9
-  const normalized = phone.replace(/[０-９]/g, (c) =>
+  const converted = phone.replace(/[０-９]/g, (c) =>
     String.fromCharCode(c.charCodeAt(0) - 0xfee0)
   );
+
+  // 商家常一格填兩支：「02-1234-5678 / 0912-345-678」「市話 02-…、手機 09…」「02-… 或 09…」。
+  // 不先切開的話兩支數字全黏成一串，撥出去是根本不存在的號碼（跟分機黏進主號同一種病）。
+  // 只取第一支：分隔號（/ ／ 、 , ， ; ； |）、「或」、換行之前那段。
+  const normalized = converted.split(/[\/／、,，;；|｜\n]|或/)[0];
 
   // 第一個分機標記之前算主號、之後算分機。# ＃ 分機 轉 ext/extension 都常見，
   // 大小寫不分；只切第一個標記，避免把後面備註裡的字也誤當分機。
