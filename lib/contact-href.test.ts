@@ -178,6 +178,14 @@ describe("socialUrl（頁尾社群連結與 sameAs：只在確定指到對方社
     assert.equal(socialUrl("  instagram.com/foo  "), "https://instagram.com/foo");
   });
 
+  it("輸入法打出的全形冒號、斜線、英數照樣認得，轉成半形網址", () => {
+    assert.equal(socialUrl("https：//www.instagram.com/foo"), "https://www.instagram.com/foo");
+    assert.equal(socialUrl("ｉｎｓｔａｇｒａｍ．ｃｏｍ／ｆｏｏ"), "https://instagram.com/foo");
+    assert.equal(socialUrl("　https：／／line.me/R/ti/p/＠abc　"), "https://line.me/R/ti/p/@abc");
+    assert.equal(socialUrl("https://www.facebook.com/植栽市集"), "https://www.facebook.com/植栽市集");
+    assert.equal(socialUrl("＠myshop"), null);
+  });
+
   it("純帳號、@帳號、亂填字、電話形狀、路徑含空白、其他 scheme 都回 null", () => {
     assert.equal(socialUrl("myshop"), null);
     assert.equal(socialUrl("@myshop"), null);

@@ -116,11 +116,17 @@ export function cleanEmail(email: string | null | undefined): string {
 // 其餘（純帳號「myshop」、@帳號、只剩空白、亂填字）一樣回 null（那個社群連結就不顯示）。
 // 純帳號／@帳號要還原成網址得先知道是哪個平台（這支 helper 三個平台共用、判斷不出來），
 // 寧可少一個連結，也不要猜錯平台給客人一個點了就壞的。
+// 全形英數與符號（！-～）先轉半形再判：注音輸入法開著打網址，Shift+; 出來的是全形
+// 「：」，「https：//instagram.com/foo」以前判不過、頁尾那格安靜消失，設定頁還一直
+// 跳「存檔後不會顯示成連結」，商家看不出差在哪。轉完的字跟正常網址一模一樣，
+// 中文路徑（facebook.com/植栽市集）不在這個範圍內，不受影響。跟 cleanEmail 同一套。
 // 這跟結構化資料的 sameAs、absoluteImageUrls 是同一條防呆線；contact 頁的 sameAs
 // 也共用這份清理，兩邊不會各判一套導致頁尾顯示與餵 Google 的連結對不上。
 export function socialUrl(raw: string | null | undefined): string | null {
   if (!raw) return null;
-  const u = raw.trim();
+  const u = raw
+    .replace(/[！-～]/g, (c) => String.fromCharCode(c.charCodeAt(0) - 0xfee0))
+    .trim();
   // 絕對網址也要 scheme 後面真的有主機、整串不含空白。只剩「https://」（填到一半先存）
   // 會掛出點了開空白頁的連結；「https://instagram.com/foo 我們的IG」這種網址後面接說明字，
   // 空白之後整段被塞進 href，開到的是不存在的帳號。漏 scheme 的那條本來就擋含空白的，
