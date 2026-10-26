@@ -43,6 +43,15 @@ describe("matchesCustomerSearch", () => {
     assert.equal(matchesCustomerSearch(noEmail, "王"), false);
   });
 
+  it("搜 Email 或姓名夾數字時，不拿那幾個數字去比電話", () => {
+    // danny 電話清完是 0912345678，含 345；以前搜「amy345@gmail.com」也會撈到他
+    assert.equal(matchesCustomerSearch(danny, "amy345@gmail.com"), false);
+    assert.equal(matchesCustomerSearch(danny, "王小明345"), false);
+    // 整串像電話（數字＋分隔符號、全形也算）照樣比
+    assert.equal(matchesCustomerSearch(danny, "345-678"), true);
+    assert.equal(matchesCustomerSearch(danny, "（０９１２）３４５"), true);
+  });
+
   it("都沒中就不中", () => {
     assert.equal(matchesCustomerSearch(danny, "0987"), false);
     assert.equal(matchesCustomerSearch(danny, "王"), false);

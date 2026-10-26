@@ -6,7 +6,7 @@
 // 的正規化規則與 samePhone「空對空不算相符」寫死。
 import { describe, it } from "node:test";
 import assert from "node:assert/strict";
-import { phoneDigits, samePhone } from "./phone-match.ts";
+import { phoneDigits, phoneSearchDigits, samePhone } from "./phone-match.ts";
 
 describe("phoneDigits", () => {
   it("null／undefined／空字串回空字串", () => {
@@ -72,5 +72,26 @@ describe("samePhone", () => {
   it("一邊空一邊有也不相符", () => {
     assert.equal(samePhone("0912345678", ""), false);
     assert.equal(samePhone(null, "0912345678"), false);
+  });
+});
+
+describe("phoneSearchDigits", () => {
+  it("整串只有數字與電話分隔符號才當電話，回正規化後的數字", () => {
+    assert.equal(phoneSearchDigits("0912-345-678"), "0912345678");
+    assert.equal(phoneSearchDigits("+886 912 345 678"), "0912345678");
+    assert.equal(phoneSearchDigits("(02) 2345.6789"), "0223456789");
+    assert.equal(phoneSearchDigits("＋８８６　９１２－３４５"), "0912345");
+  });
+
+  it("夾了字母、中文、@ 就不是在搜電話，回空字串", () => {
+    assert.equal(phoneSearchDigits("amy2024@gmail.com"), "");
+    assert.equal(phoneSearchDigits("王小明2"), "");
+    assert.equal(phoneSearchDigits("0912 分機 12"), "");
+  });
+
+  it("空值回空字串", () => {
+    assert.equal(phoneSearchDigits(null), "");
+    assert.equal(phoneSearchDigits(""), "");
+    assert.equal(phoneSearchDigits("  -  "), "");
   });
 });

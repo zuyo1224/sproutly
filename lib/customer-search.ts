@@ -1,4 +1,4 @@
-import { phoneDigits } from "./phone-match.ts";
+import { phoneDigits, phoneSearchDigits } from "./phone-match.ts";
 import { normalizeSearchText } from "./search-normalize.ts";
 
 // 客人列表關鍵字比對（姓名 / Email / 電話）單一來源。
@@ -17,7 +17,9 @@ import { normalizeSearchText } from "./search-normalize.ts";
 // 電話除了原文字面比對，再補一條「兩邊都轉純數字後」的比對（lib/phone-match 的
 // phoneDigits）：客人列表顯示的電話是訂單原文，客人下單打「0912-345-678」、商家
 // 憑記憶搜「0912345678」就字面對不上，明明人在名單裡卻搜不到。轉數字後怎麼打
-// 都找得到；搜的字串清完沒半個數字（搜姓名、email）就跳過這條，不影響原本行為。
+// 都找得到；搜的字串不像電話（夾了字母、中文、@，例如搜姓名、email）就跳過這條，
+// 免得「amy2024@gmail.com」裡的 2024 把電話剛好有這幾碼的人也撈出來（判法見
+// lib/phone-match 的 phoneSearchDigits）。
 //
 // 姓名 / Email / 電話原文的子字串比對改用 lib/search-normalize 的口徑（全形英數
 // 轉半形再轉小寫、兩邊都轉）：商家用中文輸入法搜「ｄａｎｎｙ」，客人名單存的是
@@ -28,7 +30,7 @@ export function matchesCustomerSearch(
   query: string,
 ): boolean {
   const needle = normalizeSearchText(query);
-  const needleDigits = phoneDigits(query);
+  const needleDigits = phoneSearchDigits(query);
   return (
     normalizeSearchText(customer.name).includes(needle) ||
     normalizeSearchText(customer.email ?? "").includes(needle) ||

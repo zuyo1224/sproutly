@@ -40,3 +40,22 @@ export function samePhone(
   const da = phoneDigits(a);
   return da !== "" && da === phoneDigits(b);
 }
+
+// 後台「用關鍵字搜客人／訂單」時，搜尋字串拿去跟電話比的數字串；搜尋字串不像電話就回空字串。
+//
+// 以前兩支搜尋述詞（lib/customer-search、lib/order-search）直接拿 phoneDigits(搜尋字串)
+// 去比，搜尋字串只要夾了一個數字就會把電話也比進去：商家搜 Email「amy2024@gmail.com」，
+// 數字清出「2024」，電話是 0920-245-678 的不相干客人也被撈出來；搜「王小明2」會把所有
+// 電話裡有 2 的人都列出來。匯出也吃同一條，CSV 會多出一堆不是商家要找的人。
+//
+// 所以只有整串都是「電話會出現的字」——數字（含全形）、空白、+ - ( ) . 這幾個分隔
+// 符號——才當成在搜電話；夾了字母、中文、@ 就是在搜姓名或 Email，電話那條不比，
+// 姓名／Email／電話原文的子字串比對照舊。
+export function phoneSearchDigits(query: string | null | undefined): string {
+  if (!query) return "";
+  const half = query.replace(/[＋－（）．　]/g, (c) =>
+    c === "　" ? " " : String.fromCharCode(c.charCodeAt(0) - 0xfee0)
+  );
+  if (!/^[\d０-９\s+\-().]+$/.test(half)) return "";
+  return phoneDigits(half);
+}

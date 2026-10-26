@@ -1,4 +1,4 @@
-import { phoneDigits } from "./phone-match.ts";
+import { phoneDigits, phoneSearchDigits } from "./phone-match.ts";
 import { normalizeSearchText } from "./search-normalize.ts";
 
 // 後台訂單「用關鍵字搜姓名／電話／Email」單一來源。訂單列表頁與匯出 route 是同一份
@@ -70,6 +70,8 @@ export function applyOrderSearch<T extends { or(filter: string): T }>(
 // 跟 lib/customer-search 的 matchesCustomerSearch 是同一套精神，但欄位形狀不同
 // （那邊吃分群後的客人、這邊吃訂單列），不合併。
 // 子字串比對同樣改吃 lib/search-normalize 的口徑（兩邊都轉），全形半形怎麼打都中。
+// 數字那條只在搜尋字串整串像電話時才比（lib/phone-match 的 phoneSearchDigits）：
+// 搜「amy2024@gmail.com」不會把電話裡剛好有 2024 的單也撈出來。
 export function matchesOrderSearch(
   order: {
     customer_name: string | null;
@@ -79,7 +81,7 @@ export function matchesOrderSearch(
   query: string,
 ): boolean {
   const needle = normalizeSearchText(query);
-  const needleDigits = phoneDigits(query);
+  const needleDigits = phoneSearchDigits(query);
   return (
     normalizeSearchText(order.customer_name ?? "").includes(needle) ||
     normalizeSearchText(order.customer_phone ?? "").includes(needle) ||
