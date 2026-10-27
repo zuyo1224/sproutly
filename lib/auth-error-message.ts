@@ -54,6 +54,23 @@ export function isKnownAuthErrorText(text: string): boolean {
   return KNOWN_TEXTS.has(text);
 }
 
+// 商家登入／註冊流程（app/auth/actions.ts、auth/callback）自己寫的提醒句。
+// /login、/signup 的 ?error= 一樣是任何人都能改的網址參數，頁面只顯示這些＋authErrorMessage 的句子。
+export const MERCHANT_AUTH_TEXTS = {
+  missingFields: "請填寫 email 與密碼",
+  passwordTooShort: "密碼至少 6 個字",
+  signupUnavailable: "註冊服務暫時出了點狀況，請稍後再試",
+  accountAbnormal: "帳號狀態異常，請換 email 或聯絡管理員",
+  invalidLink: "確認連結無效或已過期",
+} as const;
+
+const MERCHANT_TEXTS = new Set<string>(Object.values(MERCHANT_AUTH_TEXTS));
+
+export function knownMerchantAuthError(text: string | undefined): string | undefined {
+  if (!text) return undefined;
+  return MERCHANT_TEXTS.has(text) || KNOWN_TEXTS.has(text) ? text : undefined;
+}
+
 export function authErrorMessage(error: AuthErrorLike | null | undefined): string {
   if (!error) return AUTH_ERROR_FALLBACK;
   if (error.code && BY_CODE[error.code]) return BY_CODE[error.code];

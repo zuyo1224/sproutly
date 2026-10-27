@@ -1,7 +1,7 @@
 import { createClient } from "@/lib/supabase/server";
 import { NextResponse } from "next/server";
 import { safeNextPath, withErrorParam } from "@/lib/url";
-import { authErrorMessage } from "@/lib/auth-error-message";
+import { MERCHANT_AUTH_TEXTS, authErrorMessage } from "@/lib/auth-error-message";
 import { isStoreSlugShaped } from "@/lib/store-slug";
 
 export async function GET(request: Request) {
@@ -15,7 +15,7 @@ export async function GET(request: Request) {
   const slug = isStoreSlugShaped(rawSlug) ? rawSlug : null;
 
   if (!code) {
-    return NextResponse.redirect(withErrorParam(`${origin}/login`, "確認連結無效或已過期"));
+    return NextResponse.redirect(withErrorParam(`${origin}/login`, MERCHANT_AUTH_TEXTS.invalidLink));
   }
 
   const supabase = await createClient();

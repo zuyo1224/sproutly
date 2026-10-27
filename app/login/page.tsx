@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { knownMerchantAuthError } from "@/lib/auth-error-message";
 import { signIn } from "@/app/auth/actions";
 import PasswordInput from "@/app/_components/password-input";
 
@@ -16,7 +17,10 @@ export default async function LoginPage({
 }: {
   searchParams: SearchParams;
 }) {
-  const { error } = await searchParams;
+  const { error: rawError } = await searchParams;
+  // ?error= 照網址原樣帶進來，任何人都能做一條帶任意字的登入頁連結；
+  // 只顯示登入／註冊流程真的會帶的句子，其他當沒有。
+  const error = knownMerchantAuthError(rawError);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-emerald-50 via-white to-lime-50 flex items-center justify-center px-6 py-20 sm:py-28">

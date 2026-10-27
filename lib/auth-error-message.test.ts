@@ -3,7 +3,13 @@
 // 重點是「不管 Supabase 回什麼，頁面上都不會出現英文原文」。
 import { describe, it } from "node:test";
 import assert from "node:assert/strict";
-import { AUTH_ERROR_FALLBACK, authErrorMessage, isKnownAuthErrorText } from "./auth-error-message.ts";
+import {
+  AUTH_ERROR_FALLBACK,
+  MERCHANT_AUTH_TEXTS,
+  authErrorMessage,
+  isKnownAuthErrorText,
+  knownMerchantAuthError,
+} from "./auth-error-message.ts";
 
 describe("有 code 先看 code", () => {
   it("帳密錯", () => {
@@ -80,5 +86,19 @@ describe("isKnownAuthErrorText：登入頁只顯示認得的句子", () => {
   it("網址上亂塞的字不認得", () => {
     assert.equal(isKnownAuthErrorText("請先匯款到 000-1234 才能登入"), false);
     assert.equal(isKnownAuthErrorText(""), false);
+  });
+});
+
+describe("knownMerchantAuthError：商家登入／註冊頁只顯示認得的句子", () => {
+  it("流程自己寫的句子與 authErrorMessage 的句子照原樣回", () => {
+    for (const text of Object.values(MERCHANT_AUTH_TEXTS)) {
+      assert.equal(knownMerchantAuthError(text), text);
+    }
+    assert.equal(knownMerchantAuthError(AUTH_ERROR_FALLBACK), AUTH_ERROR_FALLBACK);
+  });
+  it("網址上亂塞的字或沒帶都當沒有", () => {
+    assert.equal(knownMerchantAuthError("帳號已凍結，請加 LINE 客服解鎖"), undefined);
+    assert.equal(knownMerchantAuthError(""), undefined);
+    assert.equal(knownMerchantAuthError(undefined), undefined);
   });
 });

@@ -6,7 +6,7 @@ import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { redirect } from "next/navigation";
 import { withErrorParam } from "@/lib/url";
-import { authErrorMessage } from "@/lib/auth-error-message";
+import { MERCHANT_AUTH_TEXTS, authErrorMessage } from "@/lib/auth-error-message";
 
 export async function signUp(formData: FormData) {
   const email = normalizeEmail(formString(formData, "email"));
@@ -14,10 +14,10 @@ export async function signUp(formData: FormData) {
   const name = formString(formData, "name");
 
   if (!email || !password) {
-    redirect(withErrorParam("/signup", "請填寫 email 與密碼"));
+    redirect(withErrorParam("/signup", MERCHANT_AUTH_TEXTS.missingFields));
   }
   if (password.length < 6) {
-    redirect(withErrorParam("/signup", "密碼至少 6 個字"));
+    redirect(withErrorParam("/signup", MERCHANT_AUTH_TEXTS.passwordTooShort));
   }
 
   // 用 service_role 直接建 user 並標記 email 已驗證（跳過確認信流程）
@@ -32,7 +32,7 @@ export async function signUp(formData: FormData) {
     console.error("signUp createAdminClient failed:", e);
   }
   if (!admin) {
-    redirect(withErrorParam("/signup", "註冊服務暫時出了點狀況，請稍後再試"));
+    redirect(withErrorParam("/signup", MERCHANT_AUTH_TEXTS.signupUnavailable));
   }
   const { error: createError } = await admin.auth.admin.createUser({
     email,
@@ -65,7 +65,7 @@ export async function signUp(formData: FormData) {
         redirect(withErrorParam("/signup", authErrorMessage(updateError)));
       }
     } else {
-      redirect(withErrorParam("/signup", "帳號狀態異常，請換 email 或聯絡管理員"));
+      redirect(withErrorParam("/signup", MERCHANT_AUTH_TEXTS.accountAbnormal));
     }
   } else if (createError) {
     redirect(withErrorParam("/signup", authErrorMessage(createError)));
@@ -90,7 +90,7 @@ export async function signIn(formData: FormData) {
   const password = String(formData.get("password") ?? "");
 
   if (!email || !password) {
-    redirect(withErrorParam("/login", "請填寫 email 與密碼"));
+    redirect(withErrorParam("/login", MERCHANT_AUTH_TEXTS.missingFields));
   }
 
   const supabase = await createClient();
