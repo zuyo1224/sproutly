@@ -8,6 +8,7 @@ import { redirect } from "next/navigation";
 import { buildUrl, safeNextPath, withErrorParam } from "@/lib/url";
 import { isStoreSlugShaped } from "@/lib/store-slug";
 import { authErrorMessage } from "@/lib/auth-error-message";
+import { MAX_CUSTOMER_EMAIL_LEN, EMAIL_TOO_LONG_ERROR } from "@/lib/checkout-fields";
 
 export async function sendCustomerMagicLink(formData: FormData) {
   const email = normalizeEmail(formString(formData, "email"));
@@ -20,6 +21,12 @@ export async function sendCustomerMagicLink(formData: FormData) {
 
   if (!email) {
     redirect(withErrorParam(`/${slug}/account/login`, "請填寫 email"));
+  }
+  // 登入頁免登入，誰都能塞一串幾十萬字的 email 一直送；比 email 規格總長 254 字還長
+  // 的地址寄不到信，以前照樣整串丟給 Supabase 寄登入信，白打一次外部 API、還吃掉
+  // 寄信次數上限。跟結帳的 Email 欄位用同一份上限與句子，超過就直接退回登入頁。
+  if (email.length > MAX_CUSTOMER_EMAIL_LEN) {
+    redirect(withErrorParam(`/${slug}/account/login`, EMAIL_TOO_LONG_ERROR));
   }
 
   const h = await headers();

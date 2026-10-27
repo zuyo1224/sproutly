@@ -4,6 +4,7 @@ import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { resolveTheme } from "../../_theme";
 import { sendCustomerMagicLink } from "../actions";
+import { MAX_CUSTOMER_EMAIL_LEN } from "@/lib/checkout-fields";
 
 // 蓋掉父層 account/layout 的「會員中心」，登入頁分頁顯示「登入」。
 export const metadata: Metadata = { title: "登入" };
@@ -188,6 +189,7 @@ export default async function CustomerLoginPage({
                 type="email"
                 required
                 autoComplete="email"
+                maxLength={MAX_CUSTOMER_EMAIL_LEN}
                 placeholder="you@example.com"
                 className="sproutly-input"
               />
