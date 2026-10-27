@@ -3,6 +3,7 @@ import { requireUser } from "@/lib/require-user";
 import { siteHost } from "@/lib/store-schema";
 import { STORE_SLUG_MAX_LENGTH, STORE_SLUG_MIN_LENGTH } from "@/lib/store-slug";
 import { createStore } from "./actions";
+import { knownNewStoreError } from "@/lib/new-store-error-message";
 import { SubmitButton } from "@/app/_components/submit-button";
 import { ContactHintInput } from "@/app/_components/contact-hint-input";
 import {
@@ -20,7 +21,8 @@ export default async function NewStorePage({
 }: {
   searchParams: SearchParams;
 }) {
-  const { error } = await searchParams;
+  // 只顯示 createStore 真的會帶的句子，網址上被塞的其他字句當沒有
+  const error = knownNewStoreError((await searchParams).error);
   await requireUser();
 
   return (

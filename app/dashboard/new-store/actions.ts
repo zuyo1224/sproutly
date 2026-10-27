@@ -7,6 +7,7 @@ import { redirect } from "next/navigation";
 import { withErrorParam } from "@/lib/url";
 import { dbErrorMessage } from "@/lib/db-error-message";
 import { normalizeStoreSlug, storeSlugError } from "@/lib/store-slug";
+import { STORE_NAME_REQUIRED_ERROR, storeSlugTakenError } from "@/lib/new-store-error-message";
 
 export async function createStore(formData: FormData) {
   const { supabase, user } = await requireUser();
@@ -22,7 +23,7 @@ export async function createStore(formData: FormData) {
   const address = formStringOrNull(formData, "address");
 
   if (!name) {
-    redirect(withErrorParam("/dashboard/new-store", "請填店名"));
+    redirect(withErrorParam("/dashboard/new-store", STORE_NAME_REQUIRED_ERROR));
   }
   // 五個文字欄位的字數上限（表單 maxLength 吃同一份數字，這裡是伺服器端真正擋下）
   const tooLong = storeTextLimitError({
@@ -47,7 +48,7 @@ export async function createStore(formData: FormData) {
     .eq("slug", slug)
     .maybeSingle();
   if (existing) {
-    redirect(withErrorParam("/dashboard/new-store", `網址「${slug}」已被使用，換一個試試`));
+    redirect(withErrorParam("/dashboard/new-store", storeSlugTakenError(slug)));
   }
 
   const { error } = await supabase.from("sproutly_merchants").insert({
@@ -62,7 +63,7 @@ export async function createStore(formData: FormData) {
   });
 
   if (error) {
-    redirect(withErrorParam("/dashboard/new-store", dbErrorMessage(error, { "23505": `網址「${slug}」已被使用，換一個試試` })));
+    redirect(withErrorParam("/dashboard/new-store", dbErrorMessage(error, { "23505": storeSlugTakenError(slug) })));
   }
 
   redirect("/dashboard");

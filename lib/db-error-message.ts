@@ -28,6 +28,13 @@ const BY_MESSAGE: Array<[RegExp, string]> = [
 
 export const DB_ERROR_FALLBACK = "存檔時出了點狀況，請稍後再試";
 
+// dbErrorMessage 不帶 overrides 時可能回的每一句，頁面拿來分辨 ?error= 是不是流程自己帶的
+export const DB_ERROR_TEXTS: ReadonlySet<string> = new Set([
+  ...Object.values(BY_CODE),
+  ...BY_MESSAGE.map(([, text]) => text),
+  DB_ERROR_FALLBACK,
+]);
+
 export function dbErrorMessage(
   error: DbErrorLike | null | undefined,
   overrides?: Record<string, string>,
