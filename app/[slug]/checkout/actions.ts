@@ -7,14 +7,18 @@ import { createAdminClient } from "@/lib/supabase/admin";
 import { redirect } from "next/navigation";
 import { encodeShippingIntoNote } from "@/lib/order-labels";
 import { checkoutFieldsError } from "@/lib/checkout-fields";
-import { QTY_MIN, QTY_MAX, isValidQty } from "@/lib/product-quantity";
+import { isValidQty } from "@/lib/product-quantity";
 import { decrementStock, restoreStock } from "@/lib/stock-restore";
 import { insufficientStockError, stockConflictError } from "@/lib/product-stock";
 import { buildOrderRow, buildOrderItemRow } from "@/lib/order-rows";
 import { buildUrl, withErrorParam } from "@/lib/url";
 import { isStoreSlugShaped } from "@/lib/store-slug";
-
-const ORDER_FAILED_MESSAGE = "訂單沒有送出成功，請稍後再試一次";
+// 這裡帶回結帳頁的句子要跟 knownCheckoutError 的名單同一份，頁面只顯示名單上的句子。
+import {
+  ORDER_FAILED_MESSAGE,
+  PRODUCT_UNAVAILABLE_ERROR,
+  QTY_INVALID_ERROR,
+} from "@/lib/checkout-error-message";
 
 export async function placeOrder(slug: string, formData: FormData) {
   // slug 雖然是頁面 bind 進來的，但 server action 的參數照樣能被人直接改掉送來。
@@ -49,7 +53,7 @@ export async function placeOrder(slug: string, formData: FormData) {
 
   const quantity = Number(qtyRaw);
   if (!isValidQty(quantity)) {
-    redirect(withErrorParam(baseRedirect, `數量必須是 ${QTY_MIN}-${QTY_MAX}`));
+    redirect(withErrorParam(baseRedirect, QTY_INVALID_ERROR));
   }
   // 收件人那幾格（姓名、電話、付款、配送、門市／地址）的條件與訊息跟購物車結帳同一份，
   // 收在 lib/checkout-fields（為什麼要收成一份，見該檔說明）。
@@ -85,7 +89,7 @@ export async function placeOrder(slug: string, formData: FormData) {
     .eq("is_active", true)
     .maybeSingle();
   if (!product) {
-    redirect(withErrorParam(baseRedirect, "商品已下架"));
+    redirect(withErrorParam(baseRedirect, PRODUCT_UNAVAILABLE_ERROR));
   }
 
   if (product.stock !== null && product.stock < quantity) {

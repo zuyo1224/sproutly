@@ -10,6 +10,7 @@ import { CheckoutFormMemory } from "./form-memory";
 import { QTY_MIN, clampQty } from "@/lib/product-quantity";
 import { clampToStock } from "@/lib/product-stock";
 import { isUuid } from "@/lib/uuid";
+import { knownCheckoutError } from "@/lib/checkout-error-message";
 
 type Params = Promise<{ slug: string }>;
 type SearchParams = Promise<{
@@ -38,7 +39,8 @@ export default async function CheckoutPage({
   // 卡死在結帳頁。這裡先捨去取整（clampQty），讓表單送出的數量必然過得了後端驗證；
   // 非數字（clampQty 回 null）當 1。
   const quantity = clampQty(sp.qty ?? 1) ?? QTY_MIN;
-  const error = sp.error;
+  // ?error= 任何人都能改，只顯示下單流程真的會帶的句子（見 lib/checkout-error-message）
+  const error = knownCheckoutError(sp.error);
 
   // ?product_id= 是客人可改的查詢字串，不是 UUID 就直接 404，別拿去查 uuid 欄位
   // 白吃一次 22P02 錯誤（見 lib/uuid.ts）。
