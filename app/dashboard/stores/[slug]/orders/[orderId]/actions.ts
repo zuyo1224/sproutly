@@ -9,6 +9,7 @@ import { fetchOrderItemsForOrder } from "@/lib/fetch-order-items";
 import { orderStatusUpdates, orderPaymentUpdates } from "@/lib/order-timestamps";
 import { withErrorParam } from "@/lib/url";
 import { dbErrorMessage } from "@/lib/db-error-message";
+import { ORDER_CHANGED_ELSEWHERE_ERROR } from "@/lib/order-detail-error-message";
 
 // 收狀態更新時的合法值跟訂單列表 chip、詳情下拉、匯出白名單同一條 canonical 順序。
 const ALLOWED_STATUS = new Set(ORDER_STATUSES);
@@ -80,7 +81,7 @@ export async function updateOrderStatus(
     redirect(
       withErrorParam(
         `/dashboard/stores/${slug}/orders/${orderId}`,
-        "訂單剛被更新過（可能在別的視窗），請重新確認再操作",
+        ORDER_CHANGED_ELSEWHERE_ERROR,
       ),
     );
   }

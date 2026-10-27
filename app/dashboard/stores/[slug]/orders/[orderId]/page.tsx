@@ -21,6 +21,7 @@ import { buildUrl } from "@/lib/url";
 import { siteBaseUrl, siteHost } from "@/lib/store-schema";
 import { isUuid } from "@/lib/uuid";
 import { fetchOrderItemsForOrder } from "@/lib/fetch-order-items";
+import { knownOrderDetailError } from "@/lib/order-detail-error-message";
 
 type Params = Promise<{ slug: string; orderId: string }>;
 type SearchParams = Promise<{ error?: string; saved?: string }>;
@@ -48,7 +49,9 @@ export default async function OrderDetailPage({
   const { slug, orderId } = await params;
   // 網址上的訂單 id 不是 UUID 就直接 404，別拿去查 uuid 欄位（見 lib/uuid.ts）。
   if (!isUuid(orderId)) notFound();
-  const { error, saved } = await searchParams;
+  const { error: rawError, saved } = await searchParams;
+  // ?error= 誰都能改，只顯示 updateOrderStatus 真的會帶的句子（見 lib/order-detail-error-message）
+  const error = knownOrderDetailError(rawError);
 
   const { supabase, user } = await requireUser();
 
