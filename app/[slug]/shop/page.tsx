@@ -14,6 +14,7 @@ import {
   isSearchQueryTooLong,
   MAX_SEARCH_QUERY_LEN,
 } from "@/lib/product-search";
+import { truncateText } from "@/lib/truncate-text";
 // 商品撈整批要分頁撈齊，不然吃 Supabase 1000 列上限，見 fetch-all-rows。
 import { fetchAllRows } from "@/lib/fetch-all-rows";
 
@@ -167,6 +168,10 @@ export default async function ShopPage({
   products.sort(bySoldOutLast);
   const totalCount = products.length;
   const hasFilter = q || sort !== "newest" || inStock;
+  // 回顯給客人看的搜尋字截短：q 照網址原樣收，有人直接打超長 ?q= 網址，
+  // 「搜尋「…」」與「符合「…」」會把幾千字整串攤在頁面上把版面撐爆。
+  // 只截顯示用的字，比對、輸入框預填、「保留搜尋」連結照用完整的 q。
+  const qLabel = truncateText(q, 40);
 
   const shopEyebrow = theme.homepage.shopEyebrow ?? HOMEPAGE_DEFAULTS.shopEyebrow;
   const shopTitle = theme.homepage.shopTitle ?? HOMEPAGE_DEFAULTS.shopTitle;
@@ -268,7 +273,7 @@ export default async function ShopPage({
           style={{ color: theme.textMuted, lineHeight: 1.7 }}
         >
           {q
-            ? `搜尋「${q}」· 找到 ${totalCount} 件${inStock ? "有貨" : ""}商品`
+            ? `搜尋「${qLabel}」· 找到 ${totalCount} 件${inStock ? "有貨" : ""}商品`
             : totalCount === 0
               ? inStock
                 ? "目前沒有有貨的商品"
@@ -510,7 +515,7 @@ export default async function ShopPage({
               <>
                 沒有商品
                 <br />
-                符合「{q}」
+                符合「{qLabel}」
               </>
             ) : inStock ? (
               <>
