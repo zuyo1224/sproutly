@@ -13,6 +13,19 @@
 // 補空字串（維持原本 (description ?? "") 行為）；query 由呼叫端自行決定空字串時是否
 // 略過整個 filter，這支只負責「單一商品是否命中」。
 import { normalizeSearchText } from "./search-normalize.ts";
+import { MAX_PRODUCT_DESC_LEN } from "./product-limits.ts";
+
+// 搜尋字的長度上限，跟商品描述上限同一個數字：關鍵字要「被包含」在名稱或描述裡
+// 才算命中，比描述上限還長的字串不可能命中任何一件商品（名稱上限更短）。
+// normalizeSearchText 是一字換一字，正規化前後長度不變，直接拿原字串比就好。
+// Cmd+K 搜尋 API 是公開網址，誰都能塞一串幾十萬字的 q 一直打——每打一次就把整家店
+// 的商品分頁撈齊、逐件比對一輪，結果必定是空的。超過這個長度就直接回空，不查 DB；
+// 逛街頁與 Cmd+K 面板的輸入框也掛同一份 maxLength。
+export const MAX_SEARCH_QUERY_LEN = MAX_PRODUCT_DESC_LEN;
+
+export function isSearchQueryTooLong(query: string): boolean {
+  return query.length > MAX_SEARCH_QUERY_LEN;
+}
 
 type ProductSearchFields = { name: string; description: string | null };
 

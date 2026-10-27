@@ -6,10 +6,13 @@
 import { describe, it } from "node:test";
 import assert from "node:assert/strict";
 import {
+  isSearchQueryTooLong,
+  MAX_SEARCH_QUERY_LEN,
   matchesProductDescription,
   matchesProductName,
   matchesProductSearch,
 } from "./product-search.ts";
+import { MAX_PRODUCT_DESC_LEN, MAX_PRODUCT_NAME_LEN } from "./product-limits.ts";
 
 const pot = { name: "Monstera 龜背芋", description: "適合半日照的觀葉植物" };
 const noDesc = { name: "陶盆 5 號", description: null };
@@ -50,5 +53,21 @@ describe("matchesProductSearch", () => {
   it("兩邊都沒有就不中", () => {
     assert.equal(matchesProductSearch(pot, "多肉"), false);
     assert.equal(matchesProductSearch(noDesc, "多肉"), false);
+  });
+});
+
+describe("isSearchQueryTooLong", () => {
+  it("上限不短於商品名稱與描述上限，上限內的字照常可搜", () => {
+    assert.ok(MAX_SEARCH_QUERY_LEN >= MAX_PRODUCT_DESC_LEN);
+    assert.ok(MAX_SEARCH_QUERY_LEN >= MAX_PRODUCT_NAME_LEN);
+    assert.equal(isSearchQueryTooLong("龜背芋"), false);
+    assert.equal(isSearchQueryTooLong("a".repeat(MAX_SEARCH_QUERY_LEN)), false);
+  });
+
+  it("超過上限就判為過長；描述剛好等於整串上限時仍搜得到", () => {
+    assert.equal(isSearchQueryTooLong("a".repeat(MAX_SEARCH_QUERY_LEN + 1)), true);
+    const full = "耐".repeat(MAX_PRODUCT_DESC_LEN);
+    assert.equal(isSearchQueryTooLong(full), false);
+    assert.equal(matchesProductDescription({ name: "x", description: full }, full), true);
   });
 });

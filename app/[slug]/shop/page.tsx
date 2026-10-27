@@ -9,7 +9,7 @@ import { resolveTheme, HOMEPAGE_DEFAULTS } from "../_theme";
 import { RecentlyViewed } from "@/app/_components/recently-viewed";
 import { AutoSubmitOnChange } from "@/app/_components/auto-submit-on-change";
 import { isSoldOut, isLowStock, bySoldOutLast, stockAriaSuffix } from "@/lib/product-stock";
-import { matchesProductSearch } from "@/lib/product-search";
+import { matchesProductSearch, MAX_SEARCH_QUERY_LEN } from "@/lib/product-search";
 // 商品撈整批要分頁撈齊，不然吃 Supabase 1000 列上限，見 fetch-all-rows。
 import { fetchAllRows } from "@/lib/fetch-all-rows";
 
@@ -282,6 +282,7 @@ export default async function ShopPage({
             name="q"
             type="search"
             defaultValue={q}
+            maxLength={MAX_SEARCH_QUERY_LEN}
             // 這頁的搜尋早就連商品描述一起比對（commit 51d845b），客人可以搜
             // 「耐陰」「適合新手」這種寫在描述、名稱沒有的字。但 placeholder 還寫
             // 「商品名稱」等於把這能力藏起來——看到「名稱」的人不會想到去打特性。

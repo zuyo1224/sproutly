@@ -1,6 +1,10 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
-import { matchesProductName, matchesProductDescription } from "@/lib/product-search";
+import {
+  matchesProductName,
+  matchesProductDescription,
+  isSearchQueryTooLong,
+} from "@/lib/product-search";
 import { bySoldOutLast } from "@/lib/product-stock";
 // 商品撈整批要分頁撈齊，不然吃 Supabase 1000 列上限，見 fetch-all-rows。
 import { fetchAllRows } from "@/lib/fetch-all-rows";
@@ -14,7 +18,8 @@ export async function GET(
   const { slug } = await params;
   const url = new URL(request.url);
   const q = (url.searchParams.get("q") ?? "").trim();
-  if (!q) return NextResponse.json([]);
+  // 比商品描述上限還長的字不可能命中，直接回空，免得白撈整家店的商品。
+  if (!q || isSearchQueryTooLong(q)) return NextResponse.json([]);
 
   const supabase = await createClient();
   const { data: store } = await supabase

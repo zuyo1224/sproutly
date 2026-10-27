@@ -17,6 +17,7 @@ type Product = {
 import { formatPrice } from "@/lib/format-price";
 import { displayableImageUrls } from "@/lib/image-url";
 import { buildUrl } from "@/lib/url";
+import { MAX_SEARCH_QUERY_LEN } from "@/lib/product-search";
 
 export function SearchOverlay({ slug }: { slug: string }) {
   const router = useRouter();
@@ -271,6 +272,7 @@ export function SearchOverlay({ slug }: { slug: string }) {
                 ref={inputRef}
                 type="search"
                 value={q}
+                maxLength={MAX_SEARCH_QUERY_LEN}
                 onChange={(e) => {
                   const value = e.target.value;
                   setQ(value);
