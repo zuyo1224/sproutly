@@ -11,11 +11,13 @@ import {
   type CheckoutFields,
   MAX_CUSTOMER_NAME_LEN,
   MAX_CUSTOMER_PHONE_LEN,
+  MAX_CUSTOMER_EMAIL_LEN,
   MAX_SHIPPING_STORE_LEN,
   MAX_SHIPPING_ADDRESS_LEN,
   MAX_ORDER_NOTE_LEN,
   NAME_TOO_LONG_ERROR,
   PHONE_TOO_LONG_ERROR,
+  EMAIL_TOO_LONG_ERROR,
   STORE_TOO_LONG_ERROR,
   ADDRESS_TOO_LONG_ERROR,
   NOTE_TOO_LONG_ERROR,
@@ -276,5 +278,28 @@ describe("字數上限", () => {
 
   it("沒帶備註（舊呼叫端）照常通過", () => {
     assert.equal(checkoutFieldsError(fields()), null);
+  });
+});
+
+// Email 選填、不驗格式，只擋超長（以前完全沒上限，送單網址能塞進整串寫進訂單）。
+describe("Email 字數上限", () => {
+  it("沒填或剛好 254 字照收", () => {
+    assert.equal(checkoutFieldsError(fields({ customerEmail: null })), null);
+    const atMax = "a".repeat(MAX_CUSTOMER_EMAIL_LEN - "@x.tw".length) + "@x.tw";
+    assert.equal(atMax.length, MAX_CUSTOMER_EMAIL_LEN);
+    assert.equal(checkoutFieldsError(fields({ customerEmail: atMax })), null);
+  });
+
+  it("超過 254 字就擋，排在電話之後、付款之前", () => {
+    const tooLong = "a".repeat(MAX_CUSTOMER_EMAIL_LEN) + "@x.tw";
+    assert.equal(checkoutFieldsError(fields({ customerEmail: tooLong })), EMAIL_TOO_LONG_ERROR);
+    assert.equal(
+      checkoutFieldsError(fields({ customerPhone: "", customerEmail: tooLong })),
+      PHONE
+    );
+    assert.equal(
+      checkoutFieldsError(fields({ customerEmail: tooLong, paymentMethod: null })),
+      EMAIL_TOO_LONG_ERROR
+    );
   });
 });

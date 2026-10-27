@@ -19,6 +19,8 @@ import { phoneDigits } from "./phone-match.ts";
 export type CheckoutFields = {
   customerName: string | null | undefined;
   customerPhone: string | null | undefined;
+  // 選填；兩條結帳路徑傳的是 normalizeEmail 清洗後、實際要寫進訂單的那串，只拿來量長度。
+  customerEmail?: string | null | undefined;
   paymentMethod: string | null | undefined;
   shippingMethod: string | null | undefined;
   shippingStoreName: string | null | undefined;
@@ -33,16 +35,19 @@ export type CheckoutFields = {
 // 是 text 也不會爆。結帳是公開頁、不用登入，有人直接打送單網址塞一串幾十萬字的姓名或
 // 備註，那張單會出現在商家後台訂單頁、匯出 CSV、複製給客人的通知裡，整頁被撐爆。
 // 數字抓得比真實情況寬很多，正常客人碰不到：姓名 50 字、電話 30 字（含分機、括號、
-// 空白）、門市名稱 100 字、地址 200 字、備註 500 字。用 JS 的 .length 算，跟瀏覽器
+// 空白）、Email 254 字（email 規格本身的總長上限，再長的地址寄不到信）、門市名稱
+// 100 字、地址 200 字、備註 500 字。用 JS 的 .length 算，跟瀏覽器
 // maxLength 的算法一致，不會出現「瀏覽器放行、伺服器退回」。
 export const MAX_CUSTOMER_NAME_LEN = 50;
 export const MAX_CUSTOMER_PHONE_LEN = 30;
+export const MAX_CUSTOMER_EMAIL_LEN = 254;
 export const MAX_SHIPPING_STORE_LEN = 100;
 export const MAX_SHIPPING_ADDRESS_LEN = 200;
 export const MAX_ORDER_NOTE_LEN = 500;
 
 export const NAME_TOO_LONG_ERROR = `收件人姓名最多 ${MAX_CUSTOMER_NAME_LEN} 字`;
 export const PHONE_TOO_LONG_ERROR = `電話最多 ${MAX_CUSTOMER_PHONE_LEN} 字`;
+export const EMAIL_TOO_LONG_ERROR = `Email 最多 ${MAX_CUSTOMER_EMAIL_LEN} 字`;
 export const STORE_TOO_LONG_ERROR = `取貨門市名稱最多 ${MAX_SHIPPING_STORE_LEN} 字`;
 export const ADDRESS_TOO_LONG_ERROR = `收件地址最多 ${MAX_SHIPPING_ADDRESS_LEN} 字`;
 export const NOTE_TOO_LONG_ERROR = `備註最多 ${MAX_ORDER_NOTE_LEN} 字`;
@@ -74,6 +79,8 @@ export function checkoutFieldsError(fields: CheckoutFields): string | null {
   // lib/phone-match 比對電話，清完沒數字的一律算對不上，這種單客人事後永遠查不到，
   // 店家也打不出去。全形數字照算（phoneDigits 會先轉半形）。
   if (!phoneDigits(fields.customerPhone)) return PHONE_NO_DIGITS_ERROR;
+  // Email 選填，表單上排在電話下面；不驗格式，只擋超長
+  if (tooLong(fields.customerEmail, MAX_CUSTOMER_EMAIL_LEN)) return EMAIL_TOO_LONG_ERROR;
   // 合法性看 isSelectablePaymentMethod（名單上且未停用），不吃顯示用的 PAYMENT_LABELS——
   // 那份含停用中的信用卡，拿來當白名單會把「即將推出」的金流放行（緣由見 order-labels）。
   if (!isSelectablePaymentMethod(fields.paymentMethod)) return PAYMENT_REQUIRED_ERROR;

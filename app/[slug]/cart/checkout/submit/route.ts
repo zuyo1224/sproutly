@@ -38,6 +38,7 @@ export async function POST(
   const fieldsErr = checkoutFieldsError({
     customerName,
     customerPhone,
+    customerEmail,
     paymentMethod,
     shippingMethod,
     shippingStoreName,

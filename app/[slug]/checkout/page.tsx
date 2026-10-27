@@ -20,7 +20,7 @@ type SearchParams = Promise<{
 
 import { formatPrice } from "@/lib/format-price";
 import { displayableImageUrls } from "@/lib/image-url";
-import { MAX_CUSTOMER_NAME_LEN, MAX_CUSTOMER_PHONE_LEN, MAX_ORDER_NOTE_LEN } from "@/lib/checkout-fields";
+import { MAX_CUSTOMER_NAME_LEN, MAX_CUSTOMER_PHONE_LEN, MAX_CUSTOMER_EMAIL_LEN, MAX_ORDER_NOTE_LEN } from "@/lib/checkout-fields";
 
 export default async function CheckoutPage({
   params,
@@ -285,6 +285,7 @@ export default async function CheckoutPage({
                 id="co-email"
                 name="customer_email"
                 type="email"
+                maxLength={MAX_CUSTOMER_EMAIL_LEN}
                 autoComplete="email"
                 inputMode="email"
                 placeholder="you@example.com"

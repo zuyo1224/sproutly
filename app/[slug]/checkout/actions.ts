@@ -56,6 +56,7 @@ export async function placeOrder(slug: string, formData: FormData) {
   const fieldsErr = checkoutFieldsError({
     customerName,
     customerPhone,
+    customerEmail,
     paymentMethod,
     shippingMethod,
     shippingStoreName,
