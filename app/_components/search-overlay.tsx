@@ -18,11 +18,16 @@ import { formatPrice } from "@/lib/format-price";
 import { displayableImageUrls } from "@/lib/image-url";
 import { buildUrl } from "@/lib/url";
 import { MAX_SEARCH_QUERY_LEN } from "@/lib/product-search";
+import { truncateText } from "@/lib/truncate-text";
 
 export function SearchOverlay({ slug }: { slug: string }) {
   const router = useRouter();
   const [open, setOpen] = useState(false);
   const [q, setQ] = useState("");
+  // 橋接列回顯給客人看／念給報讀器的搜尋字截短：輸入框上限是描述上限 2000 字，
+  // 整串塞進「在商品頁搜尋「…」」會把後面的「可排序、篩庫存」擠出畫面，報讀器也得念完整串。
+  // 只截顯示用的字，連結帶過去的 ?q= 照用完整的字。
+  const qLabel = truncateText(q.trim(), 40);
   const [results, setResults] = useState<Product[]>([]);
   const [loading, setLoading] = useState(false);
   const [failed, setFailed] = useState(false);
@@ -596,7 +601,7 @@ export function SearchOverlay({ slug }: { slug: string }) {
                   id="sproutly-search-opt-bridge"
                   role="option"
                   aria-selected={selectedIdx === results.length}
-                  aria-label={`在商品頁搜尋「${q.trim()}」，可排序、篩庫存`}
+                  aria-label={`在商品頁搜尋「${qLabel}」，可排序、篩庫存`}
                   // 索引接在所有商品之後（= results.length），鍵盤往下能停在它身上、
                   // Enter 直接過去；滑鼠移上去也跟商品列一樣反白，兩種操作一致。
                   data-result-idx={results.length}
@@ -616,7 +621,7 @@ export function SearchOverlay({ slug }: { slug: string }) {
                     className="font-medium uppercase truncate"
                     style={{ fontSize: "0.6875rem", letterSpacing: "0.25em" }}
                   >
-                    在商品頁搜尋「{q.trim()}」· 可排序、篩庫存
+                    在商品頁搜尋「{qLabel}」· 可排序、篩庫存
                   </span>
                   <span
                     aria-hidden
