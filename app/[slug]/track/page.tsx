@@ -18,7 +18,8 @@ import {
   CUSTOMER_STATUS_LABELS,
 } from "@/lib/order-labels";
 import { telHref, mailHref } from "@/lib/contact-href";
-import { samePhone } from "@/lib/phone-match";
+import { phoneDigits, samePhone } from "@/lib/phone-match";
+import { isOrderIdPrefixQuery } from "@/lib/order-id-prefix";
 import { RememberOrder } from "@/app/_components/remember-order";
 import { RecentOrdersList } from "@/app/_components/recent-orders-list";
 import { PrintButton } from "@/app/_components/print-button";
@@ -97,15 +98,11 @@ export default async function TrackPage({
   }[] = [];
   let searched = false;
 
-  // 給客人看的訂單短碼是 UUID 第一段、固定 8 碼（success 頁、會員訂單、信裡都是這 8 碼）。
-  // 比對用 startsWith，所以若不設下限，帶 ?id=a&phone= 進來就會用「電話 + 1 碼」撈到
-  // 開頭剛好是 a 的最近一筆訂單，把雙因子查詢弱化成電話幾乎就能查到別人的姓名/地址/品項。
-  // 低於 8 碼一律不查，當作查無訂單處理。
-  const SHORT_ID_MIN = 8;
-
   if (shortId && phone) {
     searched = true;
-    if (shortId.length >= SHORT_ID_MIN) {
+    // 編號長度、字元不可能是 UUID 開頭的一律不查（規則與原因見 lib/order-id-prefix），
+    // 當作查無訂單處理。
+    if (isOrderIdPrefixQuery(shortId)) {
       const admin = createAdminClient();
       // 短碼比對是撈出這支電話的全部訂單再在 JS 裡 find，整批一次 select 會吃
       // Supabase 1000 列上限：同一支電話（常客、或店家幫客人代下單都填店裡電話）
@@ -133,7 +130,8 @@ export default async function TrackPage({
       // 客人拿著正確的編號＋電話也被告知查無訂單。撈這家店的訂單逐筆用
       // samePhone 比（口徑見 lib/phone-match），編號＋整支電話的雙因子不變，
       // 只是不再挑剔格式。只在快路徑落空才走這條，格式一致的查詢不多花錢。
-      if (!order) {
+      // 電話清完一個數字都沒有時 samePhone 必定不符，不必撈整家店。
+      if (!order && phoneDigits(phone) !== "") {
         const all = await fetchAllRows<Order>((from, to) =>
           admin
             .from("sproutly_orders")
