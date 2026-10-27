@@ -20,6 +20,7 @@ import {
 import { telHref, mailHref } from "@/lib/contact-href";
 import { phoneDigits, samePhone } from "@/lib/phone-match";
 import { isOrderIdPrefixQuery } from "@/lib/order-id-prefix";
+import { MAX_CUSTOMER_PHONE_LEN } from "@/lib/checkout-fields";
 import { RememberOrder } from "@/app/_components/remember-order";
 import { RecentOrdersList } from "@/app/_components/recent-orders-list";
 import { PrintButton } from "@/app/_components/print-button";
@@ -101,8 +102,13 @@ export default async function TrackPage({
   if (shortId && phone) {
     searched = true;
     // 編號長度、字元不可能是 UUID 開頭的一律不查（規則與原因見 lib/order-id-prefix），
-    // 當作查無訂單處理。
-    if (isOrderIdPrefixQuery(shortId)) {
+    // 當作查無訂單處理。電話比結帳時的上限還長也一樣：下單時電話就擋在
+    // MAX_CUSTOMER_PHONE_LEN 字內，超過的不可能是哪筆訂單的電話，以前照樣整串
+    // 拿去 eq 撈、落空再翻頁撈整家店逐筆比，有人直接打超長 ?phone= 網址就白掃一次。
+    if (
+      isOrderIdPrefixQuery(shortId) &&
+      phone.length <= MAX_CUSTOMER_PHONE_LEN
+    ) {
       const admin = createAdminClient();
       // 短碼比對是撈出這支電話的全部訂單再在 JS 裡 find，整批一次 select 會吃
       // Supabase 1000 列上限：同一支電話（常客、或店家幫客人代下單都填店裡電話）
@@ -240,6 +246,7 @@ export default async function TrackPage({
             autoComplete="tel"
             required
             defaultValue={phone}
+            maxLength={MAX_CUSTOMER_PHONE_LEN}
             placeholder="下單時填的電話"
             className="sproutly-input"
           />
