@@ -9,7 +9,11 @@ import { resolveTheme, HOMEPAGE_DEFAULTS } from "../_theme";
 import { RecentlyViewed } from "@/app/_components/recently-viewed";
 import { AutoSubmitOnChange } from "@/app/_components/auto-submit-on-change";
 import { isSoldOut, isLowStock, bySoldOutLast, stockAriaSuffix } from "@/lib/product-stock";
-import { matchesProductSearch, MAX_SEARCH_QUERY_LEN } from "@/lib/product-search";
+import {
+  matchesProductSearch,
+  isSearchQueryTooLong,
+  MAX_SEARCH_QUERY_LEN,
+} from "@/lib/product-search";
 // 商品撈整批要分頁撈齊，不然吃 Supabase 1000 列上限，見 fetch-all-rows。
 import { fetchAllRows } from "@/lib/fetch-all-rows";
 
@@ -115,37 +119,42 @@ export default async function ShopPage({
   // 撈法走共用 fetchAllRows 分頁撈齊（Supabase 一次最多回約 1000 列，
   // 商品破千後超出的會默默從逛街頁消失）；每種排序最後都補 id tiebreaker
   // 釘住同值列的順序，翻頁切點才不會浮動漏列或重複。
-  const fetched = await fetchAllRows(async (from, to) => {
-    let query = supabase
-      .from("sproutly_products")
-      .select("*")
-      .eq("merchant_id", store.id)
-      .eq("is_active", true);
+  //
+  // 關鍵字比商品描述上限還長就不可能命中（同 Cmd+K 搜尋 API），直接當空結果，
+  // 免得有人直接打超長 ?q= 網址，每次都白撈整家店的商品逐件比。
+  const fetched = isSearchQueryTooLong(q)
+    ? []
+    : await fetchAllRows(async (from, to) => {
+        let query = supabase
+          .from("sproutly_products")
+          .select("*")
+          .eq("merchant_id", store.id)
+          .eq("is_active", true);
 
-    if (inStock) {
-      query = query.or("stock.is.null,stock.gt.0");
-    }
+        if (inStock) {
+          query = query.or("stock.is.null,stock.gt.0");
+        }
 
-    switch (sort) {
-      case "price-asc":
-        query = query.order("price_cents", { ascending: true });
-        break;
-      case "price-desc":
-        query = query.order("price_cents", { ascending: false });
-        break;
-      case "name":
-        query = query.order("name", { ascending: true });
-        break;
-    }
+        switch (sort) {
+          case "price-asc":
+            query = query.order("price_cents", { ascending: true });
+            break;
+          case "price-desc":
+            query = query.order("price_cents", { ascending: false });
+            break;
+          case "name":
+            query = query.order("name", { ascending: true });
+            break;
+        }
 
-    // 同價、同名的幾件（盆栽店常一排都 $350）原本直接落到 id，id 是隨機碼，
-    // 等於亂排；改成先照商家在後台排好的順序（跟「最新」預設同一套），再補 id。
-    return query
-      .order("sort_order", { ascending: true })
-      .order("created_at", { ascending: false })
-      .order("id", { ascending: true })
-      .range(from, to);
-  });
+        // 同價、同名的幾件（盆栽店常一排都 $350）原本直接落到 id，id 是隨機碼，
+        // 等於亂排；改成先照商家在後台排好的順序（跟「最新」預設同一套），再補 id。
+        return query
+          .order("sort_order", { ascending: true })
+          .order("created_at", { ascending: false })
+          .order("id", { ascending: true })
+          .range(from, to);
+      });
   // 名稱或描述任一含關鍵字就算命中（跟後台商品列表、Cmd+K 搜尋同一套口徑）。
   const products = q
     ? fetched.filter((p) => matchesProductSearch(p, q))
