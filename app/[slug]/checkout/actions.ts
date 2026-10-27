@@ -60,6 +60,7 @@ export async function placeOrder(slug: string, formData: FormData) {
     shippingMethod,
     shippingStoreName,
     shippingAddress,
+    note: userNote,
   });
   if (fieldsErr) {
     redirect(withErrorParam(baseRedirect, fieldsErr));

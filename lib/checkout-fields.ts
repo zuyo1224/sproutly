@@ -23,7 +23,33 @@ export type CheckoutFields = {
   shippingMethod: string | null | undefined;
   shippingStoreName: string | null | undefined;
   shippingAddress: string | null | undefined;
+  // 客人自己打的備註（還沒編進配送方式那幾行之前的原文），只拿來量長度。
+  note?: string | null | undefined;
 };
+
+// 這幾格的字數上限，表單 maxLength 與這裡的伺服器端檢查共用同一份數字。
+//
+// 以前哪裡都沒擋：表單沒掛 maxLength，兩條結帳路徑收到什麼就整串寫進訂單，DB 那幾欄
+// 是 text 也不會爆。結帳是公開頁、不用登入，有人直接打送單網址塞一串幾十萬字的姓名或
+// 備註，那張單會出現在商家後台訂單頁、匯出 CSV、複製給客人的通知裡，整頁被撐爆。
+// 數字抓得比真實情況寬很多，正常客人碰不到：姓名 50 字、電話 30 字（含分機、括號、
+// 空白）、門市名稱 100 字、地址 200 字、備註 500 字。用 JS 的 .length 算，跟瀏覽器
+// maxLength 的算法一致，不會出現「瀏覽器放行、伺服器退回」。
+export const MAX_CUSTOMER_NAME_LEN = 50;
+export const MAX_CUSTOMER_PHONE_LEN = 30;
+export const MAX_SHIPPING_STORE_LEN = 100;
+export const MAX_SHIPPING_ADDRESS_LEN = 200;
+export const MAX_ORDER_NOTE_LEN = 500;
+
+export const NAME_TOO_LONG_ERROR = `收件人姓名最多 ${MAX_CUSTOMER_NAME_LEN} 字`;
+export const PHONE_TOO_LONG_ERROR = `電話最多 ${MAX_CUSTOMER_PHONE_LEN} 字`;
+export const STORE_TOO_LONG_ERROR = `取貨門市名稱最多 ${MAX_SHIPPING_STORE_LEN} 字`;
+export const ADDRESS_TOO_LONG_ERROR = `收件地址最多 ${MAX_SHIPPING_ADDRESS_LEN} 字`;
+export const NOTE_TOO_LONG_ERROR = `備註最多 ${MAX_ORDER_NOTE_LEN} 字`;
+
+function tooLong(v: string | null | undefined, max: number): boolean {
+  return (v ?? "").length > max;
+}
 
 // 兩邊統一用「請填電話」——兩張表單上那格的 label 就寫「電話」，訊息跟客人眼睛看到的
 // 字對齊。原本單品那條寫「請填聯絡電話」，指的是同一格，改成跟購物車一致。
@@ -41,7 +67,9 @@ export const SHIPPING_REQUIRED_ERROR = "請選擇配送方式";
  */
 export function checkoutFieldsError(fields: CheckoutFields): string | null {
   if (!fields.customerName) return NAME_REQUIRED_ERROR;
+  if (tooLong(fields.customerName, MAX_CUSTOMER_NAME_LEN)) return NAME_TOO_LONG_ERROR;
   if (!fields.customerPhone) return PHONE_REQUIRED_ERROR;
+  if (tooLong(fields.customerPhone, MAX_CUSTOMER_PHONE_LEN)) return PHONE_TOO_LONG_ERROR;
   // 不驗格式（市話、分機、境外號碼寫法太多），只擋「連一個數字都沒有」：查訂單頁用
   // lib/phone-match 比對電話，清完沒數字的一律算對不上，這種單客人事後永遠查不到，
   // 店家也打不出去。全形數字照算（phoneDigits 會先轉半形）。
@@ -52,9 +80,15 @@ export function checkoutFieldsError(fields: CheckoutFields): string | null {
   // 只認名單上的 key（shippingMethodLabel 不會把 toString 這類內建屬性當成配送方式）
   if (!shippingMethodLabel(fields.shippingMethod)) return SHIPPING_REQUIRED_ERROR;
   // 超商取貨必須填門市、宅配必須填地址（這兩條的規則與句子收在 shippingDetailError）
-  return shippingDetailError(
+  const detailErr = shippingDetailError(
     fields.shippingMethod,
     fields.shippingStoreName,
     fields.shippingAddress
   );
+  if (detailErr) return detailErr;
+  if (tooLong(fields.shippingStoreName, MAX_SHIPPING_STORE_LEN)) return STORE_TOO_LONG_ERROR;
+  if (tooLong(fields.shippingAddress, MAX_SHIPPING_ADDRESS_LEN)) return ADDRESS_TOO_LONG_ERROR;
+  // 備註在表單最底下，排最後講
+  if (tooLong(fields.note, MAX_ORDER_NOTE_LEN)) return NOTE_TOO_LONG_ERROR;
+  return null;
 }

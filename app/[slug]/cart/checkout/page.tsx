@@ -25,6 +25,7 @@ import { formatPrice } from "@/lib/format-price";
 import { fetchProductsByIds } from "@/lib/fetch-products-by-ids";
 import { displayableImageUrls } from "@/lib/image-url";
 import { isPlainObject } from "@/lib/is-plain-object";
+import { MAX_CUSTOMER_NAME_LEN, MAX_CUSTOMER_PHONE_LEN, MAX_SHIPPING_STORE_LEN, MAX_SHIPPING_ADDRESS_LEN, MAX_ORDER_NOTE_LEN } from "@/lib/checkout-fields";
 
 // 送出後「連線出狀況、看不出單有沒有成立」時給客人的話。不能寫成「送出失敗」——
 // 逾時／閘道錯誤發生時訂單很可能已經在資料庫裡了，叫客人重送就會下成兩張；也不能
@@ -456,6 +457,7 @@ export default function CartCheckoutPage() {
                 <input
                   id="co-name"
                   name="customer_name"
+                  maxLength={MAX_CUSTOMER_NAME_LEN}
                   type="text"
                   required
                   autoComplete="name"
@@ -477,6 +479,7 @@ export default function CartCheckoutPage() {
                 <input
                   id="co-phone"
                   name="customer_phone"
+                  maxLength={MAX_CUSTOMER_PHONE_LEN}
                   type="tel"
                   required
                   autoComplete="tel"
@@ -583,6 +586,7 @@ export default function CartCheckoutPage() {
                 <input
                   id="co-store"
                   name="shipping_store_name"
+                  maxLength={MAX_SHIPPING_STORE_LEN}
                   type="text"
                   required
                   value={storeName}
@@ -652,6 +656,7 @@ export default function CartCheckoutPage() {
                 <input
                   id="co-address"
                   name="shipping_address"
+                  maxLength={MAX_SHIPPING_ADDRESS_LEN}
                   type="text"
                   required
                   value={address}
@@ -763,6 +768,7 @@ export default function CartCheckoutPage() {
             <textarea
               id="co-note"
               name="note"
+              maxLength={MAX_ORDER_NOTE_LEN}
               rows={3}
               placeholder="特殊需求、希望送達時間..."
               className="sproutly-input w-full resize-none"

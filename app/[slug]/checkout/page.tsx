@@ -20,6 +20,7 @@ type SearchParams = Promise<{
 
 import { formatPrice } from "@/lib/format-price";
 import { displayableImageUrls } from "@/lib/image-url";
+import { MAX_CUSTOMER_NAME_LEN, MAX_CUSTOMER_PHONE_LEN, MAX_ORDER_NOTE_LEN } from "@/lib/checkout-fields";
 
 export default async function CheckoutPage({
   params,
@@ -242,6 +243,7 @@ export default async function CheckoutPage({
                 <input
                   id="co-name"
                   name="customer_name"
+                  maxLength={MAX_CUSTOMER_NAME_LEN}
                   type="text"
                   required
                   autoComplete="name"
@@ -260,6 +262,7 @@ export default async function CheckoutPage({
                 <input
                   id="co-phone"
                   name="customer_phone"
+                  maxLength={MAX_CUSTOMER_PHONE_LEN}
                   type="tel"
                   required
                   autoComplete="tel"
@@ -391,6 +394,7 @@ export default async function CheckoutPage({
             <textarea
               id="co-note"
               name="note"
+              maxLength={MAX_ORDER_NOTE_LEN}
               rows={3}
               placeholder="特殊需求、希望送達時間..."
               className="sproutly-input w-full resize-none"

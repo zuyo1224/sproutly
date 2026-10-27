@@ -42,6 +42,7 @@ export async function POST(
     shippingMethod,
     shippingStoreName,
     shippingAddress,
+    note: userNote,
   });
   if (fieldsErr) {
     return NextResponse.json({ error: fieldsErr }, { status: 400 });

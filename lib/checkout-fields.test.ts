@@ -6,7 +6,20 @@
 // 欄位同時錯先講哪一句」全部寫死，兩條結帳路徑（單品直接買、購物車結帳）共用同一份。
 import { describe, it } from "node:test";
 import assert from "node:assert/strict";
-import { checkoutFieldsError, type CheckoutFields } from "./checkout-fields.ts";
+import {
+  checkoutFieldsError,
+  type CheckoutFields,
+  MAX_CUSTOMER_NAME_LEN,
+  MAX_CUSTOMER_PHONE_LEN,
+  MAX_SHIPPING_STORE_LEN,
+  MAX_SHIPPING_ADDRESS_LEN,
+  MAX_ORDER_NOTE_LEN,
+  NAME_TOO_LONG_ERROR,
+  PHONE_TOO_LONG_ERROR,
+  STORE_TOO_LONG_ERROR,
+  ADDRESS_TOO_LONG_ERROR,
+  NOTE_TOO_LONG_ERROR,
+} from "./checkout-fields.ts";
 
 const NAME = "請填收件人姓名";
 const PHONE = "請填電話";
@@ -214,5 +227,54 @@ describe("多格同時錯的時候先講哪一句", () => {
       checkoutFieldsError(fields({ shippingMethod: "", shippingStoreName: null })),
       SHIPPING
     );
+  });
+});
+
+// 公開結帳頁不用登入，送單網址能被直接打；超長的值會整串寫進訂單、撐爆商家後台與匯出檔。
+describe("字數上限", () => {
+  it("剛好在上限內照收", () => {
+    assert.equal(
+      checkoutFieldsError(
+        fields({
+          customerName: "王".repeat(MAX_CUSTOMER_NAME_LEN),
+          customerPhone: "0".repeat(MAX_CUSTOMER_PHONE_LEN),
+          shippingMethod: "home_delivery",
+          shippingAddress: "路".repeat(MAX_SHIPPING_ADDRESS_LEN),
+          note: "備".repeat(MAX_ORDER_NOTE_LEN),
+        })
+      ),
+      null
+    );
+  });
+
+  it("超過上限各回各的那一句", () => {
+    assert.equal(
+      checkoutFieldsError(fields({ customerName: "王".repeat(MAX_CUSTOMER_NAME_LEN + 1) })),
+      NAME_TOO_LONG_ERROR
+    );
+    assert.equal(
+      checkoutFieldsError(fields({ customerPhone: "0".repeat(MAX_CUSTOMER_PHONE_LEN + 1) })),
+      PHONE_TOO_LONG_ERROR
+    );
+    assert.equal(
+      checkoutFieldsError(
+        fields({ shippingMethod: "cvs_711", shippingStoreName: "店".repeat(MAX_SHIPPING_STORE_LEN + 1) })
+      ),
+      STORE_TOO_LONG_ERROR
+    );
+    assert.equal(
+      checkoutFieldsError(
+        fields({ shippingMethod: "home_delivery", shippingAddress: "路".repeat(MAX_SHIPPING_ADDRESS_LEN + 1) })
+      ),
+      ADDRESS_TOO_LONG_ERROR
+    );
+    assert.equal(
+      checkoutFieldsError(fields({ note: "備".repeat(MAX_ORDER_NOTE_LEN + 1) })),
+      NOTE_TOO_LONG_ERROR
+    );
+  });
+
+  it("沒帶備註（舊呼叫端）照常通過", () => {
+    assert.equal(checkoutFieldsError(fields()), null);
   });
 });

@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { SHIPPING_OPTIONS, shippingNeedsStore } from "@/lib/order-labels";
 import { CVS_STORES, formatStoreLabel, CVS_LOOKUP_URLS } from "@/lib/cvs-stores";
+import { MAX_SHIPPING_STORE_LEN, MAX_SHIPPING_ADDRESS_LEN } from "@/lib/checkout-fields";
 
 // 單品結帳的配送欄位。原本門市／地址兩欄無條件常駐且不 required：選宅配漏填地址
 // 要等 server 退回才知道；且門市欄打過字再改選宅配，字還留在欄位裡會被一起送出、
@@ -76,6 +77,7 @@ export function ShippingFields({ ringColor }: { ringColor: string }) {
           <input
             id="co-store"
             name="shipping_store_name"
+            maxLength={MAX_SHIPPING_STORE_LEN}
             type="text"
             required
             value={storeName}
@@ -142,6 +144,7 @@ export function ShippingFields({ ringColor }: { ringColor: string }) {
           <input
             id="co-address"
             name="shipping_address"
+            maxLength={MAX_SHIPPING_ADDRESS_LEN}
             type="text"
             required
             value={address}
