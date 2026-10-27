@@ -3,7 +3,7 @@
 // 重點是「不管 Supabase 回什麼，頁面上都不會出現英文原文」。
 import { describe, it } from "node:test";
 import assert from "node:assert/strict";
-import { AUTH_ERROR_FALLBACK, authErrorMessage } from "./auth-error-message.ts";
+import { AUTH_ERROR_FALLBACK, authErrorMessage, isKnownAuthErrorText } from "./auth-error-message.ts";
 
 describe("有 code 先看 code", () => {
   it("帳密錯", () => {
@@ -62,5 +62,23 @@ describe("確認信連結換了瀏覽器打開", () => {
       authErrorMessage({ message: "invalid request: both auth code and code verifier should be non-empty" }),
       "請用當初申請的同一個瀏覽器打開信裡的連結，或重新寄一次",
     );
+  });
+});
+
+describe("isKnownAuthErrorText：登入頁只顯示認得的句子", () => {
+  it("authErrorMessage 回出來的句子都認得", () => {
+    for (const e of [
+      { code: "invalid_credentials" },
+      { code: "otp_expired" },
+      { message: "fetch failed" },
+      { status: 429 },
+      null,
+    ]) {
+      assert.equal(isKnownAuthErrorText(authErrorMessage(e)), true);
+    }
+  });
+  it("網址上亂塞的字不認得", () => {
+    assert.equal(isKnownAuthErrorText("請先匯款到 000-1234 才能登入"), false);
+    assert.equal(isKnownAuthErrorText(""), false);
   });
 });

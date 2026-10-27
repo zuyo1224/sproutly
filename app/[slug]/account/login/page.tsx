@@ -4,7 +4,9 @@ import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { resolveTheme } from "../../_theme";
 import { sendCustomerMagicLink } from "../actions";
-import { MAX_CUSTOMER_EMAIL_LEN } from "@/lib/checkout-fields";
+import { EMAIL_TOO_LONG_ERROR, MAX_CUSTOMER_EMAIL_LEN } from "@/lib/checkout-fields";
+import { isKnownAuthErrorText } from "@/lib/auth-error-message";
+import { truncateText } from "@/lib/truncate-text";
 
 // 蓋掉父層 account/layout 的「會員中心」，登入頁分頁顯示「登入」。
 export const metadata: Metadata = { title: "登入" };
@@ -25,7 +27,18 @@ export default async function CustomerLoginPage({
   searchParams: SearchParams;
 }) {
   const { slug } = await params;
-  const { error, sent, email, next } = await searchParams;
+  const { error: rawError, sent, email: rawEmail, next } = await searchParams;
+  // error、email 都是照網址原樣帶進來的，任何人都能做一條帶任意字的連結。
+  // 提醒只顯示寄信流程（actions.ts、auth/callback）真的會帶的句子，其他當沒有；
+  // email 回顯截在 email 規格總長內，超長網址不會把「登入信已寄到」那塊撐爆。
+  const error =
+    rawError &&
+    (rawError === "請填寫 email" ||
+      rawError === EMAIL_TOO_LONG_ERROR ||
+      isKnownAuthErrorText(rawError))
+      ? rawError
+      : undefined;
+  const email = rawEmail ? truncateText(rawEmail, MAX_CUSTOMER_EMAIL_LEN) : rawEmail;
 
   const supabase = await createClient();
   const { data: store } = await supabase

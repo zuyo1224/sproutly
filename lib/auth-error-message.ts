@@ -42,6 +42,18 @@ const BY_MESSAGE: Array<[RegExp, string]> = [
 
 export const AUTH_ERROR_FALLBACK = "登入服務暫時出了點狀況，請稍後再試";
 
+// authErrorMessage 可能回出來的每一句。登入頁的 ?error= 是任何人都能改的網址參數，
+// 頁面只顯示這裡面的句子，免得有人做一條帶「請先匯款到某帳號」之類字句的店面登入頁連結。
+const KNOWN_TEXTS = new Set<string>([
+  ...Object.values(BY_CODE),
+  ...BY_MESSAGE.map(([, text]) => text),
+  AUTH_ERROR_FALLBACK,
+]);
+
+export function isKnownAuthErrorText(text: string): boolean {
+  return KNOWN_TEXTS.has(text);
+}
+
 export function authErrorMessage(error: AuthErrorLike | null | undefined): string {
   if (!error) return AUTH_ERROR_FALLBACK;
   if (error.code && BY_CODE[error.code]) return BY_CODE[error.code];
