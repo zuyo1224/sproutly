@@ -30,6 +30,14 @@ const EMPTY_ERROR = "購物車是空的";
 // 而且那多半代表資料被動過或是壞掉的舊資料，請他重看一次購物車最實際。
 const BAD_ITEM_ERROR = "購物車內容有誤，請重新確認";
 
+// 一張單最多幾種商品（列數，不是件數；件數由每列 qty 上限 99 管）。
+// 購物車在客人瀏覽器裡沒有上限，結帳 route 會把所有 id 塞進同一個 .in() 查詢、再逐列
+// 扣庫存：幾百列時查詢網址長到被打回（客人只看到「部分商品已下架」這句不相干的話），
+// 或一張單要連打幾百次扣庫存。100 跟 sitemap、收藏補資料的分批大小同一個數，
+// 正常小店一張單不會碰到。
+export const CART_MAX_LINES = 100;
+export const TOO_MANY_LINES_ERROR = `一張訂單最多 ${CART_MAX_LINES} 種商品，請分成幾次結帳`;
+
 export function parseCartPayload(raw: string | null | undefined): CartPayloadResult {
   let parsed: unknown;
   try {
@@ -39,6 +47,9 @@ export function parseCartPayload(raw: string | null | undefined): CartPayloadRes
   }
   if (!Array.isArray(parsed) || parsed.length === 0) {
     return { ok: false, error: EMPTY_ERROR };
+  }
+  if (parsed.length > CART_MAX_LINES) {
+    return { ok: false, error: TOO_MANY_LINES_ERROR };
   }
 
   const items: CartLine[] = [];

@@ -6,7 +6,7 @@
 // 這裡把「什麼收、什麼拒、拒的時候客人看到哪一句」全部寫死。
 import { describe, it } from "node:test";
 import assert from "node:assert/strict";
-import { parseCartPayload } from "./cart-payload.ts";
+import { CART_MAX_LINES, parseCartPayload } from "./cart-payload.ts";
 
 const EMPTY = "購物車是空的";
 const BAD = "購物車內容有誤，請重新確認";
@@ -163,6 +163,22 @@ describe("一列壞掉整份拒收", () => {
     assert.equal(
       err('[{"productId":"a","qty":1},{"productId":"b","qty":-1}]'),
       BAD
+    );
+  });
+});
+
+describe("列數上限", () => {
+  const lines = (n: number) =>
+    JSON.stringify(Array.from({ length: n }, (_, i) => ({ productId: `p${i}`, qty: 1 })));
+
+  it("剛好上限照收", () => {
+    assert.equal(ok(lines(CART_MAX_LINES)).length, CART_MAX_LINES);
+  });
+
+  it("超過上限整份拒收，告訴客人分次結帳", () => {
+    assert.equal(
+      err(lines(CART_MAX_LINES + 1)),
+      "一張訂單最多 100 種商品，請分成幾次結帳"
     );
   });
 });
