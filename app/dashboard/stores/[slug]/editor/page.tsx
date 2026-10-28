@@ -5,17 +5,13 @@ import { resolveTheme, SECTION_LABELS } from "@/app/[slug]/_theme";
 import { EditorWorkspace } from "./editor-workspace";
 
 type Params = Promise<{ slug: string }>;
-type SearchParams = Promise<{ saved?: string; error?: string }>;
 
-export default async function EditorPage({
-  params,
-  searchParams,
-}: {
-  params: Params;
-  searchParams: SearchParams;
-}) {
+// 這頁不讀 ?error= / ?saved=：編輯器的存檔動作（同目錄 actions.ts）都是回傳結果給畫面，
+// 沒有任何流程會帶這兩個參數跳到這頁。以前照網址原樣把 ?error= 攤在紅色提醒框裡，任何人
+// 都能做一條帶「店面即將停權，請加 LINE 客服」之類字句的編輯器連結傳給商家，看起來就像平台
+// 自己的提醒。
+export default async function EditorPage({ params }: { params: Params }) {
   const { slug } = await params;
-  const { saved, error } = await searchParams;
   const { supabase, user } = await requireUser();
 
   const { data: store } = await supabase
@@ -87,16 +83,6 @@ export default async function EditorPage({
 
   return (
     <div className="-mx-8 -mb-16">
-      {error && (
-        <div className="mx-8 mb-4 rounded-xl bg-red-50 border border-red-100 p-3 text-sm text-red-700">
-          {error}
-        </div>
-      )}
-      {saved && (
-        <div className="mx-8 mb-4 rounded-xl bg-emerald-50 border border-emerald-200 p-3 text-sm text-emerald-800">
-          已儲存
-        </div>
-      )}
       <EditorWorkspace
         slug={slug}
         storeName={store.name}
