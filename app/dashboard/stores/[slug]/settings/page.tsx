@@ -1,6 +1,7 @@
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import { requireUser } from "@/lib/require-user";
+import { knownStoreSettingsError } from "@/lib/store-settings-error-message";
 import { updateStore } from "./actions";
 import { SubmitButton } from "@/app/_components/submit-button";
 import { FaqTextInput } from "@/app/_components/faq-text-input";
@@ -64,7 +65,9 @@ export default async function StoreSettingsPage({
   searchParams: SearchParams;
 }) {
   const { slug } = await params;
-  const { error, saved } = await searchParams;
+  const { error: rawError, saved } = await searchParams;
+  // 只顯示 updateStore 真的會帶的句子，網址上被塞的其他字句當沒有（見 lib/store-settings-error-message）
+  const error = knownStoreSettingsError(rawError);
 
   const { supabase, user } = await requireUser();
 

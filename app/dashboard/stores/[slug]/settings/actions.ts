@@ -11,6 +11,11 @@ import { redirect } from "next/navigation";
 import { buildUrl, withErrorParam } from "@/lib/url";
 import { dbErrorMessage } from "@/lib/db-error-message";
 import {
+  HERO_UPLOAD_FALLBACK_ERROR,
+  LOGO_UPLOAD_FALLBACK_ERROR,
+  STORE_NAME_EMPTY_ERROR,
+} from "@/lib/store-settings-error-message";
+import {
   isFontKey,
   isHeroImageSide,
   isHeroStyle,
@@ -47,7 +52,7 @@ export async function updateStore(slug: string, formData: FormData) {
   const isPublished = formData.get("is_published") === "on";
 
   if (!name) {
-    redirect(withErrorParam(baseRedirect, "店名不能空"));
+    redirect(withErrorParam(baseRedirect, STORE_NAME_EMPTY_ERROR));
   }
   // 五個文字欄位的字數上限（表單 maxLength 吃同一份數字，這裡是伺服器端真正擋下）
   const tooLong = storeTextLimitError({
@@ -89,7 +94,7 @@ export async function updateStore(slug: string, formData: FormData) {
     try {
       logoUrl = await uploadImage(logoFile, "sproutly-products", `logos/${store.id}`);
     } catch (e) {
-      const msg = e instanceof Error ? e.message : "標誌上傳失敗，請稍後再試";
+      const msg = e instanceof Error ? e.message : LOGO_UPLOAD_FALLBACK_ERROR;
       redirect(withErrorParam(baseRedirect, msg));
     }
   }
@@ -98,7 +103,7 @@ export async function updateStore(slug: string, formData: FormData) {
     try {
       heroUrl = await uploadImage(heroFile, "sproutly-products", `heroes/${store.id}`);
     } catch (e) {
-      const msg = e instanceof Error ? e.message : "首屏大圖上傳失敗，請稍後再試";
+      const msg = e instanceof Error ? e.message : HERO_UPLOAD_FALLBACK_ERROR;
       redirect(withErrorParam(baseRedirect, msg));
     }
   }

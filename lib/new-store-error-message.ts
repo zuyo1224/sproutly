@@ -17,14 +17,15 @@ export function storeSlugTakenError(slug: string): string {
 // storeTextLimitError 一次只回第一個超限欄位，五欄各塞一個超長值逐一取出句子
 const OVER = "x".repeat(5000);
 const EMPTY_FIELDS = { name: "", description: null, contact_phone: null, contact_email: null, address: null };
-const TEXT_LIMIT_ERRORS = (
+// 店面設定頁（store-settings-error-message）也會帶同一組句子，匯出共用
+export const STORE_TEXT_LIMIT_ERRORS = (
   ["name", "description", "contact_phone", "contact_email", "address"] as const
 ).map((key) => storeTextLimitError({ ...EMPTY_FIELDS, [key]: OVER }));
 
 const KNOWN_TEXTS = new Set<string>(
   [
     STORE_NAME_REQUIRED_ERROR,
-    ...TEXT_LIMIT_ERRORS,
+    ...STORE_TEXT_LIMIT_ERRORS,
     // storeSlugError 可能回的每一句（保留字那句逐一列）
     storeSlugError(""),
     storeSlugError("A!"),
