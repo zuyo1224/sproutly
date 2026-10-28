@@ -19,7 +19,7 @@ import { formatPrice } from "@/lib/format-price";
 import { isSoldOut, isLowStock, stockAriaSuffix } from "@/lib/product-stock";
 import { getFavoriteIds, setFavoriteIds } from "@/lib/favorites";
 import { displayableImageUrls } from "@/lib/image-url";
-import { buildUrl } from "@/lib/url";
+import { fetchProductsByIds } from "@/lib/fetch-products-by-ids";
 
 export default function FavoritesPage() {
   const params = useParams();
@@ -69,12 +69,8 @@ export default function FavoritesPage() {
         return;
       }
       try {
-        const res = await fetch(
-          buildUrl(`/${slug}/favorites/api`, { ids: ids.join(",") }),
-          { cache: "no-store" }
-        );
-        if (!res.ok) throw new Error(`favorites api ${res.status}`);
-        const data: Product[] = await res.json();
+        // 收藏沒有上限，幾百件時整串塞一條網址會被打回；fetchProductsByIds 會切批打。
+        const data = await fetchProductsByIds<Product>(slug, ids.join(","));
         // API 用 .in("id", ids) 查，回來的順序是資料庫隨機序、不照 ids 走，
         // 害收藏卡片每次載入排序都不一樣，也跟客人實際收藏的先後對不上。
         // 更要緊的是：移除的「復原」記的是卡片在畫面上的 index、卻 splice 回

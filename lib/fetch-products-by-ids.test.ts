@@ -64,4 +64,38 @@ describe("fetchProductsByIds（購物車／結帳補商品資料）", () => {
     stubFetch(200, null);
     await assert.rejects(fetchProductsByIds("s", "a"), /回傳非陣列/);
   });
+
+  it("超過 100 個 id 時每 100 個切一批打、結果合併；重複 id 只查一次", async () => {
+    const ids = Array.from({ length: 250 }, (_, i) => `id${i}`);
+    const seen: string[] = [];
+    globalThis.fetch = (async (url: string) => {
+      seen.push(url);
+      const batch = new URL(url, "http://x").searchParams.get("ids")!.split(",");
+      return new Response(JSON.stringify(batch.map((id) => ({ id }))), {
+        status: 200,
+      });
+    }) as typeof fetch;
+    const out = await fetchProductsByIds<{ id: string }>(
+      "s",
+      [...ids, "id0", "id1"].join(",")
+    );
+    assert.equal(seen.length, 3);
+    assert.deepEqual(
+      seen.map((u) => new URL(u, "http://x").searchParams.get("ids")!.split(",").length),
+      [100, 100, 50]
+    );
+    assert.deepEqual(out.map((p) => p.id), ids);
+  });
+
+  it("任何一批失敗就整支 throw，不回半套（半套會讓呼叫端誤刪真收藏）", async () => {
+    let n = 0;
+    globalThis.fetch = (async () => {
+      n += 1;
+      return n === 2
+        ? new Response("{}", { status: 414 })
+        : new Response("[]", { status: 200 });
+    }) as typeof fetch;
+    const ids = Array.from({ length: 150 }, (_, i) => `id${i}`).join(",");
+    await assert.rejects(fetchProductsByIds("s", ids), /商品資料抓取失敗: 414/);
+  });
 });
