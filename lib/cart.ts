@@ -1,6 +1,7 @@
 // 客戶端購物車 helpers（localStorage based，per-store key）
 
 import { QTY_MIN, QTY_MAX, clampQty } from "./product-quantity.ts";
+import { CART_MAX_LINES } from "./cart-payload.ts";
 
 export type CartItem = {
   productId: string;
@@ -58,16 +59,21 @@ function normalizeNewQty(qty: number): number | "remove" | null {
   return Math.min(n, QTY_MAX);
 }
 
-export function addToCart(slug: string, productId: string, qty = 1) {
+// 回傳有沒有加進去。車裡已有 CART_MAX_LINES 種商品時，新的一種不加、回 false：
+// 結帳那端一張單只收這麼多種，以前要等客人排到結帳才被擋，現在加入當下就能講。
+// 已在車裡的商品照常累加數量，不受種類上限影響。
+export function addToCart(slug: string, productId: string, qty = 1): boolean {
   const items = getCart(slug);
   const add = normalizeAddQty(qty);
   const existing = items.find((i) => i.productId === productId);
   if (existing) {
     existing.qty = Math.min(existing.qty + add, QTY_MAX);
   } else {
+    if (items.length >= CART_MAX_LINES) return false;
     items.push({ productId, qty: add });
   }
   setCart(slug, items);
+  return true;
 }
 
 // 以前這裡只做 Math.min(qty, QTY_MAX)：小數會原樣寫進 localStorage（存 2.5、讀回

@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { addToCart, getCart, getCartCount } from "@/lib/cart";
+import { CART_MAX_LINES } from "@/lib/cart-payload";
 
 type Props = {
   slug: string;
@@ -25,6 +26,9 @@ type Props = {
   style?: React.CSSProperties;
   children?: React.ReactNode;
 };
+
+// 購物車種類滿了（結帳一張單收不下更多種）時給的話，跟結帳被擋那句同一個數字。
+const CART_FULL_NOTICE = `購物車最多放 ${CART_MAX_LINES} 種商品，請先結帳或移除一些`;
 
 export function AddToCartButton({
   slug,
@@ -115,7 +119,10 @@ export function AddToCartButton({
         return;
       }
       const toAdd = Math.min(wanted, canAdd);
-      addToCart(slug, productId, toAdd);
+      if (!addToCart(slug, productId, toAdd)) {
+        showNotice(CART_FULL_NOTICE);
+        return;
+      }
       flashAdded();
       if (toAdd < wanted) {
         showNotice(`庫存只剩 ${stock} 件，已幫你加到上限`);
@@ -124,7 +131,10 @@ export function AddToCartButton({
       }
       return;
     }
-    addToCart(slug, productId, wanted);
+    if (!addToCart(slug, productId, wanted)) {
+      showNotice(CART_FULL_NOTICE);
+      return;
+    }
     flashAdded();
   }
 

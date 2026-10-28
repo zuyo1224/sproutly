@@ -21,6 +21,7 @@ import {
   setCart,
   updateQty,
 } from "./cart.ts";
+import { CART_MAX_LINES } from "./cart-payload.ts";
 import {
   FAVORITES_CHANGED_EVENT,
   getFavoriteIds,
@@ -225,6 +226,17 @@ describe("cart：加、改、刪、數、清", () => {
       { productId: "p3", qty: 1 },
     ]);
     assert.deepEqual(getCart("shop"), rawJson("sproutly_cart_shop"));
+  });
+
+  it("addToCart 車裡已有 CART_MAX_LINES 種時新商品不加、回 false，舊商品照常累加", () => {
+    for (let i = 0; i < CART_MAX_LINES; i++) {
+      assert.equal(addToCart("shop", `p${i}`), true);
+    }
+    assert.equal(addToCart("shop", "extra"), false);
+    assert.equal(getCart("shop").length, CART_MAX_LINES);
+    assert.equal(getCart("shop").some((i) => i.productId === "extra"), false);
+    assert.equal(addToCart("shop", "p0", 2), true);
+    assert.equal(getCart("shop")[0].qty, 3);
   });
 
   it("addToCart 小數往下取整、累加時傳負數不會把既有數量扣掉", () => {
