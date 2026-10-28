@@ -29,6 +29,11 @@ export function parsePrice(raw: string): number {
   return n;
 }
 
+// parseStock 會丟的兩句，商品列表頁要拿來認「這是改庫存流程真的會帶的提醒」
+// （見 lib/product-list-error-message）。
+export const STOCK_NOT_INTEGER_ERROR = "庫存必須是非負整數或留空";
+export const STOCK_TOO_LARGE_ERROR = `庫存最多 ${MAX_STOCK.toLocaleString("zh-TW")} 件，確認一下是不是多打了幾個 0`;
+
 export function parseStock(raw: string): number | null {
   if (raw === "") return null;
   const n = Number(raw);
@@ -38,10 +43,8 @@ export function parseStock(raw: string): number | null {
   // 「invalid input syntax for type integer」這種原始錯誤字串給商家看，看不懂哪裡錯。
   // 跟 lib/product-quantity 的 isValidQty（Number.isInteger 同時擋 NaN／小數／負數）
   // 同一個態度，這裡在插入前就攔下、換成看得懂的中文訊息。
-  if (!Number.isInteger(n) || n < 0) throw new Error("庫存必須是非負整數或留空");
-  if (n > MAX_STOCK) {
-    throw new Error(`庫存最多 ${MAX_STOCK.toLocaleString("zh-TW")} 件，確認一下是不是多打了幾個 0`);
-  }
+  if (!Number.isInteger(n) || n < 0) throw new Error(STOCK_NOT_INTEGER_ERROR);
+  if (n > MAX_STOCK) throw new Error(STOCK_TOO_LARGE_ERROR);
   return n;
 }
 

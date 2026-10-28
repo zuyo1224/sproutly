@@ -13,6 +13,10 @@ import { isPastedRemoteImageUrl } from "@/lib/image-url";
 import { fetchAllRows } from "@/lib/fetch-all-rows";
 import { buildUrl, withErrorParam, withQuery } from "@/lib/url";
 import { dbErrorMessage } from "@/lib/db-error-message";
+import {
+  STOCK_REQUIRED_ERROR,
+  STOCK_INPUT_FALLBACK_ERROR,
+} from "@/lib/product-list-error-message";
 import { redirect } from "next/navigation";
 
 const BUCKET = "sproutly-products";
@@ -277,7 +281,7 @@ export async function setProductStock(
 
   const raw = formString(formData, "stock");
   if (!raw) {
-    redirect(errorUrl("請填庫存數字。要改成不管這件的庫存，請進商品編輯頁把庫存清空"));
+    redirect(errorUrl(STOCK_REQUIRED_ERROR));
   }
 
   // 上限檢查跟新增／編輯頁一起收在 parseStock 裡，三條路同一句中文。
@@ -285,7 +289,7 @@ export async function setProductStock(
   try {
     stock = parseStock(raw);
   } catch (e) {
-    redirect(errorUrl(e instanceof Error ? e.message : "庫存輸入錯誤"));
+    redirect(errorUrl(e instanceof Error ? e.message : STOCK_INPUT_FALLBACK_ERROR));
   }
 
   const { data: product } = await supabase
