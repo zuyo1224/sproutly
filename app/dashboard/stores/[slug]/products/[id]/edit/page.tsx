@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { requireUser } from "@/lib/require-user";
+import { knownProductEditorError } from "@/lib/product-editor-error-message";
 import { updateProduct, deleteProduct, duplicateProduct } from "../../actions";
 import { SubmitButton } from "@/app/_components/submit-button";
 import { ImageFilePicker } from "@/app/_components/image-file-picker";
@@ -46,7 +47,9 @@ export default async function EditProductPage({
   const { slug, id } = await params;
   // 網址上的商品 id 不是 UUID 就直接 404，別拿去查 uuid 欄位（見 lib/uuid.ts）。
   if (!isUuid(id)) notFound();
-  const { error, copied } = await searchParams;
+  const { error: rawError, copied } = await searchParams;
+  // 只顯示存商品流程真的會帶的句子，網址上被塞的其他字當沒有（見 lib/product-editor-error-message）。
+  const error = knownProductEditorError(rawError);
 
   const { supabase, user } = await requireUser();
 

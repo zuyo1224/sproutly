@@ -17,6 +17,12 @@ import {
   STOCK_REQUIRED_ERROR,
   STOCK_INPUT_FALLBACK_ERROR,
 } from "@/lib/product-list-error-message";
+import {
+  DUPLICATE_FAILED_ERROR,
+  IMAGE_PROCESS_FALLBACK_ERROR,
+  IMAGE_URL_NOT_HTTPS_ERROR,
+  IMAGE_URL_TOO_LONG_ERROR,
+} from "@/lib/product-editor-error-message";
 import { redirect } from "next/navigation";
 
 const BUCKET = "sproutly-products";
@@ -94,7 +100,7 @@ export async function createProduct(slug: string, formData: FormData) {
     try {
       imageUrls = await uploadFiles(imageFiles, store.id);
     } catch (e) {
-      const msg = e instanceof Error ? e.message : "圖片處理失敗";
+      const msg = e instanceof Error ? e.message : IMAGE_PROCESS_FALLBACK_ERROR;
       redirect(withErrorParam(baseRedirect, msg));
     }
   }
@@ -105,15 +111,10 @@ export async function createProduct(slug: string, formData: FormData) {
     // 不要存一張注定開天窗的圖進 DB 讓商家事後在店面找哪裡壞。
     // 表單那格輸入時已經同一支判斷即時提示，這裡是繞過瀏覽器也擋得住的那一層。
     if (imageUrlRaw.length > MAX_IMAGE_URL_LEN) {
-      redirect(withErrorParam(baseRedirect, `圖片網址最多 ${MAX_IMAGE_URL_LEN} 個字`));
+      redirect(withErrorParam(baseRedirect, IMAGE_URL_TOO_LONG_ERROR));
     }
     if (!isPastedRemoteImageUrl(imageUrlRaw)) {
-      redirect(
-        withErrorParam(
-          baseRedirect,
-          "圖片網址要是 https:// 開頭的完整網址（例如 https://example.com/photo.jpg），這串店面不會放這張圖",
-        ),
-      );
+      redirect(withErrorParam(baseRedirect, IMAGE_URL_NOT_HTTPS_ERROR));
     }
     imageUrls = [imageUrlRaw];
   }
@@ -176,7 +177,7 @@ export async function updateProduct(
     try {
       newUrls = await uploadFiles(imageFiles, store.id);
     } catch (e) {
-      const msg = e instanceof Error ? e.message : "圖片處理失敗";
+      const msg = e instanceof Error ? e.message : IMAGE_PROCESS_FALLBACK_ERROR;
       redirect(withErrorParam(baseRedirect, msg));
     }
   }
@@ -245,7 +246,7 @@ export async function duplicateProduct(slug: string, productId: string) {
     redirect(
       withErrorParam(
         `/dashboard/stores/${slug}/products/${productId}/edit`,
-        error ? dbErrorMessage(error) : "複製失敗，再試一次",
+        error ? dbErrorMessage(error) : DUPLICATE_FAILED_ERROR,
       ),
     );
   }

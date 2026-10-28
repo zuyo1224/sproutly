@@ -1,6 +1,6 @@
 import { createAdminClient } from "@/lib/supabase/admin";
 import { randomUUID } from "node:crypto";
-import { resolveUploadImageType } from "@/lib/upload-image-type";
+import { IMAGE_UPLOAD_FAILED_ERROR, resolveUploadImageType } from "@/lib/upload-image-type";
 
 export async function uploadImage(
   file: File,
@@ -32,6 +32,6 @@ export async function uploadImage(
     return publicUrl;
   } catch (e) {
     console.error("uploadImage failed:", e instanceof Error ? e.message : e);
-    throw new Error("圖片上傳失敗，請稍後再試");
+    throw new Error(IMAGE_UPLOAD_FAILED_ERROR);
   }
 }

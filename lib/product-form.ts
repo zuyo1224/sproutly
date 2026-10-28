@@ -18,14 +18,20 @@ import { formString, formStringOrNull } from "./form-fields.ts";
 
 // 價格／庫存上限的數字本體在 lib/product-limits（表單的 max 屬性也吃同一份），
 // 這裡負責在伺服器端真正擋下、丟中文訊息。
+// 這支檔會回的每一句也匯出，新增／編輯商品頁要拿來認「這是存商品流程真的會帶的提醒」
+// （見 lib/product-editor-error-message）。
+export const PRODUCT_NAME_REQUIRED_ERROR = "請填商品名稱";
+export const PRICE_REQUIRED_ERROR = "請填價格";
+export const PRICE_INVALID_ERROR = "價格必須是非負數";
+export const PRICE_TOO_LARGE_ERROR = `價格最多 ${MAX_PRICE_YUAN.toLocaleString("zh-TW")} 元，確認一下是不是多打了幾個 0`;
+export const PRODUCT_NAME_TOO_LONG_ERROR = `商品名稱最多 ${MAX_PRODUCT_NAME_LEN} 個字，長一點的說明放到描述欄`;
+export const PRODUCT_DESC_TOO_LONG_ERROR = `商品描述最多 ${MAX_PRODUCT_DESC_LEN.toLocaleString("zh-TW")} 個字`;
+export const PRODUCT_FORM_FALLBACK_ERROR = "輸入錯誤";
+
 export function parsePrice(raw: string): number {
   const n = Number(raw);
-  if (!Number.isFinite(n) || n < 0) throw new Error("價格必須是非負數");
-  if (n > MAX_PRICE_YUAN) {
-    throw new Error(
-      `價格最多 ${MAX_PRICE_YUAN.toLocaleString("zh-TW")} 元，確認一下是不是多打了幾個 0`
-    );
-  }
+  if (!Number.isFinite(n) || n < 0) throw new Error(PRICE_INVALID_ERROR);
+  if (n > MAX_PRICE_YUAN) throw new Error(PRICE_TOO_LARGE_ERROR);
   return n;
 }
 
@@ -52,11 +58,9 @@ export function parseStock(raw: string): number | null {
 // 也吃同一份），這裡在伺服器端真正擋下。空品名的檢查在 readProductForm 裡（那句訊息跟
 // 其他必填欄位同一組），這裡只管「太長」。
 export function assertTextLimits(name: string, description: string | null) {
-  if (name.length > MAX_PRODUCT_NAME_LEN) {
-    throw new Error(`商品名稱最多 ${MAX_PRODUCT_NAME_LEN} 個字，長一點的說明放到描述欄`);
-  }
+  if (name.length > MAX_PRODUCT_NAME_LEN) throw new Error(PRODUCT_NAME_TOO_LONG_ERROR);
   if (description && description.length > MAX_PRODUCT_DESC_LEN) {
-    throw new Error(`商品描述最多 ${MAX_PRODUCT_DESC_LEN.toLocaleString("zh-TW")} 個字`);
+    throw new Error(PRODUCT_DESC_TOO_LONG_ERROR);
   }
 }
 
@@ -88,8 +92,8 @@ export function readProductForm(formData: FormData): ProductFormResult {
   const stockRaw = formString(formData, "stock");
   const isActive = formData.get("is_active") === "on";
 
-  if (!name) return { ok: false, error: "請填商品名稱" };
-  if (!priceRaw) return { ok: false, error: "請填價格" };
+  if (!name) return { ok: false, error: PRODUCT_NAME_REQUIRED_ERROR };
+  if (!priceRaw) return { ok: false, error: PRICE_REQUIRED_ERROR };
 
   try {
     assertTextLimits(name, description);
@@ -104,6 +108,6 @@ export function readProductForm(formData: FormData): ProductFormResult {
       },
     };
   } catch (e) {
-    return { ok: false, error: e instanceof Error ? e.message : "輸入錯誤" };
+    return { ok: false, error: e instanceof Error ? e.message : PRODUCT_FORM_FALLBACK_ERROR };
   }
 }

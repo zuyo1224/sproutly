@@ -18,6 +18,10 @@ const ALLOWED_EXT = ["jpg", "jpeg", "png", "webp", "gif", "svg"];
 export const UNSUPPORTED_IMAGE_ERROR =
   "圖片格式只支援 jpg / png / webp / gif / svg";
 
+// lib/storage 上傳到 storage 失敗時統一丟的那句（放這裡是因為 storage 那支連著 Supabase，
+// 測試與 lib/product-editor-error-message 不方便直接載入）。
+export const IMAGE_UPLOAD_FAILED_ERROR = "圖片上傳失敗，請稍後再試";
+
 // 檔名看起來是圖片、內容卻不是站上收的任何一種格式時回商家的那句。
 // 特別點名 HEIC：iPhone 照片經 LINE、AirDrop 或改名後叫 xxx.jpg 內容還是 HEIC，
 // 是這關最常擋到的情況，商家看到訊息要知道該怎麼做，不是只知道「被擋了」。
