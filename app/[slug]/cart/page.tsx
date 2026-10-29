@@ -708,14 +708,18 @@ export default function CartPage() {
                 startUndoTimer();
               }
             }}
-            className="pointer-events-auto flex items-center gap-4 rounded-full pl-5 pr-2 py-2 shadow-lg max-w-[calc(100vw-3rem)]"
+            // 車滿那句很長，手機上會折成兩三行；膠囊的圓角會跟行高一起變大、吃到頭尾幾個字，
+            // 所以折行的那種改小圓角、左右留一樣寬。
+            className={`pointer-events-auto flex items-center gap-4 shadow-lg max-w-[calc(100vw-3rem)] ${
+              undo.full ? "rounded-2xl px-5 py-2" : "rounded-full pl-5 pr-2 py-2"
+            }`}
             style={{
               background: "var(--store-text, #1a1a1a)",
               color: "var(--store-bg, #fff)",
             }}
           >
             {undo.full ? (
-              <span className="text-sm py-1.5 pr-3">
+              <span className="text-sm py-1.5">
                 購物車最多放 {CART_MAX_LINES} 種商品，「{undo.name}」沒能放回，請先結帳或移除一些
               </span>
             ) : (
