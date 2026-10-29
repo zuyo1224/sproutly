@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import { getCart, updateQty, removeFromCart, addToCart } from "@/lib/cart";
+import { CART_MAX_LINES } from "@/lib/cart-payload";
 import { RecentlyViewed } from "@/app/_components/recently-viewed";
 import { StoreEmptyState } from "@/app/_components/store-empty-state";
 
@@ -51,6 +52,8 @@ export default function CartPage() {
     id: string;
     qty: number;
     name: string;
+    // 按復原時車已被別的分頁塞到 CART_MAX_LINES 種、加不回去：提示改成講清楚，收掉復原鈕。
+    full?: boolean;
   } | null>(null);
   const undoTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   // 按「復原」後提示連同按鈕一起收掉，焦點會掉到頁首，用鍵盤的人得從頭 Tab 回來。
@@ -114,7 +117,15 @@ export default function CartPage() {
       focusAfterUndo.current = undo.id;
     }
     focusAfterRemove.current = null;
-    addToCart(slug, undo.id, undo.qty);
+    if (!addToCart(slug, undo.id, undo.qty)) {
+      // 以前回傳值被忽略，提示照樣收掉，客人以為放回去了、那件卻默默不見。
+      // 復原鈕跟著消失，焦點本來在鈕上就送到標題，不讓它掉到頁首。
+      focusAfterUndo.current = null;
+      if (document.activeElement === e.currentTarget) headingRef.current?.focus();
+      setUndo({ ...undo, full: true });
+      startUndoTimer();
+      return;
+    }
     if (undoTimer.current) clearTimeout(undoTimer.current);
     setUndo(null);
   }
@@ -703,24 +714,32 @@ export default function CartPage() {
               color: "var(--store-bg, #fff)",
             }}
           >
-            <span id="cart-undo-desc" className="text-sm truncate">
-              已移除「{undo.name}」{undoFlip ? "\u00A0" : ""}
-            </span>
+            {undo.full ? (
+              <span className="text-sm py-1.5 pr-3">
+                購物車最多放 {CART_MAX_LINES} 種商品，「{undo.name}」沒能放回，請先結帳或移除一些
+              </span>
+            ) : (
+              <span id="cart-undo-desc" className="text-sm truncate">
+                已移除「{undo.name}」{undoFlip ? "\u00A0" : ""}
+              </span>
+            )}
             {/* Tab 到鈕上只會念「復原」，不知道復原哪一件；用 describedby 帶上旁邊那句。
                 不用 aria-label，免得狀態格報讀時商品名念兩次。 */}
-            <button
-              type="button"
-              onClick={handleUndo}
-              aria-describedby="cart-undo-desc"
-              className="flex-shrink-0 rounded-full px-4 py-1.5 text-[0.6875rem] uppercase font-medium transition hover:opacity-80 focus-visible:opacity-80"
-              style={{
-                letterSpacing: "0.2em",
-                background: "var(--store-accent, currentColor)",
-                color: "var(--store-bg, #fff)",
-              }}
-            >
-              復原
-            </button>
+            {!undo.full && (
+              <button
+                type="button"
+                onClick={handleUndo}
+                aria-describedby="cart-undo-desc"
+                className="flex-shrink-0 rounded-full px-4 py-1.5 text-[0.6875rem] uppercase font-medium transition hover:opacity-80 focus-visible:opacity-80"
+                style={{
+                  letterSpacing: "0.2em",
+                  background: "var(--store-accent, currentColor)",
+                  color: "var(--store-bg, #fff)",
+                }}
+              >
+                復原
+              </button>
+            )}
           </div>
         )}
       </div>
