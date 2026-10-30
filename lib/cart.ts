@@ -20,12 +20,17 @@ export function getCart(slug: string): CartItem[] {
     // qty 必須是 1-99 的整數。typeof "number" 擋不掉 NaN / 負數 / 小數，
     // 漏掉的話 getCartCount 會算出 NaN，購物車徽章直接顯示「NaN」。
     // 不是數字的那筆（clampQty 回 null）整筆丟掉。
+    // 同一個商品出現兩列（舊資料或被動過）就併成一列、數量相加夾在 99：結帳那端
+    // parseCartPayload 看到重複列會整份拒收，客人只看到「購物車內容有誤」卻改不了；
+    // 購物車頁也會用重複的 id 當 key。
     const items: CartItem[] = [];
     for (const x of arr) {
       if (!x || typeof x.productId !== "string") continue;
       const qty = clampQty(x.qty);
       if (qty === null) continue;
-      items.push({ productId: x.productId, qty });
+      const existing = items.find((i) => i.productId === x.productId);
+      if (existing) existing.qty = Math.min(existing.qty + qty, QTY_MAX);
+      else items.push({ productId: x.productId, qty });
     }
     return items;
   } catch {

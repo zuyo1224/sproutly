@@ -155,6 +155,22 @@ describe("cart：getCart 讀回來時清洗", () => {
     assert.equal(getCartCount("shop"), 4);
   });
 
+  it("同一個商品重複兩列時併成一列、數量相加夾在 99（結帳會拒收重複列）", () => {
+    storage.setItem(
+      "sproutly_cart_shop",
+      JSON.stringify([
+        { productId: "a", qty: 2 },
+        { productId: "b", qty: 1 },
+        { productId: "a", qty: 3 },
+        { productId: "b", qty: 98 },
+      ])
+    );
+    assert.deepEqual(getCart("shop"), [
+      { productId: "a", qty: 5 },
+      { productId: "b", qty: QTY_MAX },
+    ]);
+  });
+
   it("localStorage 讀取丟例外時回空陣列，不往外炸", () => {
     storage.getItem = () => {
       throw new Error("SecurityError");
