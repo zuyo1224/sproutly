@@ -376,6 +376,14 @@ describe("favorites：per-store key 與舊全站 key 的播種", () => {
     assert.deepEqual(getFavoriteIds("shop"), ["p1", "p4"]);
   });
 
+  it("同一個 id 重複出現時只留第一次的位置", () => {
+    storage.setItem(
+      "sproutly_favorites_shop",
+      JSON.stringify(["p1", "p2", "p1", "p3", "p2"])
+    );
+    assert.deepEqual(getFavoriteIds("shop"), ["p1", "p2", "p3"]);
+  });
+
   it("第一次讀某家店時，per-store key 不存在就整份抄舊的全站 key，舊 key 保留", () => {
     storage.setItem("sproutly_favorites", JSON.stringify(["p1", "other-store-p9"]));
     assert.deepEqual(getFavoriteIds("shop"), ["p1", "other-store-p9"]);

@@ -28,7 +28,12 @@ export function getFavoriteIds(slug: string): string[] {
     }
     const arr = JSON.parse(raw);
     if (!Array.isArray(arr)) return [];
-    return arr.filter((x): x is string => typeof x === "string");
+    // 同一個 id 出現兩次（舊資料或被動過）只留第一次出現的位置。以前原樣讀出：
+    // nav 愛心徽章用 length 算，一株收藏兩次就顯示 2，收藏頁卻只有一張卡；
+    // 收藏頁的幽靈清理只比「有沒有回來」，重複的那筆兩份都留著，永遠清不掉。
+    return [
+      ...new Set(arr.filter((x): x is string => typeof x === "string")),
+    ];
   } catch {
     return [];
   }
