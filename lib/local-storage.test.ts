@@ -488,6 +488,23 @@ describe("recent-products：最近看過小抄", () => {
     assert.ok(!Number.isNaN(Date.parse(got[0].viewedAt)));
   });
 
+  it("同一株出現兩次時讀回只留第一筆（最新看的那筆），順序不變", () => {
+    storage.setItem(
+      "sproutly_recent_products_shop",
+      JSON.stringify([
+        { ...sample, name: "新快照", viewedAt: "2026-09-09T00:00:00.000Z" },
+        { ...sample, id: "p2", viewedAt: "2026-09-08T00:00:00.000Z" },
+        { ...sample, name: "舊快照", viewedAt: "2026-09-07T00:00:00.000Z" },
+      ])
+    );
+    const got = getRecentProducts("shop");
+    assert.deepEqual(
+      got.map((p) => p.id),
+      ["p1", "p2"]
+    );
+    assert.equal(got[0].name, "新快照");
+  });
+
   it("最多只留 12 筆，舊的從尾端掉出去", () => {
     for (let i = 1; i <= 15; i += 1) {
       rememberProduct("shop", { ...sample, id: `p${i}` });

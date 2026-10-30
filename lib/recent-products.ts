@@ -64,7 +64,12 @@ export function parseRecentProducts(raw: string | null): RecentProduct[] {
         currency: x.currency as string,
         image: (x.image ?? null) as string | null,
         viewedAt: x.viewedAt as string,
-      }));
+      }))
+      // 同一株出現兩次（舊資料或被動過）時只留第一次出現的那筆——陣列本來就是最新看的
+      // 排前面，留前面那筆就是留最近一次看的快照。不去重的話「最近看過」一排會把同一株
+      // 列兩張卡、key={p.id} 重複，清死連結那次 fetch 的 ids 也會帶兩份。比照
+      // favorites 的 getFavoriteIds，讀回時去重，下次 rememberProduct 寫入就自動修好。
+      .filter((p, i, list) => list.findIndex((q) => q.id === p.id) === i);
   } catch {
     return [];
   }
