@@ -747,4 +747,22 @@ describe("recent-orders：這台裝置上的最近訂單小抄", () => {
       [sample]
     );
   });
+
+  it("同一筆訂單出現兩次時讀回只留第一筆（最新記的那筆），順序不變", () => {
+    storage.setItem(
+      "sproutly_recent_orders_shop",
+      JSON.stringify([
+        { ...sample, createdAt: "2026-09-12T00:00:00.000Z" },
+        { ...sample, shortId: "E5F6A7B8" },
+        { ...sample, totalCents: 1 },
+      ])
+    );
+    const got = getRecentOrders("shop");
+    assert.deepEqual(
+      got.map((o) => o.shortId),
+      ["A1B2C3D4", "E5F6A7B8"]
+    );
+    assert.equal(got[0].createdAt, "2026-09-12T00:00:00.000Z");
+    assert.equal(got[0].totalCents, 199000);
+  });
 });

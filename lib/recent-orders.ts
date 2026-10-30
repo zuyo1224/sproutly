@@ -56,7 +56,14 @@ export function parseRecentOrders(raw: string | null): RecentOrder[] {
         totalCents: Number(x.totalCents),
         currency: x.currency as string,
         createdAt: x.createdAt as string,
-      }));
+      }))
+      // 同一筆訂單出現兩次（舊資料或被動過）時只留第一次出現的那筆——rememberOrder
+      // 永遠把最新的放前面，留前面那筆就是留最近一次記的。不去重的話查單頁「最近訂單」
+      // 會把同一筆列兩次、key={o.shortId} 重複。比照 recent-products 的讀回去重，
+      // 下次 rememberOrder 寫入就自動修好。
+      .filter(
+        (o, i, list) => list.findIndex((q) => q.shortId === o.shortId) === i
+      );
   } catch {
     return [];
   }
