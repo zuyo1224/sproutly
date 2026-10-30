@@ -70,7 +70,7 @@ import { isInlineHomepageTextField } from "@/lib/inline-homepage-text-fields";
 // SECTION_LINE_STYLE_OPTIONS：實線／虛線／點線的分隔線／底線／外框／色條／卡片框線五格，再收五格。
 // SECTION_TEXT_SCALE_OPTIONS／SECTION_TEXT_TONE_OPTIONS：中檔寫「預設」（不是「跟預設」）的
 // 內文／標題大小兩格、標題／卡片品名用色兩格，再收四格。
-import { applySectionStylePatch, SECTION_BG_STRENGTH_OPTIONS, SECTION_BODY_TRACKING_EM, SECTION_BORDER_RADIUS_PX, SECTION_GAP_OPTIONS, SECTION_HEADING_SCALE, SECTION_LEADING_OPTIONS, SECTION_LINE_STYLE_OPTIONS, SECTION_LINE_TONE_OPTIONS, SECTION_LINE_WEIGHT_OPTIONS, SECTION_MIN_HEIGHT_VH, SECTION_SCALE_OPTIONS, SECTION_TEXT_SCALE_OPTIONS, SECTION_TEXT_TONE_OPTIONS, SECTION_TRACKING_OPTIONS, SECTION_WEIGHT_OPTIONS, type SectionStylePatch } from "@/lib/section-style-schema";
+import { applySectionStylePatch, sanitizeSectionStyle, SECTION_BG_STRENGTH_OPTIONS, SECTION_BODY_TRACKING_EM, SECTION_BORDER_RADIUS_PX, SECTION_GAP_OPTIONS, SECTION_HEADING_SCALE, SECTION_LEADING_OPTIONS, SECTION_LINE_STYLE_OPTIONS, SECTION_LINE_TONE_OPTIONS, SECTION_LINE_WEIGHT_OPTIONS, SECTION_MIN_HEIGHT_VH, SECTION_SCALE_OPTIONS, SECTION_TEXT_SCALE_OPTIONS, SECTION_TEXT_TONE_OPTIONS, SECTION_TRACKING_OPTIONS, SECTION_WEIGHT_OPTIONS, type SectionStylePatch } from "@/lib/section-style-schema";
 import { contrastRatio, relativeLuminance } from "@/lib/color-contrast";
 import { normalizeHexColor } from "@/lib/hex-color";
 // 版面「只認清單內的值」的 44 格＋排成幾欄 6 格，型別直接從 lib/theme-layout-choices 那張表導出，
@@ -581,10 +581,13 @@ export function EditorWorkspace({
       if (
         isPlainObject(parsed) &&
         // 用 lib/theme-keys 的 guard 過濾 localStorage 殘留的舊 key（schema 變化後保護）
-        isSectionKey(parsed.source) &&
-        isPlainObject(parsed.fields)
+        isSectionKey(parsed.source)
       ) {
-        setStyleClipboard({ source: parsed.source, fields: parsed.fields });
+        // 欄位也要清：以前只看 fields 是不是物件，改版後拿掉的欄位、不再合法的值會原樣
+        // 貼進編輯中的 theme（預覽照吃），「已貼上 N 項樣式」也把垃圾算進去。跟公開頁讀回、
+        // 存檔走同一支清洗，清完一欄不剩就當沒有 clipboard。
+        const fields = sanitizeSectionStyle(parsed.fields);
+        if (fields) setStyleClipboard({ source: parsed.source, fields });
       }
     } catch {
       // localStorage / JSON parse 壞了忽略，clipboard 維持 null
