@@ -121,6 +121,20 @@ describe("cart：getCart 讀回來時清洗", () => {
     assert.deepEqual(getCart("shop"), [{ productId: "ok", qty: 1 }]);
   });
 
+  it("productId 是空字串、只有空白、或含逗號的項目丟掉（購物車頁清不掉、徽章卻照算）", () => {
+    storage.setItem(
+      "sproutly_cart_shop",
+      JSON.stringify([
+        { productId: "", qty: 2 },
+        { productId: "   ", qty: 1 },
+        { productId: "a,b", qty: 1 },
+        { productId: "ok", qty: 1 },
+      ])
+    );
+    assert.deepEqual(getCart("shop"), [{ productId: "ok", qty: 1 }]);
+    assert.equal(getCartCount("shop"), 1);
+  });
+
   it("qty 夾到 1-99 的整數：0 與負數變 1、超量變 99、小數往下取整、數字字串轉數字", () => {
     storage.setItem(
       "sproutly_cart_shop",

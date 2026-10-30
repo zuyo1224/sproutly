@@ -26,6 +26,11 @@ export function getCart(slug: string): CartItem[] {
     const items: CartItem[] = [];
     for (const x of arr) {
       if (!x || typeof x.productId !== "string") continue;
+      // 空字串或含逗號的 id 也丟掉：購物車頁把 id 用逗號 join 成 idsKey 去抓商品、
+      // 清幽靈商品時再用逗號切回來比對。空 id 讓 idsKey 變空字串、直接當空車不抓也不清；
+      // 含逗號的 id 被切成兩段，removeFromCart 永遠對不到原本那筆。兩種都會一直留在
+      // localStorage，nav 徽章照算件數、購物車頁卻看不到，客人找不到地方清。
+      if (x.productId.trim() === "" || x.productId.includes(",")) continue;
       const qty = clampQty(x.qty);
       if (qty === null) continue;
       const existing = items.find((i) => i.productId === x.productId);
