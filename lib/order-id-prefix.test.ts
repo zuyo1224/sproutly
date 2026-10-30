@@ -34,4 +34,13 @@ describe("isOrderIdPrefixQuery", () => {
     assert.equal(isOrderIdPrefixQuery("訂單a1b2c3d4"), false);
     assert.equal(isOrderIdPrefixQuery("a1b2c3d4%"), false);
   });
+
+  it("dash 不在 UUID 該有的位置不放行（不可能相符）", () => {
+    assert.equal(isOrderIdPrefixQuery("--------"), false);
+    assert.equal(isOrderIdPrefixQuery("a1b2-c3d4"), false);
+    assert.equal(isOrderIdPrefixQuery("a1b2c3d4e"), false);
+    assert.equal(isOrderIdPrefixQuery("a1b2c3d4-e5f6g"), false);
+    assert.equal(isOrderIdPrefixQuery("a1b2c3d4-e5f-"), false);
+    assert.equal(isOrderIdPrefixQuery("a1b2c3d4-e5f6-"), true);
+  });
 });

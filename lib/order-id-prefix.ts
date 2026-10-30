@@ -15,10 +15,23 @@ export const ORDER_ID_PREFIX_MIN = 8;
 // UUID 完整長度；有人貼整串完整 UUID 也要查得到。
 export const ORDER_ID_PREFIX_MAX = 36;
 
+// UUID 的 dash 只出現在第 9、14、19、24 碼（8-4-4-4-12），其他位置一定是 16 進位。
+// 以前只看「字元在 0-9a-f- 之內」，「--------」或「a1b2-c3d4」這種 dash 放錯位置的
+// 照樣放行，跟任何 UUID 都不可能 startsWith 相符，卻一樣撈一輪電話、落空再撈整家店。
+const UUID_DASH_POSITIONS = new Set([8, 13, 18, 23]);
+
 export function isOrderIdPrefixQuery(shortId: string): boolean {
-  return (
-    shortId.length >= ORDER_ID_PREFIX_MIN &&
-    shortId.length <= ORDER_ID_PREFIX_MAX &&
-    /^[0-9a-f-]+$/.test(shortId)
-  );
+  if (
+    shortId.length < ORDER_ID_PREFIX_MIN ||
+    shortId.length > ORDER_ID_PREFIX_MAX
+  ) {
+    return false;
+  }
+  for (let i = 0; i < shortId.length; i++) {
+    const ok = UUID_DASH_POSITIONS.has(i)
+      ? shortId[i] === "-"
+      : /[0-9a-f]/.test(shortId[i]);
+    if (!ok) return false;
+  }
+  return true;
 }
