@@ -20,6 +20,7 @@ type Product = {
 import { formatPrice } from "@/lib/format-price";
 import { isSoldOut, maxSelectableQty } from "@/lib/product-stock";
 import { fetchProductsByIds } from "@/lib/fetch-products-by-ids";
+import { isUuid } from "@/lib/uuid";
 import { displayableImageUrls } from "@/lib/image-url";
 
 function withoutKey(obj: Record<string, boolean>, key: string) {
@@ -194,10 +195,15 @@ export default function CartPage() {
         // 購物車內容一致。安全前提：只有在「至少有一項商品成功撈回」時才清——整批回空可能是
         // 店家暫時整間下架或一時抓不到（API 對未發布店面也回空陣列），那種情況寧可留著不動，
         // 免得把一車有效商品整個清光。
-        if (!cancelled && data.length > 0) {
+        // 不是 UUID 的 id 例外，不論回幾筆都清：API 一開始就把它們濾掉不查，永遠不可能
+        // 撈回來。以前車裡只剩這種 id 時 API 必回空陣列、上面的安全閥擋住不清，徽章一直
+        // 算著幾件、購物車頁卻是空的，客人怎麼都清不掉。
+        if (!cancelled) {
           const returnedIds = new Set(data.map((p) => p.id));
           for (const id of idsKey.split(",")) {
-            if (!returnedIds.has(id)) removeFromCart(slug, id);
+            if (!isUuid(id) || (data.length > 0 && !returnedIds.has(id))) {
+              removeFromCart(slug, id);
+            }
           }
         }
       } catch {
