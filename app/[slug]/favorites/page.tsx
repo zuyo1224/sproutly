@@ -20,6 +20,7 @@ import { isSoldOut, isLowStock, stockAriaSuffix } from "@/lib/product-stock";
 import { getFavoriteIds, setFavoriteIds } from "@/lib/favorites";
 import { displayableImageUrls } from "@/lib/image-url";
 import { fetchProductsByIds } from "@/lib/fetch-products-by-ids";
+import { isUuid } from "@/lib/uuid";
 
 export default function FavoritesPage() {
   const params = useParams();
@@ -90,10 +91,15 @@ export default function FavoritesPage() {
         // 共用 key 播種帶進來的別店 id 也在這裡順勢修掉。安全前提同購物車：只有在
         // 「至少撈回一株」時才清——整批回空可能是店家暫時整間下架或一時抓不到（API 對
         // 未發布店面也回空陣列），那種情況寧可留著不動，免得把整批有效收藏清光。
-        if (!cancelled && data.length > 0) {
+        // 不是 UUID 的 id 例外，不論回幾筆都清：API 一開始就把它們濾掉不查，永遠不可能
+        // 撈回來。以前收藏裡只剩這種 id 時 API 必回空陣列、上面的安全閥擋住不清，愛心
+        // 徽章一直算著幾件、收藏頁卻是空的，客人怎麼都清不掉。
+        if (!cancelled) {
           const returnedIds = new Set(data.map((p) => p.id));
           const stored = getFavoriteIds(slug);
-          const cleaned = stored.filter((id) => returnedIds.has(id));
+          const cleaned = stored.filter(
+            (id) => isUuid(id) && (data.length === 0 || returnedIds.has(id))
+          );
           if (cleaned.length !== stored.length) {
             setFavoriteIds(slug, cleaned);
           }
