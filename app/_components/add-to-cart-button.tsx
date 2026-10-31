@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
-import { addToCart, getCart, getCartCount } from "@/lib/cart";
+import { addToCart, getCart, getCartBadgeCount } from "@/lib/cart";
 import { CART_MAX_LINES } from "@/lib/cart-payload";
 
 type Props = {
@@ -79,7 +79,7 @@ export function AddToCartButton({
   // 掛載先讀一次（可能先前頁面已加過），並跟著購物車變動同步——
   // addToCart / updateQty / remove 都會 dispatch 這個事件，數字才不會過時。
   useEffect(() => {
-    const sync = () => setCount(getCartCount(slug));
+    const sync = () => setCount(getCartBadgeCount(slug));
     sync();
     window.addEventListener("sproutly-cart-changed", sync);
     return () =>

@@ -2,6 +2,7 @@
 
 import { QTY_MIN, QTY_MAX, clampQty } from "./product-quantity.ts";
 import { CART_MAX_LINES } from "./cart-payload.ts";
+import { isUuid } from "./uuid.ts";
 
 export type CartItem = {
   productId: string;
@@ -111,6 +112,17 @@ export function removeFromCart(slug: string, productId: string) {
 
 export function getCartCount(slug: string): number {
   return getCart(slug).reduce((s, i) => s + i.qty, 0);
+}
+
+// 導覽列徽章、商品頁「去購物車（N 件）」用的件數：只算 id 是 UUID 的那幾筆。
+// 不是 UUID 的 id 永遠撈不到商品（favorites/api 一開始就濾掉不查），購物車頁也不會
+// 顯示，要等客人打開購物車頁才會被清掉（deadProductIds）。以前徽章直接用
+// getCartCount 全部加總，客人沒進購物車頁之前，徽章一直比購物車實際內容多。
+// getCartCount 本身不動：它是「localStorage 裡存了幾件」，測試與其他呼叫端照舊。
+export function getCartBadgeCount(slug: string): number {
+  return getCart(slug)
+    .filter((i) => isUuid(i.productId))
+    .reduce((s, i) => s + i.qty, 0);
 }
 
 export function clearCart(slug: string) {

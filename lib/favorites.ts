@@ -7,6 +7,8 @@
 // 導覽列的愛心徽章也把別店收藏算進來，數字跟頁面內容永遠對不上。
 // 改成 per-store key 後兩個症狀一起消失，清理邏輯回歸它原本的正當用途。
 
+import { isUuid } from "./uuid.ts";
+
 const KEY_PREFIX = "sproutly_favorites_";
 // 換 key 前的全站共用舊 key。第一次讀某家店的收藏時，如果 per-store key 還不存在
 // 就整份抄過來當起點（含別店 id 也無妨，收藏頁的清理會把不屬於這家店的修掉），
@@ -47,4 +49,11 @@ export function setFavoriteIds(slug: string, ids: string[]) {
   } catch {
     /* ignore */
   }
+}
+
+// 導覽列愛心徽章用的件數：只算 UUID 的 id。理由同 cart.ts 的 getCartBadgeCount——
+// 非 UUID 的收藏永遠撈不到商品、收藏頁不會顯示，要等客人打開收藏頁才清得掉，
+// 在那之前徽章不該把它們算進去。
+export function getFavoriteBadgeCount(slug: string): number {
+  return getFavoriteIds(slug).filter(isUuid).length;
 }

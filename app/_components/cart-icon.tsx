@@ -2,7 +2,7 @@
 
 import { useCallback, useSyncExternalStore } from "react";
 import Link from "next/link";
-import { getCartCount } from "@/lib/cart";
+import { getCartBadgeCount } from "@/lib/cart";
 
 export function CartIcon({ slug }: { slug: string }) {
   // 購物車件數存在瀏覽器的 localStorage 裡，不是 React 自己管的資料。
@@ -21,7 +21,7 @@ export function CartIcon({ slug }: { slug: string }) {
   }, []);
   const count = useSyncExternalStore(
     subscribe,
-    () => getCartCount(slug),
+    () => getCartBadgeCount(slug),
     () => 0,
   );
 

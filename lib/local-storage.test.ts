@@ -16,6 +16,7 @@ import {
   addToCart,
   clearCart,
   getCart,
+  getCartBadgeCount,
   getCartCount,
   removeFromCart,
   setCart,
@@ -24,6 +25,7 @@ import {
 import { CART_MAX_LINES } from "./cart-payload.ts";
 import {
   FAVORITES_CHANGED_EVENT,
+  getFavoriteBadgeCount,
   getFavoriteIds,
   setFavoriteIds,
 } from "./favorites.ts";
@@ -446,6 +448,33 @@ describe("favorites：per-store key 與舊全站 key 的播種", () => {
     } finally {
       g.window = fakeWindow;
     }
+  });
+});
+
+describe("徽章件數只算 UUID 的 id", () => {
+  const U1 = "11111111-1111-4111-8111-111111111111";
+  const U2 = "22222222-2222-4222-8222-222222222222";
+
+  it("購物車徽章跳過非 UUID 的列，getCartCount 照舊全算", () => {
+    setCart("shop", [
+      { productId: U1, qty: 2 },
+      { productId: "legacy-id", qty: 5 },
+      { productId: U2, qty: 1 },
+    ]);
+    assert.equal(getCartBadgeCount("shop"), 3);
+    assert.equal(getCartCount("shop"), 8);
+  });
+
+  it("車裡只剩非 UUID 的列時徽章是 0", () => {
+    setCart("shop", [{ productId: "legacy-id", qty: 4 }]);
+    assert.equal(getCartBadgeCount("shop"), 0);
+  });
+
+  it("收藏徽章跳過非 UUID 的 id", () => {
+    setFavoriteIds("shop", [U1, "legacy-id", U2.toUpperCase()]);
+    assert.equal(getFavoriteBadgeCount("shop"), 2);
+    setFavoriteIds("shop", ["legacy-id"]);
+    assert.equal(getFavoriteBadgeCount("shop"), 0);
   });
 });
 

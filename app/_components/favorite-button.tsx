@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import {
   FAVORITES_CHANGED_EVENT,
+  getFavoriteBadgeCount,
   getFavoriteIds,
   setFavoriteIds,
 } from "@/lib/favorites";
@@ -88,7 +89,7 @@ export function FavoritesCounter({
   const [count, setCount] = useState(0);
 
   useEffect(() => {
-    const onChange = () => setCount(getFavoriteIds(slug).length);
+    const onChange = () => setCount(getFavoriteBadgeCount(slug));
     onChange();
     window.addEventListener(FAVORITES_CHANGED_EVENT, onChange);
     window.addEventListener("storage", onChange);
