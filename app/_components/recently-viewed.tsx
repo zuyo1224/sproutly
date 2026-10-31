@@ -14,7 +14,7 @@ import {
 import { formatPrice } from "@/lib/format-price";
 import { isSoldOut, isLowStock, stockAriaSuffix } from "@/lib/product-stock";
 import { buildUrl } from "@/lib/url";
-import { isUuid } from "@/lib/uuid";
+import { deadProductIds } from "@/lib/dead-product-ids";
 
 // 不訂閱任何事件：這排只在「清掉下架商品」時改小抄，那次會跟著 setStockById 重畫、
 // 重畫時會現讀一次小抄，不需要另外通知。跟以前「掛載時讀一次」一樣不跟其他分頁同步。
@@ -94,13 +94,11 @@ export function RecentlyViewed({
             stockMap[String(d.id)] = d.stock;
           }
         }
-        const live = new Set(data.map((d) => String(d?.id)));
+        const returned = data.map((d) => String(d?.id));
         // 不是 UUID 的 id 例外，不論回幾筆都清：API 一開始就把它們濾掉不查，永遠不可能
         // 撈回來。以前小抄裡只剩這種 id 時 API 必回空陣列、上面的安全閥擋住不清，那幾張
         // 卡一直列著、點進去都是 404。比照購物車（5abaf89）、收藏頁（2a21339）同款修法。
-        const dead = ids.filter(
-          (id) => !isUuid(id) || (data.length > 0 && !live.has(id))
-        );
+        const dead = deadProductIds(ids, returned);
         // 先清小抄再 setStockById：這次 set 觸發的重畫會現讀小抄，下架的就跟著消失。
         if (dead.length > 0) removeRecentProducts(slug, dead);
         setStockById(stockMap);

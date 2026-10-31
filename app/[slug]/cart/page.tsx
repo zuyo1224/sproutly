@@ -20,7 +20,7 @@ type Product = {
 import { formatPrice } from "@/lib/format-price";
 import { isSoldOut, maxSelectableQty } from "@/lib/product-stock";
 import { fetchProductsByIds } from "@/lib/fetch-products-by-ids";
-import { isUuid } from "@/lib/uuid";
+import { deadProductIds } from "@/lib/dead-product-ids";
 import { displayableImageUrls } from "@/lib/image-url";
 
 function withoutKey(obj: Record<string, boolean>, key: string) {
@@ -199,12 +199,11 @@ export default function CartPage() {
         // 撈回來。以前車裡只剩這種 id 時 API 必回空陣列、上面的安全閥擋住不清，徽章一直
         // 算著幾件、購物車頁卻是空的，客人怎麼都清不掉。
         if (!cancelled) {
-          const returnedIds = new Set(data.map((p) => p.id));
-          for (const id of idsKey.split(",")) {
-            if (!isUuid(id) || (data.length > 0 && !returnedIds.has(id))) {
-              removeFromCart(slug, id);
-            }
-          }
+          const dead = deadProductIds(
+            idsKey.split(","),
+            data.map((p) => p.id)
+          );
+          for (const id of dead) removeFromCart(slug, id);
         }
       } catch {
         // 讀失敗就記下是這一輪失敗、別讓 products 停在 null 整頁卡骨架；車裡的 id/數量

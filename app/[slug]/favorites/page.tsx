@@ -20,7 +20,7 @@ import { isSoldOut, isLowStock, stockAriaSuffix } from "@/lib/product-stock";
 import { getFavoriteIds, setFavoriteIds } from "@/lib/favorites";
 import { displayableImageUrls } from "@/lib/image-url";
 import { fetchProductsByIds } from "@/lib/fetch-products-by-ids";
-import { isUuid } from "@/lib/uuid";
+import { deadProductIds } from "@/lib/dead-product-ids";
 
 export default function FavoritesPage() {
   const params = useParams();
@@ -95,11 +95,14 @@ export default function FavoritesPage() {
         // 撈回來。以前收藏裡只剩這種 id 時 API 必回空陣列、上面的安全閥擋住不清，愛心
         // 徽章一直算著幾件、收藏頁卻是空的，客人怎麼都清不掉。
         if (!cancelled) {
-          const returnedIds = new Set(data.map((p) => p.id));
           const stored = getFavoriteIds(slug);
-          const cleaned = stored.filter(
-            (id) => isUuid(id) && (data.length === 0 || returnedIds.has(id))
+          const dead = new Set(
+            deadProductIds(
+              stored,
+              data.map((p) => p.id)
+            )
           );
+          const cleaned = stored.filter((id) => !dead.has(id));
           if (cleaned.length !== stored.length) {
             setFavoriteIds(slug, cleaned);
           }
