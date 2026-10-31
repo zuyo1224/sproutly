@@ -11,6 +11,11 @@ import { fetchProductsByIds } from "./fetch-products-by-ids.ts";
 
 const realFetch = globalThis.fetch;
 
+// 這支只送 UUID 出去，測試用的 id 得長成 UUID 樣。n 填進最後 12 碼。
+const uid = (n: number) => `00000000-0000-4000-8000-${String(n).padStart(12, "0")}`;
+const A = uid(1);
+const B = uid(2);
+
 type Seen = { url: string; init: RequestInit | undefined };
 
 // 把全域 fetch 換成回固定內容的假貨，記下每次被怎麼叫。
@@ -30,17 +35,17 @@ afterEach(() => {
 describe("fetchProductsByIds（購物車／結帳補商品資料）", () => {
   it("打 /{slug}/favorites/api?ids=…、不走快取，陣列原樣回傳", async () => {
     const products = [
-      { id: "a", name: "龜背芋" },
-      { id: "b", name: "琴葉榕" },
+      { id: A, name: "龜背芋" },
+      { id: B, name: "琴葉榕" },
     ];
     const seen = stubFetch(200, products);
     const out = await fetchProductsByIds<{ id: string; name: string }>(
       "plant-shop",
-      "a,b"
+      `${A},${B}`
     );
 
     assert.equal(seen.length, 1);
-    assert.equal(seen[0].url, "/plant-shop/favorites/api?ids=a%2Cb");
+    assert.equal(seen[0].url, `/plant-shop/favorites/api?ids=${A}%2C${B}`);
     assert.equal(seen[0].init?.cache, "no-store");
     assert.deepEqual(out, products);
   });
@@ -52,21 +57,21 @@ describe("fetchProductsByIds（購物車／結帳補商品資料）", () => {
 
   it("回應不 ok 時 throw，訊息帶狀態碼", async () => {
     stubFetch(500, { error: "boom" });
-    await assert.rejects(fetchProductsByIds("s", "a"), /商品資料抓取失敗: 500/);
+    await assert.rejects(fetchProductsByIds("s", A), /商品資料抓取失敗: 500/);
   });
 
   it("回應 ok 但內容不是陣列（API 回了錯誤物件）也 throw，不讓呼叫端炸在 .map", async () => {
     stubFetch(200, { error: "not found" });
-    await assert.rejects(fetchProductsByIds("s", "a"), /回傳非陣列/);
+    await assert.rejects(fetchProductsByIds("s", A), /回傳非陣列/);
   });
 
   it("回 null 同樣當失敗", async () => {
     stubFetch(200, null);
-    await assert.rejects(fetchProductsByIds("s", "a"), /回傳非陣列/);
+    await assert.rejects(fetchProductsByIds("s", A), /回傳非陣列/);
   });
 
   it("超過 100 個 id 時每 100 個切一批打、結果合併；重複 id 只查一次", async () => {
-    const ids = Array.from({ length: 250 }, (_, i) => `id${i}`);
+    const ids = Array.from({ length: 250 }, (_, i) => uid(i));
     const seen: string[] = [];
     globalThis.fetch = (async (url: string) => {
       seen.push(url);
@@ -77,7 +82,7 @@ describe("fetchProductsByIds（購物車／結帳補商品資料）", () => {
     }) as typeof fetch;
     const out = await fetchProductsByIds<{ id: string }>(
       "s",
-      [...ids, "id0", "id1"].join(",")
+      [...ids, uid(0), uid(1)].join(",")
     );
     assert.equal(seen.length, 3);
     assert.deepEqual(
@@ -95,7 +100,19 @@ describe("fetchProductsByIds（購物車／結帳補商品資料）", () => {
         ? new Response("{}", { status: 414 })
         : new Response("[]", { status: 200 });
     }) as typeof fetch;
-    const ids = Array.from({ length: 150 }, (_, i) => `id${i}`).join(",");
+    const ids = Array.from({ length: 150 }, (_, i) => uid(i)).join(",");
     await assert.rejects(fetchProductsByIds("s", ids), /商品資料抓取失敗: 414/);
+  });
+
+  it("不是 UUID 的 id 不送出去；全部都不是時不打網路、直接回空陣列", async () => {
+    const seen = stubFetch(200, [{ id: A }]);
+    const long = "x".repeat(5000);
+    await fetchProductsByIds("s", `${A},abc,${long},,`);
+    assert.equal(seen.length, 1);
+    assert.equal(new URL(seen[0].url, "http://x").searchParams.get("ids"), A);
+
+    seen.length = 0;
+    assert.deepEqual(await fetchProductsByIds("s", `abc,${long}`), []);
+    assert.equal(seen.length, 0);
   });
 });

@@ -10,7 +10,13 @@
 // 380 個 UUID）被打回，收藏頁整頁變讀取失敗、購物車同樣拿不到商品資料。100 件以內
 // 跟以前一樣只打一次、網址一字不變。任何一批失敗就整支 throw，不回半套：呼叫端只要
 // 拿到一筆就會把沒回來的 id 當下架從 localStorage 清掉，半套結果會誤刪真收藏。
+//
+// 不是 UUID 的 id 這裡就先丟掉、不送出去：API 收到也是濾掉不查，送了只是白佔網址長度。
+// 以前一個超長的壞 id 就能讓整條網址超過上限被打回，整支 throw、購物車／收藏頁卡在
+// 「讀取失敗」，而呼叫端只在成功時才清幽靈（deadProductIds），壞 id 永遠清不掉。
+// 全部都不是 UUID 時直接回空陣列、不打網路，呼叫端照樣能把它們清掉。
 import { buildUrl } from "./url.ts";
+import { isUuid } from "./uuid.ts";
 
 const IDS_PER_REQUEST = 100;
 
@@ -23,7 +29,7 @@ export async function fetchProductsByIds<T>(
       idsParam
         .split(",")
         .map((s) => s.trim())
-        .filter(Boolean)
+        .filter((s) => s && isUuid(s))
     )
   );
   if (ids.length === 0) return [];
