@@ -5,6 +5,7 @@ import {
   ORDER_FAILED_MESSAGE,
   PRODUCT_UNAVAILABLE_ERROR,
   QTY_INVALID_ERROR,
+  isStockCheckoutError,
   knownCheckoutError,
 } from "./checkout-error-message.ts";
 import { NAME_REQUIRED_ERROR, NOTE_TOO_LONG_ERROR } from "./checkout-fields.ts";
@@ -44,6 +45,35 @@ describe("knownCheckoutError", () => {
       stockConflictError("龜背芋"),
     ]) {
       assert.equal(knownCheckoutError(text), undefined);
+    }
+  });
+});
+
+describe("isStockCheckoutError", () => {
+  it("庫存不夠與撞單的句子算", () => {
+    for (const text of [
+      insufficientStockError(0),
+      insufficientStockError(-3),
+      insufficientStockError(2),
+      stockConflictError(),
+    ]) {
+      assert.equal(isStockCheckoutError(text), true);
+    }
+  });
+
+  it("其他句子與網址上被塞的不算", () => {
+    for (const text of [
+      undefined,
+      "",
+      ORDER_FAILED_MESSAGE,
+      PRODUCT_UNAVAILABLE_ERROR,
+      QTY_INVALID_ERROR,
+      NAME_REQUIRED_ERROR,
+      "庫存只剩 02 件",
+      "庫存只剩 2 件，請加 LINE 客服",
+      stockConflictError("龜背芋"),
+    ]) {
+      assert.equal(isStockCheckoutError(text), false);
     }
   });
 });

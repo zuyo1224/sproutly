@@ -61,3 +61,13 @@ export function knownCheckoutError(text: string | undefined): string | undefined
   if (m && insufficientStockError(Number(m[1])) === text) return text;
   return undefined;
 }
+
+// 這句是不是「庫存不夠／撞單」那一類（送出前檢查與扣庫存失敗會帶的那幾句）。
+// 結帳頁被這類句子退回時，頁面會用重新撈到的庫存另外講現況（售完框、數量調整框），
+// 網址上那句只是送出當下的庫存，跟現況可能已經對不上，頁面要知道是哪一類才能挑一句講。
+export function isStockCheckoutError(text: string | undefined): boolean {
+  if (!text) return false;
+  if (text === insufficientStockError(0) || text === stockConflictError()) return true;
+  const m = STOCK_LEFT_RE.exec(text);
+  return Boolean(m && insufficientStockError(Number(m[1])) === text);
+}

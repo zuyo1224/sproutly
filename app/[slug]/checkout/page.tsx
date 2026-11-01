@@ -11,6 +11,7 @@ import { QTY_MIN, clampQty } from "@/lib/product-quantity";
 import { clampToStock } from "@/lib/product-stock";
 import { isUuid } from "@/lib/uuid";
 import {
+  isStockCheckoutError,
   knownCheckoutError,
   PRODUCT_UNAVAILABLE_ERROR,
 } from "@/lib/checkout-error-message";
@@ -120,6 +121,18 @@ export default async function CheckoutPage({
     quantity
   );
   const total = product.price_cents * effectiveQty;
+  // 被「庫存只剩 N 件／已售完／撞單」退回時，網址上那句是送出當下的庫存，這頁剛重撈的
+  // 才是現況。以前兩句一起擺：紅框「庫存只剩 2 件」配琥珀框「只剩 2 件，已調整成 2 件」
+  // 講兩次同一件事，售完時紅框「商品已售完」配售完框也一樣；別人訂單失敗把庫存加回來、
+  // 現在其實夠了時，紅框還說只剩 2 件，畫面卻照原數量給買。而且三個框都沒講「訂單沒有
+  // 送出」。改成：這類退回只講一次、照現況講，並講明這筆沒送出。
+  const stockRejected = isStockCheckoutError(error);
+  const shownError =
+    stockRejected && (soldOut || wasClamped)
+      ? undefined
+      : stockRejected
+        ? "庫存剛剛有變動，這筆訂單沒有送出，請確認數量後再送出一次"
+        : error;
   // 摘要縮圖先濾掉店面注定顯示不出的舊值（http://、半截網址、空白），跟逛街頁同一條線。
   const thumb = displayableImageUrls(product.image_urls)[0];
   const placeBound = placeOrder.bind(null, slug);
@@ -178,7 +191,7 @@ export default async function CheckoutPage({
         </p>
       </header>
 
-      {error && (
+      {shownError && (
         <div
           role="alert"
           className="mb-10 rounded-2xl p-5"
@@ -195,7 +208,7 @@ export default async function CheckoutPage({
             <span aria-hidden="true">Notice</span><span className="sr-only">提醒</span>
           </p>
           <p className="text-sm" style={{ lineHeight: 1.6 }}>
-            {error}
+            {shownError}
           </p>
         </div>
       )}
@@ -217,7 +230,9 @@ export default async function CheckoutPage({
             <span aria-hidden="true">Sold Out · </span>已售完
           </p>
           <p className="text-sm" style={{ lineHeight: 1.6 }}>
-            這株目前沒有庫存了，沒辦法下單。可以回去看看店裡其他的。
+            {stockRejected
+              ? "這株在你填資料的時候賣完了，這筆訂單沒有送出。可以回去看看店裡其他的。"
+              : "這株目前沒有庫存了，沒辦法下單。可以回去看看店裡其他的。"}
           </p>
           <Link
             href={`/${slug}/shop`}
@@ -247,7 +262,9 @@ export default async function CheckoutPage({
             <span aria-hidden="true">Notice · </span>庫存提醒
           </p>
           <p className="text-sm" style={{ lineHeight: 1.6 }}>
-            這株目前只剩 {product.stock} 件，數量已自動調整成 {effectiveQty} 件。
+            {stockRejected
+              ? `這筆訂單沒有送出：這株在你填資料的時候被買走一些，現在只剩 ${product.stock} 件，數量已調整成 ${effectiveQty} 件，確認後再送出一次。`
+              : `這株目前只剩 ${product.stock} 件，數量已自動調整成 ${effectiveQty} 件。`}
           </p>
         </div>
       )}
