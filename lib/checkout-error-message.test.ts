@@ -7,6 +7,9 @@ import {
   QTY_INVALID_ERROR,
   isStockCheckoutError,
   knownCheckoutError,
+  CART_PRODUCT_INVALID_ERROR,
+  CART_PRODUCT_UNAVAILABLE_ERROR,
+  isCartProductChangeError,
 } from "./checkout-error-message.ts";
 import { NAME_REQUIRED_ERROR, NOTE_TOO_LONG_ERROR } from "./checkout-fields.ts";
 import { shippingDetailError } from "./order-labels.ts";
@@ -74,6 +77,34 @@ describe("isStockCheckoutError", () => {
       stockConflictError("龜背芋"),
     ]) {
       assert.equal(isStockCheckoutError(text), false);
+    }
+  });
+});
+
+describe("isCartProductChangeError", () => {
+  it("購物車結帳退件裡「商品變了」的句子算（含品名）", () => {
+    for (const text of [
+      CART_PRODUCT_UNAVAILABLE_ERROR,
+      CART_PRODUCT_INVALID_ERROR,
+      insufficientStockError(0, "龜背芋"),
+      insufficientStockError(3, "龜背芋"),
+      stockConflictError("龜背芋"),
+    ]) {
+      assert.equal(isCartProductChangeError(text), true);
+    }
+  });
+
+  it("欄位錯誤與其他句子不算", () => {
+    for (const text of [
+      null,
+      undefined,
+      "",
+      NAME_REQUIRED_ERROR,
+      NOTE_TOO_LONG_ERROR,
+      "店面不存在",
+      "訂單建立失敗",
+    ]) {
+      assert.equal(isCartProductChangeError(text), false);
     }
   });
 });

@@ -71,3 +71,23 @@ export function isStockCheckoutError(text: string | undefined): boolean {
   const m = STOCK_LEFT_RE.exec(text);
   return Boolean(m && insufficientStockError(Number(m[1])) === text);
 }
+
+// 購物車結帳（app/[slug]/cart/checkout/submit）退件時，「車裡商品變了」那一類句子。
+// 這類退件後結帳頁會背景重抓商品、用現況另外講（下架框、售完框、數量調整框），伺服器那句
+// 是送出當下的狀況，重抓完可能已經對不上（例如又上架、庫存被加回來），頁面要知道是不是
+// 這一類才能改口。品名是店家自己取的、逐一列不完，所以比對固定的結尾。
+export const CART_PRODUCT_UNAVAILABLE_ERROR = "部分商品已下架，請重新確認購物車";
+export const CART_PRODUCT_INVALID_ERROR = "商品錯誤";
+const CART_STOCK_LEFT_RE = /庫存只剩 \d{1,9} 件$/;
+
+export function isCartProductChangeError(text: string | null | undefined): boolean {
+  if (!text) return false;
+  if (text === CART_PRODUCT_UNAVAILABLE_ERROR || text === CART_PRODUCT_INVALID_ERROR) {
+    return true;
+  }
+  return (
+    text.endsWith("已售完") ||
+    text.endsWith(stockConflictError()) ||
+    CART_STOCK_LEFT_RE.test(text)
+  );
+}

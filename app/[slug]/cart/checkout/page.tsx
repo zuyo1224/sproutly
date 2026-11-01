@@ -26,6 +26,7 @@ import { fetchProductsByIds } from "@/lib/fetch-products-by-ids";
 import { isUuid } from "@/lib/uuid";
 import { displayableImageUrls } from "@/lib/image-url";
 import { isPlainObject } from "@/lib/is-plain-object";
+import { isCartProductChangeError } from "@/lib/checkout-error-message";
 import { MAX_CUSTOMER_NAME_LEN, MAX_CUSTOMER_PHONE_LEN, MAX_CUSTOMER_EMAIL_LEN, MAX_SHIPPING_STORE_LEN, MAX_SHIPPING_ADDRESS_LEN, MAX_ORDER_NOTE_LEN } from "@/lib/checkout-fields";
 
 // 送出後「連線出狀況、看不出單有沒有成立」時給客人的話。不能寫成「送出失敗」——
@@ -54,6 +55,11 @@ export default function CartCheckoutPage() {
   // 重複送出改由這個 ref 擋：ref 同步生效，不必等 submitting 重畫，整單不會送兩張。
   const submittingRef = useRef(false);
   const [error, setError] = useState<string | null>(null);
+  // 錯誤框那句是「車裡商品變了」的伺服器退件、而且退件後背景重抓已經拿到現況。這時那句
+  // 只是送出當下的狀況，畫面改照重抓到的現況講（見 render 的 errorText）。
+  const [errorRefreshed, setErrorRefreshed] = useState(false);
+  // 第幾次送出。背景重抓回來時拿來比對，舊那次的重抓別蓋到新一次送出的狀態上。
+  const submitAttemptRef = useRef(0);
   const [shippingMethod, setShippingMethod] = useState("");
   const [storeName, setStoreName] = useState("");
   const [address, setAddress] = useState("");
@@ -244,6 +250,20 @@ export default function CartCheckoutPage() {
   // 下架跟售完一樣沒得救，兩種都把送出換成回購物車。
   const blocked = hasSoldOut || hasMissing;
 
+  // 「商品變了」被退件、重抓到現況之後，伺服器那句（送出當下的狀況）不再照講：
+  // - 現況還有下架／售完／數量被調整：收掉紅框，由下面的庫存提醒框講現況，並在那裡
+  //   講明這筆沒有送出（以前兩個框同一件事各講一次，數字還可能對不上）。
+  // - 現況已經正常（又上架、庫存被加回來、撞單但其實還夠）：紅框還說已下架／只剩 N 件，
+  //   表單卻好好的能送，客人不知道該不該再按，所以改講現況。
+  const refreshedNotice = errorRefreshed && Boolean(error);
+  const errorText =
+    refreshedNotice && (blocked || hasClamped)
+      ? null
+      : refreshedNotice
+      ? "購物車的商品剛剛有變動，現在都能結帳了。這筆訂單沒有送出，請確認後再送出一次。"
+      : error;
+  const notSentPrefix = refreshedNotice ? "這筆訂單沒有送出。" : "";
+
   const needsStore = shippingNeedsStore(shippingMethod);
   const needsAddress = shippingMethod === "home_delivery";
   const isPickup = shippingMethod === "pickup";
@@ -254,6 +274,7 @@ export default function CartCheckoutPage() {
     // 有商品售完就不送出，請客人回購物車調整（按鈕此時也已換成回購物車連結，
     // 這裡是雙保險，例如鍵盤直接 submit 表單）。只被夾住的照送，量已夾到庫存內。
     if (blocked) {
+      setErrorRefreshed(false);
       setError(
         hasMissing
           ? "購物車內有商品已下架，請回購物車確認後再結帳"
@@ -265,6 +286,8 @@ export default function CartCheckoutPage() {
     submittingRef.current = true;
     setSubmitting(true);
     setError(null);
+    setErrorRefreshed(false);
+    const attempt = ++submitAttemptRef.current;
     const form = e.currentTarget;
     const fd = new FormData(form);
     fd.set(
@@ -303,11 +326,16 @@ export default function CartCheckoutPage() {
         // 還是進來時撈的那份，送出鈕照在、再按一次還是同一句，也看不出是哪一件。背景重抓
         // 一次，下架／售完／數量調整的提示就會照現況跳出來。抓失敗就算了，不換成重試畫面
         // （那會蓋掉客人填好的表單），錯誤框已經講了原因。
+        // 重抓到之後，「商品變了」那類句子就改照現況講，不再照送出當下那句。
         fetchProductsByIds<Product>(
           slug,
           cart.map((c) => c.productId).join(",")
         )
-          .then(setProducts)
+          .then((fresh) => {
+            if (attempt !== submitAttemptRef.current) return;
+            setProducts(fresh);
+            if (isCartProductChangeError(serverError)) setErrorRefreshed(true);
+          })
           .catch(() => {});
         return;
       }
@@ -387,7 +415,7 @@ export default function CartCheckoutPage() {
         </p>
       </header>
 
-      {error && (
+      {errorText && (
         <div
           role="alert"
           className="mb-10 rounded-2xl p-5"
@@ -404,7 +432,7 @@ export default function CartCheckoutPage() {
             <span aria-hidden="true">Notice</span><span className="sr-only">提醒</span>
           </p>
           <p className="text-sm" style={{ lineHeight: 1.6 }}>
-            {error}
+            {errorText}
           </p>
         </div>
       )}
@@ -427,6 +455,7 @@ export default function CartCheckoutPage() {
             <span aria-hidden="true">Notice · </span>庫存提醒
           </p>
           <p className="text-sm" style={{ lineHeight: 1.6 }}>
+            {notSentPrefix}
             {hasMissing
               ? "購物車內有商品已下架，請回購物車確認後再結帳。"
               : hasSoldOut

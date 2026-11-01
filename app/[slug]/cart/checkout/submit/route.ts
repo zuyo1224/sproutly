@@ -9,6 +9,10 @@ import { formString, formStringOrNull } from "@/lib/form-fields";
 import { decrementStock, restoreStock } from "@/lib/stock-restore";
 import { insufficientStockError, stockConflictError } from "@/lib/product-stock";
 import { buildOrderRow, buildOrderItemRow } from "@/lib/order-rows";
+import {
+  CART_PRODUCT_INVALID_ERROR,
+  CART_PRODUCT_UNAVAILABLE_ERROR,
+} from "@/lib/checkout-error-message";
 
 type Params = Promise<{ slug: string }>;
 
@@ -75,7 +79,7 @@ export async function POST(
     .eq("is_active", true)
     .in("id", ids);
   if (!products || products.length !== ids.length) {
-    return NextResponse.json({ error: "部分商品已下架，請重新確認購物車" }, { status: 400 });
+    return NextResponse.json({ error: CART_PRODUCT_UNAVAILABLE_ERROR }, { status: 400 });
   }
 
   // 庫存檢查 + atomic 扣減（用 service_role）
@@ -88,7 +92,7 @@ export async function POST(
 
   for (const item of cartItems) {
     const product = products.find((p) => p.id === item.productId);
-    if (!product) return NextResponse.json({ error: "商品錯誤" }, { status: 400 });
+    if (!product) return NextResponse.json({ error: CART_PRODUCT_INVALID_ERROR }, { status: 400 });
     if (product.stock !== null) {
       // 扣減走 decrementStock 的重讀重試：頁面早前讀到的 stock 只當「有限量」
       // 的判斷，實際夠不夠以扣減當下重讀的為準——跟別的客人前後腳下單，
