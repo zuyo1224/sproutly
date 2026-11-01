@@ -217,6 +217,36 @@ export default function CartPage() {
     };
   }, [idsKey, slug, reloadKey, loadKey]);
 
+  // 上面只在進頁／車內容變了才抓。客人開著購物車去別的分頁比價、隔一陣子才回來，
+  // 這段期間商家下架或庫存賣掉了，頁面還是舊的那份：「去結帳」照亮、數量上限照舊，
+  // 要到結帳頁才發現不對。切回這個分頁時悄悄重抓一次，下架／售完／超量的提示照現況出來。
+  // 失敗就忽略、不換成重試畫面（手上那份還能用，結帳頁也會再查一次）。
+  useEffect(() => {
+    if (idsKey === "") return;
+    let cancelled = false;
+    async function refresh() {
+      if (document.visibilityState !== "visible") return;
+      try {
+        const data = await fetchProductsByIds<Product>(slug, idsKey);
+        if (cancelled) return;
+        setProducts(data);
+        // 跟進頁那次同一條規則清幽靈商品，徽章才不會多算剛被下架的那件。
+        const dead = deadProductIds(
+          idsKey.split(","),
+          data.map((p) => p.id)
+        );
+        for (const id of dead) removeFromCart(slug, id);
+      } catch {
+        // 手上那份照用。
+      }
+    }
+    document.addEventListener("visibilitychange", refresh);
+    return () => {
+      cancelled = true;
+      document.removeEventListener("visibilitychange", refresh);
+    };
+  }, [idsKey, slug]);
+
   useEffect(() => {
     const onChange = () => bumpCart((v) => v + 1);
     window.addEventListener("sproutly-cart-changed", onChange);
