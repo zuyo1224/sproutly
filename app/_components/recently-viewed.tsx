@@ -13,7 +13,7 @@ import {
 
 import { formatPrice } from "@/lib/format-price";
 import { isSoldOut, isLowStock, stockAriaSuffix } from "@/lib/product-stock";
-import { buildUrl } from "@/lib/url";
+import { fetchProductsByIds } from "@/lib/fetch-products-by-ids";
 import { deadProductIds } from "@/lib/dead-product-ids";
 
 // 不訂閱任何事件：這排只在「清掉下架商品」時改小抄，那次會跟著 setStockById 重畫、
@@ -80,13 +80,13 @@ export function RecentlyViewed({
     const ids = prior.map((p) => p.id);
     if (ids.length === 0) return;
     let aborted = false;
-    fetch(
-      buildUrl(`/${slug}/favorites/api`, { ids: ids.join(",") }),
-      { cache: "no-store" }
-    )
-      .then((r) => (r.ok ? r.json() : Promise.reject(new Error())))
+    // 走 fetchProductsByIds（購物車／收藏／結帳同一支）：不是 UUID 的 id 送出前就丟掉。
+    // 以前這裡自己把整串 id 塞進網址，小抄的 id 只檢查是字串、沒限長度，一個超長的壞
+    // id 就能讓網址超過上限被打回、走 catch，下面的清理永遠不會跑、那張卡一直列著。
+    // 全部都不是 UUID 時它直接回空陣列不打網路，deadProductIds 照樣把它們清掉。
+    fetchProductsByIds<{ id?: unknown; stock?: unknown }>(slug, ids.join(","))
       .then((data) => {
-        if (aborted || !Array.isArray(data)) return;
+        if (aborted) return;
         // 把這次回來的即時庫存收進 map，標售完／快沒貨用（snapshot 沒這資料）。
         const stockMap: Record<string, number> = {};
         for (const d of data) {
