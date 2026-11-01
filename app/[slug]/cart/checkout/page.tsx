@@ -35,6 +35,11 @@ import { MAX_CUSTOMER_NAME_LEN, MAX_CUSTOMER_PHONE_LEN, MAX_CUSTOMER_EMAIL_LEN, 
 const SUBMIT_UNCERTAIN_MESSAGE =
   "送出的時候連線出了狀況，這張單有沒有成立我們這邊看不到。先別急著重送——請聯絡店家確認一下，確定沒收到再送一次，免得下成兩張。";
 
+// 按送出當下這頁自己擋下來的兩句（車裡有商品下架／售完）。切回分頁重抓後要認得它們，
+// 改照現況講。
+const CART_BLOCKED_MISSING_ERROR = "購物車內有商品已下架，請回購物車確認後再結帳";
+const CART_BLOCKED_SOLD_OUT_ERROR = "購物車內有商品已售完，請回購物車調整後再結帳";
+
 export default function CartCheckoutPage() {
   const params = useParams();
   const router = useRouter();
@@ -97,6 +102,43 @@ export default function CartCheckoutPage() {
       cancelled = true;
     };
   }, [slug, router, reloadKey, loadKey, cart]);
+
+  // 上面只在進頁抓一次。客人填到一半切去別的分頁（查地址、找門市、比價），回來時商家
+  // 可能已經下架或庫存賣掉了，這頁還是舊的那份：數量、總價、送出鈕照舊，要按了送出才
+  // 被退回。切回這個分頁時悄悄重抓一次，下架／售完／數量調整的提示照現況出來。
+  // 正在送出就不抓；抓回來前客人又按了送出，這份就不用（那次送出自己會再抓）。
+  // 失敗就忽略、不換成重試畫面（那會蓋掉填好的表單）。
+  // 錯誤框若正掛著「商品變了」那類句子，那是之前的狀況，比照送出退件後的重抓改照現況講。
+  useEffect(() => {
+    const ids = cart.map((c) => c.productId).join(",");
+    if (ids === "") return;
+    let cancelled = false;
+    async function refresh() {
+      if (document.visibilityState !== "visible") return;
+      if (submittingRef.current) return;
+      const attempt = submitAttemptRef.current;
+      try {
+        const fresh = await fetchProductsByIds<Product>(slug, ids);
+        if (cancelled || attempt !== submitAttemptRef.current) return;
+        if (submittingRef.current) return;
+        setProducts(fresh);
+        if (
+          isCartProductChangeError(error) ||
+          error === CART_BLOCKED_MISSING_ERROR ||
+          error === CART_BLOCKED_SOLD_OUT_ERROR
+        ) {
+          setErrorRefreshed(true);
+        }
+      } catch {
+        // 手上那份照用。
+      }
+    }
+    document.addEventListener("visibilitychange", refresh);
+    return () => {
+      cancelled = true;
+      document.removeEventListener("visibilitychange", refresh);
+    };
+  }, [slug, cart, error]);
 
   if (failed) {
     // 讀取失敗：車裡的 id／數量還在身上，沒不見，給一條「重試」退路而不是卡骨架。
@@ -276,9 +318,7 @@ export default function CartCheckoutPage() {
     if (blocked) {
       setErrorRefreshed(false);
       setError(
-        hasMissing
-          ? "購物車內有商品已下架，請回購物車確認後再結帳"
-          : "購物車內有商品已售完，請回購物車調整後再結帳"
+        hasMissing ? CART_BLOCKED_MISSING_ERROR : CART_BLOCKED_SOLD_OUT_ERROR
       );
       window.scrollTo({ top: 0, behavior: "smooth" });
       return;
