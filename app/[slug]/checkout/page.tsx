@@ -127,12 +127,16 @@ export default async function CheckoutPage({
   // 現在其實夠了時，紅框還說只剩 2 件，畫面卻照原數量給買。而且三個框都沒講「訂單沒有
   // 送出」。改成：這類退回只講一次、照現況講，並講明這筆沒送出。
   const stockRejected = isStockCheckoutError(error);
+  // 帶「商品已下架」退回、這頁卻又撈得到（商家下架後又上架回來）時同理：紅框以前照網址
+  // 說已下架，表單卻好好的能送，客人不知道該不該再按。改成照現況講。
   const shownError =
     stockRejected && (soldOut || wasClamped)
       ? undefined
       : stockRejected
         ? "庫存剛剛有變動，這筆訂單沒有送出，請確認數量後再送出一次"
-        : error;
+        : error === PRODUCT_UNAVAILABLE_ERROR
+          ? "這件商品剛剛暫時下架，現在又上架了。這筆訂單沒有送出，請確認後再送出一次"
+          : error;
   // 摘要縮圖先濾掉店面注定顯示不出的舊值（http://、半截網址、空白），跟逛街頁同一條線。
   const thumb = displayableImageUrls(product.image_urls)[0];
   const placeBound = placeOrder.bind(null, slug);
