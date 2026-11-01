@@ -10,7 +10,10 @@ import { CheckoutFormMemory } from "./form-memory";
 import { QTY_MIN, clampQty } from "@/lib/product-quantity";
 import { clampToStock } from "@/lib/product-stock";
 import { isUuid } from "@/lib/uuid";
-import { knownCheckoutError } from "@/lib/checkout-error-message";
+import {
+  knownCheckoutError,
+  PRODUCT_UNAVAILABLE_ERROR,
+} from "@/lib/checkout-error-message";
 
 type Params = Promise<{ slug: string }>;
 type SearchParams = Promise<{
@@ -64,7 +67,52 @@ export default async function CheckoutPage({
     .eq("merchant_id", store.id)
     .eq("is_active", true)
     .maybeSingle();
-  if (!product) notFound();
+  if (!product) {
+    // 客人填表期間商品被下架：placeOrder 帶「商品已下架」退回這頁，但上面只撈上架中的
+    // 商品，以前這裡直接 404，客人打完整張表只看到找不到頁面、不知道發生什麼事。
+    // 帶著這句退回來時改成顯示提醒和回店裡的連結；其他情況（亂填的 id）照舊 404。
+    if (error !== PRODUCT_UNAVAILABLE_ERROR) notFound();
+    return (
+      <main className="max-w-2xl mx-auto px-6 sm:px-10 py-20 sm:py-28">
+        <h1
+          className="text-3xl sm:text-4xl font-medium mb-10"
+          style={{
+            fontFamily: "var(--store-font)",
+            letterSpacing: "-0.01em",
+            lineHeight: 1.15,
+          }}
+        >
+          結帳
+        </h1>
+        <div
+          role="alert"
+          className="rounded-2xl p-5"
+          style={{
+            background: "rgba(220, 38, 38, 0.04)",
+            border: "1px solid rgba(220, 38, 38, 0.2)",
+            color: "#991B1B",
+          }}
+        >
+          <p
+            className="text-[0.6875rem] uppercase font-medium mb-2"
+            style={{ letterSpacing: "0.4em", opacity: 0.8 }}
+          >
+            <span aria-hidden="true">Notice · </span>商品已下架
+          </p>
+          <p className="text-sm" style={{ lineHeight: 1.6 }}>
+            這件商品在你填資料的時候下架了，這筆訂單沒有送出。可以回去看看店裡其他的。
+          </p>
+          <Link
+            href={`/${slug}/shop`}
+            className="sproutly-link inline-block mt-3 text-sm"
+            style={{ color: theme.accent }}
+          >
+            看其他商品 <span aria-hidden="true">→</span>
+          </Link>
+        </div>
+      </main>
+    );
+  }
 
   // 把顯示數量夾到實際庫存（規則與購物車結帳頁共用，見 clampToStock）。
   const { effectiveQty, soldOut, clamped: wasClamped } = clampToStock(
