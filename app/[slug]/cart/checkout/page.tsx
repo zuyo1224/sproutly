@@ -299,6 +299,16 @@ export default function CartCheckoutPage() {
         submittingRef.current = false;
         setSubmitting(false);
         window.scrollTo({ top: 0, behavior: "smooth" });
+        // 伺服器退件常是「部分商品已下架」或庫存不足：客人填表期間商品變了，但這頁手上
+        // 還是進來時撈的那份，送出鈕照在、再按一次還是同一句，也看不出是哪一件。背景重抓
+        // 一次，下架／售完／數量調整的提示就會照現況跳出來。抓失敗就算了，不換成重試畫面
+        // （那會蓋掉客人填好的表單），錯誤框已經講了原因。
+        fetchProductsByIds<Product>(
+          slug,
+          cart.map((c) => c.productId).join(",")
+        )
+          .then(setProducts)
+          .catch(() => {});
         return;
       }
       if (!res.ok || typeof data?.orderId !== "string") {
