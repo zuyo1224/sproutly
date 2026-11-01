@@ -23,6 +23,7 @@ type Product = {
 
 import { formatPrice } from "@/lib/format-price";
 import { fetchProductsByIds } from "@/lib/fetch-products-by-ids";
+import { isUuid } from "@/lib/uuid";
 import { displayableImageUrls } from "@/lib/image-url";
 import { isPlainObject } from "@/lib/is-plain-object";
 import { MAX_CUSTOMER_NAME_LEN, MAX_CUSTOMER_PHONE_LEN, MAX_CUSTOMER_EMAIL_LEN, MAX_SHIPPING_STORE_LEN, MAX_SHIPPING_ADDRESS_LEN, MAX_ORDER_NOTE_LEN } from "@/lib/checkout-fields";
@@ -228,8 +229,20 @@ export default function CartCheckoutPage() {
   // 就比照單品結帳頁：依剩餘庫存自動調整、清楚提示後照送——摘要與送出的 cart_items
   // 本來就都吃 effectiveQty，API 收到的量在庫存內不會被退。原本連只被夾住也整單擋，
   // 同一個「庫存變少」情境單品路徑放行、購物車路徑擋下，兩條結帳路徑行為相反。
+  // 車裡有、卻沒撈回來的商品＝客人從購物車頁走到這頁之間被下架（或店家刪掉）了。
+  // 以前 itemRows 只由撈回來的商品組成，這種品項直接從摘要和送出的 cart_items 消失，
+  // 伺服器只驗收到的那幾項、照樣成立訂單，送出後 clearCart 又把它從車裡清掉——
+  // 客人少買了一件卻沒人告訴他。比照售完擋住送出、請他回購物車（購物車頁的
+  // deadProductIds 會把下架的清掉）。只算 UUID：非 UUID 的 id 本來就撈不到商品、
+  // 購物車頁和徽章都不算它們，不該因為它們擋結帳。
+  const returnedIds = new Set(products.map((p) => p.id));
+  const hasMissing = cart.some(
+    (c) => isUuid(c.productId) && !returnedIds.has(c.productId)
+  );
   const hasSoldOut = itemRows.some((r) => r.soldOut);
   const hasClamped = itemRows.some((r) => r.clamped);
+  // 下架跟售完一樣沒得救，兩種都把送出換成回購物車。
+  const blocked = hasSoldOut || hasMissing;
 
   const needsStore = shippingNeedsStore(shippingMethod);
   const needsAddress = shippingMethod === "home_delivery";
@@ -240,8 +253,12 @@ export default function CartCheckoutPage() {
     if (submittingRef.current) return;
     // 有商品售完就不送出，請客人回購物車調整（按鈕此時也已換成回購物車連結，
     // 這裡是雙保險，例如鍵盤直接 submit 表單）。只被夾住的照送，量已夾到庫存內。
-    if (hasSoldOut) {
-      setError("購物車內有商品已售完，請回購物車調整後再結帳");
+    if (blocked) {
+      setError(
+        hasMissing
+          ? "購物車內有商品已下架，請回購物車確認後再結帳"
+          : "購物車內有商品已售完，請回購物車調整後再結帳"
+      );
       window.scrollTo({ top: 0, behavior: "smooth" });
       return;
     }
@@ -382,7 +399,7 @@ export default function CartCheckoutPage() {
         </div>
       )}
 
-      {(hasSoldOut || hasClamped) && (
+      {(blocked || hasClamped) && (
         <div
           role="status"
           aria-live="polite"
@@ -400,7 +417,9 @@ export default function CartCheckoutPage() {
             <span aria-hidden="true">Notice · </span>庫存提醒
           </p>
           <p className="text-sm" style={{ lineHeight: 1.6 }}>
-            {hasSoldOut
+            {hasMissing
+              ? "購物車內有商品已下架，請回購物車確認後再結帳。"
+              : hasSoldOut
               ? "購物車內有商品已售完，請回購物車調整後再結帳。"
               : "部分商品目前庫存不夠，數量已自動調整成剩下的庫存，總計也一起更新了。可以直接送出，或回購物車再調整。"}
           </p>
@@ -777,7 +796,7 @@ export default function CartCheckoutPage() {
           </section>
 
           <div className="pt-4">
-            {hasSoldOut ? (
+            {blocked ? (
               <Link
                 href={`/${slug}/cart`}
                 className="sproutly-btn sproutly-btn-secondary sproutly-btn-lg w-full"
